@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -250,11 +250,15 @@ public class StartupViewModel
             optimizeDb = true;
         }
 
-        if (prefs.getBoolean(PK_REBUILD_TITLE_OB, false)) {
+        // Can be triggered when the user manually decides to rebuild the indexes.
+        // OR can be triggered when the app updates requires rebuilding the OB columns only.
+        if (prefs.getBoolean(PK_REBUILD_INDEXES, false)
+            || prefs.getBoolean(PK_REBUILD_TITLE_OB, false)) {
             startTask(new RebuildTitleOrderByColumnTask(taskListener));
             optimizeDb = true;
         }
 
+        // Rebuild the SQLite indexes only.
         if (prefs.getBoolean(PK_REBUILD_INDEXES, false)) {
             startTask(new RebuildIndexesTask(taskListener));
             optimizeDb = true;
