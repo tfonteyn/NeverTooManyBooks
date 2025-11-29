@@ -87,10 +87,11 @@ public class DBHelper
      * v7.7.0: 43
      * v7.8.2: 44
      * v7.8.3: 45
+     * v7.10.0: 46
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 45;
+    public static final int DATABASE_VERSION = 46;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -475,6 +476,10 @@ public class DBHelper
         if (oldVersion < 45) {
             // Github #193: rebuild to restore the spaces
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
+        }
+        if (oldVersion < 46) {
+            // Github #200: rebuild both OB columns and the indexes
+            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_INDEXES, true);
         }
 
         // We have to do this here as we're always inserting all columns,
