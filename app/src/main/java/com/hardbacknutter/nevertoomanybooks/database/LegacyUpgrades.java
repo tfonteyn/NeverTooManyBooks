@@ -35,38 +35,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
@@ -89,23 +77,18 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
-import com.hardbacknutter.util.logger.Logger;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_LANG_MAPPINGS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
@@ -148,248 +131,6 @@ public final class LegacyUpgrades {
 
     private LegacyUpgrades() {
     }
-
-    static void v16onUpgrade(@NonNull final Context context,
-                             @NonNull final SQLiteDatabase db) {
-        TBL_STRIPINFO_COLLECTION.create(db, true);
-
-        context.deleteDatabase("taskqueue.db");
-    }
-
-    static void v17onUpgrade(@NonNull final SQLiteDatabase db) {
-        TBL_CALIBRE_CUSTOM_FIELDS.create(db, true);
-        CalibreCustomFieldDaoImpl.onPostCreate(db);
-    }
-
-    static void v18onUpgrade(@NonNull final SQLiteDatabase db) {
-        TBL_BOOKSHELF_FILTERS.create(db, true);
-    }
-
-    static void v19onUpgrade(@NonNull final Context context,
-                             @NonNull final SQLiteDatabase db) {
-        // Migrate all styles
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        // change the name of these for easier migration
-        final boolean visSeries = global.getBoolean(
-                PK_FIELDS_VISIBILITY_KEYS + "series_name", true);
-        final boolean visPublisher = global.getBoolean(
-                PK_FIELDS_VISIBILITY_KEYS + "publisher_name", true);
-
-        global.edit()
-              .putBoolean(PK_FIELDS_VISIBILITY_KEYS + DBKey.FK_SERIES, visSeries)
-              .putBoolean(PK_FIELDS_VISIBILITY_KEYS + DBKey.FK_PUBLISHER, visPublisher)
-              .apply();
-
-        TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                db,
-                DBDefinitions.DOM_STYLE_NAME,
-
-                DBDefinitions.DOM_STYLE_GROUPS,
-                DBDefinitions.DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
-                DBDefinitions.DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE,
-                DBDefinitions.DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
-                DBDefinitions.DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
-                DBDefinitions.DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
-
-                DBDefinitions.DOM_STYLE_EXP_LEVEL,
-                DBDefinitions.DOM_STYLE_ROW_USES_PREF_HEIGHT,
-                DBDefinitions.DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
-                DBDefinitions.DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
-                DBDefinitions.DOM_STYLE_TEXT_SCALE,
-                DBDefinitions.DOM_STYLE_COVER_SCALE,
-                DBDefinitions.DOM_STYLE_LIST_HEADER,
-                DBDefinitions.DOM_STYLE_BOOK_DETAIL_FIELD_VISIBILITY,
-                DBDefinitions.DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY);
-
-        final List<String> uuids = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(
-                "SELECT uuid FROM " + TBL_BOOKLIST_STYLES.getName()
-                + _WHERE_ + DBKey.STYLE.TYPE + "=" + Style.Type.User.getId(), null)) {
-            while (cursor.moveToNext()) {
-                uuids.add(cursor.getString(0));
-            }
-        }
-
-        try (SQLiteStatement stmt = db.compileStatement(
-                UPDATE_ + TBL_BOOKLIST_STYLES.getName() + _SET_
-                + DBKey.STYLE.NAME + "=?, "
-
-                + DBKey.STYLE.GROUPS + "=?,"
-                + DBKey.STYLE.GROUPS_AUTHOR_SHOW_UNDER_EACH + "=?,"
-                + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE + "=?,"
-                + DBKey.STYLE.GROUPS_SERIES_SHOW_UNDER_EACH + "=?,"
-                + DBKey.STYLE.GROUPS_PUBLISHER_SHOW_UNDER_EACH + "=?,"
-                + DBKey.STYLE.GROUPS_BOOKSHELF_SHOW_UNDER_EACH + "=?,"
-
-                + DBKey.STYLE.EXP_LEVEL + "=?,"
-                + DBKey.STYLE.ROW_USES_PREF_HEIGHT + "=?,"
-                + DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME + "=?,"
-                + DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME + "=?,"
-                + DBKey.STYLE.TEXT_SCALE + "=?,"
-                + DBKey.STYLE.COVER_SCALE + "=?,"
-                + DBKey.STYLE.LIST_HEADER + "=?,"
-                + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY + "=?,"
-                + DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY + "=?"
-
-                + _WHERE_ + DBKey.STYLE.UUID + "=?")) {
-
-            // Preference keys are hardcoded, as this is for backwards compatibility.
-            uuids.forEach(uuid -> {
-                final SharedPreferences stylePrefs = context
-                        .getSharedPreferences(uuid, Context.MODE_PRIVATE);
-
-                int c = 0;
-
-                stmt.bindString(++c, stylePrefs.getString(
-                        "style.booklist.name", null));
-                stmt.bindString(++c, stylePrefs.getString(
-                        "style.booklist.groups", null));
-                stmt.bindLong(++c, stylePrefs.getBoolean(
-                        Style.UnderEach.Author.getPrefKey(), false) ? 1 : 0);
-                stmt.bindLong(++c, StyleDataStore.convert(
-                        stylePrefs.getStringSet("style.booklist.group.authors.primary.type",
-                                                null), Author.TYPE_UNKNOWN));
-                stmt.bindLong(++c, stylePrefs.getBoolean(
-                        Style.UnderEach.Series.getPrefKey(), false) ? 1 : 0);
-                stmt.bindLong(++c, stylePrefs.getBoolean(
-                        Style.UnderEach.Publisher.getPrefKey(), false) ? 1 : 0);
-                stmt.bindLong(++c, stylePrefs.getBoolean(
-                        Style.UnderEach.Bookshelf.getPrefKey(), false) ? 1 : 0);
-                stmt.bindLong(++c, stylePrefs.getInt(
-                        "style.booklist.levels.default", 1));
-                stmt.bindLong(++c, stylePrefs.getBoolean(
-                        "style.booklist.group.height", true) ? 1 : 0);
-                stmt.bindLong(++c, stylePrefs.getBoolean(
-                        "sort.author.name.given_first", false) ? 1 : 0);
-                stmt.bindLong(++c, stylePrefs.getBoolean(
-                        "show.author.name.given_first", false) ? 1 : 0);
-                stmt.bindLong(++c, stylePrefs.getInt(
-                        "style.booklist.scale.font", TextScale.DEFAULT.getId()));
-                stmt.bindLong(++c, stylePrefs.getInt(
-                        "style.booklist.scale.thumbnails", CoverScale.DEFAULT.getId()));
-                stmt.bindLong(++c, StyleDataStore.convert(
-                        stylePrefs.getStringSet("style.booklist.header", null),
-                        BooklistHeader.BITMASK_ALL));
-
-                final Set<String> detailFields = new HashSet<>();
-                if (stylePrefs.getBoolean("style.details.show.thumbnail.0", true)) {
-                    detailFields.add(DBKey.COVER[0]);
-                }
-                if (stylePrefs.getBoolean("style.details.show.thumbnail.1", true)) {
-                    detailFields.add(DBKey.COVER[1]);
-                }
-
-                stmt.bindLong(++c, FieldVisibility.getBitValue(detailFields));
-
-                final Set<String> listFields = new HashSet<>();
-                listFields.add(DBKey.FK_SERIES);
-
-                if (stylePrefs.getBoolean("style.booklist.show.thumbnails", true)) {
-                    listFields.add(DBKey.COVER[0]);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.author", true)) {
-                    listFields.add(DBKey.FK_AUTHOR);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.publisher", true)) {
-                    listFields.add(DBKey.FK_PUBLISHER);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.publication.date", true)) {
-                    listFields.add(DBKey.PUBLICATION_DATE);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.format", true)) {
-                    listFields.add(DBKey.FORMAT);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.location", true)) {
-                    listFields.add(DBKey.LOCATION);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.rating", true)) {
-                    listFields.add(DBKey.RATING);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.bookshelves", true)) {
-                    listFields.add(DBKey.FK_BOOKSHELF);
-                }
-                if (stylePrefs.getBoolean("style.booklist.show.isbn", true)) {
-                    listFields.add(DBKey.ISBN);
-                }
-
-                stmt.bindLong(++c, FieldVisibility.getBitValue(listFields));
-
-                stmt.bindString(++c, uuid);
-                stmt.executeUpdateDelete();
-
-                context.deleteSharedPreferences(uuid);
-            });
-        }
-    }
-
-    static void v20onUpgrade(@NonNull final SQLiteDatabase db) {
-        TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_AUTO_UPDATE);
-    }
-
-    static void v21onUpgrade(@NonNull final Context context) {
-        // migrate SearchEngine Preferences
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        // Note that migratePreferenceKeys() did not exist at this time
-        // Not going to bother with retro-active doing this.
-        // convert the old bit ids to the preference-key of the engine
-        Stream.of("search.siteOrder.data",
-                  "search.siteOrder.covers",
-                  "search.siteOrder.alted")
-              .forEach(key -> {
-                  final String order = Arrays
-                          .stream(prefs.getString(key, "").split(","))
-                          .map(i -> {
-                              switch (i) {
-                                  case "1":
-                                      return EngineId.GoogleBooks.getPreferenceKey();
-                                  case "2":
-                                      return EngineId.Amazon.getPreferenceKey();
-                                  case "4":
-                                      return EngineId.LibraryThing.getPreferenceKey();
-                                  case "8":
-                                      return EngineId.Goodreads.getPreferenceKey();
-                                  case "16":
-                                      return EngineId.Isfdb.getPreferenceKey();
-                                  case "32":
-                                      return EngineId.OpenLibrary.getPreferenceKey();
-                                  case "64":
-                                      return EngineId.KbNl.getPreferenceKey();
-                                  case "128":
-                                      return EngineId.StripInfoBe.getPreferenceKey();
-                                  case "256":
-                                      return EngineId.LastDodoNl.getPreferenceKey();
-                                  default:
-                                      return "";
-                              }
-                          })
-                          .collect(Collectors.joining(","));
-                  prefs.edit().putString(key, order).apply();
-              });
-    }
-
-    static void v22onUpgrade(@NonNull final SQLiteDatabase db) {
-        // remove built-in style ID_DEPRECATED_1
-        db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
-    }
-
-    static void v23onUpgrade(@NonNull final SQLiteDatabase db) {
-        // Up to version 22 we had a bug in how we'd store TOC entries which could create
-        // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
-        removeDuplicateAuthors(db);
-        // as a result of the author cleanup, we now might have duplicate toc entries,
-        // same algorithm to clean those up
-        removeDuplicateTocEntries(db);
-
-        // Add pen-name support
-        TBL_PSEUDONYM_AUTHOR.create(db, true);
-        // new search-engine added
-        TBL_BOOKS.alterTableAddColumns(db, new Domain.Builder(
-                "bdt_book_id", SqLiteDataType.Integer).build());
-    }
-
 
     static void v24onUpgrade(@NonNull final SQLiteDatabase db) {
         TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE);

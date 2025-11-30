@@ -69,6 +69,10 @@ public class DBHelper
 
     /**
      * Previous versions.
+     * v3.2.0: 22
+     * v4.0.0: 23
+     * v4.4.0: 24
+     * v4.5.0: 25
      * v5.0.0: 26
      * v5.1.0: 27
      * v5.2.0: 29
@@ -376,48 +380,9 @@ public class DBHelper
             }
         }
 
-        // this is nasty....  onUpgrade always gets executed in a transaction,
-        // and deleting an index inside a transaction does not become 'activated'
-        // until the transaction is done.
-        //
-        // We need to drop this particular index due to it having been wrongfully created 'unique'.
-        // This MUST be done BEFORE we do anything else (and luckily upgrades 15..22
-        // are not conflicting). Even if any of the further upgrades cause a fail,
-        // deleting this index is what we want.
-        if (oldVersion >= 15 && oldVersion < 23) {
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            db.execSQL("DROP INDEX anthology_IDX_pk_3");
-            db.beginTransaction();
-        }
-
-        if (oldVersion < 15) {
-            throw new UpgradeFailedException(
-                    context.getString(R.string.error_upgrade_not_supported, "2.0.0"));
-        }
-        if (oldVersion < 16) {
-            LegacyUpgrades.v16onUpgrade(context, db);
-        }
-        if (oldVersion < 17) {
-            LegacyUpgrades.v17onUpgrade(db);
-        }
-        if (oldVersion < 18) {
-            LegacyUpgrades.v18onUpgrade(db);
-        }
-        if (oldVersion < 19) {
-            LegacyUpgrades.v19onUpgrade(context, db);
-        }
-        if (oldVersion < 20) {
-            LegacyUpgrades.v20onUpgrade(db);
-        }
-        if (oldVersion < 21) {
-            LegacyUpgrades.v21onUpgrade(context);
-        }
-        if (oldVersion < 22) {
-            LegacyUpgrades.v22onUpgrade(db);
-        }
         if (oldVersion < 23) {
-            LegacyUpgrades.v23onUpgrade(db);
+            throw new UpgradeFailedException(
+                    context.getString(R.string.error_upgrade_not_supported, "4.0.0"));
         }
         if (oldVersion < 24) {
             LegacyUpgrades.v24onUpgrade(db);
