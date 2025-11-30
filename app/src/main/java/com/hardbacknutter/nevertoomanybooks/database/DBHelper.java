@@ -34,6 +34,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -443,7 +444,19 @@ public class DBHelper
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
         }
         if (oldVersion < 46) {
-            // Github #200: rebuild both OB columns and the indexes
+            // Github #200: in short: #193 introduced a bug where the order-by column
+            // could contain spaces. This led to "mergeable" data not being found,
+            // which in turn led to creating duplicates.
+            DBCleaner.setOptions(context, Set.of(
+                    DBCleaner.Option.RemoveDuplicateAuthors,
+                    DBCleaner.Option.RemoveDuplicatePublishers,
+                    DBCleaner.Option.RemoveDuplicateSeries,
+                    DBCleaner.Option.RemoveDuplicateTocEntries
+            ));
+
+            // Run the cleaner to remove duplicates as configured above
+            StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
+            // and rebuild both OB columns and the indexes
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_INDEXES, true);
         }
 

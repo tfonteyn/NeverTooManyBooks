@@ -24,27 +24,35 @@ import android.database.Cursor;
 import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -63,33 +71,79 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class DBCleaner {
 
+    public static final String PK_OPTIONS = StartupViewModel.PK_RUN_MAINTENANCE + ".options";
+
     /** Log tag. */
     private static final String TAG = "DBCleaner";
 
+    private static final String DELETE_FROM_ = "DELETE FROM ";
     private static final String SELECT_ = "SELECT ";
     private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
-    private static final String _FROM_ = " FROM ";
-    private static final String _WHERE_ = " WHERE ";
-    private static final String _IN_ = " IN ";
-    private static final String _IS_NULL = " IS NULL";
-    private static final String _IS_NOT_NULL = " IS NOT NULL";
     private static final String UPDATE_ = "UPDATE ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _IN_ = " IN ";
+    private static final String _IS_NOT_NULL = " IS NOT NULL";
+    private static final String _IS_NULL = " IS NULL";
     private static final String _SET_ = " SET ";
-    private static final String DELETE_FROM_ = "DELETE FROM ";
+    private static final String _WHERE_ = " WHERE ";
 
     private static final Pattern T = Pattern.compile("T");
-    static final Pattern RATING_PATTERN = Pattern.compile("^\\s*\\d*\\.?\\d*\\s*$");
-    static final float FLOAT_EPSILON = 0.1f;
+
+    private static final Pattern RATING_PATTERN = Pattern.compile("^\\s*\\d*\\.?\\d*\\s*$");
+
+    private static final float FLOAT_EPSILON = 0.1f;
 
     /** Database Access. */
     @NonNull
     private final SynchronizedDb db;
+    private final Logger logger;
 
     /**
      * Constructor.
      */
     public DBCleaner() {
         this.db = ServiceLocator.getInstance().getDb();
+        logger = LoggerFactory.getLogger();
+    }
+
+    public static void setOptions(@NonNull final Context context,
+                                  @NonNull final Set<DBCleaner.Option> options) {
+
+        final Set<String> all = options.stream()
+                                       .map(Enum::name)
+                                       .collect(Collectors.toSet());
+
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putStringSet(PK_OPTIONS, all)
+                         .apply();
+    }
+
+    @SuppressWarnings({"CheckStyle", "OverlyBroadCatchBlock"})
+    @NonNull
+    private static Set<DBCleaner.Option> readOptions(@NonNull final Context context) {
+        @Nullable
+        final Set<String> all = PreferenceManager.getDefaultSharedPreferences(context)
+                                                 .getStringSet(PK_OPTIONS, null);
+
+        final Set<DBCleaner.Option> options = EnumSet.noneOf(DBCleaner.Option.class);
+        if (all != null) {
+            for (final String option : all) {
+                try {
+                    options.add(DBCleaner.Option.valueOf(option));
+                } catch (final Exception ignored) {
+                    // skip invalid/missing enum values
+                }
+            }
+        }
+
+        return options;
+    }
+
+    private static void clearOptions(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .remove(PK_OPTIONS)
+                         .apply();
     }
 
     /**
@@ -102,6 +156,9 @@ public class DBCleaner {
     @WorkerThread
     public void clean(@NonNull final Context context)
             throws DaoWriteException {
+
+        final Set<DBCleaner.Option> options = readOptions(context);
+
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
@@ -124,16 +181,52 @@ public class DBCleaner {
         // we need to test with bad data
         bookBookshelf(true);
 
-        // re-sort positional links - theoretically this should never be needed... flw.
-        int modified;
-        modified = serviceLocator.getAuthorDao().fixPositions(context);
-        modified += serviceLocator.getSeriesDao().fixPositions(context);
-        modified += serviceLocator.getPublisherDao().fixPositions(context);
-        modified += serviceLocator.getTocEntryDao().fixPositions(context);
-        if (modified > 0) {
-            LoggerFactory.getLogger().w(TAG, "reposition modified=" + modified);
+        if (!options.isEmpty()) {
+            removeDuplicates(context, options);
+        }
+
+        // Lastly, always clear the options
+        clearOptions(context);
+    }
+
+    private void removeDuplicates(@NonNull final Context context,
+                                  @NonNull final Set<Option> options)
+            throws DaoWriteException {
+        final DuplicateRowCleaner drc = new DuplicateRowCleaner();
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            if (options.contains(Option.RemoveDuplicateAuthors)) {
+                drc.removeDuplicateAuthors();
+            }
+            if (options.contains(Option.RemoveDuplicatePublishers)) {
+                drc.removeDuplicatePublishers();
+            }
+            if (options.contains(Option.RemoveDuplicateSeries)) {
+                drc.removeDuplicateSeries();
+            }
+            // Paranoia check:
+            // removeDuplicateTocEntries is dependent on RemoveDuplicateAuthors having run first.
+            if (options.contains(Option.RemoveDuplicateAuthors)
+                && options.contains(Option.RemoveDuplicateTocEntries)) {
+                drc.removeDuplicateTocEntries();
+            }
+
+            drc.resortPositionalLinks(context);
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
     }
+
 
     private void ratingColumn() {
         final List<Long> toDelete = new ArrayList<>();
@@ -225,9 +318,9 @@ public class DBCleaner {
             }
 
             if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger().d(TAG, "dates",
-                                            "key=" + key
-                                            + "|rows.size()=" + rows.size());
+                logger.d(TAG, "dates",
+                         "key=" + key
+                         + "|rows.size()=" + rows.size());
             }
             try (SynchronizedStatement stmt = db.compileStatement(
                     UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
@@ -267,9 +360,9 @@ public class DBCleaner {
     private void booleanCleanup(@NonNull final String table,
                                 @NonNull final String column) {
         if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(TAG, "booleanCleanup",
-                                        "table=" + table,
-                                        "column=" + column);
+            logger.d(TAG, "booleanCleanup",
+                     "table=" + table,
+                     "column=" + column);
         }
 
         final String select = SELECT_DISTINCT_ + column + _FROM_ + table
@@ -285,7 +378,7 @@ public class DBCleaner {
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
                 if (count > 0) {
-                    LoggerFactory.getLogger().d(TAG, "booleanCleanup", "true=" + count);
+                    logger.d(TAG, "booleanCleanup", "true=" + count);
                 }
             }
         }
@@ -296,13 +389,11 @@ public class DBCleaner {
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
                 if (count > 0) {
-                    LoggerFactory.getLogger().d(TAG, "booleanCleanup", "false=" + count);
+                    logger.d(TAG, "booleanCleanup", "false=" + count);
                 }
             }
         }
     }
-
-    /* ****************************************************************************************** */
 
     /**
      * Remove rows where books are sitting on a {@code null} bookshelf.
@@ -362,14 +453,21 @@ public class DBCleaner {
                        @NonNull final String query) {
         if (BuildConfig.DEBUG /* always */) {
             try (Cursor cursor = db.rawQuery(query, null)) {
-                LoggerFactory.getLogger().d(TAG, state, "row count=" + cursor.getCount());
+                logger.d(TAG, state, "row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
                     final String field = cursor.getColumnName(0);
                     final String value = cursor.getString(0);
 
-                    LoggerFactory.getLogger().d(TAG, state, field + '=' + value);
+                    logger.d(TAG, state, field + '=' + value);
                 }
             }
         }
+    }
+
+    public enum Option {
+        RemoveDuplicateAuthors,
+        RemoveDuplicateSeries,
+        RemoveDuplicateTocEntries,
+        RemoveDuplicatePublishers
     }
 }
