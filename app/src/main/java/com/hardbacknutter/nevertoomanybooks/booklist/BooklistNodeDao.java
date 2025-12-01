@@ -665,31 +665,78 @@ public class BooklistNodeDao {
             }
         }
 
+        final Collection<Pair<Integer, String>> keyPrefixes = fetchPrefixes();
+
+        LoggerFactory.getLogger().d(TAG, "keyPrefixes=" + keyPrefixes.size());
+
+        // Plain dumb speed test in nanos:
+        //  temp table: 24484512
+        //  java      : 81680932
+
+//        final int rowsAffected = updateBranchesJava(keyPrefixes);
+        final int rowsAffected = updateBranchesTempTable(keyPrefixes);
+
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, "adjustVisibility", "rows=" + rowsAffected);
+        }
+    }
+
+    @NonNull
+    private Collection<Pair<Integer, String>> fetchPrefixes() {
         // level + key
         final Collection<Pair<Integer, String>> keyPrefixes = new ArrayList<>();
 
         // Find all branches (groups on level 2+) with visible nodes
         try (Cursor cursor = db.rawQuery(
-                String.format(Sql.ADJUST_VISIBILITY_1, listTable.getName()),
+                String.format(Sql.ADJUST_VISIBILITY_FETCH_PREFIXES, listTable.getName()),
                 new String[]{String.valueOf(groupCount)})) {
 
             while (cursor.moveToNext()) {
-                final String key = cursor.getString(0);
+                final String[] keyParts = cursor.getString(0).split("=");
                 final int level = cursor.getInt(1);
-                final String[] parts = key.split("=");
-                final StringBuilder prefix = new StringBuilder(parts[0]);
+                final StringBuilder prefix = new StringBuilder(keyParts[0]);
                 for (int p = 1; p < level; p++) {
-                    prefix.append('=').append(parts[p]);
+                    prefix.append('=').append(keyParts[p]);
                 }
                 prefix.append('%');
                 keyPrefixes.add(new Pair<>(level, prefix.toString()));
             }
         }
+        return keyPrefixes;
+    }
 
+    private int updateBranchesTempTable(@NonNull final Collection<Pair<Integer, String>>
+                                                keyPrefixes) {
+        // Paranoia...
+        db.execSQL(Sql.ADJUST_VISIBILITY_DROP_TMP_PREFIXES);
+        db.execSQL(Sql.ADJUST_VISIBILITY_CREATE_TMP_PREFIXES);
+
+        try (SynchronizedStatement insert = db.compileStatement(
+                Sql.ADJUST_VISIBILITY_INSERT_TMP_PREFIXES)) {
+
+            for (final Pair<Integer, String> p : keyPrefixes) {
+                insert.bindLong(1, p.first);
+                insert.bindString(2, p.second);
+                insert.executeInsert();
+            }
+        }
+
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(
+                String.format(Sql.ADJUST_VISIBILITY_UPDATE, listTable.getName()))) {
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+
+        db.execSQL(Sql.ADJUST_VISIBILITY_DROP_TMP_PREFIXES);
+        return rowsAffected;
+    }
+
+    private int updateBranchesJava(@NonNull final Collection<Pair<Integer, String>>
+                                           keyPrefixes) {
         // update the branches we found
         int rows = 0;
         try (SynchronizedStatement stmt = db.compileStatement(
-                String.format(Sql.ADJUST_VISIBILITY_2, listTable.getName()))) {
+                String.format(Sql.ADJUST_VISIBILITY_UPDATE_LOOPING, listTable.getName()))) {
 
             for (final Pair<Integer, String> entry : keyPrefixes) {
                 stmt.bindLong(1, entry.first);
@@ -697,10 +744,7 @@ public class BooklistNodeDao {
                 rows += stmt.executeUpdateDelete();
             }
         }
-
-        if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(TAG, "adjustVisibility", "rows=" + rows);
-        }
+        return rows;
     }
 
     private static final class Sql {
@@ -809,23 +853,40 @@ public class BooklistNodeDao {
                 + ',' + DBKey.BL_NODE.VISIBLE + "=1"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
-        /** {@link #adjustVisibility()}. */
-        private static final String ADJUST_VISIBILITY_1 =
+        /** Maintenance/debug usage. Simple clear all state data. */
+        private static final String DELETE_ALL = DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE;
+
+        private static final String ADJUST_VISIBILITY_FETCH_PREFIXES =
                 SELECT_DISTINCT_ + DBKey.BL_NODE.KEY + ',' + DBKey.BL_NODE.LEVEL
                 + _FROM_ + /* listTable.getName() */ "%s"
                 + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=1"
                 // Groups only - Don't do books
                 + _AND_ + DBKey.BL_NODE.LEVEL + " BETWEEN 2 AND ?";
 
-        /** {@link #adjustVisibility()}. */
-        private static final String ADJUST_VISIBILITY_2 =
+        private static final String ADJUST_VISIBILITY_UPDATE_LOOPING =
                 UPDATE_ + /* listTable.getName() */ "%s"
                 + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
                 + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
                 + _AND_ + DBKey.BL_NODE.LEVEL + "=?"
                 + _AND_ + DBKey.BL_NODE.KEY + " LIKE ?";
 
-        /** Maintenance/debug usage. Simple clear all state data. */
-        private static final String DELETE_ALL = DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE;
+        private static final String ADJUST_VISIBILITY_TMP_TABLE = "tmp_prefixes";
+        private static final String ADJUST_VISIBILITY_DROP_TMP_PREFIXES =
+                "DROP TABLE IF EXISTS " + ADJUST_VISIBILITY_TMP_TABLE + ";";
+        private static final String ADJUST_VISIBILITY_CREATE_TMP_PREFIXES =
+                "CREATE TEMP TABLE " + ADJUST_VISIBILITY_TMP_TABLE
+                + " (level INTEGER, prefix TEXT);";
+        private static final String ADJUST_VISIBILITY_INSERT_TMP_PREFIXES =
+                "INSERT INTO " + ADJUST_VISIBILITY_TMP_TABLE
+                + "(level, prefix) VALUES (?, ?);";
+        private static final String ADJUST_VISIBILITY_UPDATE =
+                "UPDATE " + /* listTable.getName() */ "%s" + " AS target"
+                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
+                + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
+                + " AND EXISTS ("
+                + SELECT_ + '1' + _FROM_ + ADJUST_VISIBILITY_TMP_TABLE + " AS p"
+                + _WHERE_ + "p.level=target." + DBKey.BL_NODE.LEVEL
+                + _AND_ + "target." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
+                + ')';
     }
 }
