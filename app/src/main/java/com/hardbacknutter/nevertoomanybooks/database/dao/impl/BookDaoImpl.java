@@ -370,6 +370,8 @@ public class BookDaoImpl
             }
 
             // Delete the book, and remember which ones were really deleted.
+            // We can't do a delete with uuid IN (...) as we need the individual successful
+            // uuid deletions.
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_UUID)) {
                 for (final String uuid : uuids) {
                     stmt.bindString(1, uuid);
@@ -514,6 +516,8 @@ public class BookDaoImpl
         }
 
         Synchronizer.SyncLock txLock = null;
+        //URGENT: PERFORMANCE: rewrite the touch sql to do a single update
+        // WHERE _id IN (bookIds)
         try (SynchronizedStatement touchStmt = db.compileStatement(Sql.TOUCH)) {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);

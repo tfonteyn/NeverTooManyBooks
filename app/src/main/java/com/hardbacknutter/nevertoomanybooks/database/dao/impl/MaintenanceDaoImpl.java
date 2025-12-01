@@ -151,6 +151,7 @@ public class MaintenanceDaoImpl
         }
     }
 
+    // URGENT: PERFORMANCE: transform the loops to pure/single SQL
     @Override
     @WorkerThread
     public void rebuildOrderByTitleColumns(@NonNull final Context context) {
