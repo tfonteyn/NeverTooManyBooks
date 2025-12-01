@@ -228,6 +228,15 @@ public class BookCoder {
         // Partial Date stamp, no time
         verifyDates(book, DBKey.getPartialDateKeys(), true, false);
 
+        // BC (sometimes?) produces CSV files where a book can have:
+        // "read"=0
+        // "read_end"="a valid date"
+        // github #205: force the "read" flag to =1 if a read_end" is present
+        // after the above validation of the date fields.
+        if (book.contains(DBKey.READ_END__DATE)) {
+            book.putBoolean(DBKey.READ__BOOL, true);
+        }
+
         return book;
     }
 
