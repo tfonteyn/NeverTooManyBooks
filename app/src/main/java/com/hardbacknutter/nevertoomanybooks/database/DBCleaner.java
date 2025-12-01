@@ -106,6 +106,22 @@ public class DBCleaner {
         logger = LoggerFactory.getLogger();
     }
 
+    /**
+     * Set cleaner options to use when the cleaner is started.
+     * Typically, after setting options, the cleaner should be scheduled by calling BOTH:
+     * <pre>
+     *   // Run the cleaner to remove duplicates as configured above
+     *   StartupViewModel.schedule(context,
+     *       StartupViewModel.PK_RUN_MAINTENANCE, true);
+     *
+     *   // and rebuild both OB columns and the indexes
+     *   StartupViewModel.schedule(context,
+     *       StartupViewModel.PK_REBUILD_INDEXES, true);
+     * </pre>
+     *
+     * @param context Current context
+     * @param options to set
+     */
     public static void setOptions(@NonNull final Context context,
                                   @NonNull final Set<DBCleaner.Option> options) {
 
