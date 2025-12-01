@@ -621,6 +621,9 @@ public class BooklistNodeDao {
     /**
      * {@link #restoreSavedState()} 1. Update visibility/expanded flag (single column at a time)
      *
+     * @param sqlTemplate sql with placeholders for the column name
+     * @param columnName  to use
+     *
      * @throws TransactionException (debug)
      */
     private void restoreSavedState(@NonNull final String sqlTemplate,
