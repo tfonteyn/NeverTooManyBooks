@@ -166,7 +166,7 @@ public class BookDaoHelper {
         }
 
         // cleanup/build all price related fields
-        DBKey.MONEY_KEYS.forEach(key -> processPrice(book, key, moneyParser));
+        DBKey.getMoneyKeys().forEach(key -> processPrice(book, key, moneyParser));
 
         // Try to cross-pollinate the ReadingProgress and page-count fields.
         processReadProgress(book);

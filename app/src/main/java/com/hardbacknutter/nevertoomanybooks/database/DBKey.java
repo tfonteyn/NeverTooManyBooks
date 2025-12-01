@@ -19,6 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import androidx.annotation.NonNull;
+
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
@@ -163,39 +167,84 @@ public final class DBKey {
     public static final String AUTHOR_WORK_TYPE = "work_type";
 
 
-    /**
-     * All money keys.
-     * Used with {@code MONEY_KEYS.contains(key)} to check if a key represents money.
-     */
-    public static final Set<String> MONEY_KEYS = Set.of(
+    private static final Set<String> MONEY_KEYS = Set.of(
             PRICE_LISTED,
             PRICE_PAID);
 
     /**
      * All money keys.
-     * Used with {@code LANGUAGE_KEYS.contains(key)} to check if a key represents a language.
+     *
+     * @return keys
      */
-    public static final Set<String> LANGUAGE_KEYS = Set.of(
+    @NonNull
+    public static Set<String> getMoneyKeys() {
+        return MONEY_KEYS;
+    }
+
+    private static final Set<String> LANGUAGE_KEYS = Set.of(
             LANGUAGE,
             TRANSLATION_ORIGINAL_LANGUAGE);
 
     /**
-     * All date keys (i.e. NOT datetime!).
-     * Used with {@code DATE_KEYS.contains(key)} to check if a key represents a date.
+     * All language keys.
+     *
+     * @return keys
      */
-    public static final Set<String> DATE_KEYS = Set.of(
+    @NonNull
+    public static Set<String> getLanguageKeys() {
+        return LANGUAGE_KEYS;
+    }
+
+    private static final Set<String> DATE_KEYS_PARTIAL = Set.of(
             PUBLICATION_DATE,
             FIRST_PUBLICATION_DATE,
-            DATE_ACQUIRED,
+            DATE_ACQUIRED);
+
+    @NonNull
+    public static Set<String> getPartialDateKeys() {
+        return DATE_KEYS_PARTIAL;
+    }
+
+    private static final Set<String> DATE_KEYS_FULL = Set.of(
             READ_START__DATE,
             READ_END__DATE);
 
+    @NonNull
+    public static Set<String> getFullDateKeys() {
+        return DATE_KEYS_FULL;
+    }
+
+    private static final Set<String> DATE_KEYS;
+
+    static {
+        final Set<String> tmp = new HashSet<>(DATE_KEYS_PARTIAL);
+        tmp.addAll(DATE_KEYS_FULL);
+        DATE_KEYS = Collections.unmodifiableSet(tmp);
+    }
+
     /**
-     * All datetime keys (i.e. NOT date!).
+     * All date keys (i.e. NOT datetime!).
+     *
+     * @return keys
      */
-    public static final Set<String> DATETIME_KEYS = Set.of(
+    @NonNull
+    public static Set<String> getDateKeys() {
+        return DATE_KEYS;
+    }
+
+    private static final Set<String> DATETIME_KEYS = Set.of(
             DATE_LAST_UPDATED__UTC,
             DATE_ADDED__UTC);
+
+    /**
+     * All datetime keys (i.e. NOT date!).
+     *
+     * @return keys
+     */
+    @NonNull
+    public static Set<String> getDateTimeKeys() {
+        return DATETIME_KEYS;
+    }
 
     /** The number of supported Book images. */
     public static final int NR_OF_BOOK_COVERS = 4;

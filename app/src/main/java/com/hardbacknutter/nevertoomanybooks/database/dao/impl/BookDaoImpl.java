@@ -945,7 +945,7 @@ public class BookDaoImpl
     @Override
     @NonNull
     public List<String> getCurrencyCodes(@NonNull final String key) {
-        if (!DBKey.MONEY_KEYS.contains(key)) {
+        if (!DBKey.getMoneyKeys().contains(key)) {
             throw new IllegalArgumentException(key);
         }
 

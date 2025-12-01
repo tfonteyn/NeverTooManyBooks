@@ -307,7 +307,7 @@ public class DBCleaner {
     private void datetimeFormat() {
         final Collection<Pair<Long, String>> rows = new ArrayList<>();
 
-        for (final String key : DBKey.DATETIME_KEYS) {
+        for (final String key : DBKey.getDateTimeKeys()) {
             try (Cursor cursor = db.rawQuery(
                     SELECT_ + DBKey.PK_ID + ',' + key
                     + _FROM_ + DBDefinitions.TBL_BOOKS.getName()

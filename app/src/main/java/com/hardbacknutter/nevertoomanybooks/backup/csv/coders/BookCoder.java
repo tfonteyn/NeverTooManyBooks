@@ -221,8 +221,12 @@ public class BookCoder {
         processGenre(context, book);
         processExternalIds(book);
 
-        verifyDates(book, DBKey.DATETIME_KEYS, false);
-        verifyDates(book, DBKey.DATE_KEYS, true);
+        // Full DateTime stamp.
+        verifyDates(book, DBKey.getDateTimeKeys(), false, true);
+        // Full Date stamp, no time
+        verifyDates(book, DBKey.getFullDateKeys(), false, false);
+        // Partial Date stamp, no time
+        verifyDates(book, DBKey.getPartialDateKeys(), true, false);
 
         return book;
     }
@@ -672,25 +676,29 @@ public class BookCoder {
      *
      * @param book        to verify
      * @param keys        to verify
-     * @param shortenDate flag: {@code true} to cut dates down to partial dates.
+     * @param partialDate flag: {@code true} to cut dates down to partial dates.
      *                    i.e. remove time and any tailing "-01".
+     * @param keepTime   flag: whether to keep a time component or strip it
      */
     private void verifyDates(@NonNull final Book book,
                              @NonNull final Set<String> keys,
-                             final boolean shortenDate) {
+                             final boolean partialDate,
+                             final boolean keepTime) {
         keys.stream().filter(book::contains).forEach(key -> {
             final String s = book.getString(key);
             final Optional<LocalDateTime> date = dateParser.parse(s);
             if (date.isPresent()) {
                 String iso = SqlEncode.dateTime(date.get());
-                if (shortenDate) {
-                    if (iso.length() > 10) {
-                        // cut off the time
-                        iso = iso.substring(0, 10);
-                        // 'YYYY-MM-DD' cut down to month or year if possible
-                        while (iso.endsWith("-01")) {
-                            iso = iso.substring(0, iso.length() - 3);
-                        }
+
+                // cut off the time if present & required
+                if (!keepTime && iso.length() > 10) {
+                    iso = iso.substring(0, 10);
+                }
+
+                // Cut 'YYYY-MM-DD' down to month or year if possible & required
+                if (partialDate && iso.length() > 4) {
+                    while (iso.endsWith("-01")) {
+                        iso = iso.substring(0, iso.length() - 3);
                     }
                 }
                 book.putString(key, iso);

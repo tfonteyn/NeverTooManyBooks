@@ -326,7 +326,7 @@ public class DataManager
     @Nullable
     public Object get(@NonNull final String key,
                       @NonNull final RealNumberParser parser) {
-        if (DBKey.MONEY_KEYS.contains(key)) {
+        if (DBKey.getMoneyKeys().contains(key)) {
             // try to combine the keys
             try {
                 final Money money = getMoney(key, parser);

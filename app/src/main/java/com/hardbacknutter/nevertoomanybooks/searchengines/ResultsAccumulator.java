@@ -143,13 +143,13 @@ class ResultsAccumulator {
                     new FullDateParser(isoDateParser, allLocales);
 
             result.keySet().forEach(key -> {
-                if (DBKey.DATE_KEYS.contains(key)) {
+                if (DBKey.getDateKeys().contains(key)) {
                     processDate(key, result, book, dateParser);
 
-                } else if (DBKey.MONEY_KEYS.contains(key)) {
+                } else if (DBKey.getMoneyKeys().contains(key)) {
                     processMoney(key, result, book, locale, realNumberParser);
 
-                } else if (DBKey.LANGUAGE_KEYS.contains(key)) {
+                } else if (DBKey.getLanguageKeys().contains(key)) {
                     processLanguage(key, result, book, locale);
 
                 } else if (LIST_KEYS.contains(key)) {
