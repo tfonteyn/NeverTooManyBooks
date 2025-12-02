@@ -905,7 +905,7 @@ public class Book
                                                               .getLocale(lang, userLocale);
             if (bookLocale.isPresent()) {
                 if (updateLanguage) {
-                    putString(DBKey.LANGUAGE, lang);
+                    putString(DBKey.LANGUAGE, bookLocale.get().getISO3Language());
                 }
                 return bookLocale;
             }
