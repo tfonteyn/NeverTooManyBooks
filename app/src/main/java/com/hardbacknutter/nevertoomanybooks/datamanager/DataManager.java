@@ -19,10 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -40,7 +38,6 @@ import java.util.Collection;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -53,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -179,14 +175,11 @@ public class DataManager
     /**
      * Store all passed values in our collection (with type checking).
      *
-     * @param context Current context
-     * @param src     DataManager to copy from
+     * @param src              DataManager to copy from
+     * @param realNumberParser to use for number parsing
      */
-    protected void putAll(@NonNull final Context context,
-                          @NonNull final DataManager src) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
+    protected void putAll(@NonNull final DataManager src,
+                          @NonNull final RealNumberParser realNumberParser) {
         src.keySet().forEach(key -> put(key, src.get(key, realNumberParser)));
     }
 

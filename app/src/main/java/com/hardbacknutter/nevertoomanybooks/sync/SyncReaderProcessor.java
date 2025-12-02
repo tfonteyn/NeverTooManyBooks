@@ -84,6 +84,11 @@ public class SyncReaderProcessor {
         mappers = MapperFactory.create(context);
     }
 
+    @SuppressWarnings("TypeMayBeWeakened")
+    private static boolean isEmptyOrZero(@NonNull final String value) {
+        return value.isEmpty() || "0".equals(value) || "0.0".equals(value);
+    }
+
     /**
      * Filter the fields we want versus the fields we actually need for the given book data.
      * <p>
@@ -163,8 +168,7 @@ public class SyncReaderProcessor {
 
                 // If the local data is blank or numerical zero, add the field
                 final String value = localBook.getString(field.getKey(), null);
-                return value == null || value.isEmpty()
-                       || "0".equals(value) || "0.0".equals(value);
+                return value == null || isEmptyOrZero(value);
 
             }
             case Skip:
@@ -252,7 +256,7 @@ public class SyncReaderProcessor {
 
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
-            final Book delta = Book.from(context, remoteBook);
+            final Book delta = Book.from(remoteBook, realNumberParser);
             delta.putLong(DBKey.PK_ID, bookId);
             return delta;
         }
@@ -347,8 +351,7 @@ public class SyncReaderProcessor {
             //    return localBook.contains(key);
             final Object o = localBook.get(field.getKey(), realNumberParser);
             if (o != null) {
-                final String value = o.toString().strip();
-                return !value.isEmpty() && !"0".equals(value) && !"0.0".equals(value);
+                return !isEmptyOrZero(o.toString().strip());
             }
         }
 

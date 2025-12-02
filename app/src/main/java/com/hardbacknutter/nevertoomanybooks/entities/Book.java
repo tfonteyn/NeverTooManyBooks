@@ -319,16 +319,17 @@ public class Book
     /**
      * Copy Constructor. Loads the bundle <strong>with</strong> type checks.
      *
-     * @param context Current context
-     * @param data    book to copy all data from
+     * @param data             book to copy all data from
+     * @param realNumberParser to use for number parsing
      *
      * @return new instance; flagged as {@link EntityStage.Stage#Dirty}
      */
     @NonNull
-    public static Book from(@NonNull final Context context,
-                            @NonNull final Book data) {
+    public static Book from(@NonNull final Book data,
+                            @NonNull final RealNumberParser realNumberParser) {
         final Book book = new Book();
-        book.putAll(context, data);
+        book.putAll(data, realNumberParser);
+
         // has unsaved data, hence 'Dirty'
         book.setStage(EntityStage.Stage.Dirty);
         return book;
@@ -377,7 +378,7 @@ public class Book
     /**
      * Duplicate a book by copying APPLICABLE (not simply all of them) fields.
      * i.o.w. this is <strong>NOT</strong> a copy constructor.
-     * See {@link #from(Context, Book)} for the latter.
+     * See {@link #from(Book, RealNumberParser)} for the latter.
      * <p>
      * The intended (only?) use for this method is the user choosing to
      * duplicate an existing book and manually edit the copy.
