@@ -174,14 +174,21 @@ public class DBCleaner {
      * So orphaned data will stay around a little longer which in fact may be beneficial
      * while entering/correcting a book collection.
      * <p>
-     * <strong>All Exceptions are ignored.</strong>
+     * <strong>All RuntimeException are ignored,
+     * but the transaction is rolled back on any error</strong>
      */
     @WorkerThread
     public static void purge() {
         final Logger logger = LoggerFactory.getLogger();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        //noinspection CheckStyle
+        final SynchronizedDb db = serviceLocator.getDb();
+
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
             int i;
             i = serviceLocator.getSeriesDao().purge();
             if (i > 0) {
@@ -200,11 +207,19 @@ public class DBCleaner {
                 logger.w(TAG, "Purged TocEntries: " + i);
             }
 
-            serviceLocator.getDb().analyze();
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+
+            db.analyze();
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad but NOT fatal.
             logger.e(TAG, e);
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
     }
 
