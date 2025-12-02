@@ -20,19 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * Tested with Device running in US Locale, app in Dutch.
@@ -55,23 +50,7 @@ import java.util.stream.Collectors;
  * To be clear: parsing works fine; it's just the user not able to input the
  * right decimal/thousand separators for their Locale.
  */
-public class RealNumberParser
-        implements Parcelable {
-
-    /** {@link Parcelable}. */
-    public static final Creator<RealNumberParser> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public RealNumberParser createFromParcel(@NonNull final Parcel in) {
-            return new RealNumberParser(in);
-        }
-
-        @Override
-        @NonNull
-        public RealNumberParser[] newArray(final int size) {
-            return new RealNumberParser[size];
-        }
-    };
+public class RealNumberParser {
 
     private static final String ERROR_NOT_A_FLOAT = "Not a float or no suitable Locale: ";
     private static final String ERROR_NOT_A_DOUBLE = "Not a double or no suitable Locale: ";
@@ -85,28 +64,6 @@ public class RealNumberParser
      */
     public RealNumberParser(@NonNull final List<Locale> locales) {
         this.locales = locales;
-    }
-
-    private RealNumberParser(@NonNull final Parcel in) {
-        final List<String> list = new ArrayList<>();
-        in.readStringList(list);
-
-        this.locales = list.stream().map(Locale::forLanguageTag).collect(Collectors.toList());
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-
-        final List<String> list = locales.stream()
-                                         .map(Locale::toLanguageTag)
-                                         .collect(Collectors.toList());
-        dest.writeStringList(list);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     /**
