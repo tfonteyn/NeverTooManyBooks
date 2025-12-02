@@ -53,6 +53,9 @@ final class Triggers {
     private static final String AFTER_INSERT_ON_ = "AFTER INSERT ON ";
     private static final String AFTER_UPDATE_OF_ = "AFTER UPDATE OF ";
 
+    private static final String UPDATE_BOOKS_SET =
+            "UPDATE " + TBL_BOOKS.getName()
+            + " SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp";
 
     private Triggers() {
     }
@@ -119,9 +122,7 @@ final class Triggers {
         body = AFTER_UPDATE_ON_ + TBL_AUTHORS.getName()
                + " FOR EACH ROW"
                + " BEGIN"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-
+               + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                // actual books by this Author
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
@@ -150,8 +151,7 @@ final class Triggers {
         body = AFTER_UPDATE_ON_ + TBL_SERIES.getName()
                + " FOR EACH ROW"
                + " BEGIN"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
                + " WHERE " + DBKey.FK_SERIES + "=OLD." + DBKey.PK_ID + ");"
@@ -172,8 +172,7 @@ final class Triggers {
         body = AFTER_UPDATE_ON_ + TBL_PUBLISHERS.getName()
                + " FOR EACH ROW"
                + " BEGIN"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_PUBLISHER.getName()
                + " WHERE " + DBKey.FK_PUBLISHER + "=OLD." + DBKey.PK_ID + ");"
@@ -193,8 +192,7 @@ final class Triggers {
         body = AFTER_UPDATE_ON_ + TBL_TAGS.getName()
                + " FOR EACH ROW"
                + " BEGIN"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_TAG.getName()
                + " WHERE " + DBKey.FK_TAG + "=OLD." + DBKey.PK_ID + ");"
@@ -213,8 +211,7 @@ final class Triggers {
         body = AFTER_INSERT_ON_ + TBL_BOOK_LOANEE.getName()
                + " FOR EACH ROW"
                + " BEGIN"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
                + " END";
 
@@ -232,8 +229,7 @@ final class Triggers {
         body = AFTER_UPDATE_ON_ + TBL_BOOK_LOANEE.getName()
                + " FOR EACH ROW"
                + " BEGIN"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + UPDATE_BOOKS_SET
                + "  WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
                + " END";
 
@@ -298,8 +294,7 @@ final class Triggers {
         final String body = AFTER_DELETE_ON_ + linkTable.getName()
                             + " FOR EACH ROW"
                             + " BEGIN"
-                            + "  UPDATE " + TBL_BOOKS.getName()
-                            + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                            + UPDATE_BOOKS_SET
                             + "  WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ';'
                             + " END";
 
