@@ -899,18 +899,18 @@ public class Book
     @NonNull
     public Optional<Locale> getAndUpdateLocale(final boolean updateLanguage,
                                                @NonNull final Locale userLocale) {
-        if (contains(DBKey.LANGUAGE)) {
-            final String lang = getString(DBKey.LANGUAGE);
-            final Optional<Locale> bookLocale = ServiceLocator.getInstance().getAppLocale()
-                                                              .getLocale(lang, userLocale);
-            if (bookLocale.isPresent()) {
-                if (updateLanguage) {
-                    putString(DBKey.LANGUAGE, bookLocale.get().getISO3Language());
-                }
-                return bookLocale;
-            }
+        final String lang = getString(DBKey.LANGUAGE, null);
+        if (lang == null || lang.isBlank()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        final Optional<Locale> bookLocale = ServiceLocator.getInstance().getAppLocale()
+                                                          .getLocale(lang, userLocale);
+        if (bookLocale.isPresent() && updateLanguage) {
+            putString(DBKey.LANGUAGE, bookLocale.get().getISO3Language());
+        }
+
+        return bookLocale;
     }
 
     @Override
