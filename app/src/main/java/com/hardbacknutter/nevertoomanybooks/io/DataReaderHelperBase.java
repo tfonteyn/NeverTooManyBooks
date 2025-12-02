@@ -135,11 +135,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
 
     @NonNull
     public Optional<METADATA> getMetaData() {
-        if (metadata != null) {
-            return Optional.of(metadata);
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(metadata);
     }
 
     /**

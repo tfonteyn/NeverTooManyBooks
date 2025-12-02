@@ -1362,12 +1362,7 @@ public class Book
 
         // We MIGHT have it (probably not) ...
         if (contains(StripInfoCollectionData.BKEY)) {
-            final StripInfoCollectionData data = getParcelable(StripInfoCollectionData.BKEY);
-            if (data == null) {
-                return Optional.empty();
-            } else {
-                return Optional.of(data);
-            }
+            return Optional.ofNullable(getParcelable(StripInfoCollectionData.BKEY));
         } else {
             // but if not, go explicitly fetch/create it.
             final Optional<StripInfoCollectionData> oData = ServiceLocator
@@ -1404,12 +1399,7 @@ public class Book
     public Optional<CalibreLibrary> getCalibreLibrary() {
         // We MIGHT have it (probably not) ...
         if (contains(BKEY_CALIBRE_LIBRARY)) {
-            final CalibreLibrary library = getParcelable(BKEY_CALIBRE_LIBRARY);
-            if (library == null) {
-                return Optional.empty();
-            } else {
-                return Optional.of(library);
-            }
+            return Optional.ofNullable(getParcelable(BKEY_CALIBRE_LIBRARY));
         } else {
             // but if not, go explicitly fetch it.
             final Optional<CalibreLibrary> oLibrary = ServiceLocator
@@ -1461,11 +1451,7 @@ public class Book
         // We MIGHT have it (probably not) ...
         if (contains(CalibreBookData.BKEY)) {
             final CalibreBookData calibreBookData = getParcelable(CalibreBookData.BKEY);
-            if (calibreBookData == null) {
-                return Optional.empty();
-            } else {
-                return Optional.of(calibreBookData);
-            }
+            return Optional.ofNullable(calibreBookData);
         } else {
             // but if not, go explicitly fetch it.
             final Optional<CalibreBookData> calibreBookData = ServiceLocator

@@ -593,12 +593,7 @@ public abstract class BaseStyle
     @Override
     @NonNull
     public Optional<BooklistGroup> getGroupById(@BooklistGroup.Id final int id) {
-        final BooklistGroup booklistGroup = groups.get(id);
-        if (booklistGroup != null) {
-            return Optional.of(booklistGroup);
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(groups.get(id));
     }
 
     @Override

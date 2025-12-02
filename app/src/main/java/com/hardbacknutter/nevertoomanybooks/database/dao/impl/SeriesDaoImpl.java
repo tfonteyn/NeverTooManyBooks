@@ -136,8 +136,7 @@ public class SeriesDaoImpl
     public Optional<String> getLanguage(@IntRange(from = 1) final long id) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.GET_LANGUAGE)) {
             stmt.bindLong(1, id);
-            final String code = stmt.simpleQueryForStringOrNull();
-            return code != null ? Optional.of(code) : Optional.empty();
+            return Optional.ofNullable(stmt.simpleQueryForStringOrNull());
         }
     }
 

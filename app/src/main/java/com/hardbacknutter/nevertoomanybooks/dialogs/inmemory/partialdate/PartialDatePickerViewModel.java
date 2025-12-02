@@ -87,7 +87,7 @@ public class PartialDatePickerViewModel
 
     @NonNull
     Optional<Integer> getYear() {
-        return year != null ? Optional.of(year) : Optional.empty();
+        return Optional.ofNullable(year);
     }
 
     void setYear(@Nullable final Integer year) {
@@ -97,7 +97,7 @@ public class PartialDatePickerViewModel
     @IntRange(from = 1, to = YMD.MAX_MONTHS)
     @NonNull
     Optional<Integer> getMonthValue() {
-        return month != null ? Optional.of(month) : Optional.empty();
+        return Optional.ofNullable(month);
     }
 
     void setMonthValue(@IntRange(from = 1, to = YMD.MAX_MONTHS) @Nullable final Integer month) {
@@ -107,7 +107,7 @@ public class PartialDatePickerViewModel
     @IntRange(from = 1, to = YMD.MAX_DAYS)
     @NonNull
     Optional<Integer> getDayOfMonth() {
-        return day != null ? Optional.of(day) : Optional.empty();
+        return Optional.ofNullable(day);
     }
 
     void setDayOfMonth(@IntRange(from = 1, to = YMD.MAX_DAYS) @Nullable final Integer day) {

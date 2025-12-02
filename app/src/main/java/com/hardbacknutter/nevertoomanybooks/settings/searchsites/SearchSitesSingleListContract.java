@@ -79,11 +79,6 @@ public class SearchSitesSingleListContract
             return Optional.empty();
         }
 
-        final List<Site> siteList = intent.getParcelableArrayListExtra(listKey);
-        if (siteList != null) {
-            return Optional.of(siteList);
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(intent.getParcelableArrayListExtra(listKey));
     }
 }

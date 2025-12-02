@@ -663,7 +663,7 @@ public class Identifier
             return Optional.of(EngineId.Amazon.getConfig().getHostUrl() + "/dp/%s");
         }
 
-        return bookUri != null ? Optional.of(bookUri) : Optional.empty();
+        return Optional.ofNullable(bookUri);
     }
 
     /**
@@ -681,7 +681,7 @@ public class Identifier
                                + "/stores/author/%s");
         }
 
-        return authorUri != null ? Optional.of(authorUri) : Optional.empty();
+        return Optional.ofNullable(authorUri);
     }
 
     /**
