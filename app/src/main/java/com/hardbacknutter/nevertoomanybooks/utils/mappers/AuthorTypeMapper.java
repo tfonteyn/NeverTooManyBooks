@@ -21,9 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -154,15 +156,14 @@ public class AuthorTypeMapper {
     public int map(@NonNull final Locale locale,
                    @NonNull final String typeName) {
         final String[] names = typeName.split(",");
-        int mapped = Author.TYPE_UNKNOWN;
-        for (final String name : names) {
-            final Integer type = MAPPINGS.get(name.toLowerCase(locale).strip());
-            if (type != null) {
-                mapped |= type;
-            }
-        }
+        final int mapped = Arrays
+                .stream(names)
+                .map(name -> MAPPINGS.get(name.toLowerCase(locale).strip()))
+                .filter(Objects::nonNull)
+                .mapToInt(type -> type)
+                .reduce(Author.TYPE_UNKNOWN, (a, b) -> a | b);
 
-        // If unknown, log it for future enhancement.
+        // If unknown, log it for future addition.
         if (mapped == Author.TYPE_UNKNOWN) {
             LoggerFactory.getLogger().w(TAG, "map|typeName=`" + typeName + "`");
         }

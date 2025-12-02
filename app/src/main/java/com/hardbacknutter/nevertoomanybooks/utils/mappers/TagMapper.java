@@ -95,7 +95,7 @@ public class TagMapper
         final List<Tag> result = new ArrayList<>();
         source.forEach(tag -> {
             boolean delete = false;
-            final List<Tag> replacement = new ArrayList<>();
+            final Collection<Tag> replacement = new ArrayList<>();
             // loop the mappings until we have a match (or no more mappings)
             for (final TagMapping tm : allMappings) {
                 if (tm.getName().equalsIgnoreCase(tag.getName())) {
@@ -103,11 +103,10 @@ public class TagMapper
                     if (substitutions.isEmpty()) {
                         delete = true;
                     } else {
-                        for (final String s : substitutions) {
-                            if (!s.isEmpty()) {
-                                replacement.add(new Tag(s));
-                            }
-                        }
+                        substitutions.stream()
+                                     .filter(s -> !s.isEmpty())
+                                     .map(Tag::new)
+                                     .forEach(replacement::add);
                     }
                     // We can quit the for-loop when we had a match
                     break;

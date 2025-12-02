@@ -521,7 +521,7 @@ public class Languages {
         // and all supported locales.
         Arrays.stream(BuildConfig.SUPPORTED_LOCALES)
               .map(this::getISO3FromCode)
-              .forEachOrdered(set::add);
+              .forEach(set::add);
 
         return new ArrayList<>(set);
     }
