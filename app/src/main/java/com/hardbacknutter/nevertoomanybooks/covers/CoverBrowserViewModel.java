@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -195,9 +196,7 @@ public class CoverBrowserViewModel
         }
 
         synchronized (galleryTasks) {
-            for (final FetchImageTask task : galleryTasks.values()) {
-                task.cancel();
-            }
+            galleryTasks.values().forEach(TaskBase::cancel);
             // not strictly needed, but future-proof
             galleryTasks.clear();
         }
