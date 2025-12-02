@@ -547,12 +547,8 @@ public class EditBookTocFragment
             final List<Series> series = bookData.getSeries();
             if (!series.isEmpty()) {
                 final List<Series> inBook = book.getSeries();
-                // add, weeding out duplicates
-                for (final Series s : series) {
-                    if (!inBook.contains(s)) {
-                        inBook.add(s);
-                    }
-                }
+                // weed out duplicates, add new ones
+                series.stream().filter(s -> !inBook.contains(s)).forEach(inBook::add);
                 book.setSeries(inBook);
             }
 

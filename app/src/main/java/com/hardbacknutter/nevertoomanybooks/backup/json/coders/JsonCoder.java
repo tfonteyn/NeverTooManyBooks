@@ -23,8 +23,8 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.org.json.JSONArray;
@@ -78,11 +78,9 @@ public interface JsonCoder<T> {
     @NonNull
     default JSONArray encode(@NonNull final Collection<T> elements)
             throws JSONException {
-        final List<JSONObject> result = new ArrayList<>();
-        for (final T element : elements) {
-            result.add(encode(element));
-        }
-        return new JSONArray(result);
+        return new JSONArray(elements.stream()
+                                     .map(this::encode)
+                                     .collect(Collectors.toList()));
     }
 
     @NonNull
@@ -104,11 +102,9 @@ public interface JsonCoder<T> {
     @NonNull
     default JSONArray encodeReference(@NonNull final Collection<T> elements)
             throws JSONException {
-        final List<JSONObject> result = new ArrayList<>();
-        for (final T element : elements) {
-            result.add(encodeReference(element));
-        }
-        return new JSONArray(result);
+        return new JSONArray(elements.stream()
+                                     .map(this::encodeReference)
+                                     .collect(Collectors.toList()));
     }
 
     /**

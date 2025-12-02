@@ -1007,7 +1007,7 @@ class BooklistBuilder {
                                 .map(DomainExpression::getDomain)
                                 // don't add duplicate domains
                                 .filter(domain -> !sortedDomainNames.contains(domain.getName()))
-                                .forEachOrdered(domain -> {
+                                .forEach(domain -> {
                                     sortedDomainNames.add(domain.getName());
                                     currentValues.add("NEW." + domain.getName());
 

@@ -187,9 +187,7 @@ public class DataManager
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
         final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
-        for (final String key : src.keySet()) {
-            put(key, src.get(key, realNumberParser));
-        }
+        src.keySet().forEach(key -> put(key, src.get(key, realNumberParser)));
     }
 
     /**

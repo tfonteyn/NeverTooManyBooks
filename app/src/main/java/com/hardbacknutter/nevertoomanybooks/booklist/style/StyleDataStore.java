@@ -221,11 +221,9 @@ public class StyleDataStore
         }
 
         try {
-            int bitmask = 0;
-            for (final String s : stringSet) {
-                bitmask |= Integer.parseInt(s);
-            }
-            return bitmask;
+            return stringSet.stream()
+                            .mapToInt(Integer::parseInt)
+                            .reduce(0, (a, b) -> a | b);
 
         } catch (@NonNull final NumberFormatException ignore) {
             // we should never have an invalid setting in the prefs... flw

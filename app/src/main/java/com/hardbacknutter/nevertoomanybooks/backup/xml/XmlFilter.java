@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -144,12 +144,10 @@ public final class XmlFilter {
      */
     @Nullable
     private XmlFilter getSubFilter(@Nullable final String name) {
-        for (final XmlFilter f : subFilters) {
-            if (f.matches(name)) {
-                return f;
-            }
-        }
-        return null;
+        return subFilters.stream()
+                         .filter(f -> f.matches(name))
+                         .findFirst()
+                         .orElse(null);
     }
 
     /**

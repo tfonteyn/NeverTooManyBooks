@@ -24,9 +24,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -133,13 +135,10 @@ public final class FtsDaoHelper {
 
         if (domain != null) {
             // prepend each word with the FTS column name.
-            final StringBuilder result = new StringBuilder();
-            for (final String word : cleanedText.split(" ")) {
-                if (!word.isEmpty()) {
-                    result.append(' ').append(domain).append(':').append(word);
-                }
-            }
-            return result.toString();
+            return Arrays.stream(cleanedText.split(" "))
+                         .filter(word -> !word.isEmpty())
+                         .map(word -> ' ' + domain + ':' + word)
+                         .collect(Collectors.joining());
         } else {
             // no domain, return as-is
             return cleanedText;
