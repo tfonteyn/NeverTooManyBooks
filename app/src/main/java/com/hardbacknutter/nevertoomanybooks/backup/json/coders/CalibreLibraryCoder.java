@@ -153,10 +153,11 @@ public class CalibreLibraryCoder
     public Optional<CalibreLibrary> decodeReference(@NonNull final JSONObject data)
             throws JSONException {
 
-        Optional<CalibreLibrary> library;
+        final Optional<CalibreLibrary> library;
         String s = data.optString(DBKey.CALIBRE.LIBRARY_UUID);
         if (s != null && !s.isEmpty()) {
             library = ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByUuid(s);
+            // only return if we got one, otherwise drop through
             if (library.isPresent()) {
                 return library;
             }
@@ -164,10 +165,7 @@ public class CalibreLibraryCoder
 
         s = data.optString(DBKey.CALIBRE.LIBRARY_STRING_ID);
         if (s != null && !s.isEmpty()) {
-            library = ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByStringId(s);
-            if (library.isPresent()) {
-                return library;
-            }
+            return ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByStringId(s);
         }
         return Optional.empty();
     }
