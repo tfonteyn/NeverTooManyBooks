@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 public interface MaintenanceDao {
@@ -42,14 +39,4 @@ public interface MaintenanceDao {
      */
     @WorkerThread
     void purge();
-
-    /**
-     * Repopulate all OrderBy columns.
-     * Cleans up whitespace and non-ascii characters.
-     * Optional reordering or restoring
-     *
-     * @param context Current context
-     */
-    @WorkerThread
-    void rebuildOrderByTitleColumns(@NonNull Context context);
 }

@@ -19,21 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.Context;
-import android.os.LocaleList;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import java.util.List;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -84,58 +75,6 @@ public class MaintenanceDaoImpl
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad but NOT fatal.
             logger.e(TAG, e);
-        }
-    }
-
-    @Override
-    @WorkerThread
-    public void rebuildOrderByTitleColumns(@NonNull final Context context) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final Locale userLocale = userLocales.get(0);
-        final List<Locale> locales = LocaleListUtils.asList(userLocales);
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final ReorderHelper reorderHelper = new ReorderHelper(locales);
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-            int i;
-
-            i = serviceLocator.getAuthorDao().rebuildOrderByColumns(userLocale);
-            if (i > 0) {
-                LoggerFactory.getLogger().w(TAG, "Authors rebuild: " + i);
-            }
-            i = serviceLocator.getBookDao().rebuildOrderByColumns(context, userLocale,
-                                                                  reorderHelper);
-            if (i > 0) {
-                LoggerFactory.getLogger().w(TAG, "Books rebuild: " + i);
-            }
-            i = serviceLocator.getSeriesDao().rebuildOrderByColumns(context, userLocale,
-                                                                    reorderHelper);
-            if (i > 0) {
-                LoggerFactory.getLogger().w(TAG, "Series rebuild: " + i);
-            }
-            i = serviceLocator.getPublisherDao().rebuildOrderByColumns(context, userLocale,
-                                                                       reorderHelper);
-            if (i > 0) {
-                LoggerFactory.getLogger().w(TAG, "Publishers rebuild: " + i);
-            }
-            i = serviceLocator.getTocEntryDao().rebuildOrderByColumns(context, userLocale,
-                                                                      reorderHelper);
-            if (i > 0) {
-                LoggerFactory.getLogger().w(TAG, "TocEntry rebuild: " + i);
-            }
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
         }
     }
 }
