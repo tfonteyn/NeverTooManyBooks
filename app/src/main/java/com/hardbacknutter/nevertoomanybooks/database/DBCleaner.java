@@ -88,6 +88,10 @@ public class DBCleaner {
     private static final String _SET_ = " SET ";
     private static final String _WHERE_ = " WHERE ";
 
+    private static final String UPDATE_BOOKS_SET =
+            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
+            + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp";
+
     private static final Pattern T = Pattern.compile("T");
 
     private static final Pattern RATING_PATTERN = Pattern.compile("^\\s*\\d*\\.?\\d*\\s*$");
@@ -363,14 +367,12 @@ public class DBCleaner {
             final StringJoiner sj = new StringJoiner(",", "(", ")");
             toDelete.forEach(id -> sj.add(String.valueOf(id)));
             // just the one execute for performance
-            db.execSQL(UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-                       + _SET_ + DBKey.RATING + "=null"
+            db.execSQL(UPDATE_BOOKS_SET + ',' + DBKey.RATING + "=null"
                        + _WHERE_ + DBKey.PK_ID + _IN_ + sj);
         }
         if (!toUpdate.isEmpty()) {
             try (SynchronizedStatement stmt = db.compileStatement(
-                    UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-                    + _SET_ + DBKey.RATING + "=?"
+                    UPDATE_BOOKS_SET + ',' + DBKey.RATING + "=?"
                     + _WHERE_ + DBKey.PK_ID + "=?")) {
 
                 for (final Map.Entry<Long, String> entry : toUpdate.entrySet()) {
@@ -407,9 +409,7 @@ public class DBCleaner {
                          + "|rows.size()=" + rows.size());
             }
             try (SynchronizedStatement stmt = db.compileStatement(
-                    UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-                    + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-                    + ',' + key + "=?" + _WHERE_ + DBKey.PK_ID + "=?")) {
+                    UPDATE_BOOKS_SET + ',' + key + "=?" + _WHERE_ + DBKey.PK_ID + "=?")) {
 
                 for (final Pair<Long, String> row : rows) {
                     stmt.bindString(1, T.matcher(row.second).replaceFirst(" "));
