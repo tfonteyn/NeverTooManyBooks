@@ -63,16 +63,17 @@ public final class TipManager {
     /**
      * Reset a sub set of tips, all starting (in preferences) with the given prefix.
      *
-     * @param prefix  to match
+     * @param prefix to match
      */
     public void reset(@NonNull final String prefix) {
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         final SharedPreferences.Editor ed = prefs.edit();
-        for (final String key : prefs.getAll().keySet()) {
-            if (key.toLowerCase(Locale.ENGLISH).startsWith(prefix.toLowerCase(Locale.ENGLISH))) {
-                ed.remove(key);
-            }
-        }
+        prefs.getAll()
+             .keySet()
+             .stream()
+             .filter(key -> key.toLowerCase(Locale.ENGLISH)
+                               .startsWith(prefix.toLowerCase(Locale.ENGLISH)))
+             .forEach(ed::remove);
         ed.apply();
     }
 

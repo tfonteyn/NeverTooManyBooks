@@ -206,15 +206,14 @@ public class SyncReaderProcessor {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
-        for (final String key : remoteBook.keySet()) {
+        remoteBook.keySet().forEach(key -> {
             final SyncField field = fieldsWanted.get(key);
             if (field == null || field.getAction() == SyncAction.Skip) {
                 toRemove.add(key);
             }
-        }
-        for (final String key : toRemove) {
-            remoteBook.remove(key);
-        }
+        });
+
+        toRemove.forEach(remoteBook::remove);
 
         try {
             // For each field, process it according the SyncAction set.
@@ -557,10 +556,7 @@ public class SyncReaderProcessor {
          * This is normally a user initiated action.
          */
         public void resetPreferences() {
-
-            for (final SyncField syncField : fields.values()) {
-                syncField.setDefaultAction();
-            }
+            fields.values().forEach(SyncField::setDefaultAction);
             writePreferences();
         }
 

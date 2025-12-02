@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
  */
+@SuppressWarnings("WeakerAccess")
 public class SearchAdminViewModel
         extends ViewModel {
 
@@ -137,6 +138,8 @@ public class SearchAdminViewModel
      * @param type type of list
      *
      * @return the list of sites
+     *
+     * @throws IllegalStateException (debug) for unknown types
      */
     @NonNull
     List<Site> getList(@NonNull final Site.Type type) {
@@ -169,9 +172,6 @@ public class SearchAdminViewModel
      * @param context Current context
      */
     void persist(@NonNull final Context context) {
-        for (final Map.Entry<Site.Type, List<Site>> entry : typeAndSites.entrySet()) {
-            entry.getKey().setSiteList(context, entry.getValue());
-        }
+        typeAndSites.forEach((key, value) -> key.setSiteList(context, value));
     }
-
 }
