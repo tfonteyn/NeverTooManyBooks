@@ -145,6 +145,15 @@ public class BookDaoImpl
         return result;
     }
 
+    /**
+     * See {@link #touch(long)} but for a list of books.
+     *
+     * @param bookIds to update
+     */
+    private void touch(@NonNull final Collection<Long> bookIds) {
+        db.execSQL(Sql.UPDATE_BOOKS_SET + _WHERE_ + Sql.inClause(DBKey.PK_ID, bookIds));
+    }
+
     @Override
     @IntRange(from = 1)
     public long insert(@NonNull final Context context,
@@ -520,10 +529,10 @@ public class BookDaoImpl
             return false;
         }
 
+
+
         Synchronizer.SyncLock txLock = null;
-        //URGENT: PERFORMANCE: rewrite the touch sql to do a single update
-        // WHERE _id IN (bookIds)
-        try (SynchronizedStatement touchStmt = db.compileStatement(Sql.TOUCH)) {
+        try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
@@ -532,10 +541,9 @@ public class BookDaoImpl
             for (final long bookId : bookIds) {
                 // Bookshelves will be inserted if new, but never updated
                 bookshelfDao.insertOrUpdate(context, bookId, bookshelves);
-
-                touchStmt.bindLong(1, bookId);
-                touchStmt.executeUpdateDelete();
             }
+
+            touch(bookIds);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -1159,7 +1167,7 @@ public class BookDaoImpl
          */
         @NonNull
         private static String inClause(@NonNull final String column,
-                                       @NonNull final List<Long> idList) {
+                                       @NonNull final Collection<Long> idList) {
             return idList.stream()
                          .map(String::valueOf)
                          .collect(Collectors.joining(",", column + " IN (", ")"));
