@@ -253,10 +253,11 @@ public final class AppLocaleImpl
         final Configuration deltaConfig = new Configuration();
         final String lang = desiredLocale.getLanguage();
         if (lang.length() == 2) {
+            // 2-char codes can be used as-is
             deltaConfig.setLocale(desiredLocale);
         } else {
+            // any 3-char code needs to be converted to 2-char be able to find the resource.
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-            // any 3-char code might need to be converted to 2-char be able to find the resource.
             final String iso = languagesSupplier.get().getLocaleIsoFromISO3(lang, userLocale);
             deltaConfig.setLocale(new Locale(iso));
         }
