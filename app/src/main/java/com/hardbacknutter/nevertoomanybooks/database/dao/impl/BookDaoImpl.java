@@ -433,7 +433,7 @@ public class BookDaoImpl
         final boolean lookupLocale = !flags.contains(BookFlag.RunInBatch);
 
         // unconditional lookup of the book locale!
-        final Locale bookLocale = book.getLocaleOrUserLocale(userLocale);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 

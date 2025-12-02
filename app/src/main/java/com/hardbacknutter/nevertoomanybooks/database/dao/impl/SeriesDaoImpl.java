@@ -471,7 +471,7 @@ public class SeriesDaoImpl
                 // We KNOW there are no updates needed.
                 insertOrUpdate(context, bookId, false, destList, series ->
                         series.getLocale(context)
-                              .orElseGet(() -> book.getLocaleOrUserLocale(userLocale)));
+                              .orElseGet(() -> book.getLocale(userLocale).orElse(userLocale)));
             }
 
             // delete the obsolete source.
@@ -544,7 +544,7 @@ public class SeriesDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final Locale bookLocale = book.getLocaleOrUserLocale(userLocale);
+                    final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false,
                                    book.getSeries(),

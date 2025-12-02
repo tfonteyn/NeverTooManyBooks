@@ -829,7 +829,7 @@ public class AuthorDaoImpl
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
                 insertOrUpdate(context, bookId, false, destList, author ->
-                        book.getLocaleOrUserLocale(userLocale));
+                        book.getLocale(userLocale).orElse(userLocale));
             }
 
             // delete the obsolete source.
@@ -904,7 +904,7 @@ public class AuthorDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final Locale bookLocale = book.getLocaleOrUserLocale(userLocale);
+                    final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false,
                                    book.getAuthors(),

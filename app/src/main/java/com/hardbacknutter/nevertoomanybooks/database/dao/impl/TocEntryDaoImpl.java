@@ -453,7 +453,7 @@ public class TocEntryDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final Locale bookLocale = book.getLocaleOrUserLocale(userLocale);
+                    final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId,
                                    book.getToc(),

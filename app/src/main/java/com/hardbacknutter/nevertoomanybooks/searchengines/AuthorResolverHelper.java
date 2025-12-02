@@ -65,11 +65,13 @@ public final class AuthorResolverHelper {
                                @NonNull final SearchEngine searchEngine,
                                @NonNull final Book book)
             throws CredentialsException {
-        final Locale locale = book.getLocale(context)
-                                  .orElseGet(() -> searchEngine.getLocale(context));
 
         final List<AuthorResolver> resolvers = AuthorResolverFactory
                 .getResolvers(context, searchEngine);
+
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale locale = book.getLocale(userLocale)
+                                  .orElseGet(() -> searchEngine.getLocale(context));
 
         try {
             resolve(context, locale, book.getAuthors(), resolvers, false, false);

@@ -205,7 +205,7 @@ public class BookCoder {
         }
 
         // check/fix the language
-        book.getAndUpdateLocale(true, userLocales.get(0));
+        book.getLocaleAndUpdateLanguage(userLocales.get(0), true);
 
         // Database access is strictly limited to fetching ID's for any list elements.
         processIsbn(book);

@@ -802,7 +802,8 @@ public class EditBookViewModel
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         if (author.getId() == 0) {
-            final Locale bookLocale = book.getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
             authorDao.fixId(context, author, bookLocale);
             if (author.getId() == 0) {
                 return true;
@@ -839,7 +840,8 @@ public class EditBookViewModel
         final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
         if (series.getId() == 0) {
-            final Locale bookLocale = book.getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
             seriesDao.fixId(context, series, series.getLocale(context).orElse(bookLocale));
             if (series.getId() == 0) {
                 return true;
@@ -863,7 +865,8 @@ public class EditBookViewModel
         final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
         if (publisher.getId() == 0) {
-            final Locale bookLocale = book.getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
             publisherDao.fixId(context, publisher, bookLocale);
             if (publisher.getId() == 0) {
                 return true;
@@ -926,8 +929,9 @@ public class EditBookViewModel
                            @NonNull final Author modified)
             throws DaoWriteException {
 
-        ServiceLocator.getInstance().getAuthorDao()
-                      .insert(context, modified, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getAuthorDao().insert(context, modified, bookLocale);
         final List<Author> list = book.getAuthors();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
@@ -945,8 +949,9 @@ public class EditBookViewModel
         // copy all new data
         original.copyFrom(modified, true);
 
-        ServiceLocator.getInstance().getAuthorDao()
-                      .update(context, original, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getAuthorDao().update(context, original, bookLocale);
         book.pruneAuthors(context);
         book.refreshAuthors(context);
     }
@@ -956,8 +961,9 @@ public class EditBookViewModel
                            @NonNull final Series modified)
             throws DaoWriteException {
 
-        ServiceLocator.getInstance().getSeriesDao()
-                      .insert(context, modified, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getSeriesDao().insert(context, modified, bookLocale);
         final List<Series> list = book.getSeries();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
@@ -975,8 +981,9 @@ public class EditBookViewModel
         // copy all new data
         original.copyFrom(modified, true);
 
-        ServiceLocator.getInstance().getSeriesDao()
-                      .update(context, original, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getSeriesDao().update(context, original, bookLocale);
         book.pruneSeries(context);
         book.refreshSeries(context);
     }
@@ -986,8 +993,9 @@ public class EditBookViewModel
                            @NonNull final Publisher modified)
             throws DaoWriteException {
 
-        ServiceLocator.getInstance().getPublisherDao()
-                      .insert(context, modified, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getPublisherDao().insert(context, modified, bookLocale);
         final List<Publisher> list = book.getPublishers();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
@@ -1005,35 +1013,42 @@ public class EditBookViewModel
         // copy all new data
         original.copyFrom(modified);
 
-        ServiceLocator.getInstance().getPublisherDao()
-                      .update(context, original, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getPublisherDao().update(context, original, bookLocale);
         book.prunePublishers(context);
         book.refreshPublishers(context);
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Author author) {
-        ServiceLocator.getInstance().getAuthorDao()
-                      .fixId(context, author, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getAuthorDao().fixId(context, author, bookLocale);
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Series series) {
         ServiceLocator.getInstance().getSeriesDao()
-                      .fixId(context, series, series.getLocale(context).orElseGet(
-                              () -> book.getLocaleOrUserLocale(context)));
+                      .fixId(context, series, series.getLocale(context).orElseGet(() -> {
+                          final Locale userLocale = context.getResources().getConfiguration()
+                                                           .getLocales().get(0);
+                          return book.getLocale(userLocale).orElse(userLocale);
+                      }));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Publisher publisher) {
-        ServiceLocator.getInstance().getPublisherDao()
-                      .fixId(context, publisher, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getPublisherDao().fixId(context, publisher, bookLocale);
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final TocEntry tocEntry) {
-        ServiceLocator.getInstance().getTocEntryDao()
-                      .fixId(context, tocEntry, book.getLocaleOrUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
+        ServiceLocator.getInstance().getTocEntryDao().fixId(context, tocEntry, bookLocale);
     }
 
     /**

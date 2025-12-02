@@ -135,12 +135,15 @@ public class BookDaoHelper {
         final Locale userLocale = userLocales.get(0);
 
         // Handle Language field FIRST, we need it for _OB fields.
-        final Locale bookLocale = book.getAndUpdateLocale(true, userLocale)
+        // If the book has no valid language set, we use the user-locale.
+        final Locale bookLocale = book.getLocaleAndUpdateLanguage(userLocale, true)
                                       .orElse(userLocale);
 
         // NEW copy, with the book-locale as the first
         final List<Locale> locales = new ArrayList<>(userLocales);
-        locales.add(0, bookLocale);
+        if (!bookLocale.equals(userLocale)) {
+            locales.add(0, bookLocale);
+        }
 
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final MoneyParser moneyParser = new MoneyParser(userLocale, realNumberParser);

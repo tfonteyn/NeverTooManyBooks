@@ -565,7 +565,7 @@ public class Book
             final List<Locale> userLocales = LocaleListUtils.asList(
                     context.getResources().getConfiguration().getLocales());
 
-            final Locale bookLocale = getLocaleOrUserLocale(userLocales.get(0));
+            final Locale bookLocale = getLocale(userLocales.get(0)).orElse(userLocales.get(0));
             return new ReorderHelper(userLocales).reorder(context, getTitle(), bookLocale);
         } else {
             return getTitle();
@@ -844,61 +844,31 @@ public class Book
     }
 
     /**
-     * Get the Book's Locale (based on its language).
-     *
-     * @param context Current context
-     *
-     * @return the Locale, or the users preferred Locale if no language was set.
-     */
-    @NonNull
-    public Optional<Locale> getLocale(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final Optional<Locale> updatedLocale = getAndUpdateLocale(false, userLocale);
-        if (updatedLocale.isPresent()) {
-            return updatedLocale;
-        } else {
-            return Optional.of(userLocale);
-        }
-    }
-
-    /**
-     * Convenience method which return the locale directly.
-     *
-     * @param context Current context
-     *
-     * @return the Locale, or the users preferred Locale if no language was set.
-     */
-    @NonNull
-    public Locale getLocaleOrUserLocale(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return getLocaleOrUserLocale(userLocale);
-    }
-
-    /**
-     * Convenience method which return the locale directly.
+     * Convenience method which returns the book locale without updating the language field.
      *
      * @param userLocale Current Locale
      *
-     * @return the Locale, or the users preferred Locale if no language was set.
+     * @return the Locale
+     *
+     * @see #getLocaleAndUpdateLanguage(Locale, boolean)
      */
     @NonNull
-    public Locale getLocaleOrUserLocale(@NonNull final Locale userLocale) {
-        return getAndUpdateLocale(false, userLocale)
-                .orElse(userLocale);
+    public Optional<Locale> getLocale(@NonNull final Locale userLocale) {
+        return getLocaleAndUpdateLanguage(userLocale, false);
     }
 
     /**
      * Use the book's language setting to determine the Locale.
      *
-     * @param updateLanguage {@code true} to update the language field with the ISO code
-     *                       if needed. {@code false} to leave it unchanged.
      * @param userLocale     Current Locale
+     * @param updateLanguage {@code true} to force update the language field with the ISO code
+     *                       {@code false} to leave it unchanged.
      *
      * @return the Locale.
      */
     @NonNull
-    public Optional<Locale> getAndUpdateLocale(final boolean updateLanguage,
-                                               @NonNull final Locale userLocale) {
+    public Optional<Locale> getLocaleAndUpdateLanguage(@NonNull final Locale userLocale,
+                                                       final boolean updateLanguage) {
         final String lang = getString(DBKey.LANGUAGE, null);
         if (lang == null || lang.isBlank()) {
             return Optional.empty();
@@ -980,10 +950,10 @@ public class Book
     public void refreshAuthors(@NonNull final Context context) {
         if (contains(BKEY_AUTHOR_LIST)) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            final Locale bookLocale = getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Author's always use the book Locale
-            getAuthors().forEach(author -> authorDao
-                    .refresh(context, author, bookLocale));
+            getAuthors().forEach(author -> authorDao.refresh(context, author, bookLocale));
         }
     }
 
@@ -996,7 +966,8 @@ public class Book
         final List<Author> authors = getAuthors();
         if (!authors.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            final Locale bookLocale = getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Author's always use the book Locale
             if (authorDao.pruneList(context, authors, author -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
@@ -1073,7 +1044,8 @@ public class Book
     public void refreshSeries(@NonNull final Context context) {
         if (contains(BKEY_SERIES_LIST)) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-            final Locale bookLocale = getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Series have their own Locale with fallback to the book-locale
             getSeries().forEach(series -> seriesDao
                     .refresh(context, series, series.getLocale(context).orElse(bookLocale)));
@@ -1089,7 +1061,8 @@ public class Book
         final List<Series> seriesList = getSeries();
         if (!seriesList.isEmpty()) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-            final Locale bookLocale = getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Series have their own Locale with fallback to the book-locale
             if (seriesDao.pruneList(context, seriesList,
                                     series -> series.getLocale(context).orElse(bookLocale))) {
@@ -1157,7 +1130,8 @@ public class Book
     public void refreshPublishers(@NonNull final Context context) {
         if (contains(BKEY_PUBLISHER_LIST)) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-            final Locale bookLocale = getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Publisher's always use the book Locale
             getPublishers().forEach(publisher -> publisherDao
                     .refresh(context, publisher, bookLocale));
@@ -1173,7 +1147,8 @@ public class Book
         final List<Publisher> publishers = getPublishers();
         if (!publishers.isEmpty()) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-            final Locale bookLocale = getLocaleOrUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Publisher's always use the book Locale
             if (publisherDao.pruneList(context, publishers, publisher -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
