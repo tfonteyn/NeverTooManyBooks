@@ -47,6 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 public class TableDefinition {
 
     private static final String _AS_ = " AS ";
+    private static final String ALTER_TABLE_ = "ALTER TABLE ";
+    private static final String _ADD_ = " ADD ";
+    private static final String _ON_ = " ON ";
 
     /** List of domains in this table. */
     private final List<Domain> domains = new ArrayList<>();
@@ -470,7 +473,7 @@ public class TableDefinition {
      */
     @NonNull
     public String join(@NonNull final TableDefinition to) {
-        return " JOIN " + to.ref() + " ON " + fkMatch(to);
+        return " JOIN " + to.ref() + _ON_ + fkMatch(to);
     }
 
     /**
@@ -484,7 +487,7 @@ public class TableDefinition {
      */
     @NonNull
     public String leftOuterJoin(@NonNull final TableDefinition to) {
-        return " LEFT OUTER JOIN " + to.ref() + " ON " + fkMatch(to);
+        return " LEFT OUTER JOIN " + to.ref() + _ON_ + fkMatch(to);
     }
 
     /**
@@ -541,7 +544,7 @@ public class TableDefinition {
         final TableInfo ti = getTableInfo(db);
         for (final Domain domain : domains) {
             if (ti.getColumn(domain.getName()) == null) {
-                db.execSQL("ALTER TABLE " + name + " ADD " + domain.def(true));
+                db.execSQL(ALTER_TABLE_ + name + _ADD_ + domain.def(true));
             }
         }
     }
@@ -630,13 +633,13 @@ public class TableDefinition {
                 .collect(Collectors.toList());
 
         final String sql = "INSERT INTO " + dstTableName
-                           + " (" + String.join(",", dstColumns) + ")"
+                           + " (" + String.join(",", dstColumns) + ')'
                            + " SELECT " + String.join(",", srcColumns)
                            + " FROM " + name;
         db.execSQL(sql);
 
         db.execSQL("DROP TABLE " + name);
-        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
+        db.execSQL(ALTER_TABLE_ + dstTableName + " RENAME TO " + name);
     }
 
 
