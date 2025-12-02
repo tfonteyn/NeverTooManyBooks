@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -159,7 +160,7 @@ public class ZipArchiveWriter
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         // do a cleanup before we start writing
-        serviceLocator.getMaintenanceDao().purge();
+        DBCleaner.purge();
 
         try {
             int steps = 0;

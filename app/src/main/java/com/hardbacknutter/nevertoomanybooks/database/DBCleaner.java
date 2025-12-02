@@ -163,6 +163,52 @@ public class DBCleaner {
     }
 
     /**
+     * Purge anything that is no longer in use.
+     * <p>
+     * Purging is no longer done at every occasion where it *might* be needed.
+     * It was noticed (in the logs) that it was done far to often. It is now called only:
+     * <ul>
+     *  <li>Before a (Zip) backup.</li>
+     *  <li>After an import of data (all sources).</li>
+     * </ul>
+     * So orphaned data will stay around a little longer which in fact may be beneficial
+     * while entering/correcting a book collection.
+     * <p>
+     * <strong>All Exceptions are ignored.</strong>
+     */
+    @WorkerThread
+    public static void purge() {
+        final Logger logger = LoggerFactory.getLogger();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        //noinspection CheckStyle
+        try {
+            int i;
+            i = serviceLocator.getSeriesDao().purge();
+            if (i > 0) {
+                logger.w(TAG, "Purged Series: " + i);
+            }
+            i = serviceLocator.getAuthorDao().purge();
+            if (i > 0) {
+                logger.w(TAG, "Purged Author: " + i);
+            }
+            i = serviceLocator.getPublisherDao().purge();
+            if (i > 0) {
+                logger.w(TAG, "Purged Publishers: " + i);
+            }
+            i = serviceLocator.getTocEntryDao().purge();
+            if (i > 0) {
+                logger.w(TAG, "Purged TocEntries: " + i);
+            }
+
+            serviceLocator.getDb().analyze();
+
+        } catch (@NonNull final RuntimeException e) {
+            // log to file, this is bad but NOT fatal.
+            logger.e(TAG, e);
+        }
+    }
+
+    /**
      * Start the cleaning.
      *
      * @param context Current context

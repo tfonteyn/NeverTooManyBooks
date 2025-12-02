@@ -78,7 +78,8 @@ public interface DeletedBooksDao {
      * Purge/clear the entire deleted books table.
      * This does not affect/delete the actual books.
      * <p>
-     * Note this is <strong>not</strong> called from {@link MaintenanceDao#purge()}
+     * Note this is <strong>not</strong> called from
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBCleaner#purge()}
      * as we will always seek the users permission to clear the list.
      */
     void purge();
