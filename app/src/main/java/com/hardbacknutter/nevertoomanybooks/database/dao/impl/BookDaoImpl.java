@@ -569,9 +569,7 @@ public class BookDaoImpl
             return false;
         }
 
-        final String sql = UPDATE_ + TBL_BOOKS.getName()
-                           + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-                           + ',' + DBKey.LOCATION + "=?"
+        final String sql = Sql.UPDATE_BOOKS_SET + ',' + DBKey.LOCATION + "=?"
                            + _WHERE_ + Sql.inClause(DBKey.PK_ID, bookIds);
 
         final boolean success;
@@ -1022,10 +1020,19 @@ public class BookDaoImpl
         static final String DELETE_BY_UUID =
                 DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.BOOK_UUID + "=?";
 
+        /**
+         * The base sql to update a {@link Book}. Sets the last-updated column to 'now'.
+         * Append columns and other clauses as needed.
+         * <p>
+         * This should always be used when updating the books table!
+         */
+        static final String UPDATE_BOOKS_SET =
+                UPDATE_ + TBL_BOOKS.getName()
+                + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp";
+
         /** Update a single Book's read status/progress and read_end date. */
         static final String UPDATE_READ_PROGRESS =
-                UPDATE_ + TBL_BOOKS.getName()
-                + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                UPDATE_BOOKS_SET
                 + ',' + DBKey.READ__BOOL + "=?"
                 + ',' + DBKey.READ_END__DATE + "=?"
                 + ',' + DBKey.READ_PROGRESS + "=?"
@@ -1036,19 +1043,15 @@ public class BookDaoImpl
          * Potentially update the book's page-count as well.
          */
         static final String UPDATE_READ_PROGRESS_AND_PAGE_COUNT =
-                UPDATE_ + TBL_BOOKS.getName()
-                + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                UPDATE_BOOKS_SET
                 + ',' + DBKey.READ__BOOL + "=?"
                 + ',' + DBKey.READ_END__DATE + "=?"
                 + ',' + DBKey.READ_PROGRESS + "=?"
                 + ',' + DBKey.PAGES + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
-        /** Update a {@link Book} {@link DBKey#DATE_LAST_UPDATED__UTC} to 'now'. */
         static final String TOUCH =
-                UPDATE_ + TBL_BOOKS.getName()
-                + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-                + _WHERE_ + DBKey.PK_ID + "=?";
+                UPDATE_BOOKS_SET + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Get a count of the {@link Book}s. */
         static final String COUNT_ALL =
@@ -1146,6 +1149,7 @@ public class BookDaoImpl
                         // added/updated
                         DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
                         DBKey.AUTO_UPDATE);
+
         /** All Book titles for a rebuild of the {@link DBKey#TITLE_OB} column. */
         private static final String OB_REBUILD_TITLES =
                 SELECT_ + DBKey.PK_ID
@@ -1153,8 +1157,9 @@ public class BookDaoImpl
                 + ',' + DBKey.TITLE_OB
                 + ',' + DBKey.LANGUAGE
                 + _FROM_ + TBL_BOOKS.getName();
+
         private static final String OB_REBUILD =
-                UPDATE_ + TBL_BOOKS.getName() + _SET_ + DBKey.TITLE_OB + "=?"
+                UPDATE_BOOKS_SET + ',' + DBKey.TITLE_OB + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /**
