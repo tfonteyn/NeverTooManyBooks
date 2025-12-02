@@ -543,10 +543,11 @@ public class SeriesDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final List<Series> list = getByBookId(bookId);
                     final Locale bookLocale = book.getLocaleOrUserLocale(context);
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId, false, list, series -> bookLocale);
+                    insertOrUpdate(context, bookId, false,
+                                   book.getSeries(),
+                                   series -> bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();

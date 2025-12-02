@@ -902,10 +902,11 @@ public class AuthorDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final List<Author> list = getByBookId(bookId);
                     final Locale bookLocale = book.getLocaleOrUserLocale(context);
                     // We KNOW there are no updates needed.
-                    insertOrUpdate(context, bookId, false, list, author -> bookLocale);
+                    insertOrUpdate(context, bookId, false,
+                                   book.getAuthors(),
+                                   author -> bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();

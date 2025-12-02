@@ -452,10 +452,11 @@ public class TocEntryDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final List<TocEntry> list = getByBookId(bookId);
-                    // We KNOW there are no updates needed.
                     final Locale bookLocale = book.getLocaleOrUserLocale(context);
-                    insertOrUpdate(context, bookId, list, tocEntry -> bookLocale);
+                    // We KNOW there are no updates needed.
+                    insertOrUpdate(context, bookId,
+                                   book.getToc(),
+                                   tocEntry -> bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();
