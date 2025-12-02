@@ -171,10 +171,7 @@ public final class FtsDaoHelper {
                               + prepareSearchText(publisherName, DBKey.PUBLISHER.NAME))
                 .strip();
 
-        if (query.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(query);
+        return query.isEmpty() ? Optional.empty() : Optional.of(query);
     }
 
 
