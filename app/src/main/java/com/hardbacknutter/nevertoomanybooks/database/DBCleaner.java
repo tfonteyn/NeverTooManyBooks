@@ -259,6 +259,11 @@ public class DBCleaner {
         bookBookshelf(true);
 
         if (!options.isEmpty()) {
+            if (options.contains(Option.Purge)) {
+                // purging is done one transaction.
+                purge();
+            }
+            // Duplicates removal is done one transaction.
             removeDuplicates(context, options);
         }
 
@@ -545,6 +550,7 @@ public class DBCleaner {
         RemoveDuplicateAuthors,
         RemoveDuplicateSeries,
         RemoveDuplicateTocEntries,
-        RemoveDuplicatePublishers
+        RemoveDuplicatePublishers,
+        Purge
     }
 }
