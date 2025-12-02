@@ -54,10 +54,10 @@ public interface SeriesDao {
      *
      * @param id series to get
      *
-     * @return the ISO3 code, or the empty String when none found.
+     * @return the ISO3 code
      */
     @NonNull
-    String getLanguage(@IntRange(from = 1) long id);
+    Optional<String> getLanguage(@IntRange(from = 1) long id);
 
     /**
      * Update the 'complete' status for the given {@link Series}.

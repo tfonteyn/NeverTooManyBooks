@@ -632,16 +632,16 @@ public class Series
     @NonNull
     public Optional<Locale> getLocale(@NonNull final Context context) {
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
-        if (id > 0) {
-            final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
-            if (!lang.isEmpty()) {
-                final Locale userLocale = context.getResources().getConfiguration().getLocales()
-                                                 .get(0);
-                return ServiceLocator.getInstance().getAppLocale().getLocale(lang, userLocale);
-            }
+        if (id <= 0) {
+            return Optional.empty();
         }
+        final Optional<String> lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
+        if (lang.isEmpty()) {
+            return Optional.empty();
+        }
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        return ServiceLocator.getInstance().getAppLocale().getLocale(lang.get(), userLocale);
 
-        return Optional.empty();
     }
 
     @NonNull
