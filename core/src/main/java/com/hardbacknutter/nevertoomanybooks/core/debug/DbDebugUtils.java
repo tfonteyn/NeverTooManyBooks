@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,9 @@ package com.hardbacknutter.nevertoomanybooks.core.debug;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -77,12 +80,11 @@ public final class DbDebugUtils {
                 "SELECT * FROM " + tableDefinition.getName()
                 + " ORDER BY " + orderBy + " LIMIT " + limit;
         try (Cursor cursor = db.rawQuery(sql, null)) {
-            final StringBuilder columnHeading = new StringBuilder("\n");
-            final String[] columnNames = cursor.getColumnNames();
-            for (final String column : columnNames) {
-                columnHeading.append(String.format("%-12s  ", column));
-            }
-            logger.d(tag, columnHeading.toString());
+            final String columnHeading = Arrays
+                    .stream(cursor.getColumnNames())
+                    .map(column -> String.format("%-12s  ", column))
+                    .collect(Collectors.joining("", "\n", ""));
+            logger.d(tag, columnHeading);
 
             while (cursor.moveToNext()) {
                 final StringBuilder line = new StringBuilder();

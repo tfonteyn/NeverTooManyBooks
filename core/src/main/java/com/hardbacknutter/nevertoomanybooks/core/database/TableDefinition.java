@@ -134,9 +134,7 @@ public class TableDefinition {
      */
     public void createIndices(@NonNull final SQLiteDatabase db,
                               final boolean collationCaseSensitive) {
-        for (final IndexDefinition index : indexes) {
-            index.create(db, collationCaseSensitive);
-        }
+        indexes.forEach(index -> index.create(db, collationCaseSensitive));
     }
 
     /**
@@ -152,11 +150,13 @@ public class TableDefinition {
             debugHelper.clear();
         }
 
-        parents.values().stream()
+        parents.values()
+               .stream()
                .map(FkReference::getPrimaryKeyTable)
                .forEach(this::removeReference);
 
-        children.values().stream()
+        children.values()
+                .stream()
                 .map(FkReference::getForeignKeyTable)
                 .forEach(child -> child.removeReference(this));
     }

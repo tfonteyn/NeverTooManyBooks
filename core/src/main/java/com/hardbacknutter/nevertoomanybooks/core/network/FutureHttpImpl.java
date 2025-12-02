@@ -344,9 +344,7 @@ public class FutureHttpImpl<R>
         request.setRequestProperty(HttpConstants.USER_AGENT,
                                    HttpConstants.BROWSER_USER_AGENT);
 
-        for (final Map.Entry<String, String> entry : requestProperties.entrySet()) {
-            request.setRequestProperty(entry.getKey(), entry.getValue());
-        }
+        requestProperties.forEach(request::setRequestProperty);
 
         if (connectTimeoutInMs >= 0) {
             request.setConnectTimeout(connectTimeoutInMs);

@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -228,23 +229,22 @@ public class FullDateParser
                              @NonNull final List<Locale> locales) {
         // prevent duplicate locales
         final Collection<Locale> added = new HashSet<>();
-        for (final Locale locale : locales) {
-            if (!added.contains(locale)) {
-                added.add(locale);
-                for (final String pattern : patterns) {
-                    final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
-                            .parseCaseInsensitive()
-                            .appendPattern(pattern)
-                            // Allow the day of the month to be missing and use '1'
-                            .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
-                            // Allow the time to be completely missing.
-                            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-                            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-                            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0);
-
-                    group.add(builder.toFormatter(locale));
-                }
-            }
-        }
+        locales.stream()
+               .filter(locale -> !added.contains(locale))
+               .forEach(locale -> {
+                   added.add(locale);
+                   Arrays.stream(patterns)
+                         .map(pattern -> new DateTimeFormatterBuilder()
+                                 .parseCaseInsensitive()
+                                 .appendPattern(pattern)
+                                 // Allow the day of the month to be missing and use '1'
+                                 .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+                                 // Allow the time to be completely missing.
+                                 .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                                 .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                                 .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0))
+                         .map(builder -> builder.toFormatter(locale))
+                         .forEach(group::add);
+               });
     }
 }
