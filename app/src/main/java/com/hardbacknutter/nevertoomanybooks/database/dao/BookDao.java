@@ -24,11 +24,13 @@ import android.content.Context;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface BookDao {
 
@@ -431,6 +434,20 @@ public interface BookDao {
      */
     @NonNull
     Optional<LocalDateTime> getLastUpdateDate(@IntRange(from = 1) long id);
+
+    /**
+     * Rebuild the OB columns for the table(s) of this dao.
+     *
+     * @param context       Current context
+     * @param userLocale    to use
+     * @param reorderHelper helper
+     *
+     * @return the number of rows actually updated
+     */
+    @WorkerThread
+    int rebuildOrderByColumns(@NonNull Context context,
+                              @NonNull Locale userLocale,
+                              @NonNull ReorderHelper reorderHelper);
 
     /**
      * Flags used during {@link #insert(Context, Book, Set)}

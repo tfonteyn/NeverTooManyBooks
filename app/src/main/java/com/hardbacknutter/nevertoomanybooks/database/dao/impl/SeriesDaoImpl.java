@@ -497,6 +497,39 @@ public class SeriesDaoImpl
         }
     }
 
+    // URGENT: PERFORMANCE: transform the loops to pure/single SQL
+    @Override
+    @WorkerThread
+    public int rebuildOrderByColumns(@NonNull final Context context,
+                                     @NonNull final Locale userLocale,
+                                     @NonNull final ReorderHelper reorderHelper) {
+        int i = 0;
+        // We should use the locale from the 1st book in the series...
+        // but that is a huge overhead so we use the user-locale directly.
+        try (Cursor cursor = db.rawQuery(Sql.OB_REBUILD_TITLES, null);
+             SynchronizedStatement stmt = db.compileStatement(Sql.OB_REBUILD)) {
+
+            while (cursor.moveToNext()) {
+                final long id = cursor.getLong(0);
+                final String title = cursor.getString(1);
+                final String currentObTitle = cursor.getString(2);
+
+                final String rTitle = reorderHelper
+                        .reorderForSorting(context, title, userLocale);
+                final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
+
+                // only update the database if actually needed.
+                if (!currentObTitle.equals(rObTitle)) {
+                    stmt.bindString(1, rObTitle);
+                    stmt.bindLong(2, id);
+                    stmt.executeUpdateDelete();
+                    i++;
+                }
+            }
+        }
+        return i;
+    }
+
     @Override
     public int fixPositions(@NonNull final Context context)
             throws DaoInsertException, DaoUpdateException {
@@ -654,5 +687,14 @@ public class SeriesDaoImpl
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'
                 + _WHERE_ + "mp>1";
+        /** All Series for a rebuild of the {@link DBKey.SERIES#TITLE_OB} column. */
+        private static final String OB_REBUILD_TITLES =
+                SELECT_ + DBKey.PK_ID
+                + ',' + DBKey.SERIES.TITLE
+                + ',' + DBKey.SERIES.TITLE_OB
+                + _FROM_ + TBL_SERIES.getName();
+        private static final String OB_REBUILD =
+                UPDATE_ + TBL_SERIES.getName() + _SET_ + DBKey.SERIES.TITLE_OB + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
     }
 }

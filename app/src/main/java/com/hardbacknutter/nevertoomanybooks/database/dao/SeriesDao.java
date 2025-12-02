@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface SeriesDao {
@@ -109,6 +110,20 @@ public interface SeriesDao {
      */
     @WorkerThread
     int purge();
+
+    /**
+     * Rebuild the OB columns for the table(s) of this dao.
+     *
+     * @param context       Current context
+     * @param userLocale    to use
+     * @param reorderHelper helper
+     *
+     * @return the number of rows actually updated
+     */
+    @WorkerThread
+    int rebuildOrderByColumns(@NonNull Context context,
+                              @NonNull Locale userLocale,
+                              @NonNull ReorderHelper reorderHelper);
 
     /**
      * Check for books which do not have a {@link Series} at position 1.

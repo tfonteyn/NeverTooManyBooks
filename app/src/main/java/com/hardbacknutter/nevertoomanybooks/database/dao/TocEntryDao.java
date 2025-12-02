@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface TocEntryDao {
 
@@ -161,6 +162,20 @@ public interface TocEntryDao {
      */
     @WorkerThread
     int purge();
+
+    /**
+     * Rebuild the OB columns for the table(s) of this dao.
+     *
+     * @param context       Current context
+     * @param userLocale    to use
+     * @param reorderHelper helper
+     *
+     * @return the number of rows actually updated
+     */
+    @WorkerThread
+    int rebuildOrderByColumns(@NonNull Context context,
+                              @NonNull Locale userLocale,
+                              @NonNull ReorderHelper reorderHelper);
 
     /**
      * Find a {@link TocEntry} based on the given id.

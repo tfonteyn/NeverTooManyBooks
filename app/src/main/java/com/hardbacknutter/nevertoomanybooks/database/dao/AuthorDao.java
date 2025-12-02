@@ -114,6 +114,16 @@ public interface AuthorDao {
     int purge();
 
     /**
+     * Rebuild the OB columns for the table(s) of this dao.
+     *
+     * @param userLocale to use
+     *
+     * @return the number of rows actually updated
+     */
+    @WorkerThread
+    int rebuildOrderByColumns(@NonNull Locale userLocale);
+
+    /**
      * Check for books which do not have a {@link Author} at position 1.
      * For those that don't, read their list, and re-save them.
      *

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -853,6 +854,41 @@ public class AuthorDaoImpl
         }
     }
 
+    // URGENT: PERFORMANCE: transform the loops to pure/single SQL
+    @Override
+    @WorkerThread
+    public int rebuildOrderByColumns(@NonNull final Locale userLocale) {
+        int i = 0;
+        // We should use the locale from the 1st book in the series...
+        // but that is a huge overhead so we use the user-locale directly.
+        try (Cursor cursor = db.rawQuery(Sql.OB_REBUILD_NAMES, null);
+             SynchronizedStatement stmt = db.compileStatement(Sql.OB_REBUILD)) {
+
+            while (cursor.moveToNext()) {
+                final long id = cursor.getLong(0);
+                final String familyName = cursor.getString(1);
+                final String familyNameOb = cursor.getString(2);
+                final String givenNames = cursor.getString(3);
+                final String givenNamesOb = cursor.getString(4);
+
+                // reordering is not applicable, we just want to re-normalize.
+                final String newFamilyOb = SqlEncode.orderByColumn(familyName, userLocale);
+                final String newGivenOb = SqlEncode.orderByColumn(givenNames, userLocale);
+
+                // only update the database if actually needed.
+                if (!Objects.equals(familyNameOb, newFamilyOb)
+                    || !Objects.equals(givenNamesOb, newGivenOb)) {
+                    stmt.bindString(1, newFamilyOb);
+                    stmt.bindString(2, newGivenOb);
+                    stmt.bindLong(3, id);
+                    stmt.executeUpdateDelete();
+                    i++;
+                }
+            }
+        }
+        return i;
+    }
+
     @Override
     public int fixPositions(@NonNull final Context context)
             throws DaoWriteException {
@@ -1152,5 +1188,18 @@ public class AuthorDaoImpl
                 SELECT_ + DBKey.AUTHOR.PICTURE_UUID + _FROM_ + TBL_AUTHORS.getName()
                 + _WHERE_ + DBKey.AUTHOR.PICTURE_UUID + " IS NOT NULL";
 
+        /** All Authors for a rebuild of the {@link DBKey.AUTHOR} name columns. */
+        private static final String OB_REBUILD_NAMES =
+                SELECT_ + DBKey.PK_ID
+                + ',' + DBKey.AUTHOR.FAMILY_NAME
+                + ',' + DBKey.AUTHOR.FAMILY_NAME_OB
+                + ',' + DBKey.AUTHOR.GIVEN_NAMES
+                + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB
+                + _FROM_ + TBL_AUTHORS.getName();
+        private static final String OB_REBUILD =
+                UPDATE_ + TBL_AUTHORS.getName() + _SET_
+                + DBKey.AUTHOR.FAMILY_NAME_OB + "=?"
+                + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
     }
 }

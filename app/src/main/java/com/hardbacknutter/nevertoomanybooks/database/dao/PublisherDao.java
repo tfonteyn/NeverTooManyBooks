@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface PublisherDao {
@@ -85,6 +86,20 @@ public interface PublisherDao {
      */
     @WorkerThread
     int purge();
+
+    /**
+     * Rebuild the OB columns for the table(s) of this dao.
+     *
+     * @param context       Current context
+     * @param userLocale    to use
+     * @param reorderHelper helper
+     *
+     * @return the number of rows actually updated
+     */
+    @WorkerThread
+    int rebuildOrderByColumns(@NonNull Context context,
+                              @NonNull Locale userLocale,
+                              @NonNull ReorderHelper reorderHelper);
 
     /**
      * Check for books which do not have a {@link Publisher} at position 1.
@@ -185,7 +200,7 @@ public interface PublisherDao {
      * Find a {@link Publisher} by using the <strong>name</strong> fields
      * of the given {@link Publisher}.
      * The given {@link Publisher} is <strong>not</strong> modified.
-     <p>
+     * <p>
      * Searches on both original and (potentially) reordered name.
      *
      * @param context Current context

@@ -26,6 +26,7 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.io.IOException;
@@ -69,6 +70,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -969,6 +972,40 @@ public class BookDaoImpl
         }
     }
 
+    // URGENT: PERFORMANCE: transform the loops to pure/single SQL
+    @Override
+    @WorkerThread
+    public int rebuildOrderByColumns(@NonNull final Context context,
+                                     @NonNull final Locale userLocale,
+                                     @NonNull final ReorderHelper reorderHelper) {
+        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+        int i = 0;
+        try (Cursor cursor = db.rawQuery(Sql.OB_REBUILD_TITLES, null);
+             SynchronizedStatement stmt = db.compileStatement(Sql.OB_REBUILD)) {
+
+            while (cursor.moveToNext()) {
+                final long id = cursor.getLong(0);
+                final String title = cursor.getString(1);
+                final String currentObTitle = cursor.getString(2);
+
+                final Locale bookLocale = appLocale
+                        .getLocale(cursor.getString(3), userLocale)
+                        .orElse(userLocale);
+                final String rTitle = reorderHelper
+                        .reorderForSorting(context, title, bookLocale);
+                final String rObTitle = SqlEncode.orderByColumn(rTitle, bookLocale);
+
+                // only update the database if actually needed.
+                if (!currentObTitle.equals(rObTitle)) {
+                    stmt.bindString(1, rObTitle);
+                    stmt.bindLong(2, id);
+                    stmt.executeUpdateDelete();
+                    i++;
+                }
+            }
+        }
+        return i;
+    }
 
     private static final class Sql {
 
@@ -1100,6 +1137,16 @@ public class BookDaoImpl
                         // added/updated
                         DBKey.DATE_ADDED__UTC, DBKey.DATE_LAST_UPDATED__UTC,
                         DBKey.AUTO_UPDATE);
+        /** All Book titles for a rebuild of the {@link DBKey#TITLE_OB} column. */
+        private static final String OB_REBUILD_TITLES =
+                SELECT_ + DBKey.PK_ID
+                + ',' + DBKey.TITLE
+                + ',' + DBKey.TITLE_OB
+                + ',' + DBKey.LANGUAGE
+                + _FROM_ + TBL_BOOKS.getName();
+        private static final String OB_REBUILD =
+                UPDATE_ + TBL_BOOKS.getName() + _SET_ + DBKey.TITLE_OB + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         /**
          * Create an sql fragment "column IN (csv-list)".
