@@ -408,7 +408,8 @@ public class DBCleaner {
             }
             try (SynchronizedStatement stmt = db.compileStatement(
                     UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-                    + _SET_ + key + "=?" + _WHERE_ + DBKey.PK_ID + "=?")) {
+                    + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                    + ',' + key + "=?" + _WHERE_ + DBKey.PK_ID + "=?")) {
 
                 for (final Pair<Long, String> row : rows) {
                     stmt.bindString(1, T.matcher(row.second).replaceFirst(" "));
