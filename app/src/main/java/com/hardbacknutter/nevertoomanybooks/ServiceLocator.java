@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.IsoLanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
@@ -91,7 +90,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IsoLanguageDaoImpl
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LanguageDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LoaneeDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LocationDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.MaintenanceDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.PublisherDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
@@ -202,8 +200,6 @@ public class ServiceLocator {
     private LoaneeDao loaneeDao;
     @Nullable
     private LocationDao locationDao;
-    @Nullable
-    private MaintenanceDao maintenanceDao;
     @Nullable
     private PublisherDao publisherDao;
     @Nullable
@@ -716,16 +712,6 @@ public class ServiceLocator {
             }
         }
         return locationDao;
-    }
-
-    @NonNull
-    public MaintenanceDao getMaintenanceDao() {
-        synchronized (this) {
-            if (maintenanceDao == null) {
-                maintenanceDao = new MaintenanceDaoImpl(getDb());
-            }
-        }
-        return maintenanceDao;
     }
 
     @NonNull
