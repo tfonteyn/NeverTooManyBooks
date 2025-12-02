@@ -57,7 +57,7 @@ public class SearchBookByExternalIdViewModel
     /** The currently selected radio button. */
     @IdRes
     private int selectedRbViewId = View.NO_ID;
-    /** Th current input field content. */
+    /** The current input field content. */
     @Nullable
     private String sid;
 

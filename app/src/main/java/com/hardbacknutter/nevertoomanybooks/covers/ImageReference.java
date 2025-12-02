@@ -54,7 +54,7 @@ public class ImageReference {
      * This method should only be called once after background work
      * is finished.
      *
-     * @return view, or {@code null} if th view was no longer associated.
+     * @return view, or {@code null} if the view was no longer associated.
      */
     @UiThread
     @Nullable

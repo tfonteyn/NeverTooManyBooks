@@ -156,7 +156,7 @@ public interface AuthorDao {
     List<Long> getBookIds(long itemId);
 
     /**
-     * Fetch all th author picture UUIDs, and return them as a List.
+     * Fetch all the author picture UUIDs, and return them as a List.
      *
      * @return a list of all author UUID in the database.
      */
