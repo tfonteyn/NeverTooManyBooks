@@ -168,13 +168,14 @@ public class PartialDateParser
     /**
      * Parse a string into a month number.
      *
-     * @param locale   (optional) to use; if missing we'll use {@code Locale.ENGLISH}
-     * @param monthStr to parse
+     * @param monthStr (optional) to parse; when missing {@code 0} is returned
+     * @param locale   (optional) Locale to try to decode month names.
+     *                 If set to {@code null} we'll use {@code Locale.ENGLISH}.
      *
-     * @return month 1..12, or {@code 0} on error
+     * @return month 1..12, or {@code 0} on parsing error
      */
-    private static int parseMonth(@Nullable final Locale locale,
-                                  @Nullable final String monthStr) {
+    private static int parseMonth(@Nullable final String monthStr,
+                                  @Nullable final Locale locale) {
         if (monthStr == null || monthStr.isEmpty()) {
             return 0;
         }
@@ -297,13 +298,13 @@ public class PartialDateParser
             matcher = PATTERN_MMM_YYYY.matcher(dateStr);
             if (matcher.find()) {
                 localDate = Year.parse(matcher.group(2)).atDay(1);
-                final int monthNumber = parseMonth(locale, matcher.group(1));
+                final int monthNumber = parseMonth(matcher.group(1), locale);
                 return Optional.of(new PartialDate(localDate.getYear(), monthNumber, 0));
             }
             matcher = PATTERN_DD_MMM_YYYY.matcher(dateStr);
             if (matcher.find()) {
                 localDate = Year.parse(matcher.group(3)).atDay(1);
-                final int monthNumber = parseMonth(locale, matcher.group(2));
+                final int monthNumber = parseMonth(matcher.group(2), locale);
                 final int dayNumber = Integer.parseInt(matcher.group(1));
                 return Optional.of(new PartialDate(localDate.getYear(), monthNumber, dayNumber));
             }

@@ -301,7 +301,7 @@ public class EditBookViewModel
 
             book.addValidators(context);
             book.ensureBookshelf();
-            book.ensureLanguage(context);
+            book.ensureLanguage(userLocale);
         }
     }
 

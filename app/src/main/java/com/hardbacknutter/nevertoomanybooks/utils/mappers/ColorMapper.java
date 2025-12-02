@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,24 +87,28 @@ public final class ColorMapper
 
     /**
      * Constructor.
+     *
+     * @param locale Current Locale
      */
     @VisibleForTesting
-    public ColorMapper() {
-        super(DBKey.COLOR, MAPPINGS);
+    public ColorMapper(@NonNull final Locale locale) {
+        super(DBKey.COLOR, MAPPINGS, locale);
     }
 
     /**
      * Constructor.
      *
      * @param context Current context
+     * @param locale  Current Locale
      *
      * @return instance
      */
     @NonNull
-    static Optional<Mapper> create(@NonNull final Context context) {
+    static Optional<Mapper> create(@NonNull final Context context,
+                                   @NonNull final Locale locale) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(PK_SEARCH_REFORMAT_COLOR, true)) {
-            return Optional.of(new ColorMapper());
+            return Optional.of(new ColorMapper(locale));
         } else {
             return Optional.empty();
         }

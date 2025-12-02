@@ -56,7 +56,7 @@ class EditLanguageDelegate
     @NonNull
     List<String> getList(@NonNull final Context context) {
         final Languages languages = ServiceLocator.getInstance().getLanguages();
-
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         // Convert the list of ISO codes to user readable strings.
         // We do NOT need a distinction here between different countries.
         // The codes are always unique, but code to name conversion can create duplicates
@@ -64,7 +64,7 @@ class EditLanguageDelegate
         return super.getList(context)
                     .stream()
                     .filter(code -> code != null && !code.isEmpty())
-                    .map(code -> languages.getDisplayLanguageFromISO3(context, code))
+                    .map(code -> languages.getDisplayLanguageFromISO3(code, userLocale))
                     .distinct()
                     .collect(Collectors.toList());
     }
@@ -78,8 +78,8 @@ class EditLanguageDelegate
         final Languages languages = ServiceLocator.getInstance().getLanguages();
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        final String fromIso = languages.getISO3FromDisplayLanguage(userLocale, originalText);
-        final String toIso = languages.getISO3FromDisplayLanguage(userLocale, currentText);
+        final String fromIso = languages.getISO3FromDisplayLanguage(originalText, userLocale);
+        final String toIso = languages.getISO3FromDisplayLanguage(currentText, userLocale);
 
         super.onSave(context, fromIso, toIso);
         return toIso;

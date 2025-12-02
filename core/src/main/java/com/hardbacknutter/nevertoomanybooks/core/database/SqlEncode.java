@@ -128,7 +128,7 @@ public final class SqlEncode {
      * Keep normalized basic characters and digits, strip spaces, make all lowercase.
      *
      * @param text   to normalize
-     * @param locale to use for case manipulation
+     * @param locale Current Locale
      *
      * @return normalized text; always lowercase
      */

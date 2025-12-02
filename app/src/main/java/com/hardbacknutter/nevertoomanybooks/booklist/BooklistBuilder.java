@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -505,6 +506,8 @@ class BooklistBuilder {
             }
         }
 
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+
         this.rebuildMode = rebuildMode;
 
         final boolean collationCaseSensitive = db.isCollationCaseSensitive();
@@ -522,7 +525,7 @@ class BooklistBuilder {
         // All structures are in place now
         // Construct the INSERT INTO ... SELECT
         // to populate the list-table
-        final String sqlBulkInsert = createSqlBulkInsert(context, collationCaseSensitive);
+        final String sqlBulkInsert = createSqlBulkInsert(userLocale, collationCaseSensitive);
 
         // Create the list table
         //IMPORTANT: withDomainConstraints MUST BE false
@@ -598,8 +601,9 @@ class BooklistBuilder {
     }
 
     @NonNull
-    private String createSqlBulkInsert(@NonNull final Context context,
+    private String createSqlBulkInsert(@NonNull final Locale userLocale,
                                        final boolean collationCaseSensitive) {
+
         // List of column names for the INSERT INTO... clause
         final StringJoiner destColumns = new StringJoiner(",");
         // List of expressions for the SELECT... clause.
@@ -631,7 +635,7 @@ class BooklistBuilder {
         }
 
         return INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
-               + SELECT_ + sourceColumns + _FROM_ + buildFrom(context) + buildWhere()
+               + SELECT_ + sourceColumns + _FROM_ + buildFrom(userLocale) + buildWhere()
                + _ORDER_BY_ + buildOrderBy(collationCaseSensitive);
     }
 
@@ -660,12 +664,12 @@ class BooklistBuilder {
      * and any pre-defined leftOuterJoin's
      * and {@link Style#getBookLevelFieldsOrderBy()} fields.
      *
-     * @param context Current context
+     * @param userLocale Current Locale
      *
      * @return FROM clause
      */
     @NonNull
-    private String buildFrom(@NonNull final Context context) {
+    private String buildFrom(@NonNull final Locale userLocale) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "build|joins=" + extraJoins);
@@ -718,7 +722,7 @@ class BooklistBuilder {
 
         if (style.hasGroup(BooklistGroup.LANGUAGE)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.LANGUAGE)) {
-            joinWithLanguageMappings(context,
+            joinWithLanguageMappings(userLocale,
                                      DBDefinitions.ALIAS_LANG_MAPPINGS_LANGUAGE,
                                      DBKey.LANGUAGE,
                                      sb);
@@ -726,7 +730,7 @@ class BooklistBuilder {
         if (style.hasGroup(BooklistGroup.ORIGINAL_LANGUAGE)
             || style.isShowField(FieldVisibility.Screen.List,
                                  DBKey.TRANSLATION_ORIGINAL_LANGUAGE)) {
-            joinWithLanguageMappings(context,
+            joinWithLanguageMappings(userLocale,
                                      DBDefinitions.ALIAS_LANG_MAPPINGS_ORIGINAL_LANGUAGE,
                                      DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
                                      sb);
@@ -825,12 +829,12 @@ class BooklistBuilder {
         sb.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
     }
 
-    private void joinWithLanguageMappings(@NonNull final Context context,
+    private void joinWithLanguageMappings(@NonNull final Locale userLocale,
                                           @NonNull final String tableAlias,
                                           @NonNull final String bookTableColumn,
                                           @NonNull final StringBuilder sb) {
-        final String userIso3 = context.getResources().getConfiguration().getLocales().get(0)
-                                       .getISO3Language();
+
+        final String userIso3Language = userLocale.getISO3Language();
 
         // This is using a non-enforced reference, build the JOIN manually.
         final String join =
@@ -838,7 +842,7 @@ class BooklistBuilder {
                 + _ON_
                 + TBL_BOOKS.dot(bookTableColumn) + '=' + tableAlias + "." + DBKey.LANG_MAPPING.ISO3
                 + _AND_
-                + tableAlias + "." + DBKey.LANG_MAPPING.ISO3_USER + "='" + userIso3 + '\'';
+                + tableAlias + "." + DBKey.LANG_MAPPING.ISO3_USER + "='" + userIso3Language + '\'';
         sb.append(join);
     }
 

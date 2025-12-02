@@ -41,11 +41,15 @@ abstract class MapperBase
      */
     @NonNull
     private final Map<String, Integer> mappings;
+    @NonNull
+    private final Locale locale;
 
     MapperBase(@NonNull final String key,
-               @NonNull final Map<String, Integer> mappings) {
+               @NonNull final Map<String, Integer> mappings,
+               @NonNull final Locale locale) {
         this.key = key;
         this.mappings = mappings;
+        this.locale = locale;
     }
 
     @VisibleForTesting
@@ -67,8 +71,7 @@ abstract class MapperBase
             return;
         }
 
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final String lcValue = value.toLowerCase(userLocale);
+        final String lcValue = value.toLowerCase(locale);
         // We do a "startsWith" substitution; and concatenate any remaining characters.
         //noinspection DataFlowIssue
         mappings.keySet()

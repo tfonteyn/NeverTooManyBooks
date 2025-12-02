@@ -174,11 +174,11 @@ public final class AppLocaleImpl
         String lang = language.strip().toLowerCase(userLocale);
         final int len = lang.length();
         if (len > 3) {
-            lang = languagesSupplier.get().getISO3FromDisplayLanguage(userLocale, lang);
+            lang = languagesSupplier.get().getISO3FromDisplayLanguage(lang, userLocale);
         }
 
         // THIS IS A MUST
-        lang = languagesSupplier.get().getLocaleIsoFromISO3(userLocale, lang);
+        lang = languagesSupplier.get().getLocaleIsoFromISO3(lang, userLocale);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
         Locale locale = cache.get(lang);
@@ -257,7 +257,7 @@ public final class AppLocaleImpl
         } else {
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             // any 3-char code might need to be converted to 2-char be able to find the resource.
-            final String iso = languagesSupplier.get().getLocaleIsoFromISO3(userLocale, lang);
+            final String iso = languagesSupplier.get().getLocaleIsoFromISO3(lang, userLocale);
             deltaConfig.setLocale(new Locale(iso));
         }
 

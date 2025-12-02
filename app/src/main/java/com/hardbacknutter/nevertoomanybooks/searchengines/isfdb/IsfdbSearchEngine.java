@@ -1630,8 +1630,7 @@ public class IsfdbSearchEngine
                     if (node != null) {
                         final Languages languages = ServiceLocator.getInstance().getLanguages();
                         lang = languages.getISO3FromDisplayLanguage(
-                                getLocale(context),
-                                node.toString().strip());
+                                node.toString().strip(), getLocale(context));
                     }
                 }
             }

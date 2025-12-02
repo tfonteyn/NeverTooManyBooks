@@ -59,7 +59,7 @@ public class MoneyFormatter
     /**
      * Constructor.
      *
-     * @param locale to use
+     * @param locale Current Locale
      */
     public MoneyFormatter(@NonNull final Locale locale) {
         this.locale = locale;

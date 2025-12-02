@@ -37,7 +37,7 @@ public interface BedethequeCacheDao {
      * Searches on both list-name AND real-name.
      *
      * @param name   to find
-     * @param locale to use
+     * @param locale Current Locale
      *
      * @return the {@link BdtAuthor}, or {@code null} if not found
      */
@@ -52,7 +52,7 @@ public interface BedethequeCacheDao {
      * If the item has 'sub' items, then implementations must propagate the call.
      *
      * @param bdtAuthor to update
-     * @param locale    to use
+     * @param locale    Current Locale
      */
     void fixId(@NonNull BdtAuthor bdtAuthor,
                @NonNull Locale locale);
@@ -64,7 +64,7 @@ public interface BedethequeCacheDao {
      * There can be 100's or even 1000's of Authors. Pass an Supplier
      * to the insert method so we can read/insert one-by-one.
      *
-     * @param locale         to use
+     * @param locale         Current Locale
      * @param recordSupplier a supplier which delivers a {@link BdtAuthor} to insert,
      *                       or {@code null} when done.
      *
@@ -78,7 +78,7 @@ public interface BedethequeCacheDao {
      * Update the given {@link BdtAuthor}.
      *
      * @param bdtAuthor to update
-     * @param locale    to use
+     * @param locale    Current Locale
      *
      * @throws DaoWriteException on failure
      */

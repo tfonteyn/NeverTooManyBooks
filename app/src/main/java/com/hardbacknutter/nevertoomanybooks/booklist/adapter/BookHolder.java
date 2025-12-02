@@ -382,9 +382,10 @@ public class BookHolder
                                     @Nullable final String iso3) {
         // We could use the LanguageFormatter but there is really no point here
         if (iso3 != null && !iso3.isEmpty()) {
+            final Locale userLocale = view.getContext().getResources().getConfiguration()
+                                          .getLocales().get(0);
             final String language = ServiceLocator
-                    .getInstance().getLanguages()
-                    .getDisplayLanguageFromISO3(view.getContext(), iso3);
+                    .getInstance().getLanguages().getDisplayLanguageFromISO3(iso3, userLocale);
             view.setText(language);
             view.setVisibility(View.VISIBLE);
         } else {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -35,14 +36,14 @@ class MapperTest {
 
     @Test
     void colorMappingMustUseLowerCaseKeys() {
-        final Map<String, Integer> mappings = new ColorMapper()
+        final Map<String, Integer> mappings = new ColorMapper(Locale.US)
                 .getMappings();
         mustUseLowerCaseKeys(mappings);
     }
 
     @Test
     void formatMappingMustUseLowerCaseKeys() {
-        final Map<String, Integer> mappings = new FormatMapper()
+        final Map<String, Integer> mappings = new FormatMapper(Locale.US)
                 .getMappings();
         mustUseLowerCaseKeys(mappings);
     }

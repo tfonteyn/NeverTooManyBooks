@@ -411,7 +411,7 @@ public class DnbSearchEngine
                             case "Sprache":
                             case "Language": {
                                 book.setLanguage(
-                                        languages.getISO3FromDisplayLanguage(locale, td.text()));
+                                        languages.getISO3FromDisplayLanguage(td.text(), locale));
                                 break;
                             }
                             case "Genre": {
@@ -462,7 +462,7 @@ public class DnbSearchEngine
                             case "Originalsprache":
                             case "Original language": {
                                 book.setTranslatedFromLanguage(
-                                        languages.getISO3FromDisplayLanguage(locale, td.text()));
+                                        languages.getISO3FromDisplayLanguage(td.text(), locale));
                                 break;
                             }
                             case "Land":

@@ -439,14 +439,14 @@ public interface BookDao {
      * Rebuild the OB columns for the table(s) of this dao.
      *
      * @param context       Current context
-     * @param userLocale    to use
+     * @param locale        Current Locale
      * @param reorderHelper helper
      *
      * @return the number of rows actually updated
      */
     @WorkerThread
     int rebuildOrderByColumns(@NonNull Context context,
-                              @NonNull Locale userLocale,
+                              @NonNull Locale locale,
                               @NonNull ReorderHelper reorderHelper);
 
     /**

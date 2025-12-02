@@ -51,7 +51,7 @@ public class DateFieldFormatter
     /**
      * Constructor.
      *
-     * @param locale to use
+     * @param locale Current Locale
      * @param isUtc  set to {@code true} if dates are to be handled as UTC
      *               with {@link #format(Context, String)}
      */

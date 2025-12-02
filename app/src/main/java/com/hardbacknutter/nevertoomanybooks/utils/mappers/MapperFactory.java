@@ -44,11 +44,12 @@ public final class MapperFactory {
     public static Collection<Mapper> create(@NonNull final Context context) {
         final Collection<Mapper> mappers = new ArrayList<>();
 
-        ColorMapper.create(context).ifPresent(mappers::add);
-        FormatMapper.create(context).ifPresent(mappers::add);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-        mappers.add(new TagMapper(locale));
+        ColorMapper.create(context, userLocale).ifPresent(mappers::add);
+        FormatMapper.create(context, userLocale).ifPresent(mappers::add);
+
+        mappers.add(new TagMapper(userLocale));
 
         return mappers;
     }

@@ -300,11 +300,11 @@ public class BookshelfDaoImpl
     public void validate(@NonNull final Context context)
             throws DaoInsertException,
                    DaoUpdateException {
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         for (final Bookshelf bookshelf : getAll()) {
             if (validateFilters(context, bookshelf) || validateStyle(bookshelf)) {
-                update(context, bookshelf, locale);
+                update(context, bookshelf, userLocale);
             }
         }
     }
@@ -522,12 +522,12 @@ public class BookshelfDaoImpl
             return;
         }
 
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
             for (final Bookshelf bookshelf : list) {
                 // create if needed - do NOT do updates here
                 if (bookshelf.getId() == 0) {
-                    insert(context, bookshelf, locale);
+                    insert(context, bookshelf, userLocale);
                 }
                 //2023-06-11: If we ever do updates here, then we need to check the triggers!
                 // also: look at AuthorDaoImpl/PublisherDaoImpl how we avoid unneeded updates

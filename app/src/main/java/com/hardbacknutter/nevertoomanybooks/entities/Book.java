@@ -561,10 +561,11 @@ public class Book
                            @NonNull final Style style) {
 
         if (style.isShowReorderedTitle()) {
-            final List<Locale> allLocales = LocaleListUtils.asList(
+            final List<Locale> userLocales = LocaleListUtils.asList(
                     context.getResources().getConfiguration().getLocales());
-            final ReorderHelper reorderHelper = new ReorderHelper(allLocales);
-            return reorderHelper.reorder(context, getTitle(), getLocaleOrUserLocale(context));
+
+            final Locale bookLocale = getLocaleOrUserLocale(userLocales.get(0));
+            return new ReorderHelper(userLocales).reorder(context, getTitle(), bookLocale);
         } else {
             return getTitle();
         }
@@ -869,6 +870,18 @@ public class Book
     @NonNull
     public Locale getLocaleOrUserLocale(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        return getLocaleOrUserLocale(userLocale);
+    }
+
+    /**
+     * Convenience method which return the locale directly.
+     *
+     * @param userLocale Current Locale
+     *
+     * @return the Locale, or the users preferred Locale if no language was set.
+     */
+    @NonNull
+    public Locale getLocaleOrUserLocale(@NonNull final Locale userLocale) {
         return getAndUpdateLocale(false, userLocale)
                 .orElse(userLocale);
     }
@@ -950,6 +963,7 @@ public class Book
         if (contains(BKEY_BOOKSHELF_LIST)) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
             final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+            // Bookshelves always use the users preferred Locale
             getBookshelves().forEach(bookshelf -> bookshelfDao
                     .refresh(context, bookshelf, locale));
         }
@@ -966,6 +980,7 @@ public class Book
         if (contains(BKEY_AUTHOR_LIST)) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
+            // Author's always use the book Locale
             getAuthors().forEach(author -> authorDao
                     .refresh(context, author, bookLocale));
         }
@@ -980,9 +995,9 @@ public class Book
         final List<Author> authors = getAuthors();
         if (!authors.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
-            if (authorDao.pruneList(context, authors, author -> locale)) {
+            final Locale bookLocale = getLocaleOrUserLocale(context);
+            // Author's always use the book Locale
+            if (authorDao.pruneList(context, authors, author -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1058,6 +1073,7 @@ public class Book
         if (contains(BKEY_SERIES_LIST)) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
+            // Series have their own Locale with fallback to the book-locale
             getSeries().forEach(series -> seriesDao
                     .refresh(context, series, series.getLocale(context).orElse(bookLocale)));
         }
@@ -1072,10 +1088,10 @@ public class Book
         final List<Series> seriesList = getSeries();
         if (!seriesList.isEmpty()) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-
+            final Locale bookLocale = getLocaleOrUserLocale(context);
+            // Series have their own Locale with fallback to the book-locale
             if (seriesDao.pruneList(context, seriesList,
-                                    series -> series.getLocale(context).orElseGet(
-                                            () -> getLocaleOrUserLocale(context)))) {
+                                    series -> series.getLocale(context).orElse(bookLocale))) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1141,6 +1157,7 @@ public class Book
         if (contains(BKEY_PUBLISHER_LIST)) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
             final Locale bookLocale = getLocaleOrUserLocale(context);
+            // Publisher's always use the book Locale
             getPublishers().forEach(publisher -> publisherDao
                     .refresh(context, publisher, bookLocale));
         }
@@ -1155,9 +1172,9 @@ public class Book
         final List<Publisher> publishers = getPublishers();
         if (!publishers.isEmpty()) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
-            if (publisherDao.pruneList(context, publishers, publisher -> locale)) {
+            final Locale bookLocale = getLocaleOrUserLocale(context);
+            // Publisher's always use the book Locale
+            if (publisherDao.pruneList(context, publishers, publisher -> bookLocale)) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1500,17 +1517,14 @@ public class Book
      *     <li>lacking that (i.e. at first use) the language the user is using the app in</li>
      * </ol>
      *
-     * @param context Current context
+     * @param userLocale Current Locale
      */
-    public void ensureLanguage(@NonNull final Context context) {
+    public void ensureLanguage(@NonNull final Locale userLocale) {
         if (getString(DBKey.LANGUAGE).isEmpty()) {
             final List<String> previouslyUsed = ServiceLocator.getInstance()
                                                               .getLanguageDao().getList();
             if (previouslyUsed.isEmpty()) {
-                putString(DBKey.LANGUAGE,
-                          // user locale
-                          context.getResources().getConfiguration().getLocales().get(0)
-                                 .getISO3Language());
+                putString(DBKey.LANGUAGE, userLocale.getISO3Language());
             } else {
                 putString(DBKey.LANGUAGE, previouslyUsed.get(0));
             }

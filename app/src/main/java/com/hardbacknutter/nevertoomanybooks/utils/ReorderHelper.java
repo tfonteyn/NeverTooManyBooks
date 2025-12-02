@@ -76,7 +76,7 @@ public final class ReorderHelper {
     /**
      * Constructor.
      *
-     * @param userLocales the list of all user locales.
+     * @param userLocales the list of all user Locales.
      */
     public ReorderHelper(@NonNull final List<Locale> userLocales) {
         this.allLocales = userLocales;
@@ -99,7 +99,7 @@ public final class ReorderHelper {
      *
      * @param context Current context
      * @param text    to reorder
-     * @param locale  to use for reordering
+     * @param locale  Current Locale
      *
      * @return the reordered text or the original text, as to-be used for sorting.
      */

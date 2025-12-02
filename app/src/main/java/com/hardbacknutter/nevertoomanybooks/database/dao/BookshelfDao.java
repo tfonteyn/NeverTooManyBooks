@@ -224,7 +224,7 @@ public interface BookshelfDao {
      *
      * @param context Current context
      * @param item    to find the id of
-     * @param locale  to use
+     * @param locale  Current Locale
      *
      * @return the {@link Bookshelf}
      */
@@ -257,7 +257,7 @@ public interface BookshelfDao {
      *
      * @param context Current context
      * @param item    to update
-     * @param locale  to use
+     * @param locale  Current Locale
      */
     void fixId(@NonNull Context context,
                @NonNull Bookshelf item,
@@ -273,7 +273,7 @@ public interface BookshelfDao {
      *
      * @param context Current context
      * @param item    to refresh
-     * @param locale  to use
+     * @param locale  Current Locale
      */
     void refresh(@NonNull Context context,
                  @NonNull Bookshelf item,

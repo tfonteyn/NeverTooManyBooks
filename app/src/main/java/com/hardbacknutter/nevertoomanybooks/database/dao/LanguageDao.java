@@ -20,10 +20,10 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
+
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
@@ -38,8 +38,8 @@ public interface LanguageDao
      * Do a bulk update of any languages not yet converted to ISO codes.
      * Special entries are left untouched; example "Dutch+French" a bilingual edition.
      *
-     * @param context Current context
+     * @param userLocale Current Locale
      */
     @WorkerThread
-    void bulkUpdate(@NonNull Context context);
+    void bulkUpdate(@NonNull Locale userLocale);
 }

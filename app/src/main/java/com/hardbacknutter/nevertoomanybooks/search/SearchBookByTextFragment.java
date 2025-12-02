@@ -38,6 +38,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -214,19 +215,22 @@ public class SearchBookByTextFragment
      */
     private void populateAdapters() {
         //noinspection DataFlowIssue
+        final Locale userLocale = getContext().getResources().getConfiguration()
+                                              .getLocales().get(0);
+
         authorAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAuthorNames(getContext()));
+                ExtArrayAdapter.FilterType.Diacritic, vm.getAuthorNames(userLocale));
         vb.author.setAdapter(authorAdapter);
 
         seriesAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getSeriesNames(getContext()));
+                ExtArrayAdapter.FilterType.Diacritic, vm.getSeriesNames(userLocale));
         vb.seriesTitle.setAdapter(seriesAdapter);
 
         publisherAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getPublisherNames(getContext()));
+                ExtArrayAdapter.FilterType.Diacritic, vm.getPublisherNames(userLocale));
         vb.publisher.setAdapter(publisherAdapter);
     }
 

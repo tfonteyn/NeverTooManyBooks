@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -80,26 +79,25 @@ public class SearchBookByTextViewModel
     /**
      * Build a combined list of the passed in names + the database.
      *
-     * @param context     Current context
+     * @param locale      Current Locale
      * @param dbNames     the list from the database (will be modified, and returned as the result).
      * @param recentNames the in-memory list
      *
      * @return combined list
      */
     @NonNull
-    private static List<String> combineNames(@NonNull final Context context,
+    private static List<String> combineNames(@NonNull final Locale locale,
                                              @NonNull final List<String> dbNames,
                                              @NonNull final Collection<String> recentNames) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final Collection<String> uniqueNames = new HashSet<>(dbNames.size());
         for (final String s : dbNames) {
-            uniqueNames.add(s.toLowerCase(userLocale));
+            uniqueNames.add(s.toLowerCase(locale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
         for (final String s : recentNames) {
-            if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
+            if (!uniqueNames.contains(s.toLowerCase(locale))) {
                 dbNames.add(s);
             }
         }
@@ -119,7 +117,7 @@ public class SearchBookByTextViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args    {@link Fragment#requireArguments()}
+     * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
         if (searchCriteria == null) {
@@ -148,13 +146,13 @@ public class SearchBookByTextViewModel
     }
 
     @NonNull
-    List<String> getAuthorNames(@NonNull final Context context) {
+    List<String> getAuthorNames(@NonNull final Locale locale) {
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
         // search sites can cope with the formatted version.
         final List<String> dbNames =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME_GIVEN_FIRST);
-        return combineNames(context, dbNames, recentAuthorNames);
+        return combineNames(locale, dbNames, recentAuthorNames);
     }
 
     boolean addSeriesName(@NonNull final String searchText) {
@@ -162,9 +160,9 @@ public class SearchBookByTextViewModel
     }
 
     @NonNull
-    List<String> getSeriesNames(@NonNull final Context context) {
+    List<String> getSeriesNames(@NonNull final Locale locale) {
         final List<String> dbNames = ServiceLocator.getInstance().getSeriesDao().getNames();
-        return combineNames(context, dbNames, recentSeriesNames);
+        return combineNames(locale, dbNames, recentSeriesNames);
     }
 
     boolean addPublisherName(@NonNull final String searchText) {
@@ -172,8 +170,8 @@ public class SearchBookByTextViewModel
     }
 
     @NonNull
-    List<String> getPublisherNames(@NonNull final Context context) {
+    List<String> getPublisherNames(@NonNull final Locale locale) {
         final List<String> dbNames = ServiceLocator.getInstance().getPublisherDao().getNames();
-        return combineNames(context, dbNames, recentPublisherNames);
+        return combineNames(locale, dbNames, recentPublisherNames);
     }
 }

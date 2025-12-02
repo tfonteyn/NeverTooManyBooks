@@ -214,7 +214,7 @@ public class BookDaoImpl
             book.putString(DBKey.BOOK_UUID, uuid);
 
             // next we add the links to series, authors,...
-            insertBookLinks(context, book, flags);
+            insertBookLinks(context, userLocales.get(0), book, flags);
 
             // and populate the search suggestions table
             ServiceLocator.getInstance().getFtsDao().insert(newBookId);
@@ -296,7 +296,7 @@ public class BookDaoImpl
                 SanityCheck.requireValue(uuid, ERROR_UUID);
                 book.putString(DBKey.BOOK_UUID, uuid);
 
-                insertBookLinks(context, book, flags);
+                insertBookLinks(context, userLocales.get(0), book, flags);
 
                 ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
@@ -406,13 +406,15 @@ public class BookDaoImpl
      * Each step in this method will first delete all entries in the Book-[tableX] table
      * for this bookId, and then insert the new links.
      *
-     * @param context Current context
-     * @param book    A collection with the columns to be set. May contain extra data.
-     * @param flags   See {@link BookFlag} for flag definitions
+     * @param context    Current context
+     * @param userLocale Current Locale
+     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param flags      See {@link BookFlag} for flag definitions
      *
      * @throws DaoWriteException on failure
      */
     private void insertBookLinks(@NonNull final Context context,
+                                 @NonNull final Locale userLocale,
                                  @NonNull final Book book,
                                  @NonNull final Set<BookFlag> flags)
             throws DaoWriteException {
@@ -422,7 +424,7 @@ public class BookDaoImpl
         final boolean lookupLocale = !flags.contains(BookFlag.RunInBatch);
 
         // unconditional lookup of the book locale!
-        final Locale bookLocale = book.getLocaleOrUserLocale(context);
+        final Locale bookLocale = book.getLocaleOrUserLocale(userLocale);
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
@@ -975,7 +977,7 @@ public class BookDaoImpl
     @Override
     @WorkerThread
     public int rebuildOrderByColumns(@NonNull final Context context,
-                                     @NonNull final Locale userLocale,
+                                     @NonNull final Locale locale,
                                      @NonNull final ReorderHelper reorderHelper) {
         final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
         int i = 0;
@@ -988,8 +990,8 @@ public class BookDaoImpl
                 final String currentObTitle = cursor.getString(2);
 
                 final Locale bookLocale = appLocale
-                        .getLocale(cursor.getString(3), userLocale)
-                        .orElse(userLocale);
+                        .getLocale(cursor.getString(3), locale)
+                        .orElse(locale);
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, bookLocale);
                 final String rObTitle = SqlEncode.orderByColumn(rTitle, bookLocale);

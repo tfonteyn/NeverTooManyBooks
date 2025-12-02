@@ -202,7 +202,7 @@ public interface TagDao {
      * tag-mapping rules.
      *
      * @param context Current context
-     * @param locale  to use
+     * @param locale  Current Locale
      * @param options a set of {@link TagMapperTask.Options}
      *
      * @return options + number of books modified

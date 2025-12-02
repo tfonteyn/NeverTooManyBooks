@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -239,7 +240,8 @@ public class DBCleaner {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
-        serviceLocator.getLanguageDao().bulkUpdate(context);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        serviceLocator.getLanguageDao().bulkUpdate(userLocale);
 
         // make sure there are no 'T' separators in datetime fields
         datetimeFormat();

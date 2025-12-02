@@ -45,7 +45,7 @@ public class LanguageFormatter
     /**
      * Constructor.
      *
-     * @param locale    to use
+     * @param locale    Current Locale
      * @param languages the language cache container
      */
     public LanguageFormatter(@NonNull final Locale locale,
@@ -61,7 +61,7 @@ public class LanguageFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return languages.getDisplayLanguageFromISO3(context, rawValue);
+            return languages.getDisplayLanguageFromISO3(rawValue, locale);
         }
     }
 
@@ -74,6 +74,6 @@ public class LanguageFormatter
     @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return languages.getISO3FromDisplayLanguage(locale, text);
+        return languages.getISO3FromDisplayLanguage(text, locale);
     }
 }

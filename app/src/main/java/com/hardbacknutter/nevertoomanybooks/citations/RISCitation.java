@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -71,8 +72,10 @@ public class RISCitation
 
         final String lang = book.getString(DBKey.LANGUAGE);
         if (!lang.isEmpty()) {
+            final Locale userLocale = context.getResources().getConfiguration()
+                                             .getLocales().get(0);
             sj.add("LA  - " + ServiceLocator.getInstance().getLanguages()
-                                            .getDisplayLanguageFromISO3(context, lang));
+                                            .getDisplayLanguageFromISO3(lang, userLocale));
         }
 
         book.getPrimarySeries().ifPresent(series -> {

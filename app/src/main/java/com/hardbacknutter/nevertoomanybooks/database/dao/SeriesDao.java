@@ -115,14 +115,14 @@ public interface SeriesDao {
      * Rebuild the OB columns for the table(s) of this dao.
      *
      * @param context       Current context
-     * @param userLocale    to use
+     * @param locale        Current Locale
      * @param reorderHelper helper
      *
      * @return the number of rows actually updated
      */
     @WorkerThread
     int rebuildOrderByColumns(@NonNull Context context,
-                              @NonNull Locale userLocale,
+                              @NonNull Locale locale,
                               @NonNull ReorderHelper reorderHelper);
 
     /**
@@ -228,7 +228,7 @@ public interface SeriesDao {
      *
      * @param context Current context
      * @param item    to find the id of
-     * @param locale  to use
+     * @param locale  Current Locale
      *
      * @return the {@link Series}
      */
@@ -252,7 +252,7 @@ public interface SeriesDao {
      *
      * @param context Current context
      * @param item    to update
-     * @param locale  to use
+     * @param locale  Current Locale
      */
     void fixId(@NonNull Context context,
                @NonNull Series item,
@@ -268,7 +268,7 @@ public interface SeriesDao {
      *
      * @param context Current context
      * @param item    to refresh
-     * @param locale  to use
+     * @param locale  Current Locale
      */
     void refresh(@NonNull Context context,
                  @NonNull Series item,

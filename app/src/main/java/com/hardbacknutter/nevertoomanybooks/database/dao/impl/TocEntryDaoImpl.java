@@ -441,6 +441,7 @@ public class TocEntryDaoImpl
     @Override
     public int fixPositions(@NonNull final Context context)
             throws DaoWriteException {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -452,7 +453,7 @@ public class TocEntryDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final Locale bookLocale = book.getLocaleOrUserLocale(context);
+                    final Locale bookLocale = book.getLocaleOrUserLocale(userLocale);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId,
                                    book.getToc(),
@@ -481,11 +482,11 @@ public class TocEntryDaoImpl
     @Override
     @WorkerThread
     public int rebuildOrderByColumns(@NonNull final Context context,
-                                     @NonNull final Locale userLocale,
+                                     @NonNull final Locale locale,
                                      @NonNull final ReorderHelper reorderHelper) {
         int i = 0;
         // We should use primary book or Author Locale...
-        // but that is a huge overhead, so we use the user-locale directly.
+        // but that is a huge overhead, so we use the users preferred Locale.
         try (Cursor cursor = db.rawQuery(Sql.OB_REBUILD_TITLES, null);
              SynchronizedStatement stmt = db.compileStatement(Sql.OB_REBUILD)) {
 
@@ -495,8 +496,8 @@ public class TocEntryDaoImpl
                 final String currentObTitle = cursor.getString(2);
 
                 final String rTitle = reorderHelper
-                        .reorderForSorting(context, title, userLocale);
-                final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
+                        .reorderForSorting(context, title, locale);
+                final String rObTitle = SqlEncode.orderByColumn(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

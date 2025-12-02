@@ -320,10 +320,11 @@ class EditBookAuthorDelegate
             currentEdit.setType(Author.TYPE_UNKNOWN);
         }
 
-        // Use the Locale from the book.
-        final Locale locale = ServiceLocator
-                .getInstance().getLanguages()
-                .toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
+        // Use the Locale from the book language.
+        final String language = vm.getBook().getString(DBKey.LANGUAGE);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale locale = ServiceLocator.getInstance().getLanguages()
+                                            .toLocale(language, userLocale);
 
         // We let this call go ahead even if real-author is switched off by the user
         // so we can clean up as needed.

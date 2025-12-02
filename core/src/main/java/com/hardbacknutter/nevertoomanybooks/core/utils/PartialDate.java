@@ -248,7 +248,7 @@ public class PartialDate
      *     <li>yyyy / -yyyy</li>
      * </ul>
      *
-     * @param locale   to use
+     * @param locale   Current Locale
      * @param defValue default string to return if the date is not-set.
      *                 If {@code null} an empty string will be used.
      *

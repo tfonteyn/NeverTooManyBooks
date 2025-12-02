@@ -160,7 +160,7 @@ public class AuthorDaoImpl
      *
      * @param context Current context
      * @param author  to find the id of
-     * @param locale  to use
+     * @param locale  Current Locale
      *
      * @return the Author
      */
@@ -786,6 +786,7 @@ public class AuthorDaoImpl
                          @NonNull final Author target)
             throws DaoWriteException {
 
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         int booksMoved;
 
         Synchronizer.SyncLock txLock = null;
@@ -828,7 +829,7 @@ public class AuthorDaoImpl
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
                 insertOrUpdate(context, bookId, false, destList, author ->
-                        book.getLocaleOrUserLocale(context));
+                        book.getLocaleOrUserLocale(userLocale));
             }
 
             // delete the obsolete source.
@@ -856,10 +857,10 @@ public class AuthorDaoImpl
 
     @Override
     @WorkerThread
-    public int rebuildOrderByColumns(@NonNull final Locale userLocale) {
+    public int rebuildOrderByColumns(@NonNull final Locale locale) {
         int i = 0;
         // We should use the locale from the 1st book in the series...
-        // but that is a huge overhead so we use the user-locale directly.
+        // but that is a huge overhead so we use the users preferred Locale.
         try (Cursor cursor = db.rawQuery(Sql.OB_REBUILD_NAMES, null);
              SynchronizedStatement stmt = db.compileStatement(Sql.OB_REBUILD)) {
 
@@ -871,8 +872,8 @@ public class AuthorDaoImpl
                 final String givenNamesOb = cursor.getString(4);
 
                 // reordering is not applicable, we just want to re-normalize.
-                final String newFamilyOb = SqlEncode.orderByColumn(familyName, userLocale);
-                final String newGivenOb = SqlEncode.orderByColumn(givenNames, userLocale);
+                final String newFamilyOb = SqlEncode.orderByColumn(familyName, locale);
+                final String newGivenOb = SqlEncode.orderByColumn(givenNames, locale);
 
                 // only update the database if actually needed.
                 if (!Objects.equals(familyNameOb, newFamilyOb)
@@ -891,6 +892,7 @@ public class AuthorDaoImpl
     @Override
     public int fixPositions(@NonNull final Context context)
             throws DaoWriteException {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -902,7 +904,7 @@ public class AuthorDaoImpl
 
                 for (final long bookId : bookIds) {
                     final Book book = Book.from(bookId);
-                    final Locale bookLocale = book.getLocaleOrUserLocale(context);
+                    final Locale bookLocale = book.getLocaleOrUserLocale(userLocale);
                     // We KNOW there are no updates needed.
                     insertOrUpdate(context, bookId, false,
                                    book.getAuthors(),

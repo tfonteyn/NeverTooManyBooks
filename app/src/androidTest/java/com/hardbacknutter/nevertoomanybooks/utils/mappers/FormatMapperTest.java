@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -72,7 +73,7 @@ public class FormatMapperTest
         super.setup(fLocaleCode);
 
         book = new Book();
-        mapper = new FormatMapper();
+        mapper = new FormatMapper(Locale.UK);
         key = mapper.getKey();
     }
 

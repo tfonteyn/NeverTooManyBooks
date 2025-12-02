@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -149,24 +150,28 @@ public final class FormatMapper
 
     /**
      * Constructor.
+     *
+     * @param locale Current Locale
      */
     @VisibleForTesting
-    public FormatMapper() {
-        super(DBKey.FORMAT, MAPPINGS);
+    public FormatMapper(@NonNull final Locale locale) {
+        super(DBKey.FORMAT, MAPPINGS, locale);
     }
 
     /**
      * Constructor.
      *
      * @param context Current context
+     * @param locale  Current Locale
      *
      * @return instance
      */
     @NonNull
-    static Optional<Mapper> create(@NonNull final Context context) {
+    static Optional<Mapper> create(@NonNull final Context context,
+                                   @NonNull final Locale locale) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(Prefs.PK_SEARCH_REFORMAT_FORMAT, true)) {
-            return Optional.of(new FormatMapper());
+            return Optional.of(new FormatMapper(locale));
         } else {
             return Optional.empty();
         }

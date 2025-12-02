@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Parser for dates comes from the internet and/or the user (either as direct input, or by import).
  * <p>
- * This object is thread-safe, but user locale specific at creation time.
+ * This object is thread-safe, but user Locale specific at creation time.
  * <p>
  * The result is always a {@link LocalDateTime}.
  * <p>
@@ -141,15 +141,15 @@ public class FullDateParser
      * Attempt to parse a date string using the passed locale.
      * This method is meant to be used by site-specific code where the site Locale is known.
      *
-     * @param dateStr String to parse
-     * @param locale  to try first; i.e. before the pre-defined list.
+     * @param dateStr     String to parse
+     * @param firstLocale to try first; i.e. before the pre-defined list.
      *
      * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */
     @NonNull
     @Override
     public Optional<LocalDateTime> parse(@Nullable final CharSequence dateStr,
-                                         @Nullable final Locale locale) {
+                                         @Nullable final Locale firstLocale) {
         if (dateStr == null || dateStr.length() == 0) {
             return Optional.empty();
         }
@@ -161,7 +161,7 @@ public class FullDateParser
                 numericalParsers = new ArrayList<>();
                 addPatterns(numericalParsers, NUMERICAL_PATTERNS, locales);
             }
-            return parse(numericalParsers, dateStr, locale).or(() -> {
+            return parse(numericalParsers, dateStr, firstLocale).or(() -> {
                 // or lastly the extensive text based.
                 if (textParsers == null) {
                     textParsers = new ArrayList<>();
@@ -172,7 +172,7 @@ public class FullDateParser
                         addPatterns(textParsers, TEXT_PATTERNS, List.of(Locale.ENGLISH));
                     }
                 }
-                return parse(textParsers, dateStr, locale);
+                return parse(textParsers, dateStr, firstLocale);
             });
         });
     }

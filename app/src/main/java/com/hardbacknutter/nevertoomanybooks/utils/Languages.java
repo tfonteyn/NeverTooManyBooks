@@ -85,41 +85,38 @@ public class Languages {
     /**
      * Try to convert a Language to a Locale.
      *
-     * @param context  Current context
      * @param language ISO codes (2 or 3 char), or a display-string (4+ characters)
+     * @param locale Current Locale
      *
      * @return the best matching Locale we could determine
      *
      * @see AppLocale#getLocale(String, Locale)
      */
     @NonNull
-    public Locale toLocale(@NonNull final Context context,
-                           @Nullable final String language) {
-
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+    public Locale toLocale(@Nullable final String language,
+                           @NonNull final Locale locale) {
         if (language == null || language.isBlank()) {
-            return userLocale;
+            return locale;
         }
         return ServiceLocator.getInstance().getAppLocale()
-                             .getLocale(language, userLocale)
-                             .orElse(userLocale);
+                             .getLocale(language, locale)
+                             .orElse(locale);
     }
 
     /**
      * Try to convert a Language ISO code to the display name.
      *
-     * @param context Current context
-     * @param iso3    the ISO code
+     * @param iso3   the ISO code
+     * @param locale Current Locale
      *
      * @return the display name for the language,
      *         or the input string itself if it was an invalid ISO code
      */
     @NonNull
-    public String getDisplayLanguageFromISO3(@NonNull final Context context,
-                                             @NonNull final String iso3) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return ServiceLocator.getInstance().getAppLocale().getLocale(iso3, userLocale)
-                             .map(locale -> locale.getDisplayLanguage(userLocale))
+    public String getDisplayLanguageFromISO3(@NonNull final String iso3,
+                                             @NonNull final Locale locale) {
+        return ServiceLocator.getInstance().getAppLocale().getLocale(iso3, locale)
+                             .map(l -> l.getDisplayLanguage(locale))
                              .orElse(iso3);
     }
 
@@ -129,14 +126,14 @@ public class Languages {
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
-     * @param locale   the locale of the language string
      * @param language the string as normally produced by {@link Locale#getDisplayLanguage}
+     * @param locale   the locale of the language string
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public String getISO3FromDisplayLanguage(@NonNull final Locale locale,
-                                             @NonNull final String language) {
+    public String getISO3FromDisplayLanguage(@NonNull final String language,
+                                             @NonNull final Locale locale) {
 
         final String source = language.strip().toLowerCase(locale);
         if (source.isEmpty()) {
@@ -190,16 +187,16 @@ public class Languages {
      * <br><br>
      * <strong>Note:</strong> check the javadoc on {@link Locale#getISOLanguages()} for caveats.
      *
-     * @param userLocale Current Locale
-     * @param iso3       ISO 639-2 (3-char) language code
-     *                   (either bibliographic or terminology coded)
+     * @param iso3   ISO 639-2 (3-char) language code
+     *               (either bibliographic or terminology coded)
+     * @param locale Current Locale
      *
      * @return a language code that can be used with {@code new Locale(x)},
      *         or the incoming string if conversion failed.
      */
     @NonNull
-    String getLocaleIsoFromISO3(@NonNull final Locale userLocale,
-                                @NonNull final String iso3) {
+    String getLocaleIsoFromISO3(@NonNull final String iso3,
+                                @NonNull final Locale locale) {
 
         String iso2 = lang3ToLang2Map.get(iso3);
         if (iso2 != null) {
@@ -207,14 +204,14 @@ public class Languages {
         }
 
         // try again ('terminology' seems to be preferred/standard on Android (ICU?)
-        String lang = toTerminology(userLocale, iso3);
+        String lang = toTerminology(iso3, locale);
         iso2 = lang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
         }
 
         // desperate and last attempt using 'bibliographic'.
-        lang = toBibliographic(userLocale, iso3);
+        lang = toBibliographic(iso3, locale);
         iso2 = lang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
@@ -231,14 +228,14 @@ public class Languages {
      * <p>
      * This is the entire set correct as on 2019-08-22.
      *
-     * @param locale to use for case manipulation
      * @param iso3   ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     * @param locale Current Locale
      *
      * @return the bibliographic code
      */
     @NonNull
-    public String toBibliographic(@NonNull final Locale locale,
-                                  @NonNull final String iso3) {
+    public String toBibliographic(@NonNull final String iso3,
+                                  @NonNull final Locale locale) {
         final String source = iso3.strip().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
@@ -318,14 +315,14 @@ public class Languages {
      * <p>
      * This is the entire set correct as on 2019-08-22.
      *
-     * @param locale to use for case manipulation
      * @param iso3   ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     * @param locale Current Locale
      *
      * @return the terminology code
      */
     @NonNull
-    public String toTerminology(@NonNull final Locale locale,
-                                @NonNull final String iso3) {
+    public String toTerminology(@NonNull final String iso3,
+                                @NonNull final Locale locale) {
         final String source = iso3.strip().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
@@ -481,7 +478,7 @@ public class Languages {
     }
 
     /**
-     * Check if the device or user locale has the given language enabled.
+     * Check if the device or user Locales has the given language enabled.
      * <p>
      * Non-english sites are by default only enabled if either the device or
      * this app is has the specified language enabled.

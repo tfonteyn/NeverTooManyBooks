@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.util.Log;
-
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -30,6 +28,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LanguageTest
         extends BaseDBTest {
@@ -47,13 +47,16 @@ public class LanguageTest
         final Languages l = serviceLocator.getLanguages();
 
         // result is "grc" which is correct
-        Log.d(TAG, "grc=" + l.getLocaleIsoFromISO3(Locale.UK, "grc"));
+        assertEquals("grc", l.getLocaleIsoFromISO3("grc", Locale.UK));
 
         // result is "Ancient Greek" again correct
-        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "grc"));
+        assertEquals("Ancient Greek", l.getDisplayLanguageFromISO3("grc", Locale.UK));
 
-        // This fails as Ancient Greek is not a supported Locale on Android
-        Log.d(TAG, "locale =" + new Locale("grc"));
+        // This fails as Ancient Greek is not a supported Locale on Android,
+        // so we get "grc" as the display name
+        // 2025-12-02: this now returns the correct "Ancient Greek".
+        // but I cannot find any reference how/when android/icu might have added this.
+        assertEquals("Ancient Greek", new Locale("grc").getDisplayName());
     }
 
     @Test
@@ -68,28 +71,22 @@ public class LanguageTest
         // 'italský': 'it'}
         final Languages l = serviceLocator.getLanguages();
 
-        final Locale locale = new Locale("cs", "CZ");
-        l.createLanguageMappingCache(locale);
+        final Locale czech = new Locale("cs", "CZ");
+        l.createLanguageMappingCache(czech);
 
-        // ces=cs
-        Log.d(TAG, "ces=" + l.getLocaleIsoFromISO3(Locale.UK, "ces"));
-        // display:Czech
-        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "ces"));
-        // cze=cs
-        Log.d(TAG, "cze=" + l.getLocaleIsoFromISO3(Locale.UK, "cze"));
-        // display:Czech
-        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "cze"));
+        assertEquals("cs", l.getLocaleIsoFromISO3("ces", Locale.UK));
+        assertEquals("Czech", l.getDisplayLanguageFromISO3("ces", Locale.UK));
+        assertEquals("cs", l.getLocaleIsoFromISO3("cze", Locale.UK));
+        assertEquals("Czech", l.getDisplayLanguageFromISO3("cze", Locale.UK));
 
-
-        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(locale, "český"));
-        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(locale, "slovenský"));
-        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(locale, "německý"));
-        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(locale, "polský"));
-        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(locale, "anglický"));
-        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(locale, "francouzský"));
-        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(locale, "španělský"));
-        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(locale, "italský"));
-
+        assertEquals("český", l.getISO3FromDisplayLanguage("český", czech));
+        assertEquals("slovenský", l.getISO3FromDisplayLanguage("slovenský", czech));
+        assertEquals("německý", l.getISO3FromDisplayLanguage("německý", czech));
+        assertEquals("polský", l.getISO3FromDisplayLanguage("polský", czech));
+        assertEquals("anglický", l.getISO3FromDisplayLanguage("anglický", czech));
+        assertEquals("francouzský", l.getISO3FromDisplayLanguage("francouzský", czech));
+        assertEquals("španělský", l.getISO3FromDisplayLanguage("španělský", czech));
+        assertEquals("italský", l.getISO3FromDisplayLanguage("italský", czech));
     }
 
     @Test
@@ -104,26 +101,21 @@ public class LanguageTest
         // 'italský': 'it'}
         final Languages l = serviceLocator.getLanguages();
 
-        final Locale locale = new Locale("sk", "SK");
-        l.createLanguageMappingCache(locale);
+        final Locale slovak = new Locale("sk", "SK");
+        l.createLanguageMappingCache(slovak);
 
-        // slk=sk
-        Log.d(TAG, "slk=" + l.getLocaleIsoFromISO3(Locale.UK, "slk"));
-        // display:Slovak
-        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "slk"));
-        // slo=sk
-        Log.d(TAG, "slo=" + l.getLocaleIsoFromISO3(Locale.UK, "slo"));
-        // display:Slovak
-        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "slo"));
+        assertEquals("sk", l.getLocaleIsoFromISO3("slk", Locale.UK));
+        assertEquals("Slovak", l.getDisplayLanguageFromISO3("slk", Locale.UK));
+        assertEquals("sk", l.getLocaleIsoFromISO3("slo", Locale.UK));
+        assertEquals("Slovak", l.getDisplayLanguageFromISO3("slo", Locale.UK));
 
-        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(locale, "český"));
-        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(locale, "slovenský"));
-        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(locale, "německý"));
-        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(locale, "polský"));
-        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(locale, "anglický"));
-        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(locale, "francouzský"));
-        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(locale, "španělský"));
-        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(locale, "italský"));
-
+        assertEquals("český", l.getISO3FromDisplayLanguage("český", slovak));
+        assertEquals("slovenský", l.getISO3FromDisplayLanguage("slovenský", slovak));
+        assertEquals("německý", l.getISO3FromDisplayLanguage("německý", slovak));
+        assertEquals("polský", l.getISO3FromDisplayLanguage("polský", slovak));
+        assertEquals("anglický", l.getISO3FromDisplayLanguage("anglický", slovak));
+        assertEquals("francouzský", l.getISO3FromDisplayLanguage("francouzský", slovak));
+        assertEquals("španělský", l.getISO3FromDisplayLanguage("španělský", slovak));
+        assertEquals("italský", l.getISO3FromDisplayLanguage("italský", slovak));
     }
 }

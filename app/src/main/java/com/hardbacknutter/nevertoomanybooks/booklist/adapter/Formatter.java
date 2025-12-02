@@ -256,7 +256,7 @@ class Formatter
             return context.getString(R.string.bob_empty_language);
         } else {
             return ServiceLocator.getInstance().getLanguages()
-                                 .getDisplayLanguageFromISO3(context, text);
+                                 .getDisplayLanguageFromISO3(text, locales.get(0));
         }
     }
 

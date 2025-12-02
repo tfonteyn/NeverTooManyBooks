@@ -116,12 +116,12 @@ public interface AuthorDao {
     /**
      * Rebuild the OB columns for the table(s) of this dao.
      *
-     * @param userLocale to use
+     * @param locale Current Locale
      *
      * @return the number of rows actually updated
      */
     @WorkerThread
-    int rebuildOrderByColumns(@NonNull Locale userLocale);
+    int rebuildOrderByColumns(@NonNull Locale locale);
 
     /**
      * Check for books which do not have a {@link Author} at position 1.
@@ -231,7 +231,7 @@ public interface AuthorDao {
      *
      * @param context Current context
      * @param item    to find the id of
-     * @param locale  to use
+     * @param locale  Current Locale
      *
      * @return the {@link Author}
      */
@@ -257,7 +257,7 @@ public interface AuthorDao {
      *
      * @param context Current context
      * @param item    to update
-     * @param locale  to use
+     * @param locale  Current Locale
      */
     void fixId(@NonNull Context context,
                @NonNull Author item,
@@ -273,7 +273,7 @@ public interface AuthorDao {
      *
      * @param context Current context
      * @param item    to refresh
-     * @param locale  to use
+     * @param locale  Current Locale
      */
     void refresh(@NonNull Context context,
                  @NonNull Author item,

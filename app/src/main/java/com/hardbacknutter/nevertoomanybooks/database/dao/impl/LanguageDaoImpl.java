@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -79,8 +77,7 @@ public class LanguageDaoImpl
 
     @Override
     @WorkerThread
-    public void bulkUpdate(@NonNull final Context context) {
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+    public void bulkUpdate(@NonNull final Locale userLocale) {
 
         for (final String lang : getList()) {
             if (lang != null && !lang.isEmpty()) {
@@ -88,7 +85,7 @@ public class LanguageDaoImpl
 
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = languagesSupplier.get().getISO3FromDisplayLanguage(locale, lang);
+                    iso = languagesSupplier.get().getISO3FromDisplayLanguage(lang, userLocale);
                 } else {
                     // It's almost certainly a language code
                     iso = languagesSupplier.get().getISO3FromCode(lang);
