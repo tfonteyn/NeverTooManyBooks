@@ -854,7 +854,6 @@ public class AuthorDaoImpl
         }
     }
 
-    // URGENT: PERFORMANCE: transform the loops to pure/single SQL
     @Override
     @WorkerThread
     public int rebuildOrderByColumns(@NonNull final Locale userLocale) {

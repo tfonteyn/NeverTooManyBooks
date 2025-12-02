@@ -972,7 +972,6 @@ public class BookDaoImpl
         }
     }
 
-    // URGENT: PERFORMANCE: transform the loops to pure/single SQL
     @Override
     @WorkerThread
     public int rebuildOrderByColumns(@NonNull final Context context,
