@@ -537,7 +537,7 @@ public class TagDaoImpl
 
     @Override
     @WorkerThread
-    public int importRecords(@NonNull final List<Tag> list) {
+    public int importRecords(@NonNull final Collection<Tag> list) {
         int count = 0;
 
         Synchronizer.SyncLock txLock = null;

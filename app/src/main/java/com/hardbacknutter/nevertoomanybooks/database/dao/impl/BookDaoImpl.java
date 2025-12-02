@@ -372,7 +372,7 @@ public class BookDaoImpl
      * @return the number of books deleted (i.e rowsAffected)
      */
     @Override
-    public int deleteByUuid(@NonNull final List<String> uuids) {
+    public int deleteByUuid(@NonNull final Collection<String> uuids) {
         final List<String> actuallyDeleted = new ArrayList<>();
 
         Synchronizer.SyncLock txLock = null;
@@ -522,14 +522,12 @@ public class BookDaoImpl
     @Override
     public boolean setBookshelves(@NonNull final Context context,
                                   @NonNull final Collection<Long> bookIds,
-                                  @NonNull final List<Bookshelf> bookshelves) {
+                                  @NonNull final Collection<Bookshelf> bookshelves) {
 
         // Sanity check
         if (bookIds.isEmpty() || bookshelves.isEmpty()) {
             return false;
         }
-
-
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -562,7 +560,7 @@ public class BookDaoImpl
     }
 
     @Override
-    public boolean setLocation(@NonNull final List<Long> bookIds,
+    public boolean setLocation(@NonNull final Collection<Long> bookIds,
                                @NonNull final String location) {
         // Sanity check
         if (bookIds.isEmpty()) {

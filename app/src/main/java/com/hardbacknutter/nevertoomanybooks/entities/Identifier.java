@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -286,7 +287,7 @@ public class Identifier
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     @NonNull
-    public static List<Identifier> createInitialList(@NonNull final Context context) {
+    public static Collection<Identifier> createInitialList(@NonNull final Context context) {
         return List.of(
                 // links empty on purpose; created dynamically
                 new Identifier(SID_ASIN, TYPE_STRING,

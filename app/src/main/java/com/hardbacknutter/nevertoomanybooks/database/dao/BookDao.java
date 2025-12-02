@@ -193,7 +193,7 @@ public interface BookDao {
      *
      * @return the number of rows deleted
      */
-    int deleteByUuid(@NonNull List<String> uuids);
+    int deleteByUuid(@NonNull Collection<String> uuids);
 
     /**
      * Bulk operation to set the Bookshelves.
@@ -208,7 +208,7 @@ public interface BookDao {
      */
     boolean setBookshelves(@NonNull Context context,
                            @NonNull Collection<Long> bookIds,
-                           @NonNull List<Bookshelf> bookshelves);
+                           @NonNull Collection<Bookshelf> bookshelves);
 
     /**
      * Bulk operation to set the {@link DBKey#LOCATION} field.
@@ -220,7 +220,7 @@ public interface BookDao {
      *
      * @return {@code true} for success.
      */
-    boolean setLocation(@NonNull List<Long> bookIds,
+    boolean setLocation(@NonNull Collection<Long> bookIds,
                         @NonNull String location);
 
     /**

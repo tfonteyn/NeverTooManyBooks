@@ -26,7 +26,7 @@ import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Note that there is no individual 'insert' method.
@@ -42,11 +42,11 @@ public interface DeletedBooksDao {
      *
      * @return list of records
      *
-     * @see #importRecords(List)
+     * @see #importRecords(Collection)
      * @see #sync()
      */
     @NonNull
-    List<Pair<String, String>> getAll(@Nullable LocalDateTime sinceDateTime);
+    Collection<Pair<String, String>> getAll(@Nullable LocalDateTime sinceDateTime);
 
     /**
      * Bulk import of the list of deleted books (uuid + date deleted).
@@ -60,7 +60,7 @@ public interface DeletedBooksDao {
      * @see #sync()
      */
     @WorkerThread
-    int importRecords(@NonNull List<Pair<String, String>> list);
+    int importRecords(@NonNull Collection<Pair<String, String>> list);
 
     /**
      * Delete the known deleted books; i.e. checks which books have been
@@ -70,7 +70,7 @@ public interface DeletedBooksDao {
      * @return number of actual books deleted
      *
      * @see #getAll(LocalDateTime)
-     * @see #importRecords(List)
+     * @see #importRecords(Collection)
      */
     int sync();
 

@@ -225,7 +225,7 @@ public interface TagDao {
      * @return the number of entries actually inserted; can be {@code 0}.
      */
     @WorkerThread
-    int importRecords(@NonNull List<Tag> list);
+    int importRecords(@NonNull Collection<Tag> list);
 
     /**
      * Moves all books from the 'source' {@link Tag}, to the 'target' {@link Tag}.

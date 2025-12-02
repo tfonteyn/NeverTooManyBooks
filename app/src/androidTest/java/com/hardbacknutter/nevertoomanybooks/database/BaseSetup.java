@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -137,7 +137,7 @@ public abstract class BaseSetup
 
     void setBookBookshelves(final int bookIdx,
                             @NonNull final int... bookshelfIdx) {
-        final List<Bookshelf> bookshelfList = new ArrayList<>();
+        final Collection<Bookshelf> bookshelfList = new ArrayList<>();
         for (final int idx : bookshelfIdx) {
             bookshelfList.add(bookshelfArray[idx]);
         }
@@ -146,7 +146,7 @@ public abstract class BaseSetup
 
     void setBookPublishers(final int bookIdx,
                            @NonNull final int... publisherIdx) {
-        final List<Publisher> publisherList = new ArrayList<>();
+        final Collection<Publisher> publisherList = new ArrayList<>();
         for (final int idx : publisherIdx) {
             publisherList.add(publisherArray[idx]);
         }
@@ -155,7 +155,7 @@ public abstract class BaseSetup
 
     void settBookAuthors(final int bookIdx,
                          @NonNull final int... authorIdx) {
-        final List<Author> authorList = new ArrayList<>();
+        final Collection<Author> authorList = new ArrayList<>();
         for (final int idx : authorIdx) {
             authorList.add(authorArray[idx]);
         }
@@ -164,7 +164,7 @@ public abstract class BaseSetup
 
     void setBookTocEntries(final int bookIdx,
                            @NonNull final int... tocIdx) {
-        final List<TocEntry> tocList = new ArrayList<>();
+        final Collection<TocEntry> tocList = new ArrayList<>();
         for (final int idx : tocIdx) {
             tocList.add(tocEntryArray[idx]);
         }

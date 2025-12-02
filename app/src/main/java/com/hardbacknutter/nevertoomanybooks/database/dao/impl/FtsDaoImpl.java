@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -115,7 +116,7 @@ public class FtsDaoImpl
 
     private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
                                   final int position,
-                                  @NonNull final List<String> list) {
+                                  @NonNull final Collection<String> list) {
         if (list.isEmpty()) {
             stmt.bindNull(position);
         } else {

@@ -95,7 +95,7 @@ public class IdentifierDaoImpl
      */
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {
-        final List<Identifier> identifierList = Identifier.createInitialList(context);
+        final Collection<Identifier> identifierList = Identifier.createInitialList(context);
         // This method must run on API 26: Use simple INSERT, and not the UPSERT!
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
@@ -180,7 +180,7 @@ public class IdentifierDaoImpl
     @Override
     public void restore(@NonNull final Context context)
             throws DaoUpdateException, DaoInsertException {
-        final List<Identifier> identifierList = Identifier.createInitialList(context);
+        final Collection<Identifier> identifierList = Identifier.createInitialList(context);
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -202,7 +202,7 @@ public class IdentifierDaoImpl
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private void restoreApi30(@NonNull final List<Identifier> identifierList)
+    private void restoreApi30(@NonNull final Collection<Identifier> identifierList)
             throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -218,7 +218,7 @@ public class IdentifierDaoImpl
         }
     }
 
-    private void restoreApi26(@NonNull final List<Identifier> identifierList)
+    private void restoreApi26(@NonNull final Collection<Identifier> identifierList)
             throws DaoUpdateException, DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {

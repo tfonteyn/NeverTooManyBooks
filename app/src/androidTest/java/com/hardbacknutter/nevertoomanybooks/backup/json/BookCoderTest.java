@@ -21,7 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
@@ -119,7 +119,7 @@ public class BookCoderTest
         final JSONArray identifiers = encodedBook.optJSONArray(Book.BKEY_IDENTIFIER_LIST);
         assertNotNull(identifiers);
 
-        final List<Identifier.Value> list = identifierValueCoder.decode(identifiers);
+        final Collection<Identifier.Value> list = identifierValueCoder.decode(identifiers);
         assertEquals(2, list.size());
 
         final Book decodedBook = bookCoder.decode(encodedBook);

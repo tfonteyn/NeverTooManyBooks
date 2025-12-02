@@ -139,9 +139,9 @@ public interface JsonCoder<T> {
      * @throws JSONException upon any parsing error
      */
     @NonNull
-    default List<T> decode(@NonNull final JSONArray elements)
+    default Collection<T> decode(@NonNull final JSONArray elements)
             throws JSONException {
-        final List<T> list = new ArrayList<>();
+        final Collection<T> list = new ArrayList<>();
         for (int i = 0; i < elements.length(); i++) {
             list.add(decode((JSONObject) elements.get(i)));
         }
@@ -165,9 +165,9 @@ public interface JsonCoder<T> {
      * @throws JSONException upon any parsing error
      */
     @NonNull
-    default List<T> decodeReference(@NonNull final JSONArray references)
+    default Collection<T> decodeReference(@NonNull final JSONArray references)
             throws JSONException {
-        final List<T> list = new ArrayList<>();
+        final Collection<T> list = new ArrayList<>();
         for (int i = 0; i < references.length(); i++) {
             decodeReference((JSONObject) references.get(i)).ifPresent(list::add);
         }

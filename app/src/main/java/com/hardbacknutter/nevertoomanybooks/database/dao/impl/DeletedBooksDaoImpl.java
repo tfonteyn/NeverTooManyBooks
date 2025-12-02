@@ -29,6 +29,7 @@ import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,7 @@ public class DeletedBooksDaoImpl
 
     @Override
     @NonNull
-    public List<Pair<String, String>> getAll(@Nullable final LocalDateTime sinceDateTime) {
+    public Collection<Pair<String, String>> getAll(@Nullable final LocalDateTime sinceDateTime) {
         final StringBuilder sql = new StringBuilder(
                 SELECT_ + DBKey.BOOK_UUID + ',' + DBKey.DATE_ADDED__UTC
                 + _FROM_ + TBL_DELETED_BOOKS.getName());
@@ -84,7 +85,7 @@ public class DeletedBooksDaoImpl
 
     @Override
     @WorkerThread
-    public int importRecords(@NonNull final List<Pair<String, String>> list) {
+    public int importRecords(@NonNull final Collection<Pair<String, String>> list) {
         int count = 0;
 
         Synchronizer.SyncLock txLock = null;
@@ -120,7 +121,7 @@ public class DeletedBooksDaoImpl
 
     @Override
     public int sync() {
-        final List<String> all = getAll(null)
+        final Collection<String> all = getAll(null)
                 .stream()
                 .map(record -> record.first)
                 .collect(Collectors.toList());

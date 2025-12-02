@@ -35,7 +35,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -523,7 +523,7 @@ public class JsonRecordReader
     private void readDeletedBooks(@NonNull final JSONObject root) {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.DeletedBooks.getName());
         if (jsonRoot != null) {
-            final List<Pair<String, String>> list = new DeletedBooksCoder().decode(jsonRoot);
+            final Collection<Pair<String, String>> list = new DeletedBooksCoder().decode(jsonRoot);
             if (!list.isEmpty()) {
                 results.deletedBookRecords = ServiceLocator.getInstance()
                                                            .getDeletedBooksDao()
@@ -571,7 +571,7 @@ public class JsonRecordReader
         // a sub container for {@link Tag} objects.
         final JSONArray elements = root.optJSONArray(DBKey.TAGS.TAG);
         if (elements != null) {
-            final List<Tag> list = new TagCoder().decode(elements);
+            final Collection<Tag> list = new TagCoder().decode(elements);
             if (!list.isEmpty()) {
                 // Insert new ones, skip existing ones. No updates needed.
                 ServiceLocator.getInstance().getTagDao().importRecords(list);
