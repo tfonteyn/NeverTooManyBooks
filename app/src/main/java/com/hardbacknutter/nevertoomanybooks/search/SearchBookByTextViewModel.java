@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
@@ -80,29 +81,29 @@ public class SearchBookByTextViewModel
      * Build a combined list of the passed in names + the database.
      *
      * @param locale      Current Locale
-     * @param dbNames     the list from the database (will be modified, and returned as the result).
+     * @param dbNames     the list from the database
      * @param recentNames the in-memory list
      *
      * @return combined list
      */
     @NonNull
     private static List<String> combineNames(@NonNull final Locale locale,
-                                             @NonNull final List<String> dbNames,
+                                             @NonNull final Collection<String> dbNames,
                                              @NonNull final Collection<String> recentNames) {
 
-        final Collection<String> uniqueNames = new HashSet<>(dbNames.size());
-        for (final String s : dbNames) {
-            uniqueNames.add(s.toLowerCase(locale));
-        }
+        // Convert to a Set with all lowercase names.
+        final Collection<String> uniqueNames = dbNames
+                .stream()
+                .map(s -> s.toLowerCase(locale))
+                .collect(Collectors.toCollection(() -> new HashSet<>(dbNames.size())));
 
         // Add the names the user has already tried (to handle errors and mistakes)
-        for (final String s : recentNames) {
-            if (!uniqueNames.contains(s.toLowerCase(locale))) {
-                dbNames.add(s);
-            }
-        }
+        final List<String> result = new ArrayList<>(dbNames);
+        recentNames.stream()
+                   .filter(s -> !uniqueNames.contains(s.toLowerCase(locale)))
+                   .forEach(result::add);
 
-        return dbNames;
+        return result;
     }
 
     @NonNull
