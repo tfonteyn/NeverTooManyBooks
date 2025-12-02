@@ -550,14 +550,11 @@ public class StripWebSearchEngine
         if (aas.isEmpty()) {
             // but some are plain text separated by commas
             final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
-            for (final String name : names) {
-                parseAuthor(book, type, name);
-            }
+            Arrays.stream(names).forEach(name -> parseAuthor(book, type, name));
         } else {
-            for (final Element a : aas) {
-                final String name = SearchEngineUtils.cleanText(a.text());
-                parseAuthor(book, type, name);
-            }
+            aas.stream()
+               .map(a -> SearchEngineUtils.cleanText(a.text()))
+               .forEach(name -> parseAuthor(book, type, name));
         }
     }
 
@@ -599,14 +596,11 @@ public class StripWebSearchEngine
         if (aas.isEmpty()) {
             // but some are plain text separated by commas
             final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
-            for (final String name : names) {
-                processSeries(book, name);
-            }
+            Arrays.stream(names).forEach(name -> processSeries(book, name));
         } else {
-            for (final Element a : aas) {
-                final String name = SearchEngineUtils.cleanText(a.text());
-                processSeries(book, name);
-            }
+            aas.stream()
+               .map(a -> SearchEngineUtils.cleanText(a.text()))
+               .forEach(name -> processSeries(book, name));
         }
     }
 
@@ -632,11 +626,10 @@ public class StripWebSearchEngine
         if (aas.isEmpty()) {
             // but some are plain text separated by commas
             final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
-            for (final String name : names) {
-                if (name != null && !name.isBlank()) {
-                    book.add(Publisher.from(name));
-                }
-            }
+            Arrays.stream(names)
+                  .filter(name -> name != null && !name.isBlank())
+                  .map(Publisher::from)
+                  .forEach(book::add);
         } else {
             aas.stream()
                .map(a -> SearchEngineUtils.cleanText(a.text()))

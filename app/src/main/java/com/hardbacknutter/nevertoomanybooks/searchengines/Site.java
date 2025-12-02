@@ -303,9 +303,7 @@ public final class Site
         public void setSiteList(@NonNull final Context context,
                                 @NonNull final Collection<Site> sites) {
             siteList.clear();
-            for (final Site site : sites) {
-                siteList.add(new Site(site));
-            }
+            sites.stream().map(Site::new).forEach(siteList::add);
             savePrefs(context);
         }
 
@@ -318,9 +316,11 @@ public final class Site
          */
         @NonNull
         public Site getSite(@NonNull final EngineId engineId) {
-            final Site s = siteList.stream().filter(site -> site.engineId == engineId).findFirst()
-                                   .orElseThrow(() -> new IllegalArgumentException(
-                                           String.valueOf(engineId)));
+            final Site s = siteList
+                    .stream()
+                    .filter(site -> site.engineId == engineId)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException(String.valueOf(engineId)));
             return new Site(s);
         }
 
@@ -374,18 +374,19 @@ public final class Site
             if (order != null) {
                 final List<EngineId> list = new ArrayList<>();
                 Arrays.stream(order.split(","))
-                      .forEach(prefKey -> Arrays.stream(EngineId.values())
-                                                .filter(engineId -> engineId.getPreferenceKey()
-                                                                            .equals(prefKey))
-                                                .findFirst()
-                                                .ifPresent(list::add));
+                      .forEach(prefKey -> Arrays
+                              .stream(EngineId.values())
+                              .filter(engineId -> engineId.getPreferenceKey().equals(prefKey))
+                              .findFirst()
+                              .ifPresent(list::add));
 
                 // Reorder keeping the original list members.
                 final List<Site> reorderedList = new ArrayList<>();
-                list.forEach(id -> siteList.stream()
-                                           .filter(site -> site.engineId == id)
-                                           .findFirst()
-                                           .ifPresent(reorderedList::add));
+                list.forEach(
+                        id -> siteList.stream()
+                                      .filter(site -> site.engineId == id)
+                                      .findFirst()
+                                      .ifPresent(reorderedList::add));
 
                 if (reorderedList.size() < siteList.size()) {
                     // This is a fringe case: a new engine was added, and the user upgraded

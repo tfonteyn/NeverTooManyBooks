@@ -277,10 +277,9 @@ public class BertrandPtSearchEngine
         // The author is often missing when the book is not a 'standard' portuguese book.
         final Elements authorElements = bookInfo.select(
                 "div#productPageSectionDetails-collapseDetalhes-content-author > a");
-        for (final Element ae : authorElements) {
-            final Author author = Author.from(ae.text());
-            addAuthor(author, Author.TYPE_UNKNOWN, book);
-        }
+        authorElements.stream()
+                      .map(ae -> Author.from(ae.text()))
+                      .forEach(author -> addAuthor(author, Author.TYPE_UNKNOWN, book));
 
         Element element;
         String s;
