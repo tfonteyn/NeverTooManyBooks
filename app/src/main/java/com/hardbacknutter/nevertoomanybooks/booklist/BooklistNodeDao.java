@@ -880,7 +880,7 @@ public class BooklistNodeDao {
                 "INSERT INTO " + ADJUST_VISIBILITY_TMP_TABLE
                 + "(level, prefix) VALUES (?, ?);";
         private static final String ADJUST_VISIBILITY_UPDATE =
-                "UPDATE " + /* listTable.getName() */ "%s" + " AS target"
+                UPDATE_ + /* listTable.getName() */ "%s" + " AS target"
                 + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
                 + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
                 + " AND EXISTS ("
