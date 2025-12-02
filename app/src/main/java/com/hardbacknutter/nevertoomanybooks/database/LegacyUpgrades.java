@@ -119,11 +119,14 @@ public final class LegacyUpgrades {
     /** Genre string migration splitter characters. */
     private static final Pattern GENRE_SPLITTER_PATTERN = Pattern.compile("[/,;>]");
 
+    private static final String ALTER_TABLE_ = "ALTER TABLE ";
     private static final String DELETE_FROM_ = "DELETE FROM ";
+    private static final String DROP_TABLE_ = "DROP TABLE ";
     private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_ = "SELECT ";
     private static final String UPDATE_ = "UPDATE ";
     private static final String _FROM_ = " FROM ";
+    private static final String _RENAME_TO_ = " RENAME TO ";
     private static final String _SET_ = " SET ";
     private static final String _WHERE_ = " WHERE ";
 
@@ -236,11 +239,11 @@ public final class LegacyUpgrades {
         final List<String> dstColumns = new ArrayList<>(srcColumns);
 
         db.execSQL(
-                "INSERT INTO " + dstTableName + " (" + String.join(",", dstColumns) + ")"
-                + " SELECT " + String.join(",", srcColumns) + " FROM " + td.getName());
+                INSERT_INTO_ + dstTableName + " (" + String.join(",", dstColumns) + ") "
+                + SELECT_ + String.join(",", srcColumns) + _FROM_ + td.getName());
 
-        db.execSQL("DROP TABLE " + td.getName());
-        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + td.getName());
+        db.execSQL(DROP_TABLE_ + td.getName());
+        db.execSQL(ALTER_TABLE_ + dstTableName + _RENAME_TO_ + td.getName());
     }
 
     static void v35oUpgrade(@NonNull final Context context,
@@ -256,7 +259,7 @@ public final class LegacyUpgrades {
         // Furthermore, it turns out each book with a "stripinfo" SID always wrote
         // collection data which obviously always was 'empty'.
         // and we're making a fresh start... drop and recreate the table.
-        db.execSQL("DROP TABLE " + TBL_STRIPINFO_COLLECTION.getName());
+        db.execSQL(DROP_TABLE_ + TBL_STRIPINFO_COLLECTION.getName());
         TBL_STRIPINFO_COLLECTION.create(db, true);
     }
 
@@ -537,9 +540,9 @@ public final class LegacyUpgrades {
 
         // fix name
         try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_IDENTIFIERS
-                + " SET " + DBKey.IDENTIFIERS.NAME + "=?"
-                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+                UPDATE_ + TBL_IDENTIFIERS
+                + _SET_ + DBKey.IDENTIFIERS.NAME + "=?"
+                + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
             stmt.bindString(1, context.getString(R.string.identifier_dnb));
             stmt.bindString(2, Identifier.SID_DNB);
             stmt.executeUpdateDelete();
@@ -551,9 +554,9 @@ public final class LegacyUpgrades {
                                                    @NonNull final Pair<String, String>...
                                                            keyUrlPairs) {
         try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_IDENTIFIERS
-                + " SET " + DBKey.IDENTIFIERS.BOOK_URI + "=?"
-                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+                UPDATE_ + TBL_IDENTIFIERS
+                + _SET_ + DBKey.IDENTIFIERS.BOOK_URI + "=?"
+                + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
 
             for (final Pair<String, String> ku : keyUrlPairs) {
                 stmt.bindString(1, ku.second);
@@ -586,8 +589,8 @@ public final class LegacyUpgrades {
 
     static void v43onUpgrade(@NonNull final SQLiteDatabase db) {
         // enable the cover image 2+3 for ALL styles.
-        db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES.getName()
-                   + " SET " + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
+        db.execSQL(UPDATE_ + TBL_BOOKLIST_STYLES.getName()
+                   + _SET_ + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
                    + '=' + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
                    + '|' + FieldVisibility.getBitValue(Set.of(DBKey.COVER[2], DBKey.COVER[3])));
     }
@@ -607,9 +610,9 @@ public final class LegacyUpgrades {
     private static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
                                                                @NonNull final SQLiteDatabase db) {
         try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_IDENTIFIERS.getName()
-                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
-                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
+                UPDATE_ + TBL_IDENTIFIERS.getName()
+                + _SET_ + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
+                + _WHERE_ + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
             Identifier.createInitialList(context)
                       .stream()
                       .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
@@ -695,7 +698,7 @@ public final class LegacyUpgrades {
         boolean found = false;
         try (SQLiteStatement stmt = db.compileStatement(
                 "SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
-                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+                + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
             stmt.bindString(1, identifier.getKey());
             found = 1 == stmt.simpleQueryForLong();
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -707,7 +710,7 @@ public final class LegacyUpgrades {
         }
 
         try (SQLiteStatement stmt = db.compileStatement(
-                "INSERT INTO " + TBL_IDENTIFIERS.getName()
+                INSERT_INTO_ + TBL_IDENTIFIERS.getName()
                 + '(' + DBKey.IDENTIFIERS.KEY
                 + ',' + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME
