@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -85,6 +86,7 @@ public class AuthorDaoImpl
             "Failed storing the pictures for author from\n";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
+    private final IdentifierValueDao authorIdentifierDao;
 
     /**
      * Constructor.
@@ -93,6 +95,7 @@ public class AuthorDaoImpl
      */
     public AuthorDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
+        authorIdentifierDao = ServiceLocator.getInstance().getAuthorIdentifierDao();
     }
 
     /**
@@ -539,8 +542,7 @@ public class AuthorDaoImpl
             if (iId != -1) {
                 author.setId(iId);
 
-                ServiceLocator.getInstance().getAuthorIdentifierDao()
-                              .insertOrUpdate(author.getId(), author.getIdentifiers());
+                authorIdentifierDao.insertOrUpdate(author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {
@@ -592,8 +594,7 @@ public class AuthorDaoImpl
             }
 
             if (rowsAffected > 0) {
-                ServiceLocator.getInstance().getAuthorIdentifierDao()
-                              .insertOrUpdate(author.getId(), author.getIdentifiers());
+                authorIdentifierDao.insertOrUpdate(author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {

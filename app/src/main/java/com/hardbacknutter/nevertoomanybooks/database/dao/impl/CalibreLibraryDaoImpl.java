@@ -59,6 +59,7 @@ public class CalibreLibraryDaoImpl
 
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private final BookshelfDao bookshelfDao;
 
     /**
      * Constructor.
@@ -67,6 +68,7 @@ public class CalibreLibraryDaoImpl
      */
     public CalibreLibraryDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
+        bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
     }
 
     @Override
@@ -133,8 +135,6 @@ public class CalibreLibraryDaoImpl
     @Override
     public void fixId(@NonNull final Context context,
                       @NonNull final CalibreLibrary library) {
-
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // using the mapped bookshelf-if, lookup the actual Bookshelf (with fallbacks)
         final Bookshelf libBookshelf = bookshelfDao

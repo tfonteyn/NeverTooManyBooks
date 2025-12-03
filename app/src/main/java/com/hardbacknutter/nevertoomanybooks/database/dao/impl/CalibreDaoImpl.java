@@ -52,6 +52,7 @@ public class CalibreDaoImpl
     private static final String TAG = "CalibreDaoImpl";
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private final CalibreLibraryDao calibreLibraryDao;
 
     /**
      * Constructor.
@@ -60,6 +61,7 @@ public class CalibreDaoImpl
      */
     public CalibreDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
+        calibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
     }
 
     @Override
@@ -102,7 +104,6 @@ public class CalibreDaoImpl
             }
         }
 
-        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         final CalibreLibrary library;
 
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
@@ -112,14 +113,14 @@ public class CalibreDaoImpl
             library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
 
             //noinspection DataFlowIssue
-            libraryDao.fixId(context, library);
+            calibreLibraryDao.fixId(context, library);
             if (library.getId() == 0) {
-                if (libraryDao.insert(library) == -1) {
+                if (calibreLibraryDao.insert(library) == -1) {
                     throw new DaoInsertException("CalibreLibrary insert failed");
                 }
             }
         } else if (book.contains(DBKey.FK_CALIBRE_LIBRARY)) {
-            library = libraryDao.findById(book.getLong(DBKey.FK_CALIBRE_LIBRARY))
+            library = calibreLibraryDao.findById(book.getLong(DBKey.FK_CALIBRE_LIBRARY))
                                 .orElse(null);
             if (library == null) {
                 // The book did not have a full library object;
