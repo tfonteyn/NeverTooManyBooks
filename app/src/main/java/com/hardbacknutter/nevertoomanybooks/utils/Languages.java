@@ -86,7 +86,7 @@ public class Languages {
      * Try to convert a Language to a Locale.
      *
      * @param language ISO codes (2 or 3 char), or a display-string (4+ characters)
-     * @param locale Current Locale
+     * @param locale   Current Locale
      *
      * @return the best matching Locale we could determine
      *
@@ -499,24 +499,27 @@ public class Languages {
     }
 
     /**
-     * Generate and return a list of language ISO codes consisting (in order)
-     * of the device language and the supported app locales.
+     * Generate and return a list of language ISO codes consisting
+     * of the user languages and the supported app locales.
      * <p>
-     * This can used as an initial list for new users when the database does not contain
-     * any languages yet.
+     * This is used as an initial list for new users when the database
+     * does not contain any languages yet.
      *
      * @param locales to create codes for
      *
      * @return The list of ISO 639-2 codes
      */
     @NonNull
-    public List<String> getDefaultCodes(@NonNull final LocaleList locales) {
-        // to make it easier for first time users, add some defaults.
-        // Keep in mind all these are JDK language/locale codes which need converting to ISO 639-2
+    public List<String> getDefaultCodes(@NonNull final List<Locale> locales) {
         final Set<String> set = new LinkedHashSet<>();
-        // the device language
+        // Keep in mind all these are JDK language/locale codes
+        // which need converting to ISO3 (639-2)
 
-        set.add(getISO3FromCode(locales.get(0).getLanguage()));
+        // all user locales
+        locales.stream()
+               .map(Locale::getLanguage)
+               .map(this::getISO3FromCode)
+               .forEach(set::add);
 
         // and all supported locales.
         Arrays.stream(BuildConfig.SUPPORTED_LOCALES)
