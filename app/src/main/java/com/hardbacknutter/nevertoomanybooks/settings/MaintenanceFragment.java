@@ -313,7 +313,8 @@ public class MaintenanceFragment
                 .setMessage(R.string.info_maintenance_clear_deleted_book_records)
                 .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.ok, (d, w) -> {
-                    ServiceLocator.getInstance().getDeletedBooksDao().purge();
+                    ASyncExecutor.SERIAL.execute(
+                            () -> ServiceLocator.getInstance().getDeletedBooksDao().purge());
                     //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();
                 })

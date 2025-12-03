@@ -80,9 +80,12 @@ public interface DeletedBooksDao {
      * Purge/clear the entire deleted books table.
      * This does not affect/delete the actual books.
      * <p>
-     * Note this is <strong>not</strong> called from
-     * {@link Purger#purge()}
-     * as we will always seek the users permission to clear the list.
+     * Note this is <strong>not</strong> called from {@link Purger#purge()}
+     * as we will always seek the users permission to purge the dao/table.
+     *
+     * @return the number of rows deleted,
+     *         or {@code -1} if an error occurred
      */
-    void purge();
+    @WorkerThread
+    int purge();
 }

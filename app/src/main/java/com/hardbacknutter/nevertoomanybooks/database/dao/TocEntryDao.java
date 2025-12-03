@@ -33,6 +33,7 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
@@ -40,7 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
-public interface TocEntryDao {
+public interface TocEntryDao
+        extends Purgeable {
 
     /**
      * Check for books which do not have a {@link TocEntry} at position 1.
@@ -153,15 +155,6 @@ public interface TocEntryDao {
                       @NonNull Collection<TocEntry> list,
                       boolean normalize,
                       @NonNull Function<TocEntry, Locale> localeSupplier);
-
-    /**
-     * Delete orphaned records.
-     *
-     * @return the number of rows deleted,
-     *         or {@code -1} if an error occurred
-     */
-    @WorkerThread
-    int purge();
 
     /**
      * Rebuild the OB columns for the table(s) of this dao.

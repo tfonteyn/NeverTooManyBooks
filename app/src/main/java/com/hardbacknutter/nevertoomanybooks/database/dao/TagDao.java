@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
@@ -148,6 +149,9 @@ public interface TagDao {
 
     /**
      * Delete orphaned records.
+     * <p>
+     * Note this is <strong>not</strong> called from {@link Purger#purge()}
+     * as we will always seek the users permission to purge the dao/table.
      *
      * @return the number of rows deleted,
      *         or {@code -1} if an error occurred

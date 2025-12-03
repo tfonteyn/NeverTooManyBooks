@@ -37,12 +37,14 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface AuthorDao {
+public interface AuthorDao
+        extends Purgeable {
 
     /**
      * Get a unique list of {@link Author} names in the specified format.
@@ -103,15 +105,6 @@ public interface AuthorDao {
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Author> list,
                       @NonNull Function<Author, Locale> localeSupplier);
-
-    /**
-     * Delete orphaned records.
-     *
-     * @return the number of rows deleted,
-     *         or {@code -1} if an error occurred
-     */
-    @WorkerThread
-    int purge();
 
     /**
      * Rebuild the OB columns for the table(s) of this dao.

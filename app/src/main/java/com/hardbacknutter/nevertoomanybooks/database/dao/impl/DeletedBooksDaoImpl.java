@@ -128,9 +128,12 @@ public class DeletedBooksDaoImpl
         return ServiceLocator.getInstance().getBookDao().deleteByUuid(all);
     }
 
+    @WorkerThread
     @Override
-    public void purge() {
-        db.execSQL(DELETE_FROM_ + TBL_DELETED_BOOKS.getName());
+    public int purge() {
+        try (SynchronizedStatement stmt = db.compileStatement(
+                DELETE_FROM_ + TBL_DELETED_BOOKS.getName())) {
+            return stmt.executeUpdateDelete();
+        }
     }
-
 }

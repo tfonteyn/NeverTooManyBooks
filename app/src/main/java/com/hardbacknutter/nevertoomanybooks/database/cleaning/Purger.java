@@ -23,13 +23,12 @@ package com.hardbacknutter.nevertoomanybooks.database.cleaning;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -40,20 +39,19 @@ public class Purger {
     private final Logger logger;
 
     private final SynchronizedDb db;
-    private final AuthorDao authorDao;
-    private final PublisherDao publisherDao;
-    private final SeriesDao seriesDao;
-    private final TocEntryDao tocEntryDao;
+
+    private final List<Purgeable> daos = new ArrayList<>();
 
     public Purger() {
         logger = LoggerFactory.getLogger();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         db = serviceLocator.getDb();
-        authorDao = serviceLocator.getAuthorDao();
-        publisherDao = serviceLocator.getPublisherDao();
-        seriesDao = serviceLocator.getSeriesDao();
-        tocEntryDao = serviceLocator.getTocEntryDao();
+
+        daos.add(serviceLocator.getAuthorDao());
+        daos.add(serviceLocator.getPublisherDao());
+        daos.add(serviceLocator.getSeriesDao());
+        daos.add(serviceLocator.getTocEntryDao());
     }
 
     /**
@@ -80,22 +78,11 @@ public class Purger {
                 txLock = db.beginTransaction(true);
             }
 
-            int i;
-            i = seriesDao.purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged Series: " + i);
-            }
-            i = authorDao.purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged Author: " + i);
-            }
-            i = publisherDao.purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged Publishers: " + i);
-            }
-            i = tocEntryDao.purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged TocEntries: " + i);
+            for (final Purgeable dao : daos) {
+                final int i = dao.purge();
+                if (i > 0) {
+                    logger.w(TAG, dao.getClass().getName(), "Purged: " + i);
+                }
             }
 
             if (txLock != null) {

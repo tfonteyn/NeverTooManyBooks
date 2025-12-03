@@ -32,13 +32,15 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface PublisherDao {
+public interface PublisherDao
+        extends Purgeable {
 
     /**
      * Get a unique list of all publisher names.
@@ -77,15 +79,6 @@ public interface PublisherDao {
                       @NonNull Collection<Publisher> list,
                       boolean normalize,
                       @NonNull Function<Publisher, Locale> localeSupplier);
-
-    /**
-     * Delete orphaned records.
-     *
-     * @return the number of rows deleted,
-     *         or {@code -1} if an error occurred
-     */
-    @WorkerThread
-    int purge();
 
     /**
      * Rebuild the OB columns for the table(s) of this dao.
