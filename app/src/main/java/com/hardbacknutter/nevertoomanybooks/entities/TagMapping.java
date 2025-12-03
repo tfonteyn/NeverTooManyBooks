@@ -182,7 +182,7 @@ public class TagMapping
      * @return name
      */
     @NonNull
-    public String getName() {
+    public String getTagName() {
         return name;
     }
 

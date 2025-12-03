@@ -111,7 +111,7 @@ class EditTagMappingDelegate
 
         final TagMapping currentEdit = vm.getCurrentValue();
 
-        vb.tagName.setText(currentEdit.getName());
+        vb.tagName.setText(currentEdit.getTagName());
         TilUtil.autoRemoveError(vb.tagName, vb.lblTagName);
 
         vb.tagMapping.setText(currentEdit.getMappings().stream().sorted()
@@ -146,7 +146,7 @@ class EditTagMappingDelegate
         final Context context = vb.getRoot().getContext();
 
         final TagMapping currentEdit = vm.getCurrentValue();
-        if (currentEdit.getName().isEmpty()) {
+        if (currentEdit.getTagName().isEmpty()) {
             vb.lblTagName.setError(context.getString(R.string.vldt_non_blank_required));
             return false;
         }

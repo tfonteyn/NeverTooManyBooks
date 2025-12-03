@@ -124,7 +124,7 @@ public class TagMappingDaoImpl
     @NonNull
     @Override
     public Optional<TagMapping> findByName(final TagMapping mapping) {
-        final String name = mapping.getName();
+        final String name = mapping.getTagName();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name})) {
             if (cursor.moveToFirst()) {
@@ -162,7 +162,7 @@ public class TagMappingDaoImpl
             throws DaoInsertException {
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            iId = doInsert(mapping.getName(), mapping.getMappings(), stmt);
+            iId = doInsert(mapping.getTagName(), mapping.getMappings(), stmt);
         }
         if (iId != -1) {
             mapping.setId(iId);
@@ -178,7 +178,7 @@ public class TagMappingDaoImpl
 
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            stmt.bindString(1, mapping.getName());
+            stmt.bindString(1, mapping.getTagName());
             stmt.bindString(2, TagMapping.encodeMappingString(mapping.getMappings()));
 
             stmt.bindLong(3, mapping.getId());

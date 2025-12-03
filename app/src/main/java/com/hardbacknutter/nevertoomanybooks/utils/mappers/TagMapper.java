@@ -98,7 +98,7 @@ public class TagMapper
             final Collection<Tag> replacement = new ArrayList<>();
             // loop the mappings until we have a match (or no more mappings)
             for (final TagMapping tm : allMappings) {
-                if (tm.getName().equalsIgnoreCase(tag.getName())) {
+                if (tm.getTagName().equalsIgnoreCase(tag.getName())) {
                     final Set<String> substitutions = tm.getMappings();
                     if (substitutions.isEmpty()) {
                         delete = true;

@@ -40,7 +40,7 @@ public class TagMappingCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, tagMapping.getId());
-        out.put(DBKey.TAGS.TAG, tagMapping.getName());
+        out.put(DBKey.TAGS.TAG, tagMapping.getTagName());
         // yes, out.put(@NonNull String key, @Nullable Collection<?> value)
         // would have worked. But this makes it blatantly clear how decode must work.
         final JSONArray a = new JSONArray();

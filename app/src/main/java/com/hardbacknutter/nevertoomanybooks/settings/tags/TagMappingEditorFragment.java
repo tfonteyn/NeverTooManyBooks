@@ -54,7 +54,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
@@ -65,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.tagmapping.EditTagMappingLauncher;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
@@ -79,8 +79,6 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 /**
  * This editor allows CRUD actions on {@link TagMapping}s.
  * Editing/creating uses an {@link EditParcelableLauncher}.
- * Dao interaction is handled in
- * {@code com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTagMappingDelegate}.
  * <p>
  * This fragment is hosted in the ViewPager2 of {@link TagAdminFragment}.
  */
@@ -94,15 +92,15 @@ public class TagMappingEditorFragment
     private static final int POS_NEW_ENTRY = -1;
 
     private FragmentEditTagMappingsBinding vb;
-    private List<TagMapping> mappings;
     private TagAdapter adapter;
     private ExtMenuLauncher menuLauncher;
     private EditTagMappingLauncher editLauncher;
+    private TagAdminViewModel vm;
     private final PositionHandler positionHandler = new PositionHandler() {
 
         @Override
         public void onEdit(final int position) {
-            editEntry(mappings.get(position), position);
+            editEntry(vm.getTagMappings().get(position), position);
         }
 
         @Override
@@ -111,7 +109,6 @@ public class TagMappingEditorFragment
             showContextMenu(v, position);
         }
     };
-    private TagAdminViewModel vm;
     @Nullable
     private ProgressDelegate progressDelegate;
 
@@ -156,11 +153,10 @@ public class TagMappingEditorFragment
         vm.onTagMapperCancelled().observe(getViewLifecycleOwner(), this::onMappingCancelled);
         vm.onTagMapperFailure().observe(getViewLifecycleOwner(), this::onMappingFailure);
 
-        mappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
-
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.tagList.getLayoutManager();
         //noinspection DataFlowIssue
-        adapter = new TagAdapter(context, layoutManager.getSpanCount(), mappings, positionHandler);
+        adapter = new TagAdapter(context, layoutManager.getSpanCount(), vm.getTagMappings(),
+                                 positionHandler);
 
         final GridDividerItemDecoration decoration =
                 new GridDividerItemDecoration(context, false, true);
@@ -186,16 +182,20 @@ public class TagMappingEditorFragment
     /**
      * Called from {@link TagAdminFragment}.
      *
-     * @param tagName for we want to create a new mapping (or edit existing).
+     * @param tag for we want to create a new mapping (or edit existing).
      */
-    void editOrCreateMapping(@NonNull final String tagName) {
-        for (int i = 0; i < mappings.size(); i++) {
-            if (mappings.get(i).getName().equalsIgnoreCase(tagName)) {
-                editEntry(mappings.get(i), i);
-                return;
-            }
+    void editOrCreateMapping(@NonNull final Tag tag) {
+        final String tagName = tag.getName();
+
+        final int position = vm.findTagMappingPosition(tagName);
+        final TagMapping tagMapping;
+        if (position >= 0) {
+            tagMapping = vm.getTagMappings().get(position);
+        } else {
+            tagMapping = new TagMapping(tagName, Set.of());
         }
-        editEntry(new TagMapping(tagName, Set.of()), POS_NEW_ENTRY);
+
+        editEntry(tagMapping, position);
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
@@ -228,7 +228,7 @@ public class TagMappingEditorFragment
                                        @IdRes final int menuItemId) {
 
         if (menuItemId == R.id.MENU_EDIT) {
-            editEntry(mappings.get(position), position);
+            editEntry(vm.getTagMappings().get(position), position);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {
@@ -279,25 +279,11 @@ public class TagMappingEditorFragment
         }
     }
 
-    /**
-     * Case-sensitive.
-     *
-     * @param mappingName to find
-     *
-     * @return position, or {@code -1} if not found
-     */
-    @IntRange(from = -1)
-    private int findByName(@NonNull final String mappingName) {
-        return mappings.stream().map(TagMapping::getName)
-                       .collect(Collectors.toList())
-                       .indexOf(mappingName);
-    }
-
     private void addEntry(@NonNull final TagMapping tagMapping)
             throws DaoWriteException {
 
         // check by NAME it's not already in the list.
-        final int existingPos = findByName(tagMapping.getName());
+        final int existingPos = vm.findTagMappingPosition(tagMapping.getTagName());
 
         if (existingPos >= 0) {
             // Trying to add a NEW one already there.
@@ -308,15 +294,7 @@ public class TagMappingEditorFragment
             vb.tagList.scrollToPosition(existingPos);
         } else {
             // It's a new entry, add it
-            ServiceLocator.getInstance().getTagMappingDao().insert(tagMapping);
-
-            // find insertion point using a brute-force sequential search...
-            int position = 0;
-            while (position < mappings.size()
-                   && mappings.get(position).compareTo(tagMapping) < 0) {
-                position++;
-            }
-            mappings.add(position, tagMapping);
+            final int position = vm.insert(tagMapping);
             adapter.notifyItemInserted(position);
             vb.tagList.scrollToPosition(position);
         }
@@ -328,7 +306,7 @@ public class TagMappingEditorFragment
             throws DaoWriteException {
 
         // check by NAME it's not already in the list.
-        final int existingPos = findByName(tagMapping.getName());
+        final int existingPos = vm.findTagMappingPosition(tagMapping.getTagName());
 
         // == when the name was NOT modified and we found ourselves.
         // -1 when the name WAS modified and there is no other match
@@ -336,7 +314,7 @@ public class TagMappingEditorFragment
             //  Update with the new data.
             original.copyFrom(tagMapping);
 
-            ServiceLocator.getInstance().getTagMappingDao().update(original);
+            vm.update(original);
             adapter.notifyItemChanged(position);
             vb.tagList.scrollToPosition(position);
 
@@ -356,18 +334,10 @@ public class TagMappingEditorFragment
      * @param position the position of the item
      */
     private void deleteEntry(final int position) {
-        final TagMapping tagMapping = mappings.get(position);
-        // paranoia
-        if (tagMapping.getId() == 0) {
-            // We should never get here.. all tags should have an id
-            mappings.remove(position);
-            adapter.notifyItemRemoved(position);
-            return;
-        }
-
+        final TagMapping tagMapping = vm.getTagMappings().get(position);
         //noinspection DataFlowIssue
         StandardDialogs.deleteTagMapping(getContext(), tagMapping, () -> {
-            mappings.remove(position);
+            vm.deleteTagMapping(position);
             adapter.notifyItemRemoved(position);
         });
     }
@@ -517,7 +487,7 @@ public class TagMappingEditorFragment
             } else {
                 vb.getRoot().setVisibility(View.VISIBLE);
 
-                vb.name.setText(mapping.getName());
+                vb.name.setText(mapping.getTagName());
                 final Set<String> r = mapping.getMappings();
                 final String text;
                 if (r.isEmpty()) {

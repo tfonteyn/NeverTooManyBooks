@@ -43,11 +43,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
@@ -65,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * This editor allows CRUD actions on {@link Tag}s.
@@ -87,7 +84,6 @@ public class TagEditorFragment
     private static final int POS_NEW_ENTRY = -1;
 
     private FragmentEditTagNamesBinding vb;
-    private List<Tag> tags;
     private TagAdapter adapter;
     private ExtMenuLauncher menuLauncher;
     private EditStringLauncher editLauncher;
@@ -98,7 +94,7 @@ public class TagEditorFragment
 
         @Override
         public void onEdit(final int position) {
-            editEntry(tags.get(position), position);
+            editEntry(vm.getTags().get(position), position);
         }
 
         @Override
@@ -142,11 +138,10 @@ public class TagEditorFragment
 
         final Context context = getContext();
 
-        tags = ServiceLocator.getInstance().getTagDao().getAll();
-
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.tagList.getLayoutManager();
         //noinspection DataFlowIssue
-        adapter = new TagAdapter(context, layoutManager.getSpanCount(), tags, positionHandler);
+        adapter = new TagAdapter(context, layoutManager.getSpanCount(), vm.getTags(),
+                                 positionHandler);
 
         final GridDividerItemDecoration decoration =
                 new GridDividerItemDecoration(context, false, true);
@@ -163,8 +158,7 @@ public class TagEditorFragment
         // the tag list could have been modified from a sibling
         // fragment in our host fragment (ViewPager)
         if (vm.isModified()) {
-            tags.clear();
-            tags.addAll(ServiceLocator.getInstance().getTagDao().getAll());
+            vm.reloadTags();
             adapter.notifyDataSetChanged();
         }
     }
@@ -210,7 +204,7 @@ public class TagEditorFragment
                                        @IdRes final int menuItemId) {
 
         if (menuItemId == R.id.MENU_EDIT) {
-            editEntry(tags.get(position), position);
+            editEntry(vm.getTags().get(position), position);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {
@@ -224,7 +218,7 @@ public class TagEditorFragment
                     .filter(f -> f instanceof TagAdminFragment)
                     .findFirst()
                     .ifPresent(f -> ((TagAdminFragment) f)
-                            .editOrCreateMapping(tags.get(position).getName()));
+                            .editOrCreateMapping(vm.getTags().get(position)));
             return true;
         }
         return false;
@@ -277,24 +271,11 @@ public class TagEditorFragment
         }
     }
 
-    /**
-     * Case-sensitive.
-     *
-     * @param tagName to find
-     *
-     * @return position, or {@code -1} if not found
-     */
-    @IntRange(from = -1)
-    private int findByName(@NonNull final String tagName) {
-        return tags.stream().map(Tag::getName)
-                   .collect(Collectors.toList())
-                   .indexOf(tagName);
-    }
 
     private void addEntry(@NonNull final String tagName)
             throws DaoWriteException {
         // check by NAME it's not already in the list.
-        final int existingPos = findByName(tagName);
+        final int existingPos = vm.findTagPosition(tagName);
 
         if (existingPos >= 0) {
             // Trying to add a NEW one already there. Just reject it...
@@ -303,15 +284,7 @@ public class TagEditorFragment
             vb.tagList.scrollToPosition(existingPos);
         } else {
             // It's a new entry, add it
-            final Tag tag = new Tag(tagName);
-            ServiceLocator.getInstance().getTagDao().insert(tag);
-
-            // find insertion point using a brute-force sequential search...
-            int position = 0;
-            while (position < tags.size() && tags.get(position).compareTo(tag) < 0) {
-                position++;
-            }
-            tags.add(position, tag);
+            final int position = vm.insert(new Tag(tagName));
             adapter.notifyItemInserted(position);
             vb.tagList.scrollToPosition(position);
         }
@@ -322,16 +295,16 @@ public class TagEditorFragment
             throws DaoWriteException {
 
         // check by NAME it's not already in the list.
-        final int existingPos = findByName(tagName);
+        final int existingPos = vm.findTagPosition(tagName);
 
         // we only get here if the new name IS different from the previous name
         // ... no need to compare positions
         if (existingPos == -1) {
             // update with the new data.
-            final Tag tag = tags.get(position);
+            final Tag tag = vm.getTags().get(position);
             tag.setName(tagName);
 
-            ServiceLocator.getInstance().getTagDao().update(tag);
+            vm.update(tag);
             adapter.notifyItemChanged(position);
             vb.tagList.scrollToPosition(position);
 
@@ -340,15 +313,9 @@ public class TagEditorFragment
             final Context context = getContext();
             //noinspection DataFlowIssue
             StandardDialogs.askToMerge(context, R.string.confirm_merge_tags, tagName, () -> {
-                final Tag source = tags.get(position);
-                final Tag target = tags.get(existingPos);
-                try {
-                    ServiceLocator.getInstance().getTagDao().moveBooks(context, source, target);
+                if (vm.moveBooks(context, position, existingPos)) {
                     adapter.notifyItemRemoved(position);
                     vb.tagList.scrollToPosition(existingPos);
-                } catch (@NonNull final DaoWriteException e) {
-                    // log, but ignore - should never happen unless disk full
-                    LoggerFactory.getLogger().e(TAG, e, source);
                 }
             });
         }
@@ -360,22 +327,11 @@ public class TagEditorFragment
      * @param position the position of the item
      */
     private void deleteEntry(final int position) {
-        final Tag tag = tags.get(position);
-        // paranoia
-        if (tag.getId() == 0) {
-            // We should never get here.. all tags should have an id
-            tags.remove(position);
-            adapter.notifyItemRemoved(position);
-            return;
-        }
-
+        final Tag tag = vm.getTags().get(position);
         //noinspection DataFlowIssue
         StandardDialogs.deleteTag(getContext(), tag, () -> {
-            ServiceLocator.getInstance().getTagDao().delete(tag);
-            tags.remove(position);
+            vm.deleteTag(position);
             adapter.notifyItemRemoved(position);
-            // brute force... the user modified something
-            vm.setModified();
         });
     }
 

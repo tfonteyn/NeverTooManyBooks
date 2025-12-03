@@ -44,6 +44,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
@@ -80,6 +81,7 @@ public class TagAdminFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(TagAdminViewModel.class);
+        vm.init();
     }
 
     @Nullable
@@ -130,9 +132,9 @@ public class TagAdminFragment
     /**
      * Called from {@link TagEditorFragment}.
      *
-     * @param tagName for we want to create a new mapping (or edit existing).
+     * @param tag for we want to create a new mapping (or edit existing).
      */
-    void editOrCreateMapping(@NonNull final String tagName) {
+    void editOrCreateMapping(@NonNull final Tag tag) {
         viewPager.setCurrentItem(1);
 
         getParentFragmentManager()
@@ -141,7 +143,7 @@ public class TagAdminFragment
                 .filter(f -> f instanceof TagMappingEditorFragment)
                 .findFirst()
                 .ifPresent(f -> ((TagMappingEditorFragment) f)
-                        .editOrCreateMapping(tagName));
+                        .editOrCreateMapping(tag));
     }
 
     /**

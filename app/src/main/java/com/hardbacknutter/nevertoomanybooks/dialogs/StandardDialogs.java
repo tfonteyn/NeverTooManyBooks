@@ -196,7 +196,7 @@ public final class StandardDialogs {
                                         @NonNull final TagMapping tagMapping,
                                         final Runnable onConfirm) {
         final String msg = context.getString(R.string.confirm_delete_substitutions,
-                                             tagMapping.getName());
+                                             tagMapping.getTagName());
         delete(context, onConfirm, msg);
     }
 

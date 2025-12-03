@@ -20,26 +20,187 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
+import android.content.Context;
+
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 @SuppressWarnings("WeakerAccess")
 public class TagAdminViewModel
         extends ViewModel {
 
+    private static final String TAG = "TagAdminViewModel";
+
     private final TagMapperTask mapperTask = new TagMapperTask();
     private boolean modified;
+    private TagDao tagDao;
+    private TagMappingDao tagMappingDao;
+    private List<TagMapping> mappings;
+    private List<Tag> tags;
 
     @Override
     protected void onCleared() {
         mapperTask.cancel();
         super.onCleared();
+    }
+
+    void init() {
+        if (tagDao == null) {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            tagDao = serviceLocator.getTagDao();
+            tagMappingDao = serviceLocator.getTagMappingDao();
+
+            tags = tagDao.getAll();
+            mappings = tagMappingDao.getAll();
+        }
+    }
+
+    void reloadTags() {
+        tags.clear();
+        tags.addAll(tagDao.getAll());
+    }
+
+    @NonNull
+    List<Tag> getTags() {
+        return tags;
+    }
+
+    /**
+     * Case-sensitive.
+     *
+     * @param tagName to find
+     *
+     * @return position, or {@code -1} if not found
+     */
+    @IntRange(from = -1)
+    int findTagPosition(@NonNull final String tagName) {
+        return tags.stream()
+                   .map(Tag::getName)
+                   .collect(Collectors.toList())
+                   .indexOf(tagName);
+    }
+
+    /**
+     * Insert the given {@link Tag} into the database; update the cached list.
+     *
+     * @param tag to insert
+     *
+     * @return the <strong>position</strong> in the list
+     *
+     * @throws DaoWriteException on failure
+     */
+    int insert(@NonNull final Tag tag)
+            throws DaoWriteException {
+
+        tagDao.insert(tag);
+
+        // find insertion point using a brute-force sequential search...
+        int position = 0;
+        while (position < tags.size() && tags.get(position).compareTo(tag) < 0) {
+            position++;
+        }
+        tags.add(position, tag);
+
+        return position;
+    }
+
+    void update(@NonNull final Tag tag)
+            throws DaoWriteException {
+        tagDao.update(tag);
+    }
+
+    void deleteTag(final int position) {
+        final Tag tag = tags.remove(position);
+        tagDao.delete(tag);
+        setModified();
+    }
+
+    boolean moveBooks(@NonNull final Context context,
+                      final int position,
+                      final int existingPos) {
+        final Tag source = tags.get(position);
+        final Tag target = tags.get(existingPos);
+        try {
+            tagDao.moveBooks(context, source, target);
+            return true;
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, source);
+            return false;
+        }
+    }
+
+    @NonNull
+    List<TagMapping> getTagMappings() {
+        // used directly by the adapter.
+        return mappings;
+    }
+
+    /**
+     * Case-sensitive.
+     *
+     * @param mappingName to find
+     *
+     * @return position, or {@code -1} if not found
+     */
+    @IntRange(from = -1)
+    int findTagMappingPosition(@NonNull final String mappingName) {
+        return mappings.stream()
+                       .map(TagMapping::getTagName)
+                       .collect(Collectors.toList())
+                       .indexOf(mappingName);
+    }
+
+    /**
+     * Insert the given {@link TagMapping} into the database; update the cached list.
+     *
+     * @param tagMapping to insert
+     *
+     * @return the <strong>position</strong> in the list
+     *
+     * @throws DaoWriteException on failure
+     */
+    int insert(@NonNull final TagMapping tagMapping)
+            throws DaoWriteException {
+
+        tagMappingDao.insert(tagMapping);
+
+        // find insertion point using a brute-force sequential search...
+        int position = 0;
+        while (position < mappings.size()
+               && mappings.get(position).compareTo(tagMapping) < 0) {
+            position++;
+        }
+        mappings.add(position, tagMapping);
+
+        return position;
+    }
+
+    void update(@NonNull final TagMapping tagMapping)
+            throws DaoWriteException {
+        tagMappingDao.update(tagMapping);
+    }
+
+    void deleteTagMapping(final int position) {
+        final TagMapping mapping = mappings.remove(position);
+        tagMappingDao.delete(mapping);
+        setModified();
     }
 
     boolean isModified() {
