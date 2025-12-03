@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -118,6 +119,21 @@ public class EditAuthorViewModel
 
     public void setTypesAreShown(final boolean typesAreShown) {
         this.typesAreShown = typesAreShown;
+    }
+
+    /**
+     * Get the list of names for the given name-field key.
+     * i.e. one of:
+     * {@link DBKey.AUTHOR#FAMILY_NAME}
+     * {@link DBKey.AUTHOR#GIVEN_NAMES}
+     * {@link DBKey.AUTHOR#FORMATTED_FULL_NAME}
+     *
+     * @param key field
+     *
+     * @return list
+     */
+    List<String> getAllNames(@NonNull final String key) {
+        return dao.getNames(key);
     }
 
     /**

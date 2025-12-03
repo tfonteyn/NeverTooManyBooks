@@ -41,12 +41,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -151,10 +149,8 @@ class EditAuthorDelegate
             initToolbar(owner, dialogType, toolbar);
         }
 
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-
-        setupNames(context, authorDao);
-        setupRealAuthorField(context, authorDao);
+        setupNames(context);
+        setupRealAuthorField(context);
         setupBirthDate(context);
         setupDeathDate(context);
 
@@ -163,12 +159,11 @@ class EditAuthorDelegate
         vb.familyName.requestFocus();
     }
 
-    private void setupNames(@NonNull final Context context,
-                            @NonNull final AuthorDao authorDao) {
+    private void setupNames(@NonNull final Context context) {
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.AUTHOR.FAMILY_NAME));
+                vm.getAllNames(DBKey.AUTHOR.FAMILY_NAME));
         vb.familyName.setText(vm.getCurrentEdit().getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         TilUtil.autoRemoveError(vb.familyName, vb.lblFamilyName);
@@ -176,13 +171,12 @@ class EditAuthorDelegate
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.AUTHOR.GIVEN_NAMES));
+                vm.getAllNames(DBKey.AUTHOR.GIVEN_NAMES));
         vb.givenNames.setText(vm.getCurrentEdit().getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
     }
 
-    private void setupRealAuthorField(@NonNull final Context context,
-                                      @NonNull final AuthorDao authorDao) {
+    private void setupRealAuthorField(@NonNull final Context context) {
         if (vm.showRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);
@@ -190,7 +184,7 @@ class EditAuthorDelegate
             final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                     context, R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
-                    authorDao.getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
+                    vm.getAllNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
             vb.realAuthor.setText(vm.getCurrentRealAuthorName(), false);
             vb.realAuthor.setAdapter(realNameAdapter);
             TilUtil.autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
