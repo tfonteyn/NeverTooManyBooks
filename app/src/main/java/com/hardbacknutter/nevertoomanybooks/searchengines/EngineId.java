@@ -36,13 +36,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
@@ -497,20 +495,6 @@ public enum EngineId
     @Nullable
     public String getIdentifierKey() {
         return identifierKey;
-    }
-
-    /**
-     * Get the {@link Identifier}.
-     *
-     * @return Identifier
-     */
-    @NonNull
-    public Optional<Identifier> getIdentifier() {
-        if (identifierKey != null) {
-            return ServiceLocator.getInstance().getIdentifierDao().findByKey(identifierKey);
-        } else {
-            return Optional.empty();
-        }
     }
 
     /**

@@ -180,8 +180,9 @@ public class SearchBookByExternalIdFragment
 
         final int keyboardIcon;
         final int inputType;
-        //noinspection OptionalGetWithoutIsPresent
-        if (engineId.getIdentifier().get().getType() == Identifier.TYPE_STRING) {
+        final Identifier identifier = vm.getIdentifier(engineId).orElseThrow(
+                () -> new IllegalStateException("No Identifier: " + engineId));
+        if (identifier.getType() == Identifier.TYPE_STRING) {
             // display an alphanumeric keyboard icon
             keyboardIcon = R.drawable.keyboard_24px;
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;

@@ -30,11 +30,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchBookByExternalIdViewModel
@@ -42,6 +46,14 @@ public class SearchBookByExternalIdViewModel
 
     @NonNull
     private final EditBookOutput resultData = new EditBookOutput();
+    private IdentifierDao identifierDao;
+    private Style style;
+    /** The currently selected radio button. */
+    @IdRes
+    private int selectedRbViewId = View.NO_ID;
+    /** The current input field content. */
+    @Nullable
+    private String sid;
 
     @NonNull
     Intent createResultIntent() {
@@ -52,26 +64,28 @@ public class SearchBookByExternalIdViewModel
         resultData.update(data);
     }
 
-    private Style style;
-
-    /** The currently selected radio button. */
-    @IdRes
-    private int selectedRbViewId = View.NO_ID;
-    /** The current input field content. */
-    @Nullable
-    private String sid;
-
     /**
      * Pseudo constructor.
      *
-     * @param args    {@link Fragment#requireArguments()}
+     * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (style == null) {
+        if (identifierDao == null) {
+            identifierDao = ServiceLocator.getInstance().getIdentifierDao();
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
+        }
+    }
+
+    @NonNull
+    Optional<Identifier> getIdentifier(@NonNull final EngineId engineId) {
+        final String identifierKey = engineId.getIdentifierKey();
+        if (identifierKey != null) {
+            return identifierDao.findByKey(identifierKey);
+        } else {
+            return Optional.empty();
         }
     }
 
