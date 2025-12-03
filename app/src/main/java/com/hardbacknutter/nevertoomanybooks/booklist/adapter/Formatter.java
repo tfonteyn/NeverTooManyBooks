@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -72,6 +73,7 @@ class Formatter
     private final List<Locale> locales;
     @NonNull
     private final ReorderHelper reorderHelper;
+    private final AuthorDao authorDao;
 
     Formatter(@NonNull final Context context,
               @NonNull final Style style,
@@ -80,6 +82,7 @@ class Formatter
         this.style = style;
         this.locales = locales;
         reorderHelper = new ReorderHelper(this.locales);
+        authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         unreadStr = context.getString(R.string.lbl_unread);
         a_space_b = context.getString(R.string.a_space_b);
@@ -186,15 +189,13 @@ class Formatter
             return context.getString(R.string.bob_empty_author);
         }
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        if (serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
             && rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
             // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
             // and no lookup will be needed.
             final long realAuthorId = rowData.getLong(DBKey.FK_AUTHOR_REAL_AUTHOR);
             if (realAuthorId != 0) {
-                final Optional<Author> realAuthor = serviceLocator.getAuthorDao()
-                                                                  .findById(realAuthorId);
+                final Optional<Author> realAuthor = authorDao.findById(realAuthorId);
                 if (realAuthor.isPresent()) {
                     return realAuthor.get().getStyledName(context, style, text);
                 }
