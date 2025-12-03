@@ -455,7 +455,7 @@ public class BookDaoImpl
         if (book.contains(Book.BKEY_SERIES_LIST)) {
             final Function<Series, Locale> localeSupplier = item -> {
                 if (lookupLocale) {
-                    return item.getLocale(context).orElse(bookLocale);
+                    return item.getLocale(userLocale).orElse(bookLocale);
                 } else {
                     return bookLocale;
                 }

@@ -574,7 +574,7 @@ public class EditBookViewModel
     /**
      * Add any fields the book does not have yet (does not overwrite existing ones).
      *
-     * @param args    to check
+     * @param args to check
      */
     void addFieldsFromArguments(@Nullable final Bundle args) {
         if (args != null) {
@@ -852,8 +852,8 @@ public class EditBookViewModel
                           @NonNull final Series series) {
         if (series.getId() == 0) {
             final Locale userLocale = userLocales.get(0);
-            final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-            seriesDao.fixId(context, series, series.getLocale(context).orElse(bookLocale));
+            seriesDao.fixId(context, series, series.getLocale(userLocale).orElseGet(
+                    () -> book.getLocale(userLocale).orElse(userLocale)));
             if (series.getId() == 0) {
                 return true;
             }
@@ -1038,10 +1038,9 @@ public class EditBookViewModel
 
     void fixId(@NonNull final Context context,
                @NonNull final Series series) {
-        seriesDao.fixId(context, series, series.getLocale(context).orElseGet(() -> {
-            final Locale userLocale = userLocales.get(0);
-            return book.getLocale(userLocale).orElse(userLocale);
-        }));
+        final Locale userLocale = userLocales.get(0);
+        seriesDao.fixId(context, series, series.getLocale(userLocale).orElseGet(
+                () -> book.getLocale(userLocale).orElse(userLocale)));
     }
 
     void fixId(@NonNull final Context context,

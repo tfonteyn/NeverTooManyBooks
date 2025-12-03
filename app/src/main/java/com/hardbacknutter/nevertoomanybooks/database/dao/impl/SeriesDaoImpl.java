@@ -470,7 +470,7 @@ public class SeriesDaoImpl
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
                 insertOrUpdate(context, bookId, false, destList, series ->
-                        series.getLocale(context)
+                        series.getLocale(userLocale)
                               .orElseGet(() -> book.getLocale(userLocale).orElse(userLocale)));
             }
 

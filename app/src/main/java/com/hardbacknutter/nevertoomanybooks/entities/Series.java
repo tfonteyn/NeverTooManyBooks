@@ -625,23 +625,22 @@ public class Series
      * Get the Locale for a Series.
      * This is defined as the Locale for the language from the first book in the Series.
      *
-     * @param context Current context
+     * @param userLocale Current Locale
      *
      * @return the Locale of the Series
      */
     @NonNull
-    public Optional<Locale> getLocale(@NonNull final Context context) {
+    public Optional<Locale> getLocale(@NonNull final Locale userLocale) {
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
         if (id <= 0) {
             return Optional.empty();
         }
-        final Optional<String> lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
-        if (lang.isEmpty()) {
-            return Optional.empty();
-        }
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return ServiceLocator.getInstance().getAppLocale().getLocale(lang.get(), userLocale);
-
+        return ServiceLocator.getInstance()
+                             .getSeriesDao()
+                             .getLanguage(id)
+                             .flatMap(s -> ServiceLocator.getInstance()
+                                                         .getAppLocale()
+                                                         .getLocale(s, userLocale));
     }
 
     @NonNull

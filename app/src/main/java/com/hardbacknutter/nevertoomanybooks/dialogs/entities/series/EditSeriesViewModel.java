@@ -108,8 +108,8 @@ public class EditSeriesViewModel
         // now copy changes, including the name and any other attributes
         original.copyFrom(currentEdit, false);
 
-        final Locale locale = original.getLocale(context).orElseGet(
-                () -> context.getResources().getConfiguration().getLocales().get(0));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale locale = original.getLocale(userLocale).orElse(userLocale);
 
         // It's an existing one and the name was not changed;
         // just update the other attributes

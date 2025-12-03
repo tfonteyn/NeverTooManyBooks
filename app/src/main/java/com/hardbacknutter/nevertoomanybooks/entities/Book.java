@@ -1058,7 +1058,7 @@ public class Book
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Series have their own Locale with fallback to the book-locale
             getSeries().forEach(series -> seriesDao
-                    .refresh(context, series, series.getLocale(context).orElse(bookLocale)));
+                    .refresh(context, series, series.getLocale(userLocale).orElse(bookLocale)));
         }
     }
 
@@ -1075,7 +1075,7 @@ public class Book
             final Locale bookLocale = getLocale(userLocale).orElse(userLocale);
             // Series have their own Locale with fallback to the book-locale
             if (seriesDao.pruneList(context, seriesList,
-                                    series -> series.getLocale(context).orElse(bookLocale))) {
+                                    series -> series.getLocale(userLocale).orElse(bookLocale))) {
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
