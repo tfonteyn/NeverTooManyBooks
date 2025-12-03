@@ -34,6 +34,11 @@
         <item quantity="many">%1$d livros encontrados</item>
         <item quantity="other">%1$d livros encontrados</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d autor</item>
+        <item quantity="many">%1$d autores</item>
+        <item quantity="other">%1$d autores</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrela</item>
         <item quantity="many">%1$s estrelas</item>
@@ -43,6 +48,11 @@
         <item quantity="one">%1$d etiqueta</item>
         <item quantity="many">%1$d etiquetas</item>
         <item quantity="other">%1$d etiquetas</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Existe %1$d código ISBN previamente introduzido. Deseja iniciar uma pesquisa ou deve ser removido?</item>
+        <item quantity="many">Existem %1$d códigos ISBN previamente introduzidos. Gostaria de iniciar a pesquisa dos mesmos ou devem ser removidos?</item>
+        <item quantity="other">Existem %1$d códigos ISBN previamente introduzidos. Gostaria de iniciar a pesquisa dos mesmos ou devem ser removidos?</item>
     </plurals>
     <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Limpar credenciais</string>
@@ -288,10 +298,11 @@
     <string name="size_hidden">Oculto</string>
     <string name="size_medium">Médio</string>
     <string name="book_format_hardcover">Capa dura</string>
-    <string name="book_format_paperback">Papel</string>
+    <string name="book_format_paperback">Capa mole</string>
     <string name="book_format_comic">Banda Desenhada</string>
     <string name="book_format_other">Outro</string>
-    <string name="book_format_ebook">livro eletrónico</string>
+    <string name="book_format_ebook"
+            tools:ignore="Typos">livro eletrónico</string>
     <string name="lbl_style">Estilo</string>
     <string name="lbl_group_1st_char_publisher_name">1º caracter do nome da Editora</string>
     <string name="lbl_edition_first_edition">Primeira Edição</string>
@@ -376,7 +387,7 @@
     <string name="lbl_author_type_artist">Ilustrações</string>
     <string name="size_megabytes">%1$.2f MB</string>
     <string name="lbl_styles">Estilos</string>
-    <string name="lbl_group_1st_char_book_title">1º caracter do título da Livro</string>
+    <string name="lbl_group_1st_char_book_title">1º caracter do título do Livro</string>
     <string name="style_type_user_defined">Definido pelo utilizador</string>
     <string name="bookshelf_all_books">Todos os Livros</string>
     <string name="lbl_edition_limited">Limitada</string>
@@ -413,7 +424,7 @@
     <string name="option_search_books_in_series">Livros desta série</string>
     <string name="option_search_books_by_author">Livros deste autor</string>
     <string name="option_search_books_by_author_in_series">Livros por autor/séries</string>
-    <string name="option_image_replace_from_camera">De câmera…</string>
+    <string name="option_image_replace_from_camera">De câmara…</string>
     <string name="option_cover_replace_from_alt_editions">De outras edições…</string>
     <string name="option_image_rotate_cw">No sentido horário</string>
     <string name="option_image_rotate_ccw">Anti-Horário</string>
@@ -452,12 +463,12 @@
     <string name="tip_series_book_may_appear_more_than_once">Se os livros forem apresentados em todas as séries a que pertencem, podem aparecer várias vezes na lista. A eliminação de um desses livros tem o efeito de remover todos os exemplares da lista.</string>
     <string name="size_x_small">Muito Pequeno</string>
     <string name="book_format_paperback_large">Capa mole comercial</string>
-    <string name="book_format_hardcover_oblong">Capa dura - Oblong</string>
+    <string name="book_format_hardcover_oblong">Capa dura - Oblonga</string>
     <string name="book_format_softcover_oblong">Capa mole - Oblonga</string>
     <string name="book_format_digest">Selecções</string>
     <string name="lbl_defaults">Padrões</string>
     <string name="style_type_builtin">Embutido</string>
-    <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
+    <string name="confirm_rebuild_fts">Isto recriará os dados do índice de pesquisa quando a aplicação for reiniciada. Tem a certeza de que deseja continuar?</string>
     <string name="lbl_add_book">Adicionar livro</string>
     <string name="confirm_registration_required">Esta função requer registo com %1$s. Gostaria de ver mais informações?</string>
     <string name="lbl_search_isbn">Pesquisa ISBN</string>
@@ -544,7 +555,6 @@
     <string name="lbl_substitutions">Substituições</string>
     <string name="lbl_signed">Assinado</string>
     <string name="lbl_title">Título</string>
-    <string name="lbl_date_last_updated">Data da última atualização</string>
     <string name="lbl_export_books_option_all">Todos os livros</string>
     <string name="info_export_report">Foi criado um ficheiro %1$s chamado “%2$s” na pasta seleccionada. Deve copiá-lo manualmente para outro local para proteger os dados no caso de o seu dispositivo ser danificado, perdido ou roubado.</string>
     <string name="lbl_import_options">Seleccione o que será importado.</string>
@@ -636,9 +646,10 @@
     <string name="lbl_date_read">Data de leitura</string>
     <string name="lbl_read_start">Data de início da leitura</string>
     <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
-    <string name="lbl_date_last_updated_year">Ano de Atualização</string>
-    <string name="lbl_date_last_updated_month">Mês de atualização</string>
-    <string name="lbl_date_last_updated_day">Dia de Atualização</string>
+    <string name="lbl_date_last_updated_year">Ano de Actualização</string>
+    <string name="lbl_date_last_updated_month">Mês de actualização</string>
+    <string name="lbl_date_last_updated_day">Dia de Actualização</string>
+    <string name="lbl_date_last_updated">Data da última actualização</string>
     <string name="lbl_date_acquired">Data de Aquisição</string>
     <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Ano de Aquisição</string>
@@ -730,7 +741,7 @@
     <string name="action_add_with_details">Adicionar com detalhes</string>
     <string name="lbl_importing">Importando…</string>
     <string name="lbl_backup">Cópia de segurança</string>
-    <string name="lbl_family_name">Sobrenome</string>
+    <string name="lbl_family_name">Apelido</string>
     <string name="lbl_given_names">Nomes Próprios</string>
     <string name="lbl_author_type">Tipo de autor</string>
     <string name="lbl_export_books_option_since_last_full_backup">Livros novos e atualizados</string>
@@ -871,11 +882,6 @@
     <string name="lbl_date_born">Nascido</string>
     <string name="pt_fetch_author_info">Obter informações sobre o autor</string>
     <string name="lbl_author_type_foreword">Prefácio</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Existe %1$d código ISBN previamente introduzido. Deseja iniciar uma pesquisa ou deve ser removido?</item>
-        <item quantity="many">Existem %1$d códigos ISBN previamente introduzidos. Gostaria de iniciar a pesquisa dos mesmos ou devem ser removidos?</item>
-        <item quantity="other">Existem %1$d códigos ISBN previamente introduzidos. Gostaria de iniciar a pesquisa dos mesmos ou devem ser removidos?</item>
-    </plurals>
     <string name="lbl_image_2">Imagem 3</string>
     <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
     <string name="lbl_permission_request">Solicitação de permissão</string>

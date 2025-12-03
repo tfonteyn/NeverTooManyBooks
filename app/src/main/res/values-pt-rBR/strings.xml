@@ -44,6 +44,11 @@
         <item quantity="many">%1$d tags</item>
         <item quantity="other">%1$d tags</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Há %1$d código ISBN inserido anteriormente. Você gostaria de iniciar uma busca por ele ou ele deve ser removido?</item>
+        <item quantity="many">Há %1$d códigos ISBN inseridos anteriormente. Você gostaria de iniciar as buscas por eles ou eles devem ser removidos?</item>
+        <item quantity="other">Há %1$d códigos ISBN inseridos anteriormente. Você gostaria de iniciar as buscas por eles ou eles devem ser removidos?</item>
+    </plurals>
     <string name="a_b">%1$s%2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="brackets">(%1$s)</string>
@@ -114,7 +119,7 @@
     <string name="bookshelf_all_books">Todos os livros</string>
     <string name="lbl_assign_bookshelves">Atribuir estantes</string>
     <string name="lbl_author_type_cover_inking">Tinta de capa</string>
-    <string name="option_moving_covers_from_x_to_y">Mova todas as capas de “%1$s” para “%2$s”</string>
+    <string name="option_moving_covers_from_x_to_y">Mova capas de “%1$s” para “%2$s”</string>
     <string name="option_goto_next_book_without_cover">Pular para o próximo livro sem capa</string>
     <string name="option_image_replace_from_gallery">Da Galeria…</string>
     <string name="option_image_replace_from_camera">Da Câmera…</string>
@@ -193,7 +198,7 @@
     <string name="bookshelf_my_wishlist">Lista de desejos</string>
     <string name="pe_ui_theme_light">Claro</string>
     <string name="pe_ui_theme_colors_dynamic">Cores dinâmicas</string>
-    <string name="pe_ui_theme_colors_blue_grey">Azul-cinzento</string>
+    <string name="pe_ui_theme_colors_blue_grey">Azul-cinza</string>
     <string name="option_storage_edit_settings">Editar configurações</string>
     <string name="action_edit_defaults">Editar configurações padrão</string>
     <string name="option_info_import_books_option_new_only">Importe apenas novos livros. Quaisquer atualizações em livros existentes serão ignoradas.</string>
@@ -233,7 +238,7 @@
     <string name="option_cover_replace_from_alt_editions">De outras edições…</string>
     <string name="lbl_cover_back">Contracapa</string>
     <string name="pt_bob_cover_click">Tocando em uma imagem de capa.</string>
-    <string name="pe_bob_cover_long_click_ignore">Ao tocar em um botão.</string>
+    <string name="pe_bob_cover_long_click_ignore">Ao clicar longamente em um botão.</string>
     <string name="lbl_capitalize_full">Tudo em caixa alta</string>
     <string name="info_bulk_set_location">Selecione o local que deseja atribuir a todos os livros listados no nó selecionado.</string>
     <string name="lbl_citation_type">Formato de citação/compartilhamento</string>
@@ -257,15 +262,16 @@
     <string name="action_stop_searching">Parar de pesquisar</string>
     <string name="action_save_for_later">Salvar para depois</string>
     <string name="confirm_leave_isbn_search">Há pesquisas em andamento e/ou resultados não salvos.</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Há %1$d código ISBN inserido anteriormente. Você gostaria de iniciar uma busca por ele ou ele deve ser removido?</item>
-        <item quantity="many">Há %1$d códigos ISBN inseridos anteriormente. Você gostaria de iniciar as buscas por eles ou eles devem ser removidos?</item>
-        <item quantity="other">Há %1$d códigos ISBN inseridos anteriormente. Você gostaria de iniciar as buscas por eles ou eles devem ser removidos?</item>
-    </plurals>
     <string name="site_description_polish">Polonês</string>
-    <string name="warning_delete_default_bookshelf">Esta é a sua estante padrão. Se você apagar, a nova padrão será: “%1$s”.\n\nUse “%2$s” no menu principal para escolher outra estante padrão.</string>
+    <string name="warning_delete_default_bookshelf">Esta é a sua estante padrão. Se você apagar, a nova será: “%1$s”.\n\nUse “%2$s” no menu principal para escolher outra estante padrão.</string>
     <string name="action_set_as_default">Definir como padrão</string>
     <string name="tip_bookshelf_management">A linha destacada mostra a sua estante atual.\n\nA estante padrão (marcada com *) será usada automaticamente se a atual não estiver disponível por qualquer motivo.</string>
     <string name="info_substitutions_one_per_line">Adicione uma substituição por linha ou deixe em branco para excluir a tag</string>
+    <string name="book_format_ebook">livro eletrônico</string>
+    <string name="lbl_date_last_updated_year">Ano de Atualização</string>
+    <string name="lbl_date_last_updated_month">Mês de atualização</string>
+    <string name="lbl_date_last_updated_day">Dia de Atualização</string>
+    <string name="lbl_date_last_updated">Data da última atualização</string>
+    <string name="lbl_family_name">Sobrenome</string>
 
 </resources>
