@@ -236,10 +236,13 @@ public class IdentifiersEditorFragment
     private void deleteEntry(final int position) {
         final Identifier identifier = vm.getIdentifiers().get(position);
         //noinspection DataFlowIssue
-        StandardDialogs.deleteIdentifier(getContext(), identifier, () -> {
-            vm.delete(identifier);
-            adapter.notifyItemRemoved(position);
-        });
+        StandardDialogs.deleteIdentifier(getContext(), identifier,
+                                         vm.countBooks(identifier),
+                                         vm.countAuthors(identifier),
+                                         () -> {
+                                             vm.delete(identifier);
+                                             adapter.notifyItemRemoved(position);
+                                         });
     }
 
     private static class Holder

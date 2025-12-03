@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import androidx.annotation.StringRes;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -392,20 +394,27 @@ public final class StandardDialogs {
     /**
      * Ask the user to confirm a delete.
      *
-     * @param context    Current context
-     * @param identifier we're about to delete
-     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
+     * @param context     Current context
+     * @param identifier  we're about to delete
+     * @param bookCount   for the Identifier
+     * @param authorCount for the Identifier
+     * @param onConfirm   Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteIdentifier(@NonNull final Context context,
                                         @NonNull final Identifier identifier,
+                                        final int bookCount,
+                                        final int authorCount,
                                         @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getBookIdentifierDao()
-                                        .countLinks(identifier);
-        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
-                                                                          books, books);
-        final String msg = context.getString(R.string.confirm_delete_identifier_from_x_books,
-                                             identifier.getName(),
-                                             nrOfBooks);
+        final Resources res = context.getResources();
+
+        final String nrOfBooks = res.getQuantityString(R.plurals.n_books,
+                                                       bookCount, bookCount);
+        final String nrOfAuthors = res.getQuantityString(R.plurals.n_author,
+                                                         authorCount, authorCount);
+        final String msg = context.getString(
+                R.string.confirm_delete_identifier_from_x_books,
+                identifier.getName(),
+                res.getString(R.string.list_and, nrOfBooks, nrOfAuthors));
         delete(context, onConfirm, msg);
     }
 }

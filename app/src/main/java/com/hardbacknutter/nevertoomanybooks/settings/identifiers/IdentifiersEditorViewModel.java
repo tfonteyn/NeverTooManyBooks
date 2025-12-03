@@ -30,6 +30,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 @SuppressWarnings("WeakerAccess")
@@ -41,14 +42,20 @@ public class IdentifiersEditorViewModel
 
     private IdentifierDao identifierDao;
     private List<Identifier> identifiers;
+    private IdentifierValueDao bookIdentifierDao;
+    private IdentifierValueDao authorIdentifierDao;
 
     /**
      * Pseudo constructor.
      */
     void init() {
         if (identifierDao == null) {
-            identifierDao = ServiceLocator.getInstance().getIdentifierDao();
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            identifierDao = serviceLocator.getIdentifierDao();
+            bookIdentifierDao = serviceLocator.getBookIdentifierDao();
+            authorIdentifierDao = serviceLocator.getAuthorIdentifierDao();
         }
+
         identifiers = identifierDao.getAll();
     }
 
@@ -88,5 +95,13 @@ public class IdentifiersEditorViewModel
         identifiers.remove(identifier);
         // brute force... the user modified something
         setModified();
+    }
+
+    public int countBooks(final Identifier identifier) {
+        return bookIdentifierDao.countLinks(identifier);
+    }
+
+    public int countAuthors(final Identifier identifier) {
+        return authorIdentifierDao.countLinks(identifier);
     }
 }
