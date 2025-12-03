@@ -24,6 +24,23 @@
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
+    <plurals name="n_books">
+        <item quantity="one">%1$d bók</item>
+        <item quantity="other">%1$d bøkur</item>
+    </plurals>
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d bók funnin</item>
+        <item quantity="other">%1$d bøkur funnin</item>
+    </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d høvundur</item>
+        <item quantity="other">%1$d høvundar</item>
+    </plurals>
+    <plurals name="n_stars">
+        <item quantity="one">%1$s stjørna</item>
+        <item quantity="other">%1$s stjørnur</item>
+    </plurals>
+
     <string name="lbl_styles">Stílar</string>
     <string name="style_type_builtin">Innbygt</string>
     <string name="style_type_user_defined">Brúkaraskilmarkað</string>
@@ -87,10 +104,6 @@
     <string name="and_others_textual">%1$s et al.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="name_hash_nr">%1$s #%2$d</string>
-    <plurals name="n_books">
-        <item quantity="one">%1$d bók</item>
-        <item quantity="other">%1$d bøkur</item>
-    </plurals>
     <string name="brackets">(%1$s)</string>
     <string name="quoted">„%1$s“</string>
     <string name="ellipsize">%1$s…</string>
@@ -106,14 +119,6 @@
     <string name="httpErrorFailedSslHandshake">Kundi ikki sambinda trygt.</string>
     <string name="httpErrorAuth">Kundi ikki vátta.</string>
     <string name="httpError">Ein netvilla uppstóð.</string>
-    <plurals name="n_stars">
-        <item quantity="one">%1$s stjørna</item>
-        <item quantity="other">%1$s stjørnur</item>
-    </plurals>
-    <plurals name="n_books_found">
-        <item quantity="one">%1$d bók funnin</item>
-        <item quantity="other">%1$d bøkur funnin</item>
-    </plurals>
     <string name="notification_channel_info">Upplýsingar</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>

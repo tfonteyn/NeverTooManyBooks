@@ -36,6 +36,12 @@
         <item quantity="many">Nalezeno %1$d knihy</item>
         <item quantity="other">Nalezeno %1$d knih</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d autor</item>
+        <item quantity="few">%1$d autoři</item>
+        <item quantity="many">%1$d autorů</item>
+        <item quantity="other">%1$d autorů</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s hvězdička</item>
         <item quantity="few">%1$s hvězdičky</item>
@@ -47,6 +53,12 @@
         <item quantity="few">%1$d štítky</item>
         <item quantity="many">%1$d štítků</item>
         <item quantity="other">%1$d štítků</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Je zde %1$d dříve zadaný kód ISBN. Chcete zahájit jeho vyhledávání, nebo ho chcete odstranit?</item>
+        <item quantity="few">Jsou zde %1$d dříve zadané kódy ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
+        <item quantity="many">Je zde %1$d dříve zadaných kódů ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
+        <item quantity="other">Je zde %1$d dříve zadaných kódů ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
     </plurals>
     <string name="quoted">„%1$s“</string>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
@@ -886,11 +898,6 @@
     <string name="lbl_date_born">Narozen</string>
     <string name="pt_fetch_author_info">Získat informace o autorovi</string>
     <string name="menu_search_updates">Hledání aktualizací</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Je zde %1$d dříve zadaný kód ISBN. Chcete zahájit jeho vyhledávání, nebo ho chcete odstranit?</item>
-        <item quantity="few">Jsou zde %1$d dříve zadané kódy ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
-        <item quantity="other">Je zde %1$d dříve zadaných kódů ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
-    </plurals>
     <string name="lbl_author_type_foreword">Předmluva</string>
     <string name="lbl_image_2">Obrázek 3</string>
     <string name="lbl_fastscroller_draghandle">Velikost posuvníku</string>

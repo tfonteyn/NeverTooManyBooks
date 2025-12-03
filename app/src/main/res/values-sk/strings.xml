@@ -36,6 +36,12 @@
         <item quantity="many">Nájdené %1$d knihy</item>
         <item quantity="other">Nájdených %1$d kníh</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d autor</item>
+        <item quantity="few">%1$d autori</item>
+        <item quantity="many">%1$d autorov</item>
+        <item quantity="other">%1$d autorov</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s hviezdička</item>
         <item quantity="few">%1$s hviezdičky</item>
@@ -48,6 +54,13 @@
         <item quantity="many">%1$d štítky</item>
         <item quantity="other">%1$d štítkov</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Je tu %1$d predtým zadaný kód ISBN. Chcete začať jeho vyhľadávanie alebo ho chcete odstrániť?</item>
+        <item quantity="few">Sú tu %1$d predtým zadané kódy ISBN. Chcete začať ich vyhľadávanie alebo ich chcete odstrániť?</item>
+        <item quantity="many">Je tu %1$d predtým zadaných kódov ISBN. Chcete začať ich vyhľadávanie alebo ich chcete odstrániť?</item>
+        <item quantity="other">Je tu %1$d predtým zadaných kódov ISBN. Chcete začať ich vyhľadávanie alebo ich chcete odstrániť?</item>
+    </plurals>
+
     <string name="quoted">„%1$s“</string>
     <string name="list_element">• %s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -875,11 +888,6 @@
     <string name="lbl_date_born">Narodený</string>
     <string name="pt_fetch_author_info">Získať informácie o autorovi</string>
     <string name="menu_search_updates">Hľadanie aktualizácií</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Je tu %1$d predtým zadaný kód ISBN. Chcete začať jeho vyhľadávanie alebo ho chcete odstrániť?</item>
-        <item quantity="few">Sú tu %1$d predtým zadané kódy ISBN. Chcete začať ich vyhľadávanie alebo ich chcete odstrániť?</item>
-        <item quantity="other">Je tu %1$d predtým zadaných kódov ISBN. Chcete začať ich vyhľadávanie alebo ich chcete odstrániť?</item>
-    </plurals>
     <string name="lbl_author_type_foreword">Predslov</string>
     <string name="lbl_image_2">Obrázok 3</string>
     <string name="lbl_fastscroller_draghandle">Veľkosť posuvníka</string>

@@ -30,11 +30,17 @@
     <plurals name="n_books_found">
         <item quantity="other">Đã tìm thấy %1$d cuốn sách</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="other">%1$d tác giả</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="other">%1$s sao</item>
     </plurals>
     <plurals name="n_tags">
         <item quantity="other">%1$d nhãn</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="other">Có %1$d mã ISBN đã nhập trước đó. Bạn có muốn bắt đầu tìm kiếm chúng hay nên xóa chúng?</item>
     </plurals>
     <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Xóa thông tin xác thực</string>
@@ -864,9 +870,6 @@
     <string name="info_identifier_editor"><![CDATA[Đọc <a href="%1$s">tài liệu</a> về Mã định danh trước khi chỉnh sửa.]]></string>
     <string name="lbl_date_born">Sinh</string>
     <string name="pt_fetch_author_info">Lấy thông tin tác giả</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="other">Có %1$d mã ISBN đã nhập trước đó. Bạn có muốn bắt đầu tìm kiếm chúng hay nên xóa chúng?</item>
-    </plurals>
     <string name="lbl_image_2">Hình ảnh 3</string>
     <string name="lbl_fastscroller_draghandle">Kích thước thanh kéo cuộn</string>
     <string name="lbl_permission_request">Yêu cầu quyền</string>

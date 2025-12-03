@@ -34,6 +34,11 @@
         <item quantity="many">%1$d libri trovati</item>
         <item quantity="other">%1$d libri trovati</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d autore</item>
+        <item quantity="many">%1$d autori</item>
+        <item quantity="other">%1$d autori</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s stella</item>
         <item quantity="many">%1$s stelle</item>
@@ -43,6 +48,11 @@
         <item quantity="one">%1$d tag</item>
         <item quantity="many">%1$d tag</item>
         <item quantity="other">%1$d tag</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">C’è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
+        <item quantity="many">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
+        <item quantity="other">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
     </plurals>
     <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Cancella credenziali</string>
@@ -871,11 +881,6 @@
     <string name="info_identifier_editor"><![CDATA[Leggere la <a href="%1$s">documentazione</a> sugli identificatori prima di modificarla.]]></string>
     <string name="lbl_date_born">Nato</string>
     <string name="pt_fetch_author_info">Recuperare le informazioni sull’autore</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">C’è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
-        <item quantity="many">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
-        <item quantity="other">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
-    </plurals>
     <string name="lbl_author_type_foreword">Prefazione</string>
     <string name="lbl_image_2">Immagine 3</string>
     <string name="lbl_fastscroller_draghandle">Dimensione del cursore della barra di scorrimento</string>

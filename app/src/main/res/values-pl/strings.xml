@@ -36,6 +36,12 @@
         <item quantity="many">Znaleziono %1$d książek</item>
         <item quantity="other">Znaleziono 1%1$d książek</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d autor</item>
+        <item quantity="few">%1$d autorzy</item>
+        <item quantity="many">%1$d autorów</item>
+        <item quantity="other">%1$d autora</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s gwiazdka</item>
         <item quantity="few">%1$s gwiazdki</item>
@@ -47,6 +53,12 @@
         <item quantity="few">%1$d tagi</item>
         <item quantity="many">%1$d tagów</item>
         <item quantity="other">%1$d tagów</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Jest %1$d wcześniej wprowadzony kod ISBN. Chcesz rozpocząć jego wyszukiwanie lub chcesz go usunąć?</item>
+        <item quantity="few">Są %1$d wcześniej wprowadzone kody ISBN. Chcesz rozpocząć ich wyszukiwanie lub chcesz je usunąć?</item>
+        <item quantity="many">Jest %1$d wcześniej wprowadzonych kodów ISBN. Chcesz rozpocząć ich wyszukiwanie lub chcesz je usunąć?</item>
+        <item quantity="other">Jest %1$d wcześniej wprowadzonych kodów ISBN. Chcesz rozpocząć ich wyszukiwanie lub chcesz je usunąć?</item>
     </plurals>
     <string name="quoted">„%1$s”</string>
     <string name="X_action_clear_credentials">Wyczyść dane o certyfikatach</string>
@@ -877,12 +889,6 @@
     <string name="info_identifier_editor"><![CDATA[Przed edycją zapoznaj się z <a href="%1$s">dokumentacją</a> dotyczącą identyfikatorów]]></string>
     <string name="lbl_date_born">Urodzony</string>
     <string name="pt_fetch_author_info">Pobieranie informacji o autorze</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Jest %1$d wcześniej wprowadzony kod ISBN. Chcesz rozpocząć jego wyszukiwanie lub chcesz go usunąć?</item>
-        <item quantity="few">Są %1$d wcześniej wprowadzone kody ISBN. Chcesz rozpocząć ich wyszukiwanie lub chcesz je usunąć?</item>
-        <item quantity="many">Jest %1$d wcześniej wprowadzonych kodów ISBN. Chcesz rozpocząć ich wyszukiwanie lub chcesz je usunąć?</item>
-        <item quantity="other">Jest %1$d wcześniej wprowadzonych kodów ISBN. Chcesz rozpocząć ich wyszukiwanie lub chcesz je usunąć?</item>
-    </plurals>
     <string name="lbl_author_type_foreword">Przedmowa</string>
     <string name="lbl_image_2">Obraz 3</string>
     <string name="lbl_fastscroller_draghandle">Wielkość suwaka</string>

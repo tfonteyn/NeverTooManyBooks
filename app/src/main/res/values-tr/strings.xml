@@ -32,6 +32,10 @@
         <item quantity="one">%1$d kitap bulundu</item>
         <item quantity="other">%1$d kitap bulundu</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d yazar</item>
+        <item quantity="other">%1$d yazar</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s yıldız</item>
         <item quantity="other">%1$s yıldızlar</item>
@@ -40,6 +44,11 @@
         <item quantity="one">%1$d etiket</item>
         <item quantity="other">%1$d etiketler</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Daha önce girilmiş %1$d ISBN kodu var. Bunun için bir arama başlatmak ister misiniz, yoksa kaldırılmalı mı?</item>
+        <item quantity="other">Daha önce girilmiş %1$d ISBN kodu var. Bunlar için arama başlatmak ister misiniz, yoksa kaldırılsınlar mı?</item>
+    </plurals>
+
     <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">Çalıştır</string>
@@ -176,13 +185,7 @@
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
     <string name="confirm_leave_isbn_search">Devam eden aramalar ve/veya kaydedilmemiş sonuçlar var.</string>
     <string name="confirm_remove_toc_entry">“%1$s” başlığı %2$s tarafından bu kitaptan kaldırılsın mı?</string>
-    <string name="confirm_scope_for_change">Değiştirdiniz:
-\n “%1$s”,
-\n“%2$s”
-\n olarak.
-\n
-\nDeğişiklikleri nasıl uygulamak istersiniz?
-\nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
+    <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
     <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
     <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
@@ -759,11 +762,9 @@
     <string name="pt_search_show_menu_options">Arama menülerini göster</string>
     <string name="lbl_author_pseudonym_of_X">ta. %1$s</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
-    <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir.
-\nİngilizce örnek: “Lord of The Rings, The”.</string>
+    <string name="ps_show_titles_reordered_on">Yalnızca makalelerin kullanıldığı diller için geçerlidir.\nİngilizce örnek: “Lord of The Rings, The”.</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. -->
-    <string name="ps_show_titles_reordered_off">Yalnızca makalelerin kullanıldığı diller için geçerlidir.
-\nİngilizce örnek: “The Lord of The Rings”</string>
+    <string name="ps_show_titles_reordered_off">Yalnızca makalelerin kullanıldığı diller için geçerlidir.\nİngilizce örnek: “The Lord of The Rings”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN TURKISH. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="lbl_titles">Başlıklar</string>
@@ -877,10 +878,6 @@
     <string name="info_identifier_editor"><![CDATA[Düzenlemeden önce Tanımlayıcılar hakkındaki <a href="%1$s">dokümantasyonu</a> okuyun.]]></string>
     <string name="lbl_date_born">Doğdu</string>
     <string name="pt_fetch_author_info">Yazar bilgilerini getir</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Daha önce girilmiş %1$d ISBN kodu var. Bunun için bir arama başlatmak ister misiniz, yoksa kaldırılmalı mı?</item>
-        <item quantity="other">Daha önce girilmiş %1$d ISBN kodu var. Bunlar için arama başlatmak ister misiniz, yoksa kaldırılsınlar mı?</item>
-    </plurals>
     <string name="lbl_author_type_foreword">Önsöz</string>
     <string name="lbl_image_2">Resim 3</string>
     <string name="lbl_fastscroller_draghandle">Kaydırma çubuğu tutamacı boyutu</string>

@@ -36,6 +36,12 @@
         <item quantity="many">Найдено %1$d книг</item>
         <item quantity="other">Найдено %1$d книги</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d автор</item>
+        <item quantity="few">%1$d автора</item>
+        <item quantity="many">%1$d авторов</item>
+        <item quantity="other">%1$d автора</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s звезда</item>
         <item quantity="few">%1$s звезды</item>
@@ -47,6 +53,12 @@
         <item quantity="few">%1$d теги</item>
         <item quantity="many">%1$d тегов</item>
         <item quantity="other">%1$d тегов</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Есть %1$d ранее введенный код ISBN. Хотите начать поиск по нему или хотите удалить его?</item>
+        <item quantity="few">Есть %1$d ранее введенных кода ISBN. Хотите начать их поиск или хотите их удалить?</item>
+        <item quantity="many">Есть %1$d ранее введенных кодов ISBN. Вы хотите начать их поиск или хотите их удалить?</item>
+        <item quantity="other">Есть %1$d ранее введенных кодов ISBN. Вы хотите начать их поиск или хотите их удалить?</item>
     </plurals>
     <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
@@ -885,12 +897,6 @@
     <string name="lbl_date_born">Родился</string>
     <string name="pt_fetch_author_info">Получение информации об авторе</string>
     <string name="menu_search_updates">Поиск обновлений</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Есть %1$d ранее введенный код ISBN. Хотите начать поиск по нему или хотите удалить его?</item>
-        <item quantity="few">Есть %1$d ранее введенных кода ISBN. Хотите начать их поиск или хотите их удалить?</item>
-        <item quantity="many">Есть %1$d ранее введенных кодов ISBN. Вы хотите начать их поиск или хотите их удалить?</item>
-        <item quantity="other">Есть %1$d ранее введенных кодов ISBN. Вы хотите начать их поиск или хотите их удалить?</item>
-    </plurals>
     <string name="lbl_author_type_foreword">Предисловие</string>
     <string name="lbl_image_2">Изображение 3</string>
     <string name="lbl_fastscroller_draghandle">Размер ползунка</string>

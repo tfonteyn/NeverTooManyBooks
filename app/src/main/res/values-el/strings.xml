@@ -35,6 +35,10 @@ A question mark is written as the character semicolon: ';'
         <item quantity="one">Βρέθηκε %1$d βιβλίο</item>
         <item quantity="other">%1$d βιβλία που βρέθηκαν</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d συγγραφέας</item>
+        <item quantity="other">%1$d συγγραφείς</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s αστέρι</item>
         <item quantity="other">%1$s αστέρια</item>

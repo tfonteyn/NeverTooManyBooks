@@ -32,6 +32,10 @@
         <item quantity="one">%1$d boek gevonden</item>
         <item quantity="other">%1$d boeken gevonden</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d auteur</item>
+        <item quantity="other">%1$d auteurs</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s ster</item>
         <item quantity="other">%1$s sterren</item>

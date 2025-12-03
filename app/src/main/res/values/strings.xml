@@ -54,16 +54,14 @@
         <item quantity="one">%1$d book</item>
         <item quantity="other">%1$d books</item>
     </plurals>
-    <plurals name="n_author">
-        <item quantity="one">%1$d author</item>
-        <item quantity="other">%1$d authors</item>
-    </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d book found</item>
         <item quantity="other">%1$d books found</item>
     </plurals>
-
+    <plurals name="n_author">
+        <item quantity="one">%1$d author</item>
+        <item quantity="other">%1$d authors</item>
+    </plurals>
     <!-- Rating of a book is measured in 0 (not rated) or 1..5 stars -->
     <plurals name="n_stars">
         <item quantity="one">%1$s star</item>

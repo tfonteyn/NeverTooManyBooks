@@ -30,6 +30,9 @@
     <plurals name="n_books">
         <item quantity="other">%1$d 本書</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="other">%1$d 位作者</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="other">%1$s 顆星</item>
     </plurals>

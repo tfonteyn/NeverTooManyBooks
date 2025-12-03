@@ -24,6 +24,22 @@
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
+    <plurals name="n_books">
+        <item quantity="zero">%1$d grāmatas</item>
+        <item quantity="one">%1$d grāmata</item>
+        <item quantity="other">%1$d grāmatas</item>
+    </plurals>
+    <plurals name="n_author">
+        <item quantity="zero">%1$d autori</item>
+        <item quantity="one">%1$d autors</item>
+        <item quantity="other">%1$d autori</item>
+    </plurals>
+    <plurals name="n_tags">
+        <item quantity="zero">%1$d birkas</item>
+        <item quantity="one">%1$d birka</item>
+        <item quantity="other">%1$d birkas</item>
+    </plurals>
+
     <string name="action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">%1$s un %2$s</string>
@@ -34,19 +50,10 @@
     <string name="notification_channel_error">Kļūda</string>
     <string name="list_semicolon">"; "</string>
     <string name="list_element">• %s</string>
-    <plurals name="n_books">
-        <item quantity="zero">%1$d grāmatas</item>
-        <item quantity="one">%1$d grāmata</item>
-        <item quantity="other">%1$d grāmatas</item>
-    </plurals>
+
     <string name="action_remove">Noņemt</string>
     <string name="action_remove_all">Noņemt visu</string>
     <string name="action_save">Saglabāt</string>
-    <plurals name="n_tags">
-        <item quantity="zero">%1$d birkas</item>
-        <item quantity="one">%1$d birka</item>
-        <item quantity="other">%1$d birkas</item>
-    </plurals>
     <string name="notification_channel_warn">Brīdinājums</string>
     <string name="book_format_audiobook">Audiogrāmata</string>
     <string name="book_color_full_color">Krāsains</string>

@@ -35,6 +35,11 @@
         <item quantity="other">%1$d livres trouvés</item>
         <item quantity="many">%1$d livres trouvés</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d auteur</item>
+        <item quantity="many">%1$d auteurs</item>
+        <item quantity="other">%1$d auteurs</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s étoile</item>
         <item quantity="other">%1$s étoiles</item>

@@ -33,6 +33,10 @@
         <item quantity="one">%1$d bok hittad</item>
         <item quantity="other">%1$d böcker hittade</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d författare</item>
+        <item quantity="other">%1$d författare</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s stjärna</item>
         <item quantity="other">%1$s stjärnor</item>

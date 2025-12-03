@@ -25,13 +25,34 @@
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
 --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="a_b">%1$s%2$s</string>
-    <string name="a_space_b">%1$s %2$s</string>
-    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <plurals name="n_books">
         <item quantity="one">%1$d könyv</item>
         <item quantity="other">%1$d könyv</item>
     </plurals>
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d talált könyv</item>
+        <item quantity="other">%1$d talált könyv</item>
+    </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d szerző</item>
+        <item quantity="other">%1$d szerző</item>
+    </plurals>
+    <plurals name="n_stars">
+        <item quantity="one">%1$s csillag</item>
+        <item quantity="other">%1$s csillag</item>
+    </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d címke</item>
+        <item quantity="other">%1$d címke</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Korábban %1$d ISBN kódot adtak meg. Szeretne keresést indítani rá, vagy törölni kell?</item>
+        <item quantity="other">Korábban %1$d ISBN-kódot adtak meg. Szeretne keresést indítani rájuk, vagy törölni kell őket?</item>
+    </plurals>
+
+    <string name="a_b">%1$s%2$s</string>
+    <string name="a_space_b">%1$s %2$s</string>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -52,18 +73,6 @@
     <string name="error_storage_not_writable">Kérjük, ellenőrizze, hogy a tárhely elegendő és írható.</string>
     <string name="error_insufficient_storage">Nincs elég tárhely.</string>
     <string name="error_search_x_failed_y">%1$s keresés sikertelen: %2$s</string>
-    <plurals name="n_books_found">
-        <item quantity="one">%1$d talált könyv</item>
-        <item quantity="other">%1$d talált könyv</item>
-    </plurals>
-    <plurals name="n_stars">
-        <item quantity="one">%1$s csillag</item>
-        <item quantity="other">%1$s csillag</item>
-    </plurals>
-    <plurals name="n_tags">
-        <item quantity="one">%1$d címke</item>
-        <item quantity="other">%1$d címke</item>
-    </plurals>
     <string name="quoted">„%1$s”</string>
     <string name="and_others">%1$s…</string>
     <string name="brackets">(%1$s)</string>
@@ -868,10 +877,6 @@
     <string name="lbl_date_born">Született</string>
     <string name="pt_fetch_author_info">Szerzői információk lekérése</string>
     <string name="lbl_author_type_foreword">Előszó</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Korábban %1$d ISBN kódot adtak meg. Szeretne keresést indítani rá, vagy törölni kell?</item>
-        <item quantity="other">Korábban %1$d ISBN-kódot adtak meg. Szeretne keresést indítani rájuk, vagy törölni kell őket?</item>
-    </plurals>
     <string name="lbl_image_2">Kép 3</string>
     <string name="lbl_fastscroller_draghandle">Görgetősáv fogantyú</string>
     <string name="lbl_permission_request">Engedélykérés</string>

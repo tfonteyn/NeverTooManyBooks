@@ -24,6 +24,31 @@
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
+    <plurals name="n_books">
+        <item quantity="one">%1$d நூல்</item>
+        <item quantity="other">%1$d புத்தகங்கள்</item>
+    </plurals>
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d நூல் காணப்பட்டது</item>
+        <item quantity="other">%1$d புத்தகங்கள் கிடைத்தன</item>
+    </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d எழுத்தாளர்</item>
+        <item quantity="other">%1$d எழுத்தாளர்கள்</item>
+    </plurals>
+    <plurals name="n_stars">
+        <item quantity="one">%1$s விண்மீன்</item>
+        <item quantity="other">%1$s நட்சத்திரங்கள்</item>
+    </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d குறிச்சொல்</item>
+        <item quantity="other">%1$d குறிச்சொற்கள்</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">முன்னர் ISBN குறியீட்டில் நுழைந்த %1$d உள்ளது. அதற்கான தேடலைத் தொடங்க விரும்புகிறீர்களா, அல்லது அதை அகற்ற வேண்டுமா?</item>
+        <item quantity="other">முன்னர் நுழைந்த %1$d உள்ளது. அவற்றுக்கான தேடல்களைத் தொடங்க விரும்புகிறீர்களா, அல்லது அவை அகற்றப்பட வேண்டுமா?</item>
+    </plurals>
+
     <string name="quoted">“%1$s”</string>
     <string name="list_element">• %s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -39,22 +64,6 @@
     <string name="acra_dialog_message">இது &APP_NAME; செயலிழந்தது. உங்களுக்கு விருப்பமான இடத்திற்கு ஒரு அறிக்கையைச் சேமிக்க “%1$s” ஐத் தட்டவும். திட்ட இணையதளத்தில் புதிய சிக்கலைப் புகாரளிக்க இந்த அறிக்கையைப் பயன்படுத்தலாம்.</string>
     <string name="acra_report_saved">நீங்கள் இப்போது கிதுபில் உள்ள திட்டப் பக்கத்தைப் பார்வையிட்டு புதிய சிக்கலை பதிவு செய்யலாம். முன்னர் சேமிக்கப்பட்ட அறிக்கையை பிரச்சினைக்கு இணைக்கவும். உங்களிடம் இன்னும் அறிவிலிமையம் கணக்கு இல்லையென்றால், நீங்கள் ஒன்றை உருவாக்க வேண்டும்.</string>
     <string name="httpErrorTimeout">சேவையகத்திற்கான இணைப்பு நேரம் முடிந்தது.</string>
-    <plurals name="n_books">
-        <item quantity="one">%1$d நூல்</item>
-        <item quantity="other">%1$d புத்தகங்கள்</item>
-    </plurals>
-    <plurals name="n_books_found">
-        <item quantity="one">%1$d நூல் காணப்பட்டது</item>
-        <item quantity="other">%1$d புத்தகங்கள் கிடைத்தன</item>
-    </plurals>
-    <plurals name="n_stars">
-        <item quantity="one">%1$s விண்மீன்</item>
-        <item quantity="other">%1$s நட்சத்திரங்கள்</item>
-    </plurals>
-    <plurals name="n_tags">
-        <item quantity="one">%1$d குறிச்சொல்</item>
-        <item quantity="other">%1$d குறிச்சொற்கள்</item>
-    </plurals>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -868,10 +877,6 @@
     <string name="lbl_date_born">பிறந்தது</string>
     <string name="pt_fetch_author_info">ஆசிரியர் தகவலைப் பெறுங்கள்</string>
     <string name="action_stop_searching">தேடுவதை நிறுத்துங்கள்</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">முன்னர் ISBN குறியீட்டில் நுழைந்த %1$d உள்ளது. அதற்கான தேடலைத் தொடங்க விரும்புகிறீர்களா, அல்லது அதை அகற்ற வேண்டுமா?</item>
-        <item quantity="other">முன்னர் நுழைந்த %1$d உள்ளது. அவற்றுக்கான தேடல்களைத் தொடங்க விரும்புகிறீர்களா, அல்லது அவை அகற்றப்பட வேண்டுமா?</item>
-    </plurals>
     <string name="lbl_fastscroller_draghandle">உருளைக் கட்டையின் விரலிசை</string>
     <string name="lbl_permission_request">அனுமதி கோரிக்கை</string>
     <string name="pt_barcode_zoom_control">பெரிதாக்க கட்டுப்பாடு</string>

@@ -34,6 +34,11 @@
         <item quantity="many">%1$d libros encontrados</item>
         <item quantity="other">%1$d libros encontrados</item>
     </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d autor</item>
+        <item quantity="many">%1$d autores</item>
+        <item quantity="other">%1$d autores</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrella</item>
         <item quantity="many">%1$s estrellas</item>
@@ -43,6 +48,11 @@
         <item quantity="one">%1$d etiqueta</item>
         <item quantity="many">%1$d etiquetas</item>
         <item quantity="other">%1$d etiquetas</item>
+    </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Hay %1$d código ISBN previamente introducido. Desea iniciar una búsqueda del mismo o debe eliminarlo?</item>
+        <item quantity="many">Hay %1$d códigos ISBN previamente introducidos. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
+        <item quantity="other">Hay %1$d códigos ISBN introducidos anteriormente. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
     </plurals>
     <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Eliminar certificados</string>
@@ -807,7 +817,7 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Asignar estanterías</string>
     <string name="site_description_comics">Cómics</string>
-    <string name="lbl_author_type_storyboard">Guión gráfico</string>
+    <string name="lbl_author_type_storyboard">Guion gráfico</string>
     <string name="lbl_author_type_lettering">Letras</string>
     <string name="lbl_percentage">Porcentaje</string>
     <string name="lbl_current_page">Página actual</string>
@@ -870,11 +880,6 @@
     <string name="info_identifier_editor"><![CDATA[Lea la <a href="%1$s">documentación</a> sobre Identificadores antes de editar.]]></string>
     <string name="lbl_date_born">Nacido</string>
     <string name="pt_fetch_author_info">Obtener información sobre el autor</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Hay %1$d código ISBN previamente introducido. Desea iniciar una búsqueda del mismo o debe eliminarlo?</item>
-        <item quantity="many">Hay %1$d códigos ISBN previamente introducidos. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
-        <item quantity="other">Hay %1$d códigos ISBN introducidos anteriormente. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
-    </plurals>
     <string name="lbl_author_type_foreword">Prólogo</string>
     <string name="lbl_image_2">Imagen 3</string>
     <string name="lbl_fastscroller_draghandle">Tamaño del control deslizante de la barra de desplazamiento</string>

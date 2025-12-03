@@ -25,20 +25,17 @@
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
 --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="brackets">(%1$s)</string>
     <plurals name="n_books">
         <item quantity="one">%1$d libro</item>
         <item quantity="other">%1$d libros</item>
     </plurals>
-    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_b">%1$s%2$s</string>
-    <string name="ellipsize">%1$s…</string>
-    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
-    <string name="error_updates_aborted">Actualizacións canceladas</string>
-    <string name="error_storage_not_accessible">Por favor, comproba que o almacenamento sexa accesible.</string>
     <plurals name="n_books_found">
         <item quantity="one">Atopado %1$d libro</item>
         <item quantity="other">Atopados %1$d libros</item>
+    </plurals>
+    <plurals name="n_author">
+        <item quantity="one">%1$d autor</item>
+        <item quantity="other">%1$d autores</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrela</item>
@@ -48,6 +45,18 @@
         <item quantity="one">%1$d etiqueta</item>
         <item quantity="other">%1$d etiquetas</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Hai %1$d código ISBN previamente introducido. Queres iniciar unha busca do mesmo ou eliminalo?</item>
+        <item quantity="other">Hai %1$d códigos ISBN previamente introducidos. Queres iniciar unha busca dos mesmos ou eliminalos?</item>
+    </plurals>
+
+    <string name="brackets">(%1$s)</string>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="a_b">%1$s%2$s</string>
+    <string name="ellipsize">%1$s…</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
+    <string name="error_updates_aborted">Actualizacións canceladas</string>
+    <string name="error_storage_not_accessible">Por favor, comproba que o almacenamento sexa accesible.</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="quoted">«%1$s»</string>
@@ -863,10 +872,6 @@
     <string name="unknown_author">[Autoría descoñecida]</string>
     <string name="menu_search_updates">Buscar actualizacións</string>
     <string name="lbl_wikidata_claim_author_id">Wikidata «claim/P»: código para o id da autoría</string>
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Hai %1$d código ISBN previamente introducido. Queres iniciar unha busca do mesmo ou eliminalo?</item>
-        <item quantity="other">Hai %1$d códigos ISBN previamente introducidos. Queres iniciar unha busca dos mesmos ou eliminalos?</item>
-    </plurals>
     <string name="action_stop_searching">Deter a busca</string>
     <string name="action_save_for_later">Gardar para máis tarde</string>
     <string name="confirm_leave_isbn_search">Hai buscas en curso e/ou resultados non gardados.</string>
