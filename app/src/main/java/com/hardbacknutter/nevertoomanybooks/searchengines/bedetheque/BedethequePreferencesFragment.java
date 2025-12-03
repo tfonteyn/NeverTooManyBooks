@@ -31,6 +31,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
@@ -41,6 +42,13 @@ public class BedethequePreferencesFragment
     private static final String PSK_CLEAR_AUTHOR_CACHE =
             EngineId.Bedetheque.getPreferenceKey() + ".cache.authors.clear";
     private int authorCacheCount = -1;
+    private BedethequeCacheDao cacheDao;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
+    }
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -60,7 +68,7 @@ public class BedethequePreferencesFragment
                         .setMessage(R.string.option_purge_bedetheque_authors_cache)
                         .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(R.string.ok, (d, w) -> {
-                            ServiceLocator.getInstance().getBedethequeCacheDao().clearCache();
+                            cacheDao.clearCache();
                             setPurgeCacheSummary(p);
                         })
                         .create()
@@ -72,7 +80,7 @@ public class BedethequePreferencesFragment
 
     private void setPurgeCacheSummary(@NonNull final Preference preference) {
         if (preference.isEnabled()) {
-            authorCacheCount = ServiceLocator.getInstance().getBedethequeCacheDao().countAuthors();
+            authorCacheCount = cacheDao.countAuthors();
             final String number;
             if (authorCacheCount > 0) {
                 number = String.valueOf(authorCacheCount);
