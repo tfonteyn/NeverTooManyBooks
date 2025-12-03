@@ -103,7 +103,7 @@ class SingleFileDownloadTask
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));
 
         if (!server.isMetaDataRead()) {
-            server.readMetaData(context);
+            server.readMetaData();
         }
         return server.fetchFile(context, book, folder, this);
     }

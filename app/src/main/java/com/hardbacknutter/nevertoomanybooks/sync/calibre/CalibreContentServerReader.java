@@ -135,9 +135,8 @@ public class CalibreContentServerReader
     @NonNull
     private final String eBookString;
 
-    @NonNull
     private final BookDao bookDao;
-    @NonNull
+    private final BookshelfDao bookshelfDao;
     private final CalibreLibraryDao calibreLibraryDao;
 
     @NonNull
@@ -187,6 +186,7 @@ public class CalibreContentServerReader
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         bookDao = serviceLocator.getBookDao();
+        bookshelfDao = serviceLocator.getBookshelfDao();
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
 
         dateParser = new ISODateParser(ServiceLocator.getInstance()
@@ -201,13 +201,13 @@ public class CalibreContentServerReader
         server.cancel();
     }
 
-    private void readLibraryMetaData(@NonNull final Context context)
+    private void readLibraryMetaData()
             throws StorageException,
                    IOException,
                    JSONException,
                    DaoWriteException {
 
-        server.readMetaData(context);
+        server.readMetaData();
         if (library == null) {
             library = server.getDefaultLibrary();
         }
@@ -222,7 +222,7 @@ public class CalibreContentServerReader
                    IOException {
 
         try {
-            readLibraryMetaData(context);
+            readLibraryMetaData();
         } catch (@NonNull final JSONException | DaoWriteException e) {
             throw new DataReaderException(e);
         }
@@ -258,7 +258,7 @@ public class CalibreContentServerReader
         try {
             // Always (re)read the meta data here.
             // Don't assume we still have the same instance as when readMetaData was called.
-            readLibraryMetaData(context);
+            readLibraryMetaData();
 
             //noinspection DataFlowIssue
             final int totalNum = library.getTotalBooks();
@@ -492,15 +492,10 @@ public class CalibreContentServerReader
      *
      * @return a Book
      *
-     * @throws StorageException         The covers directory is not available
-     * @throws JSONException            upon any parsing error
-     * @throws IOException              on generic/other IO failures
-     * @throws IllegalArgumentException if a value has unexpectedly the text "null".
      */
     @NonNull
     private Book convert(@NonNull final Context context,
-                         @NonNull final JSONObject calibreBook)
-            throws IOException, StorageException {
+                         @NonNull final JSONObject calibreBook) {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.Dirty);
@@ -770,7 +765,6 @@ public class CalibreContentServerReader
         // Current list, will be empty for new books
         final List<Bookshelf> bookShelves = book.getBookshelves();
 
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
         // Add the physical library mapped Bookshelf
         //noinspection DataFlowIssue
         final Bookshelf mappedBookshelf = bookshelfDao

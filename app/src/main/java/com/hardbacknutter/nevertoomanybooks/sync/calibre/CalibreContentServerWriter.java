@@ -100,7 +100,9 @@ public class CalibreContentServerWriter
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
     private final RealNumberParser realNumberParser;
-
+    private final BookDao bookDao;
+    private final CalibreDao calibreDao;
+    private final CalibreLibraryDao calibreLibraryDao;
     private SyncWriterResults results;
 
     /**
@@ -124,11 +126,13 @@ public class CalibreContentServerWriter
         this.incremental = incremental;
         this.deleteLocalBook = deleteLocalBook;
 
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        bookDao = serviceLocator.getBookDao();
+        calibreDao = serviceLocator.getCalibreDao();
+        calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
+
         server = new CalibreContentServer.Builder(context).build();
-        dateParser = new ISODateParser(ServiceLocator
-                                               .getInstance()
-                                               .getSystemLocaleList()
-                                               .get(0));
+        dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
         realNumberParser = new RealNumberParser(allLocales);
@@ -157,9 +161,7 @@ public class CalibreContentServerWriter
         progressListener.setIndeterminate(null);
 
         try {
-            server.readMetaData(context);
-            final CalibreLibraryDao libraryDao = ServiceLocator.getInstance()
-                                                               .getCalibreLibraryDao();
+            server.readMetaData();
             for (final CalibreLibrary library : server.getLibraries()) {
 
                 @Nullable
@@ -176,7 +178,7 @@ public class CalibreContentServerWriter
                 }
                 // always set the sync date!
                 library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
-                libraryDao.update(library);
+                calibreLibraryDao.update(library);
             }
         } catch (@NonNull final JSONException | DaoWriteException e) {
             throw new DataWriterException(e);
@@ -189,14 +191,11 @@ public class CalibreContentServerWriter
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
             throws StorageException, IOException {
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         try (Cursor cursor = bookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
             int delta = 0;
             long lastUpdate = 0;
             progressListener.setMaxPos(cursor.getCount());
-
-            final CalibreDao calibreDao = ServiceLocator.getInstance().getCalibreDao();
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor);

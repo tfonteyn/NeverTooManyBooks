@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -328,12 +329,16 @@ public final class CalibreContentServer
     /** As read from the Content Server. */
     @NonNull
     private final List<CalibreLibrary> libraries = new ArrayList<>();
-    private final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
+    private final Set<CalibreCustomField> calibreCustomFields;
     private final int connectTimeoutInMs;
     private final int readTimeoutInMs;
     /** The header string: "Basic user:password". (in base64) */
     @Nullable
     private final String authHeader;
+
+    private final BookshelfDao bookshelfDao;
+    private final CalibreLibraryDao calibreLibraryDao;
+
     @Nullable
     private FutureHttp<Void> httpPost;
     @Nullable
@@ -381,8 +386,13 @@ public final class CalibreContentServer
                 PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
-        calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()
-                                                 .getCustomFields());
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        bookshelfDao = serviceLocator.getBookshelfDao();
+        calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
+
+        final List<CalibreCustomField> customFields =
+                serviceLocator.getCalibreCustomFieldDao().getCustomFields();
+        calibreCustomFields = new HashSet<>(customFields);
     }
 
     /**
@@ -636,7 +646,7 @@ public final class CalibreContentServer
     }
 
     /**
-     * Check if {@link #readMetaData(Context)} has been successfully called.
+     * Check if {@link #readMetaData()} has been successfully called.
      *
      * @return flag
      */
@@ -665,15 +675,13 @@ public final class CalibreContentServer
      * Populates {@link #defaultLibrary}, {@link #libraries}
      * and the {@link #calibreExtensionInstalled} flag.
      *
-     * @param context Current context
-     *
      * @throws IOException       on generic/other IO failures
      * @throws StorageException  on storage related failures
      * @throws JSONException     upon any parsing error
      * @throws DaoWriteException on failure to update the database
      */
     @WorkerThread
-    public void readMetaData(@NonNull final Context context)
+    public void readMetaData()
             throws IOException,
                    StorageException,
                    JSONException,
@@ -681,10 +689,6 @@ public final class CalibreContentServer
 
         libraries.clear();
         defaultLibrary = null;
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final CalibreLibraryDao libraryDao = serviceLocator.getCalibreLibraryDao();
-        final BookshelfDao bookshelfDao = serviceLocator.getBookshelfDao();
 
         // use the current bookshelf (or default if not set)
         final long currentBookshelfId = bookshelfDao.getCurrent()
@@ -700,7 +704,7 @@ public final class CalibreContentServer
         final JSONObject libraryDetails = source.optJSONObject(RESPONSE_TAG_LIBRARY_DETAILS);
         calibreExtensionInstalled = libraryDetails != null;
 
-        final SynchronizedDb db = serviceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -733,10 +737,10 @@ public final class CalibreContentServer
                 @Nullable
                 CalibreLibrary library = null;
                 if (!uuid.isEmpty()) {
-                    library = libraryDao.findLibraryByUuid(uuid).orElse(null);
+                    library = calibreLibraryDao.findLibraryByUuid(uuid).orElse(null);
                 }
                 if (library == null) {
-                    library = libraryDao.findLibraryByStringId(libraryId).orElse(null);
+                    library = calibreLibraryDao.findLibraryByStringId(libraryId).orElse(null);
                 }
                 if (library == null) {
                     // must be a new one.
@@ -752,13 +756,13 @@ public final class CalibreContentServer
                 // If we have vl info, process it
                 // If we don't; the library will keep any vl defined previously
                 if (vlibs != null) {
-                    processVirtualLibraries(libraryDao, library, vlibs);
+                    processVirtualLibraries(calibreLibraryDao, library, vlibs);
                 }
 
                 if (library.getId() > 0) {
-                    libraryDao.update(library);
+                    calibreLibraryDao.update(library);
                 } else {
-                    libraryDao.insert(library);
+                    calibreLibraryDao.insert(library);
                 }
 
                 // add to cached list
@@ -850,7 +854,7 @@ public final class CalibreContentServer
      *
      * @return flag
      *
-     * @see #readMetaData(Context)
+     * @see #readMetaData()
      * @see #isMetaDataRead()
      */
     @AnyThread
@@ -1389,7 +1393,7 @@ public final class CalibreContentServer
     @NonNull
     Optional<File> getCover(final int calibreId,
                             @NonNull final String coverUrl)
-            throws StorageException, IOException {
+            throws IOException, CoverStorageException {
 
         synchronized (this) {
             if (imageDownloader == null) {
