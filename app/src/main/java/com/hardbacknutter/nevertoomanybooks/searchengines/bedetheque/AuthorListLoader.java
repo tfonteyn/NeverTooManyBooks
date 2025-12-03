@@ -57,12 +57,15 @@ class AuthorListLoader {
     private final BedethequeSearchEngine searchEngine;
     @NonNull
     private final Locale locale;
+    private final BedethequeCacheDao bedethequeCacheDao;
 
     AuthorListLoader(@NonNull final Context context,
                      @NonNull final BedethequeSearchEngine searchEngine) {
         this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
+
+        bedethequeCacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
     }
 
     /**
@@ -106,7 +109,7 @@ class AuthorListLoader {
                                                    .iterator();
 
         try {
-            ServiceLocator.getInstance().getBedethequeCacheDao().insert(locale, () -> {
+            bedethequeCacheDao.insert(locale, () -> {
                 if (iterator.hasNext()) {
                     final Element a = iterator.next();
                     final String url = a.attr("href");
