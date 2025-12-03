@@ -581,7 +581,7 @@ public class EditBookTocFragment
 
         // append the new data
         // can create duplicates if the user mixes manual input with automatic (or 2 x automatic...)
-        // They will get weeded out when saved to the DAO
+        // They will get weeded out when saved to the database
         tocEntryList.addAll(tocEntries);
         adapter.notifyDataSetChanged();
     }
