@@ -124,6 +124,8 @@
     <string name="name_hash_nr">%1$s #%2$d</string>
     <!-- x and y are numbers; e.g.: 5 of 9 -->
     <string name="x_of_y">%1$d of %2$d</string>
+    <!-- 'and' as used in lists:  x and y -->
+    <string name="list_and">%1$s and %2$s</string>
     <!-- Abbreviation to indicate there are more of something.
          e.g. a list of Series: "Foundation…" indicates a book belongs to the
          "Foundation" Series, but is also present in others.
@@ -2155,8 +2157,6 @@
     <string name="strict">Strict</string>
     <!-- Certain checks are only loosely enforced. Opposite of 'Strict' -->
     <string name="loose">Loose</string>
-    <!-- 'and' as used in lists:  x and y -->
-    <string name="list_and">and</string>
     <!-- endregion -->
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
     <string name="lbl_add_book_by_external_id"

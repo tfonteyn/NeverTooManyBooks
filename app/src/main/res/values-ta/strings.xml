@@ -801,7 +801,7 @@
     <string name="none">எதுவுமில்லை</string>
     <string name="strict">கண்டிப்பான</string>
     <string name="loose">தளர்வான</string>
-    <string name="list_and">மற்றும்</string>
+    <string name="list_and">%1$s மற்றும் %2$s</string>
     <string name="lbl_local_search">உள்ளக தேடல்</string>
     <string name="lbl_local_search_long">மேம்பட்ட உள்ளக தேடல்</string>
     <string name="lbl_keywords">முக்கிய வார்த்தைகள்</string>

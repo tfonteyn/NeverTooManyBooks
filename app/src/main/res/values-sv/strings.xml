@@ -526,7 +526,7 @@
     <string name="lbl_websites">Webbplatser</string>
     <string name="lbl_wikidata_claim_author_id">Kod för författar-ID i Wikidata ”claim/P”</string>
     <string name="lbl_year">År</string>
-    <string name="list_and">och</string>
+    <string name="list_and">%1$s och %2$s</string>
     <string name="list_element">• %s</string>
     <string name="list_semicolon">"; "</string>
     <string name="loose">Lös</string>

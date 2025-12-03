@@ -213,26 +213,24 @@ public final class StandardDialogs {
                                   @NonNull final String title,
                                   @NonNull final List<Author> authorList,
                                   @NonNull final Runnable onConfirm) {
-
-        // Format the list of authors nicely
-        final StringBuilder authors = new StringBuilder();
+        final String s;
         if (authorList.isEmpty()) {
-            authors.append(context.getString(R.string.unknown_author));
-
+            s = context.getString(R.string.unknown_author);
+        } else if (authorList.size() == 1) {
+            s = authorList.get(0).getLabel(context);
         } else {
-            // "a1, a2 and a3"
-            authors.append(authorList.get(0).getLabel(context));
-            for (int i = 1; i < authorList.size() - 1; i++) {
-                authors.append(", ").append(authorList.get(i).getLabel(context));
-            }
+            final List<String> authorNames = authorList.stream()
+                                                       .map(a -> a.getLabel(context))
+                                                       .collect(Collectors.toList());
 
-            if (authorList.size() > 1) {
-                authors.append(' ').append(context.getString(R.string.list_and)).append(' ')
-                       .append(authorList.get(authorList.size() - 1).getLabel(context));
-            }
+            // Format the list of authors as "a1 and a2" or "a1, a2,... and aN"
+            final int lastIndex = authorList.size() - 1;
+            final String csv = String.join(", ", authorNames.subList(0, lastIndex));
+            final String last = authorNames.get(lastIndex);
+            s = context.getString(R.string.list_and, csv, last);
         }
 
-        final String msg = context.getString(R.string.confirm_delete_book, title, authors);
+        final String msg = context.getString(R.string.confirm_delete_book, title, s);
         delete(context, onConfirm, msg);
     }
 
@@ -244,6 +242,7 @@ public final class StandardDialogs {
      *   <li>Warns and auto-promotes the 'oldest' bookshelf when the one
      *   to delete is the current default.</li>
      * </ul>
+     *
      * @param context   Current context
      * @param bookshelf Bookshelf we're about to delete
      * @param onConfirm Runnable to execute if the user clicks the confirm button.

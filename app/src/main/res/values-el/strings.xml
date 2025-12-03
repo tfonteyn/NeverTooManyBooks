@@ -470,7 +470,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Κωδικός «claim/P» του Wikidata για το αναγνωριστικό του συγγραφέα</string>
     <string name="lbl_year">Έτος</string>
-    <string name="list_and">και</string>
+    <string name="list_and">%1$s και %2$s</string>
     <string name="brackets">(%1$s)</string>
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"- "</string>

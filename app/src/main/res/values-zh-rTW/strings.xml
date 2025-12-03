@@ -493,7 +493,7 @@
     <string name="lbl_websites">網站</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>識別符</small>]]></string>
     <string name="lbl_year">年</string>
-    <string name="list_and">與</string>
+    <string name="list_and">%1$s 與 %2$s</string>
     <string name="brackets">（%1$s）</string>
     <string name="ellipsize">%1$s……</string>
     <string name="list_semicolon">"； "</string>

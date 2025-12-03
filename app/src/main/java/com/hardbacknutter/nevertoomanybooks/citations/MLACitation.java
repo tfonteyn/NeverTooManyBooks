@@ -80,9 +80,9 @@ class MLACitation
                 break;
             }
             case 2: {
-                authorStr = authors.get(0).getFormattedName(byGivenName)
-                            + ' ' + context.getString(R.string.list_and)
-                            + ' ' + authors.get(1).getFormattedName(byGivenName);
+                authorStr = context.getString(R.string.list_and,
+                                              authors.get(0).getFormattedName(byGivenName),
+                                              authors.get(1).getFormattedName(byGivenName));
                 break;
             }
             default: {

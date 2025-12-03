@@ -826,7 +826,7 @@
     <string name="lbl_tab_alternative_editions">Alt. kiad.</string>
     <string name="enabled">Bekapcsolva</string>
     <string name="strict">Szigorú</string>
-    <string name="list_and">és</string>
+    <string name="list_and">%1$s és %2$s</string>
     <string name="lbl_local_search">Helyi keresés</string>
     <string name="lbl_keywords">Kulcsszavak</string>
     <string name="btn_this_book">Csak ez a könyv</string>

@@ -683,7 +683,7 @@
     <string name="option_field_usage_overwrite">Substitui os dados existentes</string>
     <string name="strict">Estrito</string>
     <string name="X_neither">Nenhum</string>
-    <string name="list_and">e</string>
+    <string name="list_and">%1$s e %2$s</string>
     <string name="btn_this_book">Apenas este livro</string>
     <string name="lbl_local_search">Pesquisa Local</string>
     <string name="btn_all_books">Todos os livros</string>

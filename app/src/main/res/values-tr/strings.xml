@@ -468,7 +468,7 @@
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Yazar kimliği için Vikiveri “claim/P” kodu</string>
     <string name="lbl_year">Yıl</string>
-    <string name="list_and">ve</string>
+    <string name="list_and">%1$s ve %2$s</string>
     <string name="brackets">(%1$s)</string>
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>
