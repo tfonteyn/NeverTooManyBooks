@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,6 +63,11 @@ public class EditPublisherViewModel
 
             currentEdit = new Publisher(original);
         }
+    }
+
+    @NonNull
+    List<String> getAllNames() {
+        return dao.getNames();
     }
 
     @NonNull
