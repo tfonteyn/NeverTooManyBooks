@@ -26,6 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
+import java.util.function.Supplier;
+
+import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
+
 @SuppressWarnings("WeakerAccess")
 public class EditInLineStringViewModel
         extends ViewModel {
@@ -34,23 +39,37 @@ public class EditInLineStringViewModel
     private String original;
     /** Current edit. */
     private String currentEdit;
+    private InlineStringDao dao;
 
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args        {@link Fragment#requireArguments()}
+     * @param daoSupplier the {@link InlineStringDao} supplier
      */
-    void init(@NonNull final Bundle args) {
-        if (original == null) {
-            original = args.getString(EditInLineStringLauncher.BKEY_ITEM, "");
+    void init(@NonNull final Bundle args,
+              @NonNull final Supplier<InlineStringDao> daoSupplier) {
+        if (dao == null) {
+            dao = daoSupplier.get();
 
+            original = args.getString(EditInLineStringLauncher.BKEY_ITEM, "");
             currentEdit = original;
         }
     }
 
     @NonNull
+    List<String> getList() {
+        return dao.getList();
+    }
+
+    @NonNull
     String getOriginal() {
         return original;
+    }
+
+    void rename(@NonNull final String originalText,
+                @NonNull final String currentText) {
+        dao.rename(originalText, currentText);
     }
 
     @NonNull

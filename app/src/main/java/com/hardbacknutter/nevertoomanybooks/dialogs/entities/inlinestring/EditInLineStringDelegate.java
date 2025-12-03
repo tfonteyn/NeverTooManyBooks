@@ -60,8 +60,6 @@ class EditInLineStringDelegate
     private final String dialogTitle;
     @NonNull
     private final String label;
-    @NonNull
-    private final Supplier<InlineStringDao> daoSupplier;
 
     private final EditInLineStringViewModel vm;
     @NonNull
@@ -91,14 +89,12 @@ class EditInLineStringDelegate
                                             DialogLauncher.BKEY_REQUEST_KEY);
 
         vm = new ViewModelProvider(owner).get(EditInLineStringViewModel.class);
-        vm.init(args);
+        vm.init(args, daoSupplier);
 
         final Context context = owner.getContext();
         //noinspection DataFlowIssue
         this.dialogTitle = context.getString(dialogTitleId);
         this.label = context.getString(labelResId);
-
-        this.daoSupplier = daoSupplier;
     }
 
     @NonNull
@@ -214,7 +210,7 @@ class EditInLineStringDelegate
      */
     @NonNull
     List<String> getList(@NonNull final Context context) {
-        return daoSupplier.get().getList();
+        return vm.getList();
     }
 
     /**
@@ -233,7 +229,7 @@ class EditInLineStringDelegate
     String onSave(@NonNull final Context context,
                   @NonNull final String originalText,
                   @NonNull final String currentText) {
-        daoSupplier.get().rename(originalText, currentText);
+        vm.rename(originalText, currentText);
         return currentText;
     }
 
