@@ -37,7 +37,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesContentBinding;
@@ -130,7 +129,7 @@ class EditSeriesDelegate
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                ServiceLocator.getInstance().getSeriesDao().getNames());
+                vm.getAllNames());
 
         vb.seriesTitle.setText(currentEdit.getTitle());
         vb.seriesTitle.setAdapter(titleAdapter);
