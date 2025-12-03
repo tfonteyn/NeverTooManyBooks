@@ -63,7 +63,7 @@ public class BookLight
     public BookLight(@NonNull final Book book) {
         this.id = book.getId();
         this.title = book.getTitle();
-        this.language = book.getString(DBKey.LANGUAGE);
+        this.language = book.getLanguage();
         this.primaryAuthor = book.getPrimaryAuthor();
         this.firstPublicationDate = book.getFirstPublicationDate();
     }

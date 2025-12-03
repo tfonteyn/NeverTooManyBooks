@@ -44,7 +44,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -321,7 +320,7 @@ class EditBookAuthorDelegate
         }
 
         // Use the Locale from the book language.
-        final String language = vm.getBook().getString(DBKey.LANGUAGE);
+        final String language = vm.getBook().getLanguage();
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale locale = ServiceLocator.getInstance().getLanguages()
                                             .toLocale(language, userLocale);

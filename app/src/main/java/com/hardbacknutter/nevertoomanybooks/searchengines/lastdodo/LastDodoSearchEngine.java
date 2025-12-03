@@ -693,7 +693,7 @@ public class LastDodoSearchEngine
         final List<Series> seriesList = book.getSeries();
         if (!seriesList.isEmpty()) {
             // Determine the book locale as best as we can
-            final String language = book.getString(DBKey.LANGUAGE);
+            final String language = book.getLanguage();
             @NonNull
             final Locale locale;
             if (language.isBlank()) {

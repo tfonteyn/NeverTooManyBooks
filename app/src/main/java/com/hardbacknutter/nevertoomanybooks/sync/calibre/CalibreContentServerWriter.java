@@ -371,8 +371,8 @@ public class CalibreContentServerWriter
     @NonNull
     private JSONArray collectLanguages(@NonNull final Book localBook) {
         final JSONArray languages = new JSONArray();
-        final String language = localBook.getString(DBKey.LANGUAGE, null);
-        if (language != null && !language.isEmpty()) {
+        final String language = localBook.getLanguage();
+        if (!language.isEmpty()) {
             languages.put(language);
         }
         return languages;

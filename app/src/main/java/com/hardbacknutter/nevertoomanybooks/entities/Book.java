@@ -829,6 +829,16 @@ public class Book
     }
 
     /**
+     * Get the language.
+     *
+     * @return display-name or iso3 code; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getLanguage() {
+        return getString(DBKey.LANGUAGE);
+    }
+
+    /**
      * Set the language.
      * Ideally an iso3 code, but iso2, "display" names,
      * or unofficial languages are accepted.
@@ -1482,7 +1492,8 @@ public class Book
      * @param userLocale Current Locale
      */
     public void ensureLanguage(@NonNull final Locale userLocale) {
-        if (getString(DBKey.LANGUAGE).isEmpty()) {
+        final String lang = getString(DBKey.LANGUAGE, null);
+        if (lang == null || lang.isEmpty()) {
             final List<String> previouslyUsed = ServiceLocator.getInstance()
                                                               .getLanguageDao().getList();
             if (previouslyUsed.isEmpty()) {

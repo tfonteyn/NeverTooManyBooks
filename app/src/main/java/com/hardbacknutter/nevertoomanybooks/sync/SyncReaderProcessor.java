@@ -245,11 +245,11 @@ public class SyncReaderProcessor {
         // Commit the new data
         if (!remoteBook.isEmpty()) {
             // Get the language, if there was one requested for updating.
-            String bookLang = remoteBook.getString(DBKey.LANGUAGE, null);
-            if (bookLang == null || bookLang.isEmpty()) {
+            String bookLang = remoteBook.getLanguage();
+            if (bookLang.isEmpty()) {
                 // Otherwise add the original one.
-                bookLang = localBook.getString(DBKey.LANGUAGE, null);
-                if (bookLang != null && !bookLang.isEmpty()) {
+                bookLang = localBook.getLanguage();
+                if (!bookLang.isEmpty()) {
                     remoteBook.setLanguage(bookLang);
                 }
             }

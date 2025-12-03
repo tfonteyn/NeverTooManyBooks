@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -70,7 +69,7 @@ public class RISCitation
             sj.add("SN  - " + isbn);
         }
 
-        final String lang = book.getString(DBKey.LANGUAGE);
+        final String lang = book.getLanguage();
         if (!lang.isEmpty()) {
             final Locale userLocale = context.getResources().getConfiguration()
                                              .getLocales().get(0);
