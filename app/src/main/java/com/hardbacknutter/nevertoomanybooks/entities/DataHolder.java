@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -126,22 +127,6 @@ public interface DataHolder {
 
     /**
      * Returns the value associated with the given key.
-     * If the key is not present, or the value was {@code null}, an empty String will be returned.
-     * <p>
-     * If the value was not a String, implementations <strong>must</strong> stringify it.
-     *
-     * @param key Key of data object
-     *
-     * @return Value of the data, can be empty, but never {@code null}
-     */
-    @NonNull
-    default String getString(@NonNull final String key) {
-        //noinspection DataFlowIssue
-        return getString(key, "");
-    }
-
-    /**
-     * Returns the value associated with the given key.
      * If the key is not present, or the value was {@code null}, the 'defValue' will be returned.
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
@@ -154,6 +139,34 @@ public interface DataHolder {
     @Nullable
     String getString(@NonNull String key,
                      @Nullable String defValue);
+
+    /**
+     * Convenience method for {@link #getString(String, String)} with a default of {@code ""}.
+     *
+     * @param key Key of data object
+     *
+     * @return Value of the data, can be empty, but never {@code null}
+     */
+    @NonNull
+    default String getString(@NonNull final String key) {
+        //noinspection DataFlowIssue
+        return getString(key, "");
+    }
+
+    @NonNull
+    default Optional<String> optString(@NonNull final String key) {
+        return Optional.ofNullable(getString(key, null));
+    }
+
+    @NonNull
+    default Optional<String> optStringNonBlank(@NonNull final String key) {
+        final String s = getString(key, null);
+        if (s == null || s.isBlank()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(s);
+    }
 
     /**
      * Get a {@link Parcelable} {@link ArrayList} from the collection.
