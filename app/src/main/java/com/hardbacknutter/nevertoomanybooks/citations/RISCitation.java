@@ -52,6 +52,11 @@ public class RISCitation
         implements Citation {
 
     private static final String CRLF = "\r\n";
+    private final IdentifierDao identifierDao;
+
+    public RISCitation() {
+        identifierDao = ServiceLocator.getInstance().getIdentifierDao();
+    }
 
     @NonNull
     @Override
@@ -93,7 +98,6 @@ public class RISCitation
             .or(() -> book.getPublicationDate().getYear())
             .ifPresent(year -> sj.add("Y1  - " + year));
 
-        final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         book.getIdentifiers()
             .forEach(iv -> identifierDao
                     .findByKey(iv.getKey())
