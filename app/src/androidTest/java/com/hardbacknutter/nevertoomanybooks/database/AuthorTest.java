@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,6 +52,7 @@ public class AuthorTest
 
     private Locale bookLocale;
     private AuthorDao authorDao;
+    private BookDao bookDao;
 
     @Before
     public void setup()
@@ -59,6 +60,7 @@ public class AuthorTest
         super.setup();
 
         bookLocale = Locale.getDefault();
+        bookDao = serviceLocator.getBookDao();
         authorDao = serviceLocator.getAuthorDao();
     }
 
@@ -136,7 +138,6 @@ public class AuthorTest
         authorIdArray[2] = authorDao.insert(context, authorArray[2], bookLocale);
         assertTrue(authorIdArray[2] > 0);
 
-        final BookDao bookDao = serviceLocator.getBookDao();
         int bookIdx;
         // add book 0,1,4 to author 2
         bookIdx = 0;
@@ -208,7 +209,6 @@ public class AuthorTest
         authorIdArray[2] = authorDao.insert(context, authorArray[2], bookLocale);
         assertTrue(authorIdArray[2] > 0);
 
-        final BookDao bookDao = serviceLocator.getBookDao();
         int bookIdx;
         // add book 0,1,4 to author 2
         bookIdx = 0;

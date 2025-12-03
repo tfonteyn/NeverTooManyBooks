@@ -64,7 +64,8 @@ public class GermanEszettTest
         db.delete(TBL_AUTHORS.getName(), DBKey.AUTHOR.FAMILY_NAME
                                          + "='Gross'", null);
 
-        this.authorDao = serviceLocator.getAuthorDao();
+        authorDao = serviceLocator.getAuthorDao();
+
         final Author author1 = Author.from(GERMAN_GROSS_1);
         author1.setBirthDate(BIRTH_DATE_1);
         id1 = authorDao.insert(context, author1, Locale.GERMANY);

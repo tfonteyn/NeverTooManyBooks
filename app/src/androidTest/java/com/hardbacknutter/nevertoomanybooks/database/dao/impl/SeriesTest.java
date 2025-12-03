@@ -43,10 +43,14 @@ import static org.junit.Assert.assertTrue;
 public class SeriesTest
         extends BaseDBTest {
 
+    private SeriesDao seriesDao;
+
     @Before
     public void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        seriesDao = serviceLocator.getSeriesDao();
     }
 
     /**
@@ -58,7 +62,6 @@ public class SeriesTest
     public void pruneSeries01List()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final SeriesDao seriesDao = serviceLocator.getSeriesDao();
 
         final List<Series> list = new ArrayList<>();
         Series series;
@@ -151,7 +154,6 @@ public class SeriesTest
     @Test
     public void pruneReorderedDuplications() {
         final Locale bookLocale = Locale.getDefault();
-        final SeriesDao seriesDao = serviceLocator.getSeriesDao();
 
         final List<Series> list = new ArrayList<>();
 

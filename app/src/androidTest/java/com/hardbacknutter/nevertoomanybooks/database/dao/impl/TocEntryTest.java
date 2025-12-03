@@ -48,19 +48,22 @@ public class TocEntryTest
         extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
+    private AuthorDao authorDao;
+    private TocEntryDao tocEntryDao;
 
     @Before
     public void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        authorDao = serviceLocator.getAuthorDao();
+        tocEntryDao = serviceLocator.getTocEntryDao();
     }
 
     @Test
     public void pruneTocEntries01()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final AuthorDao authorDao = serviceLocator.getAuthorDao();
-        final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         authorDao.fixId(context, author0, bookLocale);
@@ -118,8 +121,6 @@ public class TocEntryTest
     public void pruneTocEntries02()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final AuthorDao authorDao = serviceLocator.getAuthorDao();
-        final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         authorDao.fixId(context, author0, bookLocale);
@@ -175,8 +176,6 @@ public class TocEntryTest
     public void pruneTocEntries03()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final AuthorDao authorDao = serviceLocator.getAuthorDao();
-        final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         authorDao.fixId(context, author0, bookLocale);

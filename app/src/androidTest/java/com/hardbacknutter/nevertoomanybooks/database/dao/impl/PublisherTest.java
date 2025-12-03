@@ -48,18 +48,20 @@ public class PublisherTest
     private static final String PUBLISHER_THE = "publisher, The";
     private static final String JOSE_PUBLISHER = "José publisher";
     private static final String JOSE_PUBLISHER_VARIANT = "Jose publisher";
+    private PublisherDao publisherDao;
 
     @Before
     public void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        publisherDao = serviceLocator.getPublisherDao();
     }
 
     @Test
     public void prunePublisherNames01()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -110,7 +112,6 @@ public class PublisherTest
     public void prunePublisherNames02()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -167,7 +168,6 @@ public class PublisherTest
     public void prunePublisherNames03()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;

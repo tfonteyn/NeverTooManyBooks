@@ -90,6 +90,8 @@ public class BookTest
     public TestRule rule = new InstantTaskExecutorRule();
 
     private CoverStorage coverStorage;
+    private BookDao bookDao;
+    private LoaneeDao loaneeDao;
 
     /**
      * Clean the database.
@@ -100,6 +102,9 @@ public class BookTest
     public void setup()
             throws IOException, StorageException, DaoWriteException {
         super.setup();
+
+        bookDao = serviceLocator.getBookDao();
+        loaneeDao = serviceLocator.getLoaneeDao();
 
         coverStorage = serviceLocator.getCoverStorage();
 
@@ -161,8 +166,6 @@ public class BookTest
 
         final int bookIdx = 0;
 
-        final BookDao bookDao = serviceLocator.getBookDao();
-
         // Do the initial insert and test it
         final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
         Book book = Book.from(bookId);
@@ -211,13 +214,10 @@ public class BookTest
     }
 
     @Test
-    public void Lending()
+    public void lending()
             throws DaoWriteException, IOException, StorageException {
 
         final int bookIdx = 0;
-
-        final BookDao bookDao = serviceLocator.getBookDao();
-        final LoaneeDao loaneeDao = serviceLocator.getLoaneeDao();
 
         final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
 
@@ -244,8 +244,6 @@ public class BookTest
             throws DaoWriteException, IOException, StorageException {
 
         final int bookIdx = 0;
-
-        final BookDao bookDao = serviceLocator.getBookDao();
 
         final File coverDir = coverStorage.getDir();
         final File tempDir = coverStorage.getTempDir();
@@ -318,7 +316,6 @@ public class BookTest
         final Optional<Style> s1 = helper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID);
         assertTrue(s1.isPresent());
 
-        final BookDao bookDao = serviceLocator.getBookDao();
         final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
         final Bundle args = serviceLocator.newBundle();

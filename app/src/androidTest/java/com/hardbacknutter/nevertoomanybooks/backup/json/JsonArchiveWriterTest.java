@@ -74,11 +74,14 @@ public class JsonArchiveWriterTest
     private int nrOfStyles;
 
     private ISODateParser dateParser;
+    private BookDao bookDao;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException, IOException, DataReaderException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        bookDao = ServiceLocator.getInstance().getBookDao();
 
         dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
 
@@ -163,7 +166,6 @@ public class JsonArchiveWriterTest
         final long deletedBookId = ids.get(random.nextInt(10) + 1);
         final long modifiedBookId = ids.get(random.nextInt(10) + 1);
 
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         bookDao.delete(deletedBookId);
 
         final Book book = Book.from(modifiedBookId);
