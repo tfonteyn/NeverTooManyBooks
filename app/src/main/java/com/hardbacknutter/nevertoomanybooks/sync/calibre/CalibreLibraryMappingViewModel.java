@@ -31,15 +31,19 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderViewModel;
 
+@SuppressWarnings("WeakerAccess")
 public class CalibreLibraryMappingViewModel
         extends SyncReaderViewModel {
 
     private final List<CalibreLibrary> libraries = new ArrayList<>();
+
+    private BookshelfDao bookshelfDao;
     private CalibreLibraryDao calibreLibraryDao;
 
     private CalibreLibrary currentLibrary;
@@ -54,14 +58,16 @@ public class CalibreLibraryMappingViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         super.init(context, args);
-        if (calibreLibraryDao == null) {
-            calibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
+        if (bookshelfDao == null) {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            bookshelfDao = serviceLocator.getBookshelfDao();
+            calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
         }
     }
 
     @NonNull
     List<Bookshelf> getBookshelfList() {
-        return ServiceLocator.getInstance().getBookshelfDao().getAll();
+        return bookshelfDao.getAll();
     }
 
     @NonNull
