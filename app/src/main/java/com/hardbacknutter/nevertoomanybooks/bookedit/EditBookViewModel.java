@@ -576,11 +576,9 @@ public class EditBookViewModel
     /**
      * Add any fields the book does not have yet (does not overwrite existing ones).
      *
-     * @param context Current context
      * @param args    to check
      */
-    void addFieldsFromArguments(@NonNull final Context context,
-                                @Nullable final Bundle args) {
+    void addFieldsFromArguments(@Nullable final Bundle args) {
         if (args != null) {
             final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
             if (bookFromArguments != null) {
@@ -686,12 +684,10 @@ public class EditBookViewModel
      * The list is ordered by {@link DBKey#DATE_LAST_UPDATED__UTC}.
      * It's extended with a set of defaults.
      *
-     * @param context Current context
-     *
      * @return The list of ISO 639-2 codes
      */
     @NonNull
-    private List<String> getAllLanguagesCodes(@NonNull final Context context) {
+    private List<String> getAllLanguagesCodes() {
         if (languagesCodes == null) {
             final Set<String> set = new LinkedHashSet<>(languageDao.getList());
             // Provide defaults: the device language + the set we explicitly support
@@ -1078,6 +1074,8 @@ public class EditBookViewModel
      * @param fieldGroup to create the fields for
      *
      * @return the field added
+     *
+     * @throws IllegalStateException (debug)
      */
     @NonNull
     List<Field<?, ? extends View>> initFields(@NonNull final Context context,
@@ -1095,7 +1093,7 @@ public class EditBookViewModel
         final List<Field<?, ? extends View>> fields;
         switch (fieldGroup) {
             case Main:
-                fields = initFieldsMain(context, fragmentId);
+                fields = initFieldsMain(fragmentId);
                 break;
             case Publication:
                 fields = initFieldsPublication(context, fragmentId);
@@ -1117,8 +1115,7 @@ public class EditBookViewModel
     }
 
     @NonNull
-    private List<Field<?, ? extends View>> initFieldsMain(@NonNull final Context context,
-                                                          @NonNull final FragmentId fragmentId) {
+    private List<Field<?, ? extends View>> initFieldsMain(@NonNull final FragmentId fragmentId) {
         final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
         fields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
@@ -1149,7 +1146,7 @@ public class EditBookViewModel
         fields.add(new AutoCompleteTextField(fragmentId, R.id.original_language,
                                              DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
                                              languageFormatter, true,
-                                             () -> getAllLanguagesCodes(context))
+                                             this::getAllLanguagesCodes)
                            .setTextInputLayoutId(R.id.lbl_original_language));
 
         fields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
@@ -1164,7 +1161,7 @@ public class EditBookViewModel
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.LANGUAGE,
                                              languageFormatter, true,
-                                             () -> getAllLanguagesCodes(context))
+                                             this::getAllLanguagesCodes)
                            .setTextInputLayoutId(R.id.lbl_language)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
