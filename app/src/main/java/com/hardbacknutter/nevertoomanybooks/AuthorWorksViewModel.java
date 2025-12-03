@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -83,8 +84,12 @@ public class AuthorWorksViewModel
     private final List<AuthorWork> works = new ArrayList<>();
     /** Author is set in {@link #init} and {@link #setAuthor(Context, Author, boolean)}. */
     private final List<Author> authors = new ArrayList<>();
+
     /** Database Access. */
+    private AuthorDao authorDao;
     private BookDao bookDao;
+    private TocEntryDao tocEntryDao;
+    
     /** Initial Bookshelf is set in {@link #init}. */
     private Bookshelf bookshelf;
     /** Initially we get toc entries and books. */
@@ -156,8 +161,12 @@ public class AuthorWorksViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
 
-        if (bookDao == null) {
-            bookDao = ServiceLocator.getInstance().getBookDao();
+        if (authorDao == null) {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            authorDao = serviceLocator.getAuthorDao();
+            bookDao = serviceLocator.getBookDao();
+            tocEntryDao = serviceLocator.getTocEntryDao();
+
             menuHandlers = List.of(new AuthorViewAuthorOnSiteMenuHandler());
         }
 
@@ -173,9 +182,7 @@ public class AuthorWorksViewModel
         // Note we only use/add a single author. Using a list for future compatibility though
         if (authors.isEmpty() || getPrimaryAuthor().getId() != authorId) {
             authors.clear();
-            authors.add(ServiceLocator.getInstance().getAuthorDao()
-                                      .findById(authorId)
-                                      .orElseThrow());
+            authors.add(authorDao.findById(authorId).orElseThrow());
 
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
@@ -205,10 +212,9 @@ public class AuthorWorksViewModel
             final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
             final List<AuthorWork> authorWorks =
-                    ServiceLocator.getInstance().getAuthorDao()
-                                  .getAuthorWorks(getPrimaryAuthor(), bookshelfId,
-                                                  showTocEntries, showBooks,
-                                                  orderByColumn);
+                    authorDao.getAuthorWorks(getPrimaryAuthor(), bookshelfId,
+                                             showTocEntries, showBooks,
+                                             orderByColumn);
 
             works.addAll(authorWorks);
             onWorksUpdated.postValue(null);
@@ -279,9 +285,7 @@ public class AuthorWorksViewModel
     }
 
     void reloadAuthorIfChanged(@NonNull final Context context) {
-        final Author tmp = ServiceLocator.getInstance().getAuthorDao()
-                                         .findById(getPrimaryAuthor().getId())
-                                         .orElseThrow();
+        final Author tmp = authorDao.findById(getPrimaryAuthor().getId()).orElseThrow();
         if (!tmp.equals(getPrimaryAuthor())) {
             // the works might not have changed, but we need to be sure here.
             setAuthor(context, tmp, true);
@@ -363,8 +367,7 @@ public class AuthorWorksViewModel
             final boolean success;
             switch (work.getWorkType()) {
                 case TocEntry: {
-                    success = ServiceLocator.getInstance().getTocEntryDao()
-                                            .delete(context, (TocEntry) work);
+                    success = tocEntryDao.delete(context, (TocEntry) work);
                     break;
                 }
                 case Book: {
