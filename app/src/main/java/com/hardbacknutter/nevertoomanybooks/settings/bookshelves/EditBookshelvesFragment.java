@@ -88,8 +88,13 @@ public class EditBookshelvesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Intent resultIntent = EditBookshelvesContract
-                            .createResult(vm.getSelectedBookshelfId());
+                    // can be 0; but the contract requires
+                    // us to ALWAYS return a valid shelf.
+                    long id = vm.getSelectedBookshelfId();
+                    if (id == 0) {
+                        id = vm.getDefaultBookshelf().getId();
+                    }
+                    final Intent resultIntent = EditBookshelvesContract.createResult(id);
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
