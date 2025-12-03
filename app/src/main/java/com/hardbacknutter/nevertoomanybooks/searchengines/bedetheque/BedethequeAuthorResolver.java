@@ -82,6 +82,7 @@ public class BedethequeAuthorResolver
     private final BedethequeSearchEngine searchEngine;
     @NonNull
     private final Locale locale;
+    private final BedethequeCacheDao cacheDao;
 
     /**
      * Private Constructor.
@@ -93,6 +94,8 @@ public class BedethequeAuthorResolver
                                      @NonNull final BedethequeSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
+
+        cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
     }
 
     /**
@@ -190,7 +193,7 @@ public class BedethequeAuthorResolver
             if (!realName.equals(bdtAuthor.getRealName())) {
                 bdtAuthor.setRealName(realName);
                 try {
-                    ServiceLocator.getInstance().getBedethequeCacheDao().update(bdtAuthor, locale);
+                    cacheDao.update(bdtAuthor, locale);
                 } catch (@NonNull final DaoWriteException e) {
                     // log, but ignore - should never happen unless disk full
                     LoggerFactory.getLogger().e(TAG, e);
@@ -217,8 +220,6 @@ public class BedethequeAuthorResolver
     private BdtAuthor lookupInCache(@NonNull final Context context,
                                     @NonNull final Author author)
             throws SearchException, CredentialsException {
-
-        final BedethequeCacheDao cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
 
         // Check if we have the author in the cache
         final String name = author.getFormattedName(false);
