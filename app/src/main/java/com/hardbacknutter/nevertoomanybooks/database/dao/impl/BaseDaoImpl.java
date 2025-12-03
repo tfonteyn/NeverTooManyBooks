@@ -37,8 +37,8 @@ class BaseDaoImpl {
     /**
      * In addition to the SQLite default BINARY collator (others: NOCASE and RTRIM),
      * Android supplies two more.
-     * LOCALIZED: using the system's current Locale,
-     * UNICODE  : Unicode Collation Algorithm and not tailored to the current Locale.
+     * LOCALIZED: using the user's primary Locale,
+     * UNICODE  : Unicode Collation Algorithm and not tailored to the Locale.
      * <p>
      * We tried 'COLLATE UNICODE' but it is case sensitive.
      * We ended up with 'Ursula Le Guin' and 'Ursula le Guin'.
