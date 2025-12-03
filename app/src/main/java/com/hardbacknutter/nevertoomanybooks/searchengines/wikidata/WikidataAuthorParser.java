@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONArray;
@@ -53,7 +54,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *
  * @see <a href="https://www.mediawiki.org/wiki/API:Main_page">mediawiki api</a>
  * @see <a href="https://www.wikidata.org/wiki/Wikidata:Database_reports/List_of_properties/all">
- *     claims</a>
+ *         claims</a>
  */
 class WikidataAuthorParser {
 
@@ -96,6 +97,7 @@ class WikidataAuthorParser {
     @NonNull
     private final WikidataSearchEngine searchEngine;
     private final PartialDateParser partialDateParser;
+    private final IdentifierDao identifierDao;
 
     WikidataAuthorParser(@NonNull final Context context,
                          @NonNull final WikidataSearchEngine searchEngine) {
@@ -103,6 +105,7 @@ class WikidataAuthorParser {
         this.searchEngine = searchEngine;
         this.locale = searchEngine.getLocale(context);
 
+        identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         partialDateParser = new PartialDateParser();
     }
 
@@ -139,16 +142,14 @@ class WikidataAuthorParser {
         parseDate(claims, P_DEATH_DATE).map(PartialDate::getIsoString)
                                        .ifPresent(author::setDeathDate);
 
-        ServiceLocator.getInstance()
-                      .getIdentifierDao()
-                      .getAll()
-                      .stream()
-                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
-                      .map(identifier -> parseSid(claims,
-                                                  identifier.getWikidataClaimAuthorId().get(),
-                                                  identifier.getKey()))
-                      .flatMap(Optional::stream)
-                      .forEach(v -> author.setIdentifierValue(v.getKey(), v.getSid()));
+        identifierDao.getAll()
+                     .stream()
+                     .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
+                     .map(identifier -> parseSid(claims,
+                                                 identifier.getWikidataClaimAuthorId().get(),
+                                                 identifier.getKey()))
+                     .flatMap(Optional::stream)
+                     .forEach(v -> author.setIdentifierValue(v.getKey(), v.getSid()));
 
         parseImage(context, claims).ifPresent(url -> {
             try {
