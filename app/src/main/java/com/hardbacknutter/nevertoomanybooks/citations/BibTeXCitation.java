@@ -87,9 +87,11 @@ class BibTeXCitation
 
     @NonNull
     private final Style style;
+    private final IdentifierDao identifierDao;
 
     BibTeXCitation(@NonNull final Style style) {
         this.style = style;
+        identifierDao = ServiceLocator.getInstance().getIdentifierDao();
     }
 
     @Override
@@ -132,7 +134,6 @@ class BibTeXCitation
                 }
             });
 
-        final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         book.getIdentifiers().forEach(iv -> identifierDao
                 .findByKey(iv.getKey())
                 .flatMap(Identifier::getBookUri)
