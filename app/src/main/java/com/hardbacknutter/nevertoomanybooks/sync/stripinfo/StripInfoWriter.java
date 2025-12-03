@@ -68,6 +68,11 @@ public class StripInfoWriter
     @SuppressWarnings("FieldCanBeLocal")
     private SyncWriterResults results;
 
+    @NonNull
+    private final BookDao bookDao;
+    @NonNull
+    private final StripInfoDao stripInfoDao;
+
     /**
      * Constructor.
      *
@@ -81,6 +86,10 @@ public class StripInfoWriter
                            final boolean deleteLocalBook) {
         this.deleteLocalBook = deleteLocalBook;
         this.incremental = incremental;
+
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        bookDao = serviceLocator.getBookDao();
+        stripInfoDao = serviceLocator.getStripInfoDao();
 
         this.dateParser = new ISODateParser(ServiceLocator
                                                     .getInstance()
@@ -109,19 +118,16 @@ public class StripInfoWriter
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         @Nullable
         final LocalDateTime dateSince;
         if (incremental) {
-            dateSince = dateParser.parse(global.getString(StripInfoHandler.PK_LAST_SYNC, null))
+            dateSince = dateParser.parse(prefs.getString(StripInfoHandler.PK_LAST_SYNC, null))
                                   .orElse(null);
         } else {
             dateSince = null;
         }
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final BookDao bookDao = serviceLocator.getBookDao();
-        final StripInfoDao stripInfoDao = serviceLocator.getStripInfoDao();
         try (Cursor cursor = bookDao.fetchBooksForExportToStripInfo(dateSince)) {
             int delta = 0;
             long lastUpdate = 0;
@@ -167,7 +173,7 @@ public class StripInfoWriter
         }
 
         // always set the sync date!
-        global.edit()
+        prefs.edit()
               .putString(StripInfoHandler.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
                       DateTimeFormatter.ISO_LOCAL_DATE_TIME))
               .apply();
