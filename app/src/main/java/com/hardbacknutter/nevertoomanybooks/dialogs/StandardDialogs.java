@@ -311,14 +311,15 @@ public final class StandardDialogs {
      *
      * @param context   Current context
      * @param series    Series we're about to delete
+     * @param bookCount for the Series
      * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteSeries(@NonNull final Context context,
                                     @NonNull final Series series,
+                                    final int bookCount,
                                     @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getSeriesDao().countBooks(series);
         final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
-                                                                          books, books);
+                                                                          bookCount, bookCount);
 
         final String msg = context.getString(R.string.confirm_delete_series_from_x_books,
                                              series.getLabel(context),
@@ -331,14 +332,15 @@ public final class StandardDialogs {
      *
      * @param context   Current context
      * @param publisher Publisher we're about to delete
+     * @param bookCount for the Publisher
      * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
     public static void deletePublisher(@NonNull final Context context,
                                        @NonNull final Publisher publisher,
+                                       final int bookCount,
                                        @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getPublisherDao().countBooks(publisher);
         final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
-                                                                          books, books);
+                                                                          bookCount, bookCount);
 
         final String msg = context.getString(R.string.confirm_delete_publisher_from_x_books,
                                              publisher.getLabel(context),
@@ -370,16 +372,17 @@ public final class StandardDialogs {
     /**
      * Ask the user to confirm a delete.
      *
-     * @param context   Current context
-     * @param tag       we're about to delete
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     * @param context    Current context
+     * @param tag        we're about to delete
+     * @param countBooks for the Tag
+     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteTag(@NonNull final Context context,
                                  @NonNull final Tag tag,
+                                 final int countBooks,
                                  @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getTagDao().countBooks(tag);
         final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
-                                                                          books, books);
+                                                                          countBooks, countBooks);
         final String msg = context.getString(R.string.confirm_delete_tag_from_x_books,
                                              tag.getName(),
                                              nrOfBooks);

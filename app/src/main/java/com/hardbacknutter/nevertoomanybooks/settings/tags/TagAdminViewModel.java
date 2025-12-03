@@ -233,4 +233,8 @@ public class TagAdminViewModel
     void cancelTagMapper() {
         mapperTask.cancel();
     }
+
+    public int countBooks(@NonNull final Tag tag) {
+        return tagDao.countBooks(tag);
+    }
 }

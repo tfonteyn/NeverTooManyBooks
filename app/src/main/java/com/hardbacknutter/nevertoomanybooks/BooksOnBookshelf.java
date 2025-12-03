@@ -2363,7 +2363,7 @@ public class BooksOnBookshelf
 
             } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
                 final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                StandardDialogs.deletePublisher(context, publisher,
+                StandardDialogs.deletePublisher(context, publisher, vm.countBooks(publisher),
                                                 () -> vm.delete(context, publisher));
                 return true;
             }
@@ -2440,7 +2440,8 @@ public class BooksOnBookshelf
 
             } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
                 final Series series = DataHolderUtils.requireSeries(rowData);
-                StandardDialogs.deleteSeries(context, series, () -> vm.delete(context, series));
+                StandardDialogs.deleteSeries(context, series, vm.countBooks(series),
+                                             () -> vm.delete(context, series));
                 return true;
             }
             return false;
@@ -2497,8 +2498,8 @@ public class BooksOnBookshelf
 
             } else if (menuItemId == R.id.MENU_TAG_DELETE) {
                 final Tag tag = DataHolderUtils.requireTag(rowData);
-                StandardDialogs.deleteTag(context, tag,
-                                          () -> vm.delete(context, tag));
+                StandardDialogs.deleteTag(context, tag, vm.countBooks(tag), ()
+                        -> vm.delete(context, tag));
                 return true;
             }
             return false;

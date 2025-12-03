@@ -329,7 +329,7 @@ public class TagEditorFragment
     private void deleteEntry(final int position) {
         final Tag tag = vm.getTags().get(position);
         //noinspection DataFlowIssue
-        StandardDialogs.deleteTag(getContext(), tag, () -> {
+        StandardDialogs.deleteTag(getContext(), tag, vm.countBooks(tag), () -> {
             vm.deleteTag(position);
             adapter.notifyItemRemoved(position);
         });
