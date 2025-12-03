@@ -36,7 +36,6 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
@@ -131,8 +130,7 @@ class EditTocEntryDelegate
             final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
                     context, R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
-                    ServiceLocator.getInstance().getAuthorDao()
-                                  .getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
+                    vm.getAuthorNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
             vb.author.setAdapter(authorAdapter);
             vb.author.setText(vm.getCurrentAuthorName());
             vb.author.selectAll();

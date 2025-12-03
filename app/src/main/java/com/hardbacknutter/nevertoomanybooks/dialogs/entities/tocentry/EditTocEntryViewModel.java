@@ -28,12 +28,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -69,6 +72,7 @@ public class EditTocEntryViewModel
      * The original author name is simply read from the {@link #original}.
      */
     private String currentAuthorName;
+    private AuthorDao authorDao;
 
     /**
      * Pseudo constructor.
@@ -78,7 +82,9 @@ public class EditTocEntryViewModel
      */
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        if (original == null) {
+        if (authorDao == null) {
+            authorDao = ServiceLocator.getInstance().getAuthorDao();
+
             original = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
             editPosition = args.getInt(BKEY_POSITION, 0);
             isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
@@ -90,6 +96,11 @@ public class EditTocEntryViewModel
 
             currentAuthorName = original.getPrimaryAuthor().getLabel(context);
         }
+    }
+
+    @NonNull
+    List<String> getAuthorNames(@NonNull final String key) {
+        return authorDao.getNames(key);
     }
 
     @Nullable
