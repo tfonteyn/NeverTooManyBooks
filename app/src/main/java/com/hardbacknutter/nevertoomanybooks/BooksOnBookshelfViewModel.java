@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -213,6 +214,7 @@ public class BooksOnBookshelfViewModel
     private BookDao bookDao;
     private BookshelfDao bookshelfDao;
     private LoaneeDao loaneeDao;
+    private LocationDao locationDao;
     private PublisherDao publisherDao;
     private SeriesDao seriesDao;
     private TagDao tagDao;
@@ -341,6 +343,7 @@ public class BooksOnBookshelfViewModel
             bookDao = serviceLocator.getBookDao();
             bookshelfDao = serviceLocator.getBookshelfDao();
             loaneeDao = serviceLocator.getLoaneeDao();
+            locationDao = serviceLocator.getLocationDao();
             publisherDao = serviceLocator.getPublisherDao();
             seriesDao = serviceLocator.getSeriesDao();
             tagDao = serviceLocator.getTagDao();
@@ -481,6 +484,26 @@ public class BooksOnBookshelfViewModel
         bookshelfList.clear();
         bookshelfList.add(bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS).orElseThrow());
         bookshelfList.addAll(bookshelfDao.getAll());
+    }
+
+    /**
+     * Get the list of all defined bookshelves, excluding the virtual ALL_BOOKS.
+     *
+     * @return list
+     */
+    @NonNull
+    List<Bookshelf> getBookshelvesList() {
+        return bookshelfDao.getAll();
+    }
+
+    /**
+     * Get the list of all Locations.
+     *
+     * @return list
+     */
+    @NonNull
+    List<String> getLocationList() {
+        return locationDao.getList();
     }
 
     /**

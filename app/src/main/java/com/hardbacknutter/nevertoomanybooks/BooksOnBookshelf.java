@@ -1317,7 +1317,6 @@ public class BooksOnBookshelf
         final String dialogTitle = vm.getRowLabel(this, rowData);
         final String dialogMessage = getString(R.string.info_bulk_set_bookshelves);
 
-        final List<Bookshelf> allShelves = ServiceLocator.getInstance().getBookshelfDao().getAll();
         // We simply grab the FIRST book to get the pre-selected bookshelves.
         final List<Bookshelf> bookshelves = Book.from(bookIds.get(0)).getBookshelves();
 
@@ -1326,7 +1325,7 @@ public class BooksOnBookshelf
         extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
 
         bulkSetBookshelvesLauncher.launch(this, dialogTitle, dialogMessage,
-                                          allShelves, bookshelves,
+                                          vm.getBookshelvesList(), bookshelves,
                                           extras);
         return true;
     }
@@ -1359,7 +1358,6 @@ public class BooksOnBookshelf
         final String dialogTitle = vm.getRowLabel(this, rowData);
         final String dialogMessage = getString(R.string.info_bulk_set_location);
 
-        final List<String> allLocations = ServiceLocator.getInstance().getLocationDao().getList();
         // We simply grab the FIRST book to get the pre-selected location.
         final String currentLocation = Book.from(bookIds.get(0)).getString(DBKey.LOCATION);
 
@@ -1368,7 +1366,7 @@ public class BooksOnBookshelf
         extras.putParcelable(BooksOnBookshelfViewModel.BKEY_BOOK_IDS, ParcelUtils.wrap(bookIds));
 
         bulkSetLocationLauncher.launch(this, dialogTitle, dialogMessage,
-                                       allLocations, currentLocation,
+                                       vm.getLocationList(), currentLocation,
                                        extras);
         return true;
     }
