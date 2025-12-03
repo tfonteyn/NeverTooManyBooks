@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -120,6 +121,7 @@ public class BookCoder {
     private CsvGoodreads goodreads;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
+    private final IdentifierDao identifierDao;
 
     /**
      * Constructor.
@@ -136,6 +138,8 @@ public class BookCoder {
         this.csvFormat = csvFormat;
         this.defaultStyle = defaultStyle;
         this.userLocales = userLocales;
+
+        identifierDao = ServiceLocator.getInstance().getIdentifierDao();
 
         authorCoder = new StringList<>(new AuthorCoder());
         // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
@@ -662,9 +666,10 @@ public class BookCoder {
      * @param book the book
      */
     private void processExternalIds(@NonNull final Book book) {
-        final Set<String> known = ServiceLocator.getInstance().getIdentifierDao().getAll()
-                                                .stream().map(Identifier::getKey)
-                                                .collect(Collectors.toSet());
+        final Set<String> known = identifierDao.getAll()
+                                               .stream()
+                                               .map(Identifier::getKey)
+                                               .collect(Collectors.toSet());
         final List<Identifier.Value> ivs = new ArrayList<>();
         book.keySet().forEach(key -> {
             if (known.contains(key)) {
