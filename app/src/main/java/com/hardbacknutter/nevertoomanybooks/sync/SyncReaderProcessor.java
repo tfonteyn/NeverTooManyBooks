@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -74,12 +75,17 @@ public class SyncReaderProcessor {
     /** Mappers to apply. */
     @SuppressWarnings("FieldNotUsedInToString")
     private final Collection<Mapper> mappers;
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    private final BookshelfDao bookshelfDao;
 
     @AnyThread
     protected SyncReaderProcessor(@NonNull final Context context,
                                   @NonNull final Builder builder) {
         this.fields = builder.fields;
         this.realNumberParser = builder.realNumberParser;
+
+        bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         mappers = MapperFactory.create(context);
     }
@@ -427,7 +433,7 @@ public class SyncReaderProcessor {
                 final List<Bookshelf> list = remoteBook.getBookshelves();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getBookshelves());
-                    ServiceLocator.getInstance().getBookshelfDao().pruneList(context, list);
+                    bookshelfDao.pruneList(context, list);
                 }
                 break;
             }
