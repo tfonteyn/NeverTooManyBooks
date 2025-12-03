@@ -27,13 +27,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Locale;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -121,32 +116,6 @@ abstract class LibraryBase
     @IntRange(from = 0)
     public long getMappedBookshelfId() {
         return mappedBookshelfId;
-    }
-
-    /**
-     * Use the library name to create a new bookshelf.
-     * The style is taken from the current Bookshelf.
-     *
-     * @param context Current context
-     *
-     * @return the new and mapped bookshelf
-     *
-     * @throws DaoWriteException on failure
-     */
-    @NonNull
-    Bookshelf createAsBookshelf(@NonNull final Context context)
-            throws DaoWriteException {
-
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-
-        final Bookshelf current = bookshelfDao.getCurrent().orElseGet(bookshelfDao::getDefault);
-
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-        final Bookshelf bookshelf = new Bookshelf(name, current.getStyle());
-        bookshelfDao.insert(context, bookshelf, locale);
-
-        mappedBookshelfId = bookshelf.getId();
-        return bookshelf;
     }
 
     @Override

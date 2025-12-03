@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -131,7 +132,7 @@ public class CalibreLibraryMappingViewModel
     Bookshelf createLibraryAsBookshelf(@NonNull final Context context)
             throws DaoWriteException {
 
-        final Bookshelf mappedBookshelf = currentLibrary.createAsBookshelf(context);
+        final Bookshelf mappedBookshelf = createAsBookshelf(context, currentLibrary);
         calibreLibraryDao.update(currentLibrary);
         return mappedBookshelf;
     }
@@ -142,8 +143,35 @@ public class CalibreLibraryMappingViewModel
             throws DaoWriteException {
 
         final CalibreVirtualLibrary vlib = currentLibrary.getVirtualLibraries().get(position);
-        final Bookshelf mappedBookshelf = vlib.createAsBookshelf(context);
+
+        final Bookshelf mappedBookshelf = createAsBookshelf(context, vlib);
         calibreLibraryDao.update(vlib);
         return mappedBookshelf;
+    }
+
+    /**
+     * Use the library name to create a new bookshelf.
+     * The style is taken from the current Bookshelf.
+     *
+     * @param context Current context
+     * @param library to use
+     *
+     * @return the new and mapped bookshelf
+     *
+     * @throws DaoWriteException on failure
+     */
+    @NonNull
+    private Bookshelf createAsBookshelf(@NonNull final Context context,
+                                        @NonNull final LibraryBase library)
+            throws DaoWriteException {
+
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        final Bookshelf current = bookshelfDao.getCurrent().orElseGet(bookshelfDao::getDefault);
+        final Bookshelf bookshelf = new Bookshelf(library.getName(), current.getStyle());
+        bookshelfDao.insert(context, bookshelf, locale);
+        library.setMappedBookshelf(bookshelf.getId());
+
+        return bookshelf;
     }
 }
