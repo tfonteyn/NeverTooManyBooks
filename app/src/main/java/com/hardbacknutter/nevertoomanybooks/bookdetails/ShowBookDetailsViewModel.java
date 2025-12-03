@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewMod
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -98,6 +100,9 @@ public class ShowBookDetailsViewModel
     @Nullable
     private Book book;
 
+    private BookDao bookDao;
+    private LoaneeDao loaneeDao;
+
     /**
      * Pseudo constructor.
      *
@@ -111,7 +116,10 @@ public class ShowBookDetailsViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args,
                      @NonNull final Style style) {
-        if (bookId == 0) {
+        if (bookDao == null) {
+            bookDao = ServiceLocator.getInstance().getBookDao();
+            loaneeDao = ServiceLocator.getInstance().getLoaneeDao();
+
             bookId = args.getLong(DBKey.FK_BOOK, 0);
             if (bookId <= 0) {
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
@@ -194,7 +202,7 @@ public class ShowBookDetailsViewModel
     @SuppressWarnings("UnusedReturnValue")
     boolean deleteLoan() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        return ServiceLocator.getInstance().getLoaneeDao().delete(book);
+        return loaneeDao.delete(book);
     }
 
     /**
@@ -209,7 +217,7 @@ public class ShowBookDetailsViewModel
     boolean deleteBook() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
 
-        if (ServiceLocator.getInstance().getBookDao().delete(book)) {
+        if (bookDao.delete(book)) {
             book = null;
             return true;
         } else {
@@ -226,7 +234,7 @@ public class ShowBookDetailsViewModel
     @Override
     public void setReadNow(final boolean read) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        ServiceLocator.getInstance().getBookDao().setRead(book, read);
+        bookDao.setRead(book, read);
         updateReadStatus(true);
     }
 
@@ -245,7 +253,7 @@ public class ShowBookDetailsViewModel
     @Override
     public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        ServiceLocator.getInstance().getBookDao().setReadingProgress(book, readingProgress);
+        bookDao.setReadingProgress(book, readingProgress);
         updateReadStatus(true);
     }
 
