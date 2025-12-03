@@ -55,6 +55,7 @@ abstract class ViewOnSiteMenuHandler<T>
     private final int menuGroupResId;
     @NonNull
     private final BiFunction<Context, Identifier, Optional<String>> uriProvider;
+    private final IdentifierDao dao;
 
     ViewOnSiteMenuHandler(
             @IdRes final int subMenuResId,
@@ -63,6 +64,8 @@ abstract class ViewOnSiteMenuHandler<T>
         this.subMenuResId = subMenuResId;
         this.menuGroupResId = menuGroupResId;
         this.uriProvider = uriProvider;
+
+        dao = ServiceLocator.getInstance().getIdentifierDao();
     }
 
     @NonNull
@@ -108,7 +111,6 @@ abstract class ViewOnSiteMenuHandler<T>
         parent.clear();
 
         // add to the menu if the Identifier has a valid url
-        final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
         getSids(data)
                 .stream()
                 .map(Identifier.Value::getKey)
@@ -140,9 +142,7 @@ abstract class ViewOnSiteMenuHandler<T>
             return false;
         }
 
-        final Optional<String> oUri = ServiceLocator
-                .getInstance()
-                .getIdentifierDao()
+        final Optional<String> oUri = dao
                 .findByKey(key)
                 .flatMap(identifier -> uriProvider.apply(context, identifier));
 
@@ -150,15 +150,12 @@ abstract class ViewOnSiteMenuHandler<T>
         if (oUri.isPresent()) {
             final Optional<String> oSid = getSid(data, key);
             // Sanity check, it should be there!
-            if (oSid.isEmpty()) {
-                return false;
+            if (oSid.isPresent()) {
+                final Uri uri = Uri.parse(String.format(oUri.get(), oSid.get()));
+                context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                return true;
             }
-
-            final Uri uri = Uri.parse(String.format(oUri.get(), oSid.get()));
-            context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
-            return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }
