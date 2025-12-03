@@ -44,7 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -108,6 +110,7 @@ public class LastDodoSearchEngine
 
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     private final AuthorResolverHelper authorResolverHelper;
+    private final SeriesDao seriesDao;
 
     /**
      * Constructor.
@@ -123,6 +126,7 @@ public class LastDodoSearchEngine
                                 @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
+        seriesDao = ServiceLocator.getInstance().getSeriesDao();
         authorResolverHelper = new AuthorResolverHelper();
     }
 
@@ -255,7 +259,7 @@ public class LastDodoSearchEngine
     public Book searchByExternalId(@NonNull final Context context,
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException, CredentialsException, CoverStorageException {
 
         final Book book = new Book();
 
@@ -338,16 +342,16 @@ public class LastDodoSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws StorageException     on storage related failures
+     * @throws CredentialsException  on authentication/login failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CoverStorageException The covers directory is not available
      */
     @WorkerThread
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException, CredentialsException, CoverStorageException {
 
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.card-body");
@@ -373,7 +377,7 @@ public class LastDodoSearchEngine
                              @Nullable final String isbn,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
-            throws StorageException {
+            throws CoverStorageException {
 
         // https://assets.lastdodo.com/image/ld_medium/plain/assets/catalog/assets/1/4/8/d/pdf_48dea410-1a0e-012b-985d-f5c6b2a918e0.jpg
 
@@ -473,11 +477,11 @@ public class LastDodoSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
-     *                              This should only occur if the engine calls/relies on
-     *                              secondary sites.
+     * @throws CoverStorageException The covers directory is not available
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CredentialsException  on authentication/login failures
+     *                               This should only occur if the engine calls/relies on
+     *                               secondary sites.
      */
     @VisibleForTesting
     @WorkerThread
@@ -485,7 +489,7 @@ public class LastDodoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException, CredentialsException, CoverStorageException {
 
         //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;
@@ -713,8 +717,7 @@ public class LastDodoSearchEngine
             }
 
             // Force normalization!
-            ServiceLocator.getInstance().getSeriesDao()
-                          .pruneList(context, seriesList, true, series -> locale);
+            seriesDao.pruneList(context, seriesList, true, series -> locale);
         }
     }
 
