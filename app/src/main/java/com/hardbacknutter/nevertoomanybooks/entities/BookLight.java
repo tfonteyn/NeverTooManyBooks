@@ -130,16 +130,15 @@ public class BookLight
     /**
      * Get the Book's Locale (based on its language).
      *
-     * @param context Current context
+     * @param userLocale Current Locale
      *
      * @return the Locale, or the users preferred Locale if no language was set.
      */
     @NonNull
-    public Optional<Locale> getLocale(@NonNull final Context context) {
+    public Optional<Locale> getLocale(@NonNull final Locale userLocale) {
         if (language.isEmpty()) {
             return Optional.empty();
         } else {
-            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             return ServiceLocator.getInstance().getAppLocale().getLocale(language, userLocale);
         }
     }
