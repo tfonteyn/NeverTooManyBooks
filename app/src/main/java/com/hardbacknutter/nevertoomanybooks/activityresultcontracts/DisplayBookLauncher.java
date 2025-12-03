@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
  * Small wrapper to call the {@link ShowBookPagerContract}
@@ -148,7 +147,9 @@ public class DisplayBookLauncher {
                 break;
             }
             case TocEntry: {
-                launchTocEntry(fragment, (TocEntry) work, bookshelf, allBookshelves);
+                final List<Long> bookIdList = ServiceLocator
+                        .getInstance().getTocEntryDao().getBookIds(work.getId());
+                launchList(fragment, bookIdList, bookshelf, allBookshelves);
                 break;
             }
             default:
@@ -157,24 +158,19 @@ public class DisplayBookLauncher {
     }
 
     /**
-     * When the user clicks on a {@link TocEntry}.
-     * <ul>
-     * <li>If the entry belongs to a single Book, just display that Book.</li>
-     * <li>If the entry is present in multiple books, open a new BoB with the list of books.</li>
-     * </ul>
+     * If there is only a single Book, just display that Book.
+     * Otherwise open a new BoB with the list of books.
      *
      * @param fragment       hosting fragment
-     * @param tocEntry       to open
+     * @param bookIdList       to open
      * @param bookshelf      current Bookshelf displayed by the BoB
      * @param allBookshelves flag
      */
-    private void launchTocEntry(@NonNull final Fragment fragment,
-                                @NonNull final TocEntry tocEntry,
-                                @NonNull final Bookshelf bookshelf,
-                                final boolean allBookshelves) {
+    private void launchList(@NonNull final Fragment fragment,
+                            @NonNull final List<Long> bookIdList,
+                            @NonNull final Bookshelf bookshelf,
+                            final boolean allBookshelves) {
 
-        final List<Long> bookIdList = ServiceLocator
-                .getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
         if (bookIdList.size() == 1) {
             launcher.launch(new ShowBookPagerContract.Input(bookIdList.get(0), bookshelf));
 
