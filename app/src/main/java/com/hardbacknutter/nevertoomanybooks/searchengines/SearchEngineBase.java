@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -89,6 +90,8 @@ public abstract class SearchEngineBase
     /** Helper to randomize some urls to avoid fingerprinting by the servers. */
     @NonNull
     private final Random random;
+    private final IdentifierDao identifierDao;
+
     @Nullable
     private SSLContext sslContext;
     @Nullable
@@ -106,8 +109,9 @@ public abstract class SearchEngineBase
     protected SearchEngineBase(@NonNull final Context appContext,
                                @NonNull final SearchEngineConfig config) {
         this.config = config;
-
         random = new Random();
+
+        identifierDao = ServiceLocator.getInstance().getIdentifierDao();
     }
 
     @NonNull
@@ -254,7 +258,7 @@ public abstract class SearchEngineBase
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@code HEAD} request.
      *
-     * @param <T>     return type
+     * @param <T> return type
      *
      * @return new {@code HEAD} request instance
      */
@@ -573,7 +577,7 @@ public abstract class SearchEngineBase
                 // Explicitly prune here to make unit tests easier.
                 final List<Identifier.Value> all = new ArrayList<>(author.getIdentifiers());
                 all.addAll(currentAuthor.getIdentifiers());
-                ServiceLocator.getInstance().getIdentifierDao().pruneList(all);
+                identifierDao.pruneList(all);
                 author.setIdentifiers(all);
 
                 add = false;
