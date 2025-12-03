@@ -35,10 +35,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditTagContentBinding;
@@ -135,8 +133,7 @@ class EditTagDelegate
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                ServiceLocator.getInstance().getTagDao().getAll()
-                              .stream().map(Tag::getName).collect(Collectors.toList()));
+                vm.getAllNames());
 
         vb.tagName.setText(currentEdit.getName());
         vb.tagName.setAdapter(nameAdapter);

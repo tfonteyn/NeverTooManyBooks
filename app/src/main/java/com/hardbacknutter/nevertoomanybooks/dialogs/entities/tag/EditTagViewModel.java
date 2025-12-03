@@ -27,8 +27,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -61,6 +63,11 @@ public class EditTagViewModel
 
             currentEdit = new Tag(original);
         }
+    }
+
+    @NonNull
+    List<String> getAllNames() {
+        return dao.getAll().stream().map(Tag::getName).collect(Collectors.toList());
     }
 
     @NonNull
