@@ -44,6 +44,11 @@ public class IsoLanguageDaoImpl
 
     private static final String TAG = "IsoLanguageDaoImpl";
 
+    /**
+     * Constructor.
+     *
+     * @param db Underlying database
+     */
     public IsoLanguageDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
     }

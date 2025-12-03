@@ -273,7 +273,7 @@ public class AuthorDaoImpl
             sql += Sql.FIND_TOC_ENTRIES_BY_AUTHOR_ID
                    + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.ref()
                                 + " ON (" + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK)
-                                + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + ")"
+                                + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + ')'
                               : "")
                    + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_AUTHOR) + "=?"
                    + (byShelf ? _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?" : "")
@@ -619,7 +619,8 @@ public class AuthorDaoImpl
      * @param author  the 'original' author
      * @param locale  Locale to use if the item has none set
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException (debug)
      */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Author author,
@@ -1136,7 +1137,7 @@ public class AuthorDaoImpl
          */
         static final String FIND_BOOK_TITLES_BY_AUTHOR_ID =
                 SELECT_
-                + "'" + AuthorWork.Type.BookLight.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
+                + '\'' + AuthorWork.Type.BookLight.asChar() + '\'' + _AS_ + DBKey.AUTHOR_WORK_TYPE
                 + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
                 + ",SUBSTR(" + TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION_DATE) + ",0,5)"
                 + _AS_ + DBKey.FIRST_PUBLICATION_DATE
@@ -1155,7 +1156,7 @@ public class AuthorDaoImpl
          */
         static final String FIND_TOC_ENTRIES_BY_AUTHOR_ID =
                 SELECT_
-                + "'" + AuthorWork.Type.TocEntry.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
+                + '\'' + AuthorWork.Type.TocEntry.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
                 + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
                 // Year only
                 + ",SUBSTR(" + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION_DATE) + ",0,5)"

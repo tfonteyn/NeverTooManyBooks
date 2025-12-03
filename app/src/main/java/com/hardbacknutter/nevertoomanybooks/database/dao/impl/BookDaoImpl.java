@@ -810,12 +810,12 @@ public class BookDaoImpl
         if (sinceDateTime == null) {
             whereClause =
                     TBL_STRIPINFO_COLLECTION.dot(
-                            DBKey.STRIP_INFO.COLLECTION_ID) + " IS NOT NULL";
+                            DBKey.STRIP_INFO.COLLECTION_ID) + _IS_NOT_NULL;
             selectionArgs = null;
         } else {
             whereClause =
                     TBL_STRIPINFO_COLLECTION.dot(
-                            DBKey.STRIP_INFO.COLLECTION_ID) + " IS NOT NULL"
+                            DBKey.STRIP_INFO.COLLECTION_ID) + _IS_NOT_NULL
                     + _AND_
                     + TBL_STRIPINFO_COLLECTION.dot(
                             DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC) + ">=?";
