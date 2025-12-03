@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
@@ -45,11 +46,21 @@ public class BookshelfMapper {
     static final String PK_BOOKSHELF_DIGITAL = PREFERENCE_KEY + ".bookshelf.digital";
 
     @NonNull
-    private static Optional<Bookshelf> getBookshelf(@NonNull final Context context,
-                                                    @NonNull final String key) {
+    private final BookshelfDao bookshelfDao;
+
+    /**
+     * Constructor.
+     */
+    public BookshelfMapper() {
+        bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+
+    }
+
+    @NonNull
+    private Optional<Bookshelf> getBookshelf(@NonNull final Context context,
+                                             @NonNull final String key) {
         final int id = IntListPref.getInt(context, key, 0);
-        return id == 0 ? Optional.empty() : ServiceLocator.getInstance().getBookshelfDao()
-                                                          .getBookshelf(context, id);
+        return id == 0 ? Optional.empty() : bookshelfDao.getBookshelf(context, id);
     }
 
     /**
