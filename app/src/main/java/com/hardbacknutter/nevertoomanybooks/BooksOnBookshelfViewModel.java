@@ -68,8 +68,12 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
@@ -199,13 +203,20 @@ public class BooksOnBookshelfViewModel
             new MutableLiveData<>();
     private final MutableLiveData<Boolean> searchCriteriaAreActive =
             new MutableLiveData<>();
+
     /** Holder for all search criteria. See {@link LocalSearchCriteria} for more info. */
     @Nullable
     private LocalSearchCriteria searchCriteria;
+
     /** Database Access. */
+    private AuthorDao authorDao;
     private BookDao bookDao;
     private BookshelfDao bookshelfDao;
+    private LoaneeDao loaneeDao;
+    private PublisherDao publisherDao;
+    private SeriesDao seriesDao;
     private TagDao tagDao;
+
     /** Preferred booklist state in next rebuild. */
     private RebuildBooklist rebuildMode;
     /** Current displayed list. */
@@ -324,10 +335,15 @@ public class BooksOnBookshelfViewModel
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {
 
-        if (bookDao == null) {
-            bookDao = ServiceLocator.getInstance().getBookDao();
-            bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-            tagDao = ServiceLocator.getInstance().getTagDao();
+        if (authorDao == null) {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            authorDao = serviceLocator.getAuthorDao();
+            bookDao = serviceLocator.getBookDao();
+            bookshelfDao = serviceLocator.getBookshelfDao();
+            loaneeDao = serviceLocator.getLoaneeDao();
+            publisherDao = serviceLocator.getPublisherDao();
+            seriesDao = serviceLocator.getSeriesDao();
+            tagDao = serviceLocator.getTagDao();
 
             // first start of the activity, read from user preference
             rebuildMode = RebuildBooklist.getPreferredMode(context);
@@ -531,7 +547,7 @@ public class BooksOnBookshelfViewModel
                 .or(() -> bookshelfDao.getCurrent())
                 .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
                 .orElseThrow();
-        ServiceLocator.getInstance().getBookshelfDao().setCurrent(bookshelf);
+        bookshelfDao.setCurrent(bookshelf);
 
         if (previousBookshelfId != bookshelf.getId()) {
             currentLayout = null;
@@ -582,7 +598,7 @@ public class BooksOnBookshelfViewModel
         // set as the global default.
         stylesHelper.setDefault(style.getUuid());
         // save the new bookshelf/style combination
-        ServiceLocator.getInstance().getBookshelfDao().setCurrent(bookshelf);
+        bookshelfDao.setCurrent(bookshelf);
         bookshelf.setStyle(context, style);
         currentLayout = null;
     }
@@ -767,8 +783,7 @@ public class BooksOnBookshelfViewModel
         if (rowData.contains(DBKey.LOANEE_NAME)) {
             loanee = rowData.getString(DBKey.LOANEE_NAME);
         } else {
-            loanee = ServiceLocator.getInstance().getLoaneeDao().findLoaneeByBookId(
-                    rowData.getLong(DBKey.FK_BOOK));
+            loanee = loaneeDao.findLoaneeByBookId(rowData.getLong(DBKey.FK_BOOK));
         }
         return loanee == null || loanee.isEmpty();
     }
@@ -809,12 +824,11 @@ public class BooksOnBookshelfViewModel
     }
 
     long calculateScrollDelay() {
-        final boolean covers = getStyle().isShowField(FieldVisibility.Screen.List,
-                                                      DBKey.COVER[0]);
+        final boolean covers = getStyle()
+                .isShowField(FieldVisibility.Screen.List, DBKey.COVER[0]);
         // Assume that cached covers will appear faster than File based covers.
-        final boolean imageCachingEnabled = ServiceLocator.getInstance()
-                                                          .getCoverStorage()
-                                                          .isImageCachingEnabled();
+        final boolean imageCachingEnabled =
+                ServiceLocator.getInstance().getCoverStorage().isImageCachingEnabled();
 
         return covers && !imageCachingEnabled ? SCROLL_POST_DELAY_MS : 0;
     }
@@ -884,7 +898,7 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
-        return ServiceLocator.getInstance().getAuthorDao().getByBookId(bookId);
+        return authorDao.getByBookId(bookId);
     }
 
     /**
@@ -945,13 +959,13 @@ public class BooksOnBookshelfViewModel
             // We're going to update ALL books referenced by that id, for ALL bookshelves.
             switch (groupId) {
                 case BooklistGroup.AUTHOR:
-                    books = ServiceLocator.getInstance().getAuthorDao().getBookIds(id);
+                    books = authorDao.getBookIds(id);
                     break;
                 case BooklistGroup.SERIES:
-                    books = ServiceLocator.getInstance().getSeriesDao().getBookIds(id);
+                    books = seriesDao.getBookIds(id);
                     break;
                 case BooklistGroup.PUBLISHER:
-                    books = ServiceLocator.getInstance().getPublisherDao().getBookIds(id);
+                    books = publisherDao.getBookIds(id);
                     break;
                 case BooklistGroup.BOOKSHELF:
                     books = bookshelfDao.getBookIds(id);
@@ -1026,7 +1040,7 @@ public class BooksOnBookshelfViewModel
      */
     void setAuthorComplete(@NonNull final Author author,
                            final boolean complete) {
-        if (ServiceLocator.getInstance().getAuthorDao().setComplete(author, complete)) {
+        if (authorDao.setComplete(author, complete)) {
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
             final int[] positions =
                     booklist.updateAuthorComplete(author.getId(), author.isComplete())
@@ -1047,7 +1061,7 @@ public class BooksOnBookshelfViewModel
      */
     void setSeriesComplete(@NonNull final Series series,
                            final boolean complete) {
-        if (ServiceLocator.getInstance().getSeriesDao().setComplete(series, complete)) {
+        if (seriesDao.setComplete(series, complete)) {
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
             final int[] positions =
                     booklist.updateSeriesComplete(series.getId(), series.isComplete())
@@ -1167,7 +1181,7 @@ public class BooksOnBookshelfViewModel
      * @param bookId Book to return
      */
     void deleteLoan(@IntRange(from = 1) final long bookId) {
-        if (ServiceLocator.getInstance().getLoaneeDao().delete(bookId)) {
+        if (loaneeDao.delete(bookId)) {
             onBookLoaneeChanged(bookId, null);
         }
     }
@@ -1313,7 +1327,7 @@ public class BooksOnBookshelfViewModel
      */
     void delete(@NonNull final Context context,
                 @NonNull final Series series) {
-        if (ServiceLocator.getInstance().getSeriesDao().delete(context, series)) {
+        if (seriesDao.delete(context, series)) {
             triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
@@ -1326,7 +1340,7 @@ public class BooksOnBookshelfViewModel
      */
     void delete(@NonNull final Context context,
                 @NonNull final Publisher publisher) {
-        if (ServiceLocator.getInstance().getPublisherDao().delete(context, publisher)) {
+        if (publisherDao.delete(context, publisher)) {
             triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
