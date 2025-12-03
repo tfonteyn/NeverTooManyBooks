@@ -38,6 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 
@@ -67,6 +70,10 @@ public class SearchBookByTextViewModel
 
     private Style style;
     private BookSearchCriteria searchCriteria;
+
+    private AuthorDao authorDao;
+    private PublisherDao publisherDao;
+    private SeriesDao seriesDao;
 
     private static boolean addName(@NonNull final Collection<String> recentNames,
                                    @NonNull final String searchText) {
@@ -121,12 +128,17 @@ public class SearchBookByTextViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (searchCriteria == null) {
+        if (authorDao == null) {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            authorDao = serviceLocator.getAuthorDao();
+            publisherDao = serviceLocator.getPublisherDao();
+            seriesDao = serviceLocator.getSeriesDao();
+
             searchCriteria = new BookSearchCriteria();
 
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
-            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            final StylesHelper stylesHelper = serviceLocator.getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
         }
     }
@@ -151,8 +163,7 @@ public class SearchBookByTextViewModel
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
         // search sites can cope with the formatted version.
         final List<String> dbNames =
-                ServiceLocator.getInstance().getAuthorDao()
-                              .getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME_GIVEN_FIRST);
+                authorDao.getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME_GIVEN_FIRST);
         return combineNames(locale, dbNames, recentAuthorNames);
     }
 
@@ -162,7 +173,7 @@ public class SearchBookByTextViewModel
 
     @NonNull
     List<String> getSeriesNames(@NonNull final Locale locale) {
-        final List<String> dbNames = ServiceLocator.getInstance().getSeriesDao().getNames();
+        final List<String> dbNames = seriesDao.getNames();
         return combineNames(locale, dbNames, recentSeriesNames);
     }
 
@@ -172,7 +183,7 @@ public class SearchBookByTextViewModel
 
     @NonNull
     List<String> getPublisherNames(@NonNull final Locale locale) {
-        final List<String> dbNames = ServiceLocator.getInstance().getPublisherDao().getNames();
+        final List<String> dbNames = publisherDao.getNames();
         return combineNames(locale, dbNames, recentPublisherNames);
     }
 }
