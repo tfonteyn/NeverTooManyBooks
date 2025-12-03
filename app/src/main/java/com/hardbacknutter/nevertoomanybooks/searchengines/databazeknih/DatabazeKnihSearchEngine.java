@@ -145,6 +145,7 @@ public class DatabazeKnihSearchEngine
     @NonNull
     private final RatingParser ratingParser;
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
+    private final AuthorResolverHelper authorResolverHelper;
 
     /**
      * Constructor.
@@ -160,6 +161,7 @@ public class DatabazeKnihSearchEngine
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
+        authorResolverHelper = new AuthorResolverHelper();
         ratingParser = new RatingParser(5);
     }
 
@@ -465,7 +467,7 @@ public class DatabazeKnihSearchEngine
             }
         }
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         if (isCancelled()) {
             return;

@@ -130,6 +130,8 @@ public class StripWebSearchEngine
     private static final String LANG_FRA = "fra";
     private static final String LANG_ENG = "eng";
 
+    private final AuthorResolverHelper authorResolverHelper;
+
     /**
      * Constructor.
      * <p>
@@ -143,6 +145,8 @@ public class StripWebSearchEngine
     public StripWebSearchEngine(@NonNull final Context appContext,
                                 @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        authorResolverHelper = new AuthorResolverHelper();
     }
 
     /**
@@ -424,7 +428,7 @@ public class StripWebSearchEngine
             //}
         }
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         if (isCancelled()) {
             return;

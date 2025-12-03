@@ -44,11 +44,10 @@ public class AuthorResolverTask
     private static final String TAG = "AuthorResolverTask";
 
     @Nullable
-    private List<AuthorResolver> resolvers;
-    @Nullable
     private List<Author> authors;
     private boolean storeModifications;
     private boolean mergeWithDatabase;
+    private SearchEngine searchEngine;
 
     public AuthorResolverTask() {
         super(R.id.TASK_ID_AUTHOR_RESOLVER, TAG);
@@ -77,9 +76,9 @@ public class AuthorResolverTask
         this.storeModifications = storeModifications;
         this.mergeWithDatabase = mergeWithDatabase;
 
-        final SearchEngine searchEngine = engineId.createSearchEngine(context);
+        searchEngine = engineId.createSearchEngine(context);
         searchEngine.setCaller(this);
-        this.resolvers = AuthorResolverFactory.getResolvers(context, searchEngine);
+
         execute();
     }
 
@@ -105,7 +104,8 @@ public class AuthorResolverTask
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         //noinspection DataFlowIssue
-        return AuthorResolverHelper.resolve(context, locale, authors, resolvers,
-                                            mergeWithDatabase, storeModifications);
+        return new AuthorResolverHelper()
+                .resolve(context, searchEngine, locale, authors,
+                         mergeWithDatabase, storeModifications);
     }
 }

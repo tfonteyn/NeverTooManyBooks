@@ -507,6 +507,7 @@ public class IsfdbSearchEngine
     }
 
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
+    private final AuthorResolverHelper authorResolverHelper;
     /** set during book load, used during content table load. */
     @Nullable
     private String bookTitle;
@@ -533,6 +534,8 @@ public class IsfdbSearchEngine
     public IsfdbSearchEngine(@NonNull final Context appContext,
                              @NonNull final SearchEngineConfig config) {
         super(appContext, config, CHARSET_DECODE_PAGE);
+
+        authorResolverHelper = new AuthorResolverHelper();
     }
 
     /**
@@ -1294,7 +1297,7 @@ public class IsfdbSearchEngine
 
         // post-process all found data.
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         Series.checkForSeriesNameInTitle(book);
 

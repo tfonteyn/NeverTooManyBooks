@@ -160,6 +160,7 @@ public class BedethequeSearchEngine
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
     private HttpCookie sessionCookie;
+    private final AuthorResolverHelper authorResolverHelper;
 
     /**
      * Constructor.
@@ -175,6 +176,8 @@ public class BedethequeSearchEngine
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
         extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext) + SEARCH_URL);
+
+        authorResolverHelper = new AuthorResolverHelper();
     }
 
     /**
@@ -391,7 +394,7 @@ public class BedethequeSearchEngine
             book.setDescription(description.text());
         }
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         // Unless present, add the default language
         if (!book.contains(DBKey.LANGUAGE)) {

@@ -122,6 +122,7 @@ public class GoodreadsSearchEngine
 
     private final RatingParser ratingParser;
     private final AuthorTypeMapper authorTypeMapper;
+    private final AuthorResolverHelper authorResolverHelper;
     @Nullable
     private FutureHttp<String> httpGet;
 
@@ -139,6 +140,7 @@ public class GoodreadsSearchEngine
                                  @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
+        authorResolverHelper = new AuthorResolverHelper();
         ratingParser = new RatingParser(5);
         authorTypeMapper = new AuthorTypeMapper();
     }
@@ -445,7 +447,7 @@ public class GoodreadsSearchEngine
             parseWork(apolloState, work, book);
         }
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         if (isCancelled()) {
             return;

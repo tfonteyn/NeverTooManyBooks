@@ -107,6 +107,7 @@ public class LastDodoSearchEngine
     private static final Pattern AUTHOR_ID = Pattern.compile(".*/nl/areas/(\\d+)-.*");
 
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
+    private final AuthorResolverHelper authorResolverHelper;
 
     /**
      * Constructor.
@@ -121,6 +122,8 @@ public class LastDodoSearchEngine
     public LastDodoSearchEngine(@NonNull final Context appContext,
                                 @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        authorResolverHelper = new AuthorResolverHelper();
     }
 
     /**
@@ -663,7 +666,7 @@ public class LastDodoSearchEngine
             }
         }
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         // It's extremely unlikely, but should the language be missing, add dutch.
         if (!book.contains(DBKey.LANGUAGE)) {

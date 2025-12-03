@@ -41,8 +41,25 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public final class AuthorResolverHelper {
 
     private static final String TAG = "AuthorResolverHelper";
+    private final AuthorDao authorDao;
+    private final SynchronizedDb db;
+    private List<AuthorResolver> cachedResolvers;
 
-    private AuthorResolverHelper() {
+    /**
+     * Constructor.
+     */
+    public AuthorResolverHelper() {
+        db = ServiceLocator.getInstance().getDb();
+        authorDao = ServiceLocator.getInstance().getAuthorDao();
+    }
+
+    @NonNull
+    private List<AuthorResolver> getResolvers(@NonNull final Context context,
+                                              @NonNull final SearchEngine searchEngine) {
+        if (cachedResolvers == null) {
+            cachedResolvers = AuthorResolverFactory.getResolvers(context, searchEngine);
+        }
+        return cachedResolvers;
     }
 
     /**
@@ -61,20 +78,17 @@ public final class AuthorResolverHelper {
      * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
-    public static void resolve(@NonNull final Context context,
-                               @NonNull final SearchEngine searchEngine,
-                               @NonNull final Book book)
+    public void resolve(@NonNull final Context context,
+                        @NonNull final SearchEngine searchEngine,
+                        @NonNull final Book book)
             throws CredentialsException {
-
-        final List<AuthorResolver> resolvers = AuthorResolverFactory
-                .getResolvers(context, searchEngine);
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale locale = book.getLocale(userLocale)
                                   .orElseGet(() -> searchEngine.getLocale(context));
 
         try {
-            resolve(context, locale, book.getAuthors(), resolvers, false, false);
+            resolve(context, searchEngine, locale, book.getAuthors(), false, false);
         } catch (@NonNull final DaoWriteException na) {
             // not applicable as we pass in "doStore=false"
         } catch (@NonNull final SearchException e) {
@@ -93,16 +107,16 @@ public final class AuthorResolverHelper {
      * which will be aborted, but the authors in the list authors may have been modified!
      * <strong>ALL results should be discarded in this case</strong>
      *
-     * @param context   Current context
-     * @param locale    for author updates
-     * @param authors   list to process
-     * @param resolvers to use
-     * @param doMerge   flag;
-     *                  {@code true} to force a lookup/merge with the database BEFORE
-     *                  resolving an author. {@code false} to skip.
-     * @param doStore   flag;
-     *                  {@code true} to write all modifications directly to the database,
-     *                  {@code false} not to.
+     * @param context      Current context
+     * @param searchEngine to use
+     * @param locale       for author updates
+     * @param authors      list to process
+     * @param doMerge      flag;
+     *                     {@code true} to force a lookup/merge with the database BEFORE
+     *                     resolving an author. {@code false} to skip.
+     * @param doStore      flag;
+     *                     {@code true} to write all modifications directly to the database,
+     *                     {@code false} not to.
      *
      * @return {@code true} if the any {@link Author}s were modified; {@code false} otherwise
      *
@@ -111,18 +125,15 @@ public final class AuthorResolverHelper {
      * @throws DaoWriteException    on failure
      */
     @WorkerThread
-    static boolean resolve(@NonNull final Context context,
-                           @NonNull final Locale locale,
-                           @NonNull final List<Author> authors,
-                           @NonNull final List<AuthorResolver> resolvers,
-                           final boolean doMerge,
-                           final boolean doStore)
+    boolean resolve(@NonNull final Context context,
+                    @NonNull final SearchEngine searchEngine,
+                    @NonNull final Locale locale,
+                    @NonNull final List<Author> authors,
+                    final boolean doMerge,
+                    final boolean doStore)
             throws CredentialsException, SearchException, DaoWriteException {
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final AuthorDao authorDao = serviceLocator.getAuthorDao();
-        final SynchronizedDb db = serviceLocator.getDb();
-
+        final List<AuthorResolver> resolvers = getResolvers(context, searchEngine);
         boolean result = false;
         Synchronizer.SyncLock txLock = null;
         try {

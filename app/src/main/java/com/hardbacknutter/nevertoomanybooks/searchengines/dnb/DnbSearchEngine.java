@@ -153,6 +153,7 @@ public class DnbSearchEngine
 
     @NonNull
     private final X509TrustManager x509TrustManager;
+    private final AuthorResolverHelper authorResolverHelper;
 
     /**
      * Constructor.
@@ -178,6 +179,8 @@ public class DnbSearchEngine
             LoggerFactory.getLogger().e(TAG, e);
             throw new IllegalStateException("The dnb certificates have likely become invalid", e);
         }
+
+        authorResolverHelper = new AuthorResolverHelper();
     }
 
     /**
@@ -477,7 +480,7 @@ public class DnbSearchEngine
                 }
             }
 
-            AuthorResolverHelper.resolve(context, this, book);
+            authorResolverHelper.resolve(context, this, book);
 
             if (isCancelled()) {
                 return;

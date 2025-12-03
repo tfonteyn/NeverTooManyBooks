@@ -138,6 +138,8 @@ public class BibliotecePlSearchEngine
     private static final String AUTHOR_IS_CONTRIBUTOR = "contributor";
     @NonNull
     private final RatingParser ratingParser;
+    private final AuthorResolverHelper authorResolverHelper;
+
 
     /**
      * Constructor.
@@ -153,6 +155,7 @@ public class BibliotecePlSearchEngine
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
+        authorResolverHelper = new AuthorResolverHelper();
         ratingParser = new RatingParser(5);
     }
 
@@ -370,7 +373,7 @@ public class BibliotecePlSearchEngine
         // Language is not available, we presume these are all polish.
         book.setLanguage("pl");
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         if (isCancelled()) {
             return;

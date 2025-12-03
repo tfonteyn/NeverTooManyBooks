@@ -163,6 +163,7 @@ public class StripInfoSearchEngine
 
     @NonNull
     private final RatingParser ratingParser;
+    private final AuthorResolverHelper authorResolverHelper;
     @Nullable
     private SiteAuthModule siteAuthModule;
     @Nullable
@@ -182,6 +183,7 @@ public class StripInfoSearchEngine
                                  @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
+        authorResolverHelper = new AuthorResolverHelper();
         ratingParser = new RatingParser(10);
     }
 
@@ -612,7 +614,7 @@ public class StripInfoSearchEngine
             }
         }
 
-        AuthorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
         // It's extremely unlikely, but should the language be missing, add dutch.
         if (!book.contains(DBKey.LANGUAGE)) {
