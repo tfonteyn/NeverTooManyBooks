@@ -70,9 +70,17 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -197,6 +205,18 @@ public class EditBookViewModel
     private Style style;
     private LocaleList userLocales;
 
+    private AuthorDao authorDao;
+    private BookDao bookDao;
+    private BookshelfDao bookshelfDao;
+    private ColorDao colorDao;
+    private FormatDao formatDao;
+    private LanguageDao languageDao;
+    private LocationDao locationDao;
+    private PublisherDao publisherDao;
+    private SeriesDao seriesDao;
+    private TagDao tagDao;
+    private TocEntryDao tocEntryDao;
+
     /**
      * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
      *
@@ -228,14 +248,25 @@ public class EditBookViewModel
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {
 
-        if (book == null) {
+        if (authorDao == null) {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            authorDao = serviceLocator.getAuthorDao();
+            bookDao = serviceLocator.getBookDao();
+            bookshelfDao = serviceLocator.getBookshelfDao();
+            colorDao = serviceLocator.getColorDao();
+            formatDao = serviceLocator.getFormatDao();
+            languageDao = serviceLocator.getLanguageDao();
+            locationDao = serviceLocator.getLocationDao();
+            publisherDao = serviceLocator.getPublisherDao();
+            seriesDao = serviceLocator.getSeriesDao();
+            tagDao = serviceLocator.getTagDao();
+            tocEntryDao = serviceLocator.getTocEntryDao();
+
             errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
             errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
             menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
                                    new SiteSearchMenuHandler());
-
-            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args != null ? args.getString(Style.BKEY_UUID) : null;
@@ -244,7 +275,7 @@ public class EditBookViewModel
 
             userLocales = context.getResources().getConfiguration().getLocales();
 
-            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+            final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
             final List<Locale> locales = LocaleListUtils.asList(userLocales);
             final Locale userLocale = userLocales.get(0);
 
@@ -500,9 +531,9 @@ public class EditBookViewModel
             throws StorageException, DaoWriteException {
 
         if (book.isNew()) {
-            ServiceLocator.getInstance().getBookDao().insert(context, book);
+            bookDao.insert(context, book);
         } else {
-            ServiceLocator.getInstance().getBookDao().update(context, book);
+            bookDao.update(context, book);
         }
         modified = true;
         book.setStage(EntityStage.Stage.Clean);
@@ -523,7 +554,7 @@ public class EditBookViewModel
      */
     boolean deleteTocEntry(@NonNull final Context context,
                            @NonNull final TocEntry tocEntry) {
-        return ServiceLocator.getInstance().getTocEntryDao().delete(context, tocEntry);
+        return tocEntryDao.delete(context, tocEntry);
     }
 
     /**
@@ -535,7 +566,7 @@ public class EditBookViewModel
         if (book.isNew()) {
             final String isbnStr = book.getIsbn();
             if (!isbnStr.isEmpty()) {
-                return ServiceLocator.getInstance().getBookDao().bookExistsByIsbn(isbnStr);
+                return bookDao.bookExistsByIsbn(isbnStr);
             }
         }
 
@@ -566,7 +597,7 @@ public class EditBookViewModel
     List<Bookshelf> getAllBookshelves() {
         // not cached.
         // This allows the user to edit the global list of shelves while editing a book.
-        return ServiceLocator.getInstance().getBookshelfDao().getAll();
+        return bookshelfDao.getAll();
     }
 
     /**
@@ -577,8 +608,7 @@ public class EditBookViewModel
     @NonNull
     List<String> getAllAuthorNames() {
         if (authorNamesFormatted == null) {
-            authorNamesFormatted = ServiceLocator.getInstance().getAuthorDao()
-                                                 .getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME);
+            authorNamesFormatted = authorDao.getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME);
         }
         return authorNamesFormatted;
     }
@@ -591,8 +621,7 @@ public class EditBookViewModel
     @NonNull
     List<String> getAllAuthorFamilyNames() {
         if (authorFamilyNames == null) {
-            authorFamilyNames = ServiceLocator.getInstance().getAuthorDao()
-                                              .getNames(DBKey.AUTHOR.FAMILY_NAME);
+            authorFamilyNames = authorDao.getNames(DBKey.AUTHOR.FAMILY_NAME);
         }
         return authorFamilyNames;
     }
@@ -605,8 +634,7 @@ public class EditBookViewModel
     @NonNull
     List<String> getAllAuthorGivenNames() {
         if (authorGivenNames == null) {
-            authorGivenNames = ServiceLocator.getInstance().getAuthorDao()
-                                             .getNames(DBKey.AUTHOR.GIVEN_NAMES);
+            authorGivenNames = authorDao.getNames(DBKey.AUTHOR.GIVEN_NAMES);
         }
         return authorGivenNames;
     }
@@ -619,7 +647,7 @@ public class EditBookViewModel
     @NonNull
     List<String> getAllPublisherNames() {
         if (publisherNames == null) {
-            publisherNames = ServiceLocator.getInstance().getPublisherDao().getNames();
+            publisherNames = publisherDao.getNames();
         }
         return publisherNames;
     }
@@ -632,7 +660,7 @@ public class EditBookViewModel
     @NonNull
     List<String> getAllSeriesTitles() {
         if (seriesTitles == null) {
-            seriesTitles = ServiceLocator.getInstance().getSeriesDao().getNames();
+            seriesTitles = seriesDao.getNames();
         }
         return seriesTitles;
     }
@@ -665,8 +693,7 @@ public class EditBookViewModel
     @NonNull
     private List<String> getAllLanguagesCodes(@NonNull final Context context) {
         if (languagesCodes == null) {
-            final Set<String> set = new LinkedHashSet<>(
-                    ServiceLocator.getInstance().getLanguageDao().getList());
+            final Set<String> set = new LinkedHashSet<>(languageDao.getList());
             // Provide defaults: the device language + the set we explicitly support
             set.addAll(ServiceLocator.getInstance().getLanguages().getDefaultCodes(userLocales));
             languagesCodes = new ArrayList<>(set);
@@ -685,8 +712,7 @@ public class EditBookViewModel
     @NonNull
     private List<String> getAllFormats(@NonNull final Context context) {
         if (formats == null) {
-            final Set<String> set = new LinkedHashSet<>(
-                    ServiceLocator.getInstance().getFormatDao().getList());
+            final Set<String> set = new LinkedHashSet<>(formatDao.getList());
             // Provide some defaults
             set.add(context.getString(R.string.book_format_paperback));
             set.add(context.getString(R.string.book_format_paperback_large));
@@ -708,8 +734,7 @@ public class EditBookViewModel
     @NonNull
     private List<String> getAllColors(@NonNull final Context context) {
         if (colors == null) {
-            final Set<String> set = new LinkedHashSet<>(
-                    ServiceLocator.getInstance().getColorDao().getList());
+            final Set<String> set = new LinkedHashSet<>(colorDao.getList());
             // Provide some defaults
             set.add(context.getString(R.string.book_color_black_and_white));
             set.add(context.getString(R.string.book_color_full_color));
@@ -726,7 +751,7 @@ public class EditBookViewModel
     @NonNull
     List<Tag> getAllTags() {
         if (tags == null) {
-            tags = ServiceLocator.getInstance().getTagDao().getAll();
+            tags = tagDao.getAll();
         }
         return tags;
     }
@@ -739,7 +764,7 @@ public class EditBookViewModel
     @NonNull
     private List<String> getAllLocations() {
         if (locations == null) {
-            locations = ServiceLocator.getInstance().getLocationDao().getList();
+            locations = locationDao.getList();
         }
         return locations;
     }
@@ -755,8 +780,7 @@ public class EditBookViewModel
     private List<String> getAllListPriceCurrencyCodes() {
         if (listPriceCurrencies == null) {
             final Set<String> set = new LinkedHashSet<>(
-                    ServiceLocator.getInstance().getBookDao()
-                                  .getCurrencyCodes(DBKey.PRICE_LISTED));
+                    bookDao.getCurrencyCodes(DBKey.PRICE_LISTED));
             set.addAll(getDefaultCurrencies());
             listPriceCurrencies = new ArrayList<>(set);
         }
@@ -774,8 +798,7 @@ public class EditBookViewModel
     private List<String> getAllPricePaidCurrencyCodes() {
         if (pricePaidCurrencies == null) {
             final Set<String> set = new LinkedHashSet<>(
-                    ServiceLocator.getInstance().getBookDao()
-                                  .getCurrencyCodes(DBKey.PRICE_PAID));
+                    bookDao.getCurrencyCodes(DBKey.PRICE_PAID));
             set.addAll(getDefaultCurrencies());
             pricePaidCurrencies = new ArrayList<>(set);
         }
@@ -798,9 +821,6 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Author author) {
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-
         if (author.getId() == 0) {
             final Locale userLocale = userLocales.get(0);
             final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
@@ -811,8 +831,7 @@ public class EditBookViewModel
         }
 
         final int books = authorDao.countBooks(author);
-
-        final int tocEntries = ServiceLocator.getInstance().getTocEntryDao().count(author);
+        final int tocEntries = tocEntryDao.count(author);
 
         // If the book is new, then there should be no other references.
         // If the book exists in the database, then obv. there should be 1 reference.
@@ -837,8 +856,6 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Series series) {
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-
         if (series.getId() == 0) {
             final Locale userLocale = userLocales.get(0);
             final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
@@ -862,8 +879,6 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-
         if (publisher.getId() == 0) {
             final Locale userLocale = userLocales.get(0);
             final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
@@ -931,7 +946,7 @@ public class EditBookViewModel
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getAuthorDao().insert(context, modified, bookLocale);
+        authorDao.insert(context, modified, bookLocale);
         final List<Author> list = book.getAuthors();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
@@ -951,7 +966,7 @@ public class EditBookViewModel
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getAuthorDao().update(context, original, bookLocale);
+        authorDao.update(context, original, bookLocale);
         book.pruneAuthors(context);
         book.refreshAuthors(context);
     }
@@ -963,7 +978,7 @@ public class EditBookViewModel
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getSeriesDao().insert(context, modified, bookLocale);
+        seriesDao.insert(context, modified, bookLocale);
         final List<Series> list = book.getSeries();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
@@ -983,7 +998,7 @@ public class EditBookViewModel
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getSeriesDao().update(context, original, bookLocale);
+        seriesDao.update(context, original, bookLocale);
         book.pruneSeries(context);
         book.refreshSeries(context);
     }
@@ -995,7 +1010,7 @@ public class EditBookViewModel
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getPublisherDao().insert(context, modified, bookLocale);
+        publisherDao.insert(context, modified, bookLocale);
         final List<Publisher> list = book.getPublishers();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
@@ -1015,7 +1030,7 @@ public class EditBookViewModel
 
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getPublisherDao().update(context, original, bookLocale);
+        publisherDao.update(context, original, bookLocale);
         book.prunePublishers(context);
         book.refreshPublishers(context);
     }
@@ -1024,30 +1039,29 @@ public class EditBookViewModel
                @NonNull final Author author) {
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getAuthorDao().fixId(context, author, bookLocale);
+        authorDao.fixId(context, author, bookLocale);
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Series series) {
-        ServiceLocator.getInstance().getSeriesDao()
-                      .fixId(context, series, series.getLocale(context).orElseGet(() -> {
-                          final Locale userLocale = userLocales.get(0);
-                          return book.getLocale(userLocale).orElse(userLocale);
-                      }));
+        seriesDao.fixId(context, series, series.getLocale(context).orElseGet(() -> {
+            final Locale userLocale = userLocales.get(0);
+            return book.getLocale(userLocale).orElse(userLocale);
+        }));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Publisher publisher) {
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getPublisherDao().fixId(context, publisher, bookLocale);
+        publisherDao.fixId(context, publisher, bookLocale);
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final TocEntry tocEntry) {
         final Locale userLocale = userLocales.get(0);
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
-        ServiceLocator.getInstance().getTocEntryDao().fixId(context, tocEntry, bookLocale);
+        tocEntryDao.fixId(context, tocEntry, bookLocale);
     }
 
     /**
