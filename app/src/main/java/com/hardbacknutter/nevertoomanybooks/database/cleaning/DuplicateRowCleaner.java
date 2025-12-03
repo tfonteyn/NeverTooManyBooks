@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.database;
+package com.hardbacknutter.nevertoomanybooks.database.cleaning;
 
 import android.content.Context;
 
@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 

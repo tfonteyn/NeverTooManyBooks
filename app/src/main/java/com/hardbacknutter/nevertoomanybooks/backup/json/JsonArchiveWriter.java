@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
@@ -107,7 +107,7 @@ public class JsonArchiveWriter
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         // do a cleanup before we start writing
-        DBCleaner.purge();
+        new Purger().purge();
 
         int steps = 0;
         if (recordTypes.contains(RecordType.Books)) {

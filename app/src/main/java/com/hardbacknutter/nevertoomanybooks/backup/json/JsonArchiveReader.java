@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -152,7 +152,7 @@ public class JsonArchiveReader
 
     @Override
     public void close() {
-        DBCleaner.purge();
+        new Purger().purge();
     }
 
     @VisibleForTesting

@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -848,6 +848,6 @@ public class CalibreContentServerReader
 
     @Override
     public void close() {
-        DBCleaner.purge();
+        new Purger().purge();
     }
 }

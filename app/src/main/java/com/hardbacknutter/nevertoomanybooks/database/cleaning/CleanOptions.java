@@ -1,0 +1,99 @@
+/*
+ * @Copyright 2018-2025 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.database.cleaning;
+
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
+
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
+
+public enum CleanOptions {
+    RemoveDuplicateAuthors,
+    RemoveDuplicateSeries,
+    RemoveDuplicateTocEntries,
+    RemoveDuplicatePublishers,
+    Purge;
+
+    public static final String PK_OPTIONS = StartupViewModel.PK_RUN_MAINTENANCE + ".options";
+
+    /**
+     * Set cleaner options to use when the cleaner is started.
+     * Typically, after setting options, the cleaner should be scheduled by calling BOTH:
+     * <pre>
+     *   // Run the cleaner to remove duplicates as configured above
+     *   StartupViewModel.schedule(context,
+     *       StartupViewModel.PK_RUN_MAINTENANCE, true);
+     *
+     *   // and rebuild both OB columns and the indexes
+     *   StartupViewModel.schedule(context,
+     *       StartupViewModel.PK_REBUILD_INDEXES, true);
+     * </pre>
+     *
+     * @param context Current context
+     * @param options to set
+     */
+    public static void setOptions(@NonNull final Context context,
+                                  @NonNull final Set<CleanOptions> options) {
+
+        final Set<String> all = options.stream()
+                                       .map(Enum::name)
+                                       .collect(Collectors.toSet());
+
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putStringSet(PK_OPTIONS, all)
+                         .apply();
+    }
+
+    @SuppressWarnings({"CheckStyle", "OverlyBroadCatchBlock"})
+    @NonNull
+    static Set<CleanOptions> readOptions(@NonNull final Context context) {
+        @Nullable
+        final Set<String> all = PreferenceManager.getDefaultSharedPreferences(context)
+                                                 .getStringSet(PK_OPTIONS, null);
+
+        final Set<CleanOptions> options = EnumSet.noneOf(CleanOptions.class);
+        if (all != null) {
+            for (final String option : all) {
+                try {
+                    options.add(valueOf(option));
+                } catch (final Exception ignored) {
+                    // skip invalid/missing enum values
+                }
+            }
+        }
+
+        return options;
+    }
+
+    static void clearOptions(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .remove(PK_OPTIONS)
+                         .apply();
+    }
+}

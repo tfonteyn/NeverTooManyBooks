@@ -28,6 +28,8 @@ import androidx.core.util.Pair;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
+
 /**
  * Note that there is no individual 'insert' method.
  * New records are created by a database trigger when books are deleted.
@@ -79,7 +81,7 @@ public interface DeletedBooksDao {
      * This does not affect/delete the actual books.
      * <p>
      * Note this is <strong>not</strong> called from
-     * {@link com.hardbacknutter.nevertoomanybooks.database.DBCleaner#purge()}
+     * {@link Purger#purge()}
      * as we will always seek the users permission to clear the list.
      */
     void purge();

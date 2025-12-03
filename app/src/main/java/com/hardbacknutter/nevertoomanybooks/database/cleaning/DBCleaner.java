@@ -17,21 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database;
+package com.hardbacknutter.nevertoomanybooks.database.cleaning;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,11 +37,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -53,6 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -71,8 +70,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *  where we offer a cleanup of orphaned book covers.
  */
 public class DBCleaner {
-
-    public static final String PK_OPTIONS = StartupViewModel.PK_RUN_MAINTENANCE + ".options";
 
     /** Log tag. */
     private static final String TAG = "DBCleaner";
@@ -98,134 +95,26 @@ public class DBCleaner {
 
     private static final float FLOAT_EPSILON = 0.1f;
 
+    private final Logger logger;
+
     /** Database Access. */
     @NonNull
     private final SynchronizedDb db;
-    private final Logger logger;
+    private final BookshelfDao bookshelfDao;
+    private final LanguageDao languageDao;
+
 
     /**
      * Constructor.
      */
     public DBCleaner() {
-        this.db = ServiceLocator.getInstance().getDb();
         logger = LoggerFactory.getLogger();
-    }
 
-    /**
-     * Set cleaner options to use when the cleaner is started.
-     * Typically, after setting options, the cleaner should be scheduled by calling BOTH:
-     * <pre>
-     *   // Run the cleaner to remove duplicates as configured above
-     *   StartupViewModel.schedule(context,
-     *       StartupViewModel.PK_RUN_MAINTENANCE, true);
-     *
-     *   // and rebuild both OB columns and the indexes
-     *   StartupViewModel.schedule(context,
-     *       StartupViewModel.PK_REBUILD_INDEXES, true);
-     * </pre>
-     *
-     * @param context Current context
-     * @param options to set
-     */
-    public static void setOptions(@NonNull final Context context,
-                                  @NonNull final Set<DBCleaner.Option> options) {
-
-        final Set<String> all = options.stream()
-                                       .map(Enum::name)
-                                       .collect(Collectors.toSet());
-
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putStringSet(PK_OPTIONS, all)
-                         .apply();
-    }
-
-    @SuppressWarnings({"CheckStyle", "OverlyBroadCatchBlock"})
-    @NonNull
-    private static Set<DBCleaner.Option> readOptions(@NonNull final Context context) {
-        @Nullable
-        final Set<String> all = PreferenceManager.getDefaultSharedPreferences(context)
-                                                 .getStringSet(PK_OPTIONS, null);
-
-        final Set<DBCleaner.Option> options = EnumSet.noneOf(DBCleaner.Option.class);
-        if (all != null) {
-            for (final String option : all) {
-                try {
-                    options.add(DBCleaner.Option.valueOf(option));
-                } catch (final Exception ignored) {
-                    // skip invalid/missing enum values
-                }
-            }
-        }
-
-        return options;
-    }
-
-    private static void clearOptions(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .remove(PK_OPTIONS)
-                         .apply();
-    }
-
-    /**
-     * Purge anything that is no longer in use.
-     * <p>
-     * Purging is no longer done at every occasion where it *might* be needed.
-     * It was noticed (in the logs) that it was done far to often. It is now called only:
-     * <ul>
-     *  <li>Before a (Zip) backup.</li>
-     *  <li>After an import of data (all sources).</li>
-     * </ul>
-     * So orphaned data will stay around a little longer which in fact may be beneficial
-     * while entering/correcting a book collection.
-     * <p>
-     * <strong>All RuntimeException are ignored,
-     * but the transaction is rolled back on any error</strong>
-     */
-    @WorkerThread
-    public static void purge() {
-        final Logger logger = LoggerFactory.getLogger();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final SynchronizedDb db = serviceLocator.getDb();
+        this.db = serviceLocator.getDb();
 
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            int i;
-            i = serviceLocator.getSeriesDao().purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged Series: " + i);
-            }
-            i = serviceLocator.getAuthorDao().purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged Author: " + i);
-            }
-            i = serviceLocator.getPublisherDao().purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged Publishers: " + i);
-            }
-            i = serviceLocator.getTocEntryDao().purge();
-            if (i > 0) {
-                logger.w(TAG, "Purged TocEntries: " + i);
-            }
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-
-            db.analyze();
-
-        } catch (@NonNull final RuntimeException e) {
-            // log to file, this is bad but NOT fatal.
-            logger.e(TAG, e);
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
+        bookshelfDao = serviceLocator.getBookshelfDao();
+        languageDao = serviceLocator.getLanguageDao();
     }
 
     /**
@@ -239,13 +128,11 @@ public class DBCleaner {
     public void clean(@NonNull final Context context)
             throws DaoWriteException {
 
-        final Set<DBCleaner.Option> options = readOptions(context);
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Set<CleanOptions> options = CleanOptions.readOptions(context);
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        serviceLocator.getLanguageDao().bulkUpdate(userLocale);
+        languageDao.bulkUpdate(userLocale);
 
         // make sure there are no 'T' separators in datetime fields
         datetimeFormat();
@@ -258,27 +145,26 @@ public class DBCleaner {
         //ratingColumn();
 
         // Validate styles and filters.
-        serviceLocator.getBookshelfDao().validate(context);
+        bookshelfDao.validate(context);
 
         //TEST: we only check & log for now, but don't update yet...
         // we need to test with bad data
         bookBookshelf(true);
 
         if (!options.isEmpty()) {
-            if (options.contains(Option.Purge)) {
-                // purging is done one transaction.
-                purge();
+            if (options.contains(CleanOptions.Purge)) {
+                new Purger().purge();
             }
-            // Duplicates removal is done one transaction.
+            // Duplicates removal is done in one transaction.
             removeDuplicates(context, options);
         }
 
         // Lastly, always clear the options
-        clearOptions(context);
+        CleanOptions.clearOptions(context);
     }
 
     private void removeDuplicates(@NonNull final Context context,
-                                  @NonNull final Set<Option> options)
+                                  @NonNull final Set<CleanOptions> options)
             throws DaoWriteException {
         final DuplicateRowCleaner drc = new DuplicateRowCleaner();
         Synchronizer.SyncLock txLock = null;
@@ -287,19 +173,19 @@ public class DBCleaner {
                 txLock = db.beginTransaction(true);
             }
 
-            if (options.contains(Option.RemoveDuplicateAuthors)) {
+            if (options.contains(CleanOptions.RemoveDuplicateAuthors)) {
                 drc.removeDuplicateAuthors();
             }
-            if (options.contains(Option.RemoveDuplicatePublishers)) {
+            if (options.contains(CleanOptions.RemoveDuplicatePublishers)) {
                 drc.removeDuplicatePublishers();
             }
-            if (options.contains(Option.RemoveDuplicateSeries)) {
+            if (options.contains(CleanOptions.RemoveDuplicateSeries)) {
                 drc.removeDuplicateSeries();
             }
             // Paranoia check:
             // removeDuplicateTocEntries is dependent on RemoveDuplicateAuthors having run first.
-            if (options.contains(Option.RemoveDuplicateAuthors)
-                && options.contains(Option.RemoveDuplicateTocEntries)) {
+            if (options.contains(CleanOptions.RemoveDuplicateAuthors)
+                && options.contains(CleanOptions.RemoveDuplicateTocEntries)) {
                 drc.removeDuplicateTocEntries();
             }
 
@@ -549,11 +435,4 @@ public class DBCleaner {
         }
     }
 
-    public enum Option {
-        RemoveDuplicateAuthors,
-        RemoveDuplicateSeries,
-        RemoveDuplicateTocEntries,
-        RemoveDuplicatePublishers,
-        Purge
-    }
 }

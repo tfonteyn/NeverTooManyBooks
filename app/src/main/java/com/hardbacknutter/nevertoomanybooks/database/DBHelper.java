@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
@@ -447,11 +448,11 @@ public class DBHelper
             // Github #200: in short: #193 introduced a bug where the order-by column
             // could contain spaces. This led to "mergeable" data not being found,
             // which in turn led to creating duplicates.
-            DBCleaner.setOptions(context, Set.of(
-                    DBCleaner.Option.RemoveDuplicateAuthors,
-                    DBCleaner.Option.RemoveDuplicatePublishers,
-                    DBCleaner.Option.RemoveDuplicateSeries,
-                    DBCleaner.Option.RemoveDuplicateTocEntries
+            CleanOptions.setOptions(context, Set.of(
+                    CleanOptions.RemoveDuplicateAuthors,
+                    CleanOptions.RemoveDuplicatePublishers,
+                    CleanOptions.RemoveDuplicateSeries,
+                    CleanOptions.RemoveDuplicateTocEntries
             ));
 
             // Run the cleaner to remove duplicates as configured above

@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.DBCleaner;
 
 /**
  * Data cleaning. Done at app startup when deemed needed.
