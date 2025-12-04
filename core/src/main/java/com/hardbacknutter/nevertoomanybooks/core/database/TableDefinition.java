@@ -38,6 +38,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 
 /**
@@ -45,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
  */
 @SuppressWarnings("FieldNotUsedInToString")
 public class TableDefinition {
+
+    private static final String TAG = "TableDefinition";
 
     private static final String _AS_ = " AS ";
     private static final String ALTER_TABLE_ = "ALTER TABLE ";
@@ -550,6 +553,8 @@ public class TableDefinition {
     }
 
     /**
+     * <strong>THIS IS A DANGEROUS METHOD - USE WITH CARE</strong>.
+     * <p>
      * Convenience method to use when table columns have changed definitions,
      * but no removals or renames.
      *
@@ -588,9 +593,9 @@ public class TableDefinition {
      *      disable them using PRAGMA foreign_keys=OFF.</li>
      *  <li>Start transaction</li>
      *  <li>Create new table</li>
-     *          <li>Copy data</li>
-     *          <li>Drop old table</li>
-     *          <li>Rename new into old</li>
+     *  <li>Copy data</li>
+     *  <li>Drop old table</li>
+     *  <li>Rename new into old</li>
      *  <li>commit transaction</li>
      *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
      * </ol>
@@ -600,6 +605,8 @@ public class TableDefinition {
      */
     public void recreate(@NonNull final SQLiteDatabase db,
                          @NonNull final Map<String, String> toRename) {
+
+        LoggerFactory.getLogger().w(TAG, "recreate table: " + name);
 
         // create the new table
         final String dstTableName = "copyOf" + name;
