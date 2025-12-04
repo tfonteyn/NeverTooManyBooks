@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
@@ -171,11 +171,11 @@ public interface BookDao {
     /**
      * Delete the given {@link Book} (and its covers).
      *
-     * @param bookLight to delete
+     * @param bookLite to delete
      *
      * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull BookLight bookLight);
+    boolean delete(@NonNull BookLite bookLite);
 
     /**
      * Delete the given {@link Book} (and its covers).

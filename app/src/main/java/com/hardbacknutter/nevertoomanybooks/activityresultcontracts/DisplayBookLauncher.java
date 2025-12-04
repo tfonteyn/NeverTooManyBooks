@@ -88,7 +88,7 @@ public class DisplayBookLauncher {
                 case TocEntry:
                     bookIds.addAll(tocEntryDao.getBookIds(work.getId()));
                     break;
-                case BookLight:
+                case BookLite:
                 case Book:
                     bookIds.add(work.getId());
                     break;
@@ -107,7 +107,7 @@ public class DisplayBookLauncher {
                 }
                 bookId = bookIds1.get(0);
                 break;
-            case BookLight:
+            case BookLite:
             case Book:
                 bookId = currentWork.getId();
                 break;
@@ -142,7 +142,7 @@ public class DisplayBookLauncher {
         final AuthorWork work = works.get(workPosition);
         switch (work.getWorkType()) {
             case Book:
-            case BookLight: {
+            case BookLite: {
                 launcher.launch(new ShowBookPagerContract.Input(work.getId(), bookshelf));
                 break;
             }

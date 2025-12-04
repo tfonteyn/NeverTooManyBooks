@@ -40,9 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
- * A 'light' Book object used where the full {@link Book} would be a performance penalty.
+ * A 'lite' Book object used where the full {@link Book} would be a performance penalty.
  */
-public class BookLight
+public class BookLite
         implements AuthorWork, Entity {
 
     @NonNull
@@ -60,7 +60,7 @@ public class BookLight
      *
      * @param book to use
      */
-    public BookLight(@NonNull final Book book) {
+    public BookLite(@NonNull final Book book) {
         this.id = book.getId();
         this.title = book.getTitle();
         this.language = book.getLanguage();
@@ -75,9 +75,9 @@ public class BookLight
      * @param primaryAuthor Author of title
      * @param rowData       with data
      */
-    public BookLight(final long id,
-                     @Nullable final Author primaryAuthor,
-                     @NonNull final DataHolder rowData) {
+    public BookLite(final long id,
+                    @Nullable final Author primaryAuthor,
+                    @NonNull final DataHolder rowData) {
         this.id = id;
         this.title = rowData.getString(DBKey.TITLE);
         this.language = rowData.getString(DBKey.LANGUAGE);
@@ -91,7 +91,7 @@ public class BookLight
     @Override
     @NonNull
     public Type getWorkType() {
-        return AuthorWork.Type.BookLight;
+        return AuthorWork.Type.BookLite;
     }
 
     @Override
@@ -121,8 +121,8 @@ public class BookLight
     }
 
     @NonNull
-    public List<BookLight> getBookTitles(@NonNull final Context context) {
-        final List<BookLight> list = new ArrayList<>();
+    public List<BookLite> getBookTitles(@NonNull final Context context) {
+        final List<BookLite> list = new ArrayList<>();
         list.add(this);
         return list;
     }
@@ -184,7 +184,7 @@ public class BookLight
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final BookLight that = (BookLight) o;
+        final BookLite that = (BookLite) o;
         // if both 'exist' but have different ID's -> different.
         if (id != 0 && that.id != 0 && id != that.id) {
             return false;
@@ -205,7 +205,7 @@ public class BookLight
     @Override
     @NonNull
     public String toString() {
-        return "BookLight{"
+        return "BookLite{"
                + "id=" + id
                + ", title=`" + title + '`'
                + ", language=`" + language + '`'

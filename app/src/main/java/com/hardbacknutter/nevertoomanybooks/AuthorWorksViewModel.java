@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.menus.AuthorViewAuthorOnSiteMenuHandler;
@@ -377,8 +377,8 @@ public class AuthorWorksViewModel
                     }
                     break;
                 }
-                case BookLight: {
-                    success = bookDao.delete((BookLight) work);
+                case BookLite: {
+                    success = bookDao.delete((BookLite) work);
                     if (success) {
                         dataModified = true;
                     }

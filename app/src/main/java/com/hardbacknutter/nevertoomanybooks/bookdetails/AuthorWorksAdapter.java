@@ -131,7 +131,7 @@ public class AuthorWorksAdapter
                 holder = new TocEntryHolder(vb, style, authorFormatter);
                 break;
             }
-            case BookLight:
+            case BookLite:
             case Book: {
                 holder = new BookHolder(vb, style, authorFormatter);
                 break;

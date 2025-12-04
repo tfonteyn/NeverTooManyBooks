@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -345,10 +345,10 @@ public class BookDaoImpl
     }
 
     @Override
-    public boolean delete(@NonNull final BookLight bookLight) {
-        final boolean success = delete(bookLight.getId());
+    public boolean delete(@NonNull final BookLite bookLite) {
+        final boolean success = delete(bookLite.getId());
         if (success) {
-            bookLight.setId(0);
+            bookLite.setId(0);
         }
         return success;
     }

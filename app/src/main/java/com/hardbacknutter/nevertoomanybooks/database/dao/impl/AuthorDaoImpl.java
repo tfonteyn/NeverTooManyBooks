@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -316,8 +316,8 @@ public class AuthorDaoImpl
                         list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), author, rowData));
                         break;
 
-                    case BookLight:
-                        list.add(new BookLight(rowData.getLong(DBKey.PK_ID), author, rowData));
+                    case BookLite:
+                        list.add(new BookLite(rowData.getLong(DBKey.PK_ID), author, rowData));
                         break;
 
                     case Book:
@@ -1138,7 +1138,7 @@ public class AuthorDaoImpl
          */
         static final String FIND_BOOK_TITLES_BY_AUTHOR_ID =
                 SELECT_
-                + '\'' + AuthorWork.Type.BookLight.asChar() + '\'' + _AS_ + DBKey.AUTHOR_WORK_TYPE
+                + '\'' + AuthorWork.Type.BookLite.asChar() + '\'' + _AS_ + DBKey.AUTHOR_WORK_TYPE
                 + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
                 + ",SUBSTR(" + TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION_DATE) + ",0,5)"
                 + _AS_ + DBKey.FIRST_PUBLICATION_DATE

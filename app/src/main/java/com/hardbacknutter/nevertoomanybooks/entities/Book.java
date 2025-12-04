@@ -551,8 +551,8 @@ public class Book
     }
 
     @NonNull
-    public List<BookLight> getBookTitles(@NonNull final Context context) {
-        return Collections.singletonList(new BookLight(this));
+    public List<BookLite> getBookTitles(@NonNull final Context context) {
+        return Collections.singletonList(new BookLite(this));
     }
 
     @Override

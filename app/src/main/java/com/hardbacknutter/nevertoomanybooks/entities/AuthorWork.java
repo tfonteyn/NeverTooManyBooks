@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 
 /**
- * Abstracts/shield a {@link Book}, {@link BookLight}, {@link TocEntry}
+ * Abstracts/shield a {@link Book}, {@link BookLite}, {@link TocEntry}
  * for use in a list of works by an {@link Author}.
  * i.e. {@link AuthorDao#getAuthorWorks}.
  * <p>
@@ -104,7 +104,7 @@ public interface AuthorWork {
      * @return list
      */
     @NonNull
-    List<BookLight> getBookTitles(@NonNull Context context);
+    List<BookLite> getBookTitles(@NonNull Context context);
 
     /**
      * Get the number of books this work is present in.
@@ -124,7 +124,7 @@ public interface AuthorWork {
         /** 'T' as returned by the DAO SQL. */
         TocEntry('T'),
         /** 'L'  as returned by the DAO SQL. */
-        BookLight('L'),
+        BookLite('L'),
         /** 'B' : a full {@link com.hardbacknutter.nevertoomanybooks.entities.Book} object. */
         Book('B');
 
@@ -149,7 +149,7 @@ public interface AuthorWork {
                 case 'T':
                     return TocEntry;
                 case 'L':
-                    return BookLight;
+                    return BookLite;
                 case 'B':
                     return Book;
                 default:

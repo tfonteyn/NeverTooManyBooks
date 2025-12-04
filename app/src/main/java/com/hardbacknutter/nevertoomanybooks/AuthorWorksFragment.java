@@ -416,7 +416,7 @@ public class AuthorWorksFragment
                         () -> vm.delete(getContext(), position));
                 break;
             }
-            case BookLight:
+            case BookLite:
             case Book: {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteBook(

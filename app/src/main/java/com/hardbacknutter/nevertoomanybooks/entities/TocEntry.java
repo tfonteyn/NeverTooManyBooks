@@ -355,7 +355,7 @@ public class TocEntry
 
     @Override
     @NonNull
-    public List<BookLight> getBookTitles(@NonNull final Context context) {
+    public List<BookLite> getBookTitles(@NonNull final Context context) {
         return ServiceLocator.getInstance().getTocEntryDao().getBookTitles(this);
     }
 

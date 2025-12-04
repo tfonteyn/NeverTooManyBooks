@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
@@ -224,15 +224,15 @@ public class TocEntryDaoImpl
 
     @Override
     @NonNull
-    public List<BookLight> getBookTitles(@NonNull final TocEntry tocEntry) {
+    public List<BookLite> getBookTitles(@NonNull final TocEntry tocEntry) {
         final Author author = tocEntry.getPrimaryAuthor();
 
-        final List<BookLight> list = new ArrayList<>();
+        final List<BookLite> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_TITLES_BY_TOC_ENTRY_ID,
                                          new String[]{String.valueOf(tocEntry.getId())})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new BookLight(rowData.getLong(DBKey.PK_ID), author, rowData));
+                list.add(new BookLite(rowData.getLong(DBKey.PK_ID), author, rowData));
             }
         }
 
@@ -656,7 +656,7 @@ public class TocEntryDaoImpl
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref()
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
 
-        /** All Books as {@link BookLight} for a given {@link TocEntry}. */
+        /** All Books as {@link BookLite} for a given {@link TocEntry}. */
         static final String FIND_BOOK_TITLES_BY_TOC_ENTRY_ID =
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                           DBKey.TITLE,

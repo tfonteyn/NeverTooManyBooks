@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -58,7 +58,7 @@ public interface TocEntryDao
 
     /**
      * Return a list of paired book-id and book-title 's for the given {@link TocEntry}.
-     * The primary author is used as the author for the returned {@link BookLight} objects.
+     * The primary author is used as the author for the returned {@link BookLite} objects.
      * <p>
      * The titles are returned "as-is". If re-ordering is needed, the caller must do this
      * after getting the list.
@@ -68,7 +68,7 @@ public interface TocEntryDao
      * @return list of id/titles/language of books.
      */
     @NonNull
-    List<BookLight> getBookTitles(@NonNull TocEntry tocEntry);
+    List<BookLite> getBookTitles(@NonNull TocEntry tocEntry);
 
     /**
      * Get the list of {@link TocEntry}'s for this book.
