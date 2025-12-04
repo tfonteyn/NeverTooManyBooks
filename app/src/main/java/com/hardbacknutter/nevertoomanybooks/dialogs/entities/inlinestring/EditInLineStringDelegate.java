@@ -223,7 +223,7 @@ class EditInLineStringDelegate
      * @param currentText  the modified text
      *
      * @return the text as <strong>stored</strong> which can be different from
-     *         the modified text passed in.
+     *         the modified text passed in when this method is overridden.
      */
     @NonNull
     String onSave(@NonNull final Context context,
