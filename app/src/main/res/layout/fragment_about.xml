@@ -68,13 +68,9 @@
         app:constraint_referenced_ids="lbl_books,lbl_authors,lbl_series,lbl_publishers,lbl_contacts"
         />
 
-    <!-- the counts use a larger font than the labels,
-            so the former decide position, the labels align to the baselines.
-
-             android:maxLines="1" : because Android is ...
-             sigh... in the emulator we see the "Books" label sometimes
-             being split in 2 lines "Book" an "s" ... not a clue why...
-             -->
+    <!-- The counts use a larger font than the labels,
+         so the former decide position, the labels align to the baselines.
+    -->
     <TextView
         android:id="@+id/lbl_books"
         style="@style/About.Label"

@@ -67,6 +67,8 @@
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <!-- deprecated, but the ONLY way to get the labels not to wrap. -->
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="About.Statistic"
