@@ -35,11 +35,18 @@ import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 public enum CleanOptions {
     RemoveDuplicateAuthors,
     RemoveDuplicateSeries,
-    RemoveDuplicateTocEntries,
     RemoveDuplicatePublishers,
+    /**
+     * When set, RemoveDuplicateAuthors <strong>MUST</strong> also be set.
+     * This is NOT automatic on purpose.
+     */
+    RemoveDuplicateTocEntries,
+    /**
+     * Purge orphans from all applicable tables.
+     */
     Purge;
 
-    public static final String PK_OPTIONS = StartupViewModel.PK_RUN_MAINTENANCE + ".options";
+    private static final String PK_OPTIONS = StartupViewModel.PK_RUN_MAINTENANCE + ".options";
 
     /**
      * Set cleaner options to use when the cleaner is started.
