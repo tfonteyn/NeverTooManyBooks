@@ -472,6 +472,12 @@ public class DBHelper
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
         }
         if (oldVersion < 46) {
+            // The primary key was expanded from
+            // from: setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
+            // to:   setPrimaryKey(DOM_FK_BOOK, DOM_FK_AUTHOR, DOM_BOOK_AUTHOR_POSITION)
+            runWithoutConstraints(db, () ->
+                    DBDefinitions.TBL_BOOK_AUTHOR.recreate(db));
+
             // Github #200: in short: #193 introduced a bug where the order-by column
             // could contain spaces. This led to "mergeable" data not being found,
             // which in turn led to creating duplicates.

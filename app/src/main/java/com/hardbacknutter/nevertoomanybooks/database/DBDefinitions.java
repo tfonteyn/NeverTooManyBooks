@@ -1725,8 +1725,7 @@ public final class DBDefinitions {
                 // enforce: only one author on a particular position for a book.
                 // allow: multiple copies of that author and multiple types.
                 // The latter has some restrictions handled in code.
-                //FIXME: should add DOM_FK_AUTHOR to the primary key
-                .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
+                .setPrimaryKey(DOM_FK_BOOK, DOM_FK_AUTHOR, DOM_BOOK_AUTHOR_POSITION)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
                 .addIndex(DBKey.FK_AUTHOR, true,
@@ -1748,7 +1747,8 @@ public final class DBDefinitions {
                 // The latter has some restrictions handled in code.
                 // in contract to TBL_BOOK_AUTHOR we don't want to add the DOM_FK_SERIES
                 // to the primary key, as want want to allow a single book to be
-                // present in a series multiple times (each time with a different number).
+                // present in a series multiple times at different positions
+                // (each entry with a different number in the series).
                 .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_SERIES_POSITION)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_SERIES, DOM_FK_SERIES)
