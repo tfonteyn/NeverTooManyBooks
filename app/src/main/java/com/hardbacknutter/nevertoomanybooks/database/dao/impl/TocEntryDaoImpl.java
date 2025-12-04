@@ -224,11 +224,12 @@ public class TocEntryDaoImpl
 
     @Override
     @NonNull
-    public List<BookLight> getBookTitles(@IntRange(from = 1) final long id,
-                                         @NonNull final Author author) {
+    public List<BookLight> getBookTitles(@NonNull final TocEntry tocEntry) {
+        final Author author = tocEntry.getPrimaryAuthor();
+
         final List<BookLight> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_TITLES_BY_TOC_ENTRY_ID,
-                                         new String[]{String.valueOf(id)})) {
+                                         new String[]{String.valueOf(tocEntry.getId())})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new BookLight(rowData.getLong(DBKey.PK_ID), author, rowData));
@@ -510,6 +511,7 @@ public class TocEntryDaoImpl
         }
         return i;
     }
+
     private static final class Sql {
 
         /** Insert a {@link TocEntry}. */

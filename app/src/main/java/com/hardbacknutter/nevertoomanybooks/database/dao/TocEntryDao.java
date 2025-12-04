@@ -57,19 +57,18 @@ public interface TocEntryDao
     List<Long> getBookIds(long tocId);
 
     /**
-     * Return a list of paired book-id and book-title 's for the given TOC id.
+     * Return a list of paired book-id and book-title 's for the given {@link TocEntry}.
+     * The primary author is used as the author for the returned {@link BookLight} objects.
      * <p>
      * The titles are returned "as-is". If re-ordering is needed, the caller must do this
      * after getting the list.
      *
-     * @param id     TOC id
-     * @param author the Author will be used when creating the BookLight objects.
+     * @param tocEntry to use
      *
      * @return list of id/titles/language of books.
      */
     @NonNull
-    List<BookLight> getBookTitles(@IntRange(from = 1) long id,
-                                  @NonNull Author author);
+    List<BookLight> getBookTitles(@NonNull TocEntry tocEntry);
 
     /**
      * Get the list of {@link TocEntry}'s for this book.
