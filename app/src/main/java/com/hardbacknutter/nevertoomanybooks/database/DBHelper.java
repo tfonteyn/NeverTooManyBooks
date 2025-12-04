@@ -275,6 +275,31 @@ public class DBHelper
     }
 
     /**
+     * Disable the Foreign Key Constraints, run the given commands,
+     * and enable the constraint again.
+     *
+     * @param db        Database Access
+     * @param runInside to run
+     */
+    static void runWithoutConstraints(@NonNull final SQLiteDatabase db,
+                                      @NonNull final Runnable runInside) {
+        // THIS WILL COMMIT ALL PREVIOUS UPDATES
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        // This method must not be called while a transaction is in progress.
+        db.setForeignKeyConstraintsEnabled(false);
+        db.beginTransaction();
+
+        runInside.run();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        // This method must not be called while a transaction is in progress.
+        db.setForeignKeyConstraintsEnabled(true);
+        db.beginTransaction();
+    }
+
+    /**
      * Get the main database.
      *
      * @return database connection

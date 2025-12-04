@@ -190,32 +190,20 @@ public final class LegacyUpgrades {
 
     static void v34onUpgrade(@NonNull final SQLiteDatabase db) {
         // recreate tables due to some columns having their COLLATION changed
-
-        // THIS WILL COMMIT ALL PREVIOUS UPDATES
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(false);
-        db.beginTransaction();
-
-        // DBDefinitions.DOM_STYLE_NAME
-        v34RecreateTable(db, TBL_BOOKLIST_STYLES);
-        // DBDefinitions.DOM_BOOKSHELF_NAME
-        v34RecreateTable(db, TBL_BOOKSHELF);
-        // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
-        v34RecreateTable(db, TBL_AUTHORS);
-        // DBDefinitions.DOM_SERIES_TITLE_OB
-        v34RecreateTable(db, TBL_SERIES);
-        // DBDefinitions.DOM_PUBLISHER_NAME_OB
-        v34RecreateTable(db, TBL_PUBLISHERS);
-        // DBDefinitions.DOM_TITLE_OB
-        v34RecreateTable(db, TBL_BOOKS);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(true);
-        db.beginTransaction();
+        DBHelper.runWithoutConstraints(db, () -> {
+            // DBDefinitions.DOM_STYLE_NAME
+            v34RecreateTable(db, TBL_BOOKLIST_STYLES);
+            // DBDefinitions.DOM_BOOKSHELF_NAME
+            v34RecreateTable(db, TBL_BOOKSHELF);
+            // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
+            v34RecreateTable(db, TBL_AUTHORS);
+            // DBDefinitions.DOM_SERIES_TITLE_OB
+            v34RecreateTable(db, TBL_SERIES);
+            // DBDefinitions.DOM_PUBLISHER_NAME_OB
+            v34RecreateTable(db, TBL_PUBLISHERS);
+            // DBDefinitions.DOM_TITLE_OB
+            v34RecreateTable(db, TBL_BOOKS);
+        });
     }
 
     /**
@@ -426,25 +414,13 @@ public final class LegacyUpgrades {
     static void v37onUpgrade(@NonNull final SQLiteDatabase db) {
         // Recreate tabled with date/datetime fields migrated to "text"
         // Also takes care of adding DOM_TRANSLATION_ORIGINAL_LANGUAGE
-
-        // THIS WILL COMMIT ALL PREVIOUS UPDATES
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(false);
-        db.beginTransaction();
-
-        TBL_BOOKS.recreate(db);
-        TBL_TOC_ENTRIES.recreate(db);
-        TBL_DELETED_BOOKS.recreate(db);
-        TBL_STRIPINFO_COLLECTION.recreate(db);
-        TBL_CALIBRE_LIBRARIES.recreate(db);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(true);
-        db.beginTransaction();
+        DBHelper.runWithoutConstraints(db, () -> {
+            TBL_BOOKS.recreate(db);
+            TBL_TOC_ENTRIES.recreate(db);
+            TBL_DELETED_BOOKS.recreate(db);
+            TBL_STRIPINFO_COLLECTION.recreate(db);
+            TBL_CALIBRE_LIBRARIES.recreate(db);
+        });
 
         TBL_LANG_MAPPINGS.create(db, true);
     }
