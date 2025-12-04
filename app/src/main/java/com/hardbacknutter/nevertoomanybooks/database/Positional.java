@@ -18,19 +18,28 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.database.cleaning;
+package com.hardbacknutter.nevertoomanybooks.database;
 
-import androidx.annotation.WorkerThread;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 
 @FunctionalInterface
-public interface Purgeable {
+public interface Positional {
 
     /**
-     * Delete orphaned records.
+     * Check for books which do not have a {@code linked-item}
+     * at position 1.
+     * For those that don't, read their list, and re-save them.
      *
-     * @return the number of rows deleted,
-     *         or {@code -1} if an error occurred
+     * @param context Current context
+     *
+     * @return the number of books processed
+     *
+     * @throws DaoWriteException on failure
      */
-    @WorkerThread
-    int purge();
+    int fixPositions(@NonNull Context context)
+            throws DaoWriteException;
 }

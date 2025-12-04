@@ -32,7 +32,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purgeable;
+import com.hardbacknutter.nevertoomanybooks.database.Positional;
+import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -40,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface PublisherDao
-        extends Purgeable {
+        extends Purgeable, Positional {
 
     /**
      * Get a unique list of all publisher names.
@@ -93,19 +94,6 @@ public interface PublisherDao
     int rebuildOrderByColumns(@NonNull Context context,
                               @NonNull Locale locale,
                               @NonNull ReorderHelper reorderHelper);
-
-    /**
-     * Check for books which do not have a {@link Publisher} at position 1.
-     * For those that don't, read their list, and re-save them.
-     *
-     * @param context Current context
-     *
-     * @return the number of books processed
-     *
-     * @throws DaoWriteException on failure
-     */
-    int fixPositions(@NonNull Context context)
-            throws DaoWriteException;
 
     /**
      * Count the books for the given {@link Publisher}.

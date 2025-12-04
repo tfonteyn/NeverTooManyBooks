@@ -33,7 +33,8 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purgeable;
+import com.hardbacknutter.nevertoomanybooks.database.Positional;
+import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
@@ -42,20 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface TocEntryDao
-        extends Purgeable {
-
-    /**
-     * Check for books which do not have a {@link TocEntry} at position 1.
-     * For those that don't, read their list, and re-save them.
-     *
-     * @param context Current context
-     *
-     * @return the number of books processed
-     *
-     * @throws DaoWriteException on failure
-     */
-    int fixPositions(@NonNull Context context)
-            throws DaoWriteException;
+        extends Purgeable, Positional {
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
