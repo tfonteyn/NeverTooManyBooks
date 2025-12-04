@@ -233,5 +233,5 @@
     <string name="action_set_as_default">Iestatīt kā noklusējuma</string>
     <string name="tip_bookshelf_management">Izceltā rinda norāda tavu pašreizējo grāmatplauktu.\n\nNoklusējuma grāmatplaukts (atzīmēts ar *) tiks automātiski izmantots, ja pašreizējais nav pieejams jebkāda iemesla dēļ.</string>
     <string name="info_substitutions_one_per_line">Pievieno vienu aizstājēju katrai rindai vai atstāj tukšu, lai dzēstu tagu</string>
-
+    <string name="lbl_table_of_content_entry">Ieraksts satura rādītājā</string>
 </resources>

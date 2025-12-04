@@ -453,7 +453,7 @@
     <string name="lbl_tab_publication">Veröffentlichung</string>
     <string name="lbl_table_of_content_short">Inhalt</string>
     <string name="lbl_table_of_content">Inhaltsverzeichnis</string>
-    <string name="lbl_table_of_content_entry">Eintrag im Inhaltsverzeichnis</string>
+    <string name="lbl_table_of_content_entry">Inhaltsverzeichnis-Eintrag</string>
     <string name="lbl_test_connection">Verbindung testen</string>
     <string name="lbl_timeouts">Zeitüberschreitung</string>
     <string name="lbl_title">Titel</string>

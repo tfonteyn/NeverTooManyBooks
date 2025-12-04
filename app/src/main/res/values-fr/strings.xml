@@ -461,7 +461,7 @@
     <string name="lbl_tab_publication">Publication</string>
     <string name="lbl_table_of_content_short">Contenu</string>
     <string name="lbl_table_of_content">Table des matières</string>
-    <string name="lbl_table_of_content_entry">Entrée dans la table des matières</string>
+    <string name="lbl_table_of_content_entry">Entrée de la table des matières</string>
     <string name="lbl_test_connection">Tester la connexion</string>
     <string name="lbl_timeouts">Délais d’attente</string>
     <string name="lbl_title">Titre</string>

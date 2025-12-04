@@ -460,7 +460,7 @@
     <string name="lbl_tab_publication">Pubblicazione</string>
     <string name="lbl_table_of_content_short">Contenuto</string>
     <string name="lbl_table_of_content">Tabella dei contenuti</string>
-    <string name="lbl_table_of_content_entry">Voce nella tabella dei contenuti</string>
+    <string name="lbl_table_of_content_entry">Voce dell’indice</string>
     <string name="lbl_test_connection">Verifica la connessione</string>
     <string name="lbl_timeouts">Timeout</string>
     <string name="lbl_title">Titolo</string>

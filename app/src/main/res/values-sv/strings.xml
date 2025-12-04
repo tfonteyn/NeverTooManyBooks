@@ -507,7 +507,7 @@
     <string name="lbl_tab_notes">Anteckningar</string>
     <string name="lbl_tab_publication">Utgivning</string>
     <string name="lbl_table_of_content">Innehållsförteckning</string>
-    <string name="lbl_table_of_content_entry">Innehållspost</string>
+    <string name="lbl_table_of_content_entry">Innehållsförteckningspost</string>
     <string name="lbl_table_of_content_short">Innehåll</string>
     <string name="lbl_tag">Tagg</string>
     <string name="lbl_tag_mapper_apply_merge_case">Slå ihop taggar som bara skiljer sig åt i versaler/gemener</string>

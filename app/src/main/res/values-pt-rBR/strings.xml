@@ -273,5 +273,6 @@
     <string name="lbl_date_last_updated_day">Dia de Atualização</string>
     <string name="lbl_date_last_updated">Data da última atualização</string>
     <string name="lbl_family_name">Sobrenome</string>
+    <string name="lbl_table_of_content_entry">Entrada do sumário</string>
 
 </resources>

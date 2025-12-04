@@ -489,7 +489,7 @@
     <string name="lbl_tab_notes">Ghi chú</string>
     <string name="lbl_tab_publication">Xuất bản</string>
     <string name="lbl_table_of_content">Mục lục</string>
-    <string name="lbl_table_of_content_entry">Mục nhập nội dung</string>
+    <string name="lbl_table_of_content_entry">Mục trong bảng nội dung</string>
     <string name="lbl_table_of_content_short">Nội dung</string>
     <string name="lbl_test_connection">Kiểm tra kết nối</string>
     <string name="lbl_timeouts">Hết giờ</string>

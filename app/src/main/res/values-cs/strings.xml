@@ -475,7 +475,7 @@
     <string name="lbl_tab_publication">Vydání</string>
     <string name="lbl_table_of_content_short">Obsah</string>
     <string name="lbl_table_of_content">Obsah</string>
-    <string name="lbl_table_of_content_entry">Zápis do obsahu</string>
+    <string name="lbl_table_of_content_entry">Položka obsahu</string>
     <string name="lbl_test_connection">Vyzkoušejte připojení</string>
     <string name="lbl_timeouts">Časové limity</string>
     <string name="lbl_title">Titul</string>

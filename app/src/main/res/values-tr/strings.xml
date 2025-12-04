@@ -455,7 +455,7 @@
     <string name="lbl_tab_publication">Yayınlama</string>
     <string name="lbl_table_of_content_short">Içerik</string>
     <string name="lbl_table_of_content">İçindekiler</string>
-    <string name="lbl_table_of_content_entry">İçindekiler Tablosuna Giriş</string>
+    <string name="lbl_table_of_content_entry">İçindekiler girişi</string>
     <string name="lbl_test_connection">Bağlantıyı test edin</string>
     <string name="lbl_timeouts">zaman aşımları</string>
     <string name="lbl_title">Başlık</string>

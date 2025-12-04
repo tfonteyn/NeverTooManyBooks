@@ -827,7 +827,7 @@
     <string name="lbl_owned">சொந்தமானது</string>
     <string name="lbl_table_of_content">உள்ளடக்க அட்டவணை</string>
     <string name="lbl_table_of_content_short">உள்ளடக்கம்</string>
-    <string name="lbl_table_of_content_entry">உள்ளடக்க நுழைவு</string>
+    <string name="lbl_table_of_content_entry">உள்ளடக்கப்பட்டியல் உருப்பு</string>
     <string name="lbl_websites">வலைத்தளங்கள்</string>
     <string name="lbl_site_book_id">வலைத்தள புத்தக ஐடி</string>
     <string name="lbl_select_website">ஒரு வலைத்தளத்தைத் தேர்ந்தெடுக்கவும்:</string>

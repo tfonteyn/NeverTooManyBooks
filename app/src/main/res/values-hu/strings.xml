@@ -845,7 +845,7 @@
     <string name="lbl_owned">Saját</string>
     <string name="lbl_table_of_content">Tartalomjegyzék</string>
     <string name="lbl_table_of_content_short">Tartalom</string>
-    <string name="lbl_table_of_content_entry">Tartalom bejegyzés</string>
+    <string name="lbl_table_of_content_entry">Tartalomjegyzék-bejegyzés</string>
     <string name="lbl_websites">Webhelyek</string>
     <string name="lbl_site_book_id">Webhely könyvazonosító</string>
     <string name="lbl_library">Könyvtár</string>
