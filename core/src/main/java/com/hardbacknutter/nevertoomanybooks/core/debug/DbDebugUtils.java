@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -60,24 +59,24 @@ public final class DbDebugUtils {
     /**
      * Dump the content of the given table to the debug output.
      *
-     * @param db              Underlying database
-     * @param tableDefinition to dump
-     * @param limit           LIMIT limit
-     * @param orderBy         ORDER BY orderBy
-     * @param tag             log tag to use
-     * @param header          a header which will be logged first
+     * @param db        Underlying database
+     * @param tableName to dump
+     * @param limit     LIMIT limit
+     * @param orderBy   ORDER BY orderBy
+     * @param tag       log tag to use
+     * @param header    a header which will be logged first
      */
     public static void dumpTable(@NonNull final SynchronizedDb db,
-                                 @NonNull final TableDefinition tableDefinition,
+                                 @NonNull final String tableName,
                                  final int limit,
                                  @NonNull final String orderBy,
                                  @NonNull final String tag,
                                  @NonNull final String header) {
         final Logger logger = LoggerFactory.getLogger();
-        logger.d(tag, "dumpTable", tableDefinition.getName() + ": " + header);
+        logger.d(tag, "dumpTable", tableName + ": " + header);
 
         final String sql =
-                "SELECT * FROM " + tableDefinition.getName()
+                "SELECT * FROM " + tableName
                 + " ORDER BY " + orderBy + " LIMIT " + limit;
         try (Cursor cursor = db.rawQuery(sql, null)) {
             final String columnHeading = Arrays

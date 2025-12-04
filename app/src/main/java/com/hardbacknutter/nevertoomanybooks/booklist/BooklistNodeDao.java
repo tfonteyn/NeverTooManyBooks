@@ -526,7 +526,7 @@ public class BooklistNodeDao {
                                         "fromLevel=" + nodeLevel,
                                         "endRowExcl=" + endRowExcl);
 
-            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
+            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE.getName(), 10, DBKey.PK_ID,
                                    "saveNodesBetween", "before delete");
         }
 
@@ -549,7 +549,7 @@ public class BooklistNodeDao {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             LoggerFactory.getLogger().d(TAG, "saveNodesBetween", "rowsDeleted=" + rowsUpdated);
-            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
+            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE.getName(), 10, DBKey.PK_ID,
                                    "saveNodesBetween", "delete done");
         }
 
@@ -568,7 +568,7 @@ public class BooklistNodeDao {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             LoggerFactory.getLogger().d(TAG, "saveNodesBetween", "rowsInserted=" + rowsUpdated);
-            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE, 10, DBKey.PK_ID,
+            DbDebugUtils.dumpTable(db, TBL_BOOK_LIST_NODE_STATE.getName(), 10, DBKey.PK_ID,
                                    "saveNodesBetween", "insert done");
         }
     }
