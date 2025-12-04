@@ -1,3 +1,22 @@
+### 7.10.0
+
+NEW:
+
+- Performance improvements.
+    - Handling cover images is faster and the UI should be snappier.
+    - Internal loops have been removed/improved.
+      While some of the above will show, other parts may be subjective.
+
+FIXES:
+
+- #199: image deletes no longer cause UI pauses.
+- #200: fallout from #193: duplicate authors (and more) were generated.
+  This release fixes the duplication issue and cleans up existing duplicates.
+- #202: author aliases can now be removed.
+- #205: BC imports ignore the "read=0" flag if a "read_end" is set.
+
+---
+
 ### 7.9.0
 
 NEW:
