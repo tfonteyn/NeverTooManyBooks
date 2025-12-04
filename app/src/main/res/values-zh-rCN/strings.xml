@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -880,5 +877,4 @@
     <string name="warning_delete_default_bookshelf">这是你的默认书架。如果你删除它，新的默认书架将变为：“%1$s”。\n\n请在主菜单中使用“%2$s”选择其他默认书架。</string>
     <string name="action_set_as_default">设为默认</string>
     <string name="tip_bookshelf_management">高亮的行表示你当前的书架。\n\n当当前书架因任何原因不可用时，带有 * 的默认书架会自动使用。</string>
-
 </resources>
