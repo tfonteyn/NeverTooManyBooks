@@ -26,9 +26,11 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -36,7 +38,10 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.core.debug.DbDebugUtils;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -44,10 +49,20 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
+/**
+ * Manual check for duplicates.
+ * {@code
+ * SELECT family_name ,given_names FROM authors GROUP BY family_name ,given_names HAVING COUNT(_id) >1
+ * SELECT series_name FROM series GROUP BY series_name HAVING COUNT(_id) >1
+ * SELECT publisher_name FROM publishers GROUP BY publisher_name HAVING COUNT(_id) >1
+ * SELECT author, title FROM anthology GROUP BY author, title HAVING COUNT(_id) >1
+ * }
+ */
 class DuplicateRowCleaner {
 
     private static final String TAG = "DuplicateRowCleaner";
@@ -55,8 +70,8 @@ class DuplicateRowCleaner {
     private static final String CREATE_TEMP_TABLE_ = "CREATE TEMP TABLE ";
     private static final String DELETE_FROM_ = "DELETE FROM ";
     private static final String DROP_TABLE_ = "DROP TABLE ";
-    private static final String INSERT_INTO_ = "INSERT INTO ";
-    private static final String NOT_EXISTS_ = "NOT EXISTS(";
+    private static final String INSERT_OR_IGNORE_INTO_ = "INSERT OR IGNORE INTO ";
+    private static final String NOT_EXISTS_ = "NOT EXISTS ";
     private static final String SELECT_ = "SELECT ";
     private static final String _AND_ = " AND ";
     private static final String _AS_ = " AS ";
@@ -74,37 +89,105 @@ class DuplicateRowCleaner {
     @NonNull
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
+    /** The table base name, an instance counter will be concatenated for debug purposes. */
+    private static final String TBL_KEEP_BASE_NAME = "tmp_keep";
+    private static final String TBL_REMOVE_BASE_NAME = "tmp_remove";
+
+    /** Table alias. */
+    private static final String TBL_KEEP = "k";
+    private static final String TBL_REMOVE = "r";
+
+    /** A second alias for a table. */
+    private static final String A_2 = "la2";
+
+    /** Column name. */
     private static final String KEEP_ID = "keep_id";
     private static final String REMOVE_ID = "remove_id";
+    private static final int DUMP_TABLE_ROW_LIMIT = 50;
 
-    private static final String TMP_KEEP = "k";
-    private static final String TMP_REMOVE = "r";
-
-    // A second alias for a table
-    private static final String A_2 = "la2";
-    private static final String TMP_KEEP_BASE_NAME = "tmp_keep";
-    private static final String TMP_REMOVE_BASE_NAME = "tmp_remove";
-
-    /** Database Access. */
     @NonNull
     private final SynchronizedDb db;
     private final Logger logger;
+    @NonNull
+    private final Set<CleanOptions> options;
 
     /**
      * Constructor.
+     *
+     * @param options to use
      */
-    DuplicateRowCleaner() {
-        this.db = ServiceLocator.getInstance().getDb();
+    DuplicateRowCleaner(@NonNull final Set<CleanOptions> options) {
+        this.options = options;
+        db = ServiceLocator.getInstance().getDb();
         logger = LoggerFactory.getLogger();
     }
 
-    void removeDuplicateAuthors() {
+    /**
+     * Run the actions as set in the options.
+     * Participates in, or creates a Transaction.
+     *
+     * @param context Current context
+     *
+     * @throws DaoWriteException on failure
+     */
+    void dedup(@NonNull final Context context)
+            throws DaoWriteException {
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            if (options.contains(CleanOptions.RemoveDuplicateAuthors)) {
+                removeDuplicateAuthors();
+
+                final Positional authorDao = ServiceLocator.getInstance().getAuthorDao();
+                final int rows = authorDao.fixPositions(context);
+                logger.w(TAG, "Repositioned Authors: " + rows);
+            }
+            if (options.contains(CleanOptions.RemoveDuplicatePublishers)) {
+                removeDuplicatePublishers();
+
+                final Positional publisherDao = ServiceLocator.getInstance().getPublisherDao();
+                final int rows = publisherDao.fixPositions(context);
+                logger.w(TAG, "Repositioned Publishers: " + rows);
+            }
+            if (options.contains(CleanOptions.RemoveDuplicateSeries)) {
+                removeDuplicateSeries();
+
+                final Positional seriesDao = ServiceLocator.getInstance().getSeriesDao();
+                final int rows = seriesDao.fixPositions(context);
+                logger.w(TAG, "Repositioned Series: " + rows);
+            }
+            // removeDuplicateTocEntries is dependent on RemoveDuplicateAuthors
+            // having run first.
+            if (options.contains(CleanOptions.RemoveDuplicateAuthors)
+                && options.contains(CleanOptions.RemoveDuplicateTocEntries)) {
+                removeDuplicateTocEntries();
+
+                final Positional tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
+                final int rows = tocEntryDao.fixPositions(context);
+                logger.w(TAG, "Repositioned TocEntry: " + rows);
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+    }
+
+    private void removeDuplicateAuthors() {
         final int instanceId = ID_COUNTER.incrementAndGet();
 
         @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpKeep = TMP_KEEP_BASE_NAME + instanceId;
+        final String tblKeep = TBL_KEEP_BASE_NAME + instanceId;
         @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpRemove = TMP_REMOVE_BASE_NAME + instanceId;
+        final String tblRemove = TBL_REMOVE_BASE_NAME + instanceId;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -117,19 +200,20 @@ class DuplicateRowCleaner {
                     DBKey.AUTHOR.GIVEN_NAMES
             };
 
-            createKeepTable(tmpKeep, TBL_AUTHORS, equalityColumns);
-            createRemovalTable(tmpKeep, tmpRemove, TBL_AUTHORS, equalityColumns);
+            createKeepTable(tblKeep, TBL_AUTHORS, equalityColumns);
+            createRemovalTable(tblKeep, tblRemove, TBL_AUTHORS, equalityColumns);
 
-            insertReplacementRows(tmpRemove, TBL_BOOK_AUTHOR, DBKey.FK_AUTHOR);
+            insertReplacementRows(tblRemove, TBL_BOOK_AUTHOR, DBKey.FK_AUTHOR);
+            deleteRemovedIds(tblRemove, TBL_BOOK_AUTHOR, DBKey.FK_AUTHOR);
 
-            insertReplacementRows(tmpRemove, TBL_TOC_ENTRIES, DBKey.FK_AUTHOR);
+            // ONLY handles author id's; Duplicate TocEntries are handled in a 2nd step.
+            insertReplacementRows(tblRemove, TBL_TOC_ENTRIES, DBKey.FK_AUTHOR);
+            deleteRemovedIds(tblRemove, TBL_TOC_ENTRIES, DBKey.FK_AUTHOR);
 
-            deleteRemovedIds(tmpRemove, TBL_TOC_ENTRIES, DBKey.FK_AUTHOR);
-            deleteRemovedIds(tmpRemove, TBL_BOOK_AUTHOR, DBKey.FK_AUTHOR);
-            deleteRemovedIds(tmpRemove, TBL_AUTHORS, DBKey.PK_ID);
+            deleteRemovedIds(tblRemove, TBL_AUTHORS, DBKey.PK_ID);
 
-            db.execSQL(DROP_TABLE_ + tmpKeep);
-            db.execSQL(DROP_TABLE_ + tmpRemove);
+            db.execSQL(DROP_TABLE_ + tblKeep);
+            db.execSQL(DROP_TABLE_ + tblRemove);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -141,34 +225,39 @@ class DuplicateRowCleaner {
         }
     }
 
-    void removeDuplicateSeries() {
+    /**
+     * Find duplicate entries in the {@link DBDefinitions#TBL_SERIES} table.
+     * Dedup the {@link DBDefinitions#TBL_BOOK_SERIES}
+     * and remove them from {@link DBDefinitions#TBL_SERIES}.
+     */
+    private void removeDuplicateSeries() {
         final int instanceId = ID_COUNTER.incrementAndGet();
 
         @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpKeep = TMP_KEEP_BASE_NAME + instanceId;
+        final String tblKeep = TBL_KEEP_BASE_NAME + instanceId;
         @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpRemove = TMP_REMOVE_BASE_NAME + instanceId;
+        final String tblRemove = TBL_REMOVE_BASE_NAME + instanceId;
 
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
-
+            // Ignore DBKey.SERIES_IS_COMPLETE; "keep" row wins.
             final String[] equalityColumns = {
                     DBKey.SERIES.TITLE
             };
 
-            createKeepTable(tmpKeep, TBL_SERIES, equalityColumns);
-            createRemovalTable(tmpKeep, tmpRemove, TBL_SERIES, equalityColumns);
+            createKeepTable(tblKeep, TBL_SERIES, equalityColumns);
+            createRemovalTable(tblKeep, tblRemove, TBL_SERIES, equalityColumns);
 
-            insertReplacementRows(tmpRemove, TBL_BOOK_SERIES, DBKey.FK_SERIES);
+            insertReplacementRows(tblRemove, TBL_BOOK_SERIES, DBKey.FK_SERIES);
+            deleteRemovedIds(tblRemove, TBL_BOOK_SERIES, DBKey.FK_SERIES);
 
-            deleteRemovedIds(tmpRemove, TBL_BOOK_SERIES, DBKey.FK_SERIES);
-            deleteRemovedIds(tmpRemove, TBL_SERIES, DBKey.PK_ID);
+            deleteRemovedIds(tblRemove, TBL_SERIES, DBKey.PK_ID);
 
-            db.execSQL(DROP_TABLE_ + tmpKeep);
-            db.execSQL(DROP_TABLE_ + tmpRemove);
+            db.execSQL(DROP_TABLE_ + tblKeep);
+            db.execSQL(DROP_TABLE_ + tblRemove);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -180,13 +269,18 @@ class DuplicateRowCleaner {
         }
     }
 
-    void removeDuplicatePublishers() {
+    /**
+     * Find duplicate entries in the {@link DBDefinitions#TBL_PUBLISHERS} table.
+     * Dedup the {@link DBDefinitions#TBL_BOOK_PUBLISHER}
+     * and remove them from {@link DBDefinitions#TBL_PUBLISHERS}.
+     */
+    private void removeDuplicatePublishers() {
         final int instanceId = ID_COUNTER.incrementAndGet();
 
         @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpKeep = TMP_KEEP_BASE_NAME + instanceId;
+        final String tblKeep = TBL_KEEP_BASE_NAME + instanceId;
         @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpRemove = TMP_REMOVE_BASE_NAME + instanceId;
+        final String tblRemove = TBL_REMOVE_BASE_NAME + instanceId;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -198,55 +292,16 @@ class DuplicateRowCleaner {
                     DBKey.PUBLISHER.NAME
             };
 
-            createKeepTable(tmpKeep, TBL_PUBLISHERS, equalityColumns);
-            createRemovalTable(tmpKeep, tmpRemove, TBL_PUBLISHERS, equalityColumns);
+            createKeepTable(tblKeep, TBL_PUBLISHERS, equalityColumns);
+            createRemovalTable(tblKeep, tblRemove, TBL_PUBLISHERS, equalityColumns);
 
-            insertReplacementRows(tmpRemove, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER);
+            insertReplacementRows(tblRemove, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER);
+            deleteRemovedIds(tblRemove, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER);
 
-            deleteRemovedIds(tmpRemove, TBL_BOOK_PUBLISHER, DBKey.FK_PUBLISHER);
-            deleteRemovedIds(tmpRemove, TBL_PUBLISHERS, DBKey.PK_ID);
+            deleteRemovedIds(tblRemove, TBL_PUBLISHERS, DBKey.PK_ID);
 
-            db.execSQL(DROP_TABLE_ + tmpKeep);
-            db.execSQL(DROP_TABLE_ + tmpRemove);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
-    }
-
-    void removeDuplicateTocEntries() {
-        final int instanceId = ID_COUNTER.incrementAndGet();
-
-        @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpKeep = TMP_KEEP_BASE_NAME + instanceId;
-        @SuppressWarnings("StringConcatenationMissingWhitespace")
-        final String tmpRemove = TMP_REMOVE_BASE_NAME + instanceId;
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            final String[] equalityColumns = {
-                    DBKey.FK_AUTHOR,
-                    DBKey.TITLE
-            };
-
-            createKeepTable(tmpKeep, TBL_TOC_ENTRIES, equalityColumns);
-            createRemovalTable(tmpKeep, tmpRemove, TBL_TOC_ENTRIES, equalityColumns);
-
-            insertReplacementRows(tmpRemove, TBL_TOC_ENTRIES, DBKey.FK_AUTHOR);
-
-            deleteRemovedIds(tmpRemove, TBL_TOC_ENTRIES, DBKey.FK_AUTHOR);
-
-            db.execSQL(DROP_TABLE_ + tmpKeep);
-            db.execSQL(DROP_TABLE_ + tmpRemove);
+            db.execSQL(DROP_TABLE_ + tblKeep);
+            db.execSQL(DROP_TABLE_ + tblRemove);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -259,17 +314,21 @@ class DuplicateRowCleaner {
     }
 
     /**
-     * Reposition the author, series, etc.. lists for each book.
-     *
-     * @param context Current context
-     *
-     * @throws DaoWriteException on failure
+     * Any author duplication in the {@link DBDefinitions#TBL_TOC_ENTRIES}
+     * table is cleaned up in {@link #removeDuplicateAuthors()}
+     * which <strong>MUST</strong> be called before this method is called.
+     * <p>
+     * Find duplicate entries in the {@link DBDefinitions#TBL_TOC_ENTRIES} table.
+     * Dedup the {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}
+     * and remove them from {@link DBDefinitions#TBL_TOC_ENTRIES}.
      */
-    void resortPositionalLinks(@NonNull final Context context)
-            throws DaoWriteException {
+    private void removeDuplicateTocEntries() {
+        final int instanceId = ID_COUNTER.incrementAndGet();
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        int modified;
+        @SuppressWarnings("StringConcatenationMissingWhitespace")
+        final String tblKeep = TBL_KEEP_BASE_NAME + instanceId;
+        @SuppressWarnings("StringConcatenationMissingWhitespace")
+        final String tblRemove = TBL_REMOVE_BASE_NAME + instanceId;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -277,10 +336,22 @@ class DuplicateRowCleaner {
                 txLock = db.beginTransaction(true);
             }
 
-            modified = serviceLocator.getAuthorDao().fixPositions(context);
-            modified += serviceLocator.getSeriesDao().fixPositions(context);
-            modified += serviceLocator.getPublisherDao().fixPositions(context);
-            modified += serviceLocator.getTocEntryDao().fixPositions(context);
+            // Ignore DBKey.FIRST_PUBLICATION_DATE; "keep" row wins.
+            final String[] equalityColumns = {
+                    DBKey.FK_AUTHOR,
+                    DBKey.TITLE
+            };
+
+            createKeepTable(tblKeep, TBL_TOC_ENTRIES, equalityColumns);
+            createRemovalTable(tblKeep, tblRemove, TBL_TOC_ENTRIES, equalityColumns);
+
+            insertReplacementRows(tblRemove, TBL_BOOK_TOC_ENTRIES, DBKey.FK_TOC_ENTRY);
+            deleteRemovedIds(tblRemove, TBL_BOOK_TOC_ENTRIES, DBKey.FK_TOC_ENTRY);
+
+            deleteRemovedIds(tblRemove, TBL_TOC_ENTRIES, DBKey.PK_ID);
+
+            db.execSQL(DROP_TABLE_ + tblKeep);
+            db.execSQL(DROP_TABLE_ + tblRemove);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -289,28 +360,24 @@ class DuplicateRowCleaner {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
-        }
-
-        if (modified > 0) {
-            logger.w(TAG, "reposition modified=" + modified);
         }
     }
 
     /**
      * Keep the smallest ID.
      *
-     * @param tmpKeep         table with the ids to keep
+     * @param tblKeep         table with the ids to keep
      * @param table           to operate on
      * @param equalityColumns to select/group
      */
-    private void createKeepTable(@NonNull final String tmpKeep,
+    private void createKeepTable(@NonNull final String tblKeep,
                                  @NonNull final TableDefinition table,
                                  @NonNull final String... equalityColumns) {
 
         final String columns = String.join(",", equalityColumns);
 
         db.execSQL(
-                CREATE_TEMP_TABLE_ + tmpKeep + _AS_
+                CREATE_TEMP_TABLE_ + tblKeep + _AS_
                 + SELECT_ + "MIN(" + DBKey.PK_ID + ')' + _AS_ + KEEP_ID
                 + ',' + columns
                 + _FROM_ + table.getName()
@@ -321,32 +388,40 @@ class DuplicateRowCleaner {
     /**
      * Determine which IDs to remove and what they map to.
      *
-     * @param tmpKeep         table with the ids to keep
-     * @param tmpRemove       table with the ids to remove
+     * @param tblKeep         table with the ids to keep
+     * @param tblRemove       table with the ids to remove
      * @param table           to operate on
      * @param equalityColumns for the join
      */
-    private void createRemovalTable(@NonNull final String tmpKeep,
-                                    @NonNull final String tmpRemove,
+    private void createRemovalTable(@NonNull final String tblKeep,
+                                    @NonNull final String tblRemove,
                                     @NonNull final TableDefinition table,
                                     @NonNull final String... equalityColumns) {
 
         final String columns = Arrays
                 .stream(equalityColumns)
-                .map(c -> table.dot(c) + '=' + TMP_KEEP + '.' + c)
+                .map(c -> table.dot(c) + '=' + TBL_KEEP + '.' + c)
                 .collect(Collectors.joining(_AND_));
 
+        final String keepIdColumn = TBL_KEEP + '.' + KEEP_ID;
+        final String removeIdColumn = table.dot(DBKey.PK_ID) + _AS_ + REMOVE_ID;
+
         db.execSQL(
-                CREATE_TEMP_TABLE_ + tmpRemove + _AS_
-                + SELECT_ + TMP_KEEP + '.' + KEEP_ID
-                + ',' + table.dot(DBKey.PK_ID) + _AS_ + REMOVE_ID
-                + _FROM_ + table.ref()
-                + _JOIN_ + tmpKeep + ' ' + TMP_KEEP + _ON_ + columns
-                + _WHERE_ + table.dot(DBKey.PK_ID) + "<>" + TMP_KEEP + '.' + KEEP_ID
+                CREATE_TEMP_TABLE_ + tblRemove + _AS_
+                + SELECT_ + keepIdColumn + ',' + removeIdColumn
+                + _FROM_ + table.ref() + _JOIN_ + tblKeep + ' ' + TBL_KEEP + _ON_ + columns
+                + _WHERE_ + table.dot(DBKey.PK_ID) + "<>" + keepIdColumn
         );
+
+        if (BuildConfig.DEBUG /* always */) {
+            DbDebugUtils.dumpTable(db, tblRemove, DUMP_TABLE_ROW_LIMIT,
+                                   tblRemove + '.' + KEEP_ID,
+                                   TAG, "createRemovalTable (limit=" + DUMP_TABLE_ROW_LIMIT
+                                        + ") from: " + table.getName());
+        }
     }
 
-    private void insertReplacementRows(@NonNull final String tmpRemove,
+    private void insertReplacementRows(@NonNull final String tblRemove,
                                        @NonNull final TableDefinition table,
                                        @NonNull final String keyColumn) {
 
@@ -368,32 +443,34 @@ class DuplicateRowCleaner {
                                           .map(c -> A_2 + '.' + c + '=' + table.dot(c))
                                           .collect(Collectors.joining(_AND_));
 
-        try (SynchronizedStatement stmt = db.compileStatement(
-                // ignore/skip duplicates here
-                "INSERT OR IGNORE INTO " + table.getName() + '(' + keyColumn + ',' + insOthers + ") "
-                + SELECT_ + TMP_REMOVE + '.' + KEEP_ID + ',' + selOthers
+        final String keepIdColumn = TBL_REMOVE + '.' + KEEP_ID;
+        final String removeIdColumn = TBL_REMOVE + '.' + REMOVE_ID;
 
+        try (SynchronizedStatement stmt = db.compileStatement(
+                // ignore/skip duplicates
+                INSERT_OR_IGNORE_INTO_ + table.getName()
+                + '(' + keyColumn + ',' + insOthers + ") "
+                + SELECT_ + keepIdColumn + ',' + selOthers
                 + _FROM_ + table.ref()
-                + _JOIN_ + tmpRemove + ' ' + TMP_REMOVE
-                + _ON_ + table.dot(keyColumn) + '=' + TMP_REMOVE + '.' + REMOVE_ID
+                + _JOIN_ + tblRemove + ' ' + TBL_REMOVE
+                + _ON_ + table.dot(keyColumn) + '=' + removeIdColumn
                 + _WHERE_ + NOT_EXISTS_
-                + SELECT_ + '1'
-                + _FROM_ + table.getName() + ' ' + A_2
-                + _WHERE_ + A_2 + '.' + keyColumn + '=' + TMP_REMOVE + '.' + KEEP_ID
-                + _AND_ + whereOthers
-                + ')')) {
+                + '('
+                + SELECT_ + '1' + _FROM_ + table.getName() + ' ' + A_2
+                + _WHERE_ + A_2 + '.' + keyColumn + '=' + keepIdColumn
+                + _AND_ + whereOthers + ')')) {
             final int rowsAffected = stmt.executeUpdateDelete();
             logger.w(TAG, "insertReplacementRows", table.getName() + ':' + rowsAffected);
         }
     }
 
-    private void deleteRemovedIds(@NonNull final String tmpRemove,
+    private void deleteRemovedIds(@NonNull final String tblRemove,
                                   @NonNull final TableDefinition table,
                                   @NonNull final String keyColumn) {
         try (SynchronizedStatement stmt = db.compileStatement(
                 DELETE_FROM_ + table.getName()
                 + _WHERE_ + keyColumn
-                + _IN_ + '(' + SELECT_ + REMOVE_ID + _FROM_ + tmpRemove + ')')) {
+                + _IN_ + '(' + SELECT_ + REMOVE_ID + _FROM_ + tblRemove + ')')) {
             final int rowsAffected = stmt.executeUpdateDelete();
             logger.w(TAG, "deleteRemovedIds", table.getName() + ':' + rowsAffected);
         }

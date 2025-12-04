@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
@@ -155,50 +154,12 @@ public class DBCleaner {
             if (options.contains(CleanOptions.Purge)) {
                 new Purger().purge();
             }
-            // Duplicates removal is done in one transaction.
-            removeDuplicates(context, options);
+            final DuplicateRowCleaner drc = new DuplicateRowCleaner(options);
+            drc.dedup(context);
         }
 
         // Lastly, always clear the options
         CleanOptions.clearOptions(context);
-    }
-
-    private void removeDuplicates(@NonNull final Context context,
-                                  @NonNull final Set<CleanOptions> options)
-            throws DaoWriteException {
-        final DuplicateRowCleaner drc = new DuplicateRowCleaner();
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            if (options.contains(CleanOptions.RemoveDuplicateAuthors)) {
-                drc.removeDuplicateAuthors();
-            }
-            if (options.contains(CleanOptions.RemoveDuplicatePublishers)) {
-                drc.removeDuplicatePublishers();
-            }
-            if (options.contains(CleanOptions.RemoveDuplicateSeries)) {
-                drc.removeDuplicateSeries();
-            }
-            // Paranoia check:
-            // removeDuplicateTocEntries is dependent on RemoveDuplicateAuthors having run first.
-            if (options.contains(CleanOptions.RemoveDuplicateAuthors)
-                && options.contains(CleanOptions.RemoveDuplicateTocEntries)) {
-                drc.removeDuplicateTocEntries();
-            }
-
-            drc.resortPositionalLinks(context);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
     }
 
 
