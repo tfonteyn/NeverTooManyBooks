@@ -1,0 +1,12 @@
+NEW:
+  Performance improvements.
+  - Handling cover images is faster and the UI should be snappier
+  - Internal loops have been removed/improved.
+  While some of the above will show, other parts may be subjective
+
+FIXES:
+ #199: image deletes no longer cause UI pauses
+ #200: fallout from #193: duplicate authors (and more) were generated
+       This fixes duplication and cleans up existing duplicates
+ #202: author aliases can be removed
+ #205: BC imports ignore the "read=0" flag if a "red_end" is set
