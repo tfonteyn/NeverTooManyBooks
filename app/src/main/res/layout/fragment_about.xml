@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="end"
-        app:constraint_referenced_ids="lbl_books,lbl_authors,lbl_series,lbl_publishers,lbl_contacts"
+        app:constraint_referenced_ids="lbl_books,lbl_authors,lbl_series,lbl_publishers,lbl_toc_entries,lbl_contacts"
         />
 
     <!-- The counts use a larger font than the labels,
@@ -108,6 +108,16 @@
         />
 
     <TextView
+        android:id="@+id/lbl_toc_entries"
+        style="@style/About.Label"
+        android:maxLines="1"
+        android:text="@string/lbl_table_of_content_entry"
+        app:layout_constraintBaseline_toBaselineOf="@id/toc_entry_count"
+        app:layout_constraintEnd_toStartOf="@id/barrier_labels_end"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
         android:id="@+id/book_count"
         style="@style/About.Statistic"
         android:layout_marginTop="24dp"
@@ -145,13 +155,22 @@
         />
 
     <TextView
+        android:id="@+id/toc_entry_count"
+        style="@style/About.Statistic"
+        android:textIsSelectable="true"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        app:layout_constraintTop_toBottomOf="@id/publisher_count"
+        tools:text="1389"
+        />
+
+    <TextView
         android:id="@+id/lbl_contacts"
         style="@style/Text.Header"
         android:layout_marginStart="@dimen/field_margin_start"
         android:layout_marginTop="32dp"
         android:text="@string/lbl_about_contact"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/publisher_count"
+        app:layout_constraintTop_toBottomOf="@id/toc_entry_count"
         />
 
     <Button

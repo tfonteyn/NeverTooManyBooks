@@ -86,5 +86,6 @@ public class AboutFragment
         vb.seriesCount.setText(String.valueOf(serviceLocator.getSeriesDao().count()));
         vb.authorCount.setText(String.valueOf(serviceLocator.getAuthorDao().count()));
         vb.publisherCount.setText(String.valueOf(serviceLocator.getPublisherDao().count()));
+        vb.tocEntryCount.setText(String.valueOf(serviceLocator.getTocEntryDao().count()));
     }
 }
