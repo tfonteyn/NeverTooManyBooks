@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -883,5 +880,4 @@
     <string name="warning_delete_default_bookshelf">Dit is je standaardboekenplank. Als je deze verwijdert, wordt de nieuwe standaard: “%1$s”.\n\nGebruik “%2$s” in het hoofdmenu om een andere standaardboekenplank te kiezen.</string>
     <string name="action_set_as_default">Instellen als standaard</string>
     <string name="tip_bookshelf_management">De gemarkeerde regel geeft je huidige boekenplank aan.\n\nDe standaardboekenplank (gemarkeerd met *) wordt automatisch gebruikt als je huidige om wat voor reden dan ook niet beschikbaar is.</string>
-
 </resources>
