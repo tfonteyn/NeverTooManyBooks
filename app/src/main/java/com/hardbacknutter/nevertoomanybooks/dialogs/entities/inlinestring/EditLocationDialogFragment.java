@@ -38,7 +38,6 @@ public class EditLocationDialogFragment
         super.onCreate(savedInstanceState);
         delegate = new EditInLineStringDelegate(this, requireArguments(),
                                                 R.string.lbl_location, R.string.lbl_location,
-                                                ServiceLocator.getInstance()::getLocationDao
-        );
+                                                ServiceLocator.getInstance()::getLocationDao);
     }
 }

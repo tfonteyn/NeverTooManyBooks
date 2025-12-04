@@ -35,7 +35,6 @@ public class EditFormatDialogFragment
         super.onCreate(savedInstanceState);
         delegate = new EditInLineStringDelegate(this, requireArguments(),
                                                 R.string.lbl_format, R.string.lbl_format,
-                                                ServiceLocator.getInstance()::getFormatDao
-        );
+                                                ServiceLocator.getInstance()::getFormatDao);
     }
 }

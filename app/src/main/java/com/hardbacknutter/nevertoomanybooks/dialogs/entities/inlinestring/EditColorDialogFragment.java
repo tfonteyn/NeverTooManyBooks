@@ -35,7 +35,6 @@ public class EditColorDialogFragment
         super.onCreate(savedInstanceState);
         delegate = new EditInLineStringDelegate(this, requireArguments(),
                                                 R.string.lbl_color, R.string.lbl_color,
-                                                ServiceLocator.getInstance()::getColorDao
-        );
+                                                ServiceLocator.getInstance()::getColorDao);
     }
 }

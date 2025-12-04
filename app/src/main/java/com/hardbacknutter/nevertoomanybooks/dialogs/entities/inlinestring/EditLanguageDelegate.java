@@ -48,8 +48,7 @@ class EditLanguageDelegate
                          @NonNull final Bundle args) {
         super(owner, args,
               R.string.lbl_language, R.string.lbl_language,
-              ServiceLocator.getInstance()::getLanguageDao
-        );
+              ServiceLocator.getInstance()::getLanguageDao);
     }
 
     @Override
