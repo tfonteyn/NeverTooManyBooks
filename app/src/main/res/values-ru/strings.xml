@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -906,5 +903,4 @@
     <string name="warning_delete_default_bookshelf">Это твоя полка по умолчанию. Если ты её удалишь, новой полкой по умолчанию станет: «%1$s».\n\nИспользуй «%2$s» в главном меню, чтобы выбрать другую полку по умолчанию.</string>
     <string name="action_set_as_default">Сделать по умолчанию</string>
     <string name="tip_bookshelf_management">Выделенная строка показывает твою текущую полку.\n\nПолка по умолчанию (отмеченная *) будет использоваться автоматически, если текущая по какой-либо причине недоступна.</string>
-
 </resources>
