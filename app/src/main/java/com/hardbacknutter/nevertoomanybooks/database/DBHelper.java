@@ -408,6 +408,7 @@ public class DBHelper
             LegacyUpgrades.v32onUpgrade(db);
         }
         if (oldVersion < 34) {
+            // end/begin Transaction
             LegacyUpgrades.v34onUpgrade(db);
         }
         if (oldVersion < 35) {
@@ -417,6 +418,7 @@ public class DBHelper
             LegacyUpgrades.v36onUpgrade(db);
         }
         if (oldVersion < 37) {
+            // end/begin Transaction
             LegacyUpgrades.v37onUpgrade(db);
         }
         if (oldVersion < 38) {
