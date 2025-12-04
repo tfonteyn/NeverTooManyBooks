@@ -121,7 +121,7 @@ final class Triggers {
         name = "after_update_on" + TBL_AUTHORS.getName();
         body = AFTER_UPDATE_ON_ + TBL_AUTHORS.getName()
                + " FOR EACH ROW"
-               + " BEGIN"
+               + " BEGIN "
                + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                // actual books by this Author
@@ -150,7 +150,7 @@ final class Triggers {
         name = "after_update_on" + TBL_SERIES.getName();
         body = AFTER_UPDATE_ON_ + TBL_SERIES.getName()
                + " FOR EACH ROW"
-               + " BEGIN"
+               + " BEGIN "
                + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
@@ -171,7 +171,7 @@ final class Triggers {
         name = "after_update_on" + TBL_PUBLISHERS.getName();
         body = AFTER_UPDATE_ON_ + TBL_PUBLISHERS.getName()
                + " FOR EACH ROW"
-               + " BEGIN"
+               + " BEGIN "
                + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_PUBLISHER.getName()
@@ -191,7 +191,7 @@ final class Triggers {
         name = "after_update_on" + TBL_TAGS.getName();
         body = AFTER_UPDATE_ON_ + TBL_TAGS.getName()
                + " FOR EACH ROW"
-               + " BEGIN"
+               + " BEGIN "
                + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_TAG.getName()
@@ -210,7 +210,7 @@ final class Triggers {
         name = "after_insert_on_" + TBL_BOOK_LOANEE.getName();
         body = AFTER_INSERT_ON_ + TBL_BOOK_LOANEE.getName()
                + " FOR EACH ROW"
-               + " BEGIN"
+               + " BEGIN "
                + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
                + " END";
@@ -228,7 +228,7 @@ final class Triggers {
         name = "after_update_on_" + TBL_BOOK_LOANEE.getName();
         body = AFTER_UPDATE_ON_ + TBL_BOOK_LOANEE.getName()
                + " FOR EACH ROW"
-               + " BEGIN"
+               + " BEGIN "
                + UPDATE_BOOKS_SET
                + "  WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ';'
                + " END";
@@ -248,7 +248,7 @@ final class Triggers {
         name = "after_delete_on_" + TBL_BOOKS.getName();
         body = AFTER_DELETE_ON_ + TBL_BOOKS.getName()
                + " FOR EACH ROW"
-               + " BEGIN"
+               + " BEGIN "
                + " DELETE FROM " + TBL_FTS_BOOKS.getName()
                + "  WHERE " + DBKey.FTS.PK_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
                // we must use IGNORE for when we do a sync. i.e.
@@ -268,7 +268,7 @@ final class Triggers {
         body = AFTER_UPDATE_OF_ + DBKey.ISBN + " ON " + TBL_BOOKS.getName()
                + " FOR EACH ROW"
                + " WHEN NEW." + DBKey.ISBN + " <> OLD." + DBKey.ISBN
-               + " BEGIN"
+               + " BEGIN "
                + "  DELETE FROM " + TBL_BOOK_IDENTIFIER.getName()
                + "  WHERE " + DBKey.FK_BOOK + "=NEW." + DBKey.PK_ID + ";"
                + " END";
@@ -293,7 +293,7 @@ final class Triggers {
         final String name = "after_delete_on_" + linkTable.getName();
         final String body = AFTER_DELETE_ON_ + linkTable.getName()
                             + " FOR EACH ROW"
-                            + " BEGIN"
+                            + " BEGIN "
                             + UPDATE_BOOKS_SET
                             + "  WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ';'
                             + " END";
