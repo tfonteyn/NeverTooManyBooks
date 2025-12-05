@@ -192,7 +192,7 @@ public class BibliotecePlSearchEngine
             throws StorageException, SearchException, CredentialsException {
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + '/' + externalId;
+        final String url = getHostUrl() + '/' + externalId;
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
@@ -207,7 +207,7 @@ public class BibliotecePlSearchEngine
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl(context) + SEARCH + SEARCH_PREFIX_ISBN + validIsbn;
+        final String url = getHostUrl() + SEARCH + SEARCH_PREFIX_ISBN + validIsbn;
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -258,7 +258,7 @@ public class BibliotecePlSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + SEARCH + words;
+        final String url = getHostUrl() + SEARCH + words;
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -297,7 +297,7 @@ public class BibliotecePlSearchEngine
                 String url = dataElement.attr("href");
                 // sanity check - it normally does NOT have the protocol/site part
                 if (url.startsWith("/")) {
-                    url = getHostUrl(context) + url;
+                    url = getHostUrl() + url;
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
@@ -705,7 +705,7 @@ public class BibliotecePlSearchEngine
         String url = sumUrl.attr("href");
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
-            url = getHostUrl(context) + url;
+            url = getHostUrl() + url;
         }
 
         if (isCancelled()) {
