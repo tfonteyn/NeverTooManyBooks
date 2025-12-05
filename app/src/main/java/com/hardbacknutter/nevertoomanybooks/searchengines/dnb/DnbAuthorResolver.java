@@ -260,7 +260,7 @@ public final class DnbAuthorResolver
         }
 
         if (author != null && isPseudonym && realAuthorUrl != null) {
-            final String url = searchEngine.getHostUrl(context) + '/' + realAuthorUrl;
+            final String url = searchEngine.getHostUrl() + '/' + realAuthorUrl;
             final Document raDoc = searchEngine.loadDocument(context, url, Map.of(
                     HttpConstants.REFERER, document.location()));
             if (!searchEngine.isCancelled()) {

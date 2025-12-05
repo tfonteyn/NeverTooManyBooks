@@ -236,7 +236,7 @@ public class DnbSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, SEARCH_TYPE_ISBN,
+        final String url = getHostUrl() + String.format(SEARCH_URL, SEARCH_TYPE_ISBN,
                                                                validIsbn);
         final Document document = loadDocument(context, url, ROOT_REFERER);
         if (!isCancelled()) {
@@ -276,7 +276,7 @@ public class DnbSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, SEARCH_TYPE_TEXT, words);
+        final String url = getHostUrl() + String.format(SEARCH_URL, SEARCH_TYPE_TEXT, words);
         final Document document = loadDocument(context, url, ROOT_REFERER);
         if (!isCancelled()) {
             // Check multi result first
@@ -329,7 +329,7 @@ public class DnbSearchEngine
             if (!bookUrl.startsWith("/")) {
                 bookUrl = "/" + bookUrl;
             }
-            final String url = getHostUrl(context) + bookUrl;
+            final String url = getHostUrl() + bookUrl;
             final Document redirected = loadDocument(context, url, Map.of(HttpConstants.REFERER,
                                                                           document.location()));
             if (!isCancelled()) {
@@ -834,7 +834,7 @@ public class DnbSearchEngine
         }
         // sanity check
         if (!url.startsWith("https")) {
-            url = getHostUrl(context) + url;
+            url = getHostUrl() + url;
         }
 
         // 2025-06-14: instead of the above, we could also
