@@ -179,7 +179,7 @@ public class StripWebSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
+        final String url = getHostUrl() + String.format(SEARCH_URL, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -209,7 +209,7 @@ public class StripWebSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, words);
+        final String url = getHostUrl() + String.format(SEARCH_URL, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -248,7 +248,7 @@ public class StripWebSearchEngine
                 String url = urlElement.attr("href");
                 // sanity check
                 if (url.startsWith("/")) {
-                    url = getHostUrl(context) + url;
+                    url = getHostUrl() + url;
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
@@ -672,7 +672,7 @@ public class StripWebSearchEngine
         String url = cover.attr("href");
         // Sanity check; the url is supposed to be relative
         if (url.startsWith("/")) {
-            url = getHostUrl(context) + url;
+            url = getHostUrl() + url;
         }
         return saveImage(context, url, null, bookId, cIdx, null);
     }
@@ -728,7 +728,7 @@ public class StripWebSearchEngine
             }
         }
 
-        return getHostUrl(context) + String.format(SEARCH_URL, fields);
+        return getHostUrl() + String.format(SEARCH_URL, fields);
     }
 
     public static final class SiteField {
