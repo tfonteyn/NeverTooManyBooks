@@ -166,7 +166,7 @@ public class DoubanSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
+        final String url = getHostUrl() + String.format(SEARCH_URL, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -202,7 +202,7 @@ public class DoubanSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, words);
+        final String url = getHostUrl() + String.format(SEARCH_URL, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -749,7 +749,7 @@ public class DoubanSearchEngine
                                                             @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, validIsbn);
+        final String url = getHostUrl() + String.format(SEARCH_URL, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final Optional<JSONArray> oItems = extractItemList(document);
@@ -799,7 +799,7 @@ public class DoubanSearchEngine
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
 
             final String isbn = edition.getIsbn();
-            final String url = getHostUrl(context) + String.format(SEARCH_URL, isbn);
+            final String url = getHostUrl() + String.format(SEARCH_URL, isbn);
             final Document document = loadDocument(context, url, null);
             if (!isCancelled()) {
                 return parseCover(context, document, isbn, cIdx)
