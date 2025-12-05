@@ -175,7 +175,7 @@ public class BedethequeSearchEngine
     public BedethequeSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext) + SEARCH_URL);
+        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl() + SEARCH_URL);
 
         authorResolverHelper = new AuthorResolverHelper();
     }
@@ -224,7 +224,7 @@ public class BedethequeSearchEngine
                 final FutureHttp<HttpCookie> httpHead = createHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                sessionCookie = httpHead.head(getHostUrl(context) + SEARCH_URL, response ->
+                sessionCookie = httpHead.head(getHostUrl() + SEARCH_URL, response ->
                         cookieManager.getCookieStore()
                                      .getCookies()
                                      .stream()
@@ -254,7 +254,7 @@ public class BedethequeSearchEngine
         final Book book = new Book();
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
-        final String url = getHostUrl(context) + String.format(
+        final String url = getHostUrl() + String.format(
                 BY_ISBN, ensureCookie(context), validIsbn);
 
         final Document document = loadDocument(context, url, extraRequestProperties);
@@ -275,7 +275,7 @@ public class BedethequeSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
-        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, extraRequestProperties);
         parse(context, document, fetchCovers, null, book);
 
