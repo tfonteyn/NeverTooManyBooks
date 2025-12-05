@@ -191,7 +191,7 @@ class UserCollection {
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, pageNr));
 
-        final String url = searchEngine.getHostUrl(context)
+        final String url = searchEngine.getHostUrl()
                            + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
 
         final Document document = jsoupLoader.loadDocument(context, url, null);
