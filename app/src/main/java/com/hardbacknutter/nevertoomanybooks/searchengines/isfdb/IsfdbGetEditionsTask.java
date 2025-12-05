@@ -119,7 +119,7 @@ public class IsfdbGetEditionsTask
         searchEngine.setCaller(this);
 
         // can we reach the site ?
-        searchEngine.ping(context);
+        searchEngine.ping();
 
         return searchEngine.fetchEditionsByIsbn(context, validIsbn);
     }

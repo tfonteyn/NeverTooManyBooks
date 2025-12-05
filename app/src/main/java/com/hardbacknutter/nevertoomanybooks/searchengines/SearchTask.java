@@ -201,7 +201,7 @@ final class SearchTask
         }
 
         // can we reach the site ?
-        searchEngine.ping(context);
+        searchEngine.ping();
 
         if (searchEngine instanceof SearchEngine.Login) {
             final SearchEngine.Login sel = (SearchEngine.Login) searchEngine;

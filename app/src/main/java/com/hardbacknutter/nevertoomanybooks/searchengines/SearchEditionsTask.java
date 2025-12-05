@@ -102,7 +102,7 @@ public class SearchEditionsTask
                     //noinspection CheckStyle
                     try {
                         // can we reach the site ?
-                        searchEngine.ping(context);
+                        searchEngine.ping();
                         // search for and add the editions
                         editions.addAll(searchEngine.searchAlternativeEditions(context, validIsbn));
 

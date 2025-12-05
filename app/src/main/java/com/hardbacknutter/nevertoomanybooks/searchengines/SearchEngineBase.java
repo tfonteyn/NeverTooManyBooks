@@ -133,7 +133,7 @@ public abstract class SearchEngineBase
     }
 
     @Override
-    public void ping(@NonNull final Context context)
+    public void ping()
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
