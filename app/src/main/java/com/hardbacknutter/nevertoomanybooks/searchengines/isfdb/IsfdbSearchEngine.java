@@ -370,7 +370,7 @@ public class IsfdbSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
 
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
@@ -419,7 +419,7 @@ public class IsfdbSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         int index = 0;
-        final StringJoiner url = new StringJoiner("", getHostUrl(context)
+        final StringJoiner url = new StringJoiner("", getHostUrl()
                                                       + CGI_ADV_SEARCH_PREFIX, "")
                 .setEmptyValue("");
         final Book book = new Book();
@@ -1345,7 +1345,7 @@ public class IsfdbSearchEngine
             throws SearchException, CredentialsException {
         searchForIsbn = validIsbn;
 
-        final String url = getHostUrl(context) + String.format(CGI_EDITIONS, validIsbn);
+        final String url = getHostUrl() + String.format(CGI_EDITIONS, validIsbn);
         return fetchEditions(context, url);
     }
 
@@ -1511,7 +1511,7 @@ public class IsfdbSearchEngine
         }
 
         // go get it.
-        final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID,
+        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID,
                                                                edition.getIsfdbId());
         return loadDocument(context, url, null);
     }
@@ -1641,7 +1641,7 @@ public class IsfdbSearchEngine
         //    return pub[0]
         //  else:
         //    return 0
-        final String url = getHostUrl(context) + String.format(REST_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
 
         final List<Book> publicationsList = fetchPublications(context, url, fetchCovers, 1);
         if (publicationsList.isEmpty()) {

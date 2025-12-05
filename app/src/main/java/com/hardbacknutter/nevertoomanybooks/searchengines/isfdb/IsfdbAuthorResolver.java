@@ -77,7 +77,7 @@ public final class IsfdbAuthorResolver
                                 @NonNull final IsfdbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
 
-        authorSearchUrl = this.searchEngine.getHostUrl(context)
+        authorSearchUrl = this.searchEngine.getHostUrl()
                           + "/cgi-bin/se.cgi?arg=%s&type=Name";
     }
 
