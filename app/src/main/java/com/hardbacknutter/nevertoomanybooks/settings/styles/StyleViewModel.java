@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
+import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -256,8 +257,55 @@ public class StyleViewModel
         styleDataStore.setModified();
     }
 
+    /**
+     * Get the groups from the style which support sorting.
+     * They will be wrapped in a {@link WrappedBookLevelColumn}
+     * containing the group key and sort-setting.
+     * <p>
+     * These are meant to be displayed at the top of the list (a header)
+     * to show the user these <strong>come first in the sorting process</strong>
+     * i.e. <strong>informative only</strong>
+     *
+     * @return list
+     *
+     * @see #getBookLevelColumnList()
+     */
     @NonNull
-    List<WrappedBookLevelColumn> getWrappedBookLevelColumnList() {
+    List<WrappedBookLevelColumn> getGroupSortingFields() {
+        return style.getGroupList()
+                    .stream()
+                    .flatMap(booklistGroup -> booklistGroup.getGroupDomainExpressions().stream())
+                    // only show the groups that do sorting
+                    .filter(domainExpression -> domainExpression.getSort() != Sort.Unsorted)
+                    // We can get duplicate names;
+                    // e.g. "Year Read" and "Month Read" both use "Read"
+                    // as the name. So use a LinkedHashMap to prevent duplicates
+                    .collect(Collectors.toMap(
+                            domainExpression -> domainExpression.getDomain().getName(),
+                            DomainExpression::getSort,
+                            (existingKey, replacement) -> existingKey,
+                            LinkedHashMap::new))
+                    .entrySet()
+                    .stream()
+                    // Now convert the map back a list
+                    .map(entry -> new StyleViewModel.WrappedBookLevelColumn(
+                            entry.getKey(),
+                            entry.getValue()))
+                    .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the columns which can be displayed on the book level.
+     * They will be wrapped in a {@link WrappedBookLevelColumn}
+     * containing the column key and sort-setting.
+     * <p>
+     * These are displayed as the main list allowing the user to re-order,
+     * and set the sorting preference.
+     *
+     * @return list
+     */
+    @NonNull
+    List<WrappedBookLevelColumn> getBookLevelColumnList() {
         if (wrappedBookLevelColumnList.isEmpty()) {
             style.getBookLevelFieldsOrderBy().forEach((dbKey, sort) -> wrappedBookLevelColumnList
                     .add(new WrappedBookLevelColumn(dbKey, sort)));
@@ -265,6 +313,10 @@ public class StyleViewModel
         return wrappedBookLevelColumnList;
     }
 
+    /**
+     * Called when the user leaves (back-press) the screen,
+     * to save the current configuration to the Style.
+     */
     void updateBookLevelColumnList() {
         style.setBookLevelFieldsOrderBy(
                 wrappedBookLevelColumnList
@@ -282,7 +334,7 @@ public class StyleViewModel
 
     @NonNull
     String getBookLevelSortingPreferenceSummary(@NonNull final Context context) {
-        return getWrappedBookLevelColumnList()
+        return getBookLevelColumnList()
                 .stream()
                 .filter(column -> column.getSort() != Sort.Unsorted)
                 .map(column -> context.getString(R.string.a_b,

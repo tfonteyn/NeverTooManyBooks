@@ -39,14 +39,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
@@ -94,6 +91,8 @@ public class StyleBooklistBookLevelSortingFragment
     /** View Binding. */
     private FragmentEditStyleBookLevelColumnsBinding vb;
 
+    private BookLevelColumnWrapperListAdapter listAdapter;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,9 +105,6 @@ public class StyleBooklistBookLevelSortingFragment
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemClick);
         menuLauncher.registerForFragmentResult(fm, this);
     }
-
-    private BookLevelColumnWrapperListAdapter listAdapter;
-
 
     private boolean onMenuItemClick(final int menuOwner,
                                     final int menuItemId) {
@@ -125,7 +121,7 @@ public class StyleBooklistBookLevelSortingFragment
             return false;
         }
 
-        vm.getWrappedBookLevelColumnList().get(menuOwner).setSort(nextValue);
+        vm.getBookLevelColumnList().get(menuOwner).setSort(nextValue);
         listAdapter.notifyItemChanged(menuOwner);
         return true;
     }
@@ -163,30 +159,6 @@ public class StyleBooklistBookLevelSortingFragment
         //noinspection DataFlowIssue
         toolbar.setSubtitle(style.getLabel(context));
 
-        final List<StyleViewModel.WrappedBookLevelColumn> groupSortingFields =
-                vm.getStyle()
-                  .getGroupList()
-                  .stream()
-                  .flatMap(booklistGroup -> booklistGroup.getGroupDomainExpressions().stream())
-                  // only show the groups that do sorting
-                  .filter(domainExpression -> domainExpression.getSort() != Sort.Unsorted)
-                  // We can get duplicate names;
-                  // e.g. "Year Read" and "Month Read" both use "Read"
-                  // as the name. So use a LinkedHashMap to prevent duplicates
-                  .collect(Collectors.toMap(
-                          domainExpression -> domainExpression.getDomain().getName(),
-                          DomainExpression::getSort,
-                          (existingKey, replacement) -> existingKey,
-                          LinkedHashMap::new))
-                  .entrySet()
-                  .stream()
-                  // Now convert the map back a list
-                  .map(entry -> new StyleViewModel.WrappedBookLevelColumn(
-                          entry.getKey(),
-                          entry.getValue()))
-                  .collect(Collectors.toList());
-
-
         vb.columnList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.columnList.setHasFixedSize(true);
@@ -194,13 +166,13 @@ public class StyleBooklistBookLevelSortingFragment
         // setup the adapters
 
         // The adapter for the fixed Group columns.
-        final HeaderAdapter headerAdapter =
-                new HeaderAdapter(context, groupSortingFields);
+        final HeaderAdapter headerAdapter = new HeaderAdapter(context, vm.getGroupSortingFields());
 
         // The adapter for the list.
-        listAdapter = new BookLevelColumnWrapperListAdapter(context,
-                                                      vm.getWrappedBookLevelColumnList(),
-                                                      vh -> itemTouchHelper.startDrag(vh));
+        listAdapter = new BookLevelColumnWrapperListAdapter(
+                context,
+                vm.getBookLevelColumnList(),
+                vh -> itemTouchHelper.startDrag(vh));
 
         listAdapter.setOnRowShowMenuListener(ExtMenuButton.Always, (anchor, position) -> {
             final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
@@ -212,7 +184,7 @@ public class StyleBooklistBookLevelSortingFragment
                         .setMenu(menu, true)
                         .show(anchor, menuMode);
             } else {
-                final String label = vm.getWrappedBookLevelColumnList().get(position)
+                final String label = vm.getBookLevelColumnList().get(position)
                                        .getLabel(anchor.getContext());
                 menuLauncher.launch(getActivity(), label, null, position, menu, true);
             }

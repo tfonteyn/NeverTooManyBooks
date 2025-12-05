@@ -52,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public abstract class BaseStyle
         implements Style {
 
+    private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
+
     /**
      * IMPORTANT: this is the ALMOST the same set as used by BookLevelFieldVisibility
      * and should be kept in sync.
@@ -63,7 +65,6 @@ public abstract class BaseStyle
      * Also note this is an <strong>ORDERED LIST!</strong>
      */
     private static final Map<String, Sort> BOOK_LEVEL_FIELDS_DEFAULTS = new LinkedHashMap<>();
-    private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
     /*
      * NEWTHINGS: BookLevelField: Keys must be kept in sync with
