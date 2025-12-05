@@ -264,7 +264,6 @@ public class AuthorWorksFragment
                 .setOnReloadImage(cIdx -> imageHandler.onBindView())
                 .setPlaceholderDrawable(R.drawable.person_24px)
                 .build();
-        imageHandler.onBindView();
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
