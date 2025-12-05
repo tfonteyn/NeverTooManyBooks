@@ -226,15 +226,13 @@ public class BolSearchEngine
     /**
      * Send a HEAD request to prepare a cookie for further calls.
      *
-     * @param context Current context
-     *
      * @throws SearchException on any error
      */
-    private void ensureCookie(@NonNull final Context context)
+    private void ensureCookie()
             throws SearchException {
         final FutureHttp<Boolean> httpHead = createHeadRequest();
         try {
-            httpHead.head(getHostUrl(context), con -> true);
+            httpHead.head(getHostUrl(), con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -247,7 +245,7 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String hostUrl = getHostUrl(context);
+        final String hostUrl = getHostUrl();
         final String country = getCountry(context);
         final String url = hostUrl + String.format(BY_ISBN, country, validIsbn);
         final Document document = loadDocument(context, url, Map.of(
@@ -288,7 +286,7 @@ public class BolSearchEngine
             return book;
         }
 
-        final String hostUrl = getHostUrl(context);
+        final String hostUrl = getHostUrl();
         final String country = getCountry(context);
         final String url = hostUrl + String.format(BY_TEXT, country, words);
         final Document document = loadDocument(context, url, Map.of(
@@ -330,7 +328,7 @@ public class BolSearchEngine
             String url = urlElement.attr("href");
             // sanity check - it normally does NOT have the protocol/site part
             if (url.startsWith("/")) {
-                url = getHostUrl(context) + url;
+                url = getHostUrl() + url;
             }
             final Document redirected = loadDocument(context, url, Map.of(
                     HttpConstants.REFERER, document.location()));
@@ -793,6 +791,6 @@ public class BolSearchEngine
             }
         }
 
-        return getHostUrl(context) + String.format(BY_TEXT, getCountry(context), fields);
+        return getHostUrl() + String.format(BY_TEXT, getCountry(context), fields);
     }
 }
