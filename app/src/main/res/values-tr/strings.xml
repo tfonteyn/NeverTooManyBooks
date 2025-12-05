@@ -887,5 +887,7 @@
     <string name="warning_delete_default_bookshelf">Bu senin varsayılan kitaplığın. Silersen yeni varsayılan: “%1$s” olur.\n\nAna menüden “%2$s” seçeneğini kullanarak başka bir varsayılan kitaplık seçebilirsin.</string>
     <string name="action_set_as_default">Varsayılan olarak ayarla</string>
     <string name="tip_bookshelf_management">Vurgulanan satır mevcut kitaplığını gösterir.\n\nVarsayılan kitaplık (* ile işaretli), mevcut kitaplık herhangi bir nedenle kullanılamadığında otomatik olarak kullanılır.</string>
+    <string name="pt_search_tag_use_subject_number">Konu etiketlerinde sayısal öneki koru</string>
+    <string name="site_description_greek">Yunanca</string>
 
 </resources>

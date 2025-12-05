@@ -151,4 +151,7 @@
     <string name="tip_bookshelf_management">Línjan, sum er merkt, vísir tín núverandi bókahillu.\n\nSjálvvalda bókahillan (merkt við *) verður nýtt sjálvvirkandi, um tann núverandi av einhvørjum orsøkum ikki er tøk.</string>
     <string name="info_substitutions_one_per_line">Legg eina útskifting á hvørja reglu ella lat tað vera tóm fyri at strika merkið</string>
     <string name="lbl_table_of_content_entry">Innihaldslistaruppføring</string>
+    <string name="pt_search_tag_use_subject_number">Varðveit talræna forteknið í evnismerkjunum</string>
+    <string name="site_description_greek">Grikskt</string>
+
 </resources>

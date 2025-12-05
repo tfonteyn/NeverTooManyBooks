@@ -878,5 +878,7 @@
     <string name="warning_delete_default_bookshelf">Đây là giá sách mặc định của bạn. Nếu bạn xóa nó, giá sách mặc định mới sẽ là: “%1$s”.\n\nDùng “%2$s” trong menu chính để chọn giá sách mặc định khác.</string>
     <string name="action_set_as_default">Đặt làm mặc định</string>
     <string name="tip_bookshelf_management">Dòng được tô sáng cho biết giá sách hiện tại của bạn.\n\nGiá sách mặc định (được đánh dấu bằng *) sẽ được dùng tự động nếu giá sách hiện tại không khả dụng vì bất kỳ lý do nào.</string>
+    <string name="pt_search_tag_use_subject_number">Giữ tiền tố số trong thẻ Chủ đề</string>
+    <string name="site_description_greek">Tiếng Hy Lạp</string>
 
 </resources>

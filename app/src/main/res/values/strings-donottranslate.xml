@@ -39,6 +39,8 @@
             translatable="false">Bedetheque</string>
     <string name="site_bertrand_pt"
             translatable="false">Bertrand.pt</string>
+    <string name="site_biblionet_gr"
+            translatable="false">Βιβλιονετ</string>
     <string name="site_bibliotece_pl"
             translatable="false">Bibliotece.pl</string>
     <string name="site_bol_com"

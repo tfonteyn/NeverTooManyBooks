@@ -887,5 +887,7 @@
     <string name="warning_delete_default_bookshelf">Detta är din standardbokhylla. Om du tar bort den blir den nya standarden: ”%1$s”.\n\nAnvänd ”%2$s” i huvudmenyn för att välja en annan standardbokhylla.</string>
     <string name="action_set_as_default">Ställ in som standard</string>
     <string name="tip_bookshelf_management">Den markerade raden visar din nuvarande bokhylla.\n\nStandardbokhyllan (markerad med *) används automatiskt om den nuvarande inte är tillgänglig av någon anledning.</string>
+    <string name="pt_search_tag_use_subject_number">Behåll numeriskt prefix i ämnestaggar</string>
+    <string name="site_description_greek">Grekiska</string>
 
 </resources>

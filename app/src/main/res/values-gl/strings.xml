@@ -885,4 +885,7 @@
     <string name="warning_delete_default_bookshelf">Este é o teu andel predeterminado. Se o borras, o novo predeterminado será: «%1$s».\n\nUsa «%2$s» desde o menú principal para escoller outro andel predeterminado.</string>
     <string name="action_set_as_default">Establecer como predeterminada</string>
     <string name="tip_bookshelf_management">A liña resaltada indica o teu andel actual.\n\nO andel predeterminado (marcado con *) usarase automaticamente se o actual non está dispoñible por calquera motivo.</string>
+    <string name="pt_search_tag_use_subject_number">Manter o prefixo numérico nas etiquetas de asunto</string>
+    <string name="site_description_greek">Grego</string>
+
 </resources>

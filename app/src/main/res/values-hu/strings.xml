@@ -885,5 +885,7 @@
     <string name="warning_delete_default_bookshelf">Ez az alapértelmezett könyvespolcod. Ha törlöd, az új alapértelmezett ez lesz: „%1$s”.\n\nHasználd a „%2$s” menüpontot a főmenüben, hogy másik alapértelmezett polcot válassz.</string>
     <string name="action_set_as_default">Beállítás alapértelmezettként</string>
     <string name="tip_bookshelf_management">A kiemelt sor mutatja az aktuális könyvespolcodat.\n\nAz alapértelmezett polc (csillaggal * jelölve) automatikusan használva lesz, ha az aktuális valamilyen okból nem elérhető.</string>
+    <string name="pt_search_tag_use_subject_number">A tárgycímkék numerikus előtagjának megtartása</string>
+    <string name="site_description_greek">Görög</string>
 
 </resources>

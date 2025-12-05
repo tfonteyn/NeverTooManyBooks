@@ -883,5 +883,7 @@
     <string name="warning_delete_default_bookshelf">Das ist dein Standard-Bücherregal. Wenn du es löschst, wird das neue Standardregal: „%1$s“.\n\nBenutze „%2$s“ im Hauptmenü, um ein anderes Standard-Bücherregal auszuwählen.</string>
     <string name="action_set_as_default">Als Standard festlegen</string>
     <string name="tip_bookshelf_management">Die markierte Zeile zeigt dein aktuelles Bücherregal an.\n\nDas Standardregal (mit * markiert) wird automatisch verwendet, wenn dein aktuelles Regal aus irgendeinem Grund nicht verfügbar ist.</string>
+    <string name="pt_search_tag_use_subject_number">Numerisches Präfix bei Sachschlagwörtern beibehalten</string>
+    <string name="site_description_greek">Griechisch</string>
 
 </resources>

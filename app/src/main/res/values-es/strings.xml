@@ -889,5 +889,7 @@
     <string name="warning_delete_default_bookshelf">Esta es tu estantería predeterminada. Si la borras, la nueva predeterminada será: «%1$s».\n\nUsa «%2$s» desde el menú principal para elegir otra estantería predeterminada.</string>
     <string name="action_set_as_default">Establecer como predeterminada</string>
     <string name="tip_bookshelf_management">La línea resaltada indica tu estantería actual.\n\nLa estantería predeterminada (marcada con *) se usará automáticamente si la actual no está disponible por cualquier motivo.</string>
+    <string name="pt_search_tag_use_subject_number">Mantener el prefijo numérico en las etiquetas de materia</string>
+    <string name="site_description_greek">Griego</string>
 
 </resources>

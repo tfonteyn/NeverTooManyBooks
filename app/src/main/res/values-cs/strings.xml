@@ -907,5 +907,7 @@
     <string name="warning_delete_default_bookshelf">Tohle je tvoje výchozí knihovna. Když ji smažeš, novou výchozí se stane: „%1$s“.\n\nPomocí „%2$s“ v hlavní nabídce můžeš vybrat jinou výchozí knihovnu.</string>
     <string name="action_set_as_default">Nastavit jako výchozí</string>
     <string name="tip_bookshelf_management">Zvýrazněný řádek ukazuje tvoji aktuální knihovnu.\n\nVýchozí knihovna (označená hvězdičkou *) se použije automaticky, pokud tvoje aktuální není dostupná z jakéhokoli důvodu.</string>
+    <string name="pt_search_tag_use_subject_number">Ponechat číselnou předponu u předmětových štítků</string>
+    <string name="site_description_greek">Řečtina</string>
 
 </resources>

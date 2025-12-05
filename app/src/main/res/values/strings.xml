@@ -499,6 +499,8 @@
     <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_german">German</string>
     <!-- website info: short description in which language(s) a search-site provides book data in. -->
+    <string name="site_description_greek">Greek</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_portuguese_and_more">Portuguese and more</string>
     <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_polish">Polish</string>
@@ -1654,6 +1656,14 @@
     <!-- SwitchPreference title: search engines can collect Series information from the toc.
          This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from content table</string>
+
+    <!-- SwitchPreference title: specific for Biblionet.gr
+         Subject tags on the site look like this:
+         [808.838 762 09] Science fiction - Interpretation and criticism
+
+         This is an option to  either keep (true) or strip (false) the prefixed number.
+    -->
+    <string name="pt_search_tag_use_subject_number">Keep numeric prefix in Subject tags</string>
 
     <!-- Option to fetch extra author information (pen-names, photo,...)
          Uses the same website on which the book is found.

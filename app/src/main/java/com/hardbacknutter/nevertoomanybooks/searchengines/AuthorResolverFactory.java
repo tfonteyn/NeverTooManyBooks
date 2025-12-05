@@ -70,6 +70,7 @@ public final class AuthorResolverFactory {
                 }
                 break;
             }
+            case BiblionetGr:
             case BibliotecePl: {
                 if (isEnabled(context, engineId, EngineId.Wikidata, false)) {
                     return List.of(WikidataAuthorResolver.create(context, searchEngine));

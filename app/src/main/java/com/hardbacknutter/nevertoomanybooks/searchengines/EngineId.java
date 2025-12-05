@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.biblionetgr.BiblionetGrSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
@@ -128,6 +129,7 @@ public enum EngineId
     Amazon(AmazonSearchEngine.class, true),
     Bedetheque(BedethequeSearchEngine.class, true),
     BertrandPt(BertrandPtSearchEngine.class, true),
+    BiblionetGr(BiblionetGrSearchEngine.class, true),
     BibliotecePl(BibliotecePlSearchEngine.class, true),
     Bol(BolSearchEngine.class, true),
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
@@ -256,6 +258,7 @@ public enum EngineId
         final boolean isDutch = languages.isUserLanguage(context, "nld");
         final boolean isFrench = languages.isUserLanguage(context, "fra");
         final boolean isGerman = languages.isUserLanguage(context, "deu");
+        final boolean isGreek = languages.isUserLanguage(context, "ell");
         final boolean isPolish = languages.isUserLanguage(context, "pol");
         final boolean isPortuguese = languages.isUserLanguage(context, "por");
         final boolean isSlovak = languages.isUserLanguage(context, "slo");
@@ -285,6 +288,9 @@ public enum EngineId
                 }
                 if (isGerman) {
                     type.addSite(Dnb, true);
+                }
+                if (isGreek) {
+                    type.addSite(BiblionetGr, true);
                 }
                 if (isChinese) {
                     type.addSite(Douban, true);
@@ -319,6 +325,9 @@ public enum EngineId
                 }
                 if (!isGerman) {
                     type.addSite(Dnb, false);
+                }
+                if (!isGreek) {
+                    type.addSite(BiblionetGr, false);
                 }
                 if (!isChinese) {
                     type.addSite(Douban, false);

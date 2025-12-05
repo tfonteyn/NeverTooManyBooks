@@ -890,5 +890,7 @@
     <string name="warning_delete_default_bookshelf">Esta é a tua estante predefinida. Se a apagares, a nova predefinida será: “%1$s”.\n\nUsa “%2$s” no menu principal para escolher outra estante predefinida.</string>
     <string name="action_set_as_default">Definir como predefinida</string>
     <string name="tip_bookshelf_management">A linha destacada mostra a tua estante atual.\n\nA estante predefinida (marcada com *) será usada automaticamente se a atual não estiver disponível por qualquer motivo.</string>
+    <string name="pt_search_tag_use_subject_number">Manter o prefixo numérico nas etiquetas de assunto</string>
+    <string name="site_description_greek">Grego</string>
 
 </resources>
