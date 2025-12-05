@@ -108,7 +108,7 @@ public class BertrandPtSearchEngine
         super(appContext, config);
         // based on wget experimentation
         extraRequestProperties = Map.of(
-                HttpConstants.REFERER, getHostUrl(appContext),
+                HttpConstants.REFERER, getHostUrl(),
                 HttpConstants.SEC_FETCH_SITE, HttpConstants.SEC_FETCH_MODE_SAME_ORIGIN);
     }
 
@@ -141,7 +141,7 @@ public class BertrandPtSearchEngine
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl(context) + SEARCH + validIsbn;
+        final String url = getHostUrl() + SEARCH + validIsbn;
         final Document document = loadDocument(context, url, extraRequestProperties);
 
         final Book book = new Book();
@@ -173,7 +173,7 @@ public class BertrandPtSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + SEARCH + words;
+        final String url = getHostUrl() + SEARCH + words;
         final Document document = loadDocument(context, url, extraRequestProperties);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -214,7 +214,7 @@ public class BertrandPtSearchEngine
                     String url = dataElement.attr("href");
                     // sanity check - it normally does NOT have the protocol/site part
                     if (url.startsWith("/")) {
-                        url = getHostUrl(context) + url;
+                        url = getHostUrl() + url;
                     }
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
@@ -496,6 +496,6 @@ public class BertrandPtSearchEngine
             }
         }
 
-        return getHostUrl(context) + SEARCH + fields;
+        return getHostUrl() + SEARCH + fields;
     }
 }
