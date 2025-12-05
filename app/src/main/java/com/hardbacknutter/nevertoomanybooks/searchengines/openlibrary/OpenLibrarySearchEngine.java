@@ -272,7 +272,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(SEARCH_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(SEARCH_BY_EXTERNAL_ID, externalId);
         try {
             final String response = loadDocument(context, url);
             parse(context, new JSONObject(response), fetchCovers, book);
@@ -294,7 +294,7 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, validIsbn);
+        final String url = getHostUrl() + String.format(BASE_BOOK_URL, validIsbn);
 
         fetchBook(context, url, fetchCovers, book);
         return book;
@@ -322,7 +322,7 @@ public class OpenLibrarySearchEngine
         }
 
         // Limit the result to a single book for performance.
-        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, words) + "&limit=1";
+        final String url = getHostUrl() + String.format(BASE_BOOK_URL, words) + "&limit=1";
 
         fetchBook(context, url, fetchCovers, book);
         return book;
@@ -407,7 +407,7 @@ public class OpenLibrarySearchEngine
                                        .getString("key");
 
             // "/books/OL22853304M.json"
-            final String editionUrl = getHostUrl(context) + key + ".json";
+            final String editionUrl = getHostUrl() + key + ".json";
             response = loadDocument(context, editionUrl);
 
             parse(context, new JSONObject(response), fetchCovers, book);
@@ -596,7 +596,7 @@ public class OpenLibrarySearchEngine
         if (works != null && !works.isEmpty()) {
             final String work = works.getJSONObject(0).optString("key");
             if (!work.isEmpty()) {
-                final String editionUrl = getHostUrl(context) + work + ".json";
+                final String editionUrl = getHostUrl() + work + ".json";
                 final String workResponse = loadDocument(context, editionUrl);
                 workDocument = new JSONObject(workResponse);
             }
@@ -931,7 +931,7 @@ public class OpenLibrarySearchEngine
                 authorParser = new AuthorParser(context, this);
             }
 
-            final String authorUrl = getHostUrl(context) + key + ".json";
+            final String authorUrl = getHostUrl() + key + ".json";
             final String response = loadDocument(context, authorUrl);
             final JSONObject document = new JSONObject(response);
             final Author author = authorParser.parse(context, document);
@@ -1286,7 +1286,7 @@ public class OpenLibrarySearchEngine
                                                                  @NonNull final String validIsbn)
             throws SearchException {
 
-        String url = getHostUrl(context) + "/isbn/" + validIsbn + ".json";
+        String url = getHostUrl() + "/isbn/" + validIsbn + ".json";
         try {
             String response = loadDocument(context, url);
 
@@ -1294,7 +1294,7 @@ public class OpenLibrarySearchEngine
             final JSONArray works = jsonObject.optJSONArray("works");
             if (works != null && !works.isEmpty()) {
                 final String worksKey = works.getJSONObject(0).optString("key");
-                url = getHostUrl(context) + worksKey + "/editions.json";
+                url = getHostUrl() + worksKey + "/editions.json";
                 response = loadDocument(context, url);
                 return parseEditions(new JSONObject(response));
             }
