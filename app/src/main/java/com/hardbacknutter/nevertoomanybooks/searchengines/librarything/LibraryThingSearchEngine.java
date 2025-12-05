@@ -193,7 +193,7 @@ public class LibraryThingSearchEngine
                     context.getString(R.string.error_http_401_authorization_failed));
         }
 
-        final String url = getHostUrl(context) + String.format("/api/%1$s/thingISBN/%2$s",
+        final String url = getHostUrl() + String.format("/api/%1$s/thingISBN/%2$s",
                                                                apiToken, validIsbn);
         final SAXParser parser;
         try {
