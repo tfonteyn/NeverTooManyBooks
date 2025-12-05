@@ -133,7 +133,7 @@ public class BookFinderSearchEngine
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl(context) + String.format(BY_ISBN, validIsbn);
+        final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
