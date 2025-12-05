@@ -164,15 +164,13 @@ public class KbNlHtmlSearchEngine
     /**
      * Send a HEAD request to prepare a cookie for further calls.
      *
-     * @param context Current context
-     *
      * @throws SearchException on any error
      */
-    private void ensureCookie(@NonNull final Context context)
+    private void ensureCookie()
             throws SearchException {
         final FutureHttp<Boolean> httpHead = createHeadRequest();
         try {
-            httpHead.head(getHostUrl(context) + "/cbs/", con -> true);
+            httpHead.head(getHostUrl() + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -185,19 +183,19 @@ public class KbNlHtmlSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        ensureCookie(context);
+        ensureCookie();
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL,
+        final String url = getHostUrl() + String.format(SEARCH_URL,
                                                                dbVersion, setNr, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final Element titleList = document.selectFirst("div.titlelist");
             if (titleList != null) {
-                parseMultiResult(context, titleList, fetchCovers, book);
+                parseMultiResult(context, titleList, book);
             } else {
-                parse(context, document, fetchCovers, book);
+                parse(document, book);
             }
         }
 
@@ -219,8 +217,6 @@ public class KbNlHtmlSearchEngine
      *
      * @param context     Current context
      * @param titleList   to parse
-     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
@@ -231,7 +227,6 @@ public class KbNlHtmlSearchEngine
     @VisibleForTesting
     public void parseMultiResult(@NonNull final Context context,
                                  @NonNull final Element titleList,
-                                 @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
@@ -239,11 +234,11 @@ public class KbNlHtmlSearchEngine
         if (a != null) {
             final String show = a.attr("href");
             if (!show.isEmpty()) {
-                final String url = getHostUrl(context) + String.format(BOOK_URL, dbVersion, setNr,
+                final String url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr,
                                                                        show);
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
+                    parse(redirected, book);
                 }
             }
         }
@@ -252,10 +247,7 @@ public class KbNlHtmlSearchEngine
     /**
      * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
-     * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
      * @throws StorageException     on storage related failures
@@ -266,9 +258,7 @@ public class KbNlHtmlSearchEngine
      */
     @VisibleForTesting
     @WorkerThread
-    public void parse(@NonNull final Context context,
-                      @NonNull final Document document,
-                      @NonNull final boolean[] fetchCovers,
+    public void parse(@NonNull final Document document,
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 

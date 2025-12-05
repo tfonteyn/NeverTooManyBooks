@@ -178,15 +178,13 @@ public class KbNlSearchEngine
     /**
      * Send a HEAD request to prepare a cookie for further calls.
      *
-     * @param context Current context
-     *
      * @throws SearchException on any error
      */
-    private void ensureCookie(@NonNull final Context context)
+    private void ensureCookie()
             throws SearchException {
         final FutureHttp<Boolean> httpHead = createHeadRequest();
         try {
-            httpHead.head(getHostUrl(context) + "/cbs/", con -> true);
+            httpHead.head(getHostUrl() + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -200,8 +198,7 @@ public class KbNlSearchEngine
                    SearchException,
                    CredentialsException {
 
-        final String url = getHostUrl(context)
-                           + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
+        final String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
         final Book book = getBook(context, url);
 
         if (isCancelled()) {
@@ -222,8 +219,7 @@ public class KbNlSearchEngine
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl(context) + String.format(PERMALINK_URL, dbVersion,
-                                                               externalId);
+        final String url = getHostUrl() + String.format(PERMALINK_URL, dbVersion, externalId);
         final Book book = getBook(context, url);
         if (isCancelled()) {
             return book;
@@ -245,7 +241,7 @@ public class KbNlSearchEngine
                          @NonNull final String url)
             throws SearchException, StorageException {
 
-        ensureCookie(context);
+        ensureCookie();
 
         final Book book = new Book();
 
@@ -268,7 +264,7 @@ public class KbNlSearchEngine
             final String show = book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
                 book.clearData();
-                final String url2 = getHostUrl(context)
+                final String url2 = getHostUrl()
                                     + String.format(MULTI_RESULT_BOOK_URL, dbVersion, setNr, show);
                 httpGet.get(url2, (con, is) -> handleResponse(is, parser, handler, book));
             }
