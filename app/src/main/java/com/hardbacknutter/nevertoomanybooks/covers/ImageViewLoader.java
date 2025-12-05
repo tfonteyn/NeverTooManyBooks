@@ -167,14 +167,14 @@ public class ImageViewLoader {
     /**
      * Load the file in a background thread and display it in the given view.
      *
-     * @param imageView to populate
-     * @param file      to load, must be valid
-     * @param onSuccess (optional) Consumer to execute after successfully displaying the image
+     * @param imageView   to populate
+     * @param file        to load, must be valid
+     * @param onDisplayed (optional) Consumer to execute after successfully displaying the image
      */
     @UiThread
     public void fromFile(@NonNull final ImageView imageView,
                          @NonNull final File file,
-                         @Nullable final Consumer<Bitmap> onSuccess) {
+                         @Nullable final Consumer<Bitmap> onDisplayed) {
 
         final ImageReference imageReference = new ImageReference(imageView);
 
@@ -220,8 +220,8 @@ public class ImageViewLoader {
                     if (bitmap != null) {
                         // Finally, load it into the View
                         fromBitmap(view, bitmap);
-                        if (onSuccess != null) {
-                            onSuccess.accept(bitmap);
+                        if (onDisplayed != null) {
+                            onDisplayed.accept(bitmap);
                         }
                     } else {
                         // Found the image-file, but failed to load/decode it.
@@ -230,6 +230,7 @@ public class ImageViewLoader {
                     }
                 },
                 e -> {
+                    // Transformation does not throw exceptions.
                 });
     }
 
