@@ -355,7 +355,7 @@ public class AmazonSearchEngine
     @Override
     public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(context, getHostUrl(context));
+        return getLocale(context, getHostUrl());
     }
 
     /**
@@ -397,7 +397,7 @@ public class AmazonSearchEngine
         // If conversion is not possible, use the ISBN13 anyhow
         final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
 
-        final String url = getHostUrl(context) + String.format(BY_PRODUCT_ID, asin);
+        final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin);
         return genericSearch(context, url, fetchCovers);
     }
 
@@ -414,7 +414,7 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
-            final String url = getHostUrl(context) + String.format(BY_PRODUCT_ID, barcode);
+            final String url = getHostUrl() + String.format(BY_PRODUCT_ID, barcode);
             return genericSearch(context, url, fetchCovers);
         } else {
             // Amazon only supports ISBN13 and ASIN codes
@@ -451,7 +451,7 @@ public class AmazonSearchEngine
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
             final String isbn = edition.getIsbn();
 
-            final String url = getHostUrl(context) + String.format(BY_PRODUCT_ID, isbn);
+            final String url = getHostUrl() + String.format(BY_PRODUCT_ID, isbn);
             final Document document = loadDocument(context, url, null);
 
             checkCaptcha(context, url, document);
@@ -495,7 +495,7 @@ public class AmazonSearchEngine
         // It's too difficult to cover all possibilities, we're leaving that to the user.
         final Element titleElement = document.selectFirst("h1#title > span#productTitle");
         if (titleElement == null) {
-            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+            LoggerFactory.getLogger().w(TAG, getHostUrl(),
                                         "parse", "no title?");
             return;
         }
@@ -546,7 +546,7 @@ public class AmazonSearchEngine
                             @NonNull final Book book) {
         final Element tmmSwatches = document.selectFirst("div#tmmSwatches");
         if (tmmSwatches == null) {
-            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+            LoggerFactory.getLogger().w(TAG, getHostUrl(),
                                         "parsePrice", "no tmmSwatches?");
             return;
         }
@@ -557,14 +557,14 @@ public class AmazonSearchEngine
             // This would only be the case when the page has NO selected format.
             // Not sure how this can happen; multiple checks showed the structured
             // to be correct and no way was found to have NO format selected.
-            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+            LoggerFactory.getLogger().w(TAG, getHostUrl(),
                                         "parsePrice", "no swatchElement.selected?");
             return;
         }
 
         final Element slotPrice = swatchElement.selectFirst("span.slot-price");
         if (slotPrice == null) {
-            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+            LoggerFactory.getLogger().w(TAG, getHostUrl(),
                                         "parsePrice", "no span.slot-price?");
             return;
         }
@@ -574,7 +574,7 @@ public class AmazonSearchEngine
         // but some books (.com?) have a "from $xx"
         final Element price = slotPrice.selectFirst("span");
         if (price == null) {
-            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+            LoggerFactory.getLogger().w(TAG, getHostUrl(),
                                         "parsePrice", "no span below span.slot-price?");
             return;
         }
@@ -688,7 +688,7 @@ public class AmazonSearchEngine
                     } else {
                         if (BuildConfig.DEBUG /* always */) {
                             if (!LABEL_IGNORED.contains(lcLabel)) {
-                                LoggerFactory.getLogger().d(TAG, getHostUrl(context),
+                                LoggerFactory.getLogger().d(TAG, getHostUrl(),
                                                             "parse", "label=" + label);
                             }
                         }
@@ -867,6 +867,6 @@ public class AmazonSearchEngine
             }
         }
 
-        return getHostUrl(context) + fields;
+        return getHostUrl() + fields;
     }
 }
