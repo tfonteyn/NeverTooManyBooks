@@ -126,9 +126,9 @@ public abstract class SearchEngineBase
         return config.getEngineId().getName(context);
     }
 
-    @NonNull
     @Override
-    public String getHostUrl(@NonNull final Context context) {
+    @NonNull
+    public String getHostUrl() {
         return config.getHostUrl();
     }
 
@@ -139,7 +139,7 @@ public abstract class SearchEngineBase
                    SocketTimeoutException,
                    MalformedURLException {
         ServiceLocator.getInstance().getNetworkChecker().ping(
-                getHostUrl(context), config.getConnectTimeoutInMs());
+                getHostUrl(), config.getConnectTimeoutInMs());
     }
 
     /**

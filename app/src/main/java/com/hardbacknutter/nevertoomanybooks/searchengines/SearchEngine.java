@@ -98,13 +98,11 @@ public interface SearchEngine
     /**
      * Get the host url.
      *
-     * @param context Current context
-     *
      * @return url, including scheme.
      */
     @AnyThread
     @NonNull
-    String getHostUrl(@NonNull Context context);
+    String getHostUrl();
 
     /**
      * Get the Locale for this engine.
