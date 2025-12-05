@@ -156,7 +156,7 @@ public class GoogleBooksSearchEngine
         final Book book = new Book();
 
         // %3A  :
-        final String url = getHostUrl(context) + SEARCH + "isbn%3A" + validIsbn;
+        final String url = getHostUrl() + SEARCH + "isbn%3A" + validIsbn;
         fetchBook(context, url, fetchCovers, book);
         return book;
     }
@@ -206,7 +206,7 @@ public class GoogleBooksSearchEngine
         }
 
         // %3A  :
-        final String url = getHostUrl(context) + SEARCH + args;
+        final String url = getHostUrl() + SEARCH + args;
         fetchBook(context, url, fetchCovers, book);
         return book;
     }
