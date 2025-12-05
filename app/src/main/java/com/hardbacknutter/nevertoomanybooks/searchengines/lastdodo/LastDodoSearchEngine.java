@@ -263,7 +263,7 @@ public class LastDodoSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book);
@@ -281,7 +281,7 @@ public class LastDodoSearchEngine
         final Book book = new Book();
 
         // Searching on the ISBN REQUIRES the dashes between the digits.
-        final String url = getHostUrl(context) + String.format(SEARCH, formatIsbn(validIsbn));
+        final String url = getHostUrl() + String.format(SEARCH, formatIsbn(validIsbn));
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -323,7 +323,7 @@ public class LastDodoSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + String.format(SEARCH, words);
+        final String url = getHostUrl() + String.format(SEARCH, words);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -362,7 +362,7 @@ public class LastDodoSearchEngine
                 String url = urlElement.attr("href");
                 // sanity check - it normally does NOT have the protocol/site part
                 if (url.startsWith("/")) {
-                    url = getHostUrl(context) + url;
+                    url = getHostUrl() + url;
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
