@@ -194,7 +194,7 @@ public class DatabazeKnihSearchEngine
             throws StorageException, SearchException, CredentialsException {
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BY_SID, externalId);
+        final String url = getHostUrl() + String.format(BY_SID, externalId);
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
@@ -240,7 +240,7 @@ public class DatabazeKnihSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + String.format(SEARCH, queryParams);
+        final String url = getHostUrl() + String.format(SEARCH, queryParams);
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
@@ -267,7 +267,7 @@ public class DatabazeKnihSearchEngine
                 String url = element.attr("href");
                 if (!url.isEmpty()) {
                     // url is relative, add the host
-                    url = getHostUrl(context) + url;
+                    url = getHostUrl() + url;
                     final Document redirected = loadDocument(context, url, null);
                     // sanity check
                     if (!isMultiResult(redirected)) {
@@ -447,7 +447,7 @@ public class DatabazeKnihSearchEngine
         // Sanity check
         if (sid != null && !sid.isEmpty()) {
             // fetch the "more details" and parse
-            final String url = getHostUrl(context) + String.format(MORE_DETAILS_URL, sid);
+            final String url = getHostUrl() + String.format(MORE_DETAILS_URL, sid);
             final Document d2 = loadDocument(context, url, null);
             parseAdditional(d2, book);
         }
@@ -460,7 +460,7 @@ public class DatabazeKnihSearchEngine
                 String url = a.attr("href");
                 if (!url.isEmpty()) {
                     // url is relative, add the host
-                    url = getHostUrl(context) + url;
+                    url = getHostUrl() + url;
                     final Document d2 = loadDocument(context, url, null);
                     parseToc(context, d2, book);
                 }
