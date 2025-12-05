@@ -172,7 +172,7 @@ public class GoodreadsSearchEngine
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl(context) + String.format(BY_GOODREADS_ID, externalId);
+        final String url = getHostUrl() + String.format(BY_GOODREADS_ID, externalId);
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -223,7 +223,7 @@ public class GoodreadsSearchEngine
         if (queryParams.length() == 0) {
             return book;
         }
-        final String url = getHostUrl(context) + String.format(BY_TEXT, queryParams);
+        final String url = getHostUrl() + String.format(BY_TEXT, queryParams);
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
@@ -266,7 +266,7 @@ public class GoodreadsSearchEngine
                                 @NonNull final String validIsbn)
             throws StorageException, SearchException {
 
-        final String url = getHostUrl(context) + String.format(GET_GOODREADS_ID, validIsbn);
+        final String url = getHostUrl() + String.format(GET_GOODREADS_ID, validIsbn);
         httpGet = createGetDocumentRequest(context);
 
         try {
@@ -316,7 +316,7 @@ public class GoodreadsSearchEngine
             final String href = a.attr("href");
             if (!href.isEmpty()) {
                 // pretend we click on the first result
-                final String url = getHostUrl(context) + href;
+                final String url = getHostUrl() + href;
                 final Document redirected = loadDocument(context, url, null);
 
                 if (!isCancelled()) {
