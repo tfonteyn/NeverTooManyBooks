@@ -418,10 +418,14 @@ class BooklistBuilder {
         // The domains for the book level, visibility and ordering according to style.
         style.getBookLevelFieldsOrderBy().entrySet()
              .stream()
-             .filter(field -> style.isShowField(FieldVisibility.Screen.List, field.getKey()))
-             .map(field -> DBExpr.forBookLevelField(field.getKey(),
-                                                    field.getValue(),
-                                                    style))
+             .filter(field ->
+                             // include Fields the user set to visible
+                             style.isShowField(FieldVisibility.Screen.List, field.getKey())
+                             // and include Fields the user wants to sort on
+                             || field.getValue() != Sort.Unsorted)
+
+             .map(field -> DBExpr
+                     .forBookLevelField(field.getKey(), field.getValue(), style))
              .flatMap(List::stream)
              .forEach(this::addDomainExpression);
 
