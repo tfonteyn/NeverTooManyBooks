@@ -1,3 +1,12 @@
+### 7.10.1
+
+FIXES
+
+- #209 fixes a crash during startup on Android 11 and earlier.
+- #208 author images were not displayed
+
+---
+
 ### 7.10.0
 
 NEW:
