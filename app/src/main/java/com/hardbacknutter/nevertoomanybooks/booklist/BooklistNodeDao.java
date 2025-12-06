@@ -722,8 +722,9 @@ public class BooklistNodeDao {
         }
 
         final int rowsAffected;
+        final String tableName = listTable.getName();
         try (SynchronizedStatement stmt = db.compileStatement(
-                String.format(Sql.ADJUST_VISIBILITY_UPDATE, listTable.getName()))) {
+                String.format(Sql.ADJUST_VISIBILITY_UPDATE, tableName, tableName, tableName))) {
             rowsAffected = stmt.executeUpdateDelete();
         }
 
@@ -879,14 +880,27 @@ public class BooklistNodeDao {
         private static final String ADJUST_VISIBILITY_INSERT_TMP_PREFIXES =
                 "INSERT INTO " + ADJUST_VISIBILITY_TMP_TABLE
                 + "(level, prefix) VALUES (?, ?);";
+
         private static final String ADJUST_VISIBILITY_UPDATE =
-                UPDATE_ + /* listTable.getName() */ "%s" + " AS target"
+                UPDATE_ + /* listTable.getName() */ "%s"
                 + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
                 + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
                 + " AND EXISTS ("
                 + SELECT_ + '1' + _FROM_ + ADJUST_VISIBILITY_TMP_TABLE + " AS p"
-                + _WHERE_ + "p.level=target." + DBKey.BL_NODE.LEVEL
-                + _AND_ + "target." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
+                + _WHERE_ + "p.level=%s." + DBKey.BL_NODE.LEVEL
+                + _AND_ + "%s." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
                 + ')';
+
+        // github #209: aliases in the target table of UPDATE (and DELETE)
+        // require SQLite 3.33.0 => Android 12 (API 31).
+//        private static final String ADJUST_VISIBILITY_UPDATE2 =
+//                UPDATE_ + /* listTable.getName() */ "%s" + " AS target"
+//                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
+//                + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
+//                + " AND EXISTS ("
+//                + SELECT_ + '1' + _FROM_ + ADJUST_VISIBILITY_TMP_TABLE + " AS p"
+//                + _WHERE_ + "p.level=target." + DBKey.BL_NODE.LEVEL
+//                + _AND_ + "target." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
+//                + ')';
     }
 }
