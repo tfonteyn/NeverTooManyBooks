@@ -18,26 +18,29 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-This is a book collection application available for **Android** devices, to keep track of your books
-and comics.
+**NeverTooManyBooks** is a book collection app available for **Android** devices,
+to keep track of your books and comics.
 
 Add books by scanning their barcode, ISBN, or generic text searches.
+
+Scan the QR code to open this page on your phone and use the "Get it on Github" button below to
+download.<br>
+![QR Code](qr-code.png)
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
-Scan the QR code to open this page on your phone:<br>
-![QR Code](qr-code.png)
-
 ### Download the latest release: 7.10.1
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
-<img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
+<img src="metadata/en-US/images/get-it-on-github.png" 
+     alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
-<img src="metadata/en-US/images/IzzyOnDroid.png" alt="Get it on IzzySoft" style="width:150px;"/></a>
+<img src="metadata/en-US/images/IzzyOnDroid.png" 
+     alt="Get it on IzzySoft" style="width:150px;"/></a>
 
 Signer "DN: CN=ca"; SHA-256 digest:
 df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
