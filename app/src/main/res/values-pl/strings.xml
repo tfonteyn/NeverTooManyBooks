@@ -463,7 +463,7 @@
     <string name="lbl_tab_publication">Publikacja</string>
     <string name="lbl_table_of_content_short">Treści</string>
     <string name="lbl_table_of_content">Spis treści</string>
-    <string name="lbl_table_of_content_entry">Wpis w spisie treści</string>
+    <string name="lbl_table_of_content_entry">Wpis spisu treści</string>
     <string name="lbl_test_connection">Przetestuj połączenie</string>
     <string name="lbl_timeouts">Limity czasu</string>
     <string name="lbl_title">Tytuł</string>
@@ -492,7 +492,7 @@
     <string name="option_author_details">Wszystkie prace tego autora</string>
     <string name="option_author_works_book">Tylko książki</string>
     <string name="option_author_works_toc">Tylko tytuły treści</string>
-    <string name="lbl_date_died">Zmarł</string>
+    <string name="lbl_date_died">Zm.</string>
     <string name="title_backup_and_export">Kopia zapasowa i eksport</string>
     <string name="option_apply_to_this_node_only">Tylko ten węzeł</string>
     <string name="option_apply_to_all_related_books">Wszystkie powiązane książki</string>
@@ -884,7 +884,7 @@
     <string name="vldt_blank_or_valid_url_required">Wymagana pusta wartość lub prawidłowy adres URL</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Wymagana pusta wartość lub prawidłowy adres URL \"https\" z pojedynczym identyfikatorem \"%s\"</string>
     <string name="info_identifier_editor"><![CDATA[Przed edycją zapoznaj się z <a href="%1$s">dokumentacją</a> dotyczącą identyfikatorów]]></string>
-    <string name="lbl_date_born">Urodzony</string>
+    <string name="lbl_date_born">Ur.</string>
     <string name="pt_fetch_author_info">Pobieranie informacji o autorze</string>
     <string name="lbl_author_type_foreword">Przedmowa</string>
     <string name="lbl_image_2">Obraz 3</string>
