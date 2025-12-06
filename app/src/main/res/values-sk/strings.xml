@@ -402,7 +402,7 @@
     <string name="lbl_date_published_month">Mesiac publikácie</string>
     <string name="lbl_date_first_publication_year">Rok prvej pub.</string>
     <string name="lbl_date_first_publication_month">Mesiac prvej pub.</string>
-    <string name="lbl_date_died">Zomrel</string>
+    <string name="lbl_date_died">Zom.</string>
     <string name="title_backup_and_export">Záloha a export</string>
     <string name="lbl_export_options">Vyberte, čo sa má exportovať.</string>
     <string name="lbl_export_books_option_all">Všetky knihy</string>
@@ -881,7 +881,7 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžaduje sa prázdna hodnota alebo platná adresa URL \"https\" s jedným zástupným symbolom \"%s\"</string>
     <string name="vldt_blank_or_valid_url_required">Vyžaduje sa prázdna hodnota alebo platná adresa URL</string>
     <string name="info_identifier_editor"><![CDATA[Pred úpravou si prosím prečítajte <a href="%1$s">dokumentáciu</a> k identifikátorom.]]></string>
-    <string name="lbl_date_born">Narodený</string>
+    <string name="lbl_date_born">Nar.</string>
     <string name="pt_fetch_author_info">Získať informácie o autorovi</string>
     <string name="menu_search_updates">Hľadanie aktualizácií</string>
     <string name="lbl_author_type_foreword">Predslov</string>
