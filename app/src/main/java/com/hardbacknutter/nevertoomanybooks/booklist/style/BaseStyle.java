@@ -55,12 +55,14 @@ public abstract class BaseStyle
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
     /**
-     * IMPORTANT: this is the ALMOST the same set as used by BookLevelFieldVisibility
+     * IMPORTANT: this is the ALMOST the same set as used by {@link BookLevelFieldVisibility}
      * and should be kept in sync.
      * but note the differences:
      * <ul>
-     *     <li>TITLE added: we ALWAYS display it.</li>
-     *     <li>ISBN & LANGUAGE removed: we already have it added during BooklistBuilder setup.</li>
+     *     <li>TITLE is added here;
+     *         We ALWAYS display it.</li>
+     *     <li>ISBN & LANGUAGE are removed here;
+     *         We already add these during BooklistBuilder setup.</li>
      * </ul>
      * Also note this is an <strong>ORDERED LIST!</strong>
      */
