@@ -667,13 +667,11 @@ public class BooklistNodeDao {
 
         final Collection<Pair<Integer, String>> keyPrefixes = fetchPrefixes();
 
-        LoggerFactory.getLogger().d(TAG, "keyPrefixes=" + keyPrefixes.size());
-
         // Plain dumb speed test in nanos:
         //  temp table: 24484512
         //  java      : 81680932
 
-//        final int rowsAffected = updateBranchesJava(keyPrefixes);
+        // final int rowsAffected = updateBranchesJava(keyPrefixes);
         final int rowsAffected = updateBranchesTempTable(keyPrefixes);
 
         if (BuildConfig.DEBUG /* always */) {
