@@ -221,7 +221,7 @@ public class PartialDateParser
      * <p>
      * See the Pattern definitions in the class for supported formats.
      * <ul>
-     *     <li>digit dividers can be {@code space}, {@code -} or {@code /}</li>
+     *     <li>digit separators can be {@code space}, {@code -} or {@code /}</li>
      *     <li>Month {@code MM} can be one or two digits; 01..12  or 1..9</li>
      *     <li>Day {@code dd} can be one or two digits; 01..31  or 1..9</li>
      * </ul>
