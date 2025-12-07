@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -60,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -422,18 +420,11 @@ public class DnbSearchEngine
                                 // Themen­gebiet / Topic
                                 // Thema / Subject
                                 final String[] split = td.text().split(",");
-                                //noinspection DataFlowIssue
-                                final Set<String> tagsToIgnore =
-                                        getEngineId().getConfig().getTagsToIgnore();
-
-                                final List<Tag> tags = Arrays
+                                final List<String> tagNames = Arrays
                                         .stream(split)
                                         .map(SearchEngineUtils::cleanName)
-                                        .filter(name -> !tagsToIgnore.contains(name))
-                                        .map(Tag::new)
                                         .collect(Collectors.toList());
-                                book.setTags(tags);
-
+                                setTags(tagNames, book);
                                 break;
                             }
                             case "Werk":

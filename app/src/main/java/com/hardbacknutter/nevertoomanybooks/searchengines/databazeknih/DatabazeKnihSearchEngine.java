@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -374,21 +373,18 @@ public class DatabazeKnihSearchEngine
             return;
         }
 
-        final List<Tag> tags = detailsDesc.select("a.genre")
-                                          .stream()
-                                          .map(Element::text)
-                                          .map(Tag::new)
-                                          .collect(Collectors.toList());
-        if (!tags.isEmpty()) {
-            book.setTags(tags);
-        }
+        final List<String> tagNames = detailsDesc.select("a.genre")
+                                                 .stream()
+                                                 .map(Element::text)
+                                                 .collect(Collectors.toList());
 
         // In addition to the "genre" tags parsed above
         // Note that these come from the "document"!
-        book.addTags(document.select("a.tag").stream()
-                             .map(Element::text)
-                             .map(Tag::new)
-                             .collect(Collectors.toList()));
+        tagNames.addAll(document.select("a.tag").stream()
+                                .map(Element::text)
+                                .collect(Collectors.toList()));
+
+        setTags(tagNames, book);
 
         // Issued
         element = document.selectFirst("span:contains(Vydáno:)");

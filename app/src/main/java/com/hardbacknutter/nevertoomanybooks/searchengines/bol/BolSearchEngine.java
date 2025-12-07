@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -576,16 +575,12 @@ public class BolSearchEngine
 
     private void processTags(@NonNull final Element value,
                              @NonNull final Book book) {
-        //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
         // its an 'ul' with 'li' each containing an 'a'
-        final List<Tag> tags = value.select("a")
-                                    .stream()
-                                    .map(Element::text)
-                                    .filter(t -> !tagsToIgnore.contains(t))
-                                    .map(Tag::new)
-                                    .collect(Collectors.toList());
-        book.setTags(tags);
+        final List<String> tagNames = value.select("a")
+                                           .stream()
+                                           .map(Element::text)
+                                           .collect(Collectors.toList());
+        setTags(tagNames, book);
     }
 
     /**

@@ -30,11 +30,10 @@ import androidx.annotation.VisibleForTesting;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -661,25 +659,20 @@ public class GoodreadsSearchEngine
 
     private void parseBookGenres(@NonNull final JSONArray genres,
                                  @NonNull final Book book) {
-        //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
-
-        final Set<Tag> result = new HashSet<>();
+        final List<String> tagNames = new ArrayList<>();
         for (int i = 0; i < genres.length(); i++) {
             final JSONObject bg = genres.optJSONObject(i);
             if (bg != null) {
                 final JSONObject genre = bg.optJSONObject("genre");
                 if (genre != null) {
                     final String name = genre.optString("name");
-                    if (!name.isEmpty() && !tagsToIgnore.contains(name)) {
-                        result.add(new Tag(name));
+                    if (!name.isEmpty()) {
+                        tagNames.add(name);
                     }
                 }
             }
         }
-        if (!result.isEmpty()) {
-            book.setTags(result);
-        }
+        setTags(tagNames, book);
     }
 
     /**

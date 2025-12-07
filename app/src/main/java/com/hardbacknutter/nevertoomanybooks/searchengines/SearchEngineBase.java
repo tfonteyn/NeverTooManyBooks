@@ -38,6 +38,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -71,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -687,5 +690,24 @@ public abstract class SearchEngineBase
         LoggerFactory.getLogger().w(TAG, "processPriceListed Failed to parse",
                                     "currencyStr=" + currencyStr,
                                     "priceStr=" + priceStr);
+    }
+
+    /**
+     * Process the list of tag names, remove blank, duplicates and unwanted.
+     *
+     * @param tagNames to use
+     * @param book     Bundle to update
+     */
+    protected void setTags(@NonNull final Collection<String> tagNames,
+                           @NonNull final Book book) {
+        //noinspection DataFlowIssue
+        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
+        final List<Tag> tags = tagNames.stream()
+                                       .filter(t -> !t.isBlank())
+                                       .filter(t -> !tagsToIgnore.contains(t))
+                                       .distinct()
+                                       .map(Tag::new)
+                                       .collect(Collectors.toList());
+        book.setTags(tags);
     }
 }

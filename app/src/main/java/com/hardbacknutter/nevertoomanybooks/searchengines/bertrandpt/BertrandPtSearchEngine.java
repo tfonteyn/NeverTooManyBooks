@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -363,16 +362,11 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-themes > div.info");
         if (element != null) {
-            //noinspection DataFlowIssue
-            final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
-
-            final Elements as = element.select("a");
-            final List<Tag> tags = as.stream()
-                                     .map(Element::text)
-                                     .filter(t -> !tagsToIgnore.contains(t))
-                                     .map(Tag::new)
-                                     .collect(Collectors.toList());
-            book.setTags(tags);
+            final List<String> tagNames = element.select("a")
+                                                 .stream()
+                                                 .map(Element::text)
+                                                 .collect(Collectors.toList());
+            setTags(tagNames, book);
         }
 
         final Element priceElement = document.selectFirst(

@@ -660,6 +660,8 @@ public class BibliotecePlSearchEngine
     private void parseTags(@NonNull final Element bookData,
                            @NonNull final String subElement,
                            @NonNull final Book book) {
+        // We're not using the helper 'setTags(tagNames, book) because
+        // this site can have tags in two different sections.
         //noinspection DataFlowIssue
         final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
         // the cssQuery is based on the page source, and not on the page-inspect
@@ -672,7 +674,6 @@ public class BibliotecePlSearchEngine
                                        .map(Tag::new)
                                        .collect(Collectors.toList());
         if (!tags.isEmpty()) {
-            // use 'add' !
             book.addTags(tags);
         }
     }

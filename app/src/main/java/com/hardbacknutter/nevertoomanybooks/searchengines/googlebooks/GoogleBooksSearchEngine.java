@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -56,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -449,17 +447,14 @@ public class GoogleBooksSearchEngine
 
         a = volumeInfo.optJSONArray("categories");
         if (a != null && !a.isEmpty()) {
-            //noinspection DataFlowIssue
-            final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
-
-            final List<Tag> tags = new ArrayList<>();
+            final List<String> tags = new ArrayList<>();
             for (int g = 0; g < a.length(); g++) {
-                final String category = a.optString(g, null);
-                if (category != null && !category.isEmpty() && !tagsToIgnore.contains(category)) {
-                    tags.add(new Tag(category));
+                final String category = a.optString(g);
+                if (!category.isEmpty()) {
+                    tags.add(category);
                 }
             }
-            book.setTags(tags);
+            setTags(tags, book);
         }
         // BOOK or MAGAZINE : ignored
         //s = volumeInfo.optString("printType", null);

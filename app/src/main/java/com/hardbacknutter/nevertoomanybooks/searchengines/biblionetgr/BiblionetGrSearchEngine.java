@@ -34,10 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -53,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -561,30 +558,24 @@ public class BiblionetGrSearchEngine
                 .getDefaultSharedPreferences(context)
                 .getBoolean(PK_TAG_PREFIX_NUMBER, false);
 
-        final List<String> tagStrings = new ArrayList<>();
+        final List<String> tagNames = new ArrayList<>();
         // [741.5] Κόμικς
         // [889.3] Greek prose literature, Modern - Short story
         for (final Element badge : data.select("span.badge")) {
             final String tagText = badge.text();
             if (keepPrefix) {
-                tagStrings.add(tagText);
+                tagNames.add(tagText);
             } else {
                 final Matcher matcher = SUBJECT_BADGE_PATTERN.matcher(tagText);
                 if (matcher.find()) {
                     final String subject = matcher.group(1);
                     if (!subject.isBlank()) {
-                        tagStrings.add(subject);
+                        tagNames.add(subject);
                     }
                 }
             }
         }
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
-        final List<Tag> tags = tagStrings
-                .stream()
-                .filter(t -> !tagsToIgnore.contains(t))
-                .map(Tag::new)
-                .collect(Collectors.toList());
-        book.setTags(tags);
+        setTags(tagNames, book);
     }
 
     /**

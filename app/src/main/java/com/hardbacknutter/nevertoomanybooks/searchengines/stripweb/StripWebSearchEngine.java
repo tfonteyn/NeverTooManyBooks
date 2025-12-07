@@ -310,6 +310,8 @@ public class StripWebSearchEngine
         }
 
         String tmpSeriesNr = null;
+        // We're not using the helper 'setTags(tagNames, book) because
+        // this site can have tags in two different sections.
         //noinspection DataFlowIssue
         final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
 
@@ -370,10 +372,8 @@ public class StripWebSearchEngine
                     case "Genre": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty() && !tagsToIgnore.contains(text)) {
-                            // Can also be populated by "Trefwoorden"
-                            final List<Tag> tags = book.getTags();
-                            tags.add(new Tag(text));
-                            book.setTags(tags);
+                            // Use 'add', as tags can also be populated by "Trefwoorden"
+                            book.addTags(List.of(new Tag(text)));
                         }
                         break;
                     }
@@ -382,14 +382,13 @@ public class StripWebSearchEngine
                         final String[] split = SearchEngineUtils.cleanText(td.text())
                                                                 .split(",");
 
-                        // Can also be populated by "Genre"
-                        final List<Tag> tags = book.getTags();
-                        tags.addAll(Arrays.stream(split)
-                                          .map(String::strip)
-                                          .filter(s -> !tagsToIgnore.contains(s))
-                                          .map(Tag::new)
-                                          .collect(Collectors.toList()));
-                        book.setTags(tags);
+                        // Use 'add', as tags can also be populated by "Genre"
+                        book.addTags(Arrays.stream(split)
+                                           .map(String::strip)
+                                           .filter(t -> !t.isBlank())
+                                           .filter(t -> !tagsToIgnore.contains(t))
+                                           .map(Tag::new)
+                                           .collect(Collectors.toList()));
                         break;
                     }
                     default:
