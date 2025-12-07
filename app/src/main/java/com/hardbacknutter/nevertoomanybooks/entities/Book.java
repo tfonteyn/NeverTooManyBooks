@@ -1258,14 +1258,17 @@ public class Book
 
     /**
      * Convenience method combining get/add/set.
-     * Eliminates duplicates.
+     * Eliminates blanks and duplicates.
      *
      * @param tags to add
      */
     public void addTags(@NonNull final Collection<Tag> tags) {
         List<Tag> bt = getParcelableArrayList(BKEY_TAG_LIST);
         bt.addAll(tags);
-        bt = bt.stream().distinct().collect(Collectors.toList());
+        bt = bt.stream()
+               .filter(t -> !t.getName().isBlank())
+               .distinct()
+               .collect(Collectors.toList());
         putParcelableCollection(BKEY_TAG_LIST, bt);
     }
 
