@@ -95,6 +95,14 @@ public class BiblionetGrSearchEngine
                                          + "%CF%84%CE%B7%CF%83%CE%B7?q=";
     private static final Pattern SUBJECT_BADGE_PATTERN =
             Pattern.compile("\\[.*]\\s*(.*)");
+
+    /** The language text as usd on the site. NOT the same as the Java 'display-name'. */
+    private static final String ANCIENT_GREEK_TEXT = "Greek (Ancient script)";
+    /** The Locale iso3 code for Ancient Greek. */
+    private static final String ANCIENT_GREEK_ISO3 = "grc";
+    /** The Locale iso3 code for Modern Greek. */
+    private static final String MODERN_GREEK_ISO3 = "ell";
+
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     private final AuthorResolverHelper authorResolverHelper;
 
@@ -135,6 +143,15 @@ public class BiblionetGrSearchEngine
                 .setPreferenceFragmentClazz(BiblionetGrPreferencesFragment.class)
                 .setConfig(cb -> cb
                         .build(SearchEngineConfig::new));
+    }
+
+    @NonNull
+    private static String stripLabel(@NonNull final Element li) {
+        final String label = li.ownText();
+        if (label.endsWith(":")) {
+            return label.substring(0, label.length() - 1).strip();
+        }
+        return label;
     }
 
     @NonNull
@@ -327,29 +344,86 @@ public class BiblionetGrSearchEngine
     private void processAuthors(@NonNull final Elements lis,
                                 @NonNull final Book book) {
         lis.forEach(li -> {
-            final String label = li.ownText();
+            final String label = stripLabel(li);
             switch (label) {
-                case "Συγγραφέας:":
-                case "Author:": {
+                case "Συγγραφέας":
+                case "Author": {
                     processAuthor(Author.TYPE_WRITER, li, book);
                     break;
                 }
-                case "Μετάφραση:":
-                case "Translation:": {
+                case "Μετάφραση":
+                case "Translation": {
                     processAuthor(Author.TYPE_TRANSLATOR, li, book);
                 }
-                case "Εικονογράφηση:":
-                case "Illustrator:":
-                case "Φωτογράφος:":
-                case "Photographer:": {
+                case "Εικονογράφηση":
+                case "Illustrator":
+                case "Φωτογράφος":
+                case "Photographer":
+                case "Ζωγράφος":
+                case "Painter":
+                case "Γλύπτης":
+                case "Sculptor":
+                case "Καλλιτέχνης":
+                case "Artist": {
                     processAuthor(Author.TYPE_ARTIST, li, book);
                     break;
                 }
-                case "Επιμέλεια:":
-                case "Editor:":
-                case "Ευθύνη Σειράς:":
-                case "Series editor:": {
+                case "Επιμέλεια":
+                case "Editor":
+                case "Ευθύνη Σειράς":
+                case "Series editor":
+                case "Ανθολόγος":
+                case "Anthologist":
+                case "Ευθύνη Υποσειράς":
+                case "Sub-series editor": {
                     processAuthor(Author.TYPE_EDITOR, li, book);
+                    break;
+                }
+                case "Αφήγηση":
+                case "Narrated by": {
+                    processAuthor(Author.TYPE_NARRATOR, li, book);
+                    break;
+                }
+                case "Εισήγηση":
+                case "Introduction": {
+                    processAuthor(Author.TYPE_INTRODUCTION, li, book);
+                    break;
+                }
+                case "Επίμετρο":
+                    /* no English label; Addendum? Appendix? */
+                {
+                    processAuthor(Author.TYPE_AFTERWORD, li, book);
+                    break;
+                }
+                case "Επιμέλεια Κειμένων":
+                    /* no English label; Text Editing? */
+                {
+                    processAuthor(Author.TYPE_EDITOR, li, book);
+                    break;
+                }
+                case "Μεταγραφή":
+                    /* no English label; Transcription? */
+                {
+                    processAuthor(Author.TYPE_UNKNOWN, li, book);
+                    break;
+                }
+                case "Απόδοση":
+                    /* no English label; Performance? */
+                {
+                    processAuthor(Author.TYPE_UNKNOWN, li, book);
+                    break;
+                }
+                case "Ερμηνεία":
+                case "Performed by":
+                case "Σύνθεση":
+                case "Composer":
+                case "Στιχουργός":
+                case "Lyrist":
+                case "Διασκευή":
+                case "Adaptation":
+                case "Φορέας":
+                case "Body": {
+                    processAuthor(Author.TYPE_UNKNOWN, li, book);
                     break;
                 }
                 default: {
@@ -378,7 +452,7 @@ public class BiblionetGrSearchEngine
         String seriesNum = null;
 
         for (final Element li : ul.select("li")) {
-            final String label = li.ownText();
+            final String label = stripLabel(li);
             final Element data = li.selectFirst("strong");
             // paranoia
             if (label.isEmpty() || data == null) {
@@ -392,43 +466,42 @@ public class BiblionetGrSearchEngine
 
             // The english label SHOW as uppercas on the site, but ARE LOWERCASE in the html.
             switch (label) {
-                case "Εκδοτης:":
-                case "Publisher:": {
+                case "Εκδοτης":
+                case "Publisher": {
                     book.add(Publisher.from(text));
                     break;
                 }
-                case "Διαθεσιμοτητα:":
-                case "Availability:": {
+                case "Διαθεσιμοτητα":
+                case "Availability": {
                     // Example: Κυκλοφορεί, In Print
                     break;
                 }
-                case "Ημ. Εκδοσης:":
-                case "Publish date:": {
+                case "Ημ. Εκδοσης":
+                case "Publish date": {
                     dateParser.parse(text).ifPresent(book::setPublicationDate);
                     break;
                 }
-                case "Ημ. 1ης εκδοσης:":
-                case "First publish date:": {
+                case "Ημ. 1ης εκδοσης":
+                case "First publish date": {
                     dateParser.parse(text).ifPresent(book::setFirstPublicationDate);
                     break;
                 }
-                case "Αρ. εκδοσης:":
-                case "Edition num.:": {
+                case "Αρ. εκδοσης":
+                case "Edition num.": {
                     // Example: 1
                     break;
                 }
-                case "Περιοχη:":
-                case "Area:": {
+                case "Περιοχη":
+                case "Area": {
                     // Example: Athens
                     break;
                 }
-                case "ISBN:": {
+                case "ISBN": {
                     book.setIsbn(ISBN.cleanText(text));
                     break;
                 }
                 case "Τιμη":
                 case "Price": {
-                    // no colon in label!
                     // ouch... the Greek Locale uses the "," as the decimal separator,
                     // but the site uses "." instead.
                     // While we would normally parse here with the site Locale,
@@ -436,32 +509,48 @@ public class BiblionetGrSearchEngine
                     addPriceListed(context, Locale.UK, text, MoneyParser.EUR, book);
                     break;
                 }
-                case "Γλωσσα:":
-                case "Language:": {
-                    book.setLanguage(text);
-                    break;
-                }
-                case "Γλωσσα Πρωτοτυπου:":
-                case "Original language:": {
-                    // a Greek book can also have the original lang set to Greek.
-                    // Only store it if different
-                    if (!text.equals(book.getLanguage())) {
-                        book.setTranslatedFromLanguage(text);
+                case "Γλωσσα":
+                case "Language": {
+                    if (ANCIENT_GREEK_TEXT.equals(text)) {
+                        book.setLanguage(ANCIENT_GREEK_ISO3);
+                    } else {
+                        book.setLanguage(text);
                     }
                     break;
                 }
-                case "Μεταφραση απο:":
-                case "Translated from:": {
+                case "Γλωσσα Πρωτοτυπου":
+                case "Original language": {
+                    if (ANCIENT_GREEK_TEXT.equals(text)) {
+                        book.setTranslatedFromLanguage(ANCIENT_GREEK_ISO3);
+                    } else {
+                        // a Greek book can also have the original lang set to Greek.
+                        // Only store it if different
+                        if (!text.equals(book.getLanguage())) {
+                            book.setTranslatedFromLanguage(text);
+                        }
+                    }
                     break;
                 }
-                case "Αρ. Συλλογης:":
-                case "Volume num.:": {
+                case "Μεταφραση απο":
+                case "Translated from": {
+                    break;
+                }
+                case "Αρ. Συλλογης":
+                case "Volume num.": {
                     // The volume number appears 'before' the series, cache it locally
                     seriesNum = text;
                     break;
                 }
-                case "Σειρα:":
-                case "Series title:": {
+                case "Συλλογη":
+                case "Collection": {
+                    break;
+                }
+                case "ISBN Σετ":
+                case "Collection ISBN": {
+                    break;
+                }
+                case "Σειρα":
+                case "Series title": {
                     final Series currentSeries = Series.from(text);
                     // Add if not already present.
                     if (book.getSeries().stream()
@@ -475,69 +564,81 @@ public class BiblionetGrSearchEngine
                     }
                     break;
                 }
-                case "Υποσειρα:":
-                case "Subseries:": {
+                case "Υποσειρα":
+                case "Subseries": {
                     break;
                 }
-                case "Τυπος:":
-                case "Type:": {
-                    // Example: Βιβλίο; Book
-                    // e-book
-                    if ("e-book".equals(text)) {
+                case "Τυπος":
+                case "Type": {
+                    // Ignore: Βιβλίο; Book
+                    // otherwise set the format
+                    // See also "Cover" below.
+                    if (!"Βιβλίο".equals(text)) {
                         book.setFormat(context.getString(R.string.book_format_ebook));
                     }
                     break;
                 }
-                case "Ηλικια:":
-                case "Age:": {
+                case "Ηλικια":
+                case "Age": {
                     // Example: από 7 έως 11 έτη
                     break;
                 }
-                case "Δεσιμο:":
-                case "Cover:": {
-                    // Example: Μαλακό εξώφυλλο; paperback
-                    book.setFormat(text);
+                case "Δεσιμο":
+                case "Cover": {
+                    // The site only lists hard/soft covers here.
+                    // see "Type" above for more.
+                    // We take "Type" by preference.
+                    if (book.getString(DBKey.FORMAT).isBlank()) {
+                        book.setFormat(text);
+                    }
                     break;
                 }
-                case "Σελιδες:":
-                case "Pages:": {
+                case "Σελιδες":
+                case "Pages": {
                     book.setPages(text);
                     break;
                 }
-                case "Διαστασεις (cm):":
-                case "Dimensions (cm):": {
+                case "Διαστασεις (cm)":
+                case "Dimensions (cm)": {
                     // Example: 27x21
                     break;
                 }
-                case "Βαρος (gr):":
-                case "Weight (gr):": {
+                case "Βαρος (gr)":
+                case "Weight (gr)": {
                     // xampl: 428
                     break;
                 }
-                case "Εχει Εικονογραφηση:":
-                case "has Illustration:": {
+                case "Εχει Εικονογραφηση":
+                case "has Illustration": {
                     // Example: Ναι
                     break;
                 }
-                case "Ειναι Μεταφρασμενο:":
-                case "is Translated:": {
+                case "Ειναι Μεταφρασμενο":
+                case "is Translated": {
                     // Example: Ναι
                     break;
                 }
-                case "Εχει Βιβλιογραφια:":
-                case "has Bibliography:": {
+                case "Εχει Βιβλιογραφια":
+                case "has Bibliography": {
                     // Example: Ναι
                     break;
                 }
-                case "Σημειωσεις:":
-                case "Notes:": {
+                case "Λογοτεχνικα Βραβεια":
+                case "Awards": {
+                    // these are "badge" style entries; see "Subject" below
+                    // on how to parse those.
+                    break;
+                }
+                case "Σημειωσεις":
+                case "Notes": {
+                    // Always set here, we'll append the full description as needed.
                     book.setDescription(text);
                 }
 
                 //  Below are the second ul list labels
 
-                case "Θεμα:":
-                case "Subject:": {
+                case "Θεμα":
+                case "Subject": {
                     // Subject -> use for tags
                     // Note: the html shows there might be another "tags" section
                     processSubjectTags(context, data, book);
@@ -546,8 +647,9 @@ public class BiblionetGrSearchEngine
             }
         }
 
+        // Fallback to Greek if not set
         if (book.getLanguage().isBlank()) {
-            book.setLanguage("ell");
+            book.setLanguage(MODERN_GREEK_ISO3);
         }
     }
 
