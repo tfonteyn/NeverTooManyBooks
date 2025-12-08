@@ -64,6 +64,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * As it turns out, the site has an API: <a href="https://www.biblionet.gr/webservice/">API</a>
+ * but this engine was written before I found the API :/
+ * Sticking with the current jsoup approach until it breaks, then moving to the API.
+ */
 @SuppressWarnings("ALL")
 public class BiblionetGrSearchEngine
         extends JsoupSearchEngineBase
