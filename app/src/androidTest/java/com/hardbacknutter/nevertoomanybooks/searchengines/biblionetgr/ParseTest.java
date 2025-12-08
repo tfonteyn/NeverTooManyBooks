@@ -96,7 +96,6 @@ public class ParseTest
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
-
         assertEquals("Η γαλέρα του Οβελίξ", book.getString(DBKey.TITLE, null));
         assertEquals("La Galère d'Obélix", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("9789603211495", book.getString(DBKey.ISBN, null));
@@ -163,5 +162,94 @@ public class ParseTest
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.BiblionetGr.getPreferenceKey()
                                           + "_9789603211495_0_.jpg"));
+    }
+
+    @Test
+    public void parse9789602489147()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader =
+                "https://biblionet.gr/%CE%BF-%CE%BA%CF%89%CE%BD%CF%83%CF%84%CE%B1%CE%BD%CF%84%CE%B9%CE%BD%CE%BF%CF%82-%CF%87%CE%B1%CF%84%CE%B6%CE%BF%CF%80%CE%BF%CF%85%CE%BB%CE%BF%CF%82-%CF%89%CF%82-%CF%83%CF%85%CE%B3%CE%B3%CF%81%CE%B1%CF%86%CE%B5%CE%B1%CF%82-%CE%BA%CE%B1%CE%B9-%CE%B8%CE%B5%CF%89%CF%81%CE%B7%CF%84%CE%B9%CE%BA%CE%BF%CF%82-10323";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.biblionetgr_9789602489147;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals(
+                "Ο Κωνσταντίνος Χατζόπουλος ως συγγραφέας και θεωρητικός - Πρακτικά επιστημονικό συμποσίου: Αγρίνιο, 14-17 Μαΐου 1993, Δημοτικό θέατρο",
+                book.getString(DBKey.TITLE, null));
+        assertEquals("9789602489147", book.getString(DBKey.ISBN, null));
+
+        assertEquals("1998-06", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("1998-06", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
+        assertEquals("Μαλακό εξώφυλλο", book.getString(DBKey.FORMAT, null));
+        assertEquals("603", book.getString(DBKey.PAGES, null));
+        assertEquals("ell", book.getString(DBKey.LANGUAGE, null));
+
+        final String description = book.getDescription();
+        assertEquals(
+                "Εισηγητές: Καρβέλης, Τάκης - Ιλίνσκαγια, Σόνια - Καράογλου, Χ. Λ. - Παπακωστούλα- Γιανναρά, Γ. Α. - Μηλιώτης Κωνσταντίνος Ε. κ.ά.",
+                description);
+
+        final Money listPrice = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
+        assertNotNull(listPrice);
+        assertEquals(BigDecimal.valueOf(31.8d), listPrice.getValue());
+        assertEquals(Money.EURO, listPrice.getCurrency());
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(2, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Συγγραφείς, Έλληνες"));
+        assertTrue(tags.contains("Νεοελληνική λογοτεχνία - Ερμηνεία και κριτική"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Εκδόσεις Δωδώνη", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(6, authors.size());
+
+        Optional<String> oIv;
+        Author author;
+        author = authors.get(0);
+        assertEquals("Καψωμένος", author.getFamilyName());
+        assertEquals("Ερατοσθένης", author.getGivenNames());
+        assertEquals(Author.TYPE_EDITOR, author.getType());
+
+        author = authors.get(1);
+        assertEquals("Τζούλης", author.getFamilyName());
+        assertEquals("Χρήστος", author.getGivenNames());
+        assertEquals(Author.TYPE_EDITOR, author.getType());
+
+        author = authors.get(2);
+        assertEquals("Δανιήλ", author.getFamilyName());
+        assertEquals("Χρήστος", author.getGivenNames());
+        assertEquals(Author.TYPE_EDITOR, author.getType());
+
+        author = authors.get(3);
+        assertEquals("Αγρινίου", author.getFamilyName());
+        assertEquals("Δήμος", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        author = authors.get(4);
+        //assertEquals("Χατζόπουλος", author.getFamilyName());
+        //assertEquals("Φιλολογικός Όμιλος Αγρινίου \"Κώστας Χατζόπουλος\"", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        author = authors.get(5);
+        assertEquals("Σχολή", author.getFamilyName());
+        assertEquals("Πανεπιστήμιο Ιωαννίνων. Φιλοσοφική", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.BiblionetGr.getPreferenceKey()
+                                          + "_9789602489147_0_.jpg"));
+
     }
 }
