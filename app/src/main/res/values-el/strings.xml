@@ -126,16 +126,18 @@ A question mark is written as the character semicolon: ';'
     <string name="book_color_full_color">Εγχρωμος</string>
     <string name="book_color_support_color">Δίχρωμος</string>
     <string name="book_color_black_and_white">γραπτώς</string>
-    <string name="book_format_audiobook">Ακουστικό βιβλίο</string>
-    <string name="book_format_comic">βιβλίο κόμικ</string>
-    <string name="book_format_other">Αλλα</string>
-    <string name="book_format_digest">Kleines</string>
+    <string name="book_format_audiobook">Ηχητικό βιβλίο</string>
+    <string name="book_format_comic">Κόμικ</string>
+    <string name="book_format_digest">Μικρό σχήμα</string>
     <string name="book_format_dimensions">Διαστάσεις</string>
-    <string name="book_format_ebook">ηλεκτρονικό βιβλίο</string>
-    <string name="book_format_hardcover">σκληρό βιβλίο</string>
-    <string name="book_format_paperback">βιβλίο τσέπης</string>
-    <string name="book_format_paperback_large">χαρτόδετο βιβλίο</string>
-    <string name="book_format_softcover">μαλακό κάλυμμα</string>
+    <string name="book_format_ebook">Ηλεκτρονικό βιβλίο</string>
+    <string name="book_format_hardcover">Σκληρό εξώφυλλο</string>
+    <string name="book_format_hardcover_oblong">Σκληρό εξώφυλλο - Οριζόντιο</string>
+    <string name="book_format_other">Άλλο</string>
+    <string name="book_format_paperback">Μαλακό εξώφυλλο</string>
+    <string name="book_format_paperback_large">Μεγάλο μαλακό εξώφυλλο</string>
+    <string name="book_format_softcover">Μαλακό εξώφυλλο</string>
+    <string name="book_format_softcover_oblong">Μαλακό εξώφυλλο - Οριζόντιο</string>
     <string name="bookshelf_all_books">Όλα τα βιβλία</string>
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
     <string name="btn_all_books">Όλα τα βιβλία</string>
@@ -216,8 +218,7 @@ A question mark is written as the character semicolon: ';'
     <string name="error_network_site_access_failed">Παρουσιάστηκε πρόβλημα δικτύου κατά την πρόσβαση στο %1$s. Ελέγξτε εάν ο ιστότοπος είναι ανεβασμένος και εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη.</string>
     <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων.</string>
     <string name="error_book_search_failed">Η αναζήτηση του βιβλίου απέτυχε.</string>
-    <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου.
-\nΕλέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας.</string>
+    <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου.\nΕλέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας.</string>
     <string name="error_search_x_failed_y">Η αναζήτηση στο %1$s απέτυχε: %2$s</string>
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_http_401_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
@@ -762,8 +763,6 @@ A question mark is written as the character semicolon: ';'
     <string name="confirm_toc_list_update_with_books_main_author">Αντικατάσταση του συγγραφέα σε όλες τις εγγραφές με τον κύριο συγγραφέα του βιβλίου «%1$s»;</string>
     <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη σειρά έχουν εξώφυλλα. Ψάξτε ξανά από την κορυφή;</string>
     <string name="info_all_books_have_covers">Όλα τα βιβλία σε αυτό το ράφι έχουν εξώφυλλα</string>
-    <string name="book_format_hardcover_oblong">σκληρό βιβλίο - επίμηκες</string>
-    <string name="book_format_softcover_oblong">μαλακό κάλυμμα - επίμηκες</string>
     <string name="lbl_purge_blns">Διαγράψτε την κατάσταση του κόμβου</string>
     <string name="info_purge_blns_all">Διαγράψτε την κατάσταση του κόμβου από όλες τις λίστες</string>
     <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s «%2$s»;</string>
