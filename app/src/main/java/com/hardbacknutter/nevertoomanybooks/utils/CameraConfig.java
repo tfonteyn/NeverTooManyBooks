@@ -35,6 +35,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class CameraConfig {
@@ -49,8 +50,6 @@ public final class CameraConfig {
      * int, default {@link #NO_LENS_FACING_PREFERENCE}
      */
     public static final String PK_CAMERA_LENS_FACING = "camera.lens.facing";
-    private static final int NO_LENS_FACING_PREFERENCE = -1;
-
     /**
      * Show or hide the zoom-control slider.
      * <p>
@@ -68,8 +67,15 @@ public final class CameraConfig {
      * boolean, default {@code false}.
      */
     public static final String PK_CAMERA_ZOOM_CONTROL_SHOW = "camera.zoom.control.show";
-    /** Stores the current value. */
+    /**
+     * Stores the current value of the zoom-control slider.
+     * float
+     */
     public static final String PK_CAMERA_ZOOM_CONTROL_VALUE = "camera.zoom.control.value";
+
+    /** Default for {@link #PK_CAMERA_LENS_FACING}. */
+    private static final int NO_LENS_FACING_PREFERENCE = -1;
+    /** Default for {@link #PK_CAMERA_ZOOM_CONTROL_VALUE}. */
     private static final float DEFAULT_ZOOM_VALUE = 0.0f;
 
     /** boolean, default {@code true}. */
@@ -107,7 +113,7 @@ public final class CameraConfig {
         final SharedPreferences p = ServiceLocator.getInstance().getSharedPreferences();
 
         torchEnabled = p.getBoolean(PK_CAMERA_TORCH_STATUS, false);
-        zoomValue = p.getFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, DEFAULT_ZOOM_VALUE);
+        zoomValue = Prefs.getFloat(p, PK_CAMERA_ZOOM_CONTROL_VALUE, DEFAULT_ZOOM_VALUE);
     }
 
     /**

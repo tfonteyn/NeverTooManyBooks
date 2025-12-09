@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -82,6 +83,41 @@ public final class Prefs {
 
     private Prefs() {
     }
+
+    /**
+     * Retrieve a float value from the preferences.
+     * <p>
+     * Github #211 some android-variations seem to 'optimize' floating point numbers
+     * when storing them in SharedPreferences,  with the results that a {@code 0.0} value
+     * will be written as {@code 0}, and subsequently fails to read as the OS thinks
+     * it's an integer.
+     *
+     * <pre>
+     *     java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.Float
+     *     at android.app.SharedPreferencesImpl.getFloat(SharedPreferencesImpl.java:388)
+     * </pre>
+     *
+     * @param prefs    go read
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return Returns the preference value if it exists, or defValue.
+     */
+    public static float getFloat(@NonNull final SharedPreferences prefs,
+                                 @NonNull final String key,
+                                 final float defValue) {
+        try {
+            return prefs.getFloat(key, defValue);
+        } catch (@NonNull final ClassCastException e) {
+            // getAll() to bypass the type check.
+            final Object value = prefs.getAll().get(key);
+            if (value instanceof Number) {
+                return ((Number) value).floatValue();
+            }
+            return defValue;
+        }
+    }
+
 
     public static boolean normalizeSeriesTitle(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
