@@ -1,3 +1,13 @@
+### 7.10.2
+
+FIXES:
+
+- #211 Crash due to OxygenOS seemingly 'optimizes' floating point numbers in preferences.
+
+Most users can skip this update; only relevant for some Android derived OS's.
+
+---
+
 ### 7.10.1
 
 FIXES
