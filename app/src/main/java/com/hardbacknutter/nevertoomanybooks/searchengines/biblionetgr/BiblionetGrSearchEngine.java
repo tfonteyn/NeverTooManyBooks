@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
@@ -69,7 +68,6 @@ import org.jsoup.select.Elements;
  * but this engine was written before I found the API :/
  * Sticking with the current jsoup approach until it breaks, then moving to the API.
  */
-@SuppressWarnings("ALL")
 public class BiblionetGrSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
@@ -164,7 +162,7 @@ public class BiblionetGrSearchEngine
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException, CredentialsException, CoverStorageException {
         final String url = getHostUrl() + SEARCH + validIsbn;
         final Document document = loadDocument(context, url, null);
 
@@ -186,9 +184,9 @@ public class BiblionetGrSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws StorageException     on storage related failures
+     * @throws CredentialsException  on authentication/login failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CoverStorageException on storage related failures
      */
     @VisibleForTesting
     @WorkerThread
@@ -196,7 +194,7 @@ public class BiblionetGrSearchEngine
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException, CredentialsException, CoverStorageException {
         // Grab the first search result, and redirect to that page
         Element dataElement = document.selectFirst("div#result_books");
         if (dataElement != null) {
@@ -225,11 +223,11 @@ public class BiblionetGrSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
-     *                              This should only occur if the engine calls/relies on
-     *                              secondary sites.
+     * @throws CoverStorageException The covers directory is not available
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CredentialsException  on authentication/login failures
+     *                               This should only occur if the engine calls/relies on
+     *                               secondary sites.
      */
     @VisibleForTesting
     @WorkerThread
@@ -237,7 +235,7 @@ public class BiblionetGrSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException, CredentialsException, CoverStorageException {
 
         final Elements summaryDivs = document.select("div.summary");
 
@@ -324,7 +322,7 @@ public class BiblionetGrSearchEngine
     }
 
     /**
-     * Συγγραφέας == Author
+     * Parse an author. The first text/label (e.g. Συγγραφέας) is the author type.
      * <pre>
      *    {@code
      *      <li class="text-4 mb-3">Συγγραφέας:
@@ -335,16 +333,9 @@ public class BiblionetGrSearchEngine
      *      </li>
      *    }
      * </pre>
-     * Εικονογράφηση == Illustration
-     * <pre>
-     *     {@code
-     *        <li class="text-4 mb-3">Εικονογράφηση:
-     *          <strong>
-     *          <a role="link" href="/albert-uderzo-c801">Albert Uderzo</a>
-     *          </strong>
-     *       </li>
-     *     }
-     * </pre>
+     *
+     * @param lis  to parse
+     * @param book to update
      */
     private void processAuthors(@NonNull final Elements lis,
                                 @NonNull final Book book) {
@@ -359,6 +350,7 @@ public class BiblionetGrSearchEngine
                 case "Μετάφραση":
                 case "Translation": {
                     processAuthor(Author.TYPE_TRANSLATOR, li, book);
+                    break;
                 }
                 case "Εικονογράφηση":
                 case "Illustrator":
@@ -394,27 +386,23 @@ public class BiblionetGrSearchEngine
                     processAuthor(Author.TYPE_INTRODUCTION, li, book);
                     break;
                 }
-                case "Επίμετρο":
-                    /* no English label; Addendum? Appendix? */
-                {
+                case "Επίμετρο": {
+                    /* no English label. */
                     processAuthor(Author.TYPE_AFTERWORD, li, book);
                     break;
                 }
-                case "Επιμέλεια Κειμένων":
-                    /* no English label; Text Editing? */
-                {
+                case "Επιμέλεια Κειμένων": {
+                    /* no English label. */
                     processAuthor(Author.TYPE_EDITOR, li, book);
                     break;
                 }
-                case "Μεταγραφή":
+                case "Μεταγραφή": {
                     /* no English label; Transcription? */
-                {
                     processAuthor(Author.TYPE_UNKNOWN, li, book);
                     break;
                 }
-                case "Απόδοση":
+                case "Απόδοση": {
                     /* no English label; Performance? */
-                {
                     processAuthor(Author.TYPE_UNKNOWN, li, book);
                     break;
                 }
@@ -443,11 +431,7 @@ public class BiblionetGrSearchEngine
                                @NonNull final Element li,
                                @NonNull final Book book) {
         // <a role="link" href="/rené-goscinny-c787">René Goscinny</a>
-        li.select("a").forEach(a -> {
-            final Author author = Author.from(a.text());
-            // TODO: author identifier?
-            addAuthor(author, type, book);
-        });
+        li.select("a").forEach(a -> addAuthor(Author.from(a.text()), type, book));
     }
 
     private void processDetails(@NonNull final Context context,
@@ -638,6 +622,7 @@ public class BiblionetGrSearchEngine
                 case "Notes": {
                     // Always set here, we'll append the full description as needed.
                     book.setDescription(text);
+                    break;
                 }
 
                 //  Below are the second ul list labels
@@ -676,7 +661,7 @@ public class BiblionetGrSearchEngine
                 final Matcher matcher = SUBJECT_BADGE_PATTERN.matcher(tagText);
                 if (matcher.find()) {
                     final String subject = matcher.group(1);
-                    if (!subject.isBlank()) {
+                    if (subject != null && !subject.isBlank()) {
                         tagNames.add(subject);
                     }
                 }
@@ -696,7 +681,7 @@ public class BiblionetGrSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     @VisibleForTesting

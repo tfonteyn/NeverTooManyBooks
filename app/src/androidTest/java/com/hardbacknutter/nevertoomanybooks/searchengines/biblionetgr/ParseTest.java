@@ -236,8 +236,8 @@ public class ParseTest
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
         author = authors.get(4);
-        //assertEquals("Χατζόπουλος", author.getFamilyName());
-        //assertEquals("Φιλολογικός Όμιλος Αγρινίου \"Κώστας Χατζόπουλος\"", author.getGivenNames());
+        assertEquals("Φιλολογικός Όμιλος Αγρινίου \"Κώστας Χατζόπουλος\"", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
         author = authors.get(5);
