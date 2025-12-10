@@ -407,8 +407,8 @@ public class BiblionetGrSearchEngine
                         //  through the parser again and get mangled up.
                         final Author author = new Author(a.text(), null);
                         addAuthor(author, AuthorRole.UNKNOWN, book);
-                        // note that NO specific org. author type was created,
-                        // The type is relly the role of the author for specific book.
+                        // note that NO specific organization author type was created,
+                        // The type is really the role of the author for specific book.
                         // Being an organization is an attribute of the author independent
                         // of a book.
                     });
@@ -510,7 +510,7 @@ public class BiblionetGrSearchEngine
                     // ouch... the Greek Locale uses the "," as the decimal separator,
                     // but the site uses "." instead.
                     // While we would normally parse here with the site Locale,
-                    // we parse with the UK one instead to use the "."
+                    // we parse with the UK one instead to force a "."
                     addPriceListed(context, Locale.UK, text, MoneyParser.EUR, book);
                     break;
                 }
@@ -528,7 +528,7 @@ public class BiblionetGrSearchEngine
                     if (ANCIENT_GREEK_TEXT.equals(text)) {
                         book.setTranslatedFromLanguage(ANCIENT_GREEK_ISO3);
                     } else {
-                        // a Greek book can also have the original lang set to Greek.
+                        // a Greek book can also have the original language set to Greek.
                         // Only store it if different
                         if (!text.equals(book.getLanguage())) {
                             book.setTranslatedFromLanguage(text);
