@@ -743,7 +743,7 @@
     <string name="lbl_backup">Cópia de segurança</string>
     <string name="lbl_family_name">Apelido</string>
     <string name="lbl_given_names">Nomes Próprios</string>
-    <string name="lbl_author_type">Tipo de autor</string>
+    <string name="lbl_author_role">Papel do autor</string>
     <string name="lbl_export_books_option_since_last_full_backup">Livros novos e atualizados</string>
     <string name="lbl_date_died">Morreu</string>
     <string name="title_backup_and_export">Cópia de Segurança e Exportação</string>

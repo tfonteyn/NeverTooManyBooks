@@ -531,7 +531,7 @@
     <string name="lbl_given_names">Utónevek</string>
     <string name="lbl_author_is_a_pen_name_of">Álneve a következő írónak:</string>
     <string name="lbl_author_pseudonym">Szerző álneve</string>
-    <string name="lbl_author_type">Szerzőtípus</string>
+    <string name="lbl_author_role">Szerzői szerep</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_series">Sorozat</string>
     <string name="lbl_series_multiple">Sorozatok</string>

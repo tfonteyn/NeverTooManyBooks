@@ -273,7 +273,7 @@
     <string name="option_archive_type_db">File di database (.db)</string>
     <string name="option_archive_type_json">Esportazione JSON (.json)</string>
     <string name="lbl_author">Autore</string>
-    <string name="lbl_author_type">Tipo di autore</string>
+    <string name="lbl_author_role">Ruolo dell’autore</string>
     <string name="lbl_author_type_artist">Illustrazioni</string>
     <string name="lbl_author_type_colorist">Colorista</string>
     <string name="lbl_author_type_contributor">Collaboratore</string>

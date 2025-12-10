@@ -1204,7 +1204,7 @@
     <!-- Author. -->
     <string name="lbl_given_names">Given Names</string>
     <!-- Author roles -->
-    <string name="lbl_author_type">Author type</string>
+    <string name="lbl_author_role">Author role</string>
     <!-- Author. Whether the user considers his collection of this Author to be complete. -->
     <string name="lbl_author_is_complete"
             translatable="false">@string/lbl_is_complete</string>

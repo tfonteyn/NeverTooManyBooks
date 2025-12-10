@@ -303,7 +303,7 @@
     <string name="lbl_author_is_a_pen_name_of">Detta är en pseudonym för:</string>
     <string name="lbl_author_pseudonym">Författarpseudonym</string>
     <string name="lbl_author_pseudonym_of_X">pse. %1$s</string>
-    <string name="lbl_author_type">Författartyp</string>
+    <string name="lbl_author_role">Författarroll</string>
     <string name="lbl_author_type_afterword">Efterord</string>
     <string name="lbl_author_type_artist">Illustratör</string>
     <string name="lbl_author_type_colorist">Färgläggare</string>

@@ -268,7 +268,7 @@
     <string name="option_archive_type_db">Veritabanı dosyası (.db)</string>
     <string name="option_archive_type_json">JSON dışa aktarma (.json)</string>
     <string name="lbl_author">Yazar</string>
-    <string name="lbl_author_type">Yazar tipi</string>
+    <string name="lbl_author_role">Yazar rolü</string>
     <string name="lbl_author_type_artist">Cizimler</string>
     <string name="lbl_author_type_colorist">Renk</string>
     <string name="lbl_author_type_contributor">Iştirakçi</string>

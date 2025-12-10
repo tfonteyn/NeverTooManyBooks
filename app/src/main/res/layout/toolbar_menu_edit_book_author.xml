@@ -32,7 +32,7 @@
         style="@style/Toolbar.Checkbox"
         android:layout_marginEnd="16dp"
         android:button="@drawable/selector_author_roles"
-        android:text="@string/lbl_author_type"
+        android:text="@string/lbl_author_role"
         tools:viewBindingIgnore="true"
         />
 

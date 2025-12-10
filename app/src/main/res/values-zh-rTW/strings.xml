@@ -288,7 +288,7 @@
     <string name="lbl_author_is_a_pen_name_of">此筆名屬於：</string>
     <string name="lbl_author_pseudonym">作者筆名</string>
     <string name="lbl_author_pseudonym_of_X">筆名 %1$s</string>
-    <string name="lbl_author_type">作者類型</string>
+    <string name="lbl_author_role">作者角色</string>
     <string name="lbl_author_type_artist">插圖</string>
     <string name="lbl_author_type_colorist">上色者</string>
     <string name="lbl_author_type_contributor">貢獻者</string>

@@ -512,7 +512,7 @@
     <string name="lbl_authors">Autorías</string>
     <string name="lbl_family_name">Apelidos</string>
     <string name="lbl_given_names">Nome</string>
-    <string name="lbl_author_type">Tipo de autoría</string>
+    <string name="lbl_author_role">Rol do autor</string>
     <string name="lbl_author_is_a_pen_name_of">Este é un pseudónimo de:</string>
     <string name="lbl_author_pseudonym">Pseudónimo da autoría</string>
     <string name="lbl_series">Serie</string>

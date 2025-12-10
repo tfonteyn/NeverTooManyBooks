@@ -83,7 +83,7 @@
         <SwitchPreference
             android:defaultValue="true"
             android:key="author_type"
-            android:title="@string/lbl_author_type" />
+            android:title="@string/lbl_author_role" />
 
         <!-- bit: 9 -->
         <SwitchPreference

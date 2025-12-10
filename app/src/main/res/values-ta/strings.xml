@@ -513,7 +513,7 @@
     <string name="lbl_authors">ஆசிரியர்கள்</string>
     <string name="lbl_family_name">குடும்ப பெயர்</string>
     <string name="lbl_given_names">கொடுக்கப்பட்ட பெயர்கள்</string>
-    <string name="lbl_author_type">ஆசிரியர் வகை</string>
+    <string name="lbl_author_role">ஆசிரியர் வகுப்பு / ஆசிரியர் பங்கு</string>
     <string name="lbl_author_is_a_pen_name_of">இது ஒரு பேனா பெயர்:</string>
     <string name="lbl_author_pseudonym">ஆசிரியர் புனைப்பெயர்</string>
     <string name="lbl_book">நூல்</string>

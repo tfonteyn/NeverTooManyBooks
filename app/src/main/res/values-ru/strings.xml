@@ -285,7 +285,7 @@
     <string name="option_archive_type_db">Файл базы данных (.db)</string>
     <string name="option_archive_type_json">Экспорт JSON (.json)</string>
     <string name="lbl_author">Автор</string>
-    <string name="lbl_author_type">Тип автора</string>
+    <string name="lbl_author_role">Роль автора</string>
     <string name="lbl_author_type_artist">иллюстрации</string>
     <string name="lbl_author_type_colorist">Колорист</string>
     <string name="lbl_author_type_contributor">Соавтор</string>

@@ -153,5 +153,6 @@
     <string name="lbl_table_of_content_entry">Innihaldslistaruppføring</string>
     <string name="pt_search_tag_use_subject_number">Varðveit talræna forteknið í evnismerkjunum</string>
     <string name="site_description_greek">Grikskt</string>
+    <string name="lbl_author_role">Höfundsleiklutur</string>
 
 </resources>

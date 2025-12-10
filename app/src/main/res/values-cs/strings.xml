@@ -288,7 +288,7 @@
     <string name="option_archive_type_db">Soubor databáze (.db)</string>
     <string name="option_archive_type_json">Export JSON (.json)</string>
     <string name="lbl_author">Autor</string>
-    <string name="lbl_author_type">Typ autora</string>
+    <string name="lbl_author_role">Role autora</string>
     <string name="lbl_author_type_artist">Ilustrace</string>
     <string name="lbl_author_type_colorist">Kolorista</string>
     <string name="lbl_author_type_contributor">Spolupracovník</string>

@@ -296,7 +296,7 @@
     <string name="lbl_author_is_a_pen_name_of">Đây là bút danh của:</string>
     <string name="lbl_author_pseudonym">Bút danh tác giả</string>
     <string name="lbl_author_pseudonym_of_X">tái bút. %1$s</string>
-    <string name="lbl_author_type">Loại tác giả</string>
+    <string name="lbl_author_role">Vai trò tác giả</string>
     <string name="lbl_author_type_artist">Minh họa</string>
     <string name="lbl_author_type_colorist">Chỉnh màu</string>
     <string name="lbl_author_type_contributor">Cộng tác</string>

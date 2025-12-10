@@ -335,7 +335,7 @@
     <string name="dialog_alert_title">Pozor</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_authors">Autori</string>
-    <string name="lbl_author_type">Typ autora</string>
+    <string name="lbl_author_role">Rola autora</string>
     <string name="lbl_series">Séria</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_book">Kniha</string>

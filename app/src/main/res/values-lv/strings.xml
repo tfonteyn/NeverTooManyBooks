@@ -236,5 +236,6 @@
     <string name="lbl_table_of_content_entry">Ieraksts satura rādītājā</string>
     <string name="pt_search_tag_use_subject_number">Saglabāt skaitlisko prefiksu tematu birkās</string>
     <string name="site_description_greek">Grieķu</string>
+    <string name="lbl_author_role">Autora loma</string>
 
 </resources>
