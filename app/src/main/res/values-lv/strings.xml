@@ -59,7 +59,7 @@
     <string name="book_color_full_color">Krāsains</string>
     <string name="book_color_black_and_white">Melnbalts</string>
     <string name="style_builtin_author_year">Autors, gads</string>
-    <string name="lbl_author_type_writer">Autors, Rakstnieks</string>
+    <string name="lbl_author_role_writer">Autors, Rakstnieks</string>
     <string name="option_search_books_by_author">Šī autora grāmatas</string>
     <string name="option_image_rotate_cw">Pulksteņrādītāja virzienā</string>
     <string name="btn_show_list">Rādīt sarakstu</string>
@@ -83,7 +83,7 @@
     <string name="X_action_update">Atjaunināt</string>
     <string name="lbl_book">Grāmata</string>
     <string name="option_image_rotate_ccw">Pretēji pulksteņrādītāja virzienam</string>
-    <string name="lbl_author_type_translator">Tulkotājs</string>
+    <string name="lbl_author_role_translator">Tulkotājs</string>
     <string name="action_create">Izveidot</string>
     <string name="lbl_importing">Ievieto…</string>
     <string name="lbl_author">Autors</string>
@@ -210,8 +210,8 @@
     <string name="action_stop_searching">Pārtrauciet meklēšanu</string>
     <string name="action_save_for_later">Saglabāt vēlāk</string>
     <string name="confirm_leave_isbn_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
-    <string name="lbl_author_type_foreword">Priekšvārds</string>
-    <string name="lbl_author_type_afterword">Pēcvārds</string>
+    <string name="lbl_author_role_foreword">Priekšvārds</string>
+    <string name="lbl_author_role_afterword">Pēcvārds</string>
     <string name="lbl_image_2">Attēls 3</string>
     <string name="brackets">(%1$s)</string>
     <string name="quoted">“%1$s”</string>

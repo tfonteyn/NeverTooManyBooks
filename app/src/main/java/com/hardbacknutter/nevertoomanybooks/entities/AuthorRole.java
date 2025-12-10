@@ -107,25 +107,25 @@ public final class AuthorRole {
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
     static {
-        ROLES.put(WRITER, R.string.lbl_author_type_writer);
-        ROLES.put(CONTRIBUTOR, R.string.lbl_author_type_contributor);
-        ROLES.put(INTRODUCTION, R.string.lbl_author_type_intro);
-        ROLES.put(FOREWORD, R.string.lbl_author_type_foreword);
-        ROLES.put(AFTERWORD, R.string.lbl_author_type_afterword);
+        ROLES.put(WRITER, R.string.lbl_author_role_writer);
+        ROLES.put(CONTRIBUTOR, R.string.lbl_author_role_contributor);
+        ROLES.put(INTRODUCTION, R.string.lbl_author_role_intro);
+        ROLES.put(FOREWORD, R.string.lbl_author_role_foreword);
+        ROLES.put(AFTERWORD, R.string.lbl_author_role_afterword);
 
-        ROLES.put(TRANSLATOR, R.string.lbl_author_type_translator);
-        ROLES.put(EDITOR, R.string.lbl_author_type_editor);
-        ROLES.put(NARRATOR, R.string.lbl_author_type_narrator);
+        ROLES.put(TRANSLATOR, R.string.lbl_author_role_translator);
+        ROLES.put(EDITOR, R.string.lbl_author_role_editor);
+        ROLES.put(NARRATOR, R.string.lbl_author_role_narrator);
 
-        ROLES.put(ARTIST, R.string.lbl_author_type_artist);
-        ROLES.put(INKING, R.string.lbl_author_type_inking);
-        ROLES.put(COLORIST, R.string.lbl_author_type_colorist);
-        ROLES.put(LETTERING, R.string.lbl_author_type_lettering);
-        ROLES.put(STORYBOARD, R.string.lbl_author_type_storyboard);
+        ROLES.put(ARTIST, R.string.lbl_author_role_artist);
+        ROLES.put(INKING, R.string.lbl_author_role_inking);
+        ROLES.put(COLORIST, R.string.lbl_author_role_colorist);
+        ROLES.put(LETTERING, R.string.lbl_author_role_lettering);
+        ROLES.put(STORYBOARD, R.string.lbl_author_role_storyboard);
 
-        ROLES.put(COVER_ARTIST, R.string.lbl_author_type_cover_artist);
-        ROLES.put(COVER_INKING, R.string.lbl_author_type_cover_inking);
-        ROLES.put(COVER_COLORIST, R.string.lbl_author_type_cover_colorist);
+        ROLES.put(COVER_ARTIST, R.string.lbl_author_role_cover_artist);
+        ROLES.put(COVER_INKING, R.string.lbl_author_role_cover_inking);
+        ROLES.put(COVER_COLORIST, R.string.lbl_author_role_cover_colorist);
     }
 
     private AuthorRole() {

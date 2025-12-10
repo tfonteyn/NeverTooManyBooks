@@ -171,97 +171,97 @@
         <CheckBox
             android:id="@+id/cbx_author_role_writer"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_writer"
+            android:text="@string/lbl_author_role_writer"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_intro"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_intro"
+            android:text="@string/lbl_author_role_intro"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_foreword"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_foreword"
+            android:text="@string/lbl_author_role_foreword"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_afterword"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_afterword"
+            android:text="@string/lbl_author_role_afterword"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_contributor"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_contributor"
+            android:text="@string/lbl_author_role_contributor"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_translator"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_translator"
+            android:text="@string/lbl_author_role_translator"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_editor"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_editor"
+            android:text="@string/lbl_author_role_editor"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_narrator"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_narrator"
+            android:text="@string/lbl_author_role_narrator"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_artist"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_artist"
+            android:text="@string/lbl_author_role_artist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_inking"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_inking"
+            android:text="@string/lbl_author_role_inking"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_colorist"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_colorist"
+            android:text="@string/lbl_author_role_colorist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_cover_artist"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_cover_artist"
+            android:text="@string/lbl_author_role_cover_artist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_cover_inking"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_cover_inking"
+            android:text="@string/lbl_author_role_cover_inking"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_cover_colorist"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_cover_colorist"
+            android:text="@string/lbl_author_role_cover_colorist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_storyboard"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_storyboard"
+            android:text="@string/lbl_author_role_storyboard"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_role_lettering"
             style="@style/AuthorRoleCheckBox"
-            android:text="@string/lbl_author_type_lettering"
+            android:text="@string/lbl_author_role_lettering"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout

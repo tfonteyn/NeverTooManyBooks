@@ -271,18 +271,18 @@
     <string name="lbl_author">Auteur</string>
     <string name="lbl_author_is_a_pen_name_of">Dit is een pseudoniem van:</string>
     <string name="lbl_author_role">Auteursrol</string>
-    <string name="lbl_author_type_artist">Illustraties</string>
-    <string name="lbl_author_type_colorist">Inkleurder</string>
-    <string name="lbl_author_type_contributor">Medewerker</string>
-    <string name="lbl_author_type_cover_artist">Omslag</string>
-    <string name="lbl_author_type_cover_colorist">Omslag inkleuring</string>
-    <string name="lbl_author_type_cover_inking">Omslag inkting</string>
-    <string name="lbl_author_type_editor">Redacteur</string>
-    <string name="lbl_author_type_inking">Inking</string>
-    <string name="lbl_author_type_intro">Introductie</string>
-    <string name="lbl_author_type_narrator">Verteller</string>
-    <string name="lbl_author_type_translator">Vertaler</string>
-    <string name="lbl_author_type_writer">Schrijver</string>
+    <string name="lbl_author_role_artist">Illustraties</string>
+    <string name="lbl_author_role_colorist">Inkleurder</string>
+    <string name="lbl_author_role_contributor">Medewerker</string>
+    <string name="lbl_author_role_cover_artist">Omslag</string>
+    <string name="lbl_author_role_cover_colorist">Omslag inkleuring</string>
+    <string name="lbl_author_role_cover_inking">Omslag inkting</string>
+    <string name="lbl_author_role_editor">Redacteur</string>
+    <string name="lbl_author_role_inking">Inking</string>
+    <string name="lbl_author_role_intro">Introductie</string>
+    <string name="lbl_author_role_narrator">Verteller</string>
+    <string name="lbl_author_role_translator">Vertaler</string>
+    <string name="lbl_author_role_writer">Schrijver</string>
     <string name="lbl_authors">Auteurs</string>
     <string name="lbl_available">Beschikbaar</string>
     <string name="lbl_backup">Back-up</string>
@@ -816,8 +816,8 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Boekenplanken toewijzen</string>
     <string name="site_description_comics">Strips</string>
-    <string name="lbl_author_type_storyboard">Storyboard</string>
-    <string name="lbl_author_type_lettering">Lettering</string>
+    <string name="lbl_author_role_storyboard">Storyboard</string>
+    <string name="lbl_author_role_lettering">Lettering</string>
     <string name="lbl_percentage">Percentage</string>
     <string name="lbl_percentage_read" tools:ignore="StringFormatInvalid">% gelezen</string>
     <string name="lbl_current_page">Huidige pagina</string>
@@ -873,8 +873,8 @@
     <string name="info_identifier_editor"><![CDATA[Lees de <a href="%1$s">documentatie</a> over Identifiers voor het bewerken.]]></string>
     <string name="lbl_date_born">Geboren</string>
     <string name="pt_fetch_author_info">Auteursinformatie ophalen</string>
-    <string name="lbl_author_type_foreword">Voorwoord</string>
-    <string name="lbl_author_type_afterword">Nawoord</string>
+    <string name="lbl_author_role_foreword">Voorwoord</string>
+    <string name="lbl_author_role_afterword">Nawoord</string>
     <string name="lbl_image_2">Afbeelding 3</string>
     <string name="lbl_fastscroller_draghandle">Schuifknopgrootte</string>
     <string name="lbl_permission_request">Rechtenverzoek</string>

@@ -118,7 +118,7 @@
     <string name="bookshelf_my_books">Meus Livros</string>
     <string name="bookshelf_all_books">Todos os livros</string>
     <string name="lbl_assign_bookshelves">Atribuir estantes</string>
-    <string name="lbl_author_type_cover_inking">Tinta de capa</string>
+    <string name="lbl_author_role_cover_inking">Tinta de capa</string>
     <string name="option_moving_covers_from_x_to_y">Mova capas de “%1$s” para “%2$s”</string>
     <string name="option_goto_next_book_without_cover">Pular para o próximo livro sem capa</string>
     <string name="option_image_replace_from_gallery">Da Galeria…</string>
@@ -232,8 +232,8 @@
     <string name="confirm_merge_bookshelves">A estante que você está modificando já existe. Gostaria de mesclá-las?</string>
     <string name="info_bulk_set_bookshelves">Selecione as estantes que você deseja atribuir a todos os livros listados no nó selecionado.</string>
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
-    <string name="lbl_author_type_cover_artist">Arte da capa</string>
-    <string name="lbl_author_type_cover_colorist">Colorista de capa</string>
+    <string name="lbl_author_role_cover_artist">Arte da capa</string>
+    <string name="lbl_author_role_cover_colorist">Colorista de capa</string>
     <string name="option_image_replace">Substituir…</string>
     <string name="option_cover_replace_from_alt_editions">De outras edições…</string>
     <string name="lbl_cover_back">Contracapa</string>

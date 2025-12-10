@@ -763,39 +763,39 @@
     <string name="lbl_condition_dust_cover_none">None</string>
     <!-- endregion -->
     <!-- region ========== Author roles. -->
-    <string name="lbl_author_type_writer">Writer</string>
-    <string name="lbl_author_type_translator">Translator</string>
+    <string name="lbl_author_role_writer">Writer</string>
+    <string name="lbl_author_role_translator">Translator</string>
     <!-- Examples: The person who selected short stories from different Authors for an anthology;
          or The person who coordinates a non-fiction book to which multiple writers contributed. -->
-    <string name="lbl_author_type_editor">Editor</string>
+    <string name="lbl_author_role_editor">Editor</string>
     <!-- Co-author; someone who contributed to the content, but is not considered (one of) the main authors(s). -->
-    <string name="lbl_author_type_contributor">Contributor</string>
-    <string name="lbl_author_type_intro">Introduction</string>
-    <string name="lbl_author_type_foreword">Foreword</string>
-    <string name="lbl_author_type_afterword">Afterword</string>
+    <string name="lbl_author_role_contributor">Contributor</string>
+    <string name="lbl_author_role_intro">Introduction</string>
+    <string name="lbl_author_role_foreword">Foreword</string>
+    <string name="lbl_author_role_afterword">Afterword</string>
     <!-- audiobooks -->
-    <string name="lbl_author_type_narrator">Narrator</string>
+    <string name="lbl_author_role_narrator">Narrator</string>
     <!-- Interior art / illustrations / photos / comics -->
-    <string name="lbl_author_type_artist">Illustrations</string>
+    <string name="lbl_author_role_artist">Illustrations</string>
     <!-- Comics: the artist who did the (typical) black ink drawing.
          Can be different from the "lbl_author_type_artist" who may only do the pencil sketches. -->
-    <string name="lbl_author_type_inking">Inking</string>
+    <string name="lbl_author_role_inking">Inking</string>
     <!-- Comics: the artist who coloured in the original ink drawing.-->
-    <string name="lbl_author_type_colorist">Colorist</string>
+    <string name="lbl_author_role_colorist">Colorist</string>
     <!-- Books based on movies. Typically the steps are:
          "story writer" -> "Screenplay" and/or "Storyboard" -> "book adaptation" -->
-    <string name="lbl_author_type_storyboard">Storyboard</string>
+    <string name="lbl_author_role_storyboard">Storyboard</string>
     <!-- Comics: the person who puts the text into/on the text-balloons. -->
-    <string name="lbl_author_type_lettering">Lettering</string>
+    <string name="lbl_author_role_lettering">Lettering</string>
     <!-- Cover art / Cover illustration / Cover photo, composition, ...-->
-    <string name="lbl_author_type_cover_artist">Cover art</string>
+    <string name="lbl_author_role_cover_artist">Cover art</string>
     <!-- Comics: the artist who did the (typical) black ink drawing.
         (if different from the interior of the comic) -->
-    <string name="lbl_author_type_cover_inking">Cover inking</string>
+    <string name="lbl_author_role_cover_inking">Cover inking</string>
     <!-- Comics: the artist who coloured in the original cover ink drawing.
         (if different from the interior of the comic)
         Can be different from the "lbl_author_type_cover_artist" who may only do the pencil sketches. -->
-    <string name="lbl_author_type_cover_colorist">Cover colorist</string>
+    <string name="lbl_author_role_cover_colorist">Cover colorist</string>
 
     <!-- endregion -->
     <!-- region ========== Options - radio, checkbox, preferences or menus. -->

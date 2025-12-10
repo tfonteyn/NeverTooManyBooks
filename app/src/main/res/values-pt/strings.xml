@@ -312,12 +312,12 @@
     <string name="lbl_condition_very_good">Muito bom</string>
     <string name="lbl_condition_fair">Aceitável</string>
     <string name="lbl_condition_reading_copy">Cópia de leitura</string>
-    <string name="lbl_author_type_translator">Tradutor</string>
-    <string name="lbl_author_type_inking">Pintura</string>
-    <string name="lbl_author_type_colorist">Pintor</string>
-    <string name="lbl_author_type_cover_artist">Arte da capa</string>
-    <string name="lbl_author_type_cover_inking">Pintura da capa</string>
-    <string name="lbl_author_type_cover_colorist">Pintor da capa</string>
+    <string name="lbl_author_role_translator">Tradutor</string>
+    <string name="lbl_author_role_inking">Pintura</string>
+    <string name="lbl_author_role_colorist">Pintor</string>
+    <string name="lbl_author_role_cover_artist">Arte da capa</string>
+    <string name="lbl_author_role_cover_inking">Pintura da capa</string>
+    <string name="lbl_author_role_cover_colorist">Pintor da capa</string>
     <string name="option_moving_covers_from_x_to_y">Mover todas as capas de “%1$s” para “%2$s”</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Saia e reinsira o cartão SD correto</string>
     <string name="option_level_reset">Nível de expansão preferido</string>
@@ -359,9 +359,9 @@
     <string name="bob_empty_rating">(Não avaliado)</string>
     <string name="size_large">Grande</string>
     <string name="book_format_softcover">Capa mole</string>
-    <string name="lbl_author_type_intro">Introdução</string>
-    <string name="lbl_author_type_afterword">Posfácio</string>
-    <string name="lbl_author_type_narrator">Narrador</string>
+    <string name="lbl_author_role_intro">Introdução</string>
+    <string name="lbl_author_role_afterword">Posfácio</string>
+    <string name="lbl_author_role_narrator">Narrador</string>
     <string name="option_sort_and_style_ellipsis">Ordenação e Estilos…</string>
     <string name="option_fab_add_book_by_internet_search">Pesquisa por título</string>
     <string name="book_format_dimensions">Dimensões</string>
@@ -370,7 +370,7 @@
     <string name="book_color_support_color">Duas Cores</string>
     <string name="style_builtin_author_series">Autor, Série</string>
     <string name="style_builtin_author_year">Autor, Ano</string>
-    <string name="lbl_author_type_editor">Editor</string>
+    <string name="lbl_author_role_editor">Editor</string>
     <string name="option_image_rotate">Rodar…</string>
     <string name="warning_no_extra_info_found">Não foram encontradas informações (adicionais)</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
@@ -383,15 +383,15 @@
     <string name="bob_empty_read_status">(Estado de leitura desconhecido)</string>
     <string name="lbl_condition_good">Bom</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Desaparecido/Justo</string>
-    <string name="lbl_author_type_writer">Escritor</string>
-    <string name="lbl_author_type_artist">Ilustrações</string>
+    <string name="lbl_author_role_writer">Escritor</string>
+    <string name="lbl_author_role_artist">Ilustrações</string>
     <string name="size_megabytes">%1$.2f MB</string>
     <string name="lbl_styles">Estilos</string>
     <string name="lbl_group_1st_char_book_title">1º caracter do título do Livro</string>
     <string name="style_type_user_defined">Definido pelo utilizador</string>
     <string name="bookshelf_all_books">Todos os Livros</string>
     <string name="lbl_edition_limited">Limitada</string>
-    <string name="lbl_author_type_contributor">Contribuidor</string>
+    <string name="lbl_author_role_contributor">Contribuidor</string>
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
     <string name="option_storage_select">Usar “%1$s”</string>
     <string name="warning_import_csv">AVISO: A importação de dados pode atualizar os registos de livros existentes com novas informações se a coluna UUID não estiver presente e o ID no ficheiro de importação for o mesmo que um ID existente. Normalmente, isto não tem qualquer problema se tiver alterado um campo num ficheiro exportado. Se tiver criado um novo registo de livro ou estiver a importar os livros de outra pessoa, certifique-se de que o campo UUID está presente ou que o campo ID está em branco.</string>
@@ -823,7 +823,7 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Atribuir estantes de livros</string>
     <string name="site_description_comics">Banda desenhada</string>
-    <string name="lbl_author_type_storyboard">Guião</string>
+    <string name="lbl_author_role_storyboard">Guião</string>
     <string name="lbl_percentage">Percentagem</string>
     <string name="lbl_current_page">Página atual</string>
     <string name="btn_completed">Concluído</string>
@@ -835,7 +835,7 @@
     <string name="lbl_total_pages">Total de páginas</string>
     <string name="lbl_percentage_read">% ler</string>
     <string name="lbl_track_progress">Progresso</string>
-    <string name="lbl_author_type_lettering">Letrista</string>
+    <string name="lbl_author_role_lettering">Letrista</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Deve ser maior ou igual à página atual</string>
     <string name="info_builtin_style_asterix">(* estilos predefinidos)</string>
     <string name="pe_option_bottom_sheet">Sempre na parte inferior do ecrã</string>
@@ -881,7 +881,7 @@
     <string name="info_identifier_editor"><![CDATA[Leia a <a href="%1$s">documentação</a> sobre Identificadores antes de editar.]]></string>
     <string name="lbl_date_born">Nascido</string>
     <string name="pt_fetch_author_info">Obter informações sobre o autor</string>
-    <string name="lbl_author_type_foreword">Prefácio</string>
+    <string name="lbl_author_role_foreword">Prefácio</string>
     <string name="lbl_image_2">Imagem 3</string>
     <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
     <string name="lbl_permission_request">Solicitação de permissão</string>
