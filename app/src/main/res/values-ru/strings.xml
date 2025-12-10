@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -96,18 +93,18 @@
     <string name="action_delete">Удалить</string>
     <string name="action_discard">Отменить</string>
     <string name="action_done">Готово</string>
-    <string name="action_duplicate">копия</string>
+    <string name="action_duplicate">Дублировать</string>
     <string name="action_add_all">Добавить всё</string>
     <string name="action_edit">Изменить</string>
     <string name="action_edit_ellipsis">Изменить…</string>
     <string name="action_export">Экспортировать</string>
-    <string name="X_action_go">Выбрать</string>
+    <string name="X_action_go">Перейти</string>
     <string name="action_help">Справка</string>
     <string name="action_import">Импортировать</string>
     <string name="action_merge">сливаться</string>
     <string name="action_not_now">Не сейчас</string>
     <string name="action_reset_to_default">Сбросить настройки</string>
-    <string name="action_retry">Повторить\n попытку</string>
+    <string name="action_retry">Повторить</string>
     <string name="action_remove">Удалить</string>
     <string name="action_remove_all">Удалить всё</string>
     <string name="action_save">Сохранить</string>
@@ -151,11 +148,11 @@
     <string name="action_stop_searching">Прекратить поиск</string>
     <string name="action_save_for_later">Сохранить на потом</string>
     <string name="action_disable_message">Отключить сообщение</string>
-    <string name="action_email">электронная почта</string>
+    <string name="action_email">Электронная почта</string>
     <string name="btn_just_this_shelf">Только эта книжная полка</string>
     <string name="action_learn_more">Подробнее</string>
     <string name="action_less_ellipsis">Меньше…</string>
-    <string name="action_more_ellipsis">Ещё…</string>
+    <string name="action_more_ellipsis">Больше…</string>
     <string name="action_show_options">Параметры</string>
     <string name="action_show_toc_long">Показать оглавление</string>
     <string name="action_stop_scanning">Остановить сканирование</string>
@@ -382,7 +379,7 @@
     <string name="lbl_import_books">Импортировать книги</string>
     <string name="option_import_books_option_all">Все книги</string>
     <string name="option_import_books_option_new_and_updated">Новые и обновленные книги</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Импортировать только те книги, которые \nбыли изменены после этой даты</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Импортировать только книги, измененные после даты</string>
     <string name="option_import_books_option_new_only">Только новые книги</string>
     <string name="lbl_import_options">Выберите, что будет импортировано.</string>
     <string name="lbl_importing">Импорт…</string>
@@ -816,8 +813,7 @@
     <string name="pe_list">Список</string>
     <string name="pe_grid">Сетка</string>
     <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN. -->
-    <string name="ps_show_titles_reordered_on">Применяется только к языкам, в которых используются артикли.
-\nАнглийский пример: «Lord of The Rings, The».</string>
+    <string name="ps_show_titles_reordered_on">Применяется только к языкам, в которых используются артикли. \nПример на английском языке: «Lord of The Rings, The».</string>
     <!-- NOT APPLICABLE FOR BOOKS IN RUSSIAN. -->
     <string name="ps_show_titles_reordered_off">Применяется только к языкам, в которых используются артикли.
 \nАнглийский пример: «The Lord of The Rings»</string>
@@ -828,7 +824,7 @@
     <string name="pe_bob_cover_click_details">Откроется страница с подробной информацией о книге.</string>
     <string name="X_style_type_defaults">Настройки стилей по умолчанию</string>
     <string name="acra_report_saved">Теперь вы можете зайти на страницу проекта на Github и зарегистрировать новую проблему. Пожалуйста, прикрепите к проблеме сохраненный ранее отчет. Если у вас еще нет учетной записи на Github, вам необходимо ее создать.</string>
-    <string name="action_report">Отправить отчет</string>
+    <string name="action_report">Сообщить</string>
     <string name="error_invalid_url">Неверный адрес (URL)</string>
     <string name="lbl_certificate_validity_period">Срок действия: %1$s - %2$s</string>
     <string name="lbl_reading">Читаю</string>
@@ -874,7 +870,7 @@
     <string name="pe_search_result_order_most_recent">Самая последняя найденная книга</string>
     <string name="pe_search_result_order_first_found">Первая найденная книга</string>
     <string name="info_bulk_set_bookshelves">Выберите книжные полки, которые нужно назначить всем книгам, перечисленным в выбранном узле.</string>
-    <string name="dialog_alert_title">Внимание!</string>
+    <string name="dialog_alert_title">Внимание</string>
     <string name="pt_capitalize_title">Капитализация названия</string>
     <string name="lbl_capitalize_none">Без изменений</string>
     <string name="lbl_capitalize_words">Начало слов</string>
@@ -908,5 +904,4 @@
     <string name="tip_bookshelf_management">Выделенная строка показывает твою текущую полку.\n\nПолка по умолчанию (отмеченная *) будет использоваться автоматически, если текущая по какой-либо причине недоступна.</string>
     <string name="pt_search_tag_use_subject_number">Сохранять числовой префикс в тематических метках</string>
     <string name="site_description_greek">Греческий</string>
-
 </resources>
