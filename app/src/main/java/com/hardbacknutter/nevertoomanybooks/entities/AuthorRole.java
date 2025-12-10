@@ -98,7 +98,7 @@ public final class AuthorRole {
             | TRANSLATOR | INTRODUCTION | EDITOR | CONTRIBUTOR
             | COVER_ARTIST | COVER_INKING | NARRATOR | COVER_COLORIST
             | ARTIST | INKING | STORYBOARD | COLORIST
-            | PSEUDONYM | LETTERING;
+            | LETTERING;
     /** Maps the role-bit to a string resource for the role-label. */
     static final Map<Integer, Integer> ROLES = new LinkedHashMap<>();
 
@@ -138,7 +138,7 @@ public final class AuthorRole {
                     TRANSLATOR, INTRODUCTION, EDITOR, CONTRIBUTOR,
                     COVER_ARTIST, COVER_INKING, NARRATOR, COVER_COLORIST,
                     ARTIST, INKING, STORYBOARD, COLORIST,
-                    PSEUDONYM, LETTERING
+                    LETTERING
             })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Role {
