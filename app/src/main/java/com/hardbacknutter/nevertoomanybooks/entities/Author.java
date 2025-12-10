@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -612,13 +613,18 @@ public class Author
         }
     }
 
+    /**
+     * Get the role(s) of the author related to the book this Author object is attached to.
+     *
+     * @return role(s)
+     */
     @AuthorRole.Role
     public int getRole() {
         return role;
     }
 
     /**
-     * Set the role(s).
+     * Set the role(s) of the author related to the book this Author object is attached to.
      *
      * @param role to set
      *
@@ -825,8 +831,8 @@ public class Author
 
 
     /**
-     * Get a CSV string with the role of this author; or the empty string if no specific roles
-     * are set.
+     * Get a CSV string with the role of this author; or the empty string
+     * if no specific roles are set.
      *
      * @param context Current context
      *
@@ -835,12 +841,14 @@ public class Author
     @NonNull
     private String getRoleLabels(@NonNull final Context context) {
         if (role != AuthorRole.UNKNOWN) {
-            final List<String> list = AuthorRole.ROLES.entrySet()
-                                                      .stream()
-                                                      .filter(entry -> (entry.getKey() & (long) role) != 0)
-                                                      .map(entry -> context.getString(
-                                                              entry.getValue()))
-                                                      .collect(Collectors.toList());
+            final List<String> list = AuthorRole
+                    .ROLES
+                    .entrySet()
+                    .stream()
+                    .filter(entry -> (entry.getKey() & (long) role) != 0)
+                    .map(Map.Entry::getValue)
+                    .map(context::getString)
+                    .collect(Collectors.toList());
 
             if (!list.isEmpty()) {
                 return context.getString(R.string.brackets, String.join(", ", list));
@@ -882,24 +890,44 @@ public class Author
         return givenNames;
     }
 
+    /**
+     * Get the birth-date of this Author.
+     *
+     * @return ISO formatted (partial) date
+     */
     @NonNull
     public Optional<String> getBirthDate() {
         return birthDate == null || birthDate.isEmpty() ? Optional.empty()
                                                         : Optional.of(birthDate);
     }
 
-    public void setBirthDate(@Nullable final String birthDate) {
-        this.birthDate = birthDate;
+    /**
+     * Set the birth-date of this Author.
+     *
+     * @param date ISO formatted (partial) date
+     */
+    public void setBirthDate(@Nullable final String date) {
+        this.birthDate = date;
     }
 
+    /**
+     * Get the death-date of this Author.
+     *
+     * @return ISO formatted (partial) date
+     */
     @NonNull
     public Optional<String> getDeathDate() {
         return deathDate == null || deathDate.isEmpty() ? Optional.empty()
                                                         : Optional.of(deathDate);
     }
 
-    public void setDeathDate(@Nullable final String deathDate) {
-        this.deathDate = deathDate;
+    /**
+     * Set the death-date of this Author.
+     *
+     * @param date ISO formatted (partial) date
+     */
+    public void setDeathDate(@Nullable final String date) {
+        this.deathDate = date;
     }
 
 
