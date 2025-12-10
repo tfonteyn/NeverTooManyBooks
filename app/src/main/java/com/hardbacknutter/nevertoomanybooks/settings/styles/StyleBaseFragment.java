@@ -153,7 +153,7 @@ public abstract class StyleBaseFragment
 
         // Author
         //noinspection DataFlowIssue
-        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
+        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE)
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
         // First call sets the current situation before the screen is visible.

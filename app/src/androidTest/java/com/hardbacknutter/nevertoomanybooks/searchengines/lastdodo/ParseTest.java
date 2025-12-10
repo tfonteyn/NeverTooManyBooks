@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -121,7 +122,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Gioux", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals("1960-05-05", author.getBirthDate().orElse(null));
         assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_1949_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());
@@ -135,7 +136,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Duval", author.getFamilyName());
         assertEquals("Fred", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1965-01-05", author.getBirthDate().orElse(null));
         assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_58_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());
@@ -149,7 +150,7 @@ public class ParseTest
         author = authors.get(2);
         assertEquals("Produkties", author.getFamilyName());
         assertEquals("Van der Heide", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());
@@ -158,7 +159,7 @@ public class ParseTest
         author = authors.get(3);
         assertEquals("Sayago", author.getFamilyName());
         assertEquals("Nuria", author.getGivenNames());
-        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals(AuthorRole.COLORIST, author.getRole());
         assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_30795_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
@@ -238,17 +239,17 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Astier", author.getFamilyName());
         assertEquals("Laurent", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
 
         author = authors.get(1);
         assertEquals("Van Tilburgh", author.getFamilyName());
         assertEquals("Dieter", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
         author = authors.get(2);
         assertEquals("Astier", author.getFamilyName());
         assertEquals("Stéphane", author.getGivenNames());
-        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals(AuthorRole.COLORIST, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -317,7 +318,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Rosinski (Rosek)", author.getFamilyName());
         assertEquals("Grzegorz", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());
@@ -326,7 +327,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Dufaux", author.getFamilyName());
         assertEquals("Jean", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1949-06-07", author.getBirthDate().orElse(null));
         assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_53_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());

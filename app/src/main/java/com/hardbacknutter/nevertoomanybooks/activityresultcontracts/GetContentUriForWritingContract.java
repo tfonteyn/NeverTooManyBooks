@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public class GetContentUriForWritingContract
 
             this.mimeType = mimeType;
 
-            // Stupid hack.... for reasons unknown Android does not the SQLite mimetype...
+            // Stupid hack.... for reasons unknown Android does not know the SQLite mimetype...
             if ("application/vnd.sqlite3".equals(mimeType)
                 && !fileName.contains(".")) {
                 this.fileName = fileName + ".db";

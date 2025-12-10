@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -278,7 +279,7 @@ public class BertrandPtSearchEngine
                 "div#productPageSectionDetails-collapseDetalhes-content-author > a");
         authorElements.stream()
                       .map(ae -> Author.from(ae.text()))
-                      .forEach(author -> addAuthor(author, Author.TYPE_UNKNOWN, book));
+                      .forEach(author -> addAuthor(author, AuthorRole.UNKNOWN, book));
 
         Element element;
         String s;

@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -122,7 +123,7 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Duval", author.getFamilyName());
         assertEquals("Fred", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_STRIP_INFO);
         assertTrue(oIv.isPresent());
         assertEquals("473", oIv.get());
@@ -130,7 +131,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Gioux", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_STRIP_INFO);
         assertTrue(oIv.isPresent());
         assertEquals("157", oIv.get());
@@ -138,7 +139,7 @@ public class ParseTest
         author = authors.get(2);
         assertEquals("Sayago", author.getFamilyName());
         assertEquals("Nuria", author.getGivenNames());
-        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals(AuthorRole.COLORIST, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_STRIP_INFO);
         assertTrue(oIv.isPresent());
         assertEquals("23596", oIv.get());
@@ -205,88 +206,88 @@ public class ParseTest
         author = authors.get(a++);
         assertEquals("Miel", author.getFamilyName());
         assertEquals("Rudi", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(a++);
         assertEquals("Batem", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Colman", author.getFamilyName());
         assertEquals("Stéphane", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Dany", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Derib", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Fournier", author.getFamilyName());
         assertEquals("Jean-Claude", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Frank", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Franz", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Geerts", author.getFamilyName());
         assertEquals("André", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Hardy", author.getFamilyName());
         assertEquals("Marc", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Hausman", author.getFamilyName());
         assertEquals("René", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Hermann", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Le Gall", author.getFamilyName());
         assertEquals("Frank", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Loisel", author.getFamilyName());
         assertEquals("Régis", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Maltaite", author.getFamilyName());
         assertEquals("Éric", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Mézières", author.getFamilyName());
         assertEquals("Jean-Claude", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Plessix", author.getFamilyName());
         assertEquals("Michel", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Roba", author.getFamilyName());
         assertEquals("Jean", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Walthéry", author.getFamilyName());
         assertEquals("François", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Wasterlain", author.getFamilyName());
         assertEquals("Marc", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         author = authors.get(a++);
         assertEquals("Will", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -346,12 +347,12 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Toth", author.getFamilyName());
         assertEquals("Jee Yun", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(1);
         assertEquals("Jung", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -420,12 +421,12 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Culliford", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(3);
         assertEquals("Maury", author.getFamilyName());
         assertEquals("Alain", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         // there are more...
     }
 
@@ -482,12 +483,12 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Greg", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(1);
         assertEquals("Hermann", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
     }
 
     @Test
@@ -539,12 +540,12 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Duchâteau", author.getFamilyName());
         assertEquals("André-Paul", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(1);
         assertEquals("Mittéï", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
     }
 
 
@@ -602,17 +603,17 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Béhé", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(1);
         assertEquals("Laprun", author.getFamilyName());
         assertEquals("Amandine", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(2);
         assertEquals("Surcouf", author.getFamilyName());
         assertEquals("Erwann", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST | Author.TYPE_COLORIST, author.getType());
+        assertEquals(AuthorRole.ARTIST | AuthorRole.COLORIST, author.getRole());
     }
 
     // Geheime Driehoek nr 3, "As en Goud"

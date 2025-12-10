@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -344,12 +345,12 @@ public class BiblionetGrSearchEngine
             switch (label) {
                 case "Συγγραφέας":
                 case "Author": {
-                    processAuthor(Author.TYPE_WRITER, li, book);
+                    processAuthor(AuthorRole.WRITER, li, book);
                     break;
                 }
                 case "Μετάφραση":
                 case "Translation": {
-                    processAuthor(Author.TYPE_TRANSLATOR, li, book);
+                    processAuthor(AuthorRole.TRANSLATOR, li, book);
                     break;
                 }
                 case "Εικονογράφηση":
@@ -362,7 +363,7 @@ public class BiblionetGrSearchEngine
                 case "Sculptor":
                 case "Καλλιτέχνης":
                 case "Artist": {
-                    processAuthor(Author.TYPE_ARTIST, li, book);
+                    processAuthor(AuthorRole.ARTIST, li, book);
                     break;
                 }
                 case "Επιμέλεια":
@@ -373,27 +374,27 @@ public class BiblionetGrSearchEngine
                 case "Anthologist":
                 case "Ευθύνη Υποσειράς":
                 case "Sub-series editor": {
-                    processAuthor(Author.TYPE_EDITOR, li, book);
+                    processAuthor(AuthorRole.EDITOR, li, book);
                     break;
                 }
                 case "Αφήγηση":
                 case "Narrated by": {
-                    processAuthor(Author.TYPE_NARRATOR, li, book);
+                    processAuthor(AuthorRole.NARRATOR, li, book);
                     break;
                 }
                 case "Εισήγηση":
                 case "Introduction": {
-                    processAuthor(Author.TYPE_INTRODUCTION, li, book);
+                    processAuthor(AuthorRole.INTRODUCTION, li, book);
                     break;
                 }
                 case "Επίμετρο": {
                     /* no English label. */
-                    processAuthor(Author.TYPE_AFTERWORD, li, book);
+                    processAuthor(AuthorRole.AFTERWORD, li, book);
                     break;
                 }
                 case "Επιμέλεια Κειμένων": {
                     /* no English label. */
-                    processAuthor(Author.TYPE_EDITOR, li, book);
+                    processAuthor(AuthorRole.EDITOR, li, book);
                     break;
                 }
                 case "Φορέας":
@@ -405,7 +406,7 @@ public class BiblionetGrSearchEngine
                         // URGENT: when the user manually adds/edit this name, it might go
                         //  through the parser again and get mangled up.
                         final Author author = new Author(a.text(), null);
-                        addAuthor(author, Author.TYPE_UNKNOWN, book);
+                        addAuthor(author, AuthorRole.UNKNOWN, book);
                         // note that NO specific org. author type was created,
                         // The type is relly the role of the author for specific book.
                         // Being an organization is an attribute of the author independent
@@ -415,12 +416,12 @@ public class BiblionetGrSearchEngine
                 }
                 case "Μεταγραφή": {
                     /* no English label; Transcription? */
-                    processAuthor(Author.TYPE_UNKNOWN, li, book);
+                    processAuthor(AuthorRole.UNKNOWN, li, book);
                     break;
                 }
                 case "Απόδοση": {
                     /* no English label; Performance? */
-                    processAuthor(Author.TYPE_UNKNOWN, li, book);
+                    processAuthor(AuthorRole.UNKNOWN, li, book);
                     break;
                 }
                 case "Ερμηνεία":
@@ -431,7 +432,7 @@ public class BiblionetGrSearchEngine
                 case "Lyrist":
                 case "Διασκευή":
                 case "Adaptation": {
-                    processAuthor(Author.TYPE_UNKNOWN, li, book);
+                    processAuthor(AuthorRole.UNKNOWN, li, book);
                     break;
                 }
                 default: {
@@ -442,7 +443,7 @@ public class BiblionetGrSearchEngine
         });
     }
 
-    private void processAuthor(@Author.Type final int type,
+    private void processAuthor(@AuthorRole.Role final int type,
                                @NonNull final Element li,
                                @NonNull final Book book) {
         // <a role="link" href="/rené-goscinny-c787">René Goscinny</a>

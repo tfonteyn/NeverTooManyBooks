@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -491,7 +492,7 @@ public class GoogleBooksSearchEngine
                               @NonNull final Book book) {
         for (int i = 0; i < a.length(); i++) {
             final String name = a.optString(i);
-            addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
+            addAuthor(Author.from(name), AuthorRole.UNKNOWN, book);
         }
     }
 

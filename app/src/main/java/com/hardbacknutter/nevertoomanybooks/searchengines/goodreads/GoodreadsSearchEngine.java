@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -119,7 +119,7 @@ public class GoodreadsSearchEngine
             "https://www.goodreads.com/author/show/(\\d+)\\..*");
 
     private final RatingParser ratingParser;
-    private final AuthorTypeMapper authorTypeMapper;
+    private final AuthorRoleMapper authorRoleMapper;
     private final AuthorResolverHelper authorResolverHelper;
     @Nullable
     private FutureHttp<String> httpGet;
@@ -140,7 +140,7 @@ public class GoodreadsSearchEngine
 
         authorResolverHelper = new AuthorResolverHelper();
         ratingParser = new RatingParser(5);
-        authorTypeMapper = new AuthorTypeMapper();
+        authorRoleMapper = new AuthorRoleMapper();
     }
 
     /**
@@ -588,7 +588,7 @@ public class GoodreadsSearchEngine
             return;
         }
 
-        final int role = authorTypeMapper.map(locale, contributor.optString("role"));
+        final int role = authorRoleMapper.map(locale, contributor.optString("role"));
         final JSONObject node = contributor.optJSONObject("node");
         if (node == null) {
             return;
@@ -610,7 +610,7 @@ public class GoodreadsSearchEngine
         }
 
         final Author author = mapAuthor(context, name);
-        author.setType(role);
+        author.setRole(role);
         // Get the legacyId as the SID_GOODREADS_BOOK.
         // It is this one we need to construct url's.
         final String legacyId = refObj.optString("legacyId");

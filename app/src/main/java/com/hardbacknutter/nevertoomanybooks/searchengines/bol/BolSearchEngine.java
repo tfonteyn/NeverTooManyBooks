@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -433,33 +434,33 @@ public class BolSearchEngine
                     case "Auteur principal":
                     case "Tweede Auteur":
                     case "Deuxième auteur": {
-                        parseAuthor(value, Author.TYPE_WRITER, book);
+                        parseAuthor(value, AuthorRole.WRITER, book);
                         break;
                     }
                     case "Hoofdillustrator":
                     case "Illustrateur en chef":
                     case "Tweede Illustrator":
                     case "Deuxième illustrateur": {
-                        parseAuthor(value, Author.TYPE_ARTIST, book);
+                        parseAuthor(value, AuthorRole.ARTIST, book);
                         break;
                     }
                     case "Hoofdredacteur":
                     case "Rédacteur en chef":
                     case "Tweede Redacteur":
                     case "Deuxième rédacteur": {
-                        parseAuthor(value, Author.TYPE_EDITOR, book);
+                        parseAuthor(value, AuthorRole.EDITOR, book);
                         break;
                     }
                     case "Eerste Vertaler":
                     case "Tweede Vertaler":
                     case "Premier traducteur":
                     case "Deuxième traducteur": {
-                        parseAuthor(value, Author.TYPE_TRANSLATOR, book);
+                        parseAuthor(value, AuthorRole.TRANSLATOR, book);
                         break;
                     }
                     case "Verteller":
                     case "Narrateur": {
-                        parseAuthor(value, Author.TYPE_NARRATOR, book);
+                        parseAuthor(value, AuthorRole.NARRATOR, book);
                         break;
                     }
                     case "Originele titel":
@@ -519,7 +520,7 @@ public class BolSearchEngine
     }
 
     private void parseAuthor(@NonNull final Element value,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int type,
                              @NonNull final Book book) {
         final Element a = value.selectFirst("a");
         if (a != null) {

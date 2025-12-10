@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -561,18 +562,18 @@ public abstract class SearchEngineBase
      * on the book.
      *
      * @param currentAuthor     to add
-     * @param currentAuthorType type
+     * @param currentAuthorRole role
      * @param book              Bundle to update
      */
     public void addAuthor(@NonNull final Author currentAuthor,
-                          @Author.Type final int currentAuthorType,
+                          @AuthorRole.Role final int currentAuthorRole,
                           @NonNull final Book book) {
         boolean add = true;
         // check if already present
         for (final Author author : book.getAuthors()) {
             if (author.equals(currentAuthor)) {
-                // merge types.
-                author.addType(currentAuthorType);
+                // merge roles.
+                author.addRole(currentAuthorRole);
                 // merge identifiers
                 // ENHANCE: we could now have multiple identifiers
                 //  for a single Author. As we don't support that...
@@ -589,7 +590,7 @@ public abstract class SearchEngineBase
         }
 
         if (add) {
-            currentAuthor.setType(currentAuthorType);
+            currentAuthor.setRole(currentAuthorRole);
             book.add(currentAuthor);
         }
     }

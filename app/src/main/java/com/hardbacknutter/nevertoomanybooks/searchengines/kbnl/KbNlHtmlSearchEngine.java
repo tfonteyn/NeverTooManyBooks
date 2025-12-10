@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -277,20 +278,20 @@ public class KbNlHtmlSearchEngine
                             break;
 
                         case "Auteur:":
-                            parseAuthor(td, Author.TYPE_WRITER, book);
+                            parseAuthor(td, AuthorRole.WRITER, book);
                             break;
                         case "Medewerker:":
-                            parseAuthor(td, Author.TYPE_CONTRIBUTOR, book);
+                            parseAuthor(td, AuthorRole.CONTRIBUTOR, book);
                             break;
                         case "Kunstenaar:":
-                            parseAuthor(td, Author.TYPE_ARTIST, book);
+                            parseAuthor(td, AuthorRole.ARTIST, book);
                             break;
 
                         case "Colorist:":
-                            parseAuthor(td, Author.TYPE_COLORIST, book);
+                            parseAuthor(td, AuthorRole.COLORIST, book);
                             break;
                         case "Vertaler:":
-                            parseAuthor(td, Author.TYPE_TRANSLATOR, book);
+                            parseAuthor(td, AuthorRole.TRANSLATOR, book);
                             break;
 
                         case "Reeks:":
@@ -391,7 +392,7 @@ public class KbNlHtmlSearchEngine
     }
 
     private void parseAuthor(@NonNull final Element td,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int type,
                              @NonNull final Book book) {
         final Elements aas = td.select("a");
         if (!aas.isEmpty()) {

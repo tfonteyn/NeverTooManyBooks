@@ -84,7 +84,7 @@ public class SearchByIsbnTest
         //       of His Dark Materials: cosmic rays from Lyra's universe,
         // list_price=12.46,
         // author_list=[Author{id=0, familyName=`Pullman`, givenNames=`Philip`, complete=false,
-        //                     type=0b1: Type{TYPE_WRITER}, realAuthor=null}],
+        //                     role=0b1: Role{TYPE_WRITER}, realAuthor=null}],
         // publisher_list=[Publisher{id=0, name=`Scholastic`}], list_price_currency=EUR}]}|.
 
         // this is good enough... the local junit tests do the full parse test

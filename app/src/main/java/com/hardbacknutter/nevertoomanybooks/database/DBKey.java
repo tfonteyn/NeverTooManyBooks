@@ -340,8 +340,8 @@ public final class DBKey {
          */
         public static final String FORMATTED_FULL_NAME_GIVEN_FIRST = "author_formatted_given_first";
 
-        /** Bitmask of the type(s) of this author for a book. */
-        public static final String BOOK_AUTHOR_TYPE = "author_type";
+        /** Bitmask of the role(s) of this author for a book. */
+        public static final String BOOK_AUTHOR_ROLE = "author_type";
         /** The position in the ordered list of Authors for a book. */
         public static final String BOOK_AUTHOR_POSITION = "author_position";
 
@@ -459,7 +459,7 @@ public final class DBKey {
         public static final String GROUPS = "groups";
         public static final String GROUPS_AUTHOR_SHOW_UNDER_EACH =
                 "groups_author_under_each";
-        public static final String GROUPS_AUTHOR_PRIMARY_TYPE =
+        public static final String GROUPS_AUTHOR_PRIMARY_ROLE =
                 "groups_author_prim_type";
         public static final String GROUPS_SERIES_SHOW_UNDER_EACH =
                 "groups_series_under_each";

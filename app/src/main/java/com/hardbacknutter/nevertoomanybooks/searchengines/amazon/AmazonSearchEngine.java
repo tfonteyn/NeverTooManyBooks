@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -69,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -311,7 +312,7 @@ public class AmazonSearchEngine
             Pattern.compile("(\\d+) (?:pages|Seiten|pagina's|páginas)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
+    private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
 
     /**
      * Constructor.
@@ -754,8 +755,8 @@ public class AmazonSearchEngine
                     //FIXME: search our database twice with f/g and g/f
                     // this means parsing the 'a.text()' twice.. and french names... COMPLICATED
                     final Author author = Author.from(a.text().strip());
-                    @Author.Type
-                    int type = Author.TYPE_UNKNOWN;
+                    @AuthorRole.Role
+                    int type = AuthorRole.UNKNOWN;
 
                     final Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
@@ -766,7 +767,7 @@ public class AmazonSearchEngine
                         }
 
                         if (data != null) {
-                            type = authorTypeMapper.map(siteLocale, data);
+                            type = authorRoleMapper.map(siteLocale, data);
                         }
                     }
 

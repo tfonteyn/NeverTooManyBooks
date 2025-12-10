@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -98,13 +99,13 @@ public abstract class BaseSetup
         authorArray[0] = Author.from(TestConstants.AUTHOR_FULL_NAME[0]);
 
         authorArray[1] = Author.from(TestConstants.AUTHOR_FULL_NAME[1])
-                               .setType(Author.TYPE_ARTIST);
+                               .setRole(AuthorRole.ARTIST);
 
         authorArray[2] = Author.from(TestConstants.AUTHOR_FULL_NAME[2])
-                               .setType(Author.TYPE_EDITOR);
+                               .setRole(AuthorRole.EDITOR);
 
         authorArray[3] = Author.from(TestConstants.AUTHOR_FULL_NAME[3])
-                               .setType(Author.TYPE_COVER_ARTIST | Author.TYPE_COVER_INKING);
+                               .setRole(AuthorRole.COVER_ARTIST | AuthorRole.COVER_INKING);
 
         authorArray[4] = Author.from(TestConstants.AUTHOR_FULL_NAME[4]);
     }

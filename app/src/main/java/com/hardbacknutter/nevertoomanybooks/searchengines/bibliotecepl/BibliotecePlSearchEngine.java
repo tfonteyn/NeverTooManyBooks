@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -503,56 +504,56 @@ public class BibliotecePlSearchEngine
                             case LABEL_AUTHOR:
                             case LABEL_AUTHORS: {
                                 parseAuthor(td, AUTHOR_IS_CREATOR,
-                                            Author.TYPE_WRITER, book);
+                                            AuthorRole.WRITER, book);
                                 break;
                             }
                             case LABEL_CONTRIBUTOR: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_CONTRIBUTOR,
+                                            AuthorRole.CONTRIBUTOR,
                                             book);
                                 break;
                             }
                             case LABEL_FOREWORD: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_FOREWORD, book);
+                                            AuthorRole.FOREWORD, book);
                                 break;
                             }
                             case LABEL_AFTERWORD: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_AFTERWORD, book);
+                                            AuthorRole.AFTERWORD, book);
                                 break;
                             }
                             case LABEL_INTRODUCTION: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_INTRODUCTION,
+                                            AuthorRole.INTRODUCTION,
                                             book);
                                 break;
                             }
                             case LABEL_ILLUSTRATOR: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_ARTIST, book);
+                                            AuthorRole.ARTIST, book);
                                 break;
                             }
                             case LABEL_EDITOR: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_EDITOR, book);
+                                            AuthorRole.EDITOR, book);
                                 break;
                             }
                             case LABEL_NARRATOR:
                             case LABEL_NARRATORS: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_NARRATOR, book);
+                                            AuthorRole.NARRATOR, book);
                                 break;
                             }
                             case LABEL_SCENARIST: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_WRITER, book);
+                                            AuthorRole.WRITER, book);
                                 break;
                             }
                             case LABEL_TRANSLATOR:
                             case LABEL_TRANSLATORS: {
                                 parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            Author.TYPE_TRANSLATOR, book);
+                                            AuthorRole.TRANSLATOR, book);
                                 break;
                             }
 
@@ -610,7 +611,7 @@ public class BibliotecePlSearchEngine
 
     private void parseAuthor(@NonNull final Element td,
                              @NonNull final String property,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int type,
                              @NonNull final Book book) {
         // There can be multiple authors listed under each
         td.select("div[itemprop=" + property + "]")
@@ -621,7 +622,7 @@ public class BibliotecePlSearchEngine
     }
 
     private void parseAuthorText(@NonNull final CharSequence text,
-                                 @Author.Type final int type,
+                                 @AuthorRole.Role final int type,
                                  @NonNull final Book book) {
         final Matcher matcher = AUTHOR_DATE_SUFFIX.matcher(text);
         if (matcher.find()) {
@@ -734,41 +735,41 @@ public class BibliotecePlSearchEngine
                                case LABEL_AUTHOR:
                                case LABEL_AUTHORS:
                                case LABEL_SCENARIST: {
-                                   parseAuthor2(td, Author.TYPE_WRITER, book);
+                                   parseAuthor2(td, AuthorRole.WRITER, book);
                                    break;
                                }
                                case LABEL_CONTRIBUTOR: {
-                                   parseAuthor2(td, Author.TYPE_CONTRIBUTOR, book);
+                                   parseAuthor2(td, AuthorRole.CONTRIBUTOR, book);
                                    break;
                                }
                                case LABEL_FOREWORD: {
-                                   parseAuthor2(td, Author.TYPE_FOREWORD, book);
+                                   parseAuthor2(td, AuthorRole.FOREWORD, book);
                                    break;
                                }
                                case LABEL_AFTERWORD: {
-                                   parseAuthor2(td, Author.TYPE_AFTERWORD, book);
+                                   parseAuthor2(td, AuthorRole.AFTERWORD, book);
                                    break;
                                }
                                case LABEL_INTRODUCTION: {
-                                   parseAuthor2(td, Author.TYPE_INTRODUCTION, book);
+                                   parseAuthor2(td, AuthorRole.INTRODUCTION, book);
                                    break;
                                }
                                case LABEL_ILLUSTRATOR: {
-                                   parseAuthor2(td, Author.TYPE_ARTIST, book);
+                                   parseAuthor2(td, AuthorRole.ARTIST, book);
                                    break;
                                }
                                case LABEL_EDITOR: {
-                                   parseAuthor2(td, Author.TYPE_EDITOR, book);
+                                   parseAuthor2(td, AuthorRole.EDITOR, book);
                                    break;
                                }
                                case LABEL_NARRATOR:
                                case LABEL_NARRATORS: {
-                                   parseAuthor2(td, Author.TYPE_NARRATOR, book);
+                                   parseAuthor2(td, AuthorRole.NARRATOR, book);
                                    break;
                                }
                                case LABEL_TRANSLATOR:
                                case LABEL_TRANSLATORS: {
-                                   parseAuthor2(td, Author.TYPE_TRANSLATOR, book);
+                                   parseAuthor2(td, AuthorRole.TRANSLATOR, book);
                                    break;
                                }
 
@@ -796,7 +797,7 @@ public class BibliotecePlSearchEngine
     }
 
     private void parseAuthor2(@NonNull final Element td,
-                              @Author.Type final int type,
+                              @AuthorRole.Role final int type,
                               @NonNull final Book book) {
         td.select(SPAN_DATA_IPUB_SEARCH_O)
           .stream()

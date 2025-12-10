@@ -72,7 +72,7 @@ public class UserStyleTest
 
         assertEquals(s1.getGroupList(), s2.getGroupList());
         assertEquals(s1.getExpansionLevel(), s2.getExpansionLevel());
-        assertEquals(s1.getPrimaryAuthorType(), s2.getPrimaryAuthorType());
+        assertEquals(s1.getPrimaryAuthorRole(), s2.getPrimaryAuthorRole());
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             assertEquals(s1.isShowBooksUnderEachGroup(item.getGroupId()),
                          s2.isShowBooksUnderEachGroup(item.getGroupId()));

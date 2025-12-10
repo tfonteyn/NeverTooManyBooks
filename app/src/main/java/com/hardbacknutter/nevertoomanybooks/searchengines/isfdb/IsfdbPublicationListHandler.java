@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -317,7 +318,7 @@ class IsfdbPublicationListHandler
                 case XML_AUTHOR: {
                     if (inAuthors) {
                         searchEngine.addAuthor(Author.from(builder.toString().strip()),
-                                               Author.TYPE_UNKNOWN,
+                                               AuthorRole.UNKNOWN,
                                                book);
                     }
                     break;
@@ -409,7 +410,7 @@ class IsfdbPublicationListHandler
                 case XML_ARTIST: {
                     if (inCoverArtists) {
                         searchEngine.addAuthor(Author.from(builder.toString().strip()),
-                                               Author.TYPE_COVER_ARTIST,
+                                               AuthorRole.COVER_ARTIST,
                                                book);
                     }
                     break;

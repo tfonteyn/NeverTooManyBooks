@@ -25,6 +25,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONException;
@@ -61,8 +62,8 @@ public class AuthorCoder
         if (author.isComplete()) {
             out.put(DBKey.AUTHOR.COMPLETE, true);
         }
-        if (author.getType() != Author.TYPE_UNKNOWN) {
-            out.put(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, author.getType());
+        if (author.getRole() != AuthorRole.UNKNOWN) {
+            out.put(DBKey.AUTHOR.BOOK_AUTHOR_ROLE, author.getRole());
         }
         if (author.getRealAuthor() != null) {
             out.put(DBKey.FK_AUTHOR_REAL_AUTHOR, encode(author.getRealAuthor()));
@@ -101,10 +102,10 @@ public class AuthorCoder
             author.setComplete(data.getBoolean("complete"));
         }
 
-        if (data.has(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
-            author.setType(data.getInt(DBKey.AUTHOR.BOOK_AUTHOR_TYPE));
+        if (data.has(DBKey.AUTHOR.BOOK_AUTHOR_ROLE)) {
+            author.setRole(data.getInt(DBKey.AUTHOR.BOOK_AUTHOR_ROLE));
         } else if (data.has("type")) {
-            author.setType(data.getInt("type"));
+            author.setRole(data.getInt("type"));
         }
 
         if (data.has(DBKey.FK_AUTHOR_REAL_AUTHOR)) {

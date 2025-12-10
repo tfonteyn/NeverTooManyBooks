@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -95,7 +96,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Feenstra", author.getFamilyName());
         assertEquals("Ruurd", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1904", author.getBirthDate().orElse(null));
         assertEquals("1974", author.getDeathDate().orElse(null));
         assertNull(author.getRealAuthor());
@@ -109,7 +110,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("van Straaten", author.getFamilyName());
         assertEquals("Gerard", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals("1924", author.getBirthDate().orElse(null));
         assertEquals("2011", author.getDeathDate().orElse(null));
         assertNull(author.getRealAuthor());
@@ -201,7 +202,7 @@ public class ParseTest
         Assert.assertEquals("Isaak Judovič", author.getGivenNames());
         assertEquals("1920", author.getBirthDate().orElse(null));
         assertEquals("1992", author.getDeathDate().orElse(null));
-        Assert.assertEquals(Author.TYPE_WRITER, author.getType());
+        Assert.assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
         Assert.assertEquals("068561504", oIv.get());
@@ -214,7 +215,7 @@ public class ParseTest
         Assert.assertEquals("Jack", author.getGivenNames());
         assertEquals("1920", author.getBirthDate().orElse(null));
         assertEquals("1997", author.getDeathDate().orElse(null));
-        Assert.assertEquals(Author.TYPE_CONTRIBUTOR, author.getType());
+        Assert.assertEquals(AuthorRole.CONTRIBUTOR, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
         Assert.assertEquals("072822333", oIv.get());
@@ -262,7 +263,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Camboni", author.getFamilyName());
         assertEquals("Silvio", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals("1967", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertNull(author.getRealAuthor());
@@ -276,7 +277,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Filippi", author.getFamilyName());
         assertEquals("Denis-Pierre", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1972", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertNull(author.getRealAuthor());
@@ -290,7 +291,7 @@ public class ParseTest
         author = authors.get(2);
         assertEquals("Yvan", author.getFamilyName());
         assertEquals("Gaspard", author.getGivenNames());
-        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals(AuthorRole.COLORIST, author.getRole());
         assertEquals("1988", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertNull(author.getRealAuthor());
@@ -304,7 +305,7 @@ public class ParseTest
         author = authors.get(3);
         assertEquals("Manfré", author.getFamilyName());
         assertEquals("Mariella", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertNull(author.getRealAuthor());

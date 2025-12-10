@@ -89,10 +89,10 @@ public class AuthorCoder
                     author.setComplete(details.optBoolean("complete"));
                 }
 
-                if (details.has(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
-                    author.setType(details.optInt(DBKey.AUTHOR.BOOK_AUTHOR_TYPE));
+                if (details.has(DBKey.AUTHOR.BOOK_AUTHOR_ROLE)) {
+                    author.setRole(details.optInt(DBKey.AUTHOR.BOOK_AUTHOR_ROLE));
                 } else if (details.has("type")) {
-                    author.setType(details.optInt("type"));
+                    author.setRole(details.optInt("type"));
                 }
             } catch (@NonNull final JSONException ignore) {
                 // ignore

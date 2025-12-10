@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -347,16 +348,16 @@ public class StripWebSearchEngine
                         break;
                     }
                     case "Tekenaars":
-                        parseAuthor(td, Author.TYPE_ARTIST, book);
+                        parseAuthor(td, AuthorRole.ARTIST, book);
                         break;
                     case "Scenarist":
-                        parseAuthor(td, Author.TYPE_WRITER, book);
+                        parseAuthor(td, AuthorRole.WRITER, book);
                         break;
                     case "Inkleuring":
-                        parseAuthor(td, Author.TYPE_COLORIST, book);
+                        parseAuthor(td, AuthorRole.COLORIST, book);
                         break;
                     case "Cover artiest":
-                        parseAuthor(td, Author.TYPE_COVER_ARTIST, book);
+                        parseAuthor(td, AuthorRole.COVER_ARTIST, book);
                         break;
                     case "Uitgeverij":
                         parsePublisher(td, book);
@@ -545,7 +546,7 @@ public class StripWebSearchEngine
      * @param book Bundle to update
      */
     private void parseAuthor(@NonNull final Element td,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int type,
                              @NonNull final Book book) {
 
         // Most books list the authors as "a" elements
@@ -562,7 +563,7 @@ public class StripWebSearchEngine
     }
 
     private void parseAuthor(@NonNull final Book book,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int type,
                              @NonNull final String name) {
         // The site actually uses "lastname firstname" or just "lastname".
         // This create additional issues with names like "Van Hamme" which is a "lastname"

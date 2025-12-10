@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -134,7 +135,7 @@ public class ParseTest
         assertEquals("John", author.getGivenNames());
         assertTrue(author.getBirthDate().isEmpty());
         assertTrue(author.getDeathDate().isEmpty());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
@@ -144,7 +145,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Ekholm", author.getFamilyName());
         assertEquals("C.", author.getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals(AuthorRole.COVER_ARTIST, author.getRole());
 
 
         final List<TocEntry> tocs = book.getToc();
@@ -160,7 +161,7 @@ public class ParseTest
         // same for all toc entries
         assertEquals("Miedema", tocs.get(0).getPrimaryAuthor().getFamilyName());
         assertEquals("John", tocs.get(0).getPrimaryAuthor().getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
+        assertEquals(AuthorRole.UNKNOWN, tocs.get(0).getPrimaryAuthor().getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         // "covers": [5546156]
@@ -293,7 +294,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Riordan", author.getFamilyName());
         assertEquals("Rick", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("1964-06-05", author.getBirthDate().orElse(null));
         assertTrue(author.getTmpPictureFileSpec().get().contains("_openlibrary_OL30765A_0"));
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
@@ -382,7 +383,7 @@ public class ParseTest
         assertEquals("Diehl", author.getFamilyName());
         assertEquals("Katja", author.getGivenNames());
         assertEquals("1973-09-17", author.getBirthDate().orElse(null));
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals(6, author.getIdentifiers().size());
         Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
@@ -408,12 +409,12 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Diehl", author.getFamilyName());
         assertEquals("Katja", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = authors.get(2);
         assertEquals("Reich", author.getFamilyName());
         assertEquals("Doris", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
 
         final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
@@ -471,7 +472,7 @@ public class ParseTest
         // same for all toc entries
         assertEquals("Diehl", tocs.get(0).getPrimaryAuthor().getFamilyName());
         assertEquals("Katja", tocs.get(0).getPrimaryAuthor().getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
+        assertEquals(AuthorRole.UNKNOWN, tocs.get(0).getPrimaryAuthor().getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         // "covers": [12585189]
@@ -542,7 +543,7 @@ public class ParseTest
         assertEquals("Clive", author.getGivenNames());
         assertEquals("1931-07-15", author.getBirthDate().orElse(null));
         assertEquals("2020-02-24", author.getDeathDate().orElse(null));
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals(5, author.getIdentifiers().size());
         Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
@@ -565,7 +566,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Cussler", author.getFamilyName());
         assertEquals("Clive", author.getGivenNames());
-        assertEquals(Author.TYPE_FOREWORD, author.getType());
+        assertEquals(AuthorRole.FOREWORD, author.getRole());
 
         final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
@@ -640,7 +641,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Robertson", author.getFamilyName());
         assertEquals("Eric", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         assertEquals(1, author.getIdentifiers().size());
         Optional<String> oIv;

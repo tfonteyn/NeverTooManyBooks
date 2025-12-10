@@ -69,10 +69,9 @@ public class SearchByIsbnTest
         // date_published=2014-08, isbn=9781849182089,
         // pages=48, title=Dick Digger's Gold Mine,
         // author_list=[Author{id=0, familyName=`Morris`, givenNames=``, complete=false,
-        //                     type=0b1001000000000001:
-        //                     Type{TYPE_WRITER,TYPE_ARTIST,TYPE_COLORIST},
+        //                     role=0b1001000000000001: Role{WRITER,ARTIST,COLORIST},
         // realAuthor=Author{id=0, familyName=`De Bevere`, givenNames=`Maurice`, complete=false,
-        // type=0b0: Type{}, realAuthor=null}}],
+        // role=0b0: Role{}, realAuthor=null}}],
         // publisher_list=[Publisher{id=0, name=`Cinebook`}]}]
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
                 .searchByIsbn(context, "9781849182089",

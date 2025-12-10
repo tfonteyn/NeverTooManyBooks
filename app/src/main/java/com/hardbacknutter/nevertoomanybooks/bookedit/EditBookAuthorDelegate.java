@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
@@ -80,10 +81,10 @@ class EditBookAuthorDelegate
         implements FlexDialogDelegate {
 
     /**
-     * We create a list of all the {@link Author.Type} checkboxes for easy handling.
-     * The key is the {@link Author.Type}.
+     * We create a list of all the {@link AuthorRole.Role} checkboxes for easy handling.
+     * The key is the {@link AuthorRole.Role}.
      */
-    private final SparseArray<CompoundButton> typeButtons = new SparseArray<>();
+    private final SparseArray<CompoundButton> roleButtons = new SparseArray<>();
 
     @NonNull
     private final DialogFragment owner;
@@ -153,8 +154,8 @@ class EditBookAuthorDelegate
     }
 
     @NonNull
-    private CompoundButton getTypesSwitch() {
-        return getToolbarMenuActionView().findViewById(R.id.toolbar_btn_types);
+    private CompoundButton getRolesSwitch() {
+        return getToolbarMenuActionView().findViewById(R.id.toolbar_btn_roles);
     }
 
     @Override
@@ -177,7 +178,7 @@ class EditBookAuthorDelegate
 
         setupNames(context, currentEdit);
         setupRealAuthorField(context);
-        setupAuthorTypeField(currentEdit.getType());
+        setupAuthorRoleField(currentEdit.getRole());
 
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
@@ -221,60 +222,60 @@ class EditBookAuthorDelegate
         }
     }
 
-    private void setupAuthorTypeField(@Author.Type final int currentType) {
-        final CompoundButton typesSwitch = getTypesSwitch();
+    private void setupAuthorRoleField(@AuthorRole.Role final int currentRole) {
+        final CompoundButton rolesSwitch = getRolesSwitch();
 
-        if (!authorVm.showAuthorType()) {
-            // types are globally disabled.
-            typesSwitch.setVisibility(View.GONE);
-            showTypeButtons(false);
+        if (!authorVm.showAuthorRole()) {
+            // roles are globally disabled.
+            rolesSwitch.setVisibility(View.GONE);
+            showRoleButtons(false);
             return;
         }
 
-        createTypeButtonMapping();
+        createRoleButtonMapping();
 
-        typesSwitch.setVisibility(View.VISIBLE);
-        final boolean typesAreShown = authorVm.isTypesAreShown();
-        typesSwitch.setChecked(typesAreShown);
-        showTypeButtons(typesAreShown);
-        // All typeButtons are unchecked at this point.
+        rolesSwitch.setVisibility(View.VISIBLE);
+        final boolean rolesAreShown = authorVm.isRolesAreShown();
+        rolesSwitch.setChecked(rolesAreShown);
+        showRoleButtons(rolesAreShown);
+        // All roleButtons are unchecked at this point.
         // Quick check if we should bother setting any?
-        if (currentType != Author.TYPE_UNKNOWN) {
-            for (int i = 0; i < typeButtons.size(); i++) {
-                typeButtons.valueAt(i).setChecked((currentType & typeButtons.keyAt(i)) != 0);
+        if (currentRole != AuthorRole.UNKNOWN) {
+            for (int i = 0; i < roleButtons.size(); i++) {
+                roleButtons.valueAt(i).setChecked((currentRole & roleButtons.keyAt(i)) != 0);
             }
         }
     }
 
-    private void createTypeButtonMapping() {
-        // NEWTHINGS: author type: add layout button to the Map
-        typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
-        typeButtons.put(Author.TYPE_CONTRIBUTOR, vb.cbxAuthorTypeContributor);
-        typeButtons.put(Author.TYPE_INTRODUCTION, vb.cbxAuthorTypeIntro);
-        typeButtons.put(Author.TYPE_FOREWORD, vb.cbxAuthorTypeForeword);
-        typeButtons.put(Author.TYPE_AFTERWORD, vb.cbxAuthorTypeAfterword);
-        typeButtons.put(Author.TYPE_TRANSLATOR, vb.cbxAuthorTypeTranslator);
-        typeButtons.put(Author.TYPE_EDITOR, vb.cbxAuthorTypeEditor);
-        typeButtons.put(Author.TYPE_NARRATOR, vb.cbxAuthorTypeNarrator);
+    private void createRoleButtonMapping() {
+        // NEWTHINGS: author role: add layout button to the Map
+        roleButtons.put(AuthorRole.WRITER, vb.cbxAuthorRoleWriter);
+        roleButtons.put(AuthorRole.CONTRIBUTOR, vb.cbxAuthorRoleContributor);
+        roleButtons.put(AuthorRole.INTRODUCTION, vb.cbxAuthorRoleIntro);
+        roleButtons.put(AuthorRole.FOREWORD, vb.cbxAuthorRoleForeword);
+        roleButtons.put(AuthorRole.AFTERWORD, vb.cbxAuthorRoleAfterword);
+        roleButtons.put(AuthorRole.TRANSLATOR, vb.cbxAuthorRoleTranslator);
+        roleButtons.put(AuthorRole.EDITOR, vb.cbxAuthorRoleEditor);
+        roleButtons.put(AuthorRole.NARRATOR, vb.cbxAuthorRoleNarrator);
 
-        typeButtons.put(Author.TYPE_ARTIST, vb.cbxAuthorTypeArtist);
-        typeButtons.put(Author.TYPE_INKING, vb.cbxAuthorTypeInking);
-        typeButtons.put(Author.TYPE_COLORIST, vb.cbxAuthorTypeColorist);
-        typeButtons.put(Author.TYPE_STORYBOARD, vb.cbxAuthorTypeStoryboard);
-        typeButtons.put(Author.TYPE_LETTERING, vb.cbxAuthorTypeLettering);
+        roleButtons.put(AuthorRole.ARTIST, vb.cbxAuthorRoleArtist);
+        roleButtons.put(AuthorRole.INKING, vb.cbxAuthorRoleInking);
+        roleButtons.put(AuthorRole.COLORIST, vb.cbxAuthorRoleColorist);
+        roleButtons.put(AuthorRole.STORYBOARD, vb.cbxAuthorRoleStoryboard);
+        roleButtons.put(AuthorRole.LETTERING, vb.cbxAuthorRoleLettering);
 
-        typeButtons.put(Author.TYPE_COVER_ARTIST, vb.cbxAuthorTypeCoverArtist);
-        typeButtons.put(Author.TYPE_COVER_INKING, vb.cbxAuthorTypeCoverInking);
-        typeButtons.put(Author.TYPE_COVER_COLORIST, vb.cbxAuthorTypeCoverColorist);
+        roleButtons.put(AuthorRole.COVER_ARTIST, vb.cbxAuthorRoleCoverArtist);
+        roleButtons.put(AuthorRole.COVER_INKING, vb.cbxAuthorRoleCoverInking);
+        roleButtons.put(AuthorRole.COVER_COLORIST, vb.cbxAuthorRoleCoverColorist);
     }
 
     /**
-     * Enable or disable the type related fields.
+     * Enable or disable the role related fields.
      *
      * @param enable Flag
      */
-    private void showTypeButtons(final boolean enable) {
-        vb.authorTypeGroup.setVisibility(enable ? View.VISIBLE : View.GONE);
+    private void showRoleButtons(final boolean enable) {
+        vb.authorRoleGroup.setVisibility(enable ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -286,10 +287,10 @@ class EditBookAuthorDelegate
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
-            if (id == R.id.toolbar_btn_types) {
+            if (id == R.id.toolbar_btn_roles) {
                 final boolean checked = ((Checkable) button).isChecked();
-                authorVm.setTypesAreShown(checked);
-                showTypeButtons(checked);
+                authorVm.setRolesAreShown(checked);
+                showRoleButtons(checked);
                 return true;
 
             } else if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
@@ -314,9 +315,9 @@ class EditBookAuthorDelegate
             return false;
         }
 
-        // invalidate the type if needed
-        if (!getTypesSwitch().isChecked()) {
-            currentEdit.setType(Author.TYPE_UNKNOWN);
+        // invalidate the role if needed
+        if (!getRolesSwitch().isChecked()) {
+            currentEdit.setRole(AuthorRole.UNKNOWN);
         }
 
         // Use the Locale from the book language.
@@ -371,17 +372,17 @@ class EditBookAuthorDelegate
             authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().strip());
         }
 
-        if (authorVm.showAuthorType()) {
+        if (authorVm.showAuthorRole()) {
             // Always set these when globally enabled
             // even when disabled for the current edit.
             // This is more user friendly if the user flips the switch more than once.
-            int type = Author.TYPE_UNKNOWN;
-            for (int i = 0; i < typeButtons.size(); i++) {
-                if (typeButtons.valueAt(i).isChecked()) {
-                    type |= typeButtons.keyAt(i);
+            int role = AuthorRole.UNKNOWN;
+            for (int i = 0; i < roleButtons.size(); i++) {
+                if (roleButtons.valueAt(i).isChecked()) {
+                    role |= roleButtons.keyAt(i);
                 }
             }
-            currentEdit.setType(type);
+            currentEdit.setRole(role);
         }
     }
 }

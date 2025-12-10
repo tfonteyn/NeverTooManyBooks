@@ -225,7 +225,7 @@
             android:key="title_original_lang"
             android:title="@string/lbl_original_title" />
 
-        <!-- bit: 33; Authors are always visible, but the user can hide the type/pseudonym. -->
+        <!-- bit: 33; Authors are always visible, but the user can hide the role/pseudonym. -->
         <SwitchPreference
             android:defaultValue="true"
             android:key="real_author"

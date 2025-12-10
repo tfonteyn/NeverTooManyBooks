@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 
 public interface WritableStyle
         extends Style {
@@ -156,12 +156,12 @@ public interface WritableStyle
     void setGroupIds(@NonNull List<Integer> groupIds);
 
     /**
-     * Set the primary-author-type for the {@link BooklistGroup#AUTHOR}
+     * Set the primary-author-role for the {@link BooklistGroup#AUTHOR}
      * (if this Style has the group).
      *
-     * @param type the Author type
+     * @param role of the Author
      */
-    void setPrimaryAuthorType(@Author.Type int type);
+    void setPrimaryAuthorRole(@AuthorRole.Role int role);
 
     /**
      * Set the show-book-under-each for the given wrapped group

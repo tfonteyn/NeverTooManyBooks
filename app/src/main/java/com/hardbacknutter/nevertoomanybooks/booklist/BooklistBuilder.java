@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -774,27 +774,27 @@ class BooklistBuilder {
             // then extend the join filtering on the primary Author
             sb.append(_AND_);
 
-            @Author.Type
-            final int primaryAuthorType = style.getPrimaryAuthorType();
-            if (primaryAuthorType == Author.TYPE_UNKNOWN) {
-                // The user has no specific type set, so just grab the first one (i.e. pos==1)
+            @AuthorRole.Role
+            final int primaryAuthorRole = style.getPrimaryAuthorRole();
+            if (primaryAuthorRole == AuthorRole.UNKNOWN) {
+                // The user has no specific role set, so just grab the first one (i.e. pos==1)
                 sb.append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1");
             } else {
                 // FIXME: https://github.com/tfonteyn/NeverTooManyBooks/issues/82
-                // grab the desired type, or if no such type, grab the first one anyway
+                // grab the desired role, or if no such role, grab the first one anyway
                 //   (
-                //      ((type & TYPE)<>0)
+                //      ((role & ROLE)<>0)
                 //   OR
-                //      (((type &~ TYPE)=0) AND pos=1)
+                //      (((role &~ ROLE)=0) AND pos=1)
                 //   )
                 sb.append("(((")
-                  // the type is an exact match
-                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
-                  .append(" & ").append(primaryAuthorType).append(")<>0)")
+                  // the role is an exact match
+                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_ROLE))
+                  .append(" & ").append(primaryAuthorRole).append(")<>0)")
                   .append(" OR (((")
                   // grab the first one
-                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
-                  .append(" &~ ").append(primaryAuthorType).append(")=0)")
+                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_ROLE))
+                  .append(" &~ ").append(primaryAuthorRole).append(")=0)")
                   .append(_AND_)
                   .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1))");
             }

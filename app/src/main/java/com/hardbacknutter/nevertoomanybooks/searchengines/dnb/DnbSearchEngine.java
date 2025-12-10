@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -69,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
@@ -146,7 +147,7 @@ public class DnbSearchEngine
     private static final Pattern AUTHOR_ID = Pattern.compile(
             "DE/resource\\.html\\?id=(\\d+)&.*");
 
-    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
+    private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
     @NonNull
@@ -573,23 +574,23 @@ public class DnbSearchEngine
                     }
                 }
 
-                // the type of Author MAY be listed in the next tag
+                // the role of Author MAY be listed in the next tag
                 if (it.hasNext()) {
                     // The tag AFTER the "a" can be a "<small>" or a "<br>"
                     e = it.next();
                     if (e.nameIs("small")) {
-                        String authorTypeText = e.text();
+                        String authorRoleText = e.text();
                         // Sanity check, this is always true ... flw
-                        if (authorTypeText.startsWith("(") && authorTypeText.endsWith(")")
-                            && authorTypeText.length() > 3) {
-                            authorTypeText = authorTypeText
-                                    .substring(1, authorTypeText.length() - 1);
+                        if (authorRoleText.startsWith("(") && authorRoleText.endsWith(")")
+                            && authorRoleText.length() > 3) {
+                            authorRoleText = authorRoleText
+                                    .substring(1, authorRoleText.length() - 1);
                         }
-                        @Author.Type
-                        final int authorType = authorTypeMapper
-                                .map(getLocale(context), authorTypeText);
+                        @AuthorRole.Role
+                        final int authorRole = authorRoleMapper
+                                .map(getLocale(context), authorRoleText);
 
-                        addAuthor(author, authorType, book);
+                        addAuthor(author, authorRole, book);
                         if (it.hasNext()) {
                             // The tag AFTER the "small" can be a "br" or an "a"
                             e = it.next();
@@ -597,7 +598,7 @@ public class DnbSearchEngine
                         }
                     }
                     if (e.nameIs("br")) {
-                        addAuthor(author, Author.TYPE_UNKNOWN, book);
+                        addAuthor(author, AuthorRole.UNKNOWN, book);
                         if (it.hasNext()) {
                             e = it.next();
                             continue;

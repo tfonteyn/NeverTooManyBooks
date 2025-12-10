@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -69,7 +70,7 @@ public class BookDaoHelperTest
         book.setPublicationDate("2009-06-02");
 
         final Author author0 = Author.from("Alastair Reynolds");
-        author0.setType(Author.TYPE_WRITER);
+        author0.setRole(AuthorRole.WRITER);
         final Author author1 = Author.from("Alastair Reynolds");
         book.setAuthors(List.of(author0, author1));
 

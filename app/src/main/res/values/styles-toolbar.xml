@@ -68,7 +68,7 @@
          This is only for very small/obsolete devices.
          It's not always tested...
          "android:background" as shown in the comment here makes all Fullscreen
-         screens look better, but will make the "author types" button
+         screens look better, but will make the "author roles" button
          show a little bit weird. Not going to pursue... leaving all
          screens as is.
             <item name="android:background">?attr/colorPrimary</item>

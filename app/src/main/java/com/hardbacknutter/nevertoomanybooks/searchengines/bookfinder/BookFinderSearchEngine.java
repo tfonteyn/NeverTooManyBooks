@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -184,7 +185,7 @@ public class BookFinderSearchEngine
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");
         if (authorElement != null) {
-            addAuthor(Author.from(authorElement.text()), Author.TYPE_UNKNOWN, book);
+            addAuthor(Author.from(authorElement.text()), AuthorRole.UNKNOWN, book);
         }
         final Element ratingElement = bookInfo.selectFirst("div.rating"
                                                            + " > span.book-rating-average");

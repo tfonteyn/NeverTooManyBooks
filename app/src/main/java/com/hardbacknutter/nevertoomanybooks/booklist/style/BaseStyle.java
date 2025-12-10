@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public abstract class BaseStyle
@@ -285,7 +285,7 @@ public abstract class BaseStyle
             setGroupIds(groupIds);
         }
         // group-options
-        setPrimaryAuthorType(rowData.getInt(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE));
+        setPrimaryAuthorRole(rowData.getInt(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_ROLE));
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             setShowBooksUnderEachGroup(item.getGroupId(), rowData.getBoolean(item.getDbKey()));
         }
@@ -335,7 +335,7 @@ public abstract class BaseStyle
     void copyGroupOptions(@NonNull final Style from) {
         // group-options
         setExpansionLevel(from.getExpansionLevel());
-        setPrimaryAuthorType(from.getPrimaryAuthorType());
+        setPrimaryAuthorRole(from.getPrimaryAuthorRole());
         for (final UnderEach item : UnderEach.values()) {
             final int groupId = item.getGroupId();
             setShowBooksUnderEachGroup(groupId, from.isShowBooksUnderEachGroup(groupId));
@@ -639,27 +639,27 @@ public abstract class BaseStyle
     }
 
     /**
-     * Wrapper that gets the primary-author-type from the {@link BooklistGroup#AUTHOR} group
-     * (if we have it); or else the default {@link Author#TYPE_UNKNOWN}.
+     * Wrapper that gets the primary-author-role from the {@link BooklistGroup#AUTHOR} group
+     * (if we have it); or else the default {@link AuthorRole#UNKNOWN}.
      *
-     * @return bitmask representing the type of author we consider the primary author
+     * @return bitmask representing the role of author we consider the primary author
      */
     @Override
-    public int getPrimaryAuthorType() {
+    public int getPrimaryAuthorRole() {
         return getGroupById(BooklistGroup.AUTHOR)
-                .map(group -> ((AuthorBooklistGroup) group).getPrimaryType())
-                .orElse(Author.TYPE_UNKNOWN);
+                .map(group -> ((AuthorBooklistGroup) group).getPrimaryRole())
+                .orElse(AuthorRole.UNKNOWN);
     }
 
     /**
-     * Set the primary Author type value for the {@link BooklistGroup#AUTHOR} group.
+     * Set the primary Author role value for the {@link BooklistGroup#AUTHOR} group.
      * If this style does not have the group, this method does nothing.
      *
-     * @param type to set
+     * @param role to set
      */
-    public void setPrimaryAuthorType(@Author.Type final int type) {
+    public void setPrimaryAuthorRole(@AuthorRole.Role final int role) {
         getGroupById(BooklistGroup.AUTHOR)
-                .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryType(type));
+                .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryRole(role));
     }
 
     /**

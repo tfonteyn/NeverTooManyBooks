@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 
 /**
  * Specialized BooklistGroup representing an {@link Author} group.
@@ -50,7 +51,7 @@ public class AuthorBooklistGroup
     private static final GroupPrefs GROUP_PREFS =
             new GroupPrefs("psk_style_author",
                            Style.UnderEach.Author.getPrefKey(),
-                           StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE);
+                           StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE);
 
     /** DomainExpression for displaying the data. Style dependent. */
     @NonNull
@@ -60,9 +61,9 @@ public class AuthorBooklistGroup
     private final DomainExpression sortingDomainExpression;
     /** Show a book under each item it is linked to. */
     private boolean underEach;
-    /** The primary author type the user prefers. */
-    @Author.Type
-    private int primaryAuthorType = Author.TYPE_UNKNOWN;
+    /** The primary author role the user prefers. */
+    @AuthorRole.Role
+    private int primaryAuthorRole = AuthorRole.UNKNOWN;
 
     /**
      * Constructor.
@@ -124,22 +125,22 @@ public class AuthorBooklistGroup
     }
 
     /**
-     * Get the type of author we consider the primary author.
+     * Get the role of author we consider the primary author.
      *
-     * @return the Author type
+     * @return the Author role
      */
-    @Author.Type
-    public int getPrimaryType() {
-        return primaryAuthorType;
+    @AuthorRole.Role
+    public int getPrimaryRole() {
+        return primaryAuthorRole;
     }
 
     /**
-     * Set the type of author we consider the primary author.
+     * Set the role of author we consider the primary author.
      *
-     * @param type the Author type
+     * @param role the Author role
      */
-    public void setPrimaryType(@Author.Type final int type) {
-        primaryAuthorType = type;
+    public void setPrimaryRole(@AuthorRole.Role final int role) {
+        primaryAuthorRole = role;
     }
 
     @Override
@@ -155,7 +156,7 @@ public class AuthorBooklistGroup
         }
         final AuthorBooklistGroup that = (AuthorBooklistGroup) o;
         return underEach == that.underEach
-               && primaryAuthorType == that.primaryAuthorType
+               && primaryAuthorRole == that.primaryAuthorRole
                && displayDomainExpression.equals(that.displayDomainExpression)
                && sortingDomainExpression.equals(that.sortingDomainExpression);
     }
@@ -163,7 +164,7 @@ public class AuthorBooklistGroup
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), underEach, displayDomainExpression,
-                            sortingDomainExpression, primaryAuthorType);
+                            sortingDomainExpression, primaryAuthorRole);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class AuthorBooklistGroup
                + super.toString()
                + ", displayDomainExpression=" + displayDomainExpression
                + ", sortingDomainExpression=" + sortingDomainExpression
-               + ", primaryAuthorType=" + primaryAuthorType
+               + ", primaryAuthorRole=" + primaryAuthorRole
                + ", underEach=" + underEach
                + '}';
     }

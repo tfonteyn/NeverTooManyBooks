@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -137,7 +138,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Russell", author.getFamilyName());
         assertEquals("Eric Frank", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
         assertTrue(oIv.isPresent());
         assertEquals("51", oIv.get());
@@ -145,7 +146,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Oakes", author.getFamilyName());
         assertEquals("Terry", author.getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals(AuthorRole.COVER_ARTIST, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
         assertTrue(oIv.isPresent());
         assertEquals("25102", oIv.get());
@@ -219,14 +220,14 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Pratchett", author.getFamilyName());
         assertEquals("Terry", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
         assertNull(author.getRealAuthor());
 
         author = authors.get(1);
         assertEquals("McLaren", author.getFamilyName());
         assertEquals("Joe", author.getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals(AuthorRole.COVER_ARTIST, author.getRole());
         assertEquals("197603", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
 
         final List<Series> series = book.getSeries();
@@ -298,14 +299,14 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Pratchett", author.getFamilyName());
         assertEquals("Terry", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
         assertNull(author.getRealAuthor());
 
         author = authors.get(1);
         assertEquals("Tierney", author.getFamilyName());
         assertEquals("Jim", author.getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals(AuthorRole.COVER_ARTIST, author.getRole());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -386,19 +387,19 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("French", author.getFamilyName());
         assertEquals("Paul", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("3358", author.requireIdentifierValue(Identifier.SID_ISFDB));
         author = author.getRealAuthor();
         assertNotNull(author);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("5", author.requireIdentifierValue(Identifier.SID_ISFDB));
 
         author = authors.get(1);
         assertEquals("Andersson", author.getFamilyName());
         assertEquals("Bosse", author.getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals(AuthorRole.COVER_ARTIST, author.getRole());
         assertEquals("359246", author.requireIdentifierValue(Identifier.SID_ISFDB));
 
 

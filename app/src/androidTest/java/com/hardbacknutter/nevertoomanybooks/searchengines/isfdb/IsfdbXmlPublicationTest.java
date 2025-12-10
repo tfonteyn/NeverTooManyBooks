@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -186,11 +187,11 @@ public class IsfdbXmlPublicationTest
         author = authors.get(0);
         assertEquals("Smith", author.getFamilyName());
         assertEquals("E. E. 'Doc'", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         author = authors.get(1);
         assertEquals("Reilly", author.getFamilyName());
         assertEquals("Ken", author.getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals(AuthorRole.COVER_ARTIST, author.getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);

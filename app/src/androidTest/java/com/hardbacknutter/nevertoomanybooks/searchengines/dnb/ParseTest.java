@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -113,7 +114,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_DNB);
         assertTrue(oIv.isPresent());
         assertEquals("118646109", oIv.get());
@@ -121,7 +122,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Holicki", author.getFamilyName());
         assertEquals("Irene", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_DNB);
         assertTrue(oIv.isPresent());
         assertEquals("133558215", oIv.get());
@@ -179,7 +180,7 @@ public class ParseTest
         assertEquals(1, authors.size());
         assertEquals("Föhr", authors.get(0).getFamilyName());
         assertEquals("Andreas", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -234,11 +235,11 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Zahn", author.getFamilyName());
         assertEquals("Timothy", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         author = authors.get(1);
         assertEquals("Kasprzak", author.getFamilyName());
         assertEquals("Andreas", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -299,11 +300,11 @@ public class ParseTest
         assertEquals(2, authors.size());
         assertEquals("Asimov", authors.get(0).getFamilyName());
         assertEquals("Isaac", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
 
         assertEquals("Holicki", authors.get(1).getFamilyName());
         assertEquals("Irene", authors.get(1).getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, authors.get(1).getType());
+        assertEquals(AuthorRole.TRANSLATOR, authors.get(1).getRole());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);

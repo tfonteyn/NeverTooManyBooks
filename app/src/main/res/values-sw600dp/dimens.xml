@@ -24,7 +24,7 @@
 
     <dimen name="progress_margin_top">200dp</dimen>
 
-    <dimen name="cbx_fixed_width_author_type">160dp</dimen>
+    <dimen name="cbx_fixed_width_author_role">160dp</dimen>
 
     <item name="context_menu_button_scale"
           format="float"

@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -108,7 +109,7 @@ public class ParseTest
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
         assertEquals("Alastair", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -152,10 +153,10 @@ public class ParseTest
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
         assertEquals("Alastair", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
         assertEquals("Baxter", authors.get(1).getFamilyName());
         assertEquals("Stephen", authors.get(1).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(1).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(1).getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -198,10 +199,10 @@ public class ParseTest
         assertEquals(2, authors.size());
         assertEquals("Jean-Yves", authors.get(0).getFamilyName());
         assertEquals("Ferri", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
         assertEquals("Manu", authors.get(1).getFamilyName());
         assertEquals("Larcenet", authors.get(1).getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, authors.get(1).getType());
+        assertEquals(AuthorRole.ARTIST, authors.get(1).getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -245,7 +246,7 @@ public class ParseTest
         assertEquals(1, authors.size());
         assertEquals("Hesse", authors.get(0).getFamilyName());
         assertEquals("Hermann", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -288,7 +289,7 @@ public class ParseTest
         assertEquals(1, authors.size());
         assertEquals("hermann-hesse", authors.get(0).getFamilyName());
         assertEquals("", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -332,7 +333,7 @@ public class ParseTest
         assertEquals(1, authors.size());
         assertEquals("Murphy", authors.get(0).getFamilyName());
         assertEquals("Raymond", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -376,7 +377,7 @@ public class ParseTest
         assertEquals(1, authors.size());
         assertEquals("Santiago", authors.get(0).getFamilyName());
         assertEquals("Roberto", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals(AuthorRole.WRITER, authors.get(0).getRole());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);

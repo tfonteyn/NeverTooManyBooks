@@ -178,7 +178,7 @@ public class StyleDaoImpl
 
         stmt.bindLong(++c, style.getExpansionLevel());
         stmt.bindString(++c, getGroupIdsAsCsv(style));
-        stmt.bindLong(++c, style.getPrimaryAuthorType());
+        stmt.bindLong(++c, style.getPrimaryAuthorRole());
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
         }
@@ -311,7 +311,7 @@ public class StyleDaoImpl
 
                 stmt.bindLong(++c, style.getExpansionLevel());
                 stmt.bindString(++c, getGroupIdsAsCsv(style));
-                stmt.bindLong(++c, style.getPrimaryAuthorType());
+                stmt.bindLong(++c, style.getPrimaryAuthorRole());
 
                 //NEWTHINGS: style option: add to the UPDATE
 
@@ -491,7 +491,7 @@ public class StyleDaoImpl
 
                     + ',' + DBKey.STYLE.EXP_LEVEL
                     + ',' + DBKey.STYLE.GROUPS
-                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE
+                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_ROLE
             );
 
             //NEWTHINGS: style option: add to the INSERT
@@ -537,7 +537,7 @@ public class StyleDaoImpl
 
                     + ',' + DBKey.STYLE.EXP_LEVEL + "=?"
                     + ',' + DBKey.STYLE.GROUPS + "=?"
-                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE + "=?"
+                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_ROLE + "=?"
             );
 
             //NEWTHINGS: style option: add to the UPDATE

@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -440,38 +441,38 @@ public class StripInfoSearchEngine
                             switch (label) {
                                 case "Scenario":
                                 case "Naar":
-                                    i += parseAuthor(td, Author.TYPE_WRITER, book);
+                                    i += parseAuthor(td, AuthorRole.WRITER, book);
                                     break;
 
                                 case "Tekeningen":
-                                    i += parseAuthor(td, Author.TYPE_ARTIST, book);
+                                    i += parseAuthor(td, AuthorRole.ARTIST, book);
                                     break;
 
                                 case "Kleuren":
-                                    i += parseAuthor(td, Author.TYPE_COLORIST, book);
+                                    i += parseAuthor(td, AuthorRole.COLORIST, book);
                                     break;
                                 case "Inkting":
-                                    i += parseAuthor(td, Author.TYPE_INKING, book);
+                                    i += parseAuthor(td, AuthorRole.INKING, book);
                                     break;
 
                                 case "Cover":
-                                    i += parseAuthor(td, Author.TYPE_COVER_ARTIST, book);
+                                    i += parseAuthor(td, AuthorRole.COVER_ARTIST, book);
                                     break;
 
                                 case "Inkting cover":
-                                    i += parseAuthor(td, Author.TYPE_COVER_INKING, book);
+                                    i += parseAuthor(td, AuthorRole.COVER_INKING, book);
                                     break;
 
                                 case "Vertaling":
-                                    i += parseAuthor(td, Author.TYPE_TRANSLATOR, book);
+                                    i += parseAuthor(td, AuthorRole.TRANSLATOR, book);
                                     break;
 
                                 case "Storyboard":
-                                    i += parseAuthor(td, Author.TYPE_STORYBOARD, book);
+                                    i += parseAuthor(td, AuthorRole.STORYBOARD, book);
                                     break;
 
                                 case "Lettering":
-                                    i += parseAuthor(td, Author.TYPE_LETTERING, book);
+                                    i += parseAuthor(td, AuthorRole.LETTERING, book);
                                     break;
 
                                 case "Uitgever(s)":
@@ -928,7 +929,7 @@ public class StripInfoSearchEngine
      * @return 1 if we found a value td; 0 otherwise.
      */
     private int parseAuthor(@NonNull final Element td,
-                            @Author.Type final int type,
+                            @AuthorRole.Role final int type,
                             @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {

@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -159,7 +160,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Sobczak", author.getFamilyName());
         assertEquals("Małgorzata Oliwia", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1982-04-20", author.getBirthDate().orElse(null));
         assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -235,7 +236,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Sobczak", author.getFamilyName());
         assertEquals("Małgorzata Oliwia", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1982-04-20", author.getBirthDate().orElse(null));
         assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -318,7 +319,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Sanderson", author.getFamilyName());
         assertEquals("Brandon", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1975-12-19", author.getBirthDate().orElse(null));
         assertEquals(18, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -336,12 +337,12 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Studniarek-Więch", author.getFamilyName());
         assertEquals("Anna", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR | Author.TYPE_NARRATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR | AuthorRole.NARRATOR, author.getRole());
 
         author = authors.get(2);
         assertEquals("Popczyński", author.getFamilyName());
         assertEquals("Marcin", author.getGivenNames());
-        assertEquals(Author.TYPE_NARRATOR, author.getType());
+        assertEquals(AuthorRole.NARRATOR, author.getRole());
         assertEquals("1974-01-01", author.getBirthDate().orElse(null));
         assertEquals(3, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -357,12 +358,12 @@ public class ParseTest
         author = authors.get(3);
         assertEquals("Studniarek", author.getFamilyName());
         assertEquals("Anna", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
         author = authors.get(4);
         assertEquals("Hesko-Kołodzińska", author.getFamilyName());
         assertEquals("Małgorzata", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
@@ -434,7 +435,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Tatti", author.getFamilyName());
         assertEquals("Bruno", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals("1969-01-01", author.getBirthDate().orElse(null));
         assertEquals(3, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -444,7 +445,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Aouamri", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -453,7 +454,7 @@ public class ParseTest
         author = authors.get(2);
         assertEquals("Aouamri", author.getFamilyName());
         assertEquals("Mohamed", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals("1957-03-24", author.getBirthDate().orElse(null));
         assertEquals(7, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -463,7 +464,7 @@ public class ParseTest
         author = authors.get(3);
         assertEquals("Ozanam", author.getFamilyName());
         assertEquals("Antoine", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1970-05-20", author.getBirthDate().orElse(null));
         assertEquals(8, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -473,7 +474,7 @@ public class ParseTest
         author = authors.get(4);
         assertEquals("Birek", author.getFamilyName());
         assertEquals("Wojciech", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertEquals("1961-10-17", author.getBirthDate().orElse(null));
         assertEquals(6, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -487,7 +488,7 @@ public class ParseTest
         author = authors.get(5);
         assertEquals("Rosiński", author.getFamilyName());
         assertEquals("Grzegorz", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1941-08-03", author.getBirthDate().orElse(null));
         assertEquals(11, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -501,7 +502,7 @@ public class ParseTest
         author = authors.get(6);
         assertEquals("Van Hamme", author.getFamilyName());
         assertEquals("Jean", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1939-01-16", author.getBirthDate().orElse(null));
         assertEquals(13, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -612,7 +613,7 @@ public class ParseTest
         author = authors.get(p++);
         assertEquals("Hawking", author.getFamilyName());
         assertEquals("Stephen", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1942-01-08", author.getBirthDate().orElse(null));
         assertEquals("2018-03-14", author.getDeathDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -626,7 +627,7 @@ public class ParseTest
         author = authors.get(p++);
         assertEquals("Krośniak", author.getFamilyName());
         assertEquals("Marek", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.TRANSLATOR, author.getRole());
         assertEquals("1955-01-01", author.getBirthDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -635,7 +636,7 @@ public class ParseTest
         author = authors.get(p++);
         assertEquals("Krajewski", author.getFamilyName());
         assertEquals("Artur", author.getGivenNames());
-        assertEquals(Author.TYPE_NARRATOR, author.getType());
+        assertEquals(AuthorRole.NARRATOR, author.getRole());
         assertEquals("1968-08-04", author.getBirthDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -644,12 +645,12 @@ public class ParseTest
         author = authors.get(p++);
         assertEquals("Plewako-Szczerbiński", author.getFamilyName());
         assertEquals("Krzysztof", author.getGivenNames());
-        assertEquals(Author.TYPE_NARRATOR, author.getType());
+        assertEquals(AuthorRole.NARRATOR, author.getRole());
 
         author = authors.get(p++);
         assertEquals("Szczerbiński", author.getFamilyName());
         assertEquals("Krzysztof", author.getGivenNames());
-        assertEquals(Author.TYPE_NARRATOR, author.getType());
+        assertEquals(AuthorRole.NARRATOR, author.getRole());
         assertEquals("1978-01-09", author.getBirthDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -658,7 +659,7 @@ public class ParseTest
         author = authors.get(p++);
         assertEquals("Hawking", author.getFamilyName());
         assertEquals("Lucy", author.getGivenNames());
-        assertEquals(Author.TYPE_AFTERWORD, author.getType());
+        assertEquals(AuthorRole.AFTERWORD, author.getRole());
         assertEquals("1969-11-02", author.getBirthDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -667,7 +668,7 @@ public class ParseTest
         author = authors.get(p++);
         assertEquals("Thorne", author.getFamilyName());
         assertEquals("Kip S.", author.getGivenNames());
-        assertEquals(Author.TYPE_INTRODUCTION, author.getType());
+        assertEquals(AuthorRole.INTRODUCTION, author.getRole());
         assertEquals("1940-06-01", author.getBirthDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -676,7 +677,7 @@ public class ParseTest
         author = authors.get(p++);
         assertEquals("Redmayne", author.getFamilyName());
         assertEquals("Eddie", author.getGivenNames());
-        assertEquals(Author.TYPE_FOREWORD, author.getType());
+        assertEquals(AuthorRole.FOREWORD, author.getRole());
         assertEquals("1982-01-06", author.getBirthDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());

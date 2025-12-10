@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -132,7 +133,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Goscinny", author.getFamilyName());
         assertEquals("René", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1926-08-14", author.getBirthDate().orElse(null));
         assertEquals("1977-11-05", author.getDeathDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -142,7 +143,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Uderzo", author.getFamilyName());
         assertEquals("Albert", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
         assertEquals("1927-04-25", author.getBirthDate().orElse(null));
         assertEquals("2020-03-24", author.getDeathDate().orElse(null));
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -218,32 +219,32 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Καψωμένος", author.getFamilyName());
         assertEquals("Ερατοσθένης", author.getGivenNames());
-        assertEquals(Author.TYPE_EDITOR, author.getType());
+        assertEquals(AuthorRole.EDITOR, author.getRole());
 
         author = authors.get(1);
         assertEquals("Τζούλης", author.getFamilyName());
         assertEquals("Χρήστος", author.getGivenNames());
-        assertEquals(Author.TYPE_EDITOR, author.getType());
+        assertEquals(AuthorRole.EDITOR, author.getRole());
 
         author = authors.get(2);
         assertEquals("Δανιήλ", author.getFamilyName());
         assertEquals("Χρήστος", author.getGivenNames());
-        assertEquals(Author.TYPE_EDITOR, author.getType());
+        assertEquals(AuthorRole.EDITOR, author.getRole());
 
         author = authors.get(3);
         assertEquals("Αγρινίου", author.getFamilyName());
         assertEquals("Δήμος", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = authors.get(4);
         assertEquals("Φιλολογικός Όμιλος Αγρινίου \"Κώστας Χατζόπουλος\"", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = authors.get(5);
         assertEquals("Σχολή", author.getFamilyName());
         assertEquals("Πανεπιστήμιο Ιωαννίνων. Φιλοσοφική", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);

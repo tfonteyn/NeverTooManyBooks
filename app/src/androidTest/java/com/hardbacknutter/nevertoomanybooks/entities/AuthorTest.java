@@ -64,7 +64,7 @@ public class AuthorTest
         assertEquals(pAuthor.getFamilyName(), author.getFamilyName());
         assertEquals(pAuthor.getGivenNames(), author.getGivenNames());
         assertEquals(pAuthor.isComplete(), author.isComplete());
-        assertEquals(pAuthor.getType(), author.getType());
+        assertEquals(pAuthor.getRole(), author.getRole());
         assertEquals(pAuthor.getRealAuthor(), author.getRealAuthor());
     }
 

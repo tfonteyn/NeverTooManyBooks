@@ -153,7 +153,7 @@ public class SearchBookUpdatesViewModelTest
         assertNotNull(delta);
 
         // _id=123,
-        // author_list=[Author{id=0, familyName=`Author`, givenNames=`Real`, complete=false, type=0b0: Type{}, realAuthor=null}],
+        // author_list=[Author{id=0, familyName=`Author`, givenNames=`Real`, complete=false, role=0b0: Role{}, realAuthor=null}],
         // publisher_list=[Publisher{id=0, name=`Real Pub`}, Publisher{id=0, name=`MySelf`}]}]}
         assertEquals(123, delta.getId());
 

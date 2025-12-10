@@ -243,7 +243,7 @@
         <item>4</item>
     </string-array>
 
-    <!-- MultiSelectListPreference - Determines which author type is considered
+    <!-- MultiSelectListPreference - Determines which author role is considered
          the primary author of a book -->
     <!-- Mainly of interest for comics (e.g. writer, artist). See Author class for the values. -->
     <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->

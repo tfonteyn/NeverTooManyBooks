@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -411,7 +412,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("朱寒依", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertTrue(author.getIdentifierValue(Identifier.SID_DOUBAN).isEmpty());
 
         final List<Series> series = book.getSeries();
@@ -577,7 +578,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("傅星源", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertTrue(author.getIdentifierValue(Identifier.SID_DOUBAN).isEmpty());
 
         final List<Series> series = book.getSeries();

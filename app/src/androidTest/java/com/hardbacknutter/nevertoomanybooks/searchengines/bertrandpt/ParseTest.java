@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -119,7 +120,7 @@ public class ParseTest
         final Author author = authors.get(0);
         assertEquals("Gilmore", author.getFamilyName());
         assertEquals("Laurie", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -177,7 +178,7 @@ public class ParseTest
         final Author author = authors.get(0);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);

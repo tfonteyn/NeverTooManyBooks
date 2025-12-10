@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,12 +32,12 @@ class AuthorMapperTest {
 
     @Test
     void authors() {
-        final AuthorTypeMapper mapper = new AuthorTypeMapper();
+        final AuthorRoleMapper mapper = new AuthorRoleMapper();
 
-        assertEquals(Author.TYPE_ARTIST | Author.TYPE_WRITER,
+        assertEquals(AuthorRole.ARTIST | AuthorRole.WRITER,
                      mapper.map(Locale.ENGLISH, "Author, Illustrator"));
 
-        assertEquals(Author.TYPE_NARRATOR,
+        assertEquals(AuthorRole.NARRATOR,
                      mapper.map(Locale.ENGLISH, "Narrator"));
     }
 }

@@ -39,10 +39,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey.AUTHOR#BOOK_AUTHOR_TYPE}
+ * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey.AUTHOR#BOOK_AUTHOR_ROLE}
  * is based on <strong>global USAGE</strong>.
  */
 @SuppressWarnings("WeakerAccess")
@@ -64,10 +65,10 @@ public class EditAuthorViewModel
     private String currentRealAuthorName;
 
     private boolean useRealAuthorName;
-    /** Whether types are globally enabled. */
-    private boolean useAuthorType;
-    /** The state of the typesSwitch. */
-    private boolean typesAreShown;
+    /** Whether roles are globally enabled. */
+    private boolean useAuthorRole;
+    /** The state of the rolesSwitch. */
+    private boolean rolesAreShown;
     private AuthorDao dao;
 
     /**
@@ -84,13 +85,13 @@ public class EditAuthorViewModel
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
-            useAuthorType = serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_TYPE);
+            useAuthorRole = serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_ROLE);
 
             currentEdit = new Author(original, true);
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
 
-            typesAreShown = useAuthorType && currentEdit.getType() != Author.TYPE_UNKNOWN;
+            rolesAreShown = useAuthorRole && currentEdit.getRole() != AuthorRole.UNKNOWN;
         }
     }
 
@@ -105,20 +106,20 @@ public class EditAuthorViewModel
     }
 
     /**
-     * Has the user enable the use of Author-types.
+     * Has the user enable the use of Author-roles.
      *
-     * @return {@code true} if extended author-types should be shown
+     * @return {@code true} if extended author-roles should be shown
      */
-    public boolean showAuthorType() {
-        return useAuthorType;
+    public boolean showAuthorRole() {
+        return useAuthorRole;
     }
 
-    public boolean isTypesAreShown() {
-        return typesAreShown;
+    public boolean isRolesAreShown() {
+        return rolesAreShown;
     }
 
-    public void setTypesAreShown(final boolean typesAreShown) {
-        this.typesAreShown = typesAreShown;
+    public void setRolesAreShown(final boolean rolesAreShown) {
+        this.rolesAreShown = rolesAreShown;
     }
 
     /**

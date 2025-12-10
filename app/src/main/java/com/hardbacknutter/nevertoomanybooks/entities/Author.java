@@ -28,7 +28,6 @@ import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,14 +36,10 @@ import androidx.core.content.res.ResourcesCompat;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -74,15 +69,15 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Represents an Author.
  * <p>
- * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey.AUTHOR#BOOK_AUTHOR_TYPE}
+ * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey.AUTHOR#BOOK_AUTHOR_ROLE}
  * is based on <strong>global USAGE</strong>.
  *
  * <p>
- * <strong>Note:</strong> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
+ * <strong>Note:</strong> "role" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
  * So this class does not strictly represent an Author, but a "BookAuthor"
- * When the type is disregarded, it is a real Author representation.
+ * When the role is disregarded, it is a real Author representation.
  * <p>
- * Author types:
+ * Author roles:
  * <a href="http://www.loc.gov/marc/relators/relaterm.html">
  * http://www.loc.gov/marc/relators/relaterm.html</a>
  * <p>
@@ -108,94 +103,7 @@ public class Author
         }
     };
 
-    /** Generic Author; the default. A single person created the book. */
-    public static final int TYPE_UNKNOWN = 0;
-
-    /**
-     * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
-     * NEWTHINGS: author type: add a bit flag
-     * Never change the bit value!
-     * <p>
-     * WRITER: primary or only writer. i.e. in contrast to any of the below.
-     */
-    public static final int TYPE_WRITER = 1;
-
-    /**
-     * WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1;
-     * <p>
-     * <strong>Dev. note:</strong> do NOT set "= TYPE_WRITER" or...
-     * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
-     * Each time we format the code, methods and variables jump around.
-     * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
-     */
-    public static final int TYPE_ORIGINAL_SCRIPT_WRITER = 1;
-
-    /** WRITER: the foreword. */
-    public static final int TYPE_FOREWORD = 1 << 2;
-    /** WRITER: the afterword. */
-    public static final int TYPE_AFTERWORD = 1 << 3;
-    /** WRITER: translator. */
-    public static final int TYPE_TRANSLATOR = 1 << 4;
-    /** WRITER: introduction. (some sites makes a distinction with a foreword). */
-    public static final int TYPE_INTRODUCTION = 1 << 5;
-
-
-    /** editor (e.g. of an anthology). */
-    public static final int TYPE_EDITOR = 1 << 6;
-    /** generic collaborator. */
-    public static final int TYPE_CONTRIBUTOR = 1 << 7;
-
-
-    /** ARTIST: cover. */
-    public static final int TYPE_COVER_ARTIST = 1 << 8;
-    /** ARTIST: cover inking (if different from above). */
-    public static final int TYPE_COVER_INKING = 1 << 9;
-
-    /** Audio books. */
-    public static final int TYPE_NARRATOR = 1 << 10;
-
-    /** COLOR: cover. */
-    public static final int TYPE_COVER_COLORIST = 1 << 11;
-
-
-    /** ARTIST: art work; could be illustrations, or the pages of a comic. */
-    public static final int TYPE_ARTIST = 1 << 12;
-    /** ARTIST: art work inking (if different from above). */
-    public static final int TYPE_INKING = 1 << 13;
-
-    /** WRITER/ARTIST: for comics and movies. */
-    public static final int TYPE_STORYBOARD = 1 << 14;
-
-    /** COLOR: internal colorist. */
-    public static final int TYPE_COLORIST = 1 << 15;
-
-    /**
-     * Any: indicate that this name entry is a pseudonym.
-     *
-     * @deprecated as a flag, this is useless.
-     *         (I think this flag is a legacy from when we had goodreads integration)
-     */
-    @Deprecated
-    public static final int TYPE_PSEUDONYM = 1 << 16;
-
-    /** Comics only. */
-    public static final int TYPE_LETTERING = 1 << 17;
-
     private static final String TAG = "Author";
-    /**
-     * All valid bits for the type.
-     * NEWTHINGS: author type: add to the mask
-     */
-    private static final int TYPE_BITMASK_ALL =
-            TYPE_UNKNOWN
-            | TYPE_WRITER | TYPE_ORIGINAL_SCRIPT_WRITER | TYPE_FOREWORD | TYPE_AFTERWORD
-            | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
-            | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_NARRATOR | TYPE_COVER_COLORIST
-            | TYPE_ARTIST | TYPE_INKING | TYPE_STORYBOARD | TYPE_COLORIST
-            | TYPE_PSEUDONYM | TYPE_LETTERING;
-
-    /** Maps the type-bit to a string resource for the type-label. */
-    private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
 
     /**
      * Handles recognition of a limited set of special prefixes to a family name.
@@ -276,32 +184,6 @@ public class Author
             Pattern.compile("(.*)([(\\[].+[)\\]])(.*)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /*
-     * NEWTHINGS: author type: add the label for the type
-     * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
-     */
-    static {
-        TYPES.put(TYPE_WRITER, R.string.lbl_author_type_writer);
-        TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_type_contributor);
-        TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_type_intro);
-        TYPES.put(TYPE_FOREWORD, R.string.lbl_author_type_foreword);
-        TYPES.put(TYPE_AFTERWORD, R.string.lbl_author_type_afterword);
-
-        TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_type_translator);
-        TYPES.put(TYPE_EDITOR, R.string.lbl_author_type_editor);
-        TYPES.put(TYPE_NARRATOR, R.string.lbl_author_type_narrator);
-
-        TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
-        TYPES.put(TYPE_INKING, R.string.lbl_author_type_inking);
-        TYPES.put(TYPE_COLORIST, R.string.lbl_author_type_colorist);
-        TYPES.put(TYPE_LETTERING, R.string.lbl_author_type_lettering);
-        TYPES.put(TYPE_STORYBOARD, R.string.lbl_author_type_storyboard);
-
-        TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_author_type_cover_artist);
-        TYPES.put(TYPE_COVER_INKING, R.string.lbl_author_type_cover_inking);
-        TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_author_type_cover_colorist);
-    }
-
     @NonNull
     private final List<Identifier.Value> identifiers = new ArrayList<>();
 
@@ -347,8 +229,8 @@ public class Author
     private Author realAuthor;
 
     /** Bitmask. */
-    @Type
-    private int type = TYPE_UNKNOWN;
+    @AuthorRole.Role
+    private int role = AuthorRole.UNKNOWN;
 
     /**
      * Constructor.
@@ -380,8 +262,8 @@ public class Author
 
         setIdentifiers(ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(this.id));
 
-        if (rowData.contains(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
-            type = rowData.getInt(DBKey.AUTHOR.BOOK_AUTHOR_TYPE);
+        if (rowData.contains(DBKey.AUTHOR.BOOK_AUTHOR_ROLE)) {
+            role = rowData.getInt(DBKey.AUTHOR.BOOK_AUTHOR_ROLE);
         }
 
         if (rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
@@ -422,7 +304,7 @@ public class Author
         tmpPictureFileSpec = in.readString();
 
         complete = in.readByte() != 0;
-        type = in.readInt();
+        role = in.readInt();
         realAuthor = in.readParcelable(getClass().getClassLoader());
         ParcelUtils.readParcelableList(in, identifiers, getClass().getClassLoader());
     }
@@ -730,30 +612,30 @@ public class Author
         }
     }
 
-    @Type
-    public int getType() {
-        return type;
+    @AuthorRole.Role
+    public int getRole() {
+        return role;
     }
 
     /**
-     * Set the type(s).
+     * Set the role(s).
      *
-     * @param type to set
+     * @param role to set
      *
      * @return {@code this} for chaining
      */
-    public Author setType(@Type final int type) {
-        this.type = type & TYPE_BITMASK_ALL;
+    public Author setRole(@AuthorRole.Role final int role) {
+        this.role = role & AuthorRole.BITMASK_ALL;
         return this;
     }
 
     /**
-     * Add a type to the current type(s).
+     * Add a role to the current role(s).
      *
-     * @param type to add
+     * @param role to add
      */
-    public void addType(@Type final int type) {
-        this.type |= type & TYPE_BITMASK_ALL;
+    public void addRole(@AuthorRole.Role final int role) {
+        this.role |= role & AuthorRole.BITMASK_ALL;
     }
 
     @Override
@@ -772,7 +654,7 @@ public class Author
      * <ul>
      *     <li>{@link Details#Full}: standard formatted name combined
      *          (if enabled) with the real-author name.
-     *          (if enabled) with the author type.
+     *          (if enabled) with the author role.
      *     </li>
      *     <li>{@link Details#Normal}, {@link Details#AutoSelect}: standard formatted name.</li>
      *     <li>{@link Details#Short}: initial + family-name</li>
@@ -804,10 +686,10 @@ public class Author
                     }
                 }
 
-                if (serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
-                    final String typeLabels = getTypeLabels(context);
-                    if (!typeLabels.isEmpty()) {
-                        label += smallerText(typeLabels);
+                if (serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_ROLE)) {
+                    final String roleLabels = getRoleLabels(context);
+                    if (!roleLabels.isEmpty()) {
+                        label += smallerText(roleLabels);
                     }
                 }
                 break;
@@ -943,7 +825,7 @@ public class Author
 
 
     /**
-     * Get a CSV string with the type of this author; or the empty string if no specific types
+     * Get a CSV string with the role of this author; or the empty string if no specific roles
      * are set.
      *
      * @param context Current context
@@ -951,13 +833,14 @@ public class Author
      * @return csv string, can be empty, but never {@code null}.
      */
     @NonNull
-    private String getTypeLabels(@NonNull final Context context) {
-        if (type != TYPE_UNKNOWN) {
-            final List<String> list = TYPES.entrySet()
-                                           .stream()
-                                           .filter(entry -> (entry.getKey() & (long) type) != 0)
-                                           .map(entry -> context.getString(entry.getValue()))
-                                           .collect(Collectors.toList());
+    private String getRoleLabels(@NonNull final Context context) {
+        if (role != AuthorRole.UNKNOWN) {
+            final List<String> list = AuthorRole.ROLES.entrySet()
+                                                      .stream()
+                                                      .filter(entry -> (entry.getKey() & (long) role) != 0)
+                                                      .map(entry -> context.getString(
+                                                              entry.getValue()))
+                                                      .collect(Collectors.toList());
 
             if (!list.isEmpty()) {
                 return context.getString(R.string.brackets, String.join(", ", list));
@@ -1222,7 +1105,7 @@ public class Author
         identifiers.addAll(source.identifiers);
 
         if (includeBookFields) {
-            type = source.type;
+            role = source.role;
         }
     }
 
@@ -1250,7 +1133,7 @@ public class Author
 
         if (includeBookFields) {
             // always merge using an OR
-            type |= source.getType();
+            role |= source.getRole();
         }
 
         // overwrite the id unless we're 'new'
@@ -1299,7 +1182,7 @@ public class Author
         dest.writeString(tmpPictureFileSpec);
 
         dest.writeByte((byte) (complete ? 1 : 0));
-        dest.writeInt(type);
+        dest.writeInt(role);
         dest.writeParcelable(realAuthor, flags);
         ParcelUtils.writeParcelableList(dest, identifiers, flags);
     }
@@ -1342,7 +1225,7 @@ public class Author
      * (see code for details on the image).
      * <ul>
      *   <li>'complete' is a user setting and is ignored here.</li>
-     *   <li>'type' is a book field and is ignored here.</li>
+     *   <li>'role' is a book field and is ignored here.</li>
      *   <li>'identifiers' is ignored here.</li>
      * </ul>
      *
@@ -1360,7 +1243,7 @@ public class Author
      *
      * NOT based on
      *
-     *     type
+     *     role
      *     identifiers
      *     complete flag
      *
@@ -1427,65 +1310,65 @@ public class Author
     @Override
     @NonNull
     public String toString() {
-        final StringJoiner sj = new StringJoiner("|", "Type{", "}");
+        final StringJoiner sj = new StringJoiner("|", "Role{", "}");
 
-        if ((type & TYPE_WRITER) != 0) {
-            sj.add("Author.TYPE_WRITER");
+        if ((role & AuthorRole.WRITER) != 0) {
+            sj.add("WRITER");
         }
-        //        if ((mType & TYPE_ORIGINAL_SCRIPT_WRITER) != 0) {
-        //            sj.add("TYPE_ORIGINAL_SCRIPT_WRITER");
+        //        if ((role & AuthorRole.ORIGINAL_SCRIPT_WRITER) != 0) {
+        //            sj.add("ORIGINAL_SCRIPT_WRITER");
         //        }
-        if ((type & TYPE_FOREWORD) != 0) {
-            sj.add("Author.TYPE_FOREWORD");
+        if ((role & AuthorRole.FOREWORD) != 0) {
+            sj.add("FOREWORD");
         }
-        if ((type & TYPE_AFTERWORD) != 0) {
-            sj.add("Author.TYPE_AFTERWORD");
-        }
-
-        if ((type & TYPE_TRANSLATOR) != 0) {
-            sj.add("Author.TYPE_TRANSLATOR");
-        }
-        if ((type & TYPE_INTRODUCTION) != 0) {
-            sj.add("Author.TYPE_INTRODUCTION");
-        }
-        if ((type & TYPE_EDITOR) != 0) {
-            sj.add("Author.TYPE_EDITOR");
-        }
-        if ((type & TYPE_CONTRIBUTOR) != 0) {
-            sj.add("Author.TYPE_CONTRIBUTOR");
+        if ((role & AuthorRole.AFTERWORD) != 0) {
+            sj.add("AFTERWORD");
         }
 
-        if ((type & TYPE_COVER_ARTIST) != 0) {
-            sj.add("Author.TYPE_COVER_ARTIST");
+        if ((role & AuthorRole.TRANSLATOR) != 0) {
+            sj.add("TRANSLATOR");
         }
-        if ((type & TYPE_COVER_INKING) != 0) {
-            sj.add("Author.TYPE_COVER_INKING");
+        if ((role & AuthorRole.INTRODUCTION) != 0) {
+            sj.add("INTRODUCTION");
         }
-        if ((type & TYPE_NARRATOR) != 0) {
-            sj.add("Author.TYPE_NARRATOR");
+        if ((role & AuthorRole.EDITOR) != 0) {
+            sj.add("EDITOR");
         }
-        if ((type & TYPE_COVER_COLORIST) != 0) {
-            sj.add("Author.TYPE_COVER_COLORIST");
-        }
-
-        if ((type & TYPE_ARTIST) != 0) {
-            sj.add("Author.TYPE_ARTIST");
-        }
-        if ((type & TYPE_INKING) != 0) {
-            sj.add("Author.TYPE_INKING");
-        }
-        if ((type & TYPE_STORYBOARD) != 0) {
-            sj.add("Author.TYPE_STORYBOARD");
-        }
-        if ((type & TYPE_COLORIST) != 0) {
-            sj.add("Author.TYPE_COLORIST");
+        if ((role & AuthorRole.CONTRIBUTOR) != 0) {
+            sj.add("CONTRIBUTOR");
         }
 
-        if ((type & TYPE_PSEUDONYM) != 0) {
-            sj.add("Author.TYPE_PSEUDONYM");
+        if ((role & AuthorRole.COVER_ARTIST) != 0) {
+            sj.add("COVER_ARTIST");
         }
-        if ((type & TYPE_LETTERING) != 0) {
-            sj.add("Author.TYPE_LETTERING");
+        if ((role & AuthorRole.COVER_INKING) != 0) {
+            sj.add("COVER_INKING");
+        }
+        if ((role & AuthorRole.NARRATOR) != 0) {
+            sj.add("NARRATOR");
+        }
+        if ((role & AuthorRole.COVER_COLORIST) != 0) {
+            sj.add("COVER_COLORIST");
+        }
+
+        if ((role & AuthorRole.ARTIST) != 0) {
+            sj.add("ARTIST");
+        }
+        if ((role & AuthorRole.INKING) != 0) {
+            sj.add("INKING");
+        }
+        if ((role & AuthorRole.STORYBOARD) != 0) {
+            sj.add("STORYBOARD");
+        }
+        if ((role & AuthorRole.COLORIST) != 0) {
+            sj.add("COLORIST");
+        }
+
+        if ((role & AuthorRole.PSEUDONYM) != 0) {
+            sj.add("PSEUDONYM");
+        }
+        if ((role & AuthorRole.LETTERING) != 0) {
+            sj.add("LETTERING");
         }
         return "Author{"
                + "id=" + id
@@ -1496,23 +1379,9 @@ public class Author
                + ", pictureUuid=`" + imageUuid + '`'
                + ", tmpPictureFileSpec=`" + tmpPictureFileSpec + '`'
                + ", complete=" + complete
-               + ", type=0b" + Integer.toBinaryString(type) + ": " + sj
+               + ", role=0b" + Integer.toBinaryString(role) + ": " + sj
                + ", identifiers=" + identifiers
                + ", realAuthor=" + realAuthor
                + '}';
-    }
-
-    // NEWTHINGS: author type: add to the IntDef
-    @IntDef(flag = true,
-            value = {TYPE_UNKNOWN,
-                    TYPE_WRITER, TYPE_FOREWORD, TYPE_AFTERWORD,
-                    TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
-                    TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_NARRATOR, TYPE_COVER_COLORIST,
-                    TYPE_ARTIST, TYPE_INKING, TYPE_STORYBOARD, TYPE_COLORIST,
-                    TYPE_PSEUDONYM, TYPE_LETTERING
-            })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Type {
-
     }
 }

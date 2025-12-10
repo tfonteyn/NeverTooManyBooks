@@ -762,7 +762,7 @@
     <!-- Book / Dust cover condition -->
     <string name="lbl_condition_dust_cover_none">None</string>
     <!-- endregion -->
-    <!-- region ========== Author types. -->
+    <!-- region ========== Author roles. -->
     <string name="lbl_author_type_writer">Writer</string>
     <string name="lbl_author_type_translator">Translator</string>
     <!-- Examples: The person who selected short stories from different Authors for an anthology;
@@ -1203,7 +1203,7 @@
     <string name="lbl_family_name">Family Name</string>
     <!-- Author. -->
     <string name="lbl_given_names">Given Names</string>
-    <!-- Author types -->
+    <!-- Author roles -->
     <string name="lbl_author_type">Author type</string>
     <!-- Author. Whether the user considers his collection of this Author to be complete. -->
     <string name="lbl_author_is_complete"

@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -551,23 +552,23 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Tekenaar": {
-                        parseAuthor(td, Author.TYPE_ARTIST, book);
+                        parseAuthor(td, AuthorRole.ARTIST, book);
                         break;
                     }
                     case "Scenarist": {
-                        parseAuthor(td, Author.TYPE_WRITER, book);
+                        parseAuthor(td, AuthorRole.WRITER, book);
                         break;
                     }
                     case "Vertaler": {
-                        parseAuthor(td, Author.TYPE_TRANSLATOR, book);
+                        parseAuthor(td, AuthorRole.TRANSLATOR, book);
                         break;
                     }
                     case "Inkter": {
-                        parseAuthor(td, Author.TYPE_INKING, book);
+                        parseAuthor(td, AuthorRole.INKING, book);
                         break;
                     }
                     case "Inkleurder": {
-                        parseAuthor(td, Author.TYPE_COLORIST, book);
+                        parseAuthor(td, AuthorRole.COLORIST, book);
                         break;
                     }
                     case "Uitgeverij": {
@@ -737,7 +738,7 @@ public class LastDodoSearchEngine
      * @param book Bundle to update
      */
     private void parseAuthor(@NonNull final Element td,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int type,
                              @NonNull final Book book) {
 
         for (final Element a : td.select("a")) {

@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -113,22 +114,22 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Corbeyran", author.getFamilyName());
         assertEquals("Éric", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(1);
         assertEquals("Falque", author.getFamilyName());
         assertEquals("Denis", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
 
         author = authors.get(2);
         assertEquals("Araldi", author.getFamilyName());
         assertEquals("Christophe", author.getGivenNames());
-        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals(AuthorRole.COLORIST, author.getRole());
 
         author = authors.get(3);
         assertEquals("Frémion", author.getFamilyName());
         assertEquals("Yves", author.getGivenNames());
-        assertEquals(Author.TYPE_FOREWORD, author.getType());
+        assertEquals(AuthorRole.FOREWORD, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -197,7 +198,7 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Jijé", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
         assertEquals("1914-01-13", author.getBirthDate().orElse(null));
         assertEquals("1980-06-19", author.getDeathDate().orElse(null));
         assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
@@ -206,7 +207,7 @@ public class ParseTest
         assertNotNull(author);
         assertEquals("Gillain", author.getFamilyName());
         assertEquals("Joseph", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("1914-01-13", author.getBirthDate().orElse(null));
         assertEquals("1980-06-19", author.getDeathDate().orElse(null));
         assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
@@ -278,7 +279,7 @@ public class ParseTest
         Author author = authors.get(0);
         assertEquals("Jijé", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
         assertEquals("1914-01-13", author.getBirthDate().orElse(null));
         assertEquals("1980-06-19", author.getDeathDate().orElse(null));
         assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
@@ -287,7 +288,7 @@ public class ParseTest
         assertNotNull(author);
         assertEquals("Gillain", author.getFamilyName());
         assertEquals("Joseph", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("1914-01-13", author.getBirthDate().orElse(null));
         assertEquals("1980-06-19", author.getDeathDate().orElse(null));
         assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
@@ -297,7 +298,7 @@ public class ParseTest
         assertEquals("Carlos", author.getGivenNames());
         assertEquals("1936-04-12", author.getBirthDate().orElse(null));
         assertEquals("2006-07-27", author.getDeathDate().orElse(null));
-        assertEquals(Author.TYPE_CONTRIBUTOR, author.getType());
+        assertEquals(AuthorRole.CONTRIBUTOR, author.getRole());
         assertEquals("32388", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();

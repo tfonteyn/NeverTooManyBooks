@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -76,7 +77,7 @@ public class ResultsAccumulatorTest
         //                                  familyName=`Pratchett`,
         //                                  givenNames=`Terry`,
         //                                  complete=false,
-        //                                  type=0b0: Type{},
+        //                                  role=0b0: Role{},
         //                                  realAuthor=null},
         //                    title=`The Shepherd's Crown`,
         //                    firstPublicationDate=`PartialDate{localDate=2015-01-01,
@@ -97,13 +98,13 @@ public class ResultsAccumulatorTest
         //                     familyName=`Pratchett`,
         //                     givenNames=`Terry`,
         //                     complete=false,
-        //                     type=0b0: Type{},
+        //                     role=0b0: Role{},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Kidby`,
         //                     givenNames=`Paul`,
         //                     complete=false,
-        //                     type=0b100000000: Type{TYPE_COVER_ARTIST},
+        //                     role=0b100000000: Role{COVER_ARTIST},
         //                     realAuthor=null}],
         // publisher_list=[Publisher{id=0, name=`Corgi`}],
         // isfdb_book_id=568139,
@@ -137,7 +138,7 @@ public class ResultsAccumulatorTest
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry"),
                 new Author("Kidby", "Paul")
-                        .setType(Author.TYPE_ARTIST)
+                        .setRole(AuthorRole.ARTIST)
         ));
 
         book.setPublishers(List.of(new Publisher("Corgi")));
@@ -169,7 +170,7 @@ public class ResultsAccumulatorTest
         //                     familyName=`Pratchett`,
         //                     givenNames=`Terry`,
         //                     complete=false,
-        //                     type=0b1: Type{TYPE_WRITER},
+        //                     role=0b1: Role{TYPE_WRITER},
         //                     realAuthor=null}],
         // publisher_list=[Publisher{id=0,
         //                           name=`Corgi Childrens`}],
@@ -185,7 +186,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.PRICE_LISTED, "7.29");
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry")
-                        .setType(Author.TYPE_WRITER)));
+                        .setRole(AuthorRole.WRITER)));
         book.setPublishers(List.of(new Publisher("Corgi Childrens")));
 
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_ASIN, "0552574473")));
@@ -216,19 +217,19 @@ public class ResultsAccumulatorTest
         //                     familyName=`Pratchett`,
         //                     givenNames=`Terry`,
         //                     complete=false,
-        //                     type=0b1: Type{TYPE_WRITER},
+        //                     role=0b1: Role{WRITER},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Kidby`,
         //                     givenNames=`Paul`,
         //                     complete=false,
-        //                     type=0b1000000000000: Type{TYPE_ARTIST},
+        //                     role=0b1000000000000: Role{ARTIST},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Ellen Andersen`,
         //                     givenNames=`Laura`,
         //                     complete=false,
-        //                     type=0b1000000000000: Type{TYPE_ARTIST},
+        //                     role=0b1000000000000: Role{ARTIST},
         //                     realAuthor=null}],
         // publisher_list=[Publisher{id=0,
         //                           name=`Corgi Childrens`}],
@@ -259,11 +260,11 @@ public class ResultsAccumulatorTest
 
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry")
-                        .setType(Author.TYPE_WRITER),
+                        .setRole(AuthorRole.WRITER),
                 new Author("Kidby", "Paul")
-                        .setType(Author.TYPE_ARTIST),
+                        .setRole(AuthorRole.ARTIST),
                 new Author("Ellen Andersen", "Laura")
-                        .setType(Author.TYPE_ARTIST)
+                        .setRole(AuthorRole.ARTIST)
         ));
 
         book.setPublishers(List.of(new Publisher("Corgi Childrens")));
@@ -289,7 +290,7 @@ public class ResultsAccumulatorTest
         //                                  familyName=`Pratchett`,
         //                                  givenNames=`Terry`,
         //                                  complete=false,
-        //                                  type=0b0: Type{},
+        //                                  role=0b0: Role{},
         //                                  realAuthor=null},
         //                                  title=`The Shepherd's Crown`,
         //                                  firstPublicationDate=`PartialDate{localDate=2015-01-01,
@@ -312,37 +313,37 @@ public class ResultsAccumulatorTest
         //                     familyName=`Pratchett`,
         //                     givenNames=`Terry`,
         //                     complete=false,
-        //                     type=0b0: Type{},
+        //                     role=0b0: Role{},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Kidby`,
         //                     givenNames=`Paul`,
         //                     complete=false,
-        //                     type=0b100000000: Type{TYPE_COVER_ARTIST},
+        //                     role=0b100000000: Role{COVER_ARTIST},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Pratchett`,
         //                     givenNames=`Terry`,
         //                     complete=false,
-        //                     type=0b1: Type{TYPE_WRITER},
+        //                     role=0b1: Role{WRITER},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Pratchett`,
         //                     givenNames=`Terry`,
         //                     complete=false,
-        //                     type=0b1: Type{TYPE_WRITER},
+        //                     role=0b1: Role{WRITER},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Kidby`,
         //                     givenNames=`Paul`,
         //                     complete=false,
-        //                     type=0b1000000000000: Type{TYPE_ARTIST},
+        //                     role=0b1000000000000: Role{ARTIST},
         //                     realAuthor=null},
         //              Author{id=0,
         //                     familyName=`Ellen Andersen`,
         //                     givenNames=`Laura`,
         //                     complete=false,
-        //                     type=0b1000000000000: Type{TYPE_ARTIST},
+        //                     role=0b1000000000000: Role{ARTIST},
         //                     realAuthor=null}],
         // publisher_list=[Publisher{id=0, name=`Corgi`},
         //                 Publisher{id=0, name=`Corgi Childrens`},
@@ -381,15 +382,15 @@ public class ResultsAccumulatorTest
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry"),
                 new Author("Kidby", "Paul")
-                        .setType(Author.TYPE_ARTIST),
+                        .setRole(AuthorRole.ARTIST),
                 new Author("Pratchett", "Terry")
-                        .setType(Author.TYPE_WRITER),
+                        .setRole(AuthorRole.WRITER),
                 new Author("Pratchett", "Terry")
-                        .setType(Author.TYPE_WRITER),
+                        .setRole(AuthorRole.WRITER),
                 new Author("Kidby", "Paul")
-                        .setType(Author.TYPE_ARTIST),
+                        .setRole(AuthorRole.ARTIST),
                 new Author("Ellen Andersen", "Laura")
-                        .setType(Author.TYPE_ARTIST)
+                        .setRole(AuthorRole.ARTIST)
         ));
 
         book.setPublishers(List.of(

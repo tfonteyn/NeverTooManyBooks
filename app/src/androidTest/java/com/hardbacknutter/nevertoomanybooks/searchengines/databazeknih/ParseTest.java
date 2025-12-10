@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -167,7 +168,7 @@ public class ParseTest
         assertNotNull(pic);
         assertTrue(pic.endsWith("_databazeknih_9571_0_.jpg"));
 
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
         assertTrue(oIv.isPresent());
         assertEquals("9571", oIv.get());
@@ -178,7 +179,7 @@ public class ParseTest
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
 
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
 
         final List<Series> series = book.getSeries();
@@ -265,7 +266,7 @@ public class ParseTest
         assertEquals("1976", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
 
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
         assertTrue(oIv.isPresent());
         assertEquals("85414", oIv.get());
@@ -287,7 +288,7 @@ public class ParseTest
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
 
-        assertEquals(Author.TYPE_COVER_ARTIST | Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.COVER_ARTIST | AuthorRole.ARTIST, author.getRole());
         assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
     }
 
@@ -354,7 +355,7 @@ public class ParseTest
         assertEquals("1564", author.getBirthDate().orElse(null));
         assertEquals("1616", author.getDeathDate().orElse(null));
 
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
         assertTrue(oIv.isPresent());
         assertEquals("73", oIv.get());
@@ -368,7 +369,7 @@ public class ParseTest
         assertEquals("Jarmila", author.getGivenNames());
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
 
         author = authors.get(2);
@@ -376,7 +377,7 @@ public class ParseTest
         assertEquals("Vladimír", author.getGivenNames());
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
     }
 
@@ -460,7 +461,7 @@ public class ParseTest
         assertEquals("1920", author.getBirthDate().orElse(null));
         assertEquals("1992", author.getDeathDate().orElse(null));
 
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
         assertTrue(oIv.isPresent());
         assertEquals("79", oIv.get());
@@ -471,7 +472,7 @@ public class ParseTest
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
 
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
 
         final List<Series> series = book.getSeries();

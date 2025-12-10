@@ -364,7 +364,7 @@ public class AuthorDaoImpl
 
     /**
      * Remove duplicates.
-     * Consolidates author/- and author/type.
+     * Consolidates author/- and author/role.
      * <p>
      * {@inheritDoc}
      */
@@ -502,7 +502,7 @@ public class AuthorDaoImpl
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, author.getId());
                 stmt.bindLong(3, position);
-                stmt.bindLong(4, author.getType());
+                stmt.bindLong(4, author.getRole());
                 if (stmt.executeInsert() == -1) {
                     throw new DaoInsertException("insert Book-Author");
                 }
@@ -817,8 +817,8 @@ public class AuthorDaoImpl
 
                 for (final Author item : fromBook) {
                     if (source.getId() == item.getId()) {
-                        // We MUST preserve the author type as originally set.
-                        target.setType(item.getType());
+                        // We MUST preserve the author role as originally set.
+                        target.setRole(item.getRole());
                         destList.add(target);
                         // We could 'break' here as there should be no duplicates,
                         // but paranoia...
@@ -983,7 +983,7 @@ public class AuthorDaoImpl
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_AUTHOR
                 + ',' + DBKey.AUTHOR.BOOK_AUTHOR_POSITION
-                + ',' + DBKey.AUTHOR.BOOK_AUTHOR_TYPE
+                + ',' + DBKey.AUTHOR.BOOK_AUTHOR_ROLE
                 + ") VALUES(?,?,?,?)";
 
         /**
@@ -1052,7 +1052,7 @@ public class AuthorDaoImpl
                                                      DBKey.AUTHOR.PICTURE_UUID,
                                                      DBKey.AUTHOR.COMPLETE)
                 + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.AUTHOR.BOOK_AUTHOR_POSITION,
-                                              DBKey.AUTHOR.BOOK_AUTHOR_TYPE)
+                                              DBKey.AUTHOR.BOOK_AUTHOR_ROLE)
 
                 + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.FK_AUTHOR_REAL_AUTHOR)
 

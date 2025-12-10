@@ -190,7 +190,7 @@ public class StyleCoder
                      .map(BooklistGroup::getId)
                      .collect(Collectors.toList())));
         if (style.hasGroup(BooklistGroup.AUTHOR)) {
-            options.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
+            options.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE, style.getPrimaryAuthorRole());
         }
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             if (style.hasGroup(item.getGroupId())) {
@@ -364,11 +364,11 @@ public class StyleCoder
                                                 .collect(Collectors.toList());
         style.setGroupIds(groupIds);
 
-        if (source.has(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)) {
-            style.setPrimaryAuthorType(
-                    source.getInt(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE));
+        if (source.has(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE)) {
+            style.setPrimaryAuthorRole(
+                    source.getInt(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE));
         } else {
-            style.setPrimaryAuthorType(styleDefaults.getPrimaryAuthorType());
+            style.setPrimaryAuthorRole(styleDefaults.getPrimaryAuthorRole());
         }
 
         for (final Style.UnderEach item : Style.UnderEach.values()) {

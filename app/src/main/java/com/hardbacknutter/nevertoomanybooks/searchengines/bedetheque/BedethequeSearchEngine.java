@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -579,23 +580,23 @@ public class BedethequeSearchEngine
     private void parseLabels(@NonNull final Context context,
                              @NonNull final Book book,
                              @NonNull final Element section) {
-        int lastAuthorType = -1;
+        int lastAuthorRole = -1;
 
         String currentFormat = null;
 
         final Elements labels = section.select("li > label");
         for (final Element labelElement : labels) {
             final String label = labelElement.text();
-            // check for multiple author entries of the same type
-            if (label.isBlank() && lastAuthorType != -1) {
+            // check for multiple author entries of the same role
+            if (label.isBlank() && lastAuthorRole != -1) {
                 final Element span = labelElement.nextElementSibling();
                 if (span != null) {
-                    parseAuthor(context, span.text(), lastAuthorType, book);
+                    parseAuthor(context, span.text(), lastAuthorRole, book);
                 }
                 // skip to next label
                 continue;
             }
-            lastAuthorType = -1;
+            lastAuthorRole = -1;
 
             //noinspection SwitchStatementWithoutDefaultBranch
             switch (label) {
@@ -643,31 +644,31 @@ public class BedethequeSearchEngine
                 case "Adapté de :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_WRITER;
-                        parseAuthor(context, a.text(), Author.TYPE_WRITER, book);
+                        lastAuthorRole = AuthorRole.WRITER;
+                        parseAuthor(context, a.text(), AuthorRole.WRITER, book);
                     }
                     break;
                 }
                 case "Dessin :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_ARTIST;
-                        parseAuthor(context, a.text(), Author.TYPE_ARTIST, book);
+                        lastAuthorRole = AuthorRole.ARTIST;
+                        parseAuthor(context, a.text(), AuthorRole.ARTIST, book);
                     }
                     break;
                 }
                 case "Encrage :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_INKING;
-                        parseAuthor(context, a.text(), Author.TYPE_INKING, book);
+                        lastAuthorRole = AuthorRole.INKING;
+                        parseAuthor(context, a.text(), AuthorRole.INKING, book);
                     }
                     break;
                 }
                 case "Couleurs :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_COLORIST;
+                        lastAuthorRole = AuthorRole.COLORIST;
 
                         final String colorOrColorist = a.text();
                         if (AUTHOR_NAME_COLOR.contains(colorOrColorist)) {
@@ -676,7 +677,7 @@ public class BedethequeSearchEngine
                                     colorOrColorist.substring(1, colorOrColorist.length() - 1));
                         } else {
                             // it's a real name
-                            parseAuthor(context, colorOrColorist, Author.TYPE_COLORIST,
+                            parseAuthor(context, colorOrColorist, AuthorRole.COLORIST,
                                         book);
                         }
                     }
@@ -685,32 +686,32 @@ public class BedethequeSearchEngine
                 case "Couverture :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_COVER_ARTIST;
-                        parseAuthor(context, a.text(), Author.TYPE_COVER_ARTIST, book);
+                        lastAuthorRole = AuthorRole.COVER_ARTIST;
+                        parseAuthor(context, a.text(), AuthorRole.COVER_ARTIST, book);
                     }
                     break;
                 }
                 case "Préface :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_FOREWORD;
-                        parseAuthor(context, a.text(), Author.TYPE_FOREWORD, book);
+                        lastAuthorRole = AuthorRole.FOREWORD;
+                        parseAuthor(context, a.text(), AuthorRole.FOREWORD, book);
                     }
                     break;
                 }
                 case "Traduction :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_TRANSLATOR;
-                        parseAuthor(context, a.text(), Author.TYPE_TRANSLATOR, book);
+                        lastAuthorRole = AuthorRole.TRANSLATOR;
+                        parseAuthor(context, a.text(), AuthorRole.TRANSLATOR, book);
                     }
                     break;
                 }
                 case "Autres :": {
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
-                        lastAuthorType = Author.TYPE_CONTRIBUTOR;
-                        parseAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR, book);
+                        lastAuthorRole = AuthorRole.CONTRIBUTOR;
+                        parseAuthor(context, a.text(), AuthorRole.CONTRIBUTOR, book);
                     }
                     break;
                 }
@@ -802,12 +803,12 @@ public class BedethequeSearchEngine
      *
      * @param context Current context
      * @param text    to parse
-     * @param type    the Author type
+     * @param role    of the Author
      * @param book    Bundle to update
      */
     private void parseAuthor(@NonNull final Context context,
                              @NonNull final String text,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int role,
                              @NonNull final Book book) {
 
         // REMOVE potential "<>" as we really don't want fake html tags
@@ -827,12 +828,12 @@ public class BedethequeSearchEngine
         // "<Texte non illustré>"
         switch (names) {
             case "Indéterminé": {
-                addAuthor(Author.createUnknownAuthor(context), type, book);
+                addAuthor(Author.createUnknownAuthor(context), role, book);
                 break;
             }
             case "Anonyme": {
                 addAuthor(new Author(context.getString(R.string.anonymous_author), ""),
-                          type, book);
+                          role, book);
                 break;
             }
             case "Art Book":
@@ -842,7 +843,7 @@ public class BedethequeSearchEngine
             }
             case "Collectif":
             default: {
-                addAuthor(Author.from(names), type, book);
+                addAuthor(Author.from(names), role, book);
                 break;
             }
         }

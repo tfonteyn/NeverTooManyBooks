@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -315,7 +316,7 @@ public class DatabazeKnihSearchEngine
         element = document.selectFirst("span.author");
         if (element != null) {
             final Elements aas = element.select("a");
-            parseAuthors(aas, Author.TYPE_WRITER, book);
+            parseAuthors(aas, AuthorRole.WRITER, book);
         }
         element = document.selectFirst("div.ratValue");
         if (element != null) {
@@ -435,7 +436,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 final String url = element.attr("href");
                 if (!url.isEmpty()) {
-                    parseAuthor(element, element.text(), Author.TYPE_NARRATOR, book);
+                    parseAuthor(element, element.text(), AuthorRole.NARRATOR, book);
                 }
             }
         }
@@ -517,19 +518,19 @@ public class DatabazeKnihSearchEngine
         // Překlad: translators
         final Elements translators = root.select("a[href^=/prekladatele/]");
         if (!translators.isEmpty()) {
-            parseAuthors(translators, Author.TYPE_TRANSLATOR, book);
+            parseAuthors(translators, AuthorRole.TRANSLATOR, book);
         }
 
         // Ilustrace/foto:
         final Elements illustrators = root.select("a[href^=/ilustratori/]");
         if (!illustrators.isEmpty()) {
-            parseAuthors(illustrators, Author.TYPE_ARTIST, book);
+            parseAuthors(illustrators, AuthorRole.ARTIST, book);
         }
 
         // Autor obálky:  covers
         final Elements coverArtist = root.select("a[href^=/autori-obalek/]");
         if (!coverArtist.isEmpty()) {
-            parseAuthors(coverArtist, Author.TYPE_COVER_ARTIST, book);
+            parseAuthors(coverArtist, AuthorRole.COVER_ARTIST, book);
         }
 
         // number of pages
@@ -681,7 +682,7 @@ public class DatabazeKnihSearchEngine
      * @param book to update
      */
     private void parseAuthors(@NonNull final Elements aas,
-                              @Author.Type final int type,
+                              @AuthorRole.Role final int type,
                               @NonNull final Book book) {
         for (final Element a : aas) {
             final String text = a.text();
@@ -701,7 +702,7 @@ public class DatabazeKnihSearchEngine
      */
     private void parseAuthor(@NonNull final Element a,
                              @NonNull final String text,
-                             @Author.Type final int type,
+                             @AuthorRole.Role final int type,
                              @NonNull final Book book) {
         final Author author = Author.from(text);
 

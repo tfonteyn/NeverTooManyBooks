@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -67,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -164,7 +165,7 @@ public class OpenLibrarySearchEngine
     );
     private static final String TYPE_TEXT = "/type/text";
 
-    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
+    private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
     @NonNull
     private final CookieManager cookieManager;
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
@@ -799,13 +800,13 @@ public class OpenLibrarySearchEngine
             // remove "by " from the start
             if (s.startsWith("by ") && s.length() > 3) {
                 s = s.substring(3);
-                addAuthor(Author.from(s), Author.TYPE_UNKNOWN, book);
+                addAuthor(Author.from(s), AuthorRole.UNKNOWN, book);
 
             } else if (s.contains(",")) {
                 // only grab the part before a comma
                 final String[] split = s.split(",");
                 if (split.length > 0) {
-                    addAuthor(Author.from(split[0]), Author.TYPE_UNKNOWN, book);
+                    addAuthor(Author.from(split[0]), AuthorRole.UNKNOWN, book);
                 }
             }
         }
@@ -936,7 +937,7 @@ public class OpenLibrarySearchEngine
             final JSONObject document = new JSONObject(response);
             final Author author = authorParser.parse(context, document);
             if (author != null) {
-                addAuthor(author, Author.TYPE_UNKNOWN, book);
+                addAuthor(author, AuthorRole.UNKNOWN, book);
             }
         }
     }
@@ -953,9 +954,9 @@ public class OpenLibrarySearchEngine
                     final int type;
                     final String role = c.optString("role", null);
                     if (role != null) {
-                        type = authorTypeMapper.map(getLocale(context), role);
+                        type = authorRoleMapper.map(getLocale(context), role);
                     } else {
-                        type = Author.TYPE_UNKNOWN;
+                        type = AuthorRole.UNKNOWN;
                     }
                     addAuthor(author, type, book);
                 }

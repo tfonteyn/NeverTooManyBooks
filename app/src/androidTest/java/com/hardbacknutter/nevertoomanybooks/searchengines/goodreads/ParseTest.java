@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -140,7 +141,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Cauvin", author.getFamilyName());
         assertEquals("Raoul", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1938-09-26", author.getBirthDate().orElse(null));
         assertEquals("2021-08-19", author.getDeathDate().orElse(null));
         assertEquals(11, author.getIdentifiers().size());
@@ -158,7 +159,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Kox", author.getFamilyName());
         assertEquals("Daniel", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals("1952-02-04", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertEquals(9, author.getIdentifiers().size());
@@ -173,7 +174,7 @@ public class ParseTest
         author = authors.get(2);
         assertEquals("Γαλάτουλα", author.getFamilyName());
         assertEquals("Τατιάνα", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertEquals(1, author.getIdentifiers().size());
@@ -245,7 +246,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Ye-eun", author.getFamilyName());
         assertEquals("Kim", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("50820550", oIv.get());
@@ -253,7 +254,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Nuanxed", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("40652983", oIv.get());
@@ -346,7 +347,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Nix", author.getFamilyName());
         assertEquals("Garth", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1963-07-19", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertEquals(16, author.getIdentifiers().size());
@@ -435,7 +436,7 @@ public class ParseTest
 
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1920-01-02", author.getBirthDate().orElse(null));
         assertEquals("1992-04-06", author.getDeathDate().orElse(null));
         assertTrue(author.getTmpPictureFileSpec().get().endsWith("_goodreads_16667_0_.jpg"));
@@ -561,7 +562,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Virgil", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         // the lookup on OPEN_LIBRARY fails as they have this author listed as "Virgil Virgil"
         assertEquals(2, author.getIdentifiers().size());

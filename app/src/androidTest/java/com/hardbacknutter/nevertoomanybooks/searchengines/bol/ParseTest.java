@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -129,7 +130,7 @@ public class ParseTest
         final Author author = authors.get(0);
         assertEquals("Bruna", author.getFamilyName());
         assertEquals("Dick", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
 
     }
 
@@ -184,7 +185,7 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -253,7 +254,7 @@ public class ParseTest
         final Author author = authors.get(0);
         assertEquals("Verhoef", author.getFamilyName());
         assertEquals("Esther", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -315,12 +316,12 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Ash", author.getFamilyName());
         assertEquals("Timothy Garton", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(1);
         assertEquals("Pieters", author.getFamilyName());
         assertEquals("Inge", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -383,7 +384,7 @@ public class ParseTest
         final Author author = authors.get(0);
         assertEquals("Bruna", author.getFamilyName());
         assertEquals("Dick", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
     }
 
     /** The redirect from {@link #parseMultiResult02()} */
@@ -434,12 +435,12 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
 
         author = authors.get(1);
         assertEquals("Dirda", author.getFamilyName());
         assertEquals("Michael", author.getGivenNames());
-        assertEquals(Author.TYPE_EDITOR, author.getType());
+        assertEquals(AuthorRole.EDITOR, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -505,11 +506,11 @@ public class ParseTest
         author = authors.get(0);
         assertEquals("Shafak", author.getFamilyName());
         assertEquals("Elif", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         author = authors.get(1);
         assertEquals("Smits", author.getFamilyName());
         assertEquals("Manon", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(AuthorRole.TRANSLATOR, author.getRole());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;

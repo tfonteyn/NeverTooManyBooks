@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -136,12 +137,12 @@ class KbNlBookHandler
 
             case "Author":
             case "Auteur":
-                parseAuthor(currentData, Author.TYPE_WRITER);
+                parseAuthor(currentData, AuthorRole.WRITER);
                 break;
 
             case "Collaborator":
             case "Medewerker":
-                parseAuthor(currentData, Author.TYPE_CONTRIBUTOR);
+                parseAuthor(currentData, AuthorRole.CONTRIBUTOR);
                 break;
 
             case "Artist":
@@ -150,15 +151,15 @@ class KbNlBookHandler
             case "Illustrator":
                 // illustrator (label is same in dutch) is for books
                 // Just put them both down as artists
-                parseAuthor(currentData, Author.TYPE_ARTIST);
+                parseAuthor(currentData, AuthorRole.ARTIST);
                 break;
 
             case "Colorist":
-                parseAuthor(currentData, Author.TYPE_COLORIST);
+                parseAuthor(currentData, AuthorRole.COLORIST);
                 break;
             case "Translator":
             case "Vertaler":
-                parseAuthor(currentData, Author.TYPE_TRANSLATOR);
+                parseAuthor(currentData, AuthorRole.TRANSLATOR);
                 break;
 
             case "Series":
@@ -392,7 +393,7 @@ class KbNlBookHandler
      */
     @VisibleForTesting
     void parseAuthor(@NonNull final Iterable<CurrentData> currentData,
-                     @Author.Type final int type) {
+                     @AuthorRole.Role final int type) {
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
             final String[] parts = AUTHOR_NAME.split(text, 2);

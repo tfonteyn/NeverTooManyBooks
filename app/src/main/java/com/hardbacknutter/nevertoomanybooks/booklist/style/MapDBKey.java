@@ -61,7 +61,7 @@ public final class MapDBKey {
                     Map.entry(DBKey.COVER[2], R.string.lbl_image_2),
                     Map.entry(DBKey.COVER[3], R.string.lbl_image_3),
 
-                    Map.entry(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, R.string.lbl_author_type),
+                    Map.entry(DBKey.AUTHOR.BOOK_AUTHOR_ROLE, R.string.lbl_author_type),
                     Map.entry(DBKey.COLOR, R.string.lbl_color),
                     Map.entry(DBKey.CONDITION_BOOK, R.string.lbl_condition),
                     Map.entry(DBKey.CONDITION_COVER, R.string.lbl_dust_cover),

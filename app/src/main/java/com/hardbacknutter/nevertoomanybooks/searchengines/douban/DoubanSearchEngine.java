@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -508,7 +509,7 @@ public class DoubanSearchEngine
                         //  We'll need to follow the link to the "personage" to get the correct SID.
                         //  This would also allow us to get Birthdate etc
 
-                        addAuthor(author, Author.TYPE_UNKNOWN, book);
+                        addAuthor(author, AuthorRole.UNKNOWN, book);
                     }
                     break;
                 }
@@ -541,7 +542,7 @@ public class DoubanSearchEngine
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
                         final Author author = Author.from(a.text());
-                        author.setType(Author.TYPE_TRANSLATOR);
+                        author.setRole(AuthorRole.TRANSLATOR);
                         book.add(author);
                     }
                     break;

@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 
 public interface Style {
 
@@ -382,10 +382,10 @@ public interface Style {
     /**
      * {@link BooklistGroup#AUTHOR} property.
      *
-     * @return bitmask representing the type of author we consider the primary author
+     * @return bitmask representing the role of author we consider the primary author
      */
-    @Author.Type
-    int getPrimaryAuthorType();
+    @AuthorRole.Role
+    int getPrimaryAuthorRole();
 
     /**
      * Should books be shown under each of the given row type.

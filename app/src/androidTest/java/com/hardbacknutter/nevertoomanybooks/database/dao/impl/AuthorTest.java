@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
@@ -142,19 +143,19 @@ public class AuthorTest
             id3 = authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_2);
-        author.setType(Author.TYPE_WRITER);
+        author.setRole(AuthorRole.WRITER);
         list.add(author);
 
         // discard
         author = Author.from(PHILIP_DICK);
         author.setId(FAKE_ID_2);
-        author.setType(Author.TYPE_UNKNOWN);
+        author.setRole(AuthorRole.UNKNOWN);
         list.add(author);
 
-        // discard, but add type to existing author in position 3
+        // discard, but add role to existing author in position 3
         author = Author.from(PHILIP_DICK);
         author.setId(FAKE_ID_2);
-        author.setType(Author.TYPE_CONTRIBUTOR);
+        author.setRole(AuthorRole.CONTRIBUTOR);
         list.add(author);
 
         final boolean modified = authorDao.pruneList(context, list, item -> bookLocale);
@@ -172,7 +173,7 @@ public class AuthorTest
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
         assertTrue(author.isComplete());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = list.get(1);
         assertEquals(id1, author.getId());
@@ -181,19 +182,19 @@ public class AuthorTest
         assertNotNull(author.getRealAuthor());
         assertEquals("Asimov", author.getRealAuthor().getFamilyName());
         assertEquals("Isaac", author.getRealAuthor().getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = list.get(2);
         assertEquals(id2, author.getId());
         assertEquals("Farmer", author.getFamilyName());
         assertEquals("Philip Jose", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = list.get(3);
         assertEquals(id3, author.getId());
         assertEquals("Dick", author.getFamilyName());
         assertEquals("Philip K.", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_CONTRIBUTOR, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.CONTRIBUTOR, author.getRole());
     }
 
     @Test
@@ -208,19 +209,19 @@ public class AuthorTest
         authorDao.fixId(context, author, bookLocale);
         final long id0 = author.getId();
         author.setId(FAKE_ID_1);
-        author.setType(Author.TYPE_UNKNOWN);
+        author.setRole(AuthorRole.UNKNOWN);
         authorList.add(author);
 
-        // merge type with position 1
+        // merge role with position 1
         author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(FAKE_ID_1);
-        author.setType(Author.TYPE_WRITER);
+        author.setRole(AuthorRole.WRITER);
         authorList.add(author);
 
-        // merge type with position 1
+        // merge role with position 1
         author = Author.from(PHILIP_JOSE_FARMER_VARIANT);
         author.setId(FAKE_ID_1);
-        author.setType(Author.TYPE_AFTERWORD);
+        author.setRole(AuthorRole.AFTERWORD);
         authorList.add(author);
 
         final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
@@ -235,7 +236,7 @@ public class AuthorTest
         assertEquals("Farmer", author.getFamilyName());
         // Note the "José" because we added PHILIP_JOSE_FARMER_VARIANT as the first in the list
         assertEquals("Philip José", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_AFTERWORD, author.getType());
+        assertEquals(AuthorRole.WRITER | AuthorRole.AFTERWORD, author.getRole());
     }
 
     @Test

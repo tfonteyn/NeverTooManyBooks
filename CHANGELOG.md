@@ -316,7 +316,7 @@ NEW:
 - Book list header now shows filter/search indicators even when the text is hidden
 - Enhanced parsing in series title/number to better detect titles with embedded digits
 - Parsing enhancement: IsfDb (Editor), KB.NL (Description, Pages, Translated titles)
-  Bol (original title), LastDodo (several author types), OpenLibrary (publication dates)
+  Bol (original title), LastDodo (several author roles), OpenLibrary (publication dates)
 
 FIXES:
 
@@ -509,7 +509,7 @@ NEW:
 - Track your reading progress (see #16 ) options: [read/unread] (default)
   or [percentage] / [page x of y], configurable for each Style
 - New search site: StripWeb (www.bdweb.be) for dutch/french comics.
-- Author types added: storyboard, lettering
+- Author roles added: storyboard, lettering
 
 FIXES:
 

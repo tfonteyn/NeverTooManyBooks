@@ -45,7 +45,7 @@
 
     <dimen name="column_margin_end">32dp</dimen>
 
-    <dimen name="cbx_fixed_width_author_type">140dp</dimen>
+    <dimen name="cbx_fixed_width_author_role">140dp</dimen>
 
     <!--    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>-->
     <!--    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>-->

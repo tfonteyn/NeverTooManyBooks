@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -959,7 +960,7 @@ public class IsfdbSearchEngine
                         }
                         case "Author:":
                         case "Authors:": {
-                            parseAuthors(context, li, Author.TYPE_UNKNOWN, book);
+                            parseAuthors(context, li, AuthorRole.UNKNOWN, book);
                             break;
                         }
                         case "Date:": {
@@ -1003,7 +1004,7 @@ public class IsfdbSearchEngine
                             break;
                         }
                         case "Cover:": {
-                            parseAuthors(context, li, Author.TYPE_COVER_ARTIST, book);
+                            parseAuthors(context, li, AuthorRole.COVER_ARTIST, book);
                             break;
                         }
                         case "External IDs:": {
@@ -1013,7 +1014,7 @@ public class IsfdbSearchEngine
                         }
                         case "Editor:":
                         case "Editors:": {
-                            parseAuthors(context, li, Author.TYPE_EDITOR, book);
+                            parseAuthors(context, li, AuthorRole.EDITOR, book);
                             break;
                         }
 
@@ -1210,7 +1211,7 @@ public class IsfdbSearchEngine
 
     private void parseAuthors(@NonNull final Context context,
                               @NonNull final Element li,
-                              @Author.Type final int type,
+                              @AuthorRole.Role final int type,
                               @NonNull final Book book) {
         for (final Element a : li.select("a[href*=/ea.cgi]")) {
             final String text = a.text();

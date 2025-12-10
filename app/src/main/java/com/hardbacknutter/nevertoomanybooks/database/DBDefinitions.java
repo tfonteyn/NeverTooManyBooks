@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
@@ -483,7 +483,7 @@ public final class DBDefinitions {
     public static final Domain DOM_LOANEE;
 
     /** {@link #TBL_BOOK_AUTHOR}. */
-    public static final Domain DOM_BOOK_AUTHOR_TYPE_BITMASK;
+    public static final Domain DOM_BOOK_AUTHOR_ROLE_BITMASK;
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final Domain DOM_BOOK_AUTHOR_POSITION;
 
@@ -515,7 +515,7 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY;
     public static final Domain DOM_STYLE_GROUPS;
     public static final Domain DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH;
-    public static final Domain DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE;
+    public static final Domain DOM_STYLE_GROUPS_AUTHOR_PRIMARY_ROLE;
     public static final Domain DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH;
     public static final Domain DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH;
@@ -1255,10 +1255,10 @@ public final class DBDefinitions {
          *  Link table domains
          * ====================================================================================== */
 
-        DOM_BOOK_AUTHOR_TYPE_BITMASK =
-                new Domain.Builder(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, SqLiteDataType.Integer)
+        DOM_BOOK_AUTHOR_ROLE_BITMASK =
+                new Domain.Builder(DBKey.AUTHOR.BOOK_AUTHOR_ROLE, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(Author.TYPE_UNKNOWN)
+                        .withDefault(AuthorRole.UNKNOWN)
                         .build();
 
         DOM_BOOK_AUTHOR_POSITION =
@@ -1331,11 +1331,11 @@ public final class DBDefinitions {
                         .withDefault(false)
                         .build();
 
-        DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE =
-                new Domain.Builder(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE,
+        DOM_STYLE_GROUPS_AUTHOR_PRIMARY_ROLE =
+                new Domain.Builder(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_ROLE,
                                    SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(Author.TYPE_UNKNOWN)
+                        .withDefault(AuthorRole.UNKNOWN)
                         .build();
 
         DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH =
@@ -1480,7 +1480,7 @@ public final class DBDefinitions {
 
                             DOM_STYLE_GROUPS,
                             DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
-                            DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE,
+                            DOM_STYLE_GROUPS_AUTHOR_PRIMARY_ROLE,
                             DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
                             DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
                             DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
@@ -1721,7 +1721,7 @@ public final class DBDefinitions {
                 .addDomains(DOM_FK_BOOK,
                             DOM_FK_AUTHOR,
                             DOM_BOOK_AUTHOR_POSITION,
-                            DOM_BOOK_AUTHOR_TYPE_BITMASK)
+                            DOM_BOOK_AUTHOR_ROLE_BITMASK)
                 // enforce: only one author on a particular position for a book.
                 // allow: multiple copies of that author and multiple types.
                 // The latter has some restrictions handled in code.

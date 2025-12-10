@@ -33,7 +33,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 
 /**
  * Definitions and transmogrifying (Hi Calvin) API for preference keys and actual style values.
@@ -59,10 +59,10 @@ public class StyleDataStore
     /** Style group preferences. */
     public static final String PK_GROUPS = "style.booklist.groups";
     /**
-     * Which type of Author should be considered the primary one. e.g.
+     * Which role of Author should be considered the primary one. e.g.
      * for comics you might want the artist instead of the writer.
      */
-    public static final String PK_GROUPS_AUTHOR_PRIMARY_TYPE =
+    public static final String PK_GROUPS_AUTHOR_PRIMARY_ROLE =
             "style.booklist.group.authors.primary.type";
 
 
@@ -495,8 +495,8 @@ public class StyleDataStore
                 }
                 break;
 
-            case PK_GROUPS_AUTHOR_PRIMARY_TYPE:
-                style.setPrimaryAuthorType(convert(values, Author.TYPE_UNKNOWN));
+            case PK_GROUPS_AUTHOR_PRIMARY_ROLE:
+                style.setPrimaryAuthorRole(convert(values, AuthorRole.UNKNOWN));
                 break;
 
             default:
@@ -513,8 +513,8 @@ public class StyleDataStore
             case PK_LIST_HEADER:
                 return convert(style.getHeaderFieldVisibilityValue());
 
-            case PK_GROUPS_AUTHOR_PRIMARY_TYPE:
-                return convert(style.getPrimaryAuthorType());
+            case PK_GROUPS_AUTHOR_PRIMARY_ROLE:
+                return convert(style.getPrimaryAuthorRole());
 
             default:
                 throw new IllegalArgumentException(key);
