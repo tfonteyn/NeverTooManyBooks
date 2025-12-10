@@ -396,6 +396,23 @@ public class BiblionetGrSearchEngine
                     processAuthor(Author.TYPE_EDITOR, li, book);
                     break;
                 }
+                case "Φορέας":
+                case "Body": {
+                    li.select("a").forEach(a -> {
+                        // Φιλολογικός Όμιλος Αγρινίου "Κώστας Χατζόπουλος"
+                        // -> Literary Society of Agrinio "Kostas Chatzopoulos"
+                        // Don't parse, use the name as-is.
+                        // URGENT: when the user manually adds/edit this name, it might go
+                        //  through the parser again and get mangled up.
+                        final Author author = new Author(a.text(), null);
+                        addAuthor(author, Author.TYPE_UNKNOWN, book);
+                        // note that NO specific org. author type was created,
+                        // The type is relly the role of the author for specific book.
+                        // Being an organization is an attribute of the author independent
+                        // of a book.
+                    });
+                    break;
+                }
                 case "Μεταγραφή": {
                     /* no English label; Transcription? */
                     processAuthor(Author.TYPE_UNKNOWN, li, book);
@@ -413,9 +430,7 @@ public class BiblionetGrSearchEngine
                 case "Στιχουργός":
                 case "Lyrist":
                 case "Διασκευή":
-                case "Adaptation":
-                case "Φορέας":
-                case "Body": {
+                case "Adaptation": {
                     processAuthor(Author.TYPE_UNKNOWN, li, book);
                     break;
                 }
