@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -97,7 +94,7 @@
     <string name="action_delete">Smazat</string>
     <string name="action_discard">Zahodit</string>
     <string name="action_done">Hotovo</string>
-    <string name="action_duplicate">Kopírovat</string>
+    <string name="action_duplicate">Duplikovat</string>
     <string name="action_add_all">Přidat vše</string>
     <string name="action_edit">Upravit</string>
     <string name="action_edit_ellipsis">Upravit…</string>
@@ -385,7 +382,7 @@
     <string name="lbl_import_books">Importovat knihy</string>
     <string name="option_import_books_option_all">Všechny knihy</string>
     <string name="option_import_books_option_new_and_updated">Nové a aktualizované knihy</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importovat pouze knihy, které \nbyly od tohoto data změněny</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importovat pouze knihy změněné po</string>
     <string name="option_import_books_option_new_only">Pouze nové knihy</string>
     <string name="lbl_import_options">Vyberte, co bude importováno.</string>
     <string name="lbl_importing">Probíhá import…</string>
@@ -909,5 +906,4 @@
     <string name="tip_bookshelf_management">Zvýrazněný řádek ukazuje tvoji aktuální knihovnu.\n\nVýchozí knihovna (označená hvězdičkou *) se použije automaticky, pokud tvoje aktuální není dostupná z jakéhokoli důvodu.</string>
     <string name="pt_search_tag_use_subject_number">Ponechat číselnou předponu u předmětových štítků</string>
     <string name="site_description_greek">Řečtina</string>
-
 </resources>
