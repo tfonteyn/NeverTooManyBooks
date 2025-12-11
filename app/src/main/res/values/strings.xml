@@ -76,7 +76,7 @@
     <!-- A request for confirmation in a dialog asking the user to "Remove" or "Search"
          a list of ISBN number previously scanned.
 
-        Param 1: the amount of ISBN number in the queue.
+        Param 1: the amount of ISBN numbers in the queue.
     -->
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">There is %1$d previously entered ISBN code. Would you like to start a search for it, or should it be removed?</item>
@@ -94,7 +94,7 @@
     <string name="a_space_b">%1$s %2$s</string>
     <!-- Generic "label (info)";
          Support for RTL languages;
-         https://en.wikipedia.org/wiki/Bracket-->
+         https://en.wikipedia.org/wiki/Bracket -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <!-- Generic "label: value";
          Support for RTL languages -->
@@ -159,6 +159,7 @@
          Support for RTL languages.
 
           Param 1: the price, translators should adjust/remove the decimal part as needed.
+                   i.e. the "2" stands for 2 decimal places.
     -->
     <string name="unknown_currency">¤%1$.2f</string>
 
@@ -196,14 +197,18 @@
     <string name="httpErrorFile">Couldn’t access the file.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Couldn’t find the requested file.</string>
-
+    <!-- In a few places in the app the user will be asked to enter a HTTPS://... address/url.
+         This message is displayed if that address/url is invalid in some way. -->
     <string name="error_invalid_url">Invalid address (URL)</string>
     <!-- endregion -->
     <!-- region ========== General error messages. -->
     <string name="error_unexpected">An unexpected error occurred.</string>
-    <!-- The placeholder will be replaced with R.string.pt_maintenance -->
+    <!-- The placeholder will be replaced with R.string.pt_maintenance;
+         i.e. the menu text "Maintenance" -->
     <string name="error_unexpected_long">An unexpected error has occurred. If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
-    <!-- shown when a user tries to upgrade from a very old version to the current. -->
+    <!-- shown when a user tries to upgrade from a very old version to the current.
+         Param 1: the oldest version still supported.
+    -->
     <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
     <!-- Shown when the user aborts an automatic internet-data update for a list of books -->
     <string name="error_updates_aborted">Updates aborted</string>
@@ -212,6 +217,9 @@
     <!-- [VERIFIED] An error message presented to the user when the certificate they
          specified for connecting to a server is inaccessible -->
     <string name="error_certificate_invalid">The certificate is invalid or inaccessible.</string>
+    <!-- Displayed if there are severe problems to connect to a website to search for books.
+        Param 1: website name
+        -->
     <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
     <!-- [VERIFIED] -->
     <string name="error_network_failed_try_again">Check connection and try again.</string>
@@ -238,7 +246,7 @@
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>
     <!-- STARTING a search has failed to start due to an ERROR. -->
     <string name="error_book_search_failed">Searching for the book failed.</string>
-
+    <!-- generic error message/advice in case of problems connecting to a website. -->
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
 
     <!-- MalformedURLException/UnknownHostException
@@ -247,7 +255,10 @@
     <string name="error_unknown_host">There was a connection problem to the service on “%1$s”.</string>
     <!-- The app tried to download the content-table of a book but failed to find any. -->
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
+    <!-- When the user wants to edit a cover image,
+         but the device has no image/photo editor app installed. -->
     <string name="error_no_image_editor">No image editor found.</string>
+    <!-- When the user selected to email a small backup file, but emailing failed. -->
     <string name="error_email_failed">Failed to send the email.</string>
     <!-- FileNotFoundException when opening the selected file.
     Dev Note: sometimes happens when the device file manager WAS SHOWING the file,
@@ -293,6 +304,9 @@
     <!-- Importing a book list partially failed with more than 10 lines failing. Only 10 line numbers will be listed.
          This text is displayed as a footer below a list of failures stating how many more lines failed. -->
     <string name="warning_import_failed_for_these_books_and_more">and %1$d more.</string>
+    <!-- Displayed when the user starts a backup/export, but after applying
+         for example the "changed books only" filtering,
+         there were no books that needed exporting. -->
     <string name="warning_export_contains_no_data">There was nothing to export.</string>
     <!-- A search WAS done, but there is no book-data available; this is not an error. -->
     <string name="warning_book_not_found">Unable to find the specified book.</string>
@@ -312,7 +326,9 @@
     <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
     <string name="warning_nothing_selected">Nothing selected</string>
     <string name="warning_requires_at_least_1_field">At least one field must not be blank.</string>
+    <!-- A book can only be stored if it has a title and an author set. -->
     <string name="warning_missing_title_or_author">The title and/or the author must be specified.</string>
+    <!-- For example, updating a book automatically can only be done if the book has an ISBN set. -->
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <!-- Search using a websites native book-id -->
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
@@ -430,6 +446,7 @@
     <string name="info_authorized">Authorized</string>
     <!-- Shown after a requested action when there was nothing to do. -->
     <string name="info_nothing_to_do">Nothing to do.</string>
+    <!-- An explanation on why the app requests access to the users Contacts. See also the wiki docs. -->
     <string name="info_read_contacts_permission">Access to your contacts is optional, but allows you to easily select who you’re lending a book to.</string>
 
     <!-- Param 1: story title -->
@@ -763,36 +780,54 @@
     <string name="lbl_condition_dust_cover_none">None</string>
     <!-- endregion -->
     <!-- region ========== Author roles. -->
+    <!-- Author role: the author is the primary or only writer. -->
     <string name="lbl_author_role_writer">Writer</string>
+    <!-- Author role -->
     <string name="lbl_author_role_translator">Translator</string>
-    <!-- Examples: The person who selected short stories from different Authors for an anthology;
+    <!-- Author role.
+         Examples: The person who selected short stories from different Authors for an anthology;
          or The person who coordinates a non-fiction book to which multiple writers contributed. -->
     <string name="lbl_author_role_editor">Editor</string>
-    <!-- Co-author; someone who contributed to the content, but is not considered (one of) the main authors(s). -->
+    <!-- Author role.
+         Co-author; someone who contributed to the content,
+         but is not considered to be (one of) the main authors(s). -->
     <string name="lbl_author_role_contributor">Contributor</string>
+    <!-- Author role: the person who wrote an introduction at the start of the book.
+         A book can have both an "Introduction" and a "Foreword". -->
     <string name="lbl_author_role_intro">Introduction</string>
+    <!-- Author role: the person who wrote a foreword at the start of the book.
+         A book can have both an "Introduction" and a "Foreword".-->
     <string name="lbl_author_role_foreword">Foreword</string>
+    <!-- Author role: the person who wrote a afterword (thanks, references, comments...)
+         at the end of the book. -->
     <string name="lbl_author_role_afterword">Afterword</string>
-    <!-- audiobooks -->
+    <!-- Author role: audiobooks -->
     <string name="lbl_author_role_narrator">Narrator</string>
-    <!-- Interior art / illustrations / photos / comics -->
+    <!-- Author role: Interior art / illustrations / photos / comics -->
     <string name="lbl_author_role_artist">Illustrations</string>
-    <!-- Comics: the artist who did the (typical) black ink drawing.
+    <!-- Author role.
+         Comics: the artist who did the (typical) black ink drawing.
          Can be different from the "lbl_author_type_artist" who may only do the pencil sketches. -->
     <string name="lbl_author_role_inking">Inking</string>
-    <!-- Comics: the artist who coloured in the original ink drawing.-->
+    <!-- Author role.
+         Comics: the artist who coloured in the original ink drawing.-->
     <string name="lbl_author_role_colorist">Colorist</string>
-    <!-- Books based on movies. Typically the steps are:
+    <!-- Author role.
+         Books based on movies. Typically the steps are:
          "story writer" -> "Screenplay" and/or "Storyboard" -> "book adaptation" -->
     <string name="lbl_author_role_storyboard">Storyboard</string>
-    <!-- Comics: the person who puts the text into/on the text-balloons. -->
+    <!-- Author role.
+         Comics: the person who puts the text into/on the text-balloons. -->
     <string name="lbl_author_role_lettering">Lettering</string>
-    <!-- Cover art / Cover illustration / Cover photo, composition, ...-->
+    <!-- Author role.
+         Cover art / Cover illustration / Cover photo, composition, ...-->
     <string name="lbl_author_role_cover_artist">Cover art</string>
-    <!-- Comics: the artist who did the (typical) black ink drawing.
+    <!-- Author role.
+         Comics: the artist who did the (typical) black ink drawing.
         (if different from the interior of the comic) -->
     <string name="lbl_author_role_cover_inking">Cover inking</string>
-    <!-- Comics: the artist who coloured in the original cover ink drawing.
+    <!-- Author role.
+         Comics: the artist who coloured in the original cover ink drawing.
         (if different from the interior of the comic)
         Can be different from the "lbl_author_type_cover_artist" who may only do the pencil sketches. -->
     <string name="lbl_author_role_cover_colorist">Cover colorist</string>
@@ -912,6 +947,7 @@
     <string name="pt_scan_mode">Scan mode</string>
     <!-- [VERIFIED] -->
     <string name="option_barcode_scan_mode_manual">Manual</string>
+    <!-- Setting option; whether barcode scans will be one at a time, or one after the other. -->
     <string name="option_barcode_scan_mode_continuous">Scan continuously</string>
 
     <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
@@ -919,8 +955,11 @@
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
     <string name="option_isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
 
+    <!-- Setting title. -->
     <string name="pt_search_result_order">Searches return the most recent book, or the first one found.</string>
+    <!-- Setting option. -->
     <string name="pe_search_result_order_most_recent">Most recent book found</string>
+    <!-- Setting option. -->
     <string name="pe_search_result_order_first_found">First book found</string>
 
     <!-- Menu option:
@@ -934,8 +973,12 @@
     <string name="option_import">Import</string>
     <string name="option_backup_and_export"
             translatable="false">@string/title_backup_and_export</string>
+    <!-- Calibre usage: where to download ebooks. -->
     <string name="option_download_set_folder">Set the download folder</string>
+    <!-- Calibre usage: where to download ebooks. -->
     <string name="option_download_folder">Local download folder</string>
+    <!-- Calibre usage: menu option.
+         Param 1: the format of the ebook (epub, amz, pdf,..) -->
     <string name="option_download_ebook_format">Download eBook (%1$s)</string>
     <!-- Whether the menu/options for a particular 'Sync' site are enabled or hidden. -->
     <string name="option_enable_sync_options">Enable sync options</string>
@@ -1007,7 +1050,8 @@
 
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
-    <!-- param 1: previous name; param 2: new name - each time as a single string.
+    <!-- param 1: previous name;
+         param 2: new name - each time as a single string.
          param 3: the text on the button for making a global change. e.g. "All books"
          param 4: the text on the button for making a local change. e.g. "This book only"
          param 5: the type of object we'll create a new one of if the user chooses "This book only"
@@ -1034,7 +1078,11 @@
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild. -->
     <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue?</string>
+    <!-- Displayed when the user changes their sorting preference.
+         When doing this, the search indexes information in the database needs to be rebuild. -->
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue?</string>
+    <!-- Displayed when the user changes their sorting preference.
+         When doing this, the internal indexing in the database needs to be rebuild. -->
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue?</string>
     <!-- Param 1: website name -->
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
@@ -1044,7 +1092,9 @@
     <!-- region ========== Button (action) texts, must be short. -->
     <!-- [VERIFIED] -->
     <string name="action_add">Add</string>
+    <!-- Menu option. Used to add an Author, allowing the user to add author-roles. -->
     <string name="action_add_with_details">Add with details</string>
+    <!-- Menu/button text. -->
     <string name="action_add_all">Add all</string>
 
     <!-- [VERIFIED] -->
@@ -1061,6 +1111,7 @@
     <string name="action_delete">Delete</string>
     <!-- [VERIFIED] -->
     <string name="action_remove">Remove</string>
+    <!-- Menu/button text. -->
     <string name="action_remove_all">Remove all</string>
     <!-- [VERIFIED] -->
     <string name="action_save">Save</string>
@@ -1124,7 +1175,9 @@
     <string name="action_duplicate">Duplicate</string>
     <!-- [VERIFIED] -->
     <string name="action_show_options">Options</string>
+    <!-- Button text. During barcode scanning-in-batch the user can clear all current isbn's in the queue. -->
     <string name="action_clear_queue">Clear queue</string>
+    <!-- Button text. -->
     <string name="action_stop_scanning">Stop scanning</string>
     <!-- Button -->
     <string name="action_stop_searching">Stop searching</string>
@@ -1136,6 +1189,7 @@
     <string name="action_import">Import</string>
     <!-- [VERIFIED] -->
     <string name="action_export">Export</string>
+    <!-- Calibre usage. Menu option. Starts a synchronization with a Calibre database. -->
     <string name="action_synchronize">Synchronize</string>
     <!-- Button: Ideally 3-5 characters long. -->
     <string name="action_show_toc"
@@ -1237,6 +1291,7 @@
     <string name="lbl_book">Book</string>
     <!-- Multiple Books. -->
     <string name="lbl_books">Books</string>
+    <!-- Generic label for the type of a book (book, collection, anthology,...) -->
     <string name="lbl_book_type">Book type</string>
     <string name="lbl_book_type_book"
             translatable="false">@string/lbl_book</string>
@@ -1362,7 +1417,9 @@
 
     <string name="lbl_identifier_key"
             translatable="false">@string/lbl_identifier</string>
+    <!-- Identifier editor label. The field for the template of a book url. See also the wiki docs. -->
     <string name="lbl_book_uri">Book URL</string>
+    <!-- Identifier editor label. The field for the template of an author url. See also the wiki docs. -->
     <string name="lbl_author_uri">Author URL</string>
     <!--
         The "claim" or "P" number which Wikidata uses for an author-id as
@@ -1414,8 +1471,8 @@
          (the color will be set by the app theme)
      -->
     <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
-    <string name="lbl_date_last_updated_year">Year last updated </string>
-    <string name="lbl_date_last_updated_month">Month last updated </string>
+    <string name="lbl_date_last_updated_year">Year last updated</string>
+    <string name="lbl_date_last_updated_month">Month last updated</string>
     <string name="lbl_date_last_updated_day">Day last updated</string>
     <!-- The date a user acquired the book. -->
     <string name="lbl_date_acquired">Date Acquired</string>
@@ -1443,7 +1500,9 @@
          (the color will be set by the app theme)
          -->
     <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
+    <!-- First publication year.  Translations should be abbreviated and be more or less the same text length. -->
     <string name="lbl_date_first_publication_year">First Pub. Year</string>
+    <!-- First publication month.  Translations should be abbreviated and be more or less the same text length. -->
     <string name="lbl_date_first_publication_month">First Pub. Month</string>
 
     <!-- Author birth date -->
@@ -1457,7 +1516,9 @@
     <string name="title_backup_and_export">Backup &amp; Export</string>
     <!-- Dialog export all options. -->
     <string name="lbl_export_options">Select what will be exported.</string>
+    <!-- Menu option. Backup/export. -->
     <string name="lbl_export_books_option_all">All books</string>
+    <!-- Menu option. Backup/export. -->
     <string name="lbl_export_books_option_since_last_full_backup">New and updated books</string>
     <!-- Explanatory note 'lbl_export_books_option_since_last_full_backup' -->
     <string name="info_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
@@ -1636,7 +1697,9 @@
 
     <!-- SwitchPreference title: support undoing an edit or replacement of a cover image. -->
     <string name="pt_cover_undo_enabled">Undoing operations on book covers</string>
+    <!-- menu option. -->
     <string name="ps_cover_undo_disabled">A cover edit/replace cannot be undone (uses less storage)</string>
+    <!-- menu option. -->
     <string name="ps_cover_undo_enabled">A cover edit/replace can be undone (uses more storage)</string>
 
     <!-- SwitchPreference title: Thumbnails are cached in a database to avoid resizing all the time -->
