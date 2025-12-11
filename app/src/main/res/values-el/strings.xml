@@ -41,7 +41,7 @@ A question mark is written as the character semicolon: ';'
         <item quantity="other">%1$s αστέρια</item>
     </plurals>
     <plurals name="n_tags">
-        <item quantity="one">%1$d ετικέτας</item>
+        <item quantity="one">%1$d ετικέτα</item>
         <item quantity="other">%1$d ετικέτες</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">
