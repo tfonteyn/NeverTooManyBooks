@@ -411,6 +411,13 @@ public class BiblionetGrSearchEngine
                         // The type is really the role of the author for specific book.
                         // Being an organization is an attribute of the author independent
                         // of a book.
+                        // FIXME: if the user would edit this author in either:
+                        //  EditAuthorViewModel
+                        //  EditBookAuthorListViewModel
+                        //  EditTocEntryViewModel
+                        //  it might get re-parsed and would get split up.
+                        //  Deliberate decision: tackle that the day someone complains.
+                        //  It will involve adding a UI element to prevent parsing.
                     });
                     break;
                 }
