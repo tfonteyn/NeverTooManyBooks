@@ -138,6 +138,7 @@ public class TagAdminViewModel
         final Tag target = tags.get(existingPos);
         try {
             tagDao.moveBooks(context, source, target);
+            tags.remove(position);
             return true;
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
