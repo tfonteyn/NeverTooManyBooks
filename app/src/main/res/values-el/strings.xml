@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -79,7 +76,7 @@ A question mark is written as the character semicolon: ';'
     <string name="X_action_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="acra_dialog_message">Φαίνεται ότι το &APP_NAME; έχει καταρρεύσει. Πατήστε «%1$s» για να αποθηκεύσετε μια αναφορά σε μια τοποθεσία της επιλογής σας. Μπορείτε να χρησιμοποιήσετε αυτή την αναφορά για να αναφέρετε ένα νέο πρόβλημα στον ιστότοπο του έργου.</string>
+    <string name="acra_dialog_message">Φαίνεται ότι το &APP_NAME; έχει καταρρεύσει. Πατήστε «%1$s» για να αποθηκεύσετε μια αναφορά σε τοποθεσία της επιλογής σας. Μπορείτε να χρησιμοποιήσετε αυτήν την αναφορά για να καταχωρήσετε ένα νέο ζήτημα (πρόβλημα) στον ιστότοπο της εφαρμογής.</string>
     <string name="action_add">Προσθήκη</string>
     <string name="action_add_with_details">Προσθήκη με λεπτομέρειες</string>
     <string name="action_clear">Διαγραφή</string>
@@ -227,9 +224,9 @@ A question mark is written as the character semicolon: ';'
     <string name="error_http_403_forbidden">Ο ιστότοπος έχει μπλοκάρει την πρόσβαση.</string>
     <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Ελέγξτε ότι η αποθήκευση είναι εγγράψιμη και έχει αρκετό χώρο.</string>
-    <string name="error_unexpected">Ένα άγνωστο σφάλμα συνέβη.</string>
+    <string name="error_unexpected">Παρουσιάστηκε ένα άγνωστο σφάλμα.</string>
     <string name="error_unknown_host">Παρουσιάστηκε πρόβλημα σύνδεσης με την υπηρεσία «%1$s».</string>
-    <string name="error_unexpected_long">Προέκυψε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
+    <string name="error_unexpected_long">Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_unsupported_version_v">Μη υποστηριζόμενη έκδοση: %1$d</string>
     <string name="error_upgrade_not_supported">Δεν υποστηρίζεται η αναβάθμιση από εκδόσεις παλαιότερες από %1$s.</string>
     <string name="option_fab_add_book_by_barcode_scan">Σάρωση γραμμωτού κώδικα</string>
@@ -240,7 +237,7 @@ A question mark is written as the character semicolon: ';'
     <string name="option_fab_add_book_manually">Χειροκίνητη Προσθήκη</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Παρουσιάστηκε σφάλμα δικτύου.</string>
-    <string name="httpErrorAuth">Δεν ήταν δυνατός ο έλεγχος ταυτότητας.</string>
+    <string name="httpErrorAuth">Δεν ήταν δυνατή η πιστοποίηση.</string>
     <string name="httpErrorFailedSslHandshake">Δεν ήταν δυνατή η δημιουργία ασφαλούς σύνδεσης.</string>
     <string name="httpErrorFile">Δεν ήταν δυνατή η πρόσβαση στο αρχείο.</string>
     <string name="httpErrorFileNotFound">Δεν ήταν δυνατή η εύρεση του αρχείου που ζητήθηκε.</string>
@@ -750,7 +747,7 @@ A question mark is written as the character semicolon: ';'
     <string name="info_story_in_single_book">Το «%1$s» υπάρχει σε ένα μόνο βιβλίο:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Εισαγάγετε ένα αρχείο κειμένου με αριθμούς ISBN. Το αρχείο θα πρέπει να έχει ένα μόνο ISBN σε κάθε γραμμή. Τα αποτελέσματα θα τοποθετηθούν στην ουρά.</string>
     <string name="lbl_date_added">Ημερομηνία προσθήκης</string>
-    <string name="debug_select_items">Επιλέξτε αυτό που θέλετε να συμπεριλάβετε:</string>
+    <string name="debug_select_items">Επιλέξτε τι θέλετε να συμπεριληφθεί:</string>
     <string name="lbl_group_1st_char_author_family_name">1ος χαρακτήρας του ονόματος της οικογένειας του συγγραφέα</string>
     <string name="lbl_group_1st_char_series_title">1ος χαρακτήρας του τίτλου της σειράς</string>
     <string name="lbl_group_1st_char_publisher_name">1ος χαρακτήρας του ονόματος του εκδότη</string>
@@ -813,7 +810,7 @@ A question mark is written as the character semicolon: ';'
     <string name="pe_bob_cover_click_zoom">Θα μεγεθύνει την εικόνα του εξωφύλλου.</string>
     <string name="pe_bob_cover_click_details">Ανοίγει τη σελίδα με τις λεπτομέρειες του βιβλίου.</string>
     <string name="X_style_type_defaults">Στυλ προεπιλεγμένες ρυθμίσεις</string>
-    <string name="acra_report_saved">Μπορείτε τώρα να επισκεφθείτε τη σελίδα του έργου στο Github και να καταγράψετε ένα νέο θέμα. Παρακαλούμε επισυνάψτε την προηγουμένως αποθηκευμένη αναφορά στο θέμα. Αν δεν έχετε ακόμη λογαριασμό στο Github, θα πρέπει να δημιουργήσετε έναν.</string>
+    <string name="acra_report_saved">Τώρα μπορείτε να επισκεφθείτε τη σελίδα της εφαρμογής στο GitHub και να καταχωρήσετε ένα νέο πρόβλημα. Παρακαλώ επισυνάψτε την αναφορά που αποθηκεύσατε προηγουμένως. Αν δεν έχετε λογαριασμό στο GitHub, θα χρειαστεί να δημιουργήσετε έναν.</string>
     <string name="action_report">Αναφορά</string>
     <string name="error_invalid_url">Μη έγκυρη διεύθυνση (URL)</string>
     <string name="lbl_certificate_validity_period">Ισχύς: %1$s - %2$s</string>
@@ -888,5 +885,4 @@ A question mark is written as the character semicolon: ';'
     <string name="tip_bookshelf_management">Η επισημασμένη γραμμή δείχνει τη τρέχουσα βιβλιοθήκη σου.\n\nΗ προεπιλεγμένη βιβλιοθήκη (με * δίπλα) θα χρησιμοποιηθεί αυτόματα αν η τρέχουσα δεν είναι διαθέσιμη για οποιονδήποτε λόγο.</string>
     <string name="pt_search_tag_use_subject_number">Διατήρηση του αριθμητικού προθέματος στις ετικέτες θεμάτων</string>
     <string name="site_description_greek">Ελληνικά</string>
-
 </resources>
