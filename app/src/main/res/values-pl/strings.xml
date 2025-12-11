@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -832,7 +829,7 @@
     <string name="lbl_assign_bookshelves">Przypisanie półek na książki</string>
     <string name="site_description_comics">Komiksy</string>
     <string name="lbl_author_role_storyboard">Scenorys</string>
-    <string name="lbl_author_role_lettering">Lettering</string>
+    <string name="lbl_author_role_lettering">Liternictwo</string>
     <string name="lbl_percentage">Procent</string>
     <string name="lbl_current_page">Bieżąca strona</string>
     <string name="btn_completed">Zakończony</string>
@@ -900,5 +897,4 @@
     <string name="tip_bookshelf_management">Podświetlony wiersz pokazuje twoją obecną półkę.\n\nDomyślna półka (oznaczona *) zostanie użyta automatycznie, jeśli obecna z jakiegokolwiek powodu nie będzie dostępna.</string>
     <string name="pt_search_tag_use_subject_number">Zachowaj numeryczny przedrostek w tagach tematycznych</string>
     <string name="site_description_greek">Grecki</string>
-
 </resources>
