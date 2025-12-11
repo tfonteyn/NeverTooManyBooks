@@ -226,6 +226,7 @@ public class EditAuthorViewModel
      * @return {@code true} if modified
      */
     public boolean isModified() {
+        // We're not linked to a book here, hence no author roles.
         return !(original.isSameName(currentEdit)
                  && Objects.equals(original.getBirthDate(), currentEdit.getBirthDate())
                  && Objects.equals(original.getDeathDate(), currentEdit.getDeathDate())
