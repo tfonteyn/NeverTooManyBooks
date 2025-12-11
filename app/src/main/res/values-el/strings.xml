@@ -211,7 +211,7 @@ A question mark is written as the character semicolon: ';'
     <string name="error_import_failed_for_record">Μη επιτυχημένη εισαγωγή (%1$s)</string>
     <string name="error_import_file_not_supported">Δεν είναι δυνατή η εισαγωγή του επιλεγμένου αρχείου.</string>
     <string name="error_network_failed_try_again">Ελέγξτε τη σύνδεση και δοκιμάστε ξανά.</string>
-    <string name="error_network_please_connect">Συνδεθείτε στο διαδίκτυο.</string>
+    <string name="error_network_please_connect">Παρακαλώ συνδεθείτε στο διαδίκτυο.</string>
     <string name="error_network_site_access_failed">Παρουσιάστηκε πρόβλημα δικτύου κατά την πρόσβαση στο %1$s. Ελέγξτε εάν ο ιστότοπος είναι ανεβασμένος και εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη.</string>
     <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων.</string>
     <string name="error_book_search_failed">Η αναζήτηση του βιβλίου απέτυχε.</string>
@@ -228,7 +228,7 @@ A question mark is written as the character semicolon: ';'
     <string name="error_unknown_host">Παρουσιάστηκε πρόβλημα σύνδεσης με την υπηρεσία «%1$s».</string>
     <string name="error_unexpected_long">Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_unsupported_version_v">Μη υποστηριζόμενη έκδοση: %1$d</string>
-    <string name="error_upgrade_not_supported">Δεν υποστηρίζεται η αναβάθμιση από εκδόσεις παλαιότερες από %1$s.</string>
+    <string name="error_upgrade_not_supported">Η αναβάθμιση από εκδόσεις παλαιότερες της %1$s δεν υποστηρίζεται.</string>
     <string name="option_fab_add_book_by_barcode_scan">Σάρωση γραμμωτού κώδικα</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Σάρωση γραμμωτών κωδικών σε παρτίδα</string>
     <string name="option_fab_add_book_by_external_id">Αναγνωριστικό βιβλίου ιστοτόπου</string>
@@ -763,7 +763,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_purge_blns">Διαγράψτε την κατάσταση του κόμβου</string>
     <string name="info_purge_blns_all">Διαγράψτε την κατάσταση του κόμβου από όλες τις λίστες</string>
     <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s «%2$s»;</string>
-    <string name="error_updates_aborted">Οι ενημερώσεις ματαιώθηκαν</string>
+    <string name="error_updates_aborted">Οι ενημερώσεις ακυρώθηκαν</string>
     <string name="lbl_country">Χώρα</string>
     <string name="pt_search_show_menu_options">Εμφάνιση μενού αναζήτησης</string>
     <string name="lbl_author_pseudonym_of_X">ψε. %1$s</string>
