@@ -35,24 +35,47 @@ public final class SearchEngineUtils {
     /** a CR is replaced with a space. */
     private static final Pattern CR_LITERAL = Pattern.compile("\n", Pattern.LITERAL);
 
-    private static final String LRM_CHAR = "\u200E";
-    private static final String RTL_CHAR = "\u200F";
-    /** a Right-to-left is replaced with a space. */
-    private static final Pattern LRM_LITERAL = Pattern.compile(LRM_CHAR, Pattern.LITERAL);
-    /** a Left-to-right is replaced with a space. */
-    private static final Pattern RTL_LITERAL = Pattern.compile(RTL_CHAR, Pattern.LITERAL);
+    /** All non-rendering characters to REMOVE. */
+    @SuppressWarnings("UnnecessaryUnicodeEscape")
+    private static final Pattern INVISIBLE_CHARS = Pattern.compile(
+            "["
+            // Zero-width characters
+            + "\u200B\u200C\u200D\uFEFF"
+            // Word joiner, invisible ops
+            + "\u2060-\u2064"
+            // Combining grapheme joiner
+            + "\u034F"
+            // BiDi controls (LRE, RLE, etc.)
+            + "\u202A-\u202E"
+            // LRI/RLI/FSI/PDI
+            + "\u2066-\u2069"
+            // Variation Selectors 1–16
+            + "\uFE00-\uFE0F"
+            // CJK Variation Selectors
+            + "\\x{E0100}-\\x{E01EF}"
+            // Tag characters (subtag system)
+            + "\\x{E0000}-\\x{E007F}"
+            + "]"
+    );
+
+    /** Non-standard whitespace to replace with a space. */
+    private static final Pattern ODD_WHITESPACE = Pattern.compile(
+            "[\u00A0\u2000-\u200A\u3000]");
+
+    /** Replace repeated/special whitespace characters with a single space. */
+    private static final Pattern WHITESPACE = Pattern.compile(
+            "[\\s\u00A0\u2000-\u200A\u3000]+");
 
     /**
-     * Trim extraneous punctuation suffixes from titles, authors and other types of names.
+     * Trim extraneous punctuation from the end of titles, authors and other types of names.
      *
-     * @see #cleanName(String)
+     * @see #cleanName(CharSequence)
      */
-    private static final Pattern CLEAN_NAME_PATTERN =
-            Pattern.compile("[,.':;`~@#$%^&*(\\-=_+\u200E\u200F]*$");
+    private static final Pattern END_PUNCTUATION_PATTERN =
+            Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
+
     /** Keep only alpha/digit and space characters. */
     private static final Pattern KEEP_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
-    /** Replace repeated/special whitespace characters with a single space. */
-    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
     private SearchEngineUtils() {
     }
@@ -81,39 +104,43 @@ public final class SearchEngineUtils {
     }
 
     /**
-     * Clean the given text. Currently cleans up {@code &}, {@code div} and {@code \n}
-     * and Amazon specific unicode LRM/RTL characters.
+     * Clean the given text.
+     * <p>
+     * Currently cleans up {@code &}, {@code div} and {@code \n}
+     * and a range of unicode control characters.
      *
      * @param s to clean
      *
      * @return cleansed string
      */
     @NonNull
-    public static String cleanText(@NonNull final String s) {
-        String text = s.strip();
-        // add more rules when needed.
-        if (text.contains("&")) {
-            text = AMPERSAND_LITERAL.matcher(text).replaceAll(
-                    Matcher.quoteReplacement("&"));
-        }
-        if (text.contains("<div>")) {
-            // the div elements only create empty lines, we remove them to save screen space
-            text = DIV_PATTERN.matcher(text).replaceAll("");
-        }
+    public static String cleanText(@NonNull final CharSequence s) {
+        // remove all unwanted invisible chars
+        String text = INVISIBLE_CHARS.matcher(s).replaceAll("");
+        // and replace all special whitespace with a regular single space.
+        text = ODD_WHITESPACE.matcher(text).replaceAll(" ");
+
         if (text.contains("\n")) {
             text = CR_LITERAL.matcher(text).replaceAll(" ");
         }
-        if (text.contains(LRM_CHAR)) {
-            text = LRM_LITERAL.matcher(text).replaceAll(" ");
+
+        // replace any html encoded ampersands.
+        if (text.contains("&")) {
+            text = AMPERSAND_LITERAL.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
         }
-        if (text.contains(RTL_CHAR)) {
-            text = RTL_LITERAL.matcher(text).replaceAll(" ");
+
+        // div elements only create empty lines, we remove them to save screen space
+        if (text.contains("<div>")) {
+            text = DIV_PATTERN.matcher(text).replaceAll("");
         }
+
+        // add more rules when needed.
+
         return text.strip();
     }
 
     /**
-     * Variant of {@link #cleanText(String)} which does additional cleanup
+     * Variant of {@link #cleanText(CharSequence)} which does additional cleanup
      * specific to author names and titles.
      *
      * @param s to clean
@@ -121,9 +148,10 @@ public final class SearchEngineUtils {
      * @return cleansed string
      */
     @NonNull
-    public static String cleanName(@NonNull final String s) {
-        final String tmp = cleanText(s.strip());
-        return CLEAN_NAME_PATTERN.matcher(tmp).replaceAll("").strip();
+    public static String cleanName(@NonNull final CharSequence s) {
+        final String text = cleanText(s);
+        // remove any junk characters from the end of the string
+        return END_PUNCTUATION_PATTERN.matcher(text).replaceAll("").strip();
     }
 
     /**
@@ -134,16 +162,12 @@ public final class SearchEngineUtils {
      * @return cleansed string
      */
     @NonNull
-    public static String encodeSearchString(@Nullable final String search) {
-        if (search == null || search.isEmpty()) {
+    public static String encodeSearchString(@Nullable final CharSequence search) {
+        if (search == null || search.length() == 0) {
             return "";
         }
 
-        final String result = WHITESPACE
-                .matcher(search)
-                .replaceAll(" ");
-        return KEEP_PATTERN
-                .matcher(result)
-                .replaceAll("");
+        final String result = WHITESPACE.matcher(search).replaceAll(" ");
+        return KEEP_PATTERN.matcher(result).replaceAll("");
     }
 }
