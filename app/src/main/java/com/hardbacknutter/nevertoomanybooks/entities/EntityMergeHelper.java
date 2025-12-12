@@ -74,7 +74,10 @@ public class EntityMergeHelper<T extends Mergeable> {
     /**
      * Loop over the list and try to find and merge duplicates.
      * <p>
-     * We always convert to lower case for comparing items.
+     * Comparing the name fields of items is done
+     * <strong>after normalization and lowercasing</strong>.
+     * This makes sure we can merge names which are only different in for example an accent on
+     * a character, or in upper/lower case characters.
      *
      * @param context        Current context
      * @param list           to process
