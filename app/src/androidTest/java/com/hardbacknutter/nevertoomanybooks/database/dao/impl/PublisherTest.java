@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 @MediumTest
@@ -56,6 +57,39 @@ public class PublisherTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         publisherDao = serviceLocator.getPublisherDao();
+    }
+
+    @Test
+    public void bidi()
+            throws DaoWriteException {
+        final Locale bookLocale = Locale.getDefault();
+
+        final List<Publisher> list = new ArrayList<>();
+        final Publisher p1;
+        Publisher p2;
+        Publisher p3;
+
+        p1 = new Publisher("Zsolnay, Paul");
+        p1.setId(1467);
+        list.add(p1);
+        publisherDao.insert(context, p1, bookLocale);
+
+        p2 = new Publisher("Paul Zsolnay Verlag");
+        p2.setId(1468);
+        list.add(p2);
+
+        // bidi character in front
+        p3 = new Publisher("\u200EPaul Zsolnay Verlag");
+        // same id as p2
+        p3.setId(1468);
+        list.add(p3);
+
+        assertNotEquals(p2, p3);
+
+        final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
+
+        assertTrue(list.toString(), modified);
+        assertEquals(list.toString(), 2, list.size());
     }
 
     @Test
