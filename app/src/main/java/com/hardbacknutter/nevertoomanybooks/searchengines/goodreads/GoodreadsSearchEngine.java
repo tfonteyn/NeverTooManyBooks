@@ -33,6 +33,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
@@ -117,7 +118,17 @@ public class GoodreadsSearchEngine
     /** Example: {@code "https://www.goodreads.com/author/show/40652983.Nuanxed"}. */
     private static final Pattern AUTHOR_WEB_URL_ID = Pattern.compile(
             "https://www.goodreads.com/author/show/(\\d+)\\..*");
-
+    /**
+     * The language field is checked to <strong>contain</strong> the key.
+     * When found, the value == iso3 is used.
+     */
+    private static final Map<String, String> LANG_MAP = Map.ofEntries(
+            Map.entry("Bokmål", "nob"),
+            Map.entry("Castilian", "spa"),
+            Map.entry("Greek, Ancient", "grc"),
+            Map.entry("Greek, Modern", "ell"),
+            Map.entry("Nynorsk", "nno")
+    );
     private final RatingParser ratingParser;
     private final AuthorRoleMapper authorRoleMapper;
     private final AuthorResolverHelper authorResolverHelper;
@@ -676,23 +687,40 @@ public class GoodreadsSearchEngine
     }
 
     /**
-     * Why goodreads... why...
+     * Language and sub-language mapping.
      *
      * <pre>
      *     "Dutch; Flemish"
      *     "Greek, Modern (1453-)"
+     *     "Greek, Ancient (to 1453)"
      *     "Spanish; Castilian"
+     *     "Norwegian Nynorsk; Nynorsk, Norwegian"
+     *     "Bokmål, Norwegian; Norwegian Bokmål"
+     *
      * </pre>
      *
      * @param s language
      *
-     * @return cleaned string
+     * @return iso3 code, or cleaned string as a fallback
      */
     @NonNull
     private String mapLanguage(@NonNull final String s) {
+        final Optional<String> iso = LANG_MAP
+                .entrySet()
+                .stream()
+                .filter(entry -> s.contains(entry.getKey()))
+                .findFirst()
+                .map(Map.Entry::getValue);
+
+        if (iso.isPresent()) {
+            return iso.get();
+        }
+
+        // as fallback, strip the second part
         if (s.contains(",") || s.contains(";")) {
             return LANG_SPLITTER.split(s)[0];
         }
+        // or just return the original
         return s;
     }
 
