@@ -269,6 +269,7 @@ public class AuthorParser {
         //
         // #search : present
         // #resolve: present
+        // Only used in a debug dump for now
         final JSONArray alternateNames = document.optJSONArray("alternate_names");
 
         // We've seen, BUT not used consistently (or at all)...
