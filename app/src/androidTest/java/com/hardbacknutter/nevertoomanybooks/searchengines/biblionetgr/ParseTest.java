@@ -232,8 +232,8 @@ public class ParseTest
         assertEquals(AuthorRole.EDITOR, author.getRole());
 
         author = authors.get(3);
-        assertEquals("Αγρινίου", author.getFamilyName());
-        assertEquals("Δήμος", author.getGivenNames());
+        assertEquals("Δήμος Αγρινίου", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = authors.get(4);
@@ -242,8 +242,8 @@ public class ParseTest
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         author = authors.get(5);
-        assertEquals("Σχολή", author.getFamilyName());
-        assertEquals("Πανεπιστήμιο Ιωαννίνων. Φιλοσοφική", author.getGivenNames());
+        assertEquals("Πανεπιστήμιο Ιωαννίνων. Φιλοσοφική Σχολή", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);

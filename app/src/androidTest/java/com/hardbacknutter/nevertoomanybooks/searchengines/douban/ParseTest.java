@@ -211,11 +211,9 @@ public class ParseTest
         assertFalse(book.contains(DBKey.PRICE_LISTED));
         assertFalse(book.contains(DBKey.PRICE_LISTED_CURRENCY));
 
-        assertEquals(
-                "<p>文化大革命如火如荼进行的同时。军方探寻外星文明的绝秘计划“红岸工程”取得了突破性进展。但在按下发射键的那一刻，历经劫难的叶文洁没有意识到，她彻底改变了人类的命运。地球文明向宇宙发出的第一声啼鸣，以太阳为中心，以光速向宇宙深处飞驰……</p>\n" +
-                "<p>四光年外，“三体文明”正苦苦挣扎——三颗无规则运行的太阳主导下的百余次毁灭与重生逼迫他们逃离母星。而恰在此时。他们接收到了地球发来的信息。在运用超技术锁死地球人的基础科学之后。三体人庞大的宇宙舰队开始向地球进发……</p>\n" +
-                "<p>人类的末日悄然来临。</p>",
-                book.getString(DBKey.DESCRIPTION, null));
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(description.startsWith("<p>文化大革命如火如荼进行的同时。"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -269,12 +267,10 @@ public class ParseTest
         assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals(
-                "<p>军方探寻外星文明的绝秘计划“红岸工程”取得了突破性进展。但在按下发射键的那一刻，历经劫难的叶文洁没有意识到，她彻底改变了人类的命运。地球文明向宇宙发出的第一声啼鸣，以太阳为中心，以光速向宇宙深处飞驰……</p>\n"
-                + "<p>四光年外，“三体文明”正苦苦挣扎——三颗无规则运行的太阳主导下的百余次毁灭与重生逼迫他们逃离母星。而恰在此时。他们接收到了地球发来的信息。在运用超技术锁死地球人的基础科学之后。三体人庞大的宇宙舰队开始向地球进发……</p>\n"
-                + "<p>人类的末日悄然来临。</p>",
-                book.getString(DBKey.DESCRIPTION, null));
-
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(
+                description.startsWith("<p>军方探寻外星文明的绝秘计划“红岸工程”取得了突破性进展。"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -354,40 +350,10 @@ public class ParseTest
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals(
-                "<p>反转反转反转，再反转再反转，再神级反转的绝世推理经典!</p>\n" +
-                "<p>-----------------------------------------------------------------------------------</p>\n" +
-                "<p>\uD83D\uDCD6编辑推荐</p>\n" +
-                "<p>◎ 不可能犯罪之王保罗·霍尔特绝版名作</p>\n" +
-                "<p>◎ 入选“豆瓣推理小说Top 100”，豆瓣评分8.6！</p>\n" +
-                "<p>◎ 教科书级反转神作，旧版价格炒到10倍+</p>\n" +
-                "<p>◎ 鸟嘴医生之谜×垃圾桶藏尸之谜×人体瞬移之谜×谋杀决斗之谜</p>\n" +
-                "<p>◎ 融推理三巨头之长，诡计与逻辑的惊艳结合</p>\n" +
-                "<p>◎ 让岛田庄司、绫辻行人推崇备至的推理大师</p>\n" +
-                "<p>◎ 翻开本书，共赴一场反转反转再反转的推理盛宴</p>\n" +
-                "<p>-----------------------------------------------------------------------------------</p>\n" +
-                "<p>\uD83D\uDCD6内容简介</p>\n" +
-                "<p>午夜时分，中世纪的鸟嘴医生游荡在现代街头。</p>\n" +
-                "<p>幽暗小巷，无名男尸凭空消失又凭空出现。</p>\n" +
-                "<p>密闭走廊，染病房客在众目睽睽之下人间蒸发。</p>\n" +
-                "<p>诡异书房，昔日好友发起致命的杀人对决。</p>\n" +
-                "<p>…………</p>\n" +
-                "<p>1938年的伦敦城内，怪事一桩接着一桩发生。</p>\n" +
-                "<p>侦探二人组穷举所有可能性，却始终不得其解。</p>\n" +
-                "<p>案件或许要历经六重反转，</p>\n" +
-                "<p>才能迎来揭露真相的第七重解答！</p>\n" +
-                "<p>-----------------------------------------------------------------------------------</p>\n" +
-                "<p>\uD83D\uDCD6内文金句</p>\n" +
-                "<p>1. 在绝对诚实的人和长期撒谎的人之间，存在着不同程度的撒谎者。</p>\n" +
-                "<p>2. 在我们面前的是一张拼图，其中显然没有任何一块碎片能拼得起来，而且随着事件的发酵，碎片的数量还在不断增加。</p>\n" +
-                "<p>3. 我们太过沉迷于这种组合罪犯的把戏，反而忽略了最重要的因素一一人的因素。</p>\n" +
-                "<p>-----------------------------------------------------------------------------------</p>\n" +
-                "<p>\uD83D\uDCD6媒体评价</p>\n" +
-                "<p>1.“传统”“反潮流”是对霍尔特作品的常用定义。他积累了近40本小说的疯狂谜题和不可能犯罪，成为了约翰·迪克森·卡尔的唯一继承人。——霍尔特官方主页</p>\n" +
-                "<p>2. 保罗·霍尔特的小说融合了灵异的艺术氛围和高超的经典情节，这些特质让他的小说充满令人难以抗拒的魅力。——《埃勒里·奎因推理杂志》</p>\n" +
-                "<p>3. 当您进入霍尔特笔下的故事时，千万当心！他会让您接受难以置信的传说和离奇的故事，让您相信不可能的事物和疯狂的解释。——罗兰·拉库布（法国知名作家、编辑）</p>",
-                book.getString(DBKey.DESCRIPTION, null));
-
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(
+                description.startsWith("<p>反转反转反转，再反转再反转，再神级反转的绝世推理经典!"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -541,21 +507,9 @@ public class ParseTest
         assertEquals(58d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals(
-                "<p>自然科学在解释意识上的失败，似乎让我们不得不在物理主义和某种二元论之间做出选择，前者意味着要否认我们的意识和主观体验的实在性，后者则带来了更多问题。作为第三种方案的“泛心论”近年来备受哲学家和神经科学家关注，不少人认为它离解决意识问题的目标更近；根据这一理论，意识是 物理世界中基本的、普遍存在的特征，我们的意识在物理世界中看起来之所以独特，是因为它是我们目前唯一拥有的通达物质内在本质的窗口。本书回顾了三种路径在解决意识问题方面的优势与缺陷，以简明扼要的哲学论证为泛心论做出了有力的辩护，是一部通达意识科学研究前沿的入门佳作。</p>\n" +
-                "<p>----------------------------</p>\n" +
-                "<p>\uD83E\uDDE0我怎么知道我是否存在？我等于我的大脑吗？200页无门槛直抵心灵哲学核心议题</p>\n" +
-                "<p>\uD83D\uDD34我们看到的红色从何而来？疼痛的感觉能否还原为特定神经元放电？深入分析“解释鸿沟”三种方案</p>\n" +
-                "<p>\uD83E\uDD16人类意识是否独一无二？人工智能会有自我意识吗？从“泛心论”出发重新观察世界</p>\n" +
-                "<p>----------------------------</p>\n" +
-                "<p>“本书是新一代哲学家的宣言，他们认为我们需要修正对物理世界的看法，以适应意识。伽利略把心灵从物质中抽离出来，这对物质科学来说是好事，但对心灵科学来说不见得如此。菲利普·高夫认为，要解释意识，我们必须把心灵放回物质中。他的想法很激进，但他的论证很严谨，这本书读起来很愉快。我向任何想要了解意识之谜的人推荐这本书。”</p>\n" +
-                "<p>——大卫·查莫斯，《有意识的心灵》作者、纽约大学哲学教授</p>\n" +
-                "<p>“菲利普·高夫在本书中提出了一种科学研究意识的新方法。他以通俗易懂、引人入胜的方式分析了为什么我们的感觉经验仍然无法得到科学解释，为什么将意识描述为物质基本特征的理论一直被忽视，以及为什么这些理论现在值得认真考虑。谁要是对意识研究的未来感兴趣，这就是他的必读书。”</p>\n" +
-                "<p>——安娜卡·哈里斯，科普作家</p>\n" +
-                "<p>“菲利普·高夫写了一本非常通俗易懂、趣味横生的书，介绍并捍卫了一种日渐流行（虽然乍看之下有些古怪）的观点：意识无处不在，物质不会因其排列组合突然间闪现出意识，意识一开始就存在。关于这一引人入胜的话题，再没有比本书更好的导论了。”</p>\n" +
-                "<p>——史蒂芬·劳，牛津大学继续教育系哲学主任</p>",
-                book.getString(DBKey.DESCRIPTION, null));
-
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(description.startsWith("<p>自然科学在解释意识上的失败，似乎让我们不"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

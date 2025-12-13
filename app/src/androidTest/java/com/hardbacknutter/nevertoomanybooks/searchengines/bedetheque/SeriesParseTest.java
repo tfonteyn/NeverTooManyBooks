@@ -72,7 +72,7 @@ public class SeriesParseTest
                              "Lucky Luke (Les aventures de)",
                         null},
                 {" Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
-                             " Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
+                        "Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken)",
                         null},
                 {"Lucky Luke (As aventuras de) (en portugais)",
                              "Lucky Luke (As aventuras de)",

@@ -375,7 +375,7 @@ public class ParseTest
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
-        assertEquals("Mercis Publishing B.V.", allPublishers.get(0).getName());
+        assertEquals("Mercis Publishing B.V", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);

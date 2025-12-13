@@ -155,14 +155,8 @@ public class IsfdbXmlPublicationTest
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
         assertEquals("1971-02-15", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("254", book.getString(DBKey.PAGES, null));
-        // The parser apache/ExpatParser is not very good at eliminating whitespace.
-        // In reality, the xml should parse into :
-        //    "Data from OCLC.\nPublication date from Amazon.co.uk"
-        // TODO: perhaps there is some config for the apache/ExpatParser to fix this?
-        assertEquals("Data from OCLC.                 "
-                     + "Publication date from Amazon.co.uk",
+        assertEquals("Data from OCLC. Publication date from Amazon.co.uk",
                      book.getString(DBKey.DESCRIPTION, null));
-
 
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
         assertEquals("TRPLNTRLBK1971", book.getString(IsfdbSearchEngine.SiteField.BOOK_TAG, null));

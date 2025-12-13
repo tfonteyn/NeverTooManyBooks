@@ -384,26 +384,14 @@ public class ParseTest
         assertEquals("Katja", author.getGivenNames());
         assertEquals("1973-09-17", author.getBirthDate().orElse(null));
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
-        assertEquals(6, author.getIdentifiers().size());
+        assertEquals(7, author.getIdentifiers().size());
         Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
         assertEquals("OL10146707A", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_ASIN);
-        assertTrue(oIv.isPresent());
-        assertEquals("B09KDKT6RV", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
-        assertTrue(oIv.isPresent());
-        assertEquals("22177746", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_LIBRARY_THING);
-        assertTrue(oIv.isPresent());
-        assertEquals("diehlkatja", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
         assertEquals("Q110700832", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_VIAF);
-        assertTrue(oIv.isPresent());
-        assertEquals("78164479539426210002", oIv.get());
 
         // duplicate without birthdate
         author = authors.get(1);

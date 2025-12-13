@@ -46,6 +46,7 @@ public class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
+    /** THIS TOKEN NEEDS TO BE TEMPORARILY FILLED IN - BUT NEVER COMMIT IT TO GIT! */
     private static final String TOKEN = "";
 
     private LibraryThingSearchEngine searchEngine;

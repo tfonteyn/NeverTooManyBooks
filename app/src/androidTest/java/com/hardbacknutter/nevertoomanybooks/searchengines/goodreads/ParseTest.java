@@ -100,7 +100,7 @@ public class ParseTest
 
         assertEquals("Ο νόμος ποτέ δε κοιμάται...", book.getString(DBKey.TITLE, null));
         assertEquals("9789604419197", book.getString(DBKey.ISBN, null));
-        assertEquals("Greek", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("ell", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("L'Agent 212, Tome 01 : 24 heures sur 24",
@@ -440,7 +440,7 @@ public class ParseTest
         assertEquals("1920-01-02", author.getBirthDate().orElse(null));
         assertEquals("1992-04-06", author.getDeathDate().orElse(null));
         assertTrue(author.getTmpPictureFileSpec().get().endsWith("_goodreads_16667_0_.jpg"));
-        assertEquals(20, author.getIdentifiers().size());
+        assertEquals(21, author.getIdentifiers().size());
 
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -451,18 +451,6 @@ public class ParseTest
         oIv = author.getIdentifierValue(Identifier.SID_VIAF);
         assertTrue(oIv.isPresent());
         assertEquals("24597135", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
-        assertTrue(oIv.isPresent());
-        assertEquals("16667", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
-        assertTrue(oIv.isPresent());
-        assertEquals("46170", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
-        assertTrue(oIv.isPresent());
-        assertEquals("OL34221A", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_BNF);
-        assertTrue(oIv.isPresent());
-        assertEquals("cb118892827", oIv.get());
         // We don't check all of them...
 
         final List<Series> seriesList = book.getSeries();

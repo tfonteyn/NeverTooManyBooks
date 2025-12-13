@@ -160,7 +160,7 @@ public class AuthorParseTest
         assertEquals("1920-01-02", author.getBirthDate().orElse(null));
         assertEquals("1992-04-06", author.getDeathDate().orElse(null));
 
-        assertEquals(6, author.getIdentifiers().size());
+        assertEquals(7, author.getIdentifiers().size());
         Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());

@@ -134,7 +134,7 @@ public class AuthorParseTest
         assertTrue(author.getTmpPictureFileSpec().orElse("").endsWith("_wikidata_Q34981_0_.jpg"));
 
         final List<Identifier.Value> identifiers = author.getIdentifiers();
-        assertEquals(20, identifiers.size());
+        assertEquals(21, identifiers.size());
         assertEquals("Q34981", author.getIdentifierValue(Identifier.SID_WIKIDATA).orElse(null));
 
         assertEquals("46170", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
