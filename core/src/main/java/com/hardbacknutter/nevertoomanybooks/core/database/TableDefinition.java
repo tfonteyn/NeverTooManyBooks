@@ -120,13 +120,24 @@ public class TableDefinition {
     /**
      * Create this table.
      * Don't forget to call {@link #createIndices(SQLiteDatabase, boolean)} if needed.
+     * <p>
+     * Will only create the table if it's not already present.
      *
      * @param db                    Database Access
      * @param withDomainConstraints Indicates if fields should have constraints applied
+     *
+     * @return {@code true} if the table was created; {@code false} if it already existed.
      */
-    public void create(@NonNull final SQLiteDatabase db,
-                       final boolean withDomainConstraints) {
-        db.execSQL(getCreateStatement(name, withDomainConstraints));
+    public boolean create(@NonNull final SQLiteDatabase db,
+                          final boolean withDomainConstraints) {
+        final TableInfo ti = getTableInfo(db);
+        if (!ti.exists()) {
+            db.execSQL(getCreateStatement(name, withDomainConstraints));
+            return true;
+        } else {
+            LoggerFactory.getLogger().w(TAG, "create: table already exists: " + name);
+            return false;
+        }
     }
 
     /**
@@ -520,7 +531,7 @@ public class TableDefinition {
      *
      * @param db Database Access
      *
-     * @return info object
+     * @return info object; its details might be empty if the table does not exist.
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
