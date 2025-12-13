@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,9 +58,19 @@ public class TableInfo {
     }
 
     /**
+     * Check if the table physically exists and has at least on column.
+     *
+     * @return flag
+     */
+    public boolean exists() {
+        return !columns.isEmpty();
+    }
+
+    /**
      * Get the information on all columns.
      *
      * @return the collection of column information
+     *         Will be empty if the table was not found
      */
     @NonNull
     public Collection<ColumnInfo> getColumns() {
@@ -87,8 +96,9 @@ public class TableInfo {
      * @param tableName Name of the database table to lookup
      *
      * @return A collection of ColumnInfo objects.
+     *         Will be empty if the table was not found
      *
-     * @throws SQLiteException if we failed to get the column details
+     * @see #exists()
      */
     @NonNull
     private Map<String, ColumnInfo> describeTable(@NonNull final SQLiteDatabase db,
@@ -102,9 +112,6 @@ public class TableInfo {
             }
         }
 
-        if (allColumns.isEmpty()) {
-            throw new SQLiteException("Unable to get column details");
-        }
         return allColumns;
     }
 
