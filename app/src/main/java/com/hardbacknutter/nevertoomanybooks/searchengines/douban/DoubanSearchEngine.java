@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONObject;
@@ -499,17 +500,20 @@ public class DoubanSearchEngine
                             // sorting on author names to work.
                             text = matcher.group(2) + " [" + matcher.group(1) + "]";
                         }
-                        final Author author = Author.from(text);
+                        text = SearchEngineUtils.cleanName(text);
+                        if (!text.isBlank()) {
+                            final Author author = Author.from(text);
 
-                        // ENHANCE: we parsed the author link as per below to get the SID
-                        //  Example: https://book.douban.com/author/322717
-                        //  when followed, this redirects to
-                        //  https://www.douban.com/personage/30081700/
-                        //  so the SID from the author link is WRONG...
-                        //  We'll need to follow the link to the "personage" to get the correct SID.
-                        //  This would also allow us to get Birthdate etc
+                            // ENHANCE: we parsed the author link as per below to get the SID
+                            //  Example: https://book.douban.com/author/322717
+                            //  when followed, this redirects to
+                            //  https://www.douban.com/personage/30081700/
+                            //  so the SID from the author link is WRONG...
+                            //  We'll need to follow the link to the "personage" to get the correct SID.
+                            //  This would also allow us to get Birthdate etc
 
-                        addAuthor(author, AuthorRole.UNKNOWN, book);
+                            addAuthor(author, AuthorRole.UNKNOWN, book);
+                        }
                     }
                     break;
                 }
@@ -517,7 +521,10 @@ public class DoubanSearchEngine
                     // Publisher
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        book.add(Publisher.from(a.text()));
+                        final String text = SearchEngineUtils.cleanName(a.text());
+                        if (!text.isBlank()) {
+                            book.add(Publisher.from(text));
+                        }
                     }
                     break;
                 }
@@ -541,9 +548,10 @@ public class DoubanSearchEngine
                     // Translator
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        final Author author = Author.from(a.text());
-                        author.setRole(AuthorRole.TRANSLATOR);
-                        book.add(author);
+                        final String s = SearchEngineUtils.cleanName(a.text());
+                        if (!s.isBlank()) {
+                            addAuthor(Author.from(s), AuthorRole.TRANSLATOR, book);
+                        }
                     }
                     break;
                 }
@@ -587,7 +595,10 @@ public class DoubanSearchEngine
                     // Series
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        book.add(Series.from(a.text()));
+                        final String s = SearchEngineUtils.cleanName(a.text());
+                        if (!s.isBlank()) {
+                            book.add(Series.from(s));
+                        }
                     }
                     break;
                 }
@@ -703,7 +714,10 @@ public class DoubanSearchEngine
                     && introElements.size() > 1) {
                     intro = introElements.get(1);
                 }
-                book.setDescription(intro.html().strip());
+                final String desc = SearchEngineUtils.cleanText(intro.html());
+                if (!desc.isBlank()) {
+                    book.setDescription(desc);
+                }
             }
         }
     }

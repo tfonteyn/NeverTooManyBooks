@@ -401,7 +401,7 @@ public class GoogleBooksSearchEngine
         final Locale locale = getLocale(context);
 
         s = volumeInfo.optString("title", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             book.setTitle(s);
         }
 
@@ -411,16 +411,16 @@ public class GoogleBooksSearchEngine
         }
 
         s = volumeInfo.optString("publisher", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             book.add(Publisher.from(s));
         }
         s = volumeInfo.optString("publishedDate", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             addPublicationDate(context, locale, s, book);
         }
 
         s = volumeInfo.optString("description", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             book.setDescription(s);
         }
 

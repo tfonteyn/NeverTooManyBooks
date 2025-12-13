@@ -418,7 +418,8 @@ public class BolSearchEngine
                     case "Oorspronkelijke releasedatum":
                     case "Date de sortie initiale": {
                         final String text = SearchEngineUtils.cleanText(value.text());
-                        if (!text.isEmpty()) {
+                        // can be empty!
+                        if (!text.isBlank()) {
                             addPublicationDate(context, siteLocale, text, book);
                         }
                         break;
@@ -473,8 +474,8 @@ public class BolSearchEngine
                         // but without any specific structure to it.
                         final Element a = value.selectFirst("a");
                         if (a != null) {
-                            final String text = a.text();
-                            if (!text.isEmpty()) {
+                            final String text = SearchEngineUtils.cleanName(a.text());
+                            if (!text.isBlank()) {
                                 book.add(Series.from(text));
                             }
                         }
@@ -485,9 +486,9 @@ public class BolSearchEngine
                     case "Editeur principal": {
                         final Element a = value.selectFirst("a");
                         if (a != null) {
-                            final String text = a.text();
-                            if (!text.isEmpty()) {
-                                book.add(Publisher.from(text));
+                            final String s = SearchEngineUtils.cleanName(a.text());
+                            if (!s.isBlank()) {
+                                book.add(Publisher.from(s));
                             }
                         }
                         break;
@@ -524,7 +525,10 @@ public class BolSearchEngine
                              @NonNull final Book book) {
         final Element a = value.selectFirst("a");
         if (a != null) {
-            addAuthor(Author.from(a.text()), type, book);
+            final String s = SearchEngineUtils.cleanName(a.text());
+            if (!s.isBlank()) {
+                addAuthor(Author.from(s), type, book);
+            }
         }
     }
 
@@ -532,7 +536,10 @@ public class BolSearchEngine
                                   @NonNull final Book book) {
         final Element descrElement = document.selectFirst("div.product-description");
         if (descrElement != null) {
-            book.setDescription(descrElement.text());
+            final String s = SearchEngineUtils.cleanText(descrElement.text());
+            if (!s.isBlank()) {
+                book.setDescription(s);
+            }
         }
     }
 

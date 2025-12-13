@@ -235,8 +235,8 @@ public class DnbSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(SEARCH_URL, SEARCH_TYPE_ISBN,
-                                                               validIsbn);
+        final String url = getHostUrl() + String.format(SEARCH_URL,
+                                                        SEARCH_TYPE_ISBN, validIsbn);
         final Document document = loadDocument(context, url, ROOT_REFERER);
         if (!isCancelled()) {
             // Check single result first
@@ -417,15 +417,7 @@ public class DnbSearchEngine
                                 break;
                             }
                             case "Genre": {
-                                // there is also:
-                                // Themen­gebiet / Topic
-                                // Thema / Subject
-                                final String[] split = td.text().split(",");
-                                final List<String> tagNames = Arrays
-                                        .stream(split)
-                                        .map(SearchEngineUtils::cleanName)
-                                        .collect(Collectors.toList());
-                                setTags(tagNames, book);
+                                parseGenreTags(td, book);
                                 break;
                             }
                             case "Werk":
@@ -674,7 +666,10 @@ public class DnbSearchEngine
             series.setNumber(split[1].strip());
             book.add(series);
         } else {
-            book.add(Series.from(text));
+            final String title = SearchEngineUtils.cleanName(text);
+            if (!title.isBlank()) {
+                book.add(Series.from(title));
+            }
         }
     }
 
@@ -737,6 +732,20 @@ public class DnbSearchEngine
                 }
             }
         }
+    }
+
+    private void parseGenreTags(@NonNull final Element td,
+                                @NonNull final Book book) {
+        // there is also:
+        // Themen­gebiet / Topic
+        // Thema / Subject
+        final String[] split = td.text().split(",");
+        final List<String> tagNames = Arrays
+                .stream(split)
+                .map(SearchEngineUtils::cleanText)
+                .filter(name -> !name.isBlank())
+                .collect(Collectors.toList());
+        setTags(tagNames, book);
     }
 
     /**

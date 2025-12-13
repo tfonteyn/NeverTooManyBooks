@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -185,7 +186,10 @@ public class BookFinderSearchEngine
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");
         if (authorElement != null) {
-            addAuthor(Author.from(authorElement.text()), AuthorRole.UNKNOWN, book);
+            final String s = SearchEngineUtils.cleanName(authorElement.text());
+            if (!s.isBlank()) {
+                addAuthor(Author.from(s), AuthorRole.UNKNOWN, book);
+            }
         }
         final Element ratingElement = bookInfo.selectFirst("div.rating"
                                                            + " > span.book-rating-average");
@@ -210,14 +214,7 @@ public class BookFinderSearchEngine
                             break;
                         }
                         case "Publisher:": {
-                            final String[] s = value.split(",");
-                            if (s.length > 0 && !s[0].isBlank()) {
-                                book.add(Publisher.from(s[0].strip()));
-                                if (s.length > 1 && !s[1].isBlank()) {
-                                    addPublicationDate(context, getLocale(context),
-                                                       s[1].strip(), book);
-                                }
-                            }
+                            processPublisher(context, value, book);
                             break;
                         }
                         case "Edition:": {
@@ -236,7 +233,10 @@ public class BookFinderSearchEngine
 
         final Element description = document.selectFirst("div#bookSummary > p");
         if (description != null) {
-            book.setDescription(description.html().strip());
+            final String s = SearchEngineUtils.cleanText(description.html());
+            if (!s.isBlank()) {
+                book.setDescription(s);
+            }
         }
 
         if (isCancelled()) {
@@ -246,6 +246,21 @@ public class BookFinderSearchEngine
         if (fetchCovers[0]) {
             parseCover(context, document, book.getIsbn(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+    }
+
+    private void processPublisher(@NonNull final Context context,
+                                  @NonNull final String value,
+                                  @NonNull final Book book) {
+        final String[] parts = value.split(",");
+        if (parts.length > 0) {
+            final String s = SearchEngineUtils.cleanName(parts[0]);
+            if (!s.isBlank()) {
+                book.add(Publisher.from(s.strip()));
+                if (parts.length > 1 && !parts[1].isBlank()) {
+                    addPublicationDate(context, getLocale(context), parts[1].strip(), book);
+                }
+            }
         }
     }
 

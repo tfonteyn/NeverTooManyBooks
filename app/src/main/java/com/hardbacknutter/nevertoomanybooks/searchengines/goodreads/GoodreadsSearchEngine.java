@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 import com.hardbacknutter.org.json.JSONArray;
@@ -475,15 +477,15 @@ public class GoodreadsSearchEngine
                                   @NonNull final Book book) {
         String s;
         s = details.optString("asin", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             book.setIdentifierValue(Identifier.SID_ASIN, s);
         }
         s = details.optString("format", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             book.setFormat(s);
         }
         s = details.optString("numPages", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             book.setPages(s);
         }
         final long epochMillis = details.optLong("publicationTime", EPOCH_NULL_VALUE);
@@ -493,22 +495,25 @@ public class GoodreadsSearchEngine
                     epochMillis / MILLI_TO_SECONDS, 0, ZoneOffset.UTC));
         }
         s = details.optString("publisher", null);
-        if (s != null && !s.isEmpty()) {
-            book.add(Publisher.from(s));
+        if (s != null && !s.isBlank()) {
+            s = SearchEngineUtils.cleanName(s);
+            if (!s.isBlank()) {
+                book.add(Publisher.from(s));
+            }
         }
         s = details.optString("isbn13", null);
-        if (s != null && !s.isEmpty()) {
+        if (s != null && !s.isBlank()) {
             book.setIsbn(s);
         } else {
-            s = details.optString("isbn", null);
-            if (s != null && !s.isEmpty()) {
+            s = ISBN.cleanText(details.optString("isbn", null));
+            if (!s.isBlank()) {
                 book.setIsbn(s);
             }
         }
         final JSONObject lang = details.optJSONObject("language", null);
         if (lang != null) {
             s = lang.optString("name", null);
-            if (s != null && !s.isEmpty()) {
+            if (s != null && !s.isBlank()) {
                 book.setLanguage(mapLanguage(s));
             }
         }
@@ -537,7 +542,7 @@ public class GoodreadsSearchEngine
             }
 
             final String originalTitle = o.optString("originalTitle", null);
-            if (originalTitle != null && !originalTitle.isEmpty()
+            if (originalTitle != null && !originalTitle.isBlank()
                 // sometimes it's a copy... ignore those
                 && !originalTitle.equals(book.getTitle())) {
                 book.setTranslatedFromTitle(originalTitle);
@@ -589,6 +594,12 @@ public class GoodreadsSearchEngine
      *         "user": null
      *     },
      * }</pre>
+     *
+     * @param context     Current context
+     * @param apolloState to parse
+     * @param contributor to parse
+     * @param locale      of the site
+     * @param book        to update
      */
     private void parseContributors(@NonNull final Context context,
                                    @NonNull final JSONObject apolloState,
@@ -600,6 +611,7 @@ public class GoodreadsSearchEngine
         }
 
         final int role = authorRoleMapper.map(locale, contributor.optString("role"));
+
         final JSONObject node = contributor.optJSONObject("node");
         if (node == null) {
             return;
@@ -615,13 +627,12 @@ public class GoodreadsSearchEngine
             return;
         }
 
-        final String name = refObj.optString("name");
-        if (name.isEmpty()) {
+        final String name = SearchEngineUtils.cleanName(refObj.optString("name"));
+        if (name.isBlank()) {
             return;
         }
 
         final Author author = mapAuthor(context, name);
-        author.setRole(role);
         // Get the legacyId as the SID_GOODREADS_BOOK.
         // It is this one we need to construct url's.
         final String legacyId = refObj.optString("legacyId");
@@ -635,13 +646,12 @@ public class GoodreadsSearchEngine
                 if (matcher.find()) {
                     final String siId = matcher.group(1);
                     if (siId != null) {
-                        author.setIdentifierValue(
-                                Identifier.SID_GOODREADS, siId);
+                        author.setIdentifierValue(Identifier.SID_GOODREADS, siId);
                     }
                 }
             }
         }
-        book.add(author);
+        addAuthor(author, role, book);
     }
 
     private void parseSeries(@NonNull final JSONObject apolloState,
@@ -657,8 +667,9 @@ public class GoodreadsSearchEngine
                     if (!ref.isEmpty()) {
                         final JSONObject refObj = apolloState.optJSONObject(ref);
                         if (refObj != null) {
-                            final String title = refObj.optString("title");
-                            if (!title.isEmpty()) {
+                            final String title = SearchEngineUtils.cleanName(
+                                    refObj.optString("title"));
+                            if (!title.isBlank()) {
                                 book.add(Series.from(title, numberInSeries));
                             }
                         }

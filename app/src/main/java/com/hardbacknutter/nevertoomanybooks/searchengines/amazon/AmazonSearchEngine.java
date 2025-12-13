@@ -501,7 +501,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        book.setTitle(titleElement.text());
+        book.setTitle(SearchEngineUtils.cleanText(titleElement.text()));
 
         // Use the site locale for all parsing!
         // Derive it from the actual url, as this might have been a redirect
@@ -580,7 +580,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        String priceText = price.text().strip();
+        String priceText = SearchEngineUtils.cleanText(price.text());
         for (final String prefix : PRICE_PREFIXES) {
             if (priceText.startsWith(prefix)) {
                 priceText = priceText.substring(prefix.length());
@@ -593,7 +593,7 @@ public class AmazonSearchEngine
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
         if (formatElement != null) {
-            book.setFormat(formatElement.text().strip());
+            book.setFormat(SearchEngineUtils.cleanText(formatElement.text()));
         }
     }
 
@@ -605,7 +605,7 @@ public class AmazonSearchEngine
         if (addToCart != null) {
             final Element asinElement = addToCart.selectFirst("input#ASIN");
             if (asinElement != null) {
-                final String asin = asinElement.attr("value");
+                final String asin = SearchEngineUtils.cleanText(asinElement.attr("value"));
                 book.setIdentifierValue(Identifier.SID_ASIN, asin);
             }
         }
@@ -645,15 +645,15 @@ public class AmazonSearchEngine
                         // we might already have the format, but we'll overwrite it - that's ok.
                         book.setFormat(label);
                         // 2025-06-01: we can likely remove this, as there is now LABEL_PAGES
-                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        final String data = SearchEngineUtils.cleanText(text[1]);
                         parsePages(data, book);
 
                     } else if (LABEL_PAGES.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        final String data = SearchEngineUtils.cleanText(text[1]);
                         parsePages(data, book);
 
                     } else if (LABEL_LANGUAGE.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        final String data = SearchEngineUtils.cleanText(text[1]);
                         book.setLanguage(data);
 
                     } else if (LABEL_PUBLISHER.contains(lcLabel)) {
@@ -679,11 +679,11 @@ public class AmazonSearchEngine
                             book.add(publisher);
                         }
                     } else if (LABEL_PUBLICATION_DATE.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        final String data = SearchEngineUtils.cleanText(text[1]);
                         addPublicationDate(context, siteLocale, data, book);
 
                     } else if (LABEL_SERIES.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        final String data = SearchEngineUtils.cleanText(text[1]);
                         book.add(Series.from(data));
 
                     } else {
@@ -718,7 +718,7 @@ public class AmazonSearchEngine
         // Hack to support the Portuguese site which does a redirect to the Spanish one
         if (SPANISH.equals(locale.getLanguage())) {
             allLocales = new ArrayList<>(LocaleListUtils.asList(locale, userLocales));
-            // Not verified but let's hope "pt_BR" uses the same spelling for month names
+            // "pt" and "pt_BR" use the same spelling for month names
             allLocales.add(1, new Locale("pt"));
         } else {
             allLocales = LocaleListUtils.asList(locale, userLocales);
@@ -754,13 +754,14 @@ public class AmazonSearchEngine
                     // So... we will incorrectly interpret the format "family given".
                     //FIXME: search our database twice with f/g and g/f
                     // this means parsing the 'a.text()' twice.. and french names... COMPLICATED
-                    final Author author = Author.from(a.text().strip());
+                    final String s = SearchEngineUtils.cleanName(a.text());
+                    final Author author = Author.from(s);
                     @AuthorRole.Role
                     int type = AuthorRole.UNKNOWN;
 
                     final Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
-                        String data = typeElement.text().strip();
+                        String data = SearchEngineUtils.cleanText(typeElement.text());
                         final Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
                         if (matcher.find()) {
                             data = matcher.group(1);

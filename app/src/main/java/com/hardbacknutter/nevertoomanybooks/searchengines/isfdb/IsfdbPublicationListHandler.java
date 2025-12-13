@@ -317,9 +317,8 @@ class IsfdbPublicationListHandler
                 }
                 case XML_AUTHOR: {
                     if (inAuthors) {
-                        searchEngine.addAuthor(Author.from(builder.toString().strip()),
-                                               AuthorRole.UNKNOWN,
-                                               book);
+                        final String s = SearchEngineUtils.cleanName(builder.toString());
+                        searchEngine.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book);
                     }
                     break;
                 }
@@ -344,12 +343,14 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_PUBLISHER: {
-                    final Publisher publisher = Publisher.from(builder.toString().strip());
+                    final String s = SearchEngineUtils.cleanName(builder.toString());
+                    final Publisher publisher = Publisher.from(s);
                     book.add(publisher);
                     break;
                 }
                 case XML_PUB_SERIES: {
-                    final Series series = Series.from(builder.toString().strip());
+                    final String s = SearchEngineUtils.cleanName(builder.toString());
+                    final Series series = Series.from(s);
                     book.add(series);
                     break;
                 }
@@ -409,15 +410,14 @@ class IsfdbPublicationListHandler
                 }
                 case XML_ARTIST: {
                     if (inCoverArtists) {
-                        searchEngine.addAuthor(Author.from(builder.toString().strip()),
-                                               AuthorRole.COVER_ARTIST,
-                                               book);
+                        final String s = SearchEngineUtils.cleanName(builder.toString());
+                        searchEngine.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book);
                     }
                     break;
                 }
                 case XML_NOTE: {
                     // can contain html tags!
-                    book.setDescription(SearchEngineUtils.cleanText(builder.toString().strip()));
+                    book.setDescription(SearchEngineUtils.cleanText(builder.toString()));
                     break;
                 }
                 case XML_ID_TYPE: {

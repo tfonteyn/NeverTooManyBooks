@@ -405,7 +405,12 @@ public class StripInfoSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // extracted from the page header.
-        final String primarySeriesTitle = parsePrimarySeriesTitle(document);
+        @Nullable
+        String primarySeriesTitle = parsePrimarySeriesTitle(document);
+        if (primarySeriesTitle != null) {
+            primarySeriesTitle = SearchEngineUtils.cleanText(primarySeriesTitle);
+        }
+
         // extracted from the title section.
         String primarySeriesBookNr = null;
 
@@ -934,7 +939,7 @@ public class StripInfoSearchEngine
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             dataElement.select("a").forEach(a -> {
-                final String name = a.text();
+                final String name = SearchEngineUtils.cleanName(a.text());
                 final Author author = Author.from(name);
 
                 final String url = a.attr("href");
@@ -1034,7 +1039,8 @@ public class StripInfoSearchEngine
         if (data != null) {
             data.select("a")
                 .stream()
-                .map(element -> SearchEngineUtils.cleanText(element.text()))
+                .map(Element::text)
+                .map(SearchEngineUtils::cleanText)
                 .filter(text -> !text.isBlank())
                 .map(Publisher::from)
                 .forEach(book::add);

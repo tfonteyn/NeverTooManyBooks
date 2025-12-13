@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -263,7 +264,11 @@ public class BertrandPtSearchEngine
             return;
         }
 
-        book.setTitle(titleElement.text());
+        final String title = SearchEngineUtils.cleanText(titleElement.text());
+        if (title.isBlank()) {
+            return;
+        }
+        book.setTitle(title);
 
         // sibling to the title:  class="right-title-details subtitle"
         // ==> *can* contain Series with number
@@ -278,25 +283,27 @@ public class BertrandPtSearchEngine
         final Elements authorElements = bookInfo.select(
                 "div#productPageSectionDetails-collapseDetalhes-content-author > a");
         authorElements.stream()
-                      .map(ae -> Author.from(ae.text()))
+                      .map(Element::text)
+                      .map(SearchEngineUtils::cleanName)
+                      .filter(name -> !name.isBlank())
+                      .map(Author::from)
                       .forEach(author -> addAuthor(author, AuthorRole.UNKNOWN, book));
 
         Element element;
-        String s;
 
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-isbn > div.info");
         if (element != null) {
-            s = element.text().strip();
-            if (!s.isBlank()) {
-                book.setIsbn(s);
+            final String isbn = ISBN.cleanText(element.text().strip());
+            if (!isbn.isBlank()) {
+                book.setIsbn(isbn);
             }
         }
 
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-year > div.info");
         if (element != null) {
-            s = element.text().strip();
+            final String s = element.text().strip();
             if (!s.isBlank()) {
                 final String[] split = s.split("-");
                 if (split.length == 1) {
@@ -312,7 +319,7 @@ public class BertrandPtSearchEngine
         // The "Editor", i.e. the publisher is a pain... it does not have an easy div id
         element = bookInfo.selectFirst(":containsOwn(Editor:) > div.info");
         if (element != null) {
-            s = element.text().strip();
+            final String s = SearchEngineUtils.cleanName(element.text());
             if (!s.isBlank()) {
                 book.add(Publisher.from(s));
             }
@@ -335,7 +342,7 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-type > div.info");
         if (element != null) {
-            s = element.text().strip();
+            final String s = element.text().strip();
             if (!"Livro".equals(s)) {
                 // If it's NOT a book, then overwrite the format key (i.e. ebook, audiobook...)
                 book.setFormat(s);
@@ -353,7 +360,7 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-collection > div.info");
         if (element != null) {
-            s = element.text().strip();
+            final String s = SearchEngineUtils.cleanName(element.text());
             if (!s.isBlank()) {
                 book.add(Series.from(s));
             }

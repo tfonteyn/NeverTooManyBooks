@@ -669,7 +669,7 @@ public class IsfdbSearchEngine
                         }
 
                     } else if (addSeriesFromToc && href.contains(CGI_PE)) {
-                        final Series series = Series.from(a.text());
+                        final Series series = Series.from(SearchEngineUtils.cleanName(a.text()));
 
                         //  • 4] • (1987) • novel by
                         final Node nextSibling = a.nextSibling();
@@ -1045,7 +1045,7 @@ public class IsfdbSearchEngine
             if (tmpString.startsWith("<b>Notes:</b>")) {
                 tmpString = tmpString.substring(13).strip();
             }
-            book.setDescription(tmpString);
+            book.setDescription(SearchEngineUtils.cleanText(tmpString));
         }
 
         final List<TocEntry> toc = parseToc(context, document, book);
@@ -1113,6 +1113,7 @@ public class IsfdbSearchEngine
         li.select("a")
           .stream()
           .map(Element::text)
+          .map(SearchEngineUtils::cleanName)
           .filter(name -> !name.isBlank())
           .map(Publisher::from)
           .forEach(book::add);
@@ -1135,6 +1136,7 @@ public class IsfdbSearchEngine
                                         @NonNull final Book book) {
         li.select("a")
           .stream().map(Element::text)
+          .map(SearchEngineUtils::cleanName)
           .filter(name -> !name.isBlank())
           .map(Series::from)
           .forEach(book::add);
@@ -1214,7 +1216,7 @@ public class IsfdbSearchEngine
                               @AuthorRole.Role final int type,
                               @NonNull final Book book) {
         for (final Element a : li.select("a[href*=/ea.cgi]")) {
-            final String text = a.text();
+            final String text = SearchEngineUtils.cleanName(a.text());
 
             final Author author;
             // Replace their hardcoded 'unknown' with ours
@@ -1399,8 +1401,8 @@ public class IsfdbSearchEngine
                     final Node node = langHeader.nextSibling();
                     if (node != null) {
                         final Languages languages = ServiceLocator.getInstance().getLanguages();
-                        lang = languages.getISO3FromDisplayLanguage(
-                                node.toString().strip(), getLocale(context));
+                        lang = languages.getISO3FromDisplayLanguage(node.toString(),
+                                                                    getLocale(context));
                     }
                 }
             }
@@ -1439,7 +1441,7 @@ public class IsfdbSearchEngine
                             // 3rd column: the publisher
                             final Element pa = tr.child(3).selectFirst("a");
                             if (pa != null) {
-                                publisher = pa.text();
+                                publisher = SearchEngineUtils.cleanName(pa.text());
                             }
                             // 4th column: the ISBN/Catalog ID.
                             final String catNr = tr.child(4).text();
@@ -1513,7 +1515,7 @@ public class IsfdbSearchEngine
 
         // go get it.
         final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID,
-                                                               edition.getIsfdbId());
+                                                        edition.getIsfdbId());
         return loadDocument(context, url, null);
     }
 

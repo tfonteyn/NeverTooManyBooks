@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -165,7 +166,12 @@ public final class GoodreadsAuthorResolver
             return null;
         }
 
-        final Author author = searchEngine.mapAuthor(context, nameSpan.text());
+        final String s = SearchEngineUtils.cleanName(nameSpan.text());
+        if (s.isBlank()) {
+            return null;
+        }
+
+        final Author author = searchEngine.mapAuthor(context, s);
         author.setIdentifierValue(Identifier.SID_GOODREADS, sid);
 
         Element element;

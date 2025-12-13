@@ -189,7 +189,7 @@ public class KbNlHtmlSearchEngine
         final Book book = new Book();
 
         final String url = getHostUrl() + String.format(SEARCH_URL,
-                                                               dbVersion, setNr, validIsbn);
+                                                        dbVersion, setNr, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final Element titleList = document.selectFirst("div.titlelist");
@@ -216,9 +216,9 @@ public class KbNlHtmlSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retrieved.
      *
-     * @param context     Current context
-     * @param titleList   to parse
-     * @param book        to update
+     * @param context   Current context
+     * @param titleList to parse
+     * @param book      to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -236,7 +236,7 @@ public class KbNlHtmlSearchEngine
             final String show = a.attr("href");
             if (!show.isEmpty()) {
                 final String url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr,
-                                                                       show);
+                                                                show);
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
                     parse(redirected, book);
@@ -248,8 +248,8 @@ public class KbNlHtmlSearchEngine
     /**
      * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
-     * @param document    to parse
-     * @param book        to update
+     * @param document to parse
+     * @param book     to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -368,8 +368,10 @@ public class KbNlHtmlSearchEngine
             final String title = book.getString(DBKey.TITLE, null);
             // should never happen, but paranoia...
             if (title != null && !title.isBlank()) {
-                final Series series = Series.from(title, tmpSeriesNr);
-                book.add(series);
+                final String s = SearchEngineUtils.cleanName(title);
+                if (!s.isBlank()) {
+                    book.add(Series.from(s, tmpSeriesNr));
+                }
             }
         }
 
@@ -385,7 +387,10 @@ public class KbNlHtmlSearchEngine
         final Element a = td.selectFirst("a");
         if (a != null) {
             final String[] cleanedData = a.text().split("/");
-            book.setTitle(cleanedData[0].strip());
+            final String s = SearchEngineUtils.cleanText(cleanedData[0]);
+            if (!s.isBlank()) {
+                book.setTitle(s);
+            }
             // It's temping to decode [1,
             // but the data has proven to be very unstructured and mostly unusable.
         }
@@ -398,13 +403,16 @@ public class KbNlHtmlSearchEngine
         if (!aas.isEmpty()) {
             for (final Element a : aas) {
                 // remove a year part in the name
-                final String cleanedString = a.text().split("\\(")[0].strip();
+                String s = a.text().split("\\(")[0].strip();
                 // reject separators as for example: <psi:text>;</psi:text>
-                if (cleanedString.length() == 1) {
+                if (s.length() == 1) {
                     return;
                 }
 
-                addAuthor(Author.from(cleanedString), type, book);
+                s = SearchEngineUtils.cleanName(s);
+                if (!s.isBlank()) {
+                    addAuthor(Author.from(s), type, book);
+                }
             }
         }
     }
@@ -414,7 +422,10 @@ public class KbNlHtmlSearchEngine
         final Element span = td.selectFirst("span");
         if (span != null) {
             // Note how this is different from the psi result
-            book.add(Series.from(span.text(), tmpSeriesNr));
+            final String s = SearchEngineUtils.cleanName(span.text());
+            if (!s.isBlank()) {
+                book.add(Series.from(s, tmpSeriesNr));
+            }
             tmpSeriesNr = null;
         }
     }
@@ -466,9 +477,11 @@ public class KbNlHtmlSearchEngine
                                .map(Element::text)
                                .filter(name -> !name.isEmpty())
                                .collect(Collectors.joining(" "));
+            // the part before the ":" is (usually?) the city. 2nd part is the name
             if (text.contains(":")) {
                 text = text.split(":")[1].strip();
             }
+            text = SearchEngineUtils.cleanName(text);
             if (!text.isBlank()) {
                 book.add(Publisher.from(text));
             }
@@ -589,5 +602,4 @@ public class KbNlHtmlSearchEngine
         }
         return Optional.empty();
     }
-
 }

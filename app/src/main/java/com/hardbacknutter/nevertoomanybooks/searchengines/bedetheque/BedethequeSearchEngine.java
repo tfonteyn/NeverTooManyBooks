@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -392,7 +393,10 @@ public class BedethequeSearchEngine
 
         final Element description = document.selectFirst("span[itemprop='description']");
         if (description != null) {
-            book.setDescription(description.text());
+            final String s = SearchEngineUtils.cleanText(description.text());
+            if (!s.isBlank()) {
+                book.setDescription(s);
+            }
         }
 
         authorResolverHelper.resolve(context, this, book);
@@ -426,19 +430,25 @@ public class BedethequeSearchEngine
         }
 
         // The title and series nr is a heading
-        final Element titre = albumMain.selectFirst("h3.titre");
-        if (titre != null) {
+        final Element titleElement = albumMain.selectFirst("h3.titre");
+        if (titleElement != null) {
             // <h3 class="titre">9<span class="numa">a1978/01</span> . Les soucoupes volantes</h3>
             // grab the html, to avoid the concatenation of the text
             // in the span. We might later want to extract that text as well
-            final Matcher matcher = NR_TITLE_PATTERN.matcher(titre.html());
+            final Matcher matcher = NR_TITLE_PATTERN.matcher(titleElement.html());
             if (matcher.find()) {
-                book.setTitle(matcher.group(2));
-                final String nrInSeries = matcher.group(1);
-                // gamble...
-                final List<Series> series = book.getSeries();
-                if (!series.isEmpty()) {
-                    series.get(0).setNumber(nrInSeries);
+                final String s = matcher.group(2);
+                if (s != null) {
+                    final String title = SearchEngineUtils.cleanText(s);
+                    if (!title.isBlank()) {
+                        book.setTitle(title);
+                        final String nrInSeries = matcher.group(1);
+                        // gamble...
+                        final List<Series> series = book.getSeries();
+                        if (!series.isEmpty()) {
+                            series.get(0).setNumber(nrInSeries);
+                        }
+                    }
                 }
             }
         }
@@ -677,8 +687,7 @@ public class BedethequeSearchEngine
                                     colorOrColorist.substring(1, colorOrColorist.length() - 1));
                         } else {
                             // it's a real name
-                            parseAuthor(context, colorOrColorist, AuthorRole.COLORIST,
-                                        book);
+                            parseAuthor(context, colorOrColorist, AuthorRole.COLORIST, book);
                         }
                     }
                     break;
@@ -735,9 +744,12 @@ public class BedethequeSearchEngine
                     break;
                 }
                 case "Editeur :": {
-                    final String text = parseLabelText(labelElement);
+                    String text = parseLabelText(labelElement);
                     if (text != null) {
-                        book.add(Publisher.from(text));
+                        text = SearchEngineUtils.cleanName(text);
+                        if (!text.isBlank()) {
+                            book.add(Publisher.from(text));
+                        }
                     }
                     break;
                 }
@@ -843,7 +855,10 @@ public class BedethequeSearchEngine
             }
             case "Collectif":
             default: {
-                addAuthor(Author.from(names), role, book);
+                final String s = SearchEngineUtils.cleanName(names);
+                if (!s.isBlank()) {
+                    addAuthor(Author.from(s), role, book);
+                }
                 break;
             }
         }
@@ -853,7 +868,7 @@ public class BedethequeSearchEngine
                              @NonNull final Book book) {
         final Node textNode = labelElement.nextSibling();
         if (textNode != null) {
-            book.add(processSeries(textNode.toString().strip(), book));
+            book.add(processSeries(textNode.toString(), book));
         }
     }
 
@@ -872,12 +887,12 @@ public class BedethequeSearchEngine
         // Series names can be formatted in a LOT of ways.
         // We're not going to try and capture each and every special format
         // but stick to the most common ones.
-        String seriesName = text;
+        String seriesName = SearchEngineUtils.cleanName(text);
 
         Matcher matcher;
 
         // Try extracting a language
-        matcher = SERIES_WITH_LANGUAGE.matcher(text);
+        matcher = SERIES_WITH_LANGUAGE.matcher(seriesName);
         if (matcher.find()) {
             String maybeLanguage = matcher.group(2);
             if (maybeLanguage != null) {
@@ -897,7 +912,7 @@ public class BedethequeSearchEngine
         }
 
         // Find/move a simple "Le|La/Les|L'" prefix
-        matcher = SERIES_WITH_SIMPLE_PREFIX.matcher(text);
+        matcher = SERIES_WITH_SIMPLE_PREFIX.matcher(seriesName);
         if (matcher.find()) {
             final String n = matcher.group(1);
             final String prefix = matcher.group(2);

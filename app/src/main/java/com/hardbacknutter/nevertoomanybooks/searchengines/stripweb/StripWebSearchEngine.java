@@ -329,7 +329,7 @@ public class StripWebSearchEngine
                         book.setPages(SearchEngineUtils.cleanText(td.text()));
                         break;
                     case "Reeks":
-                        processSeries(td, book);
+                        parseSeries(td, book);
                         break;
                     case "Nummer":
                         tmpSeriesNr = td.text();
@@ -365,14 +365,14 @@ public class StripWebSearchEngine
 
                     case "Afmetingen": {
                         final String text = SearchEngineUtils.cleanText(td.text());
-                        if (!text.isEmpty()) {
+                        if (!text.isBlank()) {
                             book.putString(SiteField.SIZE, text);
                         }
                         break;
                     }
                     case "Genre": {
                         final String text = SearchEngineUtils.cleanText(td.text());
-                        if (!text.isEmpty() && !tagsToIgnore.contains(text)) {
+                        if (!text.isBlank() && !tagsToIgnore.contains(text)) {
                             // Use 'add', as tags can also be populated by "Trefwoorden"
                             book.addTags(List.of(new Tag(text)));
                         }
@@ -446,7 +446,7 @@ public class StripWebSearchEngine
                             @NonNull final Element titleElement,
                             @NonNull final Book book) {
         final String text = SearchEngineUtils.cleanText(titleElement.text());
-        if (!text.isEmpty()) {
+        if (!text.isBlank()) {
             // TITLE_SUFFIXES are as entered by site-employees, hence use site-locale
             final String lcText = text.toLowerCase(getLocale(context));
             final String title = TITLE_SUFFIXES
@@ -476,10 +476,10 @@ public class StripWebSearchEngine
     private void parseLanguage(@NonNull final Book book,
                                @NonNull final Element td) {
         final String langCode = SearchEngineUtils.cleanText(td.text());
-        if (!langCode.isEmpty()) {
+        if (!langCode.isBlank()) {
             // Another mess.. the site uses an abbreviation for the language,
             // but NOT a standard one.
-            // Seen in use: NL,FR,EN,Fr
+            // Seen in use: NL,FR,Fr,EN
             switch (langCode.toLowerCase(Locale.ROOT)) {
                 case "nl":
                     book.setLanguage(LANG_NLD);
@@ -512,7 +512,10 @@ public class StripWebSearchEngine
                 }
             }
 
-            book.setDescription(html);
+            final String s = SearchEngineUtils.cleanText(html);
+            if (!s.isBlank()) {
+                book.setDescription(s);
+            }
         }
     }
 
@@ -553,18 +556,23 @@ public class StripWebSearchEngine
         final Elements aas = td.select("a");
         if (aas.isEmpty()) {
             // but some are plain text separated by commas
-            final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
-            Arrays.stream(names).forEach(name -> parseAuthor(book, type, name));
+            final String[] names = td.text().split(",");
+            Arrays.stream(names)
+                  .map(SearchEngineUtils::cleanName)
+                  .filter(name -> !name.isBlank())
+                  .forEach(name -> parseAuthor(name, type, book));
         } else {
             aas.stream()
-               .map(a -> SearchEngineUtils.cleanText(a.text()))
-               .forEach(name -> parseAuthor(book, type, name));
+               .map(Element::text)
+               .map(SearchEngineUtils::cleanName)
+               .filter(name -> !name.isBlank())
+               .forEach(name -> parseAuthor(name, type, book));
         }
     }
 
-    private void parseAuthor(@NonNull final Book book,
+    private void parseAuthor(@NonNull final String name,
                              @AuthorRole.Role final int type,
-                             @NonNull final String name) {
+                             @NonNull final Book book) {
         // The site actually uses "lastname firstname" or just "lastname".
         // This create additional issues with names like "Van Hamme" which is a "lastname"
         // with a space in... nice mess...
@@ -593,27 +601,35 @@ public class StripWebSearchEngine
      * @param td   data td
      * @param book Bundle to update
      */
-    private void processSeries(@NonNull final Element td,
-                               @NonNull final Book book) {
+    private void parseSeries(@NonNull final Element td,
+                             @NonNull final Book book) {
         // Most books list the series as "a" elements
         final Elements aas = td.select("a");
         if (aas.isEmpty()) {
             // but some are plain text separated by commas
-            final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
-            Arrays.stream(names).forEach(name -> processSeries(book, name));
+            final String[] names = td.text().split(",");
+            Arrays.stream(names)
+                  .map(SearchEngineUtils::cleanName)
+                  .filter(name -> !name.isBlank())
+                  .map(Series::from)
+                  .forEach(series -> {
+                      // Add if not already present.
+                      if (book.getSeries().stream().noneMatch(series1 -> series1.equals(series))) {
+                          book.add(series);
+                      }
+                  });
         } else {
             aas.stream()
-               .map(a -> SearchEngineUtils.cleanText(a.text()))
-               .forEach(name -> processSeries(book, name));
-        }
-    }
-
-    private void processSeries(@NonNull final Book book,
-                               @NonNull final String name) {
-        final Series currentSeries = Series.from(name);
-        // add if not already present
-        if (book.getSeries().stream().noneMatch(series -> series.equals(currentSeries))) {
-            book.add(currentSeries);
+               .map(Element::text)
+               .map(SearchEngineUtils::cleanName)
+               .filter(name -> !name.isBlank())
+               .map(Series::from)
+               .forEach(series -> {
+                   // Add if not already present.
+                   if (book.getSeries().stream().noneMatch(series1 -> series1.equals(series))) {
+                       book.add(series);
+                   }
+               });
         }
     }
 
@@ -629,14 +645,16 @@ public class StripWebSearchEngine
         final Elements aas = td.select("a");
         if (aas.isEmpty()) {
             // but some are plain text separated by commas
-            final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
+            final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .filter(name -> name != null && !name.isBlank())
+                  .map(SearchEngineUtils::cleanName)
+                  .filter(name -> !name.isBlank())
                   .map(Publisher::from)
                   .forEach(book::add);
         } else {
             aas.stream()
-               .map(a -> SearchEngineUtils.cleanText(a.text()))
+               .map(Element::text)
+               .map(SearchEngineUtils::cleanName)
                .filter(name -> !name.isBlank())
                .map(Publisher::from)
                .forEach(book::add);

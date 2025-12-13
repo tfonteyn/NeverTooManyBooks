@@ -98,8 +98,10 @@ class KbNlBookHandler
             final String title = book.getString(DBKey.TITLE, null);
             // should never happen, but paranoia...
             if (title != null && !title.isBlank()) {
-                final Series series = Series.from(title, tmpSeriesNr);
-                book.add(series);
+                final String s = SearchEngineUtils.cleanName(title);
+                if (!s.isBlank()) {
+                    book.add(Series.from(s, tmpSeriesNr));
+                }
             }
         }
 
@@ -339,12 +341,16 @@ class KbNlBookHandler
      */
     private void processTitle(@NonNull final List<CurrentData> currentData) {
 
-        final String[] cleanedData = currentData.stream()
-                                                .map(cd -> cd.data)
-                                                .collect(Collectors.joining(" "))
-                                                .split("/");
+        final String[] cleanedData = currentData
+                .stream()
+                .map(cd -> cd.data)
+                .collect(Collectors.joining(" "))
+                .split("/");
 
-        book.setTitle(cleanedData[0].strip());
+        final String s = SearchEngineUtils.cleanText(cleanedData[0]);
+        if (!s.isBlank()) {
+            book.setTitle(s);
+        }
         // It's temping to decode [1], as this is the author as it appears on the cover,
         // but the data has proven to be very unstructured and mostly unusable.
     }
@@ -395,16 +401,21 @@ class KbNlBookHandler
     void parseAuthor(@NonNull final Iterable<CurrentData> currentData,
                      @AuthorRole.Role final int type) {
         for (final CurrentData cd : currentData) {
-            final String text = cd.data;
-            final String[] parts = AUTHOR_NAME.split(text, 2);
+            final String[] parts = AUTHOR_NAME.split(cd.data, 2);
 
-            final String name = parts[0].strip();
+            String name = parts[0].strip();
             // reject separators as for example: <psi:text>;</psi:text>
             if (name.length() == 1) {
                 return;
             }
 
+            name = SearchEngineUtils.cleanName(name);
+            if (name.isBlank()) {
+                return;
+            }
+
             final Author author = Author.from(name);
+
             if (cd.url != null) {
                 final Matcher matcher = AUTHOR_ID.matcher(cd.url);
                 if (matcher.find()) {
@@ -469,8 +480,11 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void processSeries(@NonNull final List<CurrentData> currentData) {
-        book.add(Series.from(currentData.get(0).data));
-        // the number part is totally unstructured
+        final String s = SearchEngineUtils.cleanName(currentData.get(0).data);
+        if (!s.isBlank()) {
+            book.add(Series.from(s));
+            // the number part is totally unstructured
+        }
     }
 
     /**
@@ -592,6 +606,7 @@ class KbNlBookHandler
         if (text.contains(":")) {
             text = text.split(":")[1].strip();
         }
+        text = SearchEngineUtils.cleanName(text);
         if (!text.isBlank()) {
             book.add(Publisher.from(text));
         }
@@ -729,6 +744,8 @@ class KbNlBookHandler
                 .map(cd -> cd.data)
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.joining(" "));
+
+        desc = SearchEngineUtils.cleanText(desc);
         if (!desc.isBlank()) {
             // append... the site has (at least) two fields we want to collect
             final String previous = book.getDescription();

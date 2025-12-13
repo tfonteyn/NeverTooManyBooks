@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -588,16 +589,7 @@ public class BibliotecePlSearchEngine
                             }
 
                             case LABEL_FIRST_PUB_DATE: {
-                                // publication year... but given as a range. Parse the first only
-                                if (!book.contains(DBKey.FIRST_PUBLICATION_DATE)) {
-                                    final Element div = td.selectFirst("div");
-                                    if (div != null) {
-                                        final String year = div.text().split(" ")[0];
-                                        if (year != null && year.length() == 4) {
-                                            book.setFirstPublicationDate(year);
-                                        }
-                                    }
-                                }
+                                parsePublicationDate(td, book);
                                 break;
                             }
 
@@ -628,7 +620,10 @@ public class BibliotecePlSearchEngine
         if (matcher.find()) {
             final String g1 = matcher.group(1);
             if (g1 != null) {
-                addAuthor(Author.from(g1), type, book);
+                final String s = SearchEngineUtils.cleanName(g1);
+                if (!s.isBlank()) {
+                    addAuthor(Author.from(s), type, book);
+                }
             }
         }
     }
@@ -638,6 +633,8 @@ public class BibliotecePlSearchEngine
         td.select(SPAN_DATA_IPUB_SEARCH_T)
           .stream()
           .map(Element::text)
+          .map(SearchEngineUtils::cleanName)
+          .filter(name -> !name.isBlank())
           .map(Series::from)
           .filter(series -> !book.getSeries().contains(series))
           .forEach(book::add);
@@ -653,6 +650,8 @@ public class BibliotecePlSearchEngine
         bookData.select(SPAN_DATA_IPUB_SEARCH_W)
                 .stream()
                 .map(Element::text)
+                .map(SearchEngineUtils::cleanName)
+                .filter(name -> !name.isBlank())
                 .map(Publisher::from)
                 .filter(publisher -> !book.getPublishers().contains(publisher))
                 .forEach(book::add);
@@ -716,9 +715,23 @@ public class BibliotecePlSearchEngine
         final Element element = loadDocument(context, url, null)
                 .selectFirst("div.summary");
         if (element != null) {
-            final String text = element.text();
-            if (!text.isEmpty()) {
+            final String text = SearchEngineUtils.cleanText(element.text());
+            if (!text.isBlank()) {
                 book.setDescription(text);
+            }
+        }
+    }
+
+    private void parsePublicationDate(@NonNull final Element td,
+                                      @NonNull final Book book) {
+        // publication year... but given as a range. Parse the first only
+        if (!book.contains(DBKey.FIRST_PUBLICATION_DATE)) {
+            final Element div = td.selectFirst("div");
+            if (div != null) {
+                final String year = div.text().split(" ")[0];
+                if (year != null && year.length() == 4) {
+                    book.setFirstPublicationDate(year);
+                }
             }
         }
     }

@@ -528,7 +528,7 @@ public class LastDodoSearchEngine
                     }
                     case "Reeks": {
                         final String text = SearchEngineUtils.cleanText(td.child(0).text());
-                        if (!text.isEmpty()) {
+                        if (!text.isBlank()) {
                             book.putString(SiteField.REEKS, text);
                         }
                         break;
@@ -577,7 +577,7 @@ public class LastDodoSearchEngine
                     }
                     case "Jaar": {
                         final String text = SearchEngineUtils.cleanText(td.text());
-                        if (!text.isEmpty()) {
+                        if (!text.isBlank()) {
                             dateParser.parse(text).ifPresent(book::setPublicationDate);
                         }
                         break;
@@ -588,7 +588,7 @@ public class LastDodoSearchEngine
                     }
                     case "Druk": {
                         final String text = SearchEngineUtils.cleanText(td.text());
-                        if (!text.isEmpty()) {
+                        if (!text.isBlank()) {
                             book.putString(SiteField.PRINTING, text);
                         }
                         break;
@@ -615,7 +615,7 @@ public class LastDodoSearchEngine
                     case "Afmetingen": {
                         if (!"? x ? cm".equals(td.text())) {
                             final String text = SearchEngineUtils.cleanText(td.text());
-                            if (!text.isEmpty()) {
+                            if (!text.isBlank()) {
                                 book.putString(SiteField.SIZE, text);
                             }
                         }
@@ -749,7 +749,7 @@ public class LastDodoSearchEngine
                     text = split[1].strip() + ' ' + split[0].strip();
                 }
             }
-            final Author author = Author.from(text);
+            final Author author = Author.from(SearchEngineUtils.cleanName(text));
             final String url = a.attr("href");
             final Matcher matcher = AUTHOR_ID.matcher(url);
             if (matcher.find()) {
@@ -773,6 +773,8 @@ public class LastDodoSearchEngine
         td.select("a")
           .stream()
           .map(Element::text)
+          .map(SearchEngineUtils::cleanName)
+          .filter(name -> !name.isBlank())
           .map(Series::from)
           .forEach(book::add);
     }
@@ -787,7 +789,8 @@ public class LastDodoSearchEngine
                                 @NonNull final Book book) {
         td.select("a")
           .stream()
-          .map(a -> SearchEngineUtils.cleanText(a.text()))
+          .map(Element::text)
+          .map(SearchEngineUtils::cleanName)
           .filter(name -> !name.isBlank())
           .map(Publisher::from)
           .forEach(book::add);

@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -265,16 +266,18 @@ public class BiblionetGrSearchEngine
             final Element desc = bookTabs.selectFirst("div#bookDescription");
             if (desc != null) {
                 // the text is a couple of elements deeper, but there is only one text element
-                final String text = desc.text();
-                final String description = book.getDescription();
-                if (description.isBlank()) {
-                    book.setDescription(text);
-                } else {
-                    // The "Notes" field when present is kept at the start.
-                    // Example of notes:
-                    //    Freely available under a Creative Commons license via
-                    //    the website www.saitapublications.gr
-                    book.setDescription(description + "\n\n" + text);
+                final String text = SearchEngineUtils.cleanText(desc.text());
+                if (!text.isBlank()) {
+                    final String description = book.getDescription();
+                    if (description.isBlank()) {
+                        book.setDescription(text);
+                    } else {
+                        // The "Notes" field when present is kept at the start.
+                        // Example of notes:
+                        //    Freely available under a Creative Commons license via
+                        //    the website www.saitapublications.gr
+                        book.setDescription(description + "\n\n" + text);
+                    }
                 }
             }
         }
@@ -298,11 +301,11 @@ public class BiblionetGrSearchEngine
             return false;
         }
 
-        String title = titleHeader.text();
+        String title = SearchEngineUtils.cleanText(titleHeader.text());
         // optional subtitle
         final Element p = titleSection.selectFirst("p");
         if (p != null) {
-            final String sub = p.text();
+            final String sub = SearchEngineUtils.cleanText(p.text());
             if (!sub.isBlank()) {
                 title += " - " + sub;
             }
@@ -405,19 +408,22 @@ public class BiblionetGrSearchEngine
                         // Don't parse, use the name as-is.
                         // URGENT: when the user manually adds/edit this name, it might go
                         //  through the parser again and get mangled up.
-                        final Author author = new Author(a.text(), null);
-                        addAuthor(author, AuthorRole.UNKNOWN, book);
-                        // note that NO specific organization author type was created,
-                        // The type is really the role of the author for specific book.
-                        // Being an organization is an attribute of the author independent
-                        // of a book.
-                        // FIXME: if the user would edit this author in either:
-                        //  EditAuthorViewModel
-                        //  EditBookAuthorListViewModel
-                        //  EditTocEntryViewModel
-                        //  it might get re-parsed and would get split up.
-                        //  Deliberate decision: tackle that the day someone complains.
-                        //  It will involve adding a UI element to prevent parsing.
+                        final String s = SearchEngineUtils.cleanName(a.text());
+                        if (!s.isBlank()) {
+                            final Author author = new Author(s, null);
+                            addAuthor(author, AuthorRole.UNKNOWN, book);
+                            // note that NO specific organization author type was created,
+                            // The type is really the role of the author for specific book.
+                            // Being an organization is an attribute of the author independent
+                            // of a book.
+                            // FIXME: if the user would edit this author in either:
+                            //  EditAuthorViewModel
+                            //  EditBookAuthorListViewModel
+                            //  EditTocEntryViewModel
+                            //  it might get re-parsed and would get split up.
+                            //  Deliberate decision: tackle that the day someone complains.
+                            //  It will involve adding a UI element to prevent parsing.
+                        }
                     });
                     break;
                 }
@@ -454,7 +460,13 @@ public class BiblionetGrSearchEngine
                                @NonNull final Element li,
                                @NonNull final Book book) {
         // <a role="link" href="/rené-goscinny-c787">René Goscinny</a>
-        li.select("a").forEach(a -> addAuthor(Author.from(a.text()), type, book));
+        li.select("a")
+          .stream()
+          .map(Element::text)
+          .map(SearchEngineUtils::cleanName)
+          .filter(name -> !name.isBlank())
+          .map(Author::from)
+          .forEach(a -> addAuthor(a, type, book));
     }
 
     private void processDetails(@NonNull final Context context,
@@ -476,11 +488,14 @@ public class BiblionetGrSearchEngine
                 continue;
             }
 
-            // The english label SHOW as uppercas on the site, but ARE LOWERCASE in the html.
+            // The english label SHOW as uppercase on the site, but ARE LOWERCASE in the html.
             switch (label) {
                 case "Εκδοτης":
                 case "Publisher": {
-                    book.add(Publisher.from(text));
+                    final String s = SearchEngineUtils.cleanName(text);
+                    if (!s.isBlank()) {
+                        book.add(Publisher.from(s));
+                    }
                     break;
                 }
                 case "Διαθεσιμοτητα":
@@ -563,16 +578,19 @@ public class BiblionetGrSearchEngine
                 }
                 case "Σειρα":
                 case "Series title": {
-                    final Series currentSeries = Series.from(text);
-                    // Add if not already present.
-                    if (book.getSeries().stream()
-                            .noneMatch(series -> series.equals(currentSeries))) {
-                        // previously parsed number?
-                        if (seriesNum != null) {
-                            currentSeries.setNumber(seriesNum);
-                            seriesNum = null;
+                    final String s = SearchEngineUtils.cleanName(text);
+                    if (!s.isBlank()) {
+                        final Series currentSeries = Series.from(s);
+                        // Add if not already present.
+                        if (book.getSeries().stream()
+                                .noneMatch(series -> series.equals(currentSeries))) {
+                            // previously parsed number?
+                            if (seriesNum != null) {
+                                currentSeries.setNumber(seriesNum);
+                                seriesNum = null;
+                            }
+                            book.add(currentSeries);
                         }
-                        book.add(currentSeries);
                     }
                     break;
                 }

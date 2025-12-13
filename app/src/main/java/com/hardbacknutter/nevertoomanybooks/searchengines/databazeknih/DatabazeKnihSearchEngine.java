@@ -320,17 +320,7 @@ public class DatabazeKnihSearchEngine
         }
         element = document.selectFirst("div.ratValue");
         if (element != null) {
-            final Node percentage = element.firstChild();
-            if (percentage != null) {
-                try {
-                    // 0..100 / 20 -> 0.0..5.0
-                    final String s = percentage.toString().strip();
-                    final float rating = (float) Integer.parseInt(s) / 20;
-                    ratingParser.normalize(rating).ifPresent(book::setRating);
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore
-                }
-            }
+            parseRating(element, book);
         }
 
         final Element bDetails = document.selectFirst("div#bdetail_rest");
@@ -348,10 +338,10 @@ public class DatabazeKnihSearchEngine
                 // Not much we can do about that, as we need to rely on "()" parsing
                 // for many sites to BE the number.
                 final Series series = Series.from(seriesName);
-                element = document.selectFirst(
+                final Element nrElement = document.selectFirst(
                         "span.nowrap > span.odright_pet, span.nowrap > span.odleft_pet ");
-                if (element != null) {
-                    String nr = element.text();
+                if (nrElement != null) {
+                    String nr = nrElement.text();
                     if (!nr.isEmpty()) {
                         // these usually/always end with ". díl" == "episode"; remove
                         if (nr.endsWith(". díl")) {
@@ -393,15 +383,15 @@ public class DatabazeKnihSearchEngine
             final Element issuedElement = element.nextElementSibling();
             if (issuedElement != null) {
                 final String issued = issuedElement.text();
-                if (!issued.isEmpty() && !"?".equals(issued)) {
+                if (!issued.isBlank() && !"?".equals(issued)) {
                     partialDateParser.parse(issued).ifPresent(book::setPublicationDate);
                 }
 
                 // Publishing house
                 element = detailsDesc.selectFirst("a[href^=/nakladatelstvi/]");
                 if (element != null) {
-                    final String name = element.text();
-                    if (!name.isEmpty()) {
+                    final String name = SearchEngineUtils.cleanName(element.text());
+                    if (!name.isBlank()) {
                         book.add(Publisher.from(name));
                     }
                 }
@@ -415,8 +405,10 @@ public class DatabazeKnihSearchEngine
             // bit tricky.. there is no verification possible that this is a title
             textNode = element.nextSibling();
             if (textNode != null) {
-                final String text = SearchEngineUtils.cleanName(textNode.toString().strip());
-                book.setTranslatedFromTitle(text);
+                final String text = SearchEngineUtils.cleanText(textNode.toString());
+                if (!text.isBlank()) {
+                    book.setTranslatedFromTitle(text);
+                }
             }
 
             // <span class="gray">,</span>
@@ -424,8 +416,10 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 textNode = element.nextSibling();
                 if (textNode != null) {
-                    final String text = SearchEngineUtils.cleanText(textNode.toString().strip());
-                    partialDateParser.parse(text).ifPresent(book::setFirstPublicationDate);
+                    final String text = SearchEngineUtils.cleanText(textNode.toString());
+                    if (!text.isBlank()) {
+                        partialDateParser.parse(text).ifPresent(book::setFirstPublicationDate);
+                    }
                 }
             }
         }
@@ -473,6 +467,21 @@ public class DatabazeKnihSearchEngine
         if (fetchCovers[0]) {
             parseCover(context, document, book.getIsbn(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+    }
+
+    private void parseRating(@NonNull final Element element,
+                             @NonNull final Book book) {
+        final Node percentage = element.firstChild();
+        if (percentage != null) {
+            try {
+                // 0..100 / 20 -> 0.0..5.0
+                final String s = percentage.toString().strip();
+                final float rating = (float) Integer.parseInt(s) / 20;
+                ratingParser.normalize(rating).ifPresent(book::setRating);
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
+            }
         }
     }
 
@@ -704,7 +713,12 @@ public class DatabazeKnihSearchEngine
                              @NonNull final String text,
                              @AuthorRole.Role final int type,
                              @NonNull final Book book) {
-        final Author author = Author.from(text);
+        final String s = SearchEngineUtils.cleanName(text);
+        if (s.isBlank()) {
+            return;
+        }
+
+        final Author author = Author.from(s);
 
         final String url = a.attr("href");
         // see class docs!
