@@ -69,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
@@ -408,7 +407,7 @@ public class StripInfoSearchEngine
         @Nullable
         String primarySeriesTitle = parsePrimarySeriesTitle(document);
         if (primarySeriesTitle != null) {
-            primarySeriesTitle = SearchEngineUtils.cleanText(primarySeriesTitle);
+            primarySeriesTitle = cleanText(primarySeriesTitle);
         }
 
         // extracted from the title section.
@@ -434,7 +433,7 @@ public class StripInfoSearchEngine
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     if (titleUrlElement != null) {
-                        book.setTitle(SearchEngineUtils.cleanText(titleUrlElement.text()));
+                        book.setTitle(cleanText(titleUrlElement));
                         externalId = parseExternalId(titleUrlElement, book);
 
                         final Elements tds = row.select("td");
@@ -892,7 +891,7 @@ public class StripInfoSearchEngine
     private String extractText(@NonNull final Element td) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
-            return SearchEngineUtils.cleanText(dataElement.text());
+            return cleanText(dataElement);
         }
         return null;
     }
@@ -939,7 +938,7 @@ public class StripInfoSearchEngine
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             dataElement.select("a").forEach(a -> {
-                final String name = SearchEngineUtils.cleanName(a.text());
+                final String name = cleanName(a);
                 final Author author = Author.from(name);
 
                 final String url = a.attr("href");
@@ -1010,7 +1009,7 @@ public class StripInfoSearchEngine
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
-                final String text = SearchEngineUtils.cleanText(as.get(i).text());
+                final String text = cleanText(as.get(i));
                 final Series currentSeries = Series.from3(text);
                 // check if already present
                 if (book.getSeries().stream()
@@ -1039,8 +1038,7 @@ public class StripInfoSearchEngine
         if (data != null) {
             data.select("a")
                 .stream()
-                .map(Element::text)
-                .map(SearchEngineUtils::cleanText)
+                .map(this::cleanText)
                 .filter(text -> !text.isBlank())
                 .map(Publisher::from)
                 .forEach(book::add);
@@ -1079,7 +1077,7 @@ public class StripInfoSearchEngine
                         .matcher(text)
                         .replaceAll(Matcher.quoteReplacement("</b>\n<br>"));
 
-                content.append(SearchEngineUtils.cleanText(text));
+                content.append(cleanText(text));
                 if (i < sections.size() - 1) {
                     // separate multiple sections
                     content.append("\n<br>\n<br>");

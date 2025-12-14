@@ -654,11 +654,11 @@ public class IsfdbSearchEngine
                     final String href = a.attr("href");
 
                     if (title == null && href.contains(CGI_TITLE)) {
-                        title = SearchEngineUtils.cleanText(a.text());
+                        title = cleanText(a);
                         //ENHANCE: tackle 'variant' titles later
 
                     } else if (author == null && href.contains(CGI_EA)) {
-                        author = Author.from(SearchEngineUtils.cleanName(a.text()));
+                        author = Author.from(cleanName(a));
                         final String url = a.attr("href");
                         final Matcher matcher = AUTHOR_ID.matcher(url);
                         if (matcher.find()) {
@@ -669,7 +669,7 @@ public class IsfdbSearchEngine
                         }
 
                     } else if (addSeriesFromToc && href.contains(CGI_PE)) {
-                        final Series series = Series.from(SearchEngineUtils.cleanName(a.text()));
+                        final Series series = Series.from(cleanName(a));
 
                         //  • 4] • (1987) • novel by
                         final Node nextSibling = a.nextSibling();
@@ -953,7 +953,7 @@ public class IsfdbSearchEngine
                         case "Publication:": {
                             final Node nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
-                                bookTitle = SearchEngineUtils.cleanText(nextSibling.toString());
+                                bookTitle = cleanText(nextSibling);
                                 book.setTitle(bookTitle);
                             }
                             break;
@@ -1045,7 +1045,7 @@ public class IsfdbSearchEngine
             if (tmpString.startsWith("<b>Notes:</b>")) {
                 tmpString = tmpString.substring(13).strip();
             }
-            book.setDescription(SearchEngineUtils.cleanText(tmpString));
+            book.setDescription(cleanText(tmpString));
         }
 
         final List<TocEntry> toc = parseToc(context, document, book);
@@ -1112,8 +1112,7 @@ public class IsfdbSearchEngine
                                 @NonNull final Book book) {
         li.select("a")
           .stream()
-          .map(Element::text)
-          .map(SearchEngineUtils::cleanName)
+          .map(this::cleanName)
           .filter(name -> !name.isBlank())
           .map(Publisher::from)
           .forEach(book::add);
@@ -1135,8 +1134,8 @@ public class IsfdbSearchEngine
     private void parsePublicationSeries(@NonNull final Element li,
                                         @NonNull final Book book) {
         li.select("a")
-          .stream().map(Element::text)
-          .map(SearchEngineUtils::cleanName)
+          .stream()
+          .map(this::cleanName)
           .filter(name -> !name.isBlank())
           .map(Series::from)
           .forEach(book::add);
@@ -1216,7 +1215,7 @@ public class IsfdbSearchEngine
                               @AuthorRole.Role final int type,
                               @NonNull final Book book) {
         for (final Element a : li.select("a[href*=/ea.cgi]")) {
-            final String text = SearchEngineUtils.cleanName(a.text());
+            final String text = cleanName(a);
 
             final Author author;
             // Replace their hardcoded 'unknown' with ours
@@ -1441,7 +1440,7 @@ public class IsfdbSearchEngine
                             // 3rd column: the publisher
                             final Element pa = tr.child(3).selectFirst("a");
                             if (pa != null) {
-                                publisher = SearchEngineUtils.cleanName(pa.text());
+                                publisher = cleanName(pa);
                             }
                             // 4th column: the ISBN/Catalog ID.
                             final String catNr = tr.child(4).text();

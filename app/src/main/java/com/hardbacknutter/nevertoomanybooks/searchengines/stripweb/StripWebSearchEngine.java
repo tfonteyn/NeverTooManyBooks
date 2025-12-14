@@ -326,7 +326,7 @@ public class StripWebSearchEngine
                         break;
                     }
                     case "Pagina's":
-                        book.setPages(SearchEngineUtils.cleanText(td.text()));
+                        book.setPages(cleanText(td));
                         break;
                     case "Reeks":
                         parseSeries(td, book);
@@ -338,10 +338,10 @@ public class StripWebSearchEngine
                         parseLanguage(book, td);
                         break;
                     case "Cover":
-                        book.setFormat(SearchEngineUtils.cleanText(td.text()));
+                        book.setFormat(cleanText(td));
                         break;
                     case "Verschijningsdatum": {
-                        final String text = SearchEngineUtils.cleanText(td.text());
+                        final String text = cleanText(td);
                         if (!text.isEmpty()) {
                             addPublicationDate(context, siteLocale, text, book);
                         }
@@ -364,14 +364,14 @@ public class StripWebSearchEngine
                         break;
 
                     case "Afmetingen": {
-                        final String text = SearchEngineUtils.cleanText(td.text());
+                        final String text = cleanText(td);
                         if (!text.isBlank()) {
                             book.putString(SiteField.SIZE, text);
                         }
                         break;
                     }
                     case "Genre": {
-                        final String text = SearchEngineUtils.cleanText(td.text());
+                        final String text = cleanText(td);
                         if (!text.isBlank() && !tagsToIgnore.contains(text)) {
                             // Use 'add', as tags can also be populated by "Trefwoorden"
                             book.addTags(List.of(new Tag(text)));
@@ -380,8 +380,7 @@ public class StripWebSearchEngine
                     }
                     case "Trefwoorden": {
                         // comma separated words but with extra whitespace we must remove
-                        final String[] split = SearchEngineUtils.cleanText(td.text())
-                                                                .split(",");
+                        final String[] split = cleanText(td).split(",");
 
                         // Use 'add', as tags can also be populated by "Genre"
                         book.addTags(Arrays.stream(split)
@@ -445,7 +444,7 @@ public class StripWebSearchEngine
     private void parseTitle(@NonNull final Context context,
                             @NonNull final Element titleElement,
                             @NonNull final Book book) {
-        final String text = SearchEngineUtils.cleanText(titleElement.text());
+        final String text = cleanText(titleElement);
         if (!text.isBlank()) {
             // TITLE_SUFFIXES are as entered by site-employees, hence use site-locale
             final String lcText = text.toLowerCase(getLocale(context));
@@ -475,7 +474,7 @@ public class StripWebSearchEngine
 
     private void parseLanguage(@NonNull final Book book,
                                @NonNull final Element td) {
-        final String langCode = SearchEngineUtils.cleanText(td.text());
+        final String langCode = cleanText(td);
         if (!langCode.isBlank()) {
             // Another mess.. the site uses an abbreviation for the language,
             // but NOT a standard one.
@@ -512,7 +511,7 @@ public class StripWebSearchEngine
                 }
             }
 
-            final String s = SearchEngineUtils.cleanText(html);
+            final String s = cleanText(html);
             if (!s.isBlank()) {
                 book.setDescription(s);
             }
@@ -558,13 +557,12 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .map(SearchEngineUtils::cleanName)
+                  .map(this::cleanName)
                   .filter(name -> !name.isBlank())
                   .forEach(name -> parseAuthor(name, type, book));
         } else {
             aas.stream()
-               .map(Element::text)
-               .map(SearchEngineUtils::cleanName)
+               .map(this::cleanName)
                .filter(name -> !name.isBlank())
                .forEach(name -> parseAuthor(name, type, book));
         }
@@ -609,7 +607,7 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .map(SearchEngineUtils::cleanName)
+                  .map(this::cleanName)
                   .filter(name -> !name.isBlank())
                   .map(Series::from)
                   .forEach(series -> {
@@ -620,8 +618,7 @@ public class StripWebSearchEngine
                   });
         } else {
             aas.stream()
-               .map(Element::text)
-               .map(SearchEngineUtils::cleanName)
+               .map(this::cleanName)
                .filter(name -> !name.isBlank())
                .map(Series::from)
                .forEach(series -> {
@@ -647,14 +644,13 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .map(SearchEngineUtils::cleanName)
+                  .map(this::cleanName)
                   .filter(name -> !name.isBlank())
                   .map(Publisher::from)
                   .forEach(book::add);
         } else {
             aas.stream()
-               .map(Element::text)
-               .map(SearchEngineUtils::cleanName)
+               .map(this::cleanName)
                .filter(name -> !name.isBlank())
                .map(Publisher::from)
                .forEach(book::add);

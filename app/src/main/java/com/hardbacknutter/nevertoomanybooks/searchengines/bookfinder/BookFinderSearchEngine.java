@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -186,7 +185,7 @@ public class BookFinderSearchEngine
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");
         if (authorElement != null) {
-            final String s = SearchEngineUtils.cleanName(authorElement.text());
+            final String s = cleanName(authorElement);
             if (!s.isBlank()) {
                 addAuthor(Author.from(s), AuthorRole.UNKNOWN, book);
             }
@@ -233,7 +232,7 @@ public class BookFinderSearchEngine
 
         final Element description = document.selectFirst("div#bookSummary > p");
         if (description != null) {
-            final String s = SearchEngineUtils.cleanText(description.html());
+            final String s = cleanText(description.html());
             if (!s.isBlank()) {
                 book.setDescription(s);
             }
@@ -254,7 +253,7 @@ public class BookFinderSearchEngine
                                   @NonNull final Book book) {
         final String[] parts = value.split(",");
         if (parts.length > 0) {
-            final String s = SearchEngineUtils.cleanName(parts[0]);
+            final String s = cleanName(parts[0]);
             if (!s.isBlank()) {
                 book.add(Publisher.from(s.strip()));
                 if (parts.length > 1 && !parts[1].isBlank()) {

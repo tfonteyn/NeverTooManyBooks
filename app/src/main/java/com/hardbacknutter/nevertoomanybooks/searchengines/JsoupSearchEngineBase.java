@@ -35,6 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 
 /**
  * A thin layer between the {@link SearchEngineBase} and the actual engine implementation.
@@ -120,5 +122,30 @@ public abstract class JsoupSearchEngineBase
                 jsoupLoader.cancel();
             }
         }
+    }
+
+    @NonNull
+    protected String cleanText(@NonNull final String s) {
+        return SearchEngineUtils.cleanText(s);
+    }
+
+    @NonNull
+    protected String cleanText(@NonNull final Node node) {
+        return SearchEngineUtils.cleanText(node.toString());
+    }
+
+    @NonNull
+    protected String cleanText(@NonNull final Element element) {
+        return SearchEngineUtils.cleanText(element.text());
+    }
+
+    @NonNull
+    protected String cleanName(@NonNull final String s) {
+        return SearchEngineUtils.cleanName(s);
+    }
+
+    @NonNull
+    protected String cleanName(@NonNull final Element element) {
+        return SearchEngineUtils.cleanName(element.text());
     }
 }

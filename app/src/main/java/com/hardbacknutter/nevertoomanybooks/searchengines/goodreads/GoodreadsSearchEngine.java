@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 import com.hardbacknutter.org.json.JSONArray;
@@ -496,7 +495,7 @@ public class GoodreadsSearchEngine
         }
         s = details.optString("publisher", null);
         if (s != null && !s.isBlank()) {
-            s = SearchEngineUtils.cleanName(s);
+            s = cleanName(s);
             if (!s.isBlank()) {
                 book.add(Publisher.from(s));
             }
@@ -627,7 +626,7 @@ public class GoodreadsSearchEngine
             return;
         }
 
-        final String name = SearchEngineUtils.cleanName(refObj.optString("name"));
+        final String name = cleanName(refObj.optString("name"));
         if (name.isBlank()) {
             return;
         }
@@ -667,8 +666,7 @@ public class GoodreadsSearchEngine
                     if (!ref.isEmpty()) {
                         final JSONObject refObj = apolloState.optJSONObject(ref);
                         if (refObj != null) {
-                            final String title = SearchEngineUtils.cleanName(
-                                    refObj.optString("title"));
+                            final String title = cleanName(refObj.optString("title"));
                             if (!title.isBlank()) {
                                 book.add(Series.from(title, numberInSeries));
                             }

@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -620,7 +619,7 @@ public class BibliotecePlSearchEngine
         if (matcher.find()) {
             final String g1 = matcher.group(1);
             if (g1 != null) {
-                final String s = SearchEngineUtils.cleanName(g1);
+                final String s = cleanName(g1);
                 if (!s.isBlank()) {
                     addAuthor(Author.from(s), type, book);
                 }
@@ -632,8 +631,7 @@ public class BibliotecePlSearchEngine
                              @NonNull final Book book) {
         td.select(SPAN_DATA_IPUB_SEARCH_T)
           .stream()
-          .map(Element::text)
-          .map(SearchEngineUtils::cleanName)
+          .map(this::cleanName)
           .filter(name -> !name.isBlank())
           .map(Series::from)
           .filter(series -> !book.getSeries().contains(series))
@@ -649,8 +647,7 @@ public class BibliotecePlSearchEngine
         // and let the user sort them out manually.
         bookData.select(SPAN_DATA_IPUB_SEARCH_W)
                 .stream()
-                .map(Element::text)
-                .map(SearchEngineUtils::cleanName)
+                .map(this::cleanName)
                 .filter(name -> !name.isBlank())
                 .map(Publisher::from)
                 .filter(publisher -> !book.getPublishers().contains(publisher))
@@ -715,7 +712,7 @@ public class BibliotecePlSearchEngine
         final Element element = loadDocument(context, url, null)
                 .selectFirst("div.summary");
         if (element != null) {
-            final String text = SearchEngineUtils.cleanText(element.text());
+            final String text = cleanText(element);
             if (!text.isBlank()) {
                 book.setDescription(text);
             }

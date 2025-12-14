@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -266,7 +265,7 @@ public class BiblionetGrSearchEngine
             final Element desc = bookTabs.selectFirst("div#bookDescription");
             if (desc != null) {
                 // the text is a couple of elements deeper, but there is only one text element
-                final String text = SearchEngineUtils.cleanText(desc.text());
+                final String text = cleanText(desc);
                 if (!text.isBlank()) {
                     final String description = book.getDescription();
                     if (description.isBlank()) {
@@ -301,11 +300,11 @@ public class BiblionetGrSearchEngine
             return false;
         }
 
-        String title = SearchEngineUtils.cleanText(titleHeader.text());
+        String title = cleanText(titleHeader);
         // optional subtitle
         final Element p = titleSection.selectFirst("p");
         if (p != null) {
-            final String sub = SearchEngineUtils.cleanText(p.text());
+            final String sub = cleanText(p);
             if (!sub.isBlank()) {
                 title += " - " + sub;
             }
@@ -408,7 +407,7 @@ public class BiblionetGrSearchEngine
                         // Don't parse, use the name as-is.
                         // URGENT: when the user manually adds/edit this name, it might go
                         //  through the parser again and get mangled up.
-                        final String s = SearchEngineUtils.cleanName(a.text());
+                        final String s = cleanName(a);
                         if (!s.isBlank()) {
                             final Author author = new Author(s, null);
                             addAuthor(author, AuthorRole.UNKNOWN, book);
@@ -462,8 +461,7 @@ public class BiblionetGrSearchEngine
         // <a role="link" href="/rené-goscinny-c787">René Goscinny</a>
         li.select("a")
           .stream()
-          .map(Element::text)
-          .map(SearchEngineUtils::cleanName)
+          .map(this::cleanName)
           .filter(name -> !name.isBlank())
           .map(Author::from)
           .forEach(a -> addAuthor(a, type, book));
@@ -492,7 +490,7 @@ public class BiblionetGrSearchEngine
             switch (label) {
                 case "Εκδοτης":
                 case "Publisher": {
-                    final String s = SearchEngineUtils.cleanName(text);
+                    final String s = cleanName(text);
                     if (!s.isBlank()) {
                         book.add(Publisher.from(s));
                     }
@@ -578,7 +576,7 @@ public class BiblionetGrSearchEngine
                 }
                 case "Σειρα":
                 case "Series title": {
-                    final String s = SearchEngineUtils.cleanName(text);
+                    final String s = cleanName(text);
                     if (!s.isBlank()) {
                         final Series currentSeries = Series.from(s);
                         // Add if not already present.

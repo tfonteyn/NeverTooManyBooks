@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONObject;
@@ -500,7 +499,7 @@ public class DoubanSearchEngine
                             // sorting on author names to work.
                             text = matcher.group(2) + " [" + matcher.group(1) + "]";
                         }
-                        text = SearchEngineUtils.cleanName(text);
+                        text = cleanName(text);
                         if (!text.isBlank()) {
                             final Author author = Author.from(text);
 
@@ -521,7 +520,7 @@ public class DoubanSearchEngine
                     // Publisher
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        final String text = SearchEngineUtils.cleanName(a.text());
+                        final String text = cleanName(a);
                         if (!text.isBlank()) {
                             book.add(Publisher.from(text));
                         }
@@ -548,7 +547,7 @@ public class DoubanSearchEngine
                     // Translator
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        final String s = SearchEngineUtils.cleanName(a.text());
+                        final String s = cleanName(a);
                         if (!s.isBlank()) {
                             addAuthor(Author.from(s), AuthorRole.TRANSLATOR, book);
                         }
@@ -595,7 +594,7 @@ public class DoubanSearchEngine
                     // Series
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        final String s = SearchEngineUtils.cleanName(a.text());
+                        final String s = cleanName(a);
                         if (!s.isBlank()) {
                             book.add(Series.from(s));
                         }
@@ -714,7 +713,7 @@ public class DoubanSearchEngine
                     && introElements.size() > 1) {
                     intro = introElements.get(1);
                 }
-                final String desc = SearchEngineUtils.cleanText(intro.html());
+                final String desc = cleanText(intro.html());
                 if (!desc.isBlank()) {
                     book.setDescription(desc);
                 }

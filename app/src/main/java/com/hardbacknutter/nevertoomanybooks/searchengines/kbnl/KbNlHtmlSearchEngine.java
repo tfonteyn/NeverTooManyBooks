@@ -368,7 +368,7 @@ public class KbNlHtmlSearchEngine
             final String title = book.getString(DBKey.TITLE, null);
             // should never happen, but paranoia...
             if (title != null && !title.isBlank()) {
-                final String s = SearchEngineUtils.cleanName(title);
+                final String s = cleanName(title);
                 if (!s.isBlank()) {
                     book.add(Series.from(s, tmpSeriesNr));
                 }
@@ -387,11 +387,11 @@ public class KbNlHtmlSearchEngine
         final Element a = td.selectFirst("a");
         if (a != null) {
             final String[] cleanedData = a.text().split("/");
-            final String s = SearchEngineUtils.cleanText(cleanedData[0]);
+            final String s = cleanText(cleanedData[0]);
             if (!s.isBlank()) {
                 book.setTitle(s);
             }
-            // It's temping to decode [1,
+            // It's temping to decode cleanedData[1],
             // but the data has proven to be very unstructured and mostly unusable.
         }
     }
@@ -409,7 +409,7 @@ public class KbNlHtmlSearchEngine
                     return;
                 }
 
-                s = SearchEngineUtils.cleanName(s);
+                s = cleanName(s);
                 if (!s.isBlank()) {
                     addAuthor(Author.from(s), type, book);
                 }
@@ -422,7 +422,7 @@ public class KbNlHtmlSearchEngine
         final Element span = td.selectFirst("span");
         if (span != null) {
             // Note how this is different from the psi result
-            final String s = SearchEngineUtils.cleanName(span.text());
+            final String s = cleanName(span);
             if (!s.isBlank()) {
                 book.add(Series.from(s, tmpSeriesNr));
             }
@@ -481,7 +481,7 @@ public class KbNlHtmlSearchEngine
             if (text.contains(":")) {
                 text = text.split(":")[1].strip();
             }
-            text = SearchEngineUtils.cleanName(text);
+            text = cleanName(text);
             if (!text.isBlank()) {
                 book.add(Publisher.from(text));
             }

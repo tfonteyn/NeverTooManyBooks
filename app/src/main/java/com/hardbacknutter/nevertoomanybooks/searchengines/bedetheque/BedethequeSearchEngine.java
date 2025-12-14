@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -393,7 +392,7 @@ public class BedethequeSearchEngine
 
         final Element description = document.selectFirst("span[itemprop='description']");
         if (description != null) {
-            final String s = SearchEngineUtils.cleanText(description.text());
+            final String s = cleanText(description);
             if (!s.isBlank()) {
                 book.setDescription(s);
             }
@@ -439,7 +438,7 @@ public class BedethequeSearchEngine
             if (matcher.find()) {
                 final String s = matcher.group(2);
                 if (s != null) {
-                    final String title = SearchEngineUtils.cleanText(s);
+                    final String title = cleanText(s);
                     if (!title.isBlank()) {
                         book.setTitle(title);
                         final String nrInSeries = matcher.group(1);
@@ -746,7 +745,7 @@ public class BedethequeSearchEngine
                 case "Editeur :": {
                     String text = parseLabelText(labelElement);
                     if (text != null) {
-                        text = SearchEngineUtils.cleanName(text);
+                        text = cleanName(text);
                         if (!text.isBlank()) {
                             book.add(Publisher.from(text));
                         }
@@ -855,7 +854,7 @@ public class BedethequeSearchEngine
             }
             case "Collectif":
             default: {
-                final String s = SearchEngineUtils.cleanName(names);
+                final String s = cleanName(names);
                 if (!s.isBlank()) {
                     addAuthor(Author.from(s), role, book);
                 }
@@ -887,7 +886,7 @@ public class BedethequeSearchEngine
         // Series names can be formatted in a LOT of ways.
         // We're not going to try and capture each and every special format
         // but stick to the most common ones.
-        String seriesName = SearchEngineUtils.cleanName(text);
+        String seriesName = cleanName(text);
 
         Matcher matcher;
 

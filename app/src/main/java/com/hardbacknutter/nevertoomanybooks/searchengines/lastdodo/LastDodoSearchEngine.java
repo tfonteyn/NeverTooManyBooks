@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -514,12 +513,12 @@ public class LastDodoSearchEngine
 
                 switch (th.text()) {
                     case "LastDodo nummer": {
-                        final String sid = SearchEngineUtils.cleanText(td.text());
+                        final String sid = cleanText(td);
                         book.setIdentifierValue(Identifier.SID_LAST_DODO_NL, sid);
                         break;
                     }
                     case "Titel": {
-                        book.setTitle(SearchEngineUtils.cleanText(td.text()));
+                        book.setTitle(cleanText(td));
                         break;
                     }
                     case "Serie / held": {
@@ -527,7 +526,7 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Reeks": {
-                        final String text = SearchEngineUtils.cleanText(td.child(0).text());
+                        final String text = cleanText(td.child(0));
                         if (!text.isBlank()) {
                             book.putString(SiteField.REEKS, text);
                         }
@@ -576,25 +575,25 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Jaar": {
-                        final String text = SearchEngineUtils.cleanText(td.text());
+                        final String text = cleanText(td);
                         if (!text.isBlank()) {
                             dateParser.parse(text).ifPresent(book::setPublicationDate);
                         }
                         break;
                     }
                     case "Cover": {
-                        book.setFormat(SearchEngineUtils.cleanText(td.text()));
+                        book.setFormat(cleanText(td));
                         break;
                     }
                     case "Druk": {
-                        final String text = SearchEngineUtils.cleanText(td.text());
+                        final String text = cleanText(td);
                         if (!text.isBlank()) {
                             book.putString(SiteField.PRINTING, text);
                         }
                         break;
                     }
                     case "Inkleuring": {
-                        book.setColor(SearchEngineUtils.cleanText(td.text()));
+                        book.setColor(cleanText(td));
                         break;
                     }
                     case "ISBN": {
@@ -605,16 +604,16 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Oplage": {
-                        book.setPrintRun(SearchEngineUtils.cleanText(td.text()));
+                        book.setPrintRun(cleanText(td));
                         break;
                     }
                     case "Aantal bladzijden": {
-                        book.setPages(SearchEngineUtils.cleanText(td.text()));
+                        book.setPages(cleanText(td));
                         break;
                     }
                     case "Afmetingen": {
                         if (!"? x ? cm".equals(td.text())) {
-                            final String text = SearchEngineUtils.cleanText(td.text());
+                            final String text = cleanText(td);
                             if (!text.isBlank()) {
                                 book.putString(SiteField.SIZE, text);
                             }
@@ -626,11 +625,11 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Taal / dialect": {
-                        book.setLanguage(SearchEngineUtils.cleanText(td.text()));
+                        book.setLanguage(cleanText(td));
                         break;
                     }
                     case "Bijzonderheden": {
-                        book.setDescription(SearchEngineUtils.cleanText(td.text()));
+                        book.setDescription(cleanText(td));
                         break;
                     }
                     default:
@@ -749,7 +748,7 @@ public class LastDodoSearchEngine
                     text = split[1].strip() + ' ' + split[0].strip();
                 }
             }
-            final Author author = Author.from(SearchEngineUtils.cleanName(text));
+            final Author author = Author.from(cleanName(text));
             final String url = a.attr("href");
             final Matcher matcher = AUTHOR_ID.matcher(url);
             if (matcher.find()) {
@@ -772,8 +771,7 @@ public class LastDodoSearchEngine
                                @NonNull final Book book) {
         td.select("a")
           .stream()
-          .map(Element::text)
-          .map(SearchEngineUtils::cleanName)
+          .map(this::cleanName)
           .filter(name -> !name.isBlank())
           .map(Series::from)
           .forEach(book::add);
@@ -789,8 +787,7 @@ public class LastDodoSearchEngine
                                 @NonNull final Book book) {
         td.select("a")
           .stream()
-          .map(Element::text)
-          .map(SearchEngineUtils::cleanName)
+          .map(this::cleanName)
           .filter(name -> !name.isBlank())
           .map(Publisher::from)
           .forEach(book::add);

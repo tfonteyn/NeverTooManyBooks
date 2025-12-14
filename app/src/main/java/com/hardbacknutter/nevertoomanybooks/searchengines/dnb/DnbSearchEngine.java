@@ -67,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
@@ -424,7 +423,7 @@ public class DnbSearchEngine
                             case "Work": {
                                 // The original title for a translated book
                                 // Can have Series/nr prefixed; let the user clean that up.
-                                book.setTranslatedFromTitle(SearchEngineUtils.cleanName(td.text()));
+                                book.setTranslatedFromTitle(cleanName(td));
                                 break;
                             }
                             case "Teil von":
@@ -507,7 +506,7 @@ public class DnbSearchEngine
             text = PATTERN_BAR.split(text)[0];
         }
 
-        text = SearchEngineUtils.cleanName(text);
+        text = cleanName(text);
         for (final String suffix : TITLE_SUFFIXES) {
             if (text.endsWith(suffix)) {
                 text = text.substring(0, text.length() - suffix.length() - 1).strip();
@@ -555,7 +554,7 @@ public class DnbSearchEngine
             Element e = it.next();
 
             while (e != null && e.nameIs("a")) {
-                final String name = SearchEngineUtils.cleanName(e.text());
+                final String name = cleanName(e);
                 final Author author = Author.from(name);
                 final String url = e.attr("href");
                 final Matcher matcher = AUTHOR_ID.matcher(url);
@@ -625,7 +624,7 @@ public class DnbSearchEngine
                              @NonNull final Book book) {
         final Element a = td.selectFirst("a");
         if (a != null) {
-            final String title = SearchEngineUtils.cleanName(a.text());
+            final String title = cleanName(a);
             if (!title.isBlank()) {
                 final Series series = Series.from(title);
                 final Node node = a.nextSibling();
@@ -661,12 +660,12 @@ public class DnbSearchEngine
         final String text = td.text();
         if (text.contains(" ; ")) {
             final String[] split = PATTERN_SERIES_NR.split(text);
-            final String title = SearchEngineUtils.cleanName(split[0]);
+            final String title = cleanName(split[0]);
             final Series series = Series.from(title);
             series.setNumber(split[1].strip());
             book.add(series);
         } else {
-            final String title = SearchEngineUtils.cleanName(text);
+            final String title = cleanName(text);
             if (!title.isBlank()) {
                 book.add(Series.from(title));
             }
@@ -707,9 +706,9 @@ public class DnbSearchEngine
                 final String name;
                 if (brSplit[0].contains(":")) {
                     final String[] parts = brSplit[0].split(":", 2);
-                    name = SearchEngineUtils.cleanName(parts[parts.length - 1]);
+                    name = cleanName(parts[parts.length - 1]);
                 } else {
-                    name = SearchEngineUtils.cleanName(brSplit[0]);
+                    name = cleanName(brSplit[0]);
                 }
 
                 if (!name.isBlank()) {
@@ -742,7 +741,7 @@ public class DnbSearchEngine
         final String[] split = td.text().split(",");
         final List<String> tagNames = Arrays
                 .stream(split)
-                .map(SearchEngineUtils::cleanText)
+                .map(this::cleanText)
                 .filter(name -> !name.isBlank())
                 .collect(Collectors.toList());
         setTags(tagNames, book);

@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -330,7 +329,7 @@ public class DatabazeKnihSearchEngine
 
         element = bDetails.selectFirst("a[href^=/serie/]");
         if (element != null) {
-            final String seriesName = SearchEngineUtils.cleanName(element.text());
+            final String seriesName = cleanName(element);
             if (!seriesName.isEmpty()) {
                 // some series will parse wrong.
                 // Example "Lucky Luke (Crew)"
@@ -390,7 +389,7 @@ public class DatabazeKnihSearchEngine
                 // Publishing house
                 element = detailsDesc.selectFirst("a[href^=/nakladatelstvi/]");
                 if (element != null) {
-                    final String name = SearchEngineUtils.cleanName(element.text());
+                    final String name = cleanName(element);
                     if (!name.isBlank()) {
                         book.add(Publisher.from(name));
                     }
@@ -405,7 +404,7 @@ public class DatabazeKnihSearchEngine
             // bit tricky.. there is no verification possible that this is a title
             textNode = element.nextSibling();
             if (textNode != null) {
-                final String text = SearchEngineUtils.cleanText(textNode.toString());
+                final String text = cleanText(textNode);
                 if (!text.isBlank()) {
                     book.setTranslatedFromTitle(text);
                 }
@@ -416,7 +415,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 textNode = element.nextSibling();
                 if (textNode != null) {
-                    final String text = SearchEngineUtils.cleanText(textNode.toString());
+                    final String text = cleanText(textNode);
                     if (!text.isBlank()) {
                         partialDateParser.parse(text).ifPresent(book::setFirstPublicationDate);
                     }
@@ -713,7 +712,7 @@ public class DatabazeKnihSearchEngine
                              @NonNull final String text,
                              @AuthorRole.Role final int type,
                              @NonNull final Book book) {
-        final String s = SearchEngineUtils.cleanName(text);
+        final String s = cleanName(text);
         if (s.isBlank()) {
             return;
         }

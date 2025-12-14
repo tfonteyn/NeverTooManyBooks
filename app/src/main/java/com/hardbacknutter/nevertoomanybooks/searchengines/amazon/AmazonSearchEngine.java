@@ -501,7 +501,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        book.setTitle(SearchEngineUtils.cleanText(titleElement.text()));
+        book.setTitle(cleanText(titleElement));
 
         // Use the site locale for all parsing!
         // Derive it from the actual url, as this might have been a redirect
@@ -580,7 +580,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        String priceText = SearchEngineUtils.cleanText(price.text());
+        String priceText = cleanText(price);
         for (final String prefix : PRICE_PREFIXES) {
             if (priceText.startsWith(prefix)) {
                 priceText = priceText.substring(prefix.length());
@@ -593,7 +593,7 @@ public class AmazonSearchEngine
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
         if (formatElement != null) {
-            book.setFormat(SearchEngineUtils.cleanText(formatElement.text()));
+            book.setFormat(cleanText(formatElement));
         }
     }
 
@@ -605,7 +605,7 @@ public class AmazonSearchEngine
         if (addToCart != null) {
             final Element asinElement = addToCart.selectFirst("input#ASIN");
             if (asinElement != null) {
-                final String asin = SearchEngineUtils.cleanText(asinElement.attr("value"));
+                final String asin = cleanText(asinElement.attr("value"));
                 book.setIdentifierValue(Identifier.SID_ASIN, asin);
             }
         }
@@ -632,7 +632,7 @@ public class AmazonSearchEngine
                 .filter(text -> text.length == 2)
                 .forEach(text -> {
 
-                    final String label = SearchEngineUtils.cleanText(text[0]);
+                    final String label = cleanText(text[0]);
                     final String lcLabel = label.toLowerCase(siteLocale);
 
                     if (LABEL_ISBN_13.equals(lcLabel)) {
@@ -645,20 +645,20 @@ public class AmazonSearchEngine
                         // we might already have the format, but we'll overwrite it - that's ok.
                         book.setFormat(label);
                         // 2025-06-01: we can likely remove this, as there is now LABEL_PAGES
-                        final String data = SearchEngineUtils.cleanText(text[1]);
+                        final String data = cleanText(text[1]);
                         parsePages(data, book);
 
                     } else if (LABEL_PAGES.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
+                        final String data = cleanText(text[1]);
                         parsePages(data, book);
 
                     } else if (LABEL_LANGUAGE.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
+                        final String data = cleanText(text[1]);
                         book.setLanguage(data);
 
                     } else if (LABEL_PUBLISHER.contains(lcLabel)) {
                         boolean publisherWasAdded = false;
-                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        final String data = cleanName(text[1]);
                         final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
                         if (matcher.find()) {
                             final String pubName = matcher.group(1);
@@ -679,11 +679,11 @@ public class AmazonSearchEngine
                             book.add(publisher);
                         }
                     } else if (LABEL_PUBLICATION_DATE.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
+                        final String data = cleanText(text[1]);
                         addPublicationDate(context, siteLocale, data, book);
 
                     } else if (LABEL_SERIES.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
+                        final String data = cleanText(text[1]);
                         book.add(Series.from(data));
 
                     } else {
@@ -754,14 +754,14 @@ public class AmazonSearchEngine
                     // So... we will incorrectly interpret the format "family given".
                     //FIXME: search our database twice with f/g and g/f
                     // this means parsing the 'a.text()' twice.. and french names... COMPLICATED
-                    final String s = SearchEngineUtils.cleanName(a.text());
+                    final String s = cleanName(a);
                     final Author author = Author.from(s);
                     @AuthorRole.Role
                     int type = AuthorRole.UNKNOWN;
 
                     final Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
-                        String data = SearchEngineUtils.cleanText(typeElement.text());
+                        String data = cleanText(typeElement);
                         final Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
                         if (matcher.find()) {
                             data = matcher.group(1);
