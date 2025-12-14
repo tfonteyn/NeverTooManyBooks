@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.net.Uri;
-import android.util.Base64;
 import android.util.Pair;
 
 import androidx.annotation.AnyThread;
@@ -64,6 +63,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -71,6 +71,16 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import com.burgstaller.okhttp.AuthenticationCacheInterceptor;
+import com.burgstaller.okhttp.CachingAuthenticatorDecorator;
+import com.burgstaller.okhttp.DefaultRequestCacheKeyProvider;
+import com.burgstaller.okhttp.DispatchingAuthenticator;
+import com.burgstaller.okhttp.basic.BasicAuthenticator;
+import com.burgstaller.okhttp.digest.CachingAuthenticator;
+import com.burgstaller.okhttp.digest.Credentials;
+import com.burgstaller.okhttp.digest.DigestAuthenticator;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -99,10 +109,13 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import okhttp3.Authenticator;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * <ul>
@@ -329,11 +342,11 @@ public final class CalibreContentServer
     @NonNull
     private final List<CalibreLibrary> libraries = new ArrayList<>();
     private final Set<CalibreCustomField> calibreCustomFields;
-    /** The header string: "Basic user:password". (in base64) */
-    @Nullable
-    private final String authHeader;
+
     @NonNull
     private final OkHttpClient httpClient;
+    private final BookshelfDao bookshelfDao;
+    private final CalibreLibraryDao calibreLibraryDao;
     @Nullable
     private ImageDownloader imageDownloader;
     /** As read from the Content Server. */
@@ -346,9 +359,6 @@ public final class CalibreContentServer
     private HttpCall fileFetchCall;
     @Nullable
     private HttpCall postCall;
-
-    private final BookshelfDao bookshelfDao;
-    private final CalibreLibraryDao calibreLibraryDao;
 
     /**
      * Constructor.
@@ -370,14 +380,6 @@ public final class CalibreContentServer
 
         this.serverUri = uri;
 
-        // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
-        if (username.isEmpty()) {
-            authHeader = null;
-        } else {
-            authHeader = "Basic " + Base64.encodeToString(
-                    (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
-        }
-
         final int connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
                 PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
                 CONNECT_TIMEOUT_IN_MS);
@@ -398,6 +400,47 @@ public final class CalibreContentServer
                 builder.hostnameVerifier(hostnameVerifier);
             }
         }
+
+        if (!username.isEmpty() && !password.isEmpty()) {
+            // https://github.com/rburgst/okhttp-digest
+            final Credentials credentials = new Credentials(username, password);
+
+            final Authenticator basicAuthenticator =
+                    new BasicAuthenticator(credentials, StandardCharsets.UTF_8);
+            final Authenticator digestAuthenticator =
+                    new DigestAuthenticator(credentials, StandardCharsets.UTF_8);
+
+            final Authenticator dispatchingAuthenticator =
+                    new DispatchingAuthenticator.Builder()
+                            .with("digest", digestAuthenticator)
+                            .with("basic", basicAuthenticator)
+                            .build();
+
+            final Map<String, CachingAuthenticator> authCache = new ConcurrentHashMap<>();
+
+            final Authenticator authenticator =
+                    new CachingAuthenticatorDecorator(dispatchingAuthenticator, authCache);
+            builder.authenticator(authenticator);
+
+            // Proxy support
+            // final Interceptor authCacheProxyInterceptor =
+            //      new AuthenticationCacheInterceptor(authCache,
+            //                                         new DefaultProxyCacheKeyProvider());
+            // builder.addNetworkInterceptor(authCacheProxyInterceptor);
+
+            final Interceptor authCacheInterceptor =
+                    new AuthenticationCacheInterceptor(authCache,
+                                                       new DefaultRequestCacheKeyProvider());
+            builder.addInterceptor(authCacheInterceptor);
+        }
+
+        //noinspection ConstantValue
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OKHTTP != null) {
+            final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(DEBUG_SWITCHES.OKHTTP);
+            builder.addNetworkInterceptor(logging);
+        }
+
         httpClient = builder.build();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -600,10 +643,6 @@ public final class CalibreContentServer
                 .header(HttpConstants.CONNECTION,
                         HttpConstants.CONNECTION_KEEP_ALIVE);
 
-        if (authHeader != null) {
-            builder.header(HttpConstants.AUTHORIZATION, authHeader);
-        }
-
         return builder.build();
     }
 
@@ -619,9 +658,7 @@ public final class CalibreContentServer
                         HttpConstants.ACCEPT_ENCODING_GZIP)
                 .header(HttpConstants.CONNECTION,
                         HttpConstants.CONNECTION_KEEP_ALIVE);
-        if (authHeader != null) {
-            builder.header(HttpConstants.AUTHORIZATION, authHeader);
-        }
+
         return builder.build();
     }
 
@@ -637,9 +674,6 @@ public final class CalibreContentServer
                         HttpConstants.CONNECTION_KEEP_ALIVE)
                 .header(HttpConstants.CONTENT_TYPE,
                         HttpConstants.CONTENT_TYPE_JSON);
-        if (authHeader != null) {
-            builder.header(HttpConstants.AUTHORIZATION, authHeader);
-        }
 
         return builder.build();
     }
@@ -915,8 +949,8 @@ public final class CalibreContentServer
      *
      * @return see above, or {@code null} if the extension is missing
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      * @see #isExtensionInstalled()
      */
     @WorkerThread
@@ -1309,8 +1343,8 @@ public final class CalibreContentServer
      *
      * @return JSONObject with a list of Calibre book objects; NOT an array.
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      */
     @WorkerThread
     @NonNull
@@ -1618,8 +1652,8 @@ public final class CalibreContentServer
      * @param calibreId       book to update
      * @param changes         to send
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws JSONException    upon any parsing error
+     * @throws IOException   on generic/other IO failures
+     * @throws JSONException upon any parsing error
      */
     void pushChanges(@NonNull final String libraryStringId,
                      final int calibreId,

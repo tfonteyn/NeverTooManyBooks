@@ -44,6 +44,9 @@ jsoup = "1.21.2"
 # https://github.com/square/okhttp
 okhttpAndroid = "5.3.2"
 
+# https://github.com/rburgst/okhttp-digest
+okhttpAuthenticationDiggest = "3.1.1"
+
 # http://commons.apache.org/proper/commons-codec/
 apacheCommonsCodec = "1.20.0"
 # http://commons.apache.org/proper/commons-compress/
@@ -124,6 +127,7 @@ jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttpAndroid" }
 okhttp-urlconnection = { group = "com.squareup.okhttp3", name = "okhttp-urlconnection", version.ref = "okhttpAndroid" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpAndroid" }
+okhttp-authentication-diggest = { group = "io.github.rburgst", name = "okhttp-digest", version.ref = "okhttpAuthenticationDiggest" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxingCore" }
 
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter" }
