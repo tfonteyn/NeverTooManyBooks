@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.net.Uri;
 import android.util.Base64;
+import android.util.Pair;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -44,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -64,11 +64,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -76,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -98,8 +99,10 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * <ul>
@@ -322,35 +325,30 @@ public final class CalibreContentServer
 
     @NonNull
     private final Uri serverUri;
-    @Nullable
-    private final SSLContext sslContext;
-    @Nullable
-    private final HostnameVerifier hostnameVerifier;
     /** As read from the Content Server. */
     @NonNull
     private final List<CalibreLibrary> libraries = new ArrayList<>();
     private final Set<CalibreCustomField> calibreCustomFields;
-    private final int connectTimeoutInMs;
-    private final int readTimeoutInMs;
     /** The header string: "Basic user:password". (in base64) */
     @Nullable
     private final String authHeader;
-
-    private final BookshelfDao bookshelfDao;
-    private final CalibreLibraryDao calibreLibraryDao;
-
-    @Nullable
-    private FutureHttp<Void> httpPost;
-    @Nullable
-    private FutureHttp<String> jsonFetchRequest;
-    @Nullable
-    private FutureHttp<Uri> fileFetchRequest;
+    @NonNull
+    private final OkHttpClient httpClient;
     @Nullable
     private ImageDownloader imageDownloader;
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary defaultLibrary;
     private boolean calibreExtensionInstalled;
+    @Nullable
+    private HttpCall jsonFetchCall;
+    @Nullable
+    private HttpCall fileFetchCall;
+    @Nullable
+    private HttpCall postCall;
+
+    private final BookshelfDao bookshelfDao;
+    private final CalibreLibraryDao calibreLibraryDao;
 
     /**
      * Constructor.
@@ -359,17 +357,18 @@ public final class CalibreContentServer
      * @param username         for the content server
      * @param password         for the content server
      * @param sslContext       (optional) for certificate handling
+     * @param x509TrustManager (optional) for certificate handling;
+     *                         Must NOT be {@code null} if the {@code sslContext} is set.
      * @param hostnameVerifier (optional) for certificate handling
      */
     private CalibreContentServer(@NonNull final Uri uri,
                                  @NonNull final String username,
                                  @NonNull final String password,
                                  @Nullable final SSLContext sslContext,
+                                 @Nullable final X509TrustManager x509TrustManager,
                                  @Nullable final HostnameVerifier hostnameVerifier) {
 
         this.serverUri = uri;
-        this.sslContext = sslContext;
-        this.hostnameVerifier = hostnameVerifier;
 
         // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
         if (username.isEmpty()) {
@@ -379,12 +378,27 @@ public final class CalibreContentServer
                     (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
         }
 
-        connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
+        final int connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
                 PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
                 CONNECT_TIMEOUT_IN_MS);
-        readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
+        final int readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
                 PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
+
+        final OkHttpClient.Builder builder = ServiceLocator
+                .getInstance()
+                .getOkHttpClient()
+                .newBuilder()
+                .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
+                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS);
+
+        if (sslContext != null && x509TrustManager != null) {
+            builder.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager);
+            if (hostnameVerifier != null) {
+                builder.hostnameVerifier(hostnameVerifier);
+            }
+        }
+        httpClient = builder.build();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         bookshelfDao = serviceLocator.getBookshelfDao();
@@ -526,7 +540,7 @@ public final class CalibreContentServer
      */
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     @Nullable
-    private static SSLContext getSslContext(@NonNull final Context context)
+    private static Pair<SSLContext, X509TrustManager> getSslContext(@NonNull final Context context)
             throws CertificateException {
 
         try {
@@ -540,9 +554,16 @@ public final class CalibreContentServer
                     .getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(keyStore);
 
-            final SSLContext tls = SSLContext.getInstance("TLS");
-            tls.init(null, tmf.getTrustManagers(), null);
-            return tls;
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+
+            for (final TrustManager tm : tmf.getTrustManagers()) {
+                if (tm instanceof X509TrustManager) {
+                    return new Pair<>(sslContext, (X509TrustManager) tm);
+                }
+            }
+
+            return null;
 
         } catch (@NonNull final KeyManagementException e) {
             // wrap for ease of handling; it is in fact almost certain that
@@ -556,25 +577,6 @@ public final class CalibreContentServer
             // loaded in the Android system keystore.
             return null;
         }
-    }
-
-    @NonNull
-    private OkHttpClient createHttpClient() {
-        final OkHttpClient.Builder builder = ServiceLocator
-                .getInstance()
-                .getOkHttpClient()
-                .newBuilder()
-                .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
-                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS);
-
-        if (sslContext != null) {
-            builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
-            if (hostnameVerifier != null) {
-                builder.setHostnameVerifier$okhttp(hostnameVerifier);
-            }
-        }
-
-        return builder.build();
     }
 
     @NonNull
@@ -606,41 +608,46 @@ public final class CalibreContentServer
     }
 
     @NonNull
-    private <FRT> FutureHttp<FRT> createGetRequest() {
-        final FutureHttp<FRT> request = HttpCallFactory.create(R.string.site_calibre);
+    private Request createGetRequest(final String url) {
 
         // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server
 
-        request.setConnectTimeout(connectTimeoutInMs)
-               .setReadTimeout(readTimeoutInMs)
-               .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
-               .setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-                                   HttpConstants.ACCEPT_ENCODING_GZIP)
-               .setRequestProperty(HttpConstants.CONNECTION,
-                                   HttpConstants.CONNECTION_KEEP_ALIVE)
-               .setSSLContext(sslContext)
-               .setHostnameVerifier(hostnameVerifier);
-        return request;
+        final Request.Builder builder = new Request.Builder()
+                .url(url)
+                .header(HttpConstants.ACCEPT_ENCODING,
+                        HttpConstants.ACCEPT_ENCODING_GZIP)
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE);
+        if (authHeader != null) {
+            builder.header(HttpConstants.AUTHORIZATION, authHeader);
+        }
+        return builder.build();
     }
 
     @NonNull
-    private <FRT> FutureHttp<FRT> createPostRequest() {
-        final FutureHttp<FRT> request = HttpCallFactory.create(R.string.site_calibre);
-        request.setConnectTimeout(connectTimeoutInMs)
-               .setReadTimeout(readTimeoutInMs)
-               .setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON)
-               .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
-               .setSSLContext(sslContext)
-               .setHostnameVerifier(hostnameVerifier);
-        return request;
+    private Request createPostRequest(@NonNull final String url,
+                                      @NonNull final RequestBody body) {
+        final Request.Builder builder = new Request.Builder()
+                .url(url)
+                .post(body)
+                .header(HttpConstants.ACCEPT_ENCODING,
+                        HttpConstants.ACCEPT_ENCODING_GZIP)
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE)
+                .header(HttpConstants.CONTENT_TYPE,
+                        HttpConstants.CONTENT_TYPE_JSON);
+        if (authHeader != null) {
+            builder.header(HttpConstants.AUTHORIZATION, authHeader);
+        }
+
+        return builder.build();
     }
 
     @WorkerThread
     @Override
     public boolean validateConnection(@NonNull final Context context)
-            throws StorageException,
-                   IOException {
+            throws IOException {
         final String url = String.format(GET_LIBRARY_INFO, serverUri);
         return !fetch(url, BUFFER_SMALL).isEmpty();
     }
@@ -909,7 +916,6 @@ public final class CalibreContentServer
      * @return see above, or {@code null} if the extension is missing
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
      * @see #isExtensionInstalled()
      */
@@ -918,7 +924,6 @@ public final class CalibreContentServer
     JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryStringId,
                                            @NonNull final JSONArray calibreIds)
             throws IOException,
-                   StorageException,
                    JSONException {
         if (!calibreExtensionInstalled) {
             return null;
@@ -1305,15 +1310,13 @@ public final class CalibreContentServer
      * @return JSONObject with a list of Calibre book objects; NOT an array.
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @NonNull
     JSONObject getBooks(@NonNull final String libraryStringId,
                         @NonNull final JSONArray calibreIds)
-            throws StorageException,
-                   IOException,
+            throws IOException,
                    JSONException {
 
         final String url = String.format(GET_BOOKS, serverUri, libraryStringId,
@@ -1397,7 +1400,6 @@ public final class CalibreContentServer
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final OkHttpClient httpClient = createHttpClient();
                 imageDownloader = new ImageDownloader(httpClient,
                                                       null,
                                                       R.string.site_calibre,
@@ -1420,23 +1422,16 @@ public final class CalibreContentServer
      *
      * @return content
      *
-     * @throws CancellationException  if the user cancelled us
-     * @throws SocketTimeoutException if the timeout expires before
-     *                                the connection can be established
-     * @throws IOException            on generic/other IO failures
-     * @throws StorageException       on storage related failures
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     private String fetch(@NonNull final String url,
                          final int buffer)
-            throws CancellationException,
-                   StorageException,
-                   SocketTimeoutException,
-                   IOException {
+            throws IOException {
 
-        jsonFetchRequest = createGetRequest();
-        jsonFetchRequest.setBufferSize(buffer);
-        return jsonFetchRequest.getAsString(url, (con, s) -> s);
+        jsonFetchCall = HttpCallFactory.create(httpClient, null, R.string.site_calibre, false);
+        jsonFetchCall.setBufferSize(buffer);
+        return jsonFetchCall.getAsString(createGetRequest(url));
     }
 
     /**
@@ -1449,11 +1444,7 @@ public final class CalibreContentServer
      *
      * @return the file
      *
-     * @throws CancellationException  if the user cancelled us
-     * @throws SocketTimeoutException if the timeout expires before
-     *                                the connection can be established
-     * @throws StorageException       on storage related failures
-     * @throws IOException            on generic/other IO failures
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     @NonNull
@@ -1461,10 +1452,7 @@ public final class CalibreContentServer
                   @NonNull final Book book,
                   @NonNull final Uri folder,
                   @NonNull final ProgressListener progressListener)
-            throws CancellationException,
-                   StorageException,
-                   SocketTimeoutException,
-                   IOException {
+            throws IOException {
 
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
 
@@ -1486,9 +1474,9 @@ public final class CalibreContentServer
 
         final Uri destUri = destFile.getUri();
 
-        fileFetchRequest = createGetRequest();
-        fileFetchRequest.setBufferSize(BUFFER_FILE);
-        return fileFetchRequest.get(url, (con, is) -> {
+        fileFetchCall = HttpCallFactory.create(httpClient, null, R.string.site_calibre, false);
+        fileFetchCall.setBufferSize(BUFFER_FILE);
+        final Uri uri = fileFetchCall.get(createGetRequest(url), (response, is) -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
                     progressListener.publishProgress(0, context.getString(
@@ -1511,6 +1499,8 @@ public final class CalibreContentServer
                         R.string.error_file_not_found, destFile.getName()));
             }
         });
+        // Should never be null...flw
+        return Objects.requireNonNull(uri, "uri==null");
     }
 
     /**
@@ -1629,43 +1619,46 @@ public final class CalibreContentServer
      * @param changes         to send
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
      */
     void pushChanges(@NonNull final String libraryStringId,
                      final int calibreId,
                      @NonNull final JSONObject changes)
-            throws IOException, JSONException, StorageException {
+            throws IOException, JSONException {
 
         final JSONArray loadedBookIds = new JSONArray()
                 .put(calibreId);
 
         final String url = serverUri + "/cdb/set-fields/" + calibreId + '/' + libraryStringId;
-        final String postBody = new JSONObject()
+        final String jsonBody = new JSONObject()
                 .put("changes", changes)
                 .put("loaded_book_ids", loadedBookIds)
                 .toString();
-        if (postBody == null) {
-            throw new JSONException("postBody was null");
+        if (jsonBody == null || jsonBody.isEmpty()) {
+            throw new JSONException("jsonBody invalid?");
         }
 
-        httpPost = createPostRequest();
-        httpPost.post(url, postBody, null);
+        final RequestBody body = RequestBody.create(
+                jsonBody,
+                MediaType.parse("application/json; charset=utf-8"));
+
+        postCall = HttpCallFactory.create(httpClient, null, R.string.site_calibre, false);
+        postCall.post(createPostRequest(url, body), null);
     }
 
     public void cancel() {
         synchronized (this) {
-            if (jsonFetchRequest != null) {
-                jsonFetchRequest.cancel();
+            if (jsonFetchCall != null) {
+                jsonFetchCall.cancel();
             }
-            if (fileFetchRequest != null) {
-                fileFetchRequest.cancel();
+            if (fileFetchCall != null) {
+                fileFetchCall.cancel();
             }
             if (imageDownloader != null) {
                 imageDownloader.cancel();
             }
-            if (httpPost != null) {
-                httpPost.cancel();
+            if (postCall != null) {
+                postCall.cancel();
             }
         }
     }
@@ -1685,6 +1678,8 @@ public final class CalibreContentServer
 
         @Nullable
         private SSLContext sslContext;
+        @Nullable
+        private X509TrustManager x509TrustManager;
 
         @Nullable
         private HostnameVerifier hostnameVerifier;
@@ -1712,8 +1707,10 @@ public final class CalibreContentServer
         }
 
         @NonNull
-        public Builder setSSLContext(@NonNull final SSLContext sslContext) {
+        public Builder setSSLContext(@NonNull final SSLContext sslContext,
+                                     @NonNull final X509TrustManager trustManager) {
             this.sslContext = sslContext;
+            this.x509TrustManager = trustManager;
             return this;
         }
 
@@ -1754,14 +1751,22 @@ public final class CalibreContentServer
                 if ("https".equals(uri.getScheme())) {
                     // *if* a certificate is configured *then*
                     // we might get a CertificateException.... which we MUST propagate!
-                    sslContext = getSslContext(context);
+                    final Pair<SSLContext, X509TrustManager> pair = getSslContext(context);
+                    if (pair != null) {
+                        sslContext = pair.first;
+                        x509TrustManager = pair.second;
+                    } else {
+                        sslContext = null;
+                        x509TrustManager = null;
+                    }
                 } else {
                     sslContext = null;
+                    x509TrustManager = null;
                 }
             }
 
             return new CalibreContentServer(uri, username, password,
-                                            sslContext, hostnameVerifier);
+                                            sslContext, x509TrustManager, hostnameVerifier);
         }
     }
 }

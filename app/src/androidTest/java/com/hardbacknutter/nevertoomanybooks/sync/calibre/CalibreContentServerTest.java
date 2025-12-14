@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -82,21 +83,20 @@ public class CalibreContentServerTest {
                    CertificateException {
         this.context = ServiceLocator.getInstance().getLocalizedAppContext();
 
+
+        final X509TrustManager trustAllTrustManager = new TrustAllTrustManager();
+        final SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null,
+                        new TrustManager[]{trustAllTrustManager},
+                        new SecureRandom());
+
         server = new CalibreContentServer.Builder(context)
                 .setUrl(URL)
                 .setUser(USERNAME)
                 .setPassword(PASSWORD)
-                .setSSLContext(createSSLContext())
+                .setSSLContext(sslContext, trustAllTrustManager)
                 .setHostnameVerifier((hostname, session) -> true)
                 .build();
-    }
-
-    private SSLContext createSSLContext()
-            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        final TrustManager[] myTM = {new TrustAllTrustManager()};
-        final SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, myTM, new SecureRandom());
-        return sslContext;
     }
 
     @Test

@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
@@ -551,7 +550,7 @@ public class CalibreContentServerReader
         }
 
         if (doCovers) {
-            convertCovers(calibreBookId, calibreBook, book);
+            convertCovers(context, calibreBookId, calibreBook, book);
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.USER_METADATA)) {
@@ -817,13 +816,20 @@ public class CalibreContentServerReader
 
     /**
      * Fetch a cover from the server and add it to the book.
-     * This is a fire-and-forget operation. Errors are ignored.
+     * Download errors are ignored.
+     * <p>
+     * TODO: it would be nice if we could start cover downloads in another thread.
+     *  Instead of updating the book and returning, we would need to handle
+     *  the tmp -> permanent storage here. It would mean the user would at first
+     *  NOT see covers... which might be annoying, and presuming "bug".
      *
+     * @param context       Current context
      * @param calibreBookId pre-parsed id for the calibreBook
      * @param calibreBook   to fetch the cover for
      * @param book          to update
      */
-    private void convertCovers(final int calibreBookId,
+    private void convertCovers(@NonNull final Context context,
+                               final int calibreBookId,
                                @NonNull final JSONObject calibreBook,
                                @NonNull final Book book) {
         if (calibreBook.isNull(CalibreBookJsonKey.COVER)) {
@@ -834,16 +840,13 @@ public class CalibreContentServerReader
             return;
         }
 
-        ASyncExecutor.SERIAL.execute(() -> {
-            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-            try {
-                final File file = server.getCover(calibreBookId, coverUrl)
-                                        .orElse(null);
-                book.setImage(context, 0, file);
-            } catch (@NonNull final IOException | StorageException e) {
-                LoggerFactory.getLogger().e(TAG, e);
-            }
-        });
+        try {
+            final File file = server.getCover(calibreBookId, coverUrl)
+                                    .orElse(null);
+            book.setImage(context, 0, file);
+        } catch (@NonNull final IOException | StorageException e) {
+            LoggerFactory.getLogger().e(TAG, e);
+        }
     }
 
     @Override
