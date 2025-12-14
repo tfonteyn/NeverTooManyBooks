@@ -278,6 +278,7 @@ dependencies {
     implementation(libs.jsoup)
     implementation(libs.okhttp)
     implementation(libs.okhttp.urlconnection)
+    implementation(libs.okhttp.logging.interceptor)
 
     // Tar file import for BC backups
     implementation(libs.apache.commons.codec)
