@@ -149,7 +149,6 @@ public final class DBKey {
      */
     public static final String AUTO_UPDATE = "auto_update";
 
-
     /** {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}. */
     public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
 
@@ -166,10 +165,52 @@ public final class DBKey {
      */
     public static final String AUTHOR_WORK_TYPE = "work_type";
 
+    /** The number of supported Book images. */
+    public static final int NR_OF_BOOK_COVERS = 4;
+    /**
+     * The "field is used" key for covers and other places where we need
+     * to represent an image.
+     * There is NO VALUE linked to this key.
+     */
+    public static final String[] COVER = new String[NR_OF_BOOK_COVERS];
+    /** As used for {@link #COVER} with a ".x" added for the number. */
+    private static final String PREFIX_COVER = "thumbnail";
+
+    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
+    private static final String ORDER_BY_SUFFIX = "_ob";
+    /** {@link DBDefinitions#TBL_BOOKS} + {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}. */
+    public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
 
     private static final Set<String> MONEY_KEYS = Set.of(
             PRICE_LISTED,
             PRICE_PAID);
+    private static final Set<String> LANGUAGE_KEYS = Set.of(
+            LANGUAGE,
+            TRANSLATION_ORIGINAL_LANGUAGE);
+    private static final Set<String> DATE_KEYS_PARTIAL = Set.of(
+            PUBLICATION_DATE,
+            FIRST_PUBLICATION_DATE,
+            DATE_ACQUIRED);
+    private static final Set<String> DATE_KEYS_FULL = Set.of(
+            READ_START__DATE,
+            READ_END__DATE);
+    private static final Set<String> DATE_KEYS;
+    private static final Set<String> DATETIME_KEYS = Set.of(
+            DATE_LAST_UPDATED__UTC,
+            DATE_ADDED__UTC);
+
+    static {
+        final Set<String> tmp = new HashSet<>(DATE_KEYS_PARTIAL);
+        tmp.addAll(DATE_KEYS_FULL);
+        DATE_KEYS = Collections.unmodifiableSet(tmp);
+
+        for (int cIdx = 0; cIdx < NR_OF_BOOK_COVERS; cIdx++) {
+            COVER[cIdx] = PREFIX_COVER + '.' + cIdx;
+        }
+    }
+
+    private DBKey() {
+    }
 
     /**
      * All money keys.
@@ -181,10 +222,6 @@ public final class DBKey {
         return MONEY_KEYS;
     }
 
-    private static final Set<String> LANGUAGE_KEYS = Set.of(
-            LANGUAGE,
-            TRANSLATION_ORIGINAL_LANGUAGE);
-
     /**
      * All language keys.
      *
@@ -194,11 +231,6 @@ public final class DBKey {
     public static Set<String> getLanguageKeys() {
         return LANGUAGE_KEYS;
     }
-
-    private static final Set<String> DATE_KEYS_PARTIAL = Set.of(
-            PUBLICATION_DATE,
-            FIRST_PUBLICATION_DATE,
-            DATE_ACQUIRED);
 
     /**
      * All the <strong>partial</strong> date field keys.
@@ -212,10 +244,6 @@ public final class DBKey {
         return DATE_KEYS_PARTIAL;
     }
 
-    private static final Set<String> DATE_KEYS_FULL = Set.of(
-            READ_START__DATE,
-            READ_END__DATE);
-
     /**
      * All the <strong>full</strong> date field keys.
      *
@@ -226,14 +254,6 @@ public final class DBKey {
     @NonNull
     public static Set<String> getFullDateKeys() {
         return DATE_KEYS_FULL;
-    }
-
-    private static final Set<String> DATE_KEYS;
-
-    static {
-        final Set<String> tmp = new HashSet<>(DATE_KEYS_PARTIAL);
-        tmp.addAll(DATE_KEYS_FULL);
-        DATE_KEYS = Collections.unmodifiableSet(tmp);
     }
 
     /**
@@ -248,10 +268,6 @@ public final class DBKey {
         return DATE_KEYS;
     }
 
-    private static final Set<String> DATETIME_KEYS = Set.of(
-            DATE_LAST_UPDATED__UTC,
-            DATE_ADDED__UTC);
-
     /**
      * All datetime keys (i.e. NOT date!).
      *
@@ -260,29 +276,6 @@ public final class DBKey {
     @NonNull
     public static Set<String> getDateTimeKeys() {
         return DATETIME_KEYS;
-    }
-
-    /** The number of supported Book images. */
-    public static final int NR_OF_BOOK_COVERS = 4;
-    public static final String[] COVER = new String[NR_OF_BOOK_COVERS];
-
-    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
-    private static final String ORDER_BY_SUFFIX = "_ob";
-    public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
-    /**
-     * The "field is used" key for thumbnails and other places where we need
-     * to represent a cover.
-     * There is NO VALUE linked to this key.
-     */
-    private static final String PREFIX_COVER = "thumbnail";
-
-    static {
-        for (int cIdx = 0; cIdx < NR_OF_BOOK_COVERS; cIdx++) {
-            COVER[cIdx] = PREFIX_COVER + '.' + cIdx;
-        }
-    }
-
-    private DBKey() {
     }
 
     /**
