@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 public class BiblionetGrPreferencesFragment
@@ -37,7 +38,8 @@ public class BiblionetGrPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_biblionetgr, rootKey);
 
         //noinspection DataFlowIssue
-        findPreference("biblionetgr.resolve.authors.wikidata")
+        findPreference(EngineId.BiblionetGr.getPreferenceKey()
+                       + ".resolve.authors.wikidata")
                 .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
                                     getString(R.string.site_wikidata)));
     }

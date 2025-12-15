@@ -85,7 +85,8 @@ public class ParseTest
         // but the wikidata one is by default false.
         // For these tests we want both
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean("goodreads.resolve.authors.wikidata", true)
+                         .putBoolean(EngineId.Goodreads.getPreferenceKey()
+                                     + ".resolve.authors.wikidata", true)
                          .apply();
     }
 

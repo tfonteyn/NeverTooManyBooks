@@ -84,7 +84,8 @@ public class ParseTest
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean("bibliotecepl.resolve.authors.wikidata", true)
+                         .putBoolean(EngineId.BibliotecePl.getPreferenceKey()
+                                     + ".resolve.authors.wikidata", true)
                          .apply();
 
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));

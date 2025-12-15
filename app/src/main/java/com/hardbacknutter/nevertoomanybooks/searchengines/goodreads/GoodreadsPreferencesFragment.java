@@ -25,6 +25,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
@@ -38,7 +39,8 @@ public class GoodreadsPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_goodreads, rootKey);
 
         //noinspection DataFlowIssue
-        findPreference("goodreads.resolve.authors.wikidata")
+        findPreference(EngineId.Goodreads.getPreferenceKey()
+                       + ".resolve.authors.wikidata")
                 .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
                                     getString(R.string.site_wikidata)));
     }
