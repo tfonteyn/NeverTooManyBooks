@@ -68,6 +68,10 @@ import org.jsoup.select.Elements;
  * As it turns out, the site has an API: <a href="https://www.biblionet.gr/webservice/">API</a>
  * but this engine was written before I found the API :/
  * Sticking with the current jsoup approach until it breaks, then moving to the API.
+ * <p>
+ * Identifiers: wikidata lists identifiers and url templates for both books and authors,
+ * but <strong>these are invalid since the biblionet 2024 rebuild</strong>.
+ * Currently (2025-12) neither the BOOK_URL nor the AUTHOR_URL is supported.
  */
 public class BiblionetGrSearchEngine
         extends JsoupSearchEngineBase
