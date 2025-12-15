@@ -34,19 +34,16 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
@@ -468,30 +465,10 @@ public class DBHelper
             LegacyUpgrades.v44onUpgrade(context);
         }
         if (oldVersion < 45) {
-            // Github #193: rebuild to restore the spaces
-            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
+            LegacyUpgrades.v45onUpgrade(context);
         }
         if (oldVersion < 46) {
-            // The primary key was expanded from
-            // from: setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
-            // to:   setPrimaryKey(DOM_FK_BOOK, DOM_FK_AUTHOR, DOM_BOOK_AUTHOR_POSITION)
-            runWithoutConstraints(db, () ->
-                    DBDefinitions.TBL_BOOK_AUTHOR.recreate(db));
-
-            // Github #200: in short: #193 introduced a bug where the order-by column
-            // could contain spaces. This led to "mergeable" data not being found,
-            // which in turn led to creating duplicates.
-            CleanOptions.setOptions(context, Set.of(
-                    CleanOptions.RemoveDuplicateAuthors,
-                    CleanOptions.RemoveDuplicatePublishers,
-                    CleanOptions.RemoveDuplicateSeries,
-                    CleanOptions.RemoveDuplicateTocEntries
-            ));
-
-            // Run the cleaner to remove duplicates as configured above
-            StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
-            // and rebuild both OB columns and the indexes
-            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_INDEXES, true);
+            LegacyUpgrades.v46onUpgrade(db, context);
         }
 
         // We have to do this here as we're always inserting all columns,

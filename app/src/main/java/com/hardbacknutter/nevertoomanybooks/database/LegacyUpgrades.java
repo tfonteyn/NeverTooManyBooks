@@ -50,12 +50,14 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.biblionetgr.BiblionetGrSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
@@ -582,6 +584,35 @@ public final class LegacyUpgrades {
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB, true);
     }
 
+    static void v45onUpgrade(@NonNull final Context context) {
+        // Github #193: rebuild to restore the spaces
+        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
+    }
+
+    static void v46onUpgrade(@NonNull final SQLiteDatabase db,
+                             @NonNull final Context context) {
+        // The primary key was expanded from
+        // from: setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
+        // to:   setPrimaryKey(DOM_FK_BOOK, DOM_FK_AUTHOR, DOM_BOOK_AUTHOR_POSITION)
+        DBHelper.runWithoutConstraints(db, () ->
+                DBDefinitions.TBL_BOOK_AUTHOR.recreate(db));
+
+        // Github #200: in short: #193 introduced a bug where the order-by column
+        // could contain spaces. This led to "mergeable" data not being found,
+        // which in turn led to creating duplicates.
+        CleanOptions.setOptions(context, Set.of(
+                CleanOptions.RemoveDuplicateAuthors,
+                CleanOptions.RemoveDuplicatePublishers,
+                CleanOptions.RemoveDuplicateSeries,
+                CleanOptions.RemoveDuplicateTocEntries
+        ));
+
+        // Run the cleaner to remove duplicates as configured above
+        StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
+        // and rebuild both OB columns and the indexes
+        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_INDEXES, true);
+
+    }
 
     private static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
                                                                @NonNull final SQLiteDatabase db) {
