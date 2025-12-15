@@ -200,6 +200,13 @@ public final class DBKey {
             FIRST_PUBLICATION_DATE,
             DATE_ACQUIRED);
 
+    /**
+     * All the <strong>partial</strong> date field keys.
+     *
+     * @return keys
+     *
+     * @see #getDateKeys()
+     */
     @NonNull
     public static Set<String> getPartialDateKeys() {
         return DATE_KEYS_PARTIAL;
@@ -209,6 +216,13 @@ public final class DBKey {
             READ_START__DATE,
             READ_END__DATE);
 
+    /**
+     * All the <strong>full</strong> date field keys.
+     *
+     * @return keys
+     *
+     * @see #getDateKeys()
+     */
     @NonNull
     public static Set<String> getFullDateKeys() {
         return DATE_KEYS_FULL;
@@ -224,6 +238,8 @@ public final class DBKey {
 
     /**
      * All date keys (i.e. NOT datetime!).
+     * <p>
+     * Combines the keys from {@link #getFullDateKeys()} and {@link #getPartialDateKeys()}.
      *
      * @return keys
      */
