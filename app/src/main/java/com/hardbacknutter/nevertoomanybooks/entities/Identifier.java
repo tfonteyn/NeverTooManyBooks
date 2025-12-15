@@ -304,6 +304,7 @@ public class Identifier
                                Audible.AUTHOR_URL),
                 new Identifier(SID_BARNES_AND_NOBLE, TYPE_LONG,
                                context.getString(R.string.identifier_barnesandnoble),
+                               // 2025-12-15: none found
                                null,
                                BarnesAndNoble.SITE_URL,
                                BarnesAndNoble.BOOK_URL,
@@ -316,7 +317,7 @@ public class Identifier
                                BedethequeSearchEngine.AUTHOR_URL),
                 new Identifier(SID_BIBLIOTECE_PL, TYPE_LONG,
                                context.getString(R.string.identifier_bibliotece_pl),
-                               // 2025-11-04: none found
+                               // 2025-12-15: none found
                                null,
                                BibliotecePlSearchEngine.SITE_URL,
                                BibliotecePlSearchEngine.BOOK_URL,
@@ -329,6 +330,7 @@ public class Identifier
                                BNF.AUTHOR_URL),
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_british_library),
+                               // 2025-12-15: none found
                                null,
                                BL.SITE_URL,
                                BL.BOOK_URL,
@@ -371,6 +373,7 @@ public class Identifier
                                GoodreadsSearchEngine.AUTHOR_URL),
                 new Identifier(SID_GOOGLE, TYPE_STRING,
                                context.getString(R.string.identifier_google_books),
+                               // 2025-12-15: none found
                                null,
                                GoogleBooksSearchEngine.SITE_URL,
                                GoogleBooksSearchEngine.BOOK_URL,
@@ -401,6 +404,7 @@ public class Identifier
                                KBR.AUTHOR_URL),
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
                                context.getString(R.string.identifier_lastdodo_nl),
+                               // 2025-12-15: none found
                                null,
                                LastDodoSearchEngine.SITE_URL,
                                LastDodoSearchEngine.BOOK_URL,
@@ -419,12 +423,14 @@ public class Identifier
                                LibraryThingSearchEngine.AUTHOR_URL),
                 new Identifier(SID_LIBRIS, TYPE_LONG,
                                context.getString(R.string.identifier_libris),
+                               // 2025-12-15: none found
                                null,
                                LibrisSE.SITE_URL,
                                LibrisSE.BOOK_URL,
                                LibrisSE.AUTHOR_URL),
                 new Identifier(SID_LIBRIS_XL, TYPE_STRING,
                                context.getString(R.string.identifier_libris),
+                               // 2025-12-15: none found
                                null,
                                LibrisSE.XL_SITE_URL,
                                LibrisSE.XL_BOOK_URL,
@@ -467,18 +473,21 @@ public class Identifier
                                StoryGraph.AUTHOR_URL),
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
                                context.getString(R.string.identifier_stripinfo_be),
+                               // 2025-12-15: none found
                                null,
                                StripInfoSearchEngine.SITE_URL,
                                StripInfoSearchEngine.BOOK_URL,
                                StripInfoSearchEngine.AUTHOR_URL),
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
                                context.getString(R.string.identifier_stripweb_be),
+                               // 2025-12-15: none found
                                null,
                                StripWebSearchEngine.SITE_URL,
                                StripWebSearchEngine.BOOK_URL,
                                StripWebSearchEngine.AUTHOR_URL),
                 new Identifier(SID_TERCERA_FUNDACION, TYPE_LONG,
                                context.getString(R.string.identifier_tercerafundacion),
+                               // 2025-12-15: none found
                                null,
                                TerceraFundacion.SITE_URL,
                                TerceraFundacion.BOOK_URL,
