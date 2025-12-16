@@ -1,3 +1,14 @@
+### 7.10.3
+
+FIXES
+
+- #216 prevent a circular reference between an author and their pseudonym.
+
+This is an emergency patch for the above issue. If you don't have this issue,
+you can/should skip this update.
+
+---
+
 ### 7.10.2
 
 FIXES:
