@@ -389,6 +389,7 @@ public class Author
             if (realAuthorId > 0) {
                 realAuthor = ServiceLocator.getInstance().getAuthorDao()
                                            .findById(realAuthorId)
+                                           .map(this::resolveRealAuthor)
                                            .orElse(null);
             }
         }
