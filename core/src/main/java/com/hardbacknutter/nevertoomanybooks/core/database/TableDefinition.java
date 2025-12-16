@@ -537,7 +537,10 @@ public class TableDefinition {
     @NonNull
     public TableInfo getTableInfo(@NonNull final SQLiteDatabase db) {
         synchronized (this) {
-            if (tableInfo == null) {
+            // When called before the table exists, tableInfo IS instantiated,
+            // but exists()==false.
+            // Second call, if exists()==false, load the table-info for real.
+            if (tableInfo == null || !tableInfo.exists()) {
                 tableInfo = new TableInfo(db, name);
             }
         }
