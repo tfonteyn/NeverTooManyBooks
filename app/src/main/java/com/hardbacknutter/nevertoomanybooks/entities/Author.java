@@ -554,7 +554,8 @@ public class Author
     /**
      * If this Author is a pen-name (pseudonym), then this method returns the real Author.
      *
-     * @return the resolved real-author; or {@code null} if there is none
+     * @return the resolved real-author,
+     *         or {@code null} if {@code this} author <strong>is</strong> the real-author
      */
     @Nullable
     public Author getRealAuthor() {
@@ -570,7 +571,8 @@ public class Author
      *
      * @param author to use; use {@code null} to remove
      *
-     * @return the resolved real-author; or {@code null} if there is none
+     * @return the resolved real-author,
+     *         or {@code null} if {@code this} author <strong>is</strong> the real-author
      */
     @Nullable
     public Author setRealAuthor(@Nullable final Author author) {
@@ -582,6 +584,14 @@ public class Author
         return realAuthor;
     }
 
+    /**
+     * Resolve any nested and 1:1 circular references.
+     *
+     * @param author to resolve
+     *
+     * @return the resolved real-author,
+     *         or {@code null} if {@code this} author <strong>is</strong> the real-author
+     */
     @Nullable
     private Author resolveRealAuthor(@NonNull final Author author) {
         @Nullable
