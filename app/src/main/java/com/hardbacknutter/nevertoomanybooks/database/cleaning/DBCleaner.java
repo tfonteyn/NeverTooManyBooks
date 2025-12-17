@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -47,12 +48,19 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
 /**
  * Cleanup routines for some columns/tables which can be run at upgrades, import, startup.
@@ -85,7 +93,7 @@ public class DBCleaner {
     private static final String _WHERE_ = " WHERE ";
 
     private static final String UPDATE_BOOKS_SET =
-            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
+            UPDATE_ + TBL_BOOKS.getName()
             + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp";
 
     private static final Pattern T = Pattern.compile("T");
@@ -121,7 +129,7 @@ public class DBCleaner {
      *
      * @param context Current context
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoWriteException on any failure
      */
     @WorkerThread
     public void clean(@NonNull final Context context)
@@ -137,9 +145,9 @@ public class DBCleaner {
         datetimeFormat();
 
         // validate booleans to have 0/1 content (could do just ALL_TABLES)
-        booleanColumns(DBDefinitions.TBL_BOOKS,
-                       DBDefinitions.TBL_AUTHORS,
-                       DBDefinitions.TBL_SERIES);
+        booleanColumns(TBL_BOOKS,
+                       TBL_AUTHORS,
+                       TBL_SERIES);
 
         //ratingColumn();
 
@@ -151,6 +159,14 @@ public class DBCleaner {
         bookBookshelf(true);
 
         if (!options.isEmpty()) {
+            if (options.contains(CleanOptions.ResolveAuthors)) {
+                // run the resolve until no more mods are done,
+                // but a max of 3 times to prevent endless loops in case of bugs
+                int r = 3;
+                while (resolveAuthors(context, userLocale) && r > 0) {
+                    r--;
+                }
+            }
             if (options.contains(CleanOptions.Purge)) {
                 new Purger().purge();
             }
@@ -162,6 +178,58 @@ public class DBCleaner {
         CleanOptions.clearOptions(context);
     }
 
+    /**
+     * Check any circular references between authors and real-authors.
+     *
+     * @param context Current context
+     * @param locale  to use while updating
+     *
+     * @return {@code true} if any updates were done
+     *
+     * @throws DaoWriteException on any failure
+     */
+    private boolean resolveAuthors(@NonNull final Context context,
+                                   @NonNull final Locale locale)
+            throws DaoWriteException {
+
+        // collect the authors (id) who have a 'real' author, i.e. are pseudonym names.
+        final List<Long> all = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(
+                SELECT_ + TBL_AUTHORS.dot(DBKey.PK_ID)
+                + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR)
+                + _WHERE_ + TBL_PSEUDONYM_AUTHOR.dot(DBKey.FK_AUTHOR_REAL_AUTHOR) + ">0",
+                null)) {
+            while (cursor.moveToNext()) {
+                all.add(cursor.getLong(0));
+            }
+        }
+
+        // We could obviously combine the above with loading the authors,
+        // TODO: move the resolve/clean routine to the DAO...
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final List<Author> authors = all.stream()
+                                        .map(authorDao::findById)
+                                        .filter(Optional::isPresent)
+                                        .map(Optional::get)
+                                        .collect(Collectors.toList());
+
+        final boolean[] updatesDone = new boolean[1];
+        for (final Author author : authors) {
+            final long tmpRAID = author.getRealAuthorId();
+            // resolve
+            author.getRealAuthor();
+            // did the real-author get modified?
+            if (tmpRAID != author.getRealAuthorId()) {
+                authorDao.update(context, author, locale);
+                updatesDone[0] = true;
+            }
+        }
+
+        logger.w(TAG, "resolveAuthors",
+                 "modified=" + updatesDone[0],
+                 "pIds=" + all);
+        return updatesDone[0];
+    }
 
     private void ratingColumn() {
         final List<Long> toDelete = new ArrayList<>();
@@ -170,7 +238,7 @@ public class DBCleaner {
 
         try (Cursor cursor = db.rawQuery(
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.RATING
-                + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
+                + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + DBKey.RATING + _IS_NOT_NULL, null)) {
             while (cursor.moveToNext()) {
                 boolean modified = false;
@@ -243,7 +311,7 @@ public class DBCleaner {
         for (final String key : DBKey.getDateTimeKeys()) {
             try (Cursor cursor = db.rawQuery(
                     SELECT_ + DBKey.PK_ID + ',' + key
-                    + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
+                    + _FROM_ + TBL_BOOKS.getName()
                     + _WHERE_ + key + " LIKE '%T%'", null)) {
                 while (cursor.moveToNext()) {
                     rows.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
@@ -334,12 +402,12 @@ public class DBCleaner {
      */
     private void bookBookshelf(@SuppressWarnings("SameParameterValue") final boolean dryRun) {
         final String select = SELECT_DISTINCT_ + DBKey.FK_BOOK
-                              + _FROM_ + DBDefinitions.TBL_BOOK_BOOKSHELF
+                              + _FROM_ + TBL_BOOK_BOOKSHELF
                               + _WHERE_ + DBKey.FK_BOOKSHELF + _IS_NULL;
 
         toLog("bookBookshelf|ENTER", select);
         if (!dryRun) {
-            final String sql = DELETE_FROM_ + DBDefinitions.TBL_BOOK_BOOKSHELF
+            final String sql = DELETE_FROM_ + TBL_BOOK_BOOKSHELF
                                + _WHERE_ + DBKey.FK_BOOKSHELF + _IS_NULL;
             try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
@@ -395,5 +463,4 @@ public class DBCleaner {
             }
         }
     }
-
 }

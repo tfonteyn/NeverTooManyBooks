@@ -44,7 +44,12 @@ public enum CleanOptions {
     /**
      * Purge orphans from all applicable tables.
      */
-    Purge;
+    Purge,
+    /**
+     * Check for, and fix, authors which directly or indirectly reference themselves
+     * as a pseudonym.
+     */
+    ResolveAuthors;
 
     private static final String PK_OPTIONS = StartupViewModel.PK_RUN_MAINTENANCE + ".options";
 
