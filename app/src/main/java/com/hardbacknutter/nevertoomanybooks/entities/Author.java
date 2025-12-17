@@ -31,6 +31,7 @@ import android.text.style.StyleSpan;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -184,6 +185,7 @@ public class Author
     private static final Pattern PATTERN_BRACKETS =
             Pattern.compile("(.*)([(\\[].+[)\\]])(.*)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final String ERROR_RESOLVE_REAL_AUTHOR = "resolveRealAuthor";
 
     @NonNull
     private final List<Identifier.Value> identifiers = new ArrayList<>();
@@ -226,8 +228,12 @@ public class Author
      * If this Author is a pseudonym, then 'realAuthorId' points to that author.
      * When {@code null} this IS a real author.
      */
+    @VisibleForTesting
     @Nullable
-    private Author realAuthor;
+    public Author realAuthor;
+    /** can be {@code 0}. Should be a {@code Long} but we need parceling ... */
+    @VisibleForTesting
+    public long realAuthorId;
 
     /** Bitmask. */
     @AuthorRole.Role
@@ -268,13 +274,9 @@ public class Author
         }
 
         if (rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
-            final long realAuthorId = rowData.getLong(DBKey.FK_AUTHOR_REAL_AUTHOR);
-            if (realAuthorId > 0) {
-                realAuthor = ServiceLocator.getInstance().getAuthorDao()
-                                           .findById(realAuthorId)
-                                           .map(this::resolveRealAuthor)
-                                           .orElse(null);
-            }
+            realAuthorId = rowData.getLong(DBKey.FK_AUTHOR_REAL_AUTHOR);
+            // We're NOT loading the real-author here to avoid
+            // ANY possible recursion.
         }
     }
 
@@ -307,6 +309,7 @@ public class Author
 
         complete = in.readByte() != 0;
         role = in.readInt();
+        realAuthorId = in.readLong();
         realAuthor = in.readParcelable(getClass().getClassLoader());
         ParcelUtils.readParcelableList(in, identifiers, getClass().getClassLoader());
     }
@@ -552,17 +555,49 @@ public class Author
     }
 
     /**
-     * If this Author is a pen-name (pseudonym), then this method returns the real Author.
+     * CLEANER ACCESS ONLY.
      *
-     * @return the resolved real-author,
+     * @return the real-author id; no loading/resolving
+     */
+    public long getRealAuthorId() {
+        return realAuthorId;
+    }
+
+    /**
+     * If this Author is a pen-name (pseudonym), return the real Author.
+     *
+     * @return the real-author,
      *         or {@code null} if {@code this} author <strong>is</strong> the real-author
      */
     @Nullable
     public Author getRealAuthor() {
-        if (realAuthor != null) {
-            // always assume the worst; resolve here AGAIN
-            realAuthor = resolveRealAuthor(realAuthor);
+        // conditions spelled out in long for readability...
+
+        if (realAuthorId == 0 && realAuthor != null) {
+            // We have a 'new' real author.
+            return realAuthor;
         }
+
+        if (realAuthorId == 0) {
+            // this IS a real author
+            return null;
+        }
+
+        if (realAuthor != null) {
+            // Was loaded previously.
+            return realAuthor;
+        }
+
+        // We have an id, load and resolve!
+        realAuthor = ServiceLocator.getInstance().getAuthorDao()
+                                   .findById(realAuthorId)
+                                   .map(this::resolveRealAuthor)
+                                   .orElse(null);
+        if (realAuthor == null) {
+            // We get here if resolving null'd the real-author
+            realAuthorId = 0;
+        }
+
         return realAuthor;
     }
 
@@ -576,36 +611,107 @@ public class Author
      */
     @Nullable
     public Author setRealAuthor(@Nullable final Author author) {
-        if (author != null) {
-            realAuthor = resolveRealAuthor(author);
-        } else {
+        // Don't allow null or self-reference.
+        if (author == null || author == this) {
             realAuthor = null;
+            realAuthorId = 0;
+        } else {
+            realAuthor = resolveRealAuthor(author);
+            realAuthorId = realAuthor != null ? realAuthor.id : 0;
         }
         return realAuthor;
     }
 
     /**
      * Resolve any nested and 1:1 circular references.
+     * <p>
+     * <strong>Important</strong>: the database is NOT updated in this method,
+     * but {@code this} object <strong>may</strong> be updated.
+     * The caller may update the database.
+     * <p>
+     * TODO: implement {@link EntityStage} for the author class.
      *
      * @param author to resolve
      *
-     * @return the resolved real-author,
-     *         or {@code null} if {@code this} author <strong>is</strong> the real-author
+     * @return the resolved real-author, can be {@code null}.
      */
     @Nullable
-    private Author resolveRealAuthor(@NonNull final Author author) {
-        @Nullable
-        Author a = author;
-        // resolve any nested reference
-        while (a.getRealAuthor() != null) {
-            a = a.getRealAuthor();
+    private Author resolveRealAuthor(@Nullable final Author author) {
+        if (author == null) {
+            // duh...
+            return null;
         }
 
-        // resolve 1:1 circular reference; Case-sensitive!
-        if (a.isSameName(this)) {
-            a = null;
+        if (author == this) {
+            // that's a bug... we should never be called on ourselves.
+            // Log it for shaming, but ignore
+            LoggerFactory.getLogger().w(TAG, ERROR_RESOLVE_REAL_AUTHOR,
+                                        "called on this", new Throwable());
+            return null;
         }
-        return a;
+
+        if (author.realAuthorId == 0 && author.realAuthor == null) {
+            // there is no parent real-author,
+            // but check names to detect 1:1 circular reference.
+            if (this.isSameName(author)) {
+                if (BuildConfig.DEBUG /* always */) {
+                    LoggerFactory.getLogger().d(TAG, ERROR_RESOLVE_REAL_AUTHOR,
+                                                "circular1", author);
+                }
+                return null;
+            }
+            // endpoint, and different, all done.
+            return author;
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, ERROR_RESOLVE_REAL_AUTHOR,
+                                        "resolve any nested reference", author);
+        }
+
+        @Nullable
+        Author current = author;
+        do {
+            // current.realAuthorId contains a valid, != 0 value.
+            // Load the real-author for the current real-author
+            current = ServiceLocator.getInstance().getAuthorDao()
+                                    .findById(current.realAuthorId)
+                                    .orElse(null);
+
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().d(TAG, ERROR_RESOLVE_REAL_AUTHOR,
+                                            "loaded", current);
+            }
+
+            // conditions spelled out in long for readability...
+
+            if (current == null) {
+                // none found, we should not have gotten here... flw
+                if (BuildConfig.DEBUG /* always */) {
+                    LoggerFactory.getLogger().d(TAG, ERROR_RESOLVE_REAL_AUTHOR,
+                                                "none found");
+                }
+                return null;
+            }
+
+            // If we found THIS author, we have a circular reference, quit
+            if (current.id == this.id || this.isSameName(current)) {
+                if (BuildConfig.DEBUG /* always */) {
+                    LoggerFactory.getLogger().d(TAG, ERROR_RESOLVE_REAL_AUTHOR,
+                                                "circular2", current);
+                }
+                // note we do NOT fix the database here!
+                return null;
+            }
+            // if the current on has a parent, loop to resolve that one
+        } while (current.realAuthorId != 0);
+
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG, ERROR_RESOLVE_REAL_AUTHOR,
+                                        "resolved", current);
+        }
+        // endpoint, and different, all done.
+        return current;
     }
 
     @Override
@@ -752,14 +858,16 @@ public class Author
      *
      * @return styled and formatted name
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
                                       @NonNull final Style style) {
         final CharSequence name = getStyledName(context, style, (CharSequence) null);
-        if (realAuthor == null) {
+        final Author ra = getRealAuthor();
+        if (ra == null) {
             return name;
         } else {
-            return realAuthor.getStyledName(context, style, name);
+            return ra.getStyledName(context, style, name);
         }
     }
 
@@ -776,6 +884,7 @@ public class Author
      *
      * @see #getStyledName(Context, Style, CharSequence)
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
                                       @NonNull final Style style,
@@ -1138,8 +1247,11 @@ public class Author
         tmpPictureFileSpec = source.tmpPictureFileSpec;
 
         complete = source.complete;
+
         // Do not deep copy! We WANT the same/original object
+        realAuthorId = source.realAuthorId;
         realAuthor = source.realAuthor;
+
         identifiers.clear();
         identifiers.addAll(source.identifiers);
 
@@ -1182,9 +1294,8 @@ public class Author
 
         // Other fields are copied when this object does not have values for them.
 
-        // use direct; already resolved above
-        if (realAuthor == null) {
-            realAuthor = sourceRealAuthor;
+        if (currentRealAuthor == null) {
+            setRealAuthor(sourceRealAuthor);
         }
 
         if (getBirthDate().isEmpty()) {
@@ -1222,6 +1333,7 @@ public class Author
 
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeInt(role);
+        dest.writeLong(realAuthorId);
         dest.writeParcelable(realAuthor, flags);
         ParcelUtils.writeParcelableList(dest, identifiers, flags);
     }
@@ -1239,7 +1351,7 @@ public class Author
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, familyName, givenNames, realAuthor);
+        return Objects.hash(id, familyName, givenNames, realAuthorId, realAuthor);
     }
 
     /**
@@ -1260,7 +1372,8 @@ public class Author
     }
 
     /**
-     * Equality: <strong>id, family and given-names, realAuthor(id,names), image</strong>
+     * Equality: <strong>id, family and given-names,
+     * realAuthorId, realAuthor(id,names), image</strong>
      * (see code for details on the image).
      * <ul>
      *   <li>'complete' is a user setting and is ignored here.</li>
@@ -1343,6 +1456,7 @@ public class Author
                && Objects.equals(birthDate, that.birthDate)
                && Objects.equals(deathDate, that.deathDate)
                && Objects.equals(imageUuid, that.imageUuid)
+               && Objects.equals(realAuthorId, that.realAuthorId)
                && Objects.equals(realAuthor, that.realAuthor);
     }
 
@@ -1420,6 +1534,7 @@ public class Author
                + ", complete=" + complete
                + ", role=0b" + Integer.toBinaryString(role) + ": " + sj
                + ", identifiers=" + identifiers
+               + ", realAuthorId=" + realAuthorId
                + ", realAuthor=" + realAuthor
                + '}';
     }
