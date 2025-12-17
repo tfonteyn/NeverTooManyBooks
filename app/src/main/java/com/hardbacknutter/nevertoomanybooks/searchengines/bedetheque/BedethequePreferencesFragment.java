@@ -45,15 +45,12 @@ public class BedethequePreferencesFragment
     private BedethequeCacheDao cacheDao;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
-    }
-
-    @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
+
+        cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
+
         setPreferencesFromResource(R.xml.preferences_site_bedetheque, rootKey);
 
         final Preference purgeCache = findPreference(PSK_CLEAR_AUTHOR_CACHE);
