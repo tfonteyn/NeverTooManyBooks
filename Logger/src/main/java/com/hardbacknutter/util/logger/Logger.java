@@ -44,10 +44,10 @@ public interface Logger {
         }
 
         final StringJoiner sj = new StringJoiner("|");
-        Exception e = null;
+        Throwable e = null;
         for (final Object parameter : params) {
-            if (parameter instanceof Exception) {
-                e = (Exception) parameter;
+            if (parameter instanceof Throwable) {
+                e = (Throwable) parameter;
             } else {
                 sj.add(String.valueOf(parameter));
             }
