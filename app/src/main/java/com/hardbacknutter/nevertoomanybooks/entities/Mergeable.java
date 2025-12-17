@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -59,7 +60,10 @@ public interface Mergeable {
      *
      * @return {@code true} if it's the same name (except for diacritics)
      */
-    default boolean isSameName(@NonNull final Mergeable that) {
+    default boolean isSameName(@Nullable final Mergeable that) {
+        if (that == null) {
+            return false;
+        }
         // Single-spaces in the string are preserved.
         return Objects.hash(getNameFields()
                                     .stream()
