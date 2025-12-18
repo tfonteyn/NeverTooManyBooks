@@ -780,7 +780,7 @@ class BooklistBuilder {
                 // The user has no specific role set, so just grab the first one (i.e. pos==1)
                 sb.append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1");
             } else {
-                // FIXME: https://github.com/tfonteyn/NeverTooManyBooks/issues/82
+                // URGENT: #82 https://github.com/tfonteyn/NeverTooManyBooks/issues/82
                 // grab the desired role, or if no such role, grab the first one anyway
                 //   (
                 //      ((role & ROLE)<>0)
