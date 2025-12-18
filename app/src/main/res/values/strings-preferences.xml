@@ -227,15 +227,16 @@
     <!-- ========== booklist style preferences ========== -->
     <!-- *************************************************************************************** -->
 
-    <!-- MultiSelectListPreference - Determines what is show in booklist header -->
-    <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
+    <!-- Determines what is show in booklist header.
+         MultiSelectListPreference, i.e. each item is a checkbox, the user can select any/all.
+         -->
     <string-array name="pe_bob_header">
         <item>@string/pv_bob_header_style_name</item>
         <item>@string/pv_bob_header_nr_of_books</item>
         <item>@string/pv_bob_header_filters</item>
         <item>@string/lbl_keywords</item>
     </string-array>
-    <!-- multi-select: use bitmask values: 1,2,4,8,...-->
+    <!-- MultiSelectListPreference: use bitmask values: 1,2,4,8,...-->
     <string-array name="pv_bob_header">
         <item>8</item>
         <item>1</item>
@@ -243,17 +244,32 @@
         <item>4</item>
     </string-array>
 
-    <!-- MultiSelectListPreference - Determines which author role is considered
-         the primary author of a book -->
-    <!-- Mainly of interest for comics (e.g. writer, artist). See Author class for the values. -->
-    <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
+    <!-- Determines which author role is considered the primary author of a book.
+         Mainly of interest for comics and maybe audiobooks.
+         See {@link AuthorRole} class for the values.
+         MultiSelectListPreference, i.e. each item is a checkbox, the user can select any/all.
+         -->
     <string-array name="pe_author_type">
         <item>@string/lbl_author_role_writer</item>
+        <item>@string/lbl_author_role_translator</item>
+        <item>@string/lbl_author_role_editor</item>
+        <item>@string/lbl_author_role_narrator</item>
         <item>@string/lbl_author_role_artist</item>
+        <item>@string/lbl_author_role_colorist</item>
     </string-array>
-    <!-- multi-select: use bitmask values: 1,2,4,8,...-->
+    <!-- MultiSelectListPreference: use bitmask values: 1,2,4,8,...-->
     <string-array name="pv_author_type">
+        <!-- writer: 1 -->
         <item>1</item>
+        <!-- translator: 1<<4 -->
+        <item>16</item>
+        <!-- editor: 1<<6 -->
+        <item>64</item>
+        <!-- narrator: 1<<10 -->
+        <item>1024</item>
+        <!-- artist: 1<<12 -->
         <item>4096</item>
+        <!-- colorist: 1<<15 -->
+        <item>32768</item>
     </string-array>
 </resources>
