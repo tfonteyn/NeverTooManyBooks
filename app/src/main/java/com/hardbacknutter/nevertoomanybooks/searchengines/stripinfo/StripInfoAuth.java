@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
+import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
@@ -215,7 +215,7 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
-        httpPost = FutureHttpFactory.create(EngineId.StripInfoBe);
+        httpPost = HttpCallFactory.create(EngineId.StripInfoBe);
         httpPost.post(url, postBody, null);
 
         userId = getUserId().orElseThrow(

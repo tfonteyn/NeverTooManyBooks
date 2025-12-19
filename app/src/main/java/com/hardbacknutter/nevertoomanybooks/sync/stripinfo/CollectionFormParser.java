@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
+import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 
@@ -102,7 +102,7 @@ public class CollectionFormParser {
         postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
                   + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
-        httpPost = FutureHttpFactory.create(EngineId.StripInfoBe);
+        httpPost = HttpCallFactory.create(EngineId.StripInfoBe);
         httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
                                     HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED_UTF8);
 

@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
+import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import okhttp3.OkHttpClient;
@@ -269,7 +269,7 @@ public abstract class SearchEngineBase
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public <T> FutureHttp<T> createHeadRequest() {
-        final FutureHttp<T> httpHead = FutureHttpFactory.create(config.getEngineId());
+        final FutureHttp<T> httpHead = HttpCallFactory.create(config.getEngineId());
         httpHead.setSSLContext(sslContext);
         return httpHead;
     }
@@ -287,7 +287,7 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpGet = FutureHttpFactory.create(config.getEngineId());
+        final FutureHttp<T> httpGet = HttpCallFactory.create(config.getEngineId());
         httpGet.setSSLContext(sslContext);
 
         // Improve compatibility by sending standard headers.

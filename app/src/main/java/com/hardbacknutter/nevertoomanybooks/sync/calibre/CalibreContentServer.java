@@ -90,7 +90,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
+import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.org.json.JSONArray;
@@ -607,7 +607,7 @@ public final class CalibreContentServer
 
     @NonNull
     private <FRT> FutureHttp<FRT> createGetRequest() {
-        final FutureHttp<FRT> request = FutureHttpFactory.create(R.string.site_calibre);
+        final FutureHttp<FRT> request = HttpCallFactory.create(R.string.site_calibre);
 
         // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server
@@ -626,7 +626,7 @@ public final class CalibreContentServer
 
     @NonNull
     private <FRT> FutureHttp<FRT> createPostRequest() {
-        final FutureHttp<FRT> request = FutureHttpFactory.create(R.string.site_calibre);
+        final FutureHttp<FRT> request = HttpCallFactory.create(R.string.site_calibre);
         request.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
                .setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON)

@@ -30,9 +30,9 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpImpl;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 
-public final class FutureHttpFactory {
+public final class HttpCallFactory {
 
-    private FutureHttpFactory() {
+    private HttpCallFactory() {
     }
 
     /**

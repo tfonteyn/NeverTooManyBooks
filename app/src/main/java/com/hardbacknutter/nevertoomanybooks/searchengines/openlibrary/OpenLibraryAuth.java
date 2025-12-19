@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
+import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
@@ -206,7 +206,7 @@ public class OpenLibraryAuth
                 .add("debug_token=")
                 .toString();
 
-        httpPost = FutureHttpFactory.create(EngineId.OpenLibrary);
+        httpPost = HttpCallFactory.create(EngineId.OpenLibrary);
         httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
                                     HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
                 .post(url, postBody, null);
