@@ -641,11 +641,11 @@
     <string name="pv_bob_header_nr_of_books">Liczba książek</string>
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
     <string name="size_hidden">Ukryte</string>
-    <string name="size_large">Duży</string>
-    <string name="size_medium">Średni</string>
-    <string name="size_small">Mały</string>
-    <string name="size_x_large">X-Duży</string>
-    <string name="size_x_small">X-Mały</string>
+    <string name="size_large">Duże</string>
+    <string name="size_medium">Średnie</string>
+    <string name="size_small">Małe</string>
+    <string name="size_x_large">X-Duże</string>
+    <string name="size_x_small">X-Małe</string>
     <string name="pe_fast_scroller_overlay_static">Statyczny</string>
     <string name="strict">Ścisły</string>
     <string name="style_builtin_author_series">Autor, seria</string>
