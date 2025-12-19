@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import android.content.Context;
 
@@ -50,15 +50,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpStatusException;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
-import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -88,6 +79,9 @@ public class HttpCall {
     private static final String POST = "POST";
     private static final String HEAD = "HEAD";
 
+    private static final int HTTP_TEMPORARY_REDIRECT = 307;
+    private static final int HTTP_PERMANENT_REDIRECT = 308;
+
     @NonNull
     private final OkHttpClient httpClient;
     @Nullable
@@ -95,29 +89,32 @@ public class HttpCall {
     private final boolean logEnabled;
     private final int labelResId;
 
+    @NonNull
+    private final CookieStore store;
+
     /** InputStream buffer size. Used by {@code GET} and {@code POST}. */
     private int bufferSize = DEFAULT_BUFFER_SIZE;
 
     @Nullable
     private Call call;
 
+    /**
+     * Constructor.
+     *
+     * @param httpClient  the one
+     * @param cookieStore for logging <strong>all</strong> cookies as desired
+     * @param labelResId  string resource representing the caller
+     * @param throttler   to use
+     * @param logEnabled  flag
+     */
     public HttpCall(@NonNull final OkHttpClient httpClient,
-                    @NonNull final EngineId engineId) {
-        this.httpClient = httpClient;
-        this.labelResId = engineId.getLabelResId();
-
-        final SearchEngineConfig config = engineId.getConfig();
-        //noinspection DataFlowIssue
-        this.throttler = config.getThrottler();
-        this.logEnabled = config.isLogHttpGetRequests();
-    }
-
-    public HttpCall(@NonNull final OkHttpClient httpClient,
-                    @Nullable final Throttler throttler,
+                    @NonNull final CookieStore cookieStore,
                     @StringRes final int labelResId,
+                    @Nullable final Throttler throttler,
                     final boolean logEnabled) {
 
         this.httpClient = httpClient;
+        this.store = cookieStore;
         this.labelResId = labelResId;
 
         this.throttler = throttler;
@@ -200,7 +197,7 @@ public class HttpCall {
                 response.header(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
     }
 
-    private static void logRequest(@NonNull final Request request) {
+    private void logRequest(@NonNull final Request request) {
         final String headers = request
                 .headers()
                 .toMultimap()
@@ -216,7 +213,7 @@ public class HttpCall {
         logger.d(TAG, "body", "\n" + request.body());
     }
 
-    private static void logResponse(@NonNull final Response response) {
+    private void logResponse(@NonNull final Response response) {
         final String headers = response
                 .headers()
                 .toMultimap()
@@ -232,9 +229,6 @@ public class HttpCall {
         logger.d(TAG, "responseMsg: " + response.message());
         logger.d(TAG, "headers", "\n" + headers);
 
-        final CookieStore store = ServiceLocator.getInstance()
-                                                .getCookieManager()
-                                                .getCookieStore();
         for (final URI uri : store.getURIs()) {
             for (final HttpCookie cookie : store.get(uri)) {
                 logger.d(TAG, "Stored cookie → URI: " + uri + " | " + cookie);
@@ -250,14 +244,12 @@ public class HttpCall {
      *
      * @return flag
      */
-    private static boolean isRedirect(final int code) {
+    private boolean isRedirect(final int code) {
         return code == HttpURLConnection.HTTP_MOVED_PERM
                || code == HttpURLConnection.HTTP_MOVED_TEMP
                || code == HttpURLConnection.HTTP_SEE_OTHER
-               // Temporary Redirect
-               || code == 307
-               // Permanent Redirect
-               || code == 308;
+               || code == HTTP_TEMPORARY_REDIRECT
+               || code == HTTP_PERMANENT_REDIRECT;
     }
 
     /**

@@ -113,6 +113,10 @@ dependencies {
 
     implementation(libs.google.material)
 
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.urlconnection)
+    implementation(libs.okhttp.logging.interceptor)
+
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.mockito.core)
