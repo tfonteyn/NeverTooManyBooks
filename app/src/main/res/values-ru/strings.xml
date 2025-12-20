@@ -29,9 +29,9 @@
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Найдена %1$d книга</item>
-        <item quantity="few">Найдено %1$d книги</item>
+        <item quantity="few">Найдены %1$d книги</item>
         <item quantity="many">Найдено %1$d книг</item>
-        <item quantity="other">Найдено %1$d книги</item>
+        <item quantity="other">Найдено %1$d книг</item>
     </plurals>
     <plurals name="n_author">
         <item quantity="one">%1$d автор</item>
@@ -224,7 +224,7 @@
     <string name="error_import_failed_for_record">Сбой импорта (%1$s)</string>
     <string name="error_import_file_not_supported">Выбранный файл не может быть импортирован.</string>
     <string name="error_network_failed_try_again">Проверьте подключение и повторите попытку.</string>
-    <string name="error_network_please_connect">Подключитесь к Интернету.</string>
+    <string name="error_network_please_connect">Подключитесь к интернету.</string>
     <string name="error_network_site_access_failed">При доступе к %1$s возникла проблема с сетью. Пожалуйста, проверьте, работает ли веб-сайт, и если проблема не устранена, обратитесь в службу поддержки.</string>
     <string name="error_no_image_editor">Редактор изображений не найден.</string>
     <string name="error_book_search_failed">Поиск книги не удался.</string>
@@ -237,9 +237,9 @@
     <string name="error_http_403_forbidden">Веб-сайт заблокировал доступ.</string>
     <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
-    <string name="error_unexpected">Произошла неизвестная ошибка.</string>
+    <string name="error_unexpected">Произошла неожиданная ошибка.</string>
     <string name="error_unknown_host">Возникла проблема с подключением к сервису на «%1$s».</string>
-    <string name="error_unexpected_long">Произошла непредвиденная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
+    <string name="error_unexpected_long">Произошла неожиданная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
     <string name="error_unsupported_version_v">Неподдерживаемая версия: %1$d</string>
     <string name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
     <string name="option_fab_add_book_by_barcode_scan">Сканирование штрих-кода</string>
@@ -253,7 +253,7 @@
     <string name="httpErrorAuth">Ошибка аутентификации.</string>
     <string name="httpErrorFailedSslHandshake">Не удалось установить защищенное соединение.</string>
     <string name="httpErrorFile">Не удалось получить доступ к файлу.</string>
-    <string name="httpErrorFileNotFound">Не удалось найти файл.</string>
+    <string name="httpErrorFileNotFound">Не удалось найти запрошенный файл.</string>
     <string name="httpErrorTimeout">Время ожидания соединения с сервером истекло.</string>
     <string name="info_authorized">Авторизовано</string>
     <string name="option_moving_covers_from_x_to_y">Перенести все обложки из «%1$s» в «%2$s»</string>
@@ -448,7 +448,7 @@
     <string name="lbl_substitutions">Подстановки</string>
     <string name="lbl_signed">подписанный</string>
     <string name="lbl_site_book_id">Идентификатор книги сайта</string>
-    <string name="option_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
+    <string name="option_sort_and_style_ellipsis">Сортировка и стили…</string>
     <string name="lbl_sorting">Сортировка</string>
     <string name="lbl_sql_query">SQL-запрос</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Закройте приложение и вставьте правильную SD-карту</string>
@@ -493,7 +493,7 @@
     <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_search_books_by_author">Книги этого автора</string>
     <string name="option_search_books_by_author_in_series">Книги по автору/серии</string>
-    <string name="option_search_books_on">Поиск по…</string>
+    <string name="option_search_books_on">Поиск на…</string>
     <string name="option_search_books_in_series">Книги в этой серии</string>
     <string name="option_author_details">Все работы этого автора</string>
     <string name="option_author_works_book">Только книги</string>
@@ -519,15 +519,15 @@
     <string name="option_enable_sync_options">Включить параметры синхронизации</string>
     <string name="option_import">Импортировать</string>
     <string name="option_lend_out_book">Одолжить книгу…</string>
-    <string name="option_lend_return_book">Заимствованная книга возвращается</string>
+    <string name="option_lend_return_book">Одолженная книга возвращена</string>
     <string name="option_purge_bedetheque_authors_cache">Очистить кэш авторов Bedetheque</string>
     <string name="option_rebuild_fts">Перестроить данные полнотекстового поиска</string>
     <string name="option_rebuild_index">Перестроить индексы</string>
     <string name="option_set_complete">Отметка завершена</string>
     <string name="option_download_set_folder">Установите папку загрузки</string>
     <string name="option_set_incomplete">Отметить не полностью</string>
-    <string name="option_set_read">Марк читать</string>
-    <string name="option_set_unread">Марк не читается</string>
+    <string name="option_set_read">Пометить как прочитанное</string>
+    <string name="option_set_unread">Пометить как непрочитанное</string>
     <string name="menu_update_books">Обновите книги</string>
     <string name="info_bulk_set_location">Выберите место, которое вы хотите назначить всем книгам, перечисленным в выбранном узле.</string>
     <string name="menu_update_fields">обновить поля</string>
@@ -556,7 +556,7 @@
     <string name="pe_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
     <string name="pe_ui_theme_dark">Тёмная</string>
     <string name="pe_ui_theme_from_device">Тема устройства</string>
-    <string name="pe_ui_theme_light">свет</string>
+    <string name="pe_ui_theme_light">Светлая</string>
     <string name="pt_barcode_scanner">Сканер штрих-кода</string>
     <string name="pt_bob_show_details">Детали книги, отображаемые в списке</string>
     <string name="lbl_filters">Фильтры</string>
@@ -633,7 +633,7 @@
     <string name="pt_thumbnails_rotate_auto">Повернуть изображения</string>
     <string name="pt_ui_language">язык</string>
     <string name="pt_ui_system_locale">Язык системы</string>
-    <string name="pt_ui_theme">тема</string>
+    <string name="pt_ui_theme">Тема</string>
     <string name="pt_website_search_order_and_enable">Приоритет, включить и отключить</string>
     <string name="ps_show_author_name_family_first">Отображать сначала фамилии,\nнапример «Достоевский, Фёдор»</string>
     <string name="ps_show_author_name_given_first">Отобразить сначала фамилии,\nнапример «Фёдор Достоевский»</string>
