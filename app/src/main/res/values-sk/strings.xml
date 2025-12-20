@@ -294,7 +294,7 @@
     <string name="action_learn_more">Zistiť viac</string>
     <string name="action_email">E-mail</string>
     <string name="X_action_go">Ísť</string>
-    <string name="action_search">Hľadať</string>
+    <string name="action_search">Hľadanie</string>
     <string name="X_action_send">Poslať</string>
     <string name="X_action_next">Ďalej</string>
     <string name="X_action_previous">Predchádzajúci</string>
@@ -310,7 +310,7 @@
     <string name="action_show_options">Možnosti</string>
     <string name="action_clear_queue">Vyčistiť front</string>
     <string name="action_stop_scanning">Zastaviť skenovanie</string>
-    <string name="action_stop_searching">Prestaňte hľadať</string>
+    <string name="action_stop_searching">Zastaviť hľadanie</string>
     <string name="action_save_for_later">Uložiť na neskôr</string>
     <string name="action_disable_message">Zakázať správu</string>
     <string name="action_import">Importovať</string>
@@ -432,7 +432,7 @@
     <string name="pc_advanced_options">Rozšírené</string>
     <string name="pc_image_cache">Vyrovnávacia pamäť obrázkov</string>
     <string name="pc_camera">Fotoaparát</string>
-    <string name="pt_website_search_order_and_enable">Priorita, povoliť a zakázať</string>
+    <string name="pt_website_search_order_and_enable">Priorita, zapnúť a vypnúť</string>
     <string name="pt_barcode_scanner">Čítačka čiarových kódov</string>
     <string name="pt_storage_volume">Úložný priestor</string>
     <string name="pt_maintenance">Údržba</string>
