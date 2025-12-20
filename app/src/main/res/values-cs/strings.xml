@@ -109,7 +109,7 @@
     <string name="action_remove">Odstranit</string>
     <string name="action_remove_all">Odebrat vše</string>
     <string name="action_save">Uložit</string>
-    <string name="action_search">Hledat</string>
+    <string name="action_search">Hledání</string>
     <string name="action_select">Vybrat</string>
     <string name="option_select_all">Vybrat vše</string>
     <string name="option_select_none">Zrušit výběr všech položek</string>
@@ -146,7 +146,7 @@
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="btn_all_books">Všechny knihy</string>
     <string name="action_clear_queue">Vymazat frontu</string>
-    <string name="action_stop_searching">Přestaňte hledat</string>
+    <string name="action_stop_searching">Zastavit hledání</string>
     <string name="action_save_for_later">Uložit na později</string>
     <string name="action_disable_message">Zakázat zprávu</string>
     <string name="action_email">email</string>
@@ -637,7 +637,7 @@
     <string name="pt_ui_language">Jazyk</string>
     <string name="pt_ui_system_locale">Jazyk systému</string>
     <string name="pt_ui_theme">Téma</string>
-    <string name="pt_website_search_order_and_enable">Priorita, povolení a zakázání</string>
+    <string name="pt_website_search_order_and_enable">Priorita, zapnutí a vypnutí</string>
     <string name="ps_show_author_name_family_first">Zobrazení s příjmením na prvním místě,\ntj. „Čapek, Karel“</string>
     <string name="ps_show_author_name_given_first">Zobrazení s křestními jmény na prvním místě,\ntj. „Karel Čapek“</string>
     <string name="ps_bob_books_under_multiple_authors_each">Pod každým autorem</string>
