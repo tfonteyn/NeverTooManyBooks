@@ -607,7 +607,7 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .map(this::cleanName)
+                  .map(this::cleanText)
                   .filter(name -> !name.isBlank())
                   .map(Series::from)
                   .forEach(series -> {
@@ -618,7 +618,7 @@ public class StripWebSearchEngine
                   });
         } else {
             aas.stream()
-               .map(this::cleanName)
+               .map(this::cleanText)
                .filter(name -> !name.isBlank())
                .map(Series::from)
                .forEach(series -> {
