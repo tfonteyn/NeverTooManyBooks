@@ -199,8 +199,9 @@ public class ImageDownloader {
 
                     try (InputStream source = response.body().byteStream()) {
                         if (isZipped(response)) {
-                            savedFile = coverStorage.persist(new GZIPInputStream(source),
-                                                             destFile);
+                            try (GZIPInputStream gzipInputStream = new GZIPInputStream(source)) {
+                                savedFile = coverStorage.persist(gzipInputStream, destFile);
+                            }
                         } else {
                             savedFile = coverStorage.persist(source, destFile);
                         }
