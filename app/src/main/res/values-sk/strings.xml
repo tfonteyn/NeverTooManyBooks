@@ -225,7 +225,7 @@
     <string name="option_book_sync_list_with_details">Synchronizovať/umiestniť zoznam</string>
     <string name="option_set_unread">Označiť ako neprečítané</string>
     <string name="option_set_read">Označiť ako prečítané</string>
-    <string name="option_lend_return_book">Kniha je vrátená</string>
+    <string name="option_lend_return_book">Požičaná kniha je vrátená</string>
     <string name="option_set_incomplete">Nastaviť ako „nedokončené“</string>
     <string name="option_search_books_on">Hľadať na…</string>
     <string name="option_search_books_by_author">Knihy od tohto autora</string>
