@@ -34,16 +34,19 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
@@ -91,10 +94,11 @@ public class DBHelper
      * v7.8.2: 44
      * v7.8.3: 45
      * v7.10.0: 46
+     * v7.11.0: 47
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 46;
+    public static final int DATABASE_VERSION = 47;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -469,6 +473,11 @@ public class DBHelper
         }
         if (oldVersion < 46) {
             LegacyUpgrades.v46onUpgrade(db, context);
+        }
+        if (oldVersion < 47) {
+            // github #216 fix/improvements
+            CleanOptions.setOptions(context, Set.of(CleanOptions.ResolveAuthors));
+            StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
         }
 
         // We have to do this here as we're always inserting all columns,
