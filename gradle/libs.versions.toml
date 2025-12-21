@@ -1,7 +1,7 @@
 [versions]
 androidGradlePlugin = "8.13.2"
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
-androidKotlinPlugin = "2.2.21"
+androidKotlinPlugin = "2.3.0"
 # https://github.com/mannodermaus/android-junit5
 mannodermausPlugin = "1.14.0.0"
 
@@ -9,7 +9,7 @@ mannodermaus = "1.9.0"
 
 # https://developer.android.com/jetpack/androidx/versions
 
-androidxActivity = "1.12.1"
+androidxActivity = "1.12.2"
 androidxAnnotation = '1.9.1'
 androidxAppcompat = "1.7.1"
 androidxCamerax = "1.5.2"
