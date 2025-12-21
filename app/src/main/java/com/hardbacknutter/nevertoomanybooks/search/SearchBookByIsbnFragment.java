@@ -96,6 +96,9 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
+ * FIXME: 2025-12-21: this class and the ViewModel are doing to much...
+ *  The code is becoming fragile and needs refactoring.
+ * <p>
  * Use-cases / logic flow....   might contain errors...
  * <p>
  * - start batch scan
@@ -780,6 +783,7 @@ public class SearchBookByIsbnFragment
     }
 
     /**
+     * Interactive mode; no queue.
      * Called <strong>before</strong> a search is started if the entered code
      * is already present in the local database.
      *
@@ -1013,6 +1017,7 @@ public class SearchBookByIsbnFragment
         final Book book = result.getBook();
 
         if (!hasData(book)) {
+            // We should never get here... flw
             vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
             return;
         }
@@ -1170,12 +1175,14 @@ public class SearchBookByIsbnFragment
             }
         }
 
+        // Discard and Cancel buttons.
         builder.setNeutralButton(R.string.action_discard, (d, w) -> {
                    d.dismiss();
                    removeFromQueue(chip);
                })
                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss());
 
+        // Clicked while searching, offer "discard" and "cancel"
         if (item.isSearching()) {
             // delete this one?
             builder.create()
@@ -1183,7 +1190,7 @@ public class SearchBookByIsbnFragment
             return;
         }
 
-
+        // All choices: "edit", "save", "discard", "cancel".
         if (result != null) {
             // delete this one?, or edit book?
             builder.setPositiveButton(R.string.action_edit, (d, w) -> {
@@ -1195,16 +1202,6 @@ public class SearchBookByIsbnFragment
                    .show();
             return;
         }
-
-        //        // no result, and not searching; allow a manual search to be started
-        //        builder.setPositiveButton(R.string.action_search, (d, w) -> {
-        //                   final ISBN code = item.getIsbn();
-        //                   vm.setIsbnText(code.asText());
-        //                   modelToView();
-        //                   prepareCriteria(code);
-        //               })
-        //               .create()
-        //               .show();
     }
 
     /**
