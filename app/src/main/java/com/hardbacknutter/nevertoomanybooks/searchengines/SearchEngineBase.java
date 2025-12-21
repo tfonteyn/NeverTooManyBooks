@@ -40,7 +40,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,6 +54,7 @@ import javax.net.ssl.SSLContext;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -452,57 +452,10 @@ public abstract class SearchEngineBase
      */
     @NonNull
     private String createAcceptLanguageHeader(@NonNull final Context context) {
-        final Set<String> noDups = new HashSet<>();
-        boolean addQ;
-
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final String userLanguage = userLocale.getLanguage();
-        final String languageTag = userLocale.toLanguageTag();
-
         final Locale siteLocale = getLocale(context);
-        final String siteLanguageTag = siteLocale.toLanguageTag();
-        final String siteLanguage = siteLocale.getLanguage();
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        final StringBuilder accept = new StringBuilder(languageTag);
-        noDups.add(languageTag);
-
-        if (!noDups.contains(userLanguage)) {
-            accept.append(',').append(userLanguage);
-            noDups.add(userLanguage);
-        }
-
-        final int offset = random.nextInt(2);
-
-        // use 0.8 or 0.7
-        //noinspection CheckStyle
-        accept.append(";q=0.").append(8 + offset);
-
-        addQ = false;
-        if (!noDups.contains(siteLanguageTag)) {
-            accept.append(',').append(siteLanguageTag);
-            noDups.add(siteLanguageTag);
-            addQ = true;
-        }
-        if (!noDups.contains(siteLanguage)) {
-            accept.append(',').append(siteLanguage);
-            noDups.add(siteLanguage);
-            addQ = true;
-        }
-        // only add q if we actually added a value.
-        if (addQ) {
-            // use 0.5 or 0.4
-            accept.append(";q=0.").append(4 + offset);
-        }
-
-        // Always add english if not there already.
-        //noinspection CheckStyle
-        if (!noDups.contains("en")) {
-            accept.append(',').append("en");
-            // use 0.3 or 0.2
-            accept.append(";q=0.").append(2 + offset);
-        }
-
-        return accept.toString();
+        return HttpCall.createAcceptLanguageHeader(siteLocale, userLocale);
     }
 
     /**
