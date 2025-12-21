@@ -336,15 +336,12 @@ public class BolSearchEngine
                 parse(context, redirected, fetchCovers, book);
             }
         } else {
-            final Element script = document.selectFirst("script");
-            if (script != null) {
-                final String url = script.attr("src");
-                if (url.startsWith("/.well-known")) {
-                    throw new SearchException(getEngineId(),
-                                              new HttpForbiddenException(
-                                                      getEngineId().getLabelResId(),
-                                                      "well-known", null, document.location()));
-                }
+            final Element element = document.selectFirst("div.unicorn");
+            if (element != null) {
+                throw new SearchException(getEngineId(),
+                                          new HttpForbiddenException(
+                                                  getEngineId().getLabelResId(),
+                                                  "unicorn", null, document.location()));
             }
         }
     }
