@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
-import android.content.Context;
-
 import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -121,67 +120,63 @@ public class HttpCall {
     }
 
     /**
-     * Create a suitable "Accept-Language" with user and site language.
-     * The priorities will be a little randomized to help prevent fingerprinting
+     * Create a suitable "Accept-Language" with site and user language.
+     * The site locale is send first.
+     * The priorities (q) will be a little randomized to help prevent fingerprinting.
      *
-     * @param context Current context
-     * @param locale  for the primary language
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
      *
      * @return header string
+     *
+     * @see HttpConstants#ACCEPT_LANGUAGE
      */
     @NonNull
-    public static String createAcceptLanguageHeader(@NonNull final Context context,
-                                                    @NonNull final Locale locale) {
+    public static String createAcceptLanguageHeader(@NonNull final Locale siteLocale,
+                                                    @NonNull final Locale userLocale) {
         final Set<String> noDups = new HashSet<>();
-        boolean addQ;
-
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final String userLanguage = userLocale.getLanguage();
-        final String languageTag = userLocale.toLanguageTag();
-
-        final String siteLanguageTag = locale.toLanguageTag();
-        final String siteLanguage = locale.getLanguage();
-
-        final StringBuilder accept = new StringBuilder(languageTag);
-        noDups.add(languageTag);
-
-        if (!noDups.contains(userLanguage)) {
-            accept.append(',').append(userLanguage);
-            noDups.add(userLanguage);
-        }
-
         final int offset = RANDOM.nextInt(2);
 
+        final StringJoiner accept = new StringJoiner(",");
+
         // use 0.8 or 0.7
-        //noinspection CheckStyle
-        accept.append(";q=0.").append(8 + offset);
-
-        addQ = false;
-        if (!noDups.contains(siteLanguageTag)) {
-            accept.append(',').append(siteLanguageTag);
-            noDups.add(siteLanguageTag);
-            addQ = true;
-        }
-        if (!noDups.contains(siteLanguage)) {
-            accept.append(',').append(siteLanguage);
-            noDups.add(siteLanguage);
-            addQ = true;
-        }
-        // only add q if we actually added a value.
-        if (addQ) {
-            // use 0.5 or 0.4
-            accept.append(";q=0.").append(4 + offset);
-        }
-
+        accept.add(addLangTag(siteLocale.toLanguageTag(), siteLocale.getLanguage(),
+                              8 + offset, noDups));
+        // use 0.5 or 0.4
         // Always add english if not there already.
-        //noinspection CheckStyle
-        if (!noDups.contains("en")) {
-            accept.append(',').append("en");
-            // use 0.3 or 0.2
-            accept.append(";q=0.").append(2 + offset);
-        }
+        accept.add(addLangTag(userLocale.toLanguageTag(), userLocale.getLanguage(),
+                              4 + offset, noDups));
+        // use 0.3 or 0.2
+        accept.add(addLangTag("en", "en-GB", 2 + offset, noDups));
 
         return accept.toString();
+    }
+
+    @NonNull
+    private static CharSequence addLangTag(@NonNull final String languageTag,
+                                           @NonNull final String language,
+                                           final int q,
+                                           @NonNull final Set<String> noDups) {
+
+        final StringJoiner accept = new StringJoiner(",");
+        boolean addQ = false;
+        if (!noDups.contains(languageTag)) {
+            accept.add(languageTag);
+            noDups.add(languageTag);
+            addQ = true;
+        }
+        if (!noDups.contains(language)) {
+            accept.add(language);
+            noDups.add(language);
+            addQ = true;
+        }
+
+        // only add q if we actually added a value.
+        if (addQ) {
+            return accept + ";q=0." + q;
+        } else {
+            return accept.toString();
+        }
     }
 
     /**
@@ -263,9 +258,9 @@ public class HttpCall {
     /**
      * Create a suitable {@code HEAD} request.
      *
-     * @param context Current context
-     * @param locale  to use for the language header
-     * @param url     to fetch
+     * @param url        to fetch
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
      *
      * @return new {@link Request} instance
      *
@@ -273,20 +268,21 @@ public class HttpCall {
      */
     @NonNull
     @EmptySuper
-    public Request createHeadRequest(@NonNull final Context context,
-                                     @NonNull final Locale locale,
-                                     @NonNull final String url)
+    public Request createHeadRequest(@NonNull final String url,
+                                     @NonNull final Locale siteLocale,
+                                     @NonNull final Locale userLocale)
             throws MalformedURLException {
-        return createDocumentRequest(context, locale, HEAD, new URL(url), null, null);
+        return createDocumentRequest(HEAD, new URL(url), siteLocale, userLocale, null, null
+        );
     }
 
     /**
      * Create a suitable {@code GET} request.
      *
-     * @param context Current context
-     * @param locale  to use for the language header
-     * @param url     to fetch
-     * @param headers (optional) extra headers to add/override
+     * @param url        to fetch
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
+     * @param headers    (optional) extra headers to add/override
      *
      * @return new {@link Request} instance
      *
@@ -294,12 +290,12 @@ public class HttpCall {
      */
     @NonNull
     @EmptySuper
-    public Request createGetRequest(@NonNull final Context context,
-                                    @NonNull final Locale locale,
-                                    @NonNull final String url,
+    public Request createGetRequest(@NonNull final String url,
+                                    @NonNull final Locale siteLocale,
+                                    @NonNull final Locale userLocale,
                                     @Nullable final Map<String, String> headers)
             throws MalformedURLException {
-        return createDocumentRequest(context, locale, GET, new URL(url), null, headers);
+        return createDocumentRequest(GET, new URL(url), siteLocale, userLocale, headers, null);
     }
 
     /**
@@ -308,23 +304,23 @@ public class HttpCall {
      * Use {@link #postWithRedirectHandling(Request, ResponseProcessor)} for authentication
      * or other cookie/redirect issues.
      *
-     * @param context Current context
-     * @param locale  to use for the language header
-     * @param url     to fetch
-     * @param body    (optional) to post
-     * @param headers (optional) extra headers to add/override
+     * @param url        to fetch
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
+     * @param headers    (optional) extra headers to add/override
+     * @param body       (optional) to post
      *
      * @return new {@link Request} instance
      *
      * @throws MalformedURLException on url errors
      */
-    public Request createPostRequest(@NonNull final Context context,
-                                     @NonNull final Locale locale,
-                                     @NonNull final String url,
-                                     @Nullable final RequestBody body,
-                                     @Nullable final Map<String, String> headers)
+    public Request createPostRequest(@NonNull final String url,
+                                     @NonNull final Locale siteLocale,
+                                     @NonNull final Locale userLocale,
+                                     @Nullable final Map<String, String> headers,
+                                     @Nullable final RequestBody body)
             throws MalformedURLException {
-        return createDocumentRequest(context, locale, POST, new URL(url), body, headers);
+        return createDocumentRequest(POST, new URL(url), siteLocale, userLocale, headers, body);
     }
 
     /**
@@ -332,22 +328,22 @@ public class HttpCall {
      * <p>
      * The headers are set to the defaults as used by Firefox to request a "document"
      *
-     * @param context Current context
-     * @param locale  to use
-     * @param method  "GET", "HEAD", "POST"
-     * @param url     to use
-     * @param body    (optional) the body to send when using a "POST"
-     * @param headers (optional) extra headers to add/override
+     * @param method     "GET", "HEAD", "POST"
+     * @param url        to use
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
+     * @param headers    (optional) extra headers to add/override
+     * @param body       (optional) the body to send when using a "POST"
      *
      * @return new {@code GET} request instance
      */
     @NonNull
-    private Request createDocumentRequest(@NonNull final Context context,
-                                          @NonNull final Locale locale,
-                                          @NonNull final String method,
+    private Request createDocumentRequest(@NonNull final String method,
                                           @NonNull final URL url,
-                                          @Nullable final RequestBody body,
-                                          @Nullable final Map<String, String> headers) {
+                                          @NonNull final Locale siteLocale,
+                                          @NonNull final Locale userLocale,
+                                          @Nullable final Map<String, String> headers,
+                                          @Nullable final RequestBody body) {
 
         // Example of a Firefox request to https://developer.android.com
 
@@ -384,7 +380,7 @@ public class HttpCall {
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_KITCHEN_SINK)
                 .header(HttpConstants.ACCEPT_LANGUAGE,
-                        createAcceptLanguageHeader(context, locale))
+                        createAcceptLanguageHeader(siteLocale, userLocale))
                 .header(HttpConstants.ACCEPT_ENCODING,
                         HttpConstants.ACCEPT_ENCODING_GZIP)
 
