@@ -61,7 +61,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpCall {
 
@@ -566,9 +565,6 @@ public class HttpCall {
     public <R> R postWithRedirectHandling(@NonNull final Request request,
                                           @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
-
-        final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
         call = httpClient.newBuilder()
                          .followRedirects(false)
