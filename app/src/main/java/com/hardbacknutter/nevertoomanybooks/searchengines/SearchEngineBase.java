@@ -76,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
+import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import okhttp3.OkHttpClient;
@@ -375,13 +376,9 @@ public abstract class SearchEngineBase
             builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
         }
 
-        // not in use for now. We'll need to write our own interceptor
-        // to be able to yse LoggerFactory.getLogger()
-        //        if (logEnabled) {
-        //            final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        //            logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-        //            builder.addInterceptor(logging);
-        //        }
+        if (config.isLogHttpGetRequests()) {
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(TAG));
+        }
 
         return builder.build();
     }

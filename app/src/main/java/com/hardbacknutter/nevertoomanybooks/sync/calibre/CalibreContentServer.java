@@ -79,8 +79,6 @@ import com.burgstaller.okhttp.basic.BasicAuthenticator;
 import com.burgstaller.okhttp.digest.CachingAuthenticator;
 import com.burgstaller.okhttp.digest.Credentials;
 import com.burgstaller.okhttp.digest.DigestAuthenticator;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -104,6 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
+import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -115,7 +114,6 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * <ul>
@@ -177,6 +175,8 @@ public final class CalibreContentServer
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+
+    private static final String PK_ENABLE_HTTP_LOGGING = PREFERENCE_KEY + '.' + "logging.http";
     private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
 
     private static final String AMAZON = "amazon";
@@ -434,11 +434,8 @@ public final class CalibreContentServer
             builder.addInterceptor(authCacheInterceptor);
         }
 
-        //noinspection ConstantValue
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OKHTTP != null) {
-            final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(DEBUG_SWITCHES.OKHTTP);
-            builder.addNetworkInterceptor(logging);
+        if (isLogHttpGetRequests()) {
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(TAG));
         }
 
         httpClient = builder.build();
@@ -620,6 +617,11 @@ public final class CalibreContentServer
             // loaded in the Android system keystore.
             return null;
         }
+    }
+
+    private static boolean isLogHttpGetRequests() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_ENABLE_HTTP_LOGGING, false);
     }
 
     @NonNull

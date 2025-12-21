@@ -24,8 +24,6 @@ import androidx.activity.result.contract.ActivityResultContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 
-import okhttp3.logging.HttpLoggingInterceptor;
-
 /**
  * Global location where you can switch individual DEBUG options of/off
  * <p>
@@ -91,14 +89,8 @@ public final class DEBUG_SWITCHES {
     public static final boolean IMPORT_CALIBRE_BOOKS = false;
     public static final boolean IMPORT_STRIP_INFO_BOOKS = false;
 
-    /**
-     * OkHttp logging level.
-     * <p>
-     * Set to {@code null} to NOT add the logging interceptor at all.
-     */
-    public static final HttpLoggingInterceptor.Level OKHTTP =
-            null;
-    //HttpLoggingInterceptor.Level.BODY;
+    /** Sets OkHttp logging level to {@code BODY}. */
+    public static final boolean OKHTTP = false;
 
 
     /** Enable strict mode reporting on network,disc,... */
