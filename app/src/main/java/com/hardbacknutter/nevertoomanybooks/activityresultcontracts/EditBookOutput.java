@@ -64,11 +64,11 @@ public final class EditBookOutput {
      *                            processed, this is the last book id we processed.
      *                            Pass in {@code 0} when not applicable.
      */
-    private EditBookOutput(final boolean modified,
+    public EditBookOutput(final boolean modified,
                            final long repositionToBookId,
                            final long lastBookIdProcessed) {
-        this.repositionToBookId = repositionToBookId;
         this.modified = modified;
+        this.repositionToBookId = repositionToBookId;
         this.lastBookIdProcessed = lastBookIdProcessed;
     }
 

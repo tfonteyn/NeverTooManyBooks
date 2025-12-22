@@ -45,6 +45,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.camera.core.CameraSelector;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -69,19 +70,26 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookFoundBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -1025,6 +1033,62 @@ public class SearchBookByIsbnFragment
         editBook(book, vm.getStyle());
     }
 
+    private void onSearchResultsSaveBook(@NonNull final BookSearchResult result) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "onSearchResults",
+                                        vm.getScannerMode(),
+                                        "queue=" + vb.queue.getChildCount(),
+                                        result);
+        }
+        final Book book = result.getBook();
+
+        if (!hasData(book)) {
+            // We should never get here... flw
+            vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
+            return;
+        }
+
+        // Add it to the current shelf.
+        book.ensureBookshelf();
+
+        final String isbnStr = book.getIsbn();
+        if (!isbnStr.isEmpty()) {
+            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            if (bookDao.bookExistsByIsbn(isbnStr)) {
+                //noinspection DataFlowIssue
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.warning_24px)
+                        .setTitle(R.string.lbl_duplicate_book)
+                        .setMessage(R.string.confirm_duplicate_book_message)
+                        // this dialog is important. Make sure the user pays some attention
+                        .setCancelable(false)
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                        .setNeutralButton(R.string.action_edit, (d, w) -> onSearchResults(result))
+                        // add regardless
+                        .setPositiveButton(R.string.action_add,
+                                           (d, w) -> onSearchResultsSaveBook(book))
+                        .create()
+                        .show();
+            }
+        }
+        onSearchResultsSaveBook(book);
+    }
+
+    private void onSearchResultsSaveBook(@NonNull final Book book) {
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        final Context context = getContext();
+        try {
+            //noinspection DataFlowIssue
+            final long id = bookDao.insert(context, book);
+            book.setStage(EntityStage.Stage.Clean);
+            vm.onBookEditingDone(new EditBookOutput(true, id, 0));
+        } catch (@NonNull final StorageException | DaoWriteException e) {
+            // Should never get here unless disk-full.
+            // If we do... the book result is discarded.
+            ErrorDialog.show(context, TAG, e);
+        }
+    }
+
     /**
      * Called <strong>after</strong> a search to check if there is a minimal amount
      * of useful data in the given book.
@@ -1136,44 +1200,45 @@ public class SearchBookByIsbnFragment
         final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
         @Nullable
         final BookSearchResult result = item.getResult();
-
-        final Context context = getContext();
-        final StringJoiner sj = new StringJoiner("\n");
-
-        // If we have a result, show some book information, otherwise only the isbn.
+        final String info;
         if (result != null) {
+            // Show some book information
+            final Context context = getContext();
+            final StringJoiner sj = new StringJoiner("\n");
             final Book book = result.getBook();
-
-            //noinspection DataFlowIssue
-            book.getPrimarySeries()
-                .map(s -> s.getLabel(context, Details.Normal, vm.getStyle()))
-                .ifPresent(sj::add);
-
-            sj.add(book.getTitle());
 
             final Author primaryAuthor = book.getPrimaryAuthor();
             if (primaryAuthor != null) {
                 //noinspection DataFlowIssue
                 sj.add(primaryAuthor.getLabel(context, Details.Normal, vm.getStyle()));
             }
+
+            sj.add(book.getTitle());
+            sj.add(item.getIsbn().asText());
+
+            info = sj.toString();
+        } else {
+            // no result; not sure if we ever get here... flw
+            info = item.getIsbn().asText();
         }
 
-        final String dialogTitle;
-        if (sj.length() == 0) {
-            dialogTitle = item.getIsbn().asText();
-        } else {
-            dialogTitle = sj.toString();
-        }
+        final DialogBookFoundBinding dvb = DialogBookFoundBinding.inflate(getLayoutInflater());
 
         //noinspection DataFlowIssue
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
-                .setTitle(dialogTitle);
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
+                .setView(dvb.getRoot());
+        dvb.info.setText(info);
+
+        // Error message in dialog body.
+        boolean hasMessage = false;
         if (result != null) {
             final String errorMessage = result.getErrorMessage();
             if (errorMessage != null) {
-                builder.setMessage(errorMessage);
+                dvb.errorMessage.setText(errorMessage);
+                hasMessage = true;
             }
         }
+        dvb.errorMessage.setVisibility(hasMessage ? View.VISIBLE : View.GONE);
 
         // Discard and Cancel buttons.
         builder.setNeutralButton(R.string.action_discard, (d, w) -> {
@@ -1184,7 +1249,8 @@ public class SearchBookByIsbnFragment
 
         // Clicked while searching, offer "discard" and "cancel"
         if (item.isSearching()) {
-            // delete this one?
+            dvb.edit.setVisibility(View.GONE);
+
             builder.create()
                    .show();
             return;
@@ -1192,15 +1258,23 @@ public class SearchBookByIsbnFragment
 
         // All choices: "edit", "save", "discard", "cancel".
         if (result != null) {
-            // delete this one?, or edit book?
-            builder.setPositiveButton(R.string.action_edit, (d, w) -> {
-                       removeFromQueue(chip);
-                       d.dismiss();
-                       onSearchResults(result);
-                   })
-                   .create()
-                   .show();
-            return;
+            builder.setPositiveButton(R.string.action_save,
+                                      (dialog, w) -> {
+                                          dialog.dismiss();
+                                          removeFromQueue(chip);
+                                          onSearchResultsSaveBook(result);
+                                      });
+
+            final AlertDialog dialog = builder.create();
+
+            dvb.edit.setVisibility(View.VISIBLE);
+            dvb.edit.setOnClickListener(v -> {
+                dialog.dismiss();
+                removeFromQueue(chip);
+                onSearchResults(result);
+            });
+
+            dialog.show();
         }
     }
 
