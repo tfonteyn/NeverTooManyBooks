@@ -136,6 +136,18 @@ public class FutureHttpImpl<R>
     }
 
     /**
+     * Check if the response headers indicate the encoding is gzip.
+     *
+     * @param response connection to check
+     *
+     * @return {@code true} if the content-encoding was "gzip"
+     */
+    private static boolean isZipped(@NonNull final HttpURLConnection response) {
+        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
+                response.getHeaderField(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
+    }
+
+    /**
      * If already connected, simply check the response code.
      * Otherwise implicitly connect by getting the response code.
      *
@@ -470,7 +482,7 @@ public class FutureHttpImpl<R>
         return Objects.requireNonNull(doGetExecute(url, GET, connection -> {
             try (BufferedInputStream bis = new BufferedInputStream(
                     connection.getInputStream(), bufferSize)) {
-                if (HttpConstants.isZipped(connection)) {
+                if (isZipped(connection)) {
                     try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
                         return responseProcessor.apply(connection, gzs);
                     }
@@ -494,7 +506,7 @@ public class FutureHttpImpl<R>
 
             try (InputStream is = connection.getInputStream()) {
                 final String page;
-                if (HttpConstants.isZipped(connection)) {
+                if (isZipped(connection)) {
                     try (GZIPInputStream gzs = new GZIPInputStream(is)) {
                         try (Reader isr = new InputStreamReader(gzs, StandardCharsets.UTF_8)) {
                             try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
@@ -776,7 +788,7 @@ public class FutureHttpImpl<R>
                     if (responseProcessor != null) {
                         try (InputStream is = request.getInputStream();
                              BufferedInputStream bis = new BufferedInputStream(is, bufferSize)) {
-                            if (HttpConstants.isZipped(request)) {
+                            if (isZipped(request)) {
                                 try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
                                     return responseProcessor.apply(gzs);
                                 }
