@@ -187,7 +187,7 @@ public class HttpCall {
      * @return {@code true} if the content-encoding was "gzip"
      */
     private static boolean isZipped(@NonNull final Response response) {
-        return "gzip".equalsIgnoreCase(
+        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
                 response.header(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
     }
 
