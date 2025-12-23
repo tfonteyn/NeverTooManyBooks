@@ -249,7 +249,7 @@
     <string name="option_fab_add_book_by_isbn">Поиск по ISBN</string>
     <string name="option_fab_add_book_manually">Добавить вручную</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="httpError">Ошибка сети.</string>
+    <string name="httpError">Произошла ошибка сети.</string>
     <string name="httpErrorAuth">Ошибка аутентификации.</string>
     <string name="httpErrorFailedSslHandshake">Не удалось установить защищенное соединение.</string>
     <string name="httpErrorFile">Не удалось получить доступ к файлу.</string>
