@@ -28,6 +28,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,9 +49,13 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
+import javax.xml.parsers.SAXParser;
 
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
+
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import okhttp3.Call;
 import okhttp3.Headers;
@@ -627,32 +632,8 @@ public class HttpCall {
         }
     }
 
-    @Nullable
-    private <R> R readBody(@NonNull final Response response,
-                           @Nullable final ResponseProcessor<R> responseProcessor)
-            throws IOException {
-        if (responseProcessor != null) {
-            final ResponseBody body = response.body();
-            if (body != null) {
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        body.byteStream(), bufferSize)) {
-                    if (isZipped(response)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            return responseProcessor.apply(response, gzs);
-                        }
-                    } else {
-                        return responseProcessor.apply(response, bis);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     /**
-     * Send the GET and use the given {@link ResponseProcessor} to handle the response.
-     * <p>
-     * This method handles gzip encoding automatically.
+     * Send a {@code GET} request and return the response as a single string.
      *
      * @param request execute
      *
@@ -681,12 +662,74 @@ public class HttpCall {
         }
     }
 
-    public void cancel() {
-        synchronized (this) {
-            if (call != null) {
-                call.cancel();
+    /**
+     * Send a {@code GET} request and process the response using the
+     * given SAX parser/handler.
+     * <p>
+     * The handler should provide the result.
+     *
+     * @param request execute
+     * @param parser  SAX parser
+     * @param handler SAX handler
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    public void get(@NonNull final Request request,
+                    @NonNull final SAXParser parser,
+                    @NonNull final DefaultHandler handler)
+            throws IOException {
+        get(request, (response, is) -> {
+            // The InputStream is already unzipped as needed.
+            try {
+                parser.parse(is, handler);
+                return true;
+            } catch (@NonNull final SAXException e) {
+                // always unwrap SAXException using getException() !
+                final Exception cause = e.getException();
+                if (cause instanceof EOFException) {
+                    // not an error; we're done.
+                    return true;
+                }
+                if (cause != null) {
+                    throw new IOException(cause);
+                }
+                // a raw SAXException? Should never happen... flw
+                throw new IOException(e);
+            }
+        });
+    }
+
+    /**
+     * Read the response body, and unzip as required.
+     *
+     * @param response          to read/unzip
+     * @param responseProcessor to process the resulting stream
+     * @param <R>               type of the result
+     *
+     * @return the processed response
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @Nullable
+    private <R> R readBody(@NonNull final Response response,
+                           @Nullable final ResponseProcessor<R> responseProcessor)
+            throws IOException {
+        if (responseProcessor != null) {
+            final ResponseBody body = response.body();
+            if (body != null) {
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        body.byteStream(), bufferSize)) {
+                    if (isZipped(response)) {
+                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                            return responseProcessor.apply(response, gzs);
+                        }
+                    } else {
+                        return responseProcessor.apply(response, bis);
+                    }
+                }
             }
         }
+        return null;
     }
 
     /**
@@ -750,6 +793,14 @@ public class HttpCall {
                                               response.message(),
                                               response.request().url().url(),
                                               location);
+        }
+    }
+
+    public void cancel() {
+        synchronized (this) {
+            if (call != null) {
+                call.cancel();
+            }
         }
     }
 
