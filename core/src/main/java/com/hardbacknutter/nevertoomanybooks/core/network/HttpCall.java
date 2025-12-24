@@ -699,6 +699,28 @@ public class HttpCall {
     /**
      * Send a {@code GET} request and return the response as a single string.
      *
+     * @param url        to fetch
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
+     * @param headers    (optional) extra headers to add/override
+     *
+     * @return the response page as a single {@code String}
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @NonNull
+    public String getAsString(@NonNull final String url,
+                              @NonNull final Locale siteLocale,
+                              @NonNull final Locale userLocale,
+                              @Nullable final Map<String, String> headers)
+            throws IOException {
+        final Request request = createGetRequest(url, siteLocale, userLocale, headers);
+        return getAsString(request);
+    }
+
+    /**
+     * Send a {@code GET} request and return the response as a single string.
+     *
      * @param request execute
      *
      * @return the response page as a single {@code String}
