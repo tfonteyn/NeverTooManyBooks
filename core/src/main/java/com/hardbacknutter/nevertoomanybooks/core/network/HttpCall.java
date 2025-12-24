@@ -420,6 +420,23 @@ public class HttpCall {
     /**
      * Send a {@code HEAD} request.
      *
+     * @param url        to fetch
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    public void head(@NonNull final String url,
+                     @NonNull final Locale siteLocale,
+                     @NonNull final Locale userLocale)
+            throws IOException {
+        final Request request = createHeadRequest(url, siteLocale, userLocale);
+        head(request);
+    }
+
+    /**
+     * Send a {@code HEAD} request.
+     *
      * @param request to execute
      *
      * @throws IOException on generic/other IO failures
@@ -428,6 +445,31 @@ public class HttpCall {
             throws IOException {
         // silly, sure...  but lets keep the calls clear by calling this method "head"
         get(request, null);
+    }
+
+    /**
+     * Send a {@code GET} request.
+     *
+     * @param url               to fetch
+     * @param siteLocale        for the primary language tag
+     * @param userLocale        for the secondary language tag
+     * @param headers           (optional) extra headers to add/override
+     * @param responseProcessor (optional) receives the response/InputStream
+     * @param <R>               type of the result
+     *
+     * @return the processed response
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @Nullable
+    public <R> R get(@NonNull final String url,
+                     @NonNull final Locale siteLocale,
+                     @NonNull final Locale userLocale,
+                     @Nullable final Map<String, String> headers,
+                     @Nullable final ResponseProcessor<R> responseProcessor)
+            throws IOException {
+        final Request request = createGetRequest(url, siteLocale, userLocale, headers);
+        return get(request, responseProcessor);
     }
 
     /**
