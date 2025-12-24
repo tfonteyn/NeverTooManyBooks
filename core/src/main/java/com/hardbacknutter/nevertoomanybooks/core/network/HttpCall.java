@@ -540,6 +540,37 @@ public class HttpCall {
     }
 
     /**
+     * Create a request, and {@code POST} it; handles redirects manually capturing cookies
+     * as needed.
+     *
+     * @param url               to fetch
+     * @param siteLocale        for the primary language tag
+     * @param userLocale        for the secondary language tag
+     * @param headers           (optional) extra headers to add/override
+     * @param body              (optional) to post
+     * @param responseProcessor (optional) receives the response/InputStream
+     * @param <R>               type of the result
+     *
+     * @return the processed response; can be {@code null} if there was no response body.
+     *
+     * @throws IOException on generic/other IO failures
+     * @see #createPostRequest(String, Locale, Locale, Map, RequestBody)
+     * @see #postWithRedirectHandling(Request, ResponseProcessor)
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @Nullable
+    public <R> R postAuthenticationForm(@NonNull final String url,
+                                        @NonNull final Locale siteLocale,
+                                        @NonNull final Locale userLocale,
+                                        @Nullable final Map<String, String> headers,
+                                        @Nullable final RequestBody body,
+                                        @Nullable final ResponseProcessor<R> responseProcessor)
+            throws IOException {
+        final Request request = createPostRequest(url, siteLocale, userLocale, headers, body);
+        return postWithRedirectHandling(request, responseProcessor);
+    }
+
+    /**
      * Send a {@code POST} request.
      * <p>
      * This method will manually follow redirects enabling it to capture
@@ -553,6 +584,8 @@ public class HttpCall {
      * @return the processed response; can be {@code null} if there was no response body.
      *
      * @throws IOException on generic/other IO failures
+     *
+     * @see #postAuthenticationForm(String, Locale, Locale, Map, RequestBody, ResponseProcessor)
      */
     @Nullable
     public <R> R postWithRedirectHandling(@NonNull final Request request,
