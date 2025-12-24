@@ -44,9 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.SAXParser;
@@ -73,11 +71,6 @@ public class HttpCall {
     /** InputStream buffer size. Used by {@code GET} and {@code POST}. */
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-    /** Helper to randomize some urls to avoid fingerprinting by the servers. */
-    @SuppressWarnings("TypeMayBeWeakened")
-    @NonNull
-    private static final Random RANDOM = new Random();
-
     private static final String GET = "GET";
     private static final String POST = "POST";
     private static final String HEAD = "HEAD";
@@ -93,7 +86,7 @@ public class HttpCall {
     private final int labelResId;
 
     @NonNull
-    private final CookieStore store;
+    private final CookieStore cookieStore;
 
     /** InputStream buffer size. Used by {@code GET} and {@code POST}. */
     private int bufferSize = DEFAULT_BUFFER_SIZE;
@@ -117,71 +110,11 @@ public class HttpCall {
                     final boolean logEnabled) {
 
         this.httpClient = httpClient;
-        this.store = cookieStore;
+        this.cookieStore = cookieStore;
         this.labelResId = labelResId;
 
         this.throttler = throttler;
         this.logEnabled = logEnabled;
-    }
-
-    /**
-     * Create a suitable "Accept-Language" with site and user language.
-     * The site locale is send first.
-     * The priorities (q) will be a little randomized to help prevent fingerprinting.
-     *
-     * @param siteLocale for the primary language tag
-     * @param userLocale for the secondary language tag
-     *
-     * @return header string
-     *
-     * @see HttpConstants#ACCEPT_LANGUAGE
-     */
-    @NonNull
-    public static String createAcceptLanguageHeader(@NonNull final Locale siteLocale,
-                                                    @NonNull final Locale userLocale) {
-        final Set<String> noDups = new HashSet<>();
-        final int offset = RANDOM.nextInt(2);
-
-        final StringJoiner accept = new StringJoiner(",");
-
-        // use 0.8 or 0.7
-        accept.add(addLangTag(siteLocale.toLanguageTag(), siteLocale.getLanguage(),
-                              8 + offset, noDups));
-        // use 0.5 or 0.4
-        // Always add english if not there already.
-        accept.add(addLangTag(userLocale.toLanguageTag(), userLocale.getLanguage(),
-                              4 + offset, noDups));
-        // use 0.3 or 0.2
-        accept.add(addLangTag("en", "en-GB", 2 + offset, noDups));
-
-        return accept.toString();
-    }
-
-    @NonNull
-    private static CharSequence addLangTag(@NonNull final String languageTag,
-                                           @NonNull final String language,
-                                           final int q,
-                                           @NonNull final Set<String> noDups) {
-
-        final StringJoiner accept = new StringJoiner(",");
-        boolean addQ = false;
-        if (!noDups.contains(languageTag)) {
-            accept.add(languageTag);
-            noDups.add(languageTag);
-            addQ = true;
-        }
-        if (!noDups.contains(language)) {
-            accept.add(language);
-            noDups.add(language);
-            addQ = true;
-        }
-
-        // only add q if we actually added a value.
-        if (addQ) {
-            return accept + ";q=0." + q;
-        } else {
-            return accept.toString();
-        }
     }
 
     /**
@@ -191,48 +124,9 @@ public class HttpCall {
      *
      * @return {@code true} if the content-encoding was "gzip"
      */
-    private static boolean isZipped(@NonNull final Response response) {
+    private boolean isZipped(@NonNull final Response response) {
         return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
                 response.header(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
-    }
-
-    private void logRequest(@NonNull final Request request) {
-        final String headers = request
-                .headers()
-                .toMultimap()
-                .entrySet()
-                .stream()
-                .map(es -> "Request Header: " + es.getKey() + "="
-                           + String.join("|", es.getValue()))
-                .collect(Collectors.joining("\n"));
-
-        final Logger logger = LoggerFactory.getLogger();
-        logger.d(TAG, "url: " + request.url().url());
-        logger.d(TAG, "headers", "\n" + headers);
-        logger.d(TAG, "body", "\n" + request.body());
-    }
-
-    private void logResponse(@NonNull final Response response) {
-        final String headers = response
-                .headers()
-                .toMultimap()
-                .entrySet()
-                .stream()
-                .map(es -> "Response Header: " + es.getKey() + "="
-                           + String.join("|", es.getValue()))
-                .collect(Collectors.joining("\n"));
-
-        final Logger logger = LoggerFactory.getLogger();
-        logger.d(TAG, "url: ", response.request().url().url());
-        logger.d(TAG, "responseCode: " + response.code());
-        logger.d(TAG, "responseMsg: " + response.message());
-        logger.d(TAG, "headers", "\n" + headers);
-
-        for (final URI uri : store.getURIs()) {
-            for (final HttpCookie cookie : store.get(uri)) {
-                logger.d(TAG, "Stored cookie → URI: " + uri + " | " + cookie);
-            }
-        }
     }
 
     /**
@@ -273,9 +167,9 @@ public class HttpCall {
      */
     @NonNull
     @EmptySuper
-    public Request createHeadRequest(@NonNull final String url,
-                                     @NonNull final Locale siteLocale,
-                                     @NonNull final Locale userLocale)
+    private Request createHeadRequest(@NonNull final String url,
+                                      @NonNull final Locale siteLocale,
+                                      @NonNull final Locale userLocale)
             throws MalformedURLException {
         return createDocumentRequest(HEAD, new URL(url), siteLocale, userLocale, null, null
         );
@@ -295,10 +189,10 @@ public class HttpCall {
      */
     @NonNull
     @EmptySuper
-    public Request createGetRequest(@NonNull final String url,
-                                    @NonNull final Locale siteLocale,
-                                    @NonNull final Locale userLocale,
-                                    @Nullable final Map<String, String> headers)
+    private Request createGetRequest(@NonNull final String url,
+                                     @NonNull final Locale siteLocale,
+                                     @NonNull final Locale userLocale,
+                                     @Nullable final Map<String, String> headers)
             throws MalformedURLException {
         return createDocumentRequest(GET, new URL(url), siteLocale, userLocale, headers, null);
     }
@@ -319,11 +213,11 @@ public class HttpCall {
      *
      * @throws MalformedURLException on url errors
      */
-    public Request createPostRequest(@NonNull final String url,
-                                     @NonNull final Locale siteLocale,
-                                     @NonNull final Locale userLocale,
-                                     @Nullable final Map<String, String> headers,
-                                     @Nullable final RequestBody body)
+    private Request createPostRequest(@NonNull final String url,
+                                      @NonNull final Locale siteLocale,
+                                      @NonNull final Locale userLocale,
+                                      @Nullable final Map<String, String> headers,
+                                      @Nullable final RequestBody body)
             throws MalformedURLException {
         return createDocumentRequest(POST, new URL(url), siteLocale, userLocale, headers, body);
     }
@@ -385,7 +279,7 @@ public class HttpCall {
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_KITCHEN_SINK)
                 .header(HttpConstants.ACCEPT_LANGUAGE,
-                        createAcceptLanguageHeader(siteLocale, userLocale))
+                        HttpLanguageHeader.create(siteLocale, userLocale))
                 .header(HttpConstants.ACCEPT_ENCODING,
                         HttpConstants.ACCEPT_ENCODING_GZIP)
 
@@ -529,8 +423,8 @@ public class HttpCall {
     }
 
     @Nullable
-    public <R> R getWithRedirectHandling(@NonNull final Request request,
-                                         @Nullable final ResponseProcessor<R> responseProcessor)
+    private <R> R getWithRedirectHandling(@NonNull final Request request,
+                                          @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
 
         call = httpClient.newBuilder()
@@ -637,12 +531,11 @@ public class HttpCall {
      * @return the processed response; can be {@code null} if there was no response body.
      *
      * @throws IOException on generic/other IO failures
-     *
      * @see #postAuthenticationForm(String, Locale, Locale, Map, RequestBody, ResponseProcessor)
      */
     @Nullable
-    public <R> R postWithRedirectHandling(@NonNull final Request request,
-                                          @Nullable final ResponseProcessor<R> responseProcessor)
+    private <R> R postWithRedirectHandling(@NonNull final Request request,
+                                           @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
 
         call = httpClient.newBuilder()
@@ -916,6 +809,45 @@ public class HttpCall {
         synchronized (this) {
             if (call != null) {
                 call.cancel();
+            }
+        }
+    }
+
+    private void logRequest(@NonNull final Request request) {
+        final String headers = request
+                .headers()
+                .toMultimap()
+                .entrySet()
+                .stream()
+                .map(es -> "Request Header: " + es.getKey() + "="
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
+
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "url: " + request.url().url());
+        logger.d(TAG, "headers", "\n" + headers);
+        logger.d(TAG, "body", "\n" + request.body());
+    }
+
+    private void logResponse(@NonNull final Response response) {
+        final String headers = response
+                .headers()
+                .toMultimap()
+                .entrySet()
+                .stream()
+                .map(es -> "Response Header: " + es.getKey() + "="
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
+
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "url: ", response.request().url().url());
+        logger.d(TAG, "responseCode: " + response.code());
+        logger.d(TAG, "responseMsg: " + response.message());
+        logger.d(TAG, "headers", "\n" + headers);
+
+        for (final URI uri : cookieStore.getURIs()) {
+            for (final HttpCookie cookie : cookieStore.get(uri)) {
+                logger.d(TAG, "Stored cookie → URI: " + uri + " | " + cookie);
             }
         }
     }

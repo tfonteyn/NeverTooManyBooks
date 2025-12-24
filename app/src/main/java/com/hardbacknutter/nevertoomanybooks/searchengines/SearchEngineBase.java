@@ -54,8 +54,8 @@ import javax.net.ssl.SSLContext;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -455,7 +455,7 @@ public abstract class SearchEngineBase
         final Locale siteLocale = getLocale(context);
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        return HttpCall.createAcceptLanguageHeader(siteLocale, userLocale);
+        return HttpLanguageHeader.create(siteLocale, userLocale);
     }
 
     /**
