@@ -154,7 +154,7 @@
     <string name="action_less_ellipsis">Меньше…</string>
     <string name="action_more_ellipsis">Больше…</string>
     <string name="action_show_options">Параметры</string>
-    <string name="action_show_toc_long">Показать оглавление</string>
+    <string name="action_show_toc_long">Показать содержание</string>
     <string name="action_stop_scanning">Остановить сканирование</string>
     <string name="btn_this_book">Эта книга</string>
     <string name="size_bytes">%1$.0fB</string>
@@ -467,8 +467,8 @@
     <string name="lbl_tab_lbl_ext_id">Внешний идентификатор</string>
     <string name="lbl_tab_notes">Примечания</string>
     <string name="lbl_tab_publication">публикация</string>
-    <string name="lbl_table_of_content_short">оглавление</string>
-    <string name="lbl_table_of_content">оглавление</string>
+    <string name="lbl_table_of_content_short">Содержание</string>
+    <string name="lbl_table_of_content">Содержание</string>
     <string name="lbl_table_of_content_entry">Запись оглавления</string>
     <string name="lbl_test_connection">Проверить соединение</string>
     <string name="lbl_timeouts">Таймауты</string>
@@ -497,7 +497,7 @@
     <string name="option_search_books_in_series">Книги в этой серии</string>
     <string name="option_author_details">Все работы этого автора</string>
     <string name="option_author_works_book">Только книги</string>
-    <string name="option_author_works_toc">Только заголовки контента</string>
+    <string name="option_author_works_toc">Только названия содержания</string>
     <string name="lbl_date_died">Ум.</string>
     <string name="title_backup_and_export">Резервное копирование и экспорт</string>
     <string name="option_apply_to_this_node_only">Только этот узел</string>
