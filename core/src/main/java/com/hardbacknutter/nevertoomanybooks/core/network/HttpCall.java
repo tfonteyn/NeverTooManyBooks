@@ -518,6 +518,17 @@ public class HttpCall {
 
 
     @Nullable
+    public <R> R getWithRedirectHandling(@NonNull final String url,
+                                         @NonNull final Locale siteLocale,
+                                         @NonNull final Locale userLocale,
+                                         @Nullable final Map<String, String> headers,
+                                         @Nullable final ResponseProcessor<R> responseProcessor)
+            throws IOException {
+        final Request request = createGetRequest(url, siteLocale, userLocale, headers);
+        return getWithRedirectHandling(request, responseProcessor);
+    }
+
+    @Nullable
     public <R> R getWithRedirectHandling(@NonNull final Request request,
                                          @Nullable final ResponseProcessor<R> responseProcessor)
             throws IOException {
