@@ -447,9 +447,7 @@ public class HttpCall {
             throws IOException {
 
         call = httpClient.newCall(request);
-        preExecute(request);
-        try (Response response = call.execute()) {
-            checkResponse(response);
+        try (Response response = getResponse(request)) {
             return readBody(response, responseProcessor);
         }
     }
@@ -471,9 +469,7 @@ public class HttpCall {
             throws IOException {
 
         call = httpClient.newCall(request);
-        preExecute(request);
-        try (Response response = call.execute()) {
-            checkResponse(response);
+        try (Response response = getResponse(request)) {
             return readBody(response, responseProcessor);
         }
     }
@@ -489,9 +485,7 @@ public class HttpCall {
                          .build()
                          .newCall(request);
 
-        preExecute(request);
-        Response response = call.execute();
-        checkResponse(response);
+        Response response = getResponse(request);
 
         final int MAX_REDIRECTS = 50;
         final Set<String> visited = new HashSet<>();
@@ -537,9 +531,7 @@ public class HttpCall {
                                      .build()
                                      .newCall(redirectedRequest);
 
-                    preExecute(request);
-                    response = call.execute();
-                    checkResponse(response);
+                    response = getResponse(request);
                 }
             }
         }
@@ -575,10 +567,7 @@ public class HttpCall {
         HttpUrl redirectedUrl = null;
         Headers headers = null;
         final int code;
-        preExecute(request);
-        try (Response response = call.execute()) {
-            checkResponse(response);
-
+        try (Response response = getResponse(request)) {
             code = response.code();
             if (!isRedirect(code)) {
                 return readBody(response, responseProcessor);
@@ -612,9 +601,7 @@ public class HttpCall {
             }
             final Request redirectedRequest = requestBuilder.build();
             call = httpClient.newCall(redirectedRequest);
-            preExecute(redirectedRequest);
-            try (Response response = call.execute()) {
-                checkResponse(response);
+            try (Response response = getResponse(request)) {
                 return readBody(response, responseProcessor);
             }
         }
@@ -622,15 +609,6 @@ public class HttpCall {
         return null;
     }
 
-    private void preExecute(@NonNull final Request request) {
-        if (throttler != null) {
-            throttler.waitUntilRequestAllowed();
-        }
-
-        if (logEnabled) {
-            logRequest(request);
-        }
-    }
 
     /**
      * Send a {@code GET} request and return the response as a single string.
@@ -646,9 +624,7 @@ public class HttpCall {
             throws IOException {
 
         call = httpClient.newCall(request);
-        preExecute(request);
-        try (Response response = call.execute()) {
-            checkResponse(response);
+        try (Response response = getResponse(request)) {
             // This code SHOULD have worked but it does not unzip correctly!?
             // response.body().string();
             //noinspection DataFlowIssue
@@ -730,6 +706,32 @@ public class HttpCall {
             }
         }
         return null;
+    }
+
+    /**
+     * Prepare and execute the request. The response will be checked
+     * for errors before returning.
+     *
+     * @param request to execute
+     *
+     * @return response
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @NonNull
+    private Response getResponse(@NonNull final Request request)
+            throws IOException {
+        if (throttler != null) {
+            throttler.waitUntilRequestAllowed();
+        }
+
+        if (logEnabled) {
+            logRequest(request);
+        }
+        //noinspection DataFlowIssue
+        final Response response = call.execute();
+        checkResponse(response);
+        return response;
     }
 
     /**
