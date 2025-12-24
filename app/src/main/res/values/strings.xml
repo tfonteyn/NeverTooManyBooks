@@ -1215,7 +1215,10 @@
     <string name="lbl_clone_style">Clone style</string>
     <!-- Toolbar/Screen title. -->
     <string name="lbl_search_for_books">Search for Books</string>
-    <!-- Dialog title. -->
+    <!-- Dialog title.
+         The options are "global scope", or "local to a single book"
+         (and similar situations)
+    -->
     <string name="lbl_scope_of_change">Scope of Change</string>
     <!-- Dialog title. -->
     <string name="lbl_duplicate_book">Copy this book</string>
@@ -1303,9 +1306,13 @@
     <string name="lbl_cover_front">Cover</string>
     <!-- Single book back/second cover. -->
     <string name="lbl_cover_back">Back cover</string>
-    <!-- Multiple book covers. Short label. -->
+    <!-- Dialog title / Progress label (followed/preceded by a number).
+         Multiple book covers. Short label.
+    -->
     <string name="lbl_covers">Covers</string>
-    <!-- Multiple book covers. Long label. -->
+    <!-- Dialog title / progress message / ...
+         Multiple book covers. Long label.
+    -->
     <string name="lbl_covers_long">Cover images</string>
 
     <!-- [VERIFIED] Generic image (singular). -->
@@ -1335,18 +1342,20 @@
     <string name="lbl_currency">Currency</string>
     <!-- Official price for a book -->
     <string name="lbl_price_listed">List Price</string>
-    <!-- What the user paid when they bought it. -->
+    <!-- What the user paid when they bought the book. -->
     <string name="lbl_price_paid">Price paid</string>
-    <!-- hwo good is this book in your opinion -->
+    <!-- How good is this book in your opinion. -->
     <string name="lbl_rating">Rating</string>
-    <!-- the book format -->
+    <!-- The book format (hardback, softcover,...) -->
     <string name="lbl_format">Format</string>
     <!-- If it's an eBook, the file format (e.g. pdf, epub, ...) -->
     <string name="lbl_ebook_file_type">eBook file type</string>
 
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] Field label; interior of the book.
+         Mostly for comics: black& white, full-colour,...
+    -->
     <string name="lbl_color">Color</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] Field label -->
     <string name="lbl_language">Language</string>
     <!-- Label for the genre of the book (e.g. Romance, Crime, etc..)
          Used in combination wth "lbl_tag" only.
