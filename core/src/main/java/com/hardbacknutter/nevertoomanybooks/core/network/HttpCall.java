@@ -752,17 +752,23 @@ public class HttpCall {
      * <p>
      * The handler should provide the result.
      *
-     * @param request execute
-     * @param parser  SAX parser
-     * @param handler SAX handler
+     * @param url        to fetch
+     * @param siteLocale for the primary language tag
+     * @param userLocale for the secondary language tag
+     * @param headers    (optional) extra headers to add/override
+     * @param parser     SAX parser
+     * @param handler    SAX handler
      *
      * @throws IOException on generic/other IO failures
      */
-    public void get(@NonNull final Request request,
+    public void get(@NonNull final String url,
+                    @NonNull final Locale siteLocale,
+                    @NonNull final Locale userLocale,
+                    @Nullable final Map<String, String> headers,
                     @NonNull final SAXParser parser,
                     @NonNull final DefaultHandler handler)
             throws IOException {
-        get(request, (response, is) -> {
+        get(url, siteLocale, userLocale, headers, (response, is) -> {
             // The InputStream is already unzipped as needed.
             try {
                 parser.parse(is, handler);
