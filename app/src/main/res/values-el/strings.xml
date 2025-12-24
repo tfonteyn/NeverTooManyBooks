@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -159,7 +156,7 @@ A question mark is written as the character semicolon: ';'
     <string name="pe_camera_back">Πίσω Κάμερα</string>
     <string name="pt_camera_auto_focus">Αυτόματη εστίαση</string>
     <string name="pe_camera_front">Μπροστινή Κάμερα</string>
-    <string name="camera_next_action">Ενέργεια μετά τη λήψη μιας φωτογραφίας</string>
+    <string name="camera_next_action">Ενέργεια μετά τη λήψη φωτογραφίας</string>
     <string name="pe_camera_other">Άλλο</string>
     <string name="cancelled">Ακυρώθηκε</string>
     <string name="cd_btn_drag_handle">Σύρετε για να αναδιατάξετε αυτή τη λίστα</string>
@@ -195,7 +192,7 @@ A question mark is written as the character semicolon: ';'
     <string name="confirm_test_connection">Συνιστάται να δοκιμάσετε αυτή τη σύνδεση για να αποφύγετε προβλήματα αργότερα.</string>
     <string name="confirm_unsaved_edits">Υπάρχουν μη αποθηκευμένες αλλαγές, αν γίνει έξοδος τώρα θα χαθούν.</string>
     <string name="disabled">Απενεργοποιημένο</string>
-    <string name="pe_fast_scroller_overlay_dynamic">Δυναμικός</string>
+    <string name="pe_fast_scroller_overlay_dynamic">Δυναμικό</string>
     <string name="enabled">Ενεργοποιήθηκε</string>
     <string name="error_http_401_authorization_failed">Η εξουσιοδότηση απέτυχε</string>
     <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε.</string>
@@ -540,20 +537,20 @@ A question mark is written as the character semicolon: ';'
     <string name="option_bob_filter_lend_out_yes">Βιβλία δανείου</string>
     <string name="option_bob_filter_signed_no">Βιβλία χωρίς υπογραφή</string>
     <string name="option_bob_filter_signed_yes">Υπογεγραμμένα βιβλία</string>
-    <string name="pe_bob_list_rebuild_state_collapsed">Διπλώστε όλα</string>
-    <string name="pe_bob_list_rebuild_state_expanded">Επεκτείνετε όλα</string>
-    <string name="pe_bob_list_rebuild_state_preferred">Χρησιμοποιήστε την προτιμώμενη κατάσταση</string>
-    <string name="pe_bob_list_rebuild_state_preserve">Διατηρήστε την τρέχουσα κατάσταση</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Έναρξη σε κατάσταση σύμπτυξης</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Έναρξη σε κατάσταση ανάπτυξης</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Χρήση προτιμώμενης ανάπτυξης</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Διατήρηση της τρέχουσας κατάστασης</string>
     <string name="loose">Χαλαρά</string>
-    <string name="pe_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργό scrolling)</string>
-    <string name="pe_thumbnails_cache_resized_stored">Αποθήκευση μικρογραφιών αλλαγμένου μεγέθους στην προσωρινή μνήμη (χρήση περισσότερου αποθηλευτικού χώρου, πιο γρήγορο scrolling στις λίστες)</string>
+    <string name="pe_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους εικόνων όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργή κύλιση)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Αποθήκευση αλλαγμένων σε μέγεθος εικόνων (πιο γρήγορη κύλιση, μεγαλύτερη χρήση αποθηκευτικού χώρου)</string>
     <string name="pe_ui_theme_dark">Σκούρο</string>
     <string name="pe_ui_theme_from_device">Θέμα συσκευής</string>
     <string name="pe_ui_theme_light">Φως</string>
     <string name="pt_barcode_scanner">Σαρωτής γραμμωτού κώδικα</string>
     <string name="pt_bob_show_details">Λεπτομέρειες βιβλίου εμφανίζονται στη λίστα</string>
     <string name="lbl_filters">Φίλτρα</string>
-    <string name="pc_image_cache">Προσωρινή μνήμη εικόνων</string>
+    <string name="pc_image_cache">Αποθήκη εικόνων</string>
     <string name="pt_bob_groups">Ομαδοποιήσεις</string>
     <string name="pc_ui">Περιβάλλον Χρήστη</string>
     <string name="pt_field_visibility">Ορατότητα πεδίων</string>
@@ -600,33 +597,33 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_bob_cover_show">Εμφάνιση μικρογραφιών</string>
     <string name="pt_bob_font_size">Μέγεθος γραμματοσειράς</string>
     <string name="pt_bob_header">επικεφαλίδα</string>
-    <string name="pt_bob_list_rebuild_state">Κατάσταση εκκίνησης βιβλιοθήκης</string>
+    <string name="pt_bob_list_rebuild_state">Αρχική κατάσταση λίστας βιβλίων</string>
     <string name="pt_bob_list_state_expansion_level">Προεπιλεγμένο επίπεδο ανάπτυξης</string>
-    <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
+    <string name="pt_collect_series_info_from_toc">Συλλογή πληροφοριών σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_edit_book_isbn_checks">Έλεγχοι εγκυρότητας ISBN</string>
-    <string name="pt_bob_row_menu">Μενού περιβάλλοντος σειράς</string>
+    <string name="pt_bob_row_menu">Μενού περιβάλλοντος γραμμής</string>
     <string name="pe_bob_row_menu_button">Να εμφανίζεται πάντα ένα κουμπί.</string>
-    <string name="pe_bob_row_menu_button_when_space">Εμφάνιση ενός κουμπιού εάν υπάρχει χώρος, διαφορετικά χρησιμοποιήστε παρατεταμένο κλικ.</string>
-    <string name="pe_bob_row_menu_long_click">Να χρησιμοποιείτε πάντα παρατεταμένο κλικ.</string>
-    <string name="pt_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση.</string>
+    <string name="pe_bob_row_menu_button_when_space">Εμφάνιση κουμπιού αν υπάρχει χώρος, αλλιώς χρήση παρατεταμένου πατήματος.</string>
+    <string name="pe_bob_row_menu_long_click">Να χρησιμοποιείτε πάντα παρατεταμένο πάτημα.</string>
+    <string name="pt_fast_scroller_overlay">Πλαίσιο κειμένου κατά την κύλιση.</string>
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="pt_maintenance">Συντήρηση</string>
     <string name="pt_main_author_type">Κύριος τύπος συγγραφέα</string>
     <string name="pt_scanning_beep_on_barcode_found">Ήχος με τον εντοπισμό γραμμωτού κώδικα</string>
     <string name="pt_scanning_beep_on_invalid">Ήχος όταν ο σαρωμένος ISBN είναι μη έγκυρος</string>
     <string name="pt_scanning_beep_on_valid">Ήχος όταν ο σαρωμένος ISBN είναι έγκυρος</string>
-    <string name="pt_search_prefer_isbn10">Χρησιμοποιήστε ISBN-10 όταν είναι δυνατόν</string>
-    <string name="pt_search_reformat_color">Τυποποιήστε τα ονόματα «χρώματος βιβλίου»</string>
-    <string name="pt_search_reformat_format">Τυποποιήστε τα ονόματα «μορφής βιβλίου»</string>
+    <string name="pt_search_prefer_isbn10">Χρήση ISBN‑10 όταν είναι δυνατόν</string>
+    <string name="pt_search_reformat_color">Τυποποίηση ονομάτων χρωμάτων βιβλίων</string>
+    <string name="pt_search_reformat_format">Τυποποίηση ονομάτων μορφής βιβλίων</string>
     <string name="ps_show_titles_reordered_off">Εμφάνιση όπως δίνεται,\nπ.χ. «Ο Άρχοντας των Δαχτυλιδιών»</string>
     <string name="error_type_not_supported">Δεν υποστηρίζεται ο τύπος: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Μετακίνηση άρθρου από την αρχή του τίτλου στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων κατά</string>
     <string name="pt_cover_undo_enabled">Αναίρεση ενεργειών εξωφύλλων</string>
-    <string name="ps_cover_undo_disabled">Μια επεξεργασία/αντικατάσταση εξωφύλλου δεν μπορεί να αναιρεθεί (χρησιμοποιεί λιγότερο αποθηκευτικό χώρο)</string>
-    <string name="ps_cover_undo_enabled">Μια επεξεργασία/αντικατάσταση εξωφύλλου μπορεί να αναιρεθεί (χρησιμοποιεί περισσότερο αποθηκευτικό χώρο)</string>
-    <string name="pt_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
-    <string name="pt_thumbnails_rotate_auto">Περιστρέψτε τις εικόνες</string>
+    <string name="ps_cover_undo_disabled">Η επεξεργασία/αντικατάσταση εξωφύλλου δεν μπορεί να αναιρεθεί (χρησιμοποιεί λιγότερο αποθηκευτικό χώρο)</string>
+    <string name="ps_cover_undo_enabled">Η επεξεργασία ή αντικατάσταση εξωφύλλου μπορεί να αναιρεθεί (χρησιμοποιεί περισσότερο αποθηκευτικό χώρο)</string>
+    <string name="pt_thumbnails_cache_resized">Οι αλλαγμένες σε μέγεθος εικόνες αποθηκεύονται στη βάση δεδομένων</string>
+    <string name="pt_thumbnails_rotate_auto">Περιστροφή εικόνων</string>
     <string name="pt_ui_language">Γλώσσα</string>
     <string name="pt_ui_system_locale">Γλώσσα συστήματος</string>
     <string name="pt_ui_theme">Θέμα</string>
@@ -649,7 +646,7 @@ A question mark is written as the character semicolon: ';'
     <string name="size_small">Μικρό</string>
     <string name="size_x_large">Πολύ μεγάλο</string>
     <string name="size_x_small">Πολύ μικρό</string>
-    <string name="pe_fast_scroller_overlay_static">Στατικός</string>
+    <string name="pe_fast_scroller_overlay_static">Στατικό</string>
     <string name="strict">Αυστηρό</string>
     <string name="style_builtin_author_series">Συγγραφέας, Σειρά</string>
     <string name="style_builtin_author_year">Συγγραφέας, Χρονιά</string>
@@ -759,7 +756,7 @@ A question mark is written as the character semicolon: ';'
     <string name="vldt_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχον Συγγραφέας</string>
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει. Θέλετε να δημιουργηθεί;</string>
     <string name="pt_fetch_author_info_using_site_x">Λήψη πληροφοριών συγγραφέα από %1$s</string>
-    <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική)</string>
+    <string name="pt_bedetheque_search_resolve_formats">Διατήρηση της ονομασίας μορφής Bedetheque (γαλλικά)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Αντικατάσταση του συγγραφέα σε όλες τις εγγραφές με τον κύριο συγγραφέα του βιβλίου «%1$s»;</string>
     <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη γραμμή έχουν εξώφυλλα. Να γίνει αναζήτηση ξανά από την αρχή;</string>
     <string name="info_all_books_have_covers">Όλα τα βιβλία σε αυτό το ράφι έχουν εξώφυλλα</string>
@@ -879,9 +876,9 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_date_born">Γεννήθηκε</string>
     <string name="pt_fetch_author_info">Λήψη πληροφοριών συγγραφέα</string>
     <string name="lbl_image_2">Εικόνα 3</string>
-    <string name="lbl_fastscroller_draghandle">Μέγεθος ρυθμιστικού γραμμής κύλισης»</string>
+    <string name="lbl_fastscroller_draghandle">Μέγεθος του δείκτη της γραμμής κύλισης</string>
     <string name="lbl_permission_request">Αίτημα άδειας</string>
-    <string name="pt_barcode_zoom_control">Έλεγχος εστίασης</string>
+    <string name="pt_barcode_zoom_control">Έλεγχος μεγέθυνσης</string>
     <string name="pt_barcode_sounds">Ήχοι</string>
     <string name="warning_delete_default_bookshelf">Αυτή είναι η προεπιλεγμένη βιβλιοθήκη σας. Αν τη διαγράψετε, η νέα προεπιλογή θα είναι η “%1$s”.\n\nΧρησιμοποιήστε το “%2$s” από το κύριο μενού για να επιλέξετε διαφορετική προεπιλεγμένη βιβλιοθήκη.</string>
     <string name="action_set_as_default">Ορισμός ως προεπιλογή</string>
