@@ -316,7 +316,7 @@
     <string name="action_import">Importovať</string>
     <string name="action_export">Exportovať</string>
     <string name="action_synchronize">Synchronizovať</string>
-    <string name="lbl_search_isbn">Hľadanie podľa ISBN</string>
+    <string name="lbl_search_isbn">Hľadať ISBN</string>
     <string name="lbl_add_book">Pridať knihu</string>
     <string name="lbl_clone_style">Klonovať štýl</string>
     <string name="lbl_search_for_books">Hľadať knihy</string>
