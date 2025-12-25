@@ -75,7 +75,7 @@
     <string name="X_error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
     <string name="error_record_must_contain_column">Rekord musi zawierać pole o nazwie „%1$s”.</string>
     <string name="X_error_network_site_has_problems">Witryna ma problemy.</string>
-    <string name="X_info_not_authorized">Nieautoryzowany</string>
+    <string name="X_info_not_authorized">Nieautoryzowane</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
     <string name="lbl_image">Obraz</string>
     <string name="X_lbl_anthologies">Antologie</string>
@@ -89,7 +89,7 @@
     <string name="action_create">Utwórz</string>
     <string name="action_apply">Zastosuj</string>
     <string name="action_delete">Usuń</string>
-    <string name="action_discard">Odrzuć</string>
+    <string name="action_discard">Odrzucić</string>
     <string name="action_done">Gotowe</string>
     <string name="action_duplicate">Kopia</string>
     <string name="action_add_all">Dodaj wszystko</string>
@@ -425,7 +425,7 @@
     <string name="lbl_scope_of_change">Zakres zmiany</string>
     <string name="lbl_search_filtered_by_x">Filtrowane według: %1$s</string>
     <string name="lbl_search_for_books">Szukać książek</string>
-    <string name="lbl_search_isbn">Szukj wg ISBN</string>
+    <string name="lbl_search_isbn">Szukać ISBN</string>
     <string name="lbl_select_fields">Wybierz pola</string>
     <string name="lbl_select_website">Wybierz stronę internetową:</string>
     <string name="option_bug_report">Zgłoszenie błędu</string>
@@ -522,7 +522,7 @@
     <string name="menu_update_books">Zaktualizuj książki</string>
     <string name="info_bulk_set_location">Wybierz lokalizację, którą chcesz przypisać do wszystkich książek wymienionych w wybranym węźle.</string>
     <string name="menu_update_fields">Aktualizuj pola</string>
-    <string name="option_view_book_at">Zobacz na…</string>
+    <string name="option_view_book_at">Zobaczyć na…</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Nie</string>
@@ -590,7 +590,7 @@
     <string name="pt_bob_show_group_book_count">Pokaż liczbę książek w każdej grupie.</string>
     <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
     <string name="pt_bob_books_under_multiple_publishers">Pokaż książki wielu wydawcom</string>
-    <string name="pt_bob_books_under_multiple_series">Książki w wielu seriach</string>
+    <string name="pt_bob_books_under_multiple_series">Pokazać książki w wielu seriach</string>
     <string name="pt_bob_cover_long_click">Otwórz menu kontekstowe książki.</string>
     <string name="pe_bob_cover_long_click_ignore">Za pomocą przycisku.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Długim kliknięciem obrazu okładki.</string>
@@ -630,10 +630,10 @@
     <string name="ps_show_author_name_given_first">Wyświetlanie z podanymi imionami w pierwszej kolejności,\nnp. „Stanisław Lem”</string>
     <string name="ps_bob_books_under_multiple_authors_each">Pod każdym autor</string>
     <string name="ps_bob_books_under_multiple_publishers_each">pod każdym wydawcą</string>
-    <string name="ps_bob_books_under_multiple_series_each">Pod każdym seria</string>
+    <string name="ps_bob_books_under_multiple_series_each">pod każdą serią</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">Pod głównym tylko autor</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">tylko u głównego wydawcy</string>
-    <string name="ps_bob_books_under_multiple_series_main_only">Pod głównym tylko seria</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">tylko pod ich główną serią</string>
     <string name="pv_bob_header_filters">Filtry</string>
     <string name="pv_bob_header_nr_of_books">Liczba książek</string>
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
@@ -668,7 +668,7 @@
     <string name="site_description_german">Niemiecki</string>
     <string name="info_tip_reset_done">Wskazówki zostały zresetowane</string>
     <string name="tip_series_book_may_appear_more_than_once">Jeśli książki są pokazywane we wszystkich seriach, do których należy dana książka, mogą pojawić się na liście wielokrotnie. Usunięcie jednej z tych książek ma skutek usunięcia wszystkich egzemplarzy z listy.</string>
-    <string name="X_tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Widok na……” pokaże tylko to, co jest dostępne.</string>
+    <string name="X_tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Zobaczyć na……” pokaże tylko to, co jest dostępne.</string>
     <string name="tip_view_only_help">Możesz przesuwać palcem w lewo lub w prawo, aby przejść do innych książek.</string>
     <string name="info_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d książek, w %2$d wpisach</string>
@@ -738,7 +738,7 @@
     <string name="whichViewApplication">Otwórz w aplikacji</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="ok">OK</string>
-    <string name="cancel">Anuluj</string>
+    <string name="cancel">Anulować</string>
     <string name="yes">Tak</string>
     <string name="info_story_in_single_book">„%1$s” występuje w jednej książce:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Zaimportuj plik tekstowy z numerami ISBN. Plik powinien mieć jeden numer ISBN w każdym wierszu. Wyniki zostaną umieszczone w kolejce.</string>
@@ -791,7 +791,7 @@
     <string name="error_type_not_supported">Typ nie jest obsługiwany: %1$s…</string>
     <string name="info_books_deleted">Książki usunięte: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d usunięty</string>
-    <string name="action_undo">Cofnij</string>
+    <string name="action_undo">Cofnąć</string>
     <string name="info_nothing_to_do">Nic do zrobienia.</string>
     <string name="option_image_restore">Przywróć poprzedni obraz</string>
     <string name="info_site_list">Wyszukiwanie jest ograniczone do: %1$s</string>
