@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -179,7 +176,7 @@
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="confirm_email_file">Chcete tento soubor někomu poslat e-mailem?</string>
     <string name="confirm_merge_authors">Autor, kterého upravujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_merge_bookshelves">Polička s knihami, kterou upravujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_bookshelves">Police s knihami, kterou upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_publishers">Vydavatel, kterého upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_series">Série, kterou upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_tags">Upravovaný štítek již existuje. Chcete je sloučit?</string>
@@ -309,7 +306,7 @@
     <string name="pc_book_detail_screen">Stránka s podrobnostmi o knize</string>
     <string name="lbl_book_type">Typ knihy</string>
     <string name="lbl_books">Knihy</string>
-    <string name="lbl_bookshelf">Knihovna</string>
+    <string name="lbl_bookshelf">Police s knihami</string>
     <string name="lbl_bookshelves">Poličky s knihami</string>
     <string name="lbl_calibre_content_server">Server obsahu Calibre</string>
     <string name="info_calibre_content_server_extension">Rozšíření serveru s obsahem Calibre není nainstalováno. Virtuální knihovny nebudou k dispozici.</string>
@@ -460,7 +457,7 @@
     <string name="option_isbn_strict">Přísné ISBN</string>
     <string name="lbl_style">Styl</string>
     <string name="lbl_styles">Styly</string>
-    <string name="lbl_styles_long">Stylování knihovny</string>
+    <string name="lbl_styles_long">Stylování police s knihami</string>
     <string name="lbl_sync_date">Od</string>
     <string name="lbl_tab_alternative_editions">Alt. vyd.</string>
     <string name="lbl_tab_details">Podrobnosti</string>
@@ -709,7 +706,7 @@
     <string name="vldt_non_blank_required_for_x">Neprázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení</string>
     <string name="vldt_real_expected_for_x">Očekáváno reálné číslo pro „%1$s“</string>
-    <string name="warning_cannot_delete_only_bookshelf">Máš jen jednu knihovnu, takže ji nejde smazat.</string>
+    <string name="warning_cannot_delete_only_bookshelf">Máš jen jednu polici na knihy, takže ji nejde smazat.</string>
     <string name="warning_already_in_list">Již v seznamu!</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu?</string>
     <string name="warning_book_not_always_found">Ne všechny weby vrátily platná data.</string>
@@ -897,9 +894,9 @@
     <string name="lbl_permission_request">Žádost o oprávnění</string>
     <string name="pt_barcode_zoom_control">Ovládání přiblížení/oddálení</string>
     <string name="pt_barcode_sounds">Zvuky</string>
-    <string name="warning_delete_default_bookshelf">Tohle je tvoje výchozí knihovna. Když ji smažeš, novou výchozí se stane: „%1$s“.\n\nPomocí „%2$s“ v hlavní nabídce můžeš vybrat jinou výchozí knihovnu.</string>
+    <string name="warning_delete_default_bookshelf">Tohle je tvoje výchozí police na knihy. Když ji smažeš, novou výchozí se stane: „%1$s“.\n\nPomocí „%2$s“ v hlavní nabídce můžeš vybrat jinou výchozí polici.</string>
     <string name="action_set_as_default">Nastavit jako výchozí</string>
-    <string name="tip_bookshelf_management">Zvýrazněný řádek ukazuje tvoji aktuální knihovnu.\n\nVýchozí knihovna (označená hvězdičkou *) se použije automaticky, pokud tvoje aktuální není dostupná z jakéhokoli důvodu.</string>
+    <string name="tip_bookshelf_management">Zvýrazněný řádek ukazuje tvoji aktuální polici.\n\nVýchozí police (označená hvězdičkou *) se použije automaticky, pokud tvoje aktuální není dostupná z jakéhokoli důvodu.</string>
     <string name="pt_search_tag_use_subject_number">Ponechat číselnou předponu u předmětových štítků</string>
     <string name="site_description_greek">Řečtina</string>
 </resources>
