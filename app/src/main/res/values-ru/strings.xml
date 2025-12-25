@@ -70,7 +70,7 @@
     <string name="X_action_customize">Настроить…</string>
     <string name="btn_show_list">Показать список</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить?</string>
-    <string name="X_error_authentication_failed">Ошибка аутентификации</string>
+    <string name="X_error_authentication_failed">Аутентификация не удалась</string>
     <string name="error_record_must_contain_column">Запись должна содержать поле с именем «%1$s».</string>
     <string name="X_error_network_site_has_problems">На сайте есть проблемы.</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
@@ -91,7 +91,7 @@
     <string name="action_create">Создать</string>
     <string name="action_apply">Применить</string>
     <string name="action_delete">Удалить</string>
-    <string name="action_discard">Отменить</string>
+    <string name="action_discard">Отбросить</string>
     <string name="action_done">Готово</string>
     <string name="action_duplicate">Дублировать</string>
     <string name="action_add_all">Добавить всё</string>
@@ -101,7 +101,7 @@
     <string name="X_action_go">Перейти</string>
     <string name="action_help">Справка</string>
     <string name="action_import">Импортировать</string>
-    <string name="action_merge">сливаться</string>
+    <string name="action_merge">Объединить</string>
     <string name="action_not_now">Не сейчас</string>
     <string name="action_reset_to_default">Сбросить настройки</string>
     <string name="action_retry">Повторить</string>
@@ -434,7 +434,7 @@
     <string name="lbl_scope_of_change">Масштаб изменения</string>
     <string name="lbl_search_filtered_by_x">Фильтр: %1$s</string>
     <string name="lbl_search_for_books">Поиск книг</string>
-    <string name="lbl_search_isbn">поиск по ISBN</string>
+    <string name="lbl_search_isbn">Поиск ISBN</string>
     <string name="lbl_select_fields">Выберите поля</string>
     <string name="lbl_select_website">Выберите сайт:</string>
     <string name="option_bug_report">Отчет об ошибке</string>
@@ -599,7 +599,7 @@
     <string name="pt_bob_show_group_book_count">Покажите количество книг в каждой группе.</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_publishers">Показать книги с несколькими издателями</string>
-    <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
+    <string name="pt_bob_books_under_multiple_series">Показать книги в нескольких сериях</string>
     <string name="pt_bob_cover_long_click">Открыть контекстное меню книги.</string>
     <string name="pe_bob_cover_long_click_ignore">С помощью кнопки.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Долгим щелчком по изображению обложки.</string>
@@ -609,7 +609,7 @@
     <string name="pt_bob_header">Заголовок</string>
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
     <string name="pt_bob_list_state_expansion_level">Уровень раскрытия по умолчанию</string>
-    <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
+    <string name="pt_collect_series_info_from_toc">Собирать информацию о сериях из оглавления</string>
     <string name="pt_edit_book_isbn_checks">Проверки действительности ISBN</string>
     <string name="pt_bob_row_menu">Контекстное меню строки</string>
     <string name="pe_bob_row_menu_button">Всегда показывать кнопку.</string>
@@ -639,10 +639,10 @@
     <string name="ps_show_author_name_given_first">Отобразить сначала фамилии,\nнапример «Фёдор Достоевский»</string>
     <string name="ps_bob_books_under_multiple_authors_each">Под каждым автор</string>
     <string name="ps_bob_books_under_multiple_publishers_each">под каждым издателем</string>
-    <string name="ps_bob_books_under_multiple_series_each">Под каждым серии</string>
+    <string name="ps_bob_books_under_multiple_series_each">под каждой серией</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">Только под первым автор</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">только под своим основным издателем</string>
-    <string name="ps_bob_books_under_multiple_series_main_only">Только под первым серии</string>
+    <string name="ps_bob_books_under_multiple_series_main_only">только под их главной серией</string>
     <string name="pv_bob_header_filters">Фильтры</string>
     <string name="pv_bob_header_nr_of_books">Количество книг</string>
     <string name="pv_bob_header_style_name">Название стиля</string>
@@ -747,7 +747,7 @@
     <string name="whichViewApplication">Открыть с помощью приложения</string>
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="ok">OK</string>
-    <string name="cancel">Отмена</string>
+    <string name="cancel">Отменить</string>
     <string name="yes">Да</string>
     <string name="info_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Импортируйте текстовый файл с номерами ISBN. Файл должен иметь один ISBN в каждой строке. Результаты будут помещены в очередь.</string>
@@ -800,7 +800,7 @@
     <string name="error_type_not_supported">Тип не поддерживается: %1$s…</string>
     <string name="info_books_deleted">Книги удалены: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d удалено</string>
-    <string name="action_undo">Отменить</string>
+    <string name="action_undo">Откатить</string>
     <string name="info_nothing_to_do">Ничего не делать.</string>
     <string name="option_image_restore">Восстановить предыдущее изображение</string>
     <string name="info_site_list">Поиск ограничен: %1$s</string>
