@@ -117,28 +117,28 @@ class BooklistBuilder {
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
+    private static final String COUNT_ROWS = "COUNT(*)";
+    private static final String CREATE_INDEX_ = "CREATE INDEX ";
+    private static final String CREATE_TEMPORARY_TRIGGER_ = "CREATE TEMPORARY TRIGGER ";
+    private static final String CREATE_TEMP_TABLE_ = "CREATE TEMP TABLE ";
     private static final String DELETE_FROM_ = "DELETE FROM ";
+    private static final String DROP_TABLE_IF_EXISTS_ = "DROP TABLE IF EXISTS ";
+    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
+    private static final String END = "END";
     private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_ = "SELECT ";
-    private static final String SELECT_COUNT_ = "SELECT COUNT(*) ";
-    private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
     private static final String UPDATE_ = "UPDATE ";
-    private static final String WITH_ = "WITH ";
+
     private static final String _AND_ = " AND ";
     private static final String _AS_ = " AS ";
+    private static final String _BEGIN_ = " BEGIN ";
     private static final String _FROM_ = " FROM ";
     private static final String _GROUP_BY_ = " GROUP BY ";
+    private static final String _ON_ = " ON ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _SET_ = " SET ";
     private static final String _VALUES_ = " VALUES ";
     private static final String _WHERE_ = " WHERE ";
-    private static final String _JOIN_ = " JOIN ";
-    private static final String _ON_ = " ON ";
-
-    private static final String CREATE_TEMPORARY_TRIGGER_ = "CREATE TEMPORARY TRIGGER ";
-    private static final String _BEGIN_ = " BEGIN ";
-    private static final String END = "END";
-    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
 
     /**
      * Foreign key between the {@link Booklist} list table
@@ -147,8 +147,8 @@ class BooklistBuilder {
      */
     private static final Domain DOM_FK_BL_ROW_ID;
 
-    /** Table alias. */
-    private static final String TA_WITH = "ws";
+    /** Table alias prefix. */
+    private static final String TA_SUMS_ = "sums_";
     /** Column alias. */
     private static final String CA_SUM = "cnt";
 
@@ -1160,11 +1160,6 @@ class BooklistBuilder {
         // the first level above the books == number of groups
         final int groupCount = style.getGroupCount();
 
-        // count the number of books for each lowest-level group
-        // and store the result on that group
-        final String sqlBookCount = createLevelSumsBooks(groupCount + 1);
-        db.execSQL(sqlBookCount);
-
         final List<String> keyColumns = style
                 .getGroupList().stream()
                 .map(BooklistGroup::getGroupKey)
@@ -1173,79 +1168,55 @@ class BooklistBuilder {
                 .map(Domain::getName)
                 .collect(Collectors.toList());
 
-        for (int level = groupCount; level > 1; level--) {
-            final String sqlGroupSum =
-                    createLevelSumsGroups(keyColumns.subList(0, level - 1), level);
+        // count the number of books for each lowest-level group
+        // and store the result on that group
+        createBookCounts(db, keyColumns, groupCount + 1, COUNT_ROWS);
 
-            // for each group, sum the book-counts, and store them in the next group up.
-            db.execSQL(sqlGroupSum);
+        // for each group, sum the book-counts, and store them in the next group up.
+        for (int level = groupCount; level > 1; level--) {
+            createBookCounts(db, keyColumns.subList(0, level - 1), level,
+                             "SUM(" + DBKey.FK_BOOK + ')');
         }
     }
 
-    @NonNull
-    private String createLevelSumsBooks(final int level) {
+    /**
+     * Create a temporary table for the given level.
+     * The lowest level should use operation {@code COUNT(*)}
+     * and the levels above {@code SUM(book)}.
+     *
+     * @param db         Database Access
+     * @param keyColumns for the given level
+     * @param level      to process
+     * @param operation  {@code COUNT(*)} or {@code SUM(book)}
+     */
+    private void createBookCounts(@NonNull final SynchronizedDb db,
+                                  @NonNull final List<String> keyColumns,
+                                  final int level,
+                                  @NonNull final String operation) {
+        final String taSums = TA_SUMS_ + level;
 
-        final String nodeLevel = listTable.getName() + "." + DBKey.BL_NODE.LEVEL;
-        // Note we use the single concatenated/string key column.
-        final String keys = listTable.getName() + "." + DBKey.BL_NODE.KEY;
+        // Paranoia...
+        db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
+        // Temp table to hold the count/sums before we run the update
+        final String selectKeys = String.join(",", keyColumns);
+        db.execSQL(CREATE_TEMP_TABLE_ + taSums + _AS_
+                   + SELECT_ + selectKeys + ',' + operation + _AS_ + CA_SUM
+                   + _FROM_ + listTable.getName()
+                   + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + level
+                   + _GROUP_BY_ + selectKeys);
+        db.execSQL(CREATE_INDEX_ + "idx_" + taSums + _ON_ + taSums + '(' + selectKeys + ')');
 
-        // Create a temp view for use with a WITH-clause
-        // collecting the [node-key, count] pairs for the books.
-        // This count will be stored on the level just above the books.
-        final String withSelectClause =
-                "("
-                + SELECT_ + keys + ", COUNT(*)" + _AS_ + CA_SUM
-                + _FROM_ + listTable.getName()
-                + _WHERE_ + nodeLevel + "=" + level
-                + _GROUP_BY_ + keys
-                + ")";
-
-        final String bookSetter =
-                "("
-                + SELECT_ + TA_WITH + "." + CA_SUM
-                + _FROM_ + TA_WITH
-                + _WHERE_ + TA_WITH + "." + DBKey.BL_NODE.KEY + "=" + keys
-                + ")";
-
-        return WITH_ + TA_WITH + _AS_ + withSelectClause
-               + UPDATE_ + listTable.getName()
-               + _SET_ + DBKey.FK_BOOK + "=" + bookSetter
-               + _WHERE_ + nodeLevel + "=" + (level - 1)
-               + _AND_ + keys + " IN (SELECT " + DBKey.BL_NODE.KEY + _FROM_ + TA_WITH + ")";
-    }
-
-    @NonNull
-    private String createLevelSumsGroups(@NonNull final List<String> keyColumns,
-                                         final int level) {
-
-        final String nodeLevel = listTable.getName() + "." + DBKey.BL_NODE.LEVEL;
-        // Note we use the list of individual key (id) columns
-        final String keys = keyColumns.stream()
-                                      .map(key -> listTable.getName() + "." + key)
-                                      .collect(Collectors.joining(","));
-
-        final String withSelectClause =
-                "("
-                + SELECT_ + keys + ", SUM(" + DBKey.FK_BOOK + ")" + _AS_ + CA_SUM
-                + _FROM_ + listTable.getName()
-                + _WHERE_ + nodeLevel + "=" + level
-                + _GROUP_BY_ + keys
-                + ")";
-
-        final String bookSetter =
-                "("
-                + SELECT_ + TA_WITH + "." + CA_SUM
-                + _FROM_ + TA_WITH
-                + _WHERE_ + createKeyEquality(keyColumns, TA_WITH)
-                + ")";
-
-        return WITH_ + TA_WITH + _AS_ + withSelectClause
-               + UPDATE_ + listTable.getName()
-               + _SET_ + DBKey.FK_BOOK + "=" + bookSetter
-               + _WHERE_ + nodeLevel + "=" + (level - 1)
-               + _AND_ + "EXISTS "
-               + "(SELECT 1 FROM " + TA_WITH + _WHERE_ + createKeyEquality(keyColumns,
-                                                                           TA_WITH) + ")";
+        // Run the actual update on the list table.
+        final String whereKeys = createKeyEquality(keyColumns, taSums);
+        final String s =
+                UPDATE_ + listTable.getName() + _SET_ + DBKey.FK_BOOK + '='
+                + '(' + SELECT_ + CA_SUM + _FROM_ + taSums + _WHERE_ + whereKeys + ')'
+                + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + (level - 1)
+                + _AND_
+                + "EXISTS (" + SELECT_ + '1' + _FROM_ + taSums + _WHERE_ + whereKeys + ')';
+        db.execSQL(s);
+        // No longer needed
+        db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
     }
 
     @NonNull
