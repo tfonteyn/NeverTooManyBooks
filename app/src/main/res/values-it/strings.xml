@@ -56,7 +56,6 @@
     </plurals>
     <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Cancella credenziali</string>
-    <string name="X_action_execute">Esegui</string>
     <string name="X_action_move">Sposta</string>
     <string name="X_action_next">Avanti</string>
     <string name="X_action_previous">Prec.</string>
@@ -72,12 +71,8 @@
     <string name="X_error_network_site_has_problems">Il sito Web ha problemi.</string>
     <string name="X_info_not_authorized">Non autorizzato</string>
     <string name="X_info_site_authorization_successful">Autorizzazione %1$s concessa</string>
-    <string name="X_lbl_folder">Cartella</string>
     <string name="lbl_image">Immagine</string>
-    <string name="X_lbl_thumbnails">Miniature</string>
-    <string name="X_neither">Nessuno dei due</string>
     <string name="X_lbl_anthologies">Antologie</string>
-    <string name="X_lbl_general">Generali</string>
     <string name="tip_booklist_style_defaults">Questa schermata consente di impostare le caratteristiche predefinite di tutti gli stili. Queste vengono utilizzate da tutti gli stili incorporati e come punto di partenza per qualsiasi stile definito dall’utente.</string>
     <string name="X_action_use_default_setting">Utilizza le impostazioni predefinite</string>
     <string name="a_b">%1$s%2$s</string>
@@ -95,7 +90,6 @@
     <string name="action_edit">Modifica</string>
     <string name="action_edit_ellipsis">Modifica…</string>
     <string name="action_export">Esporta</string>
-    <string name="X_action_go">Vai</string>
     <string name="action_help">Guida</string>
     <string name="action_import">Importa</string>
     <string name="action_merge">Unire</string>
@@ -656,7 +650,6 @@
     <string name="lbl_defaults">Impostazioni predefinite</string>
     <string name="style_type_builtin">Predefinito</string>
     <string name="style_type_user_defined">Definito dall’utente</string>
-    <string name="X_lbl_system">(Sistema)</string>
     <string name="lbl_system_default">(Predefinita)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se i libri sono mostrati per ogni autore del libro, possono comparire più volte nell’elenco. L’eliminazione di uno di questi libri ha l’effetto di rimuovere tutte le copie dall’elenco.</string>
     <string name="tip_authors_works">Icone utilizzate</string>

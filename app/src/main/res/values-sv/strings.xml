@@ -51,8 +51,6 @@
     </plurals>
     <string name="X_action_clear_credentials">Rensa användaruppgifter</string>
     <string name="X_action_customize">Anpassa…</string>
-    <string name="X_action_execute">Utför</string>
-    <string name="X_action_go">Kör</string>
     <string name="X_action_move">Flytta</string>
     <string name="X_action_next">Nästa</string>
     <string name="X_action_previous">Föreg.</string>
@@ -66,11 +64,6 @@
     <string name="X_info_not_authorized">Inte auktoriserad</string>
     <string name="X_info_site_authorization_successful">%1$s auktorisering lyckades</string>
     <string name="X_lbl_anthologies">Antologier</string>
-    <string name="X_lbl_folder">Mapp</string>
-    <string name="X_lbl_general">Allmänt</string>
-    <string name="X_lbl_system">(System)</string>
-    <string name="X_lbl_thumbnails">Miniatyrbilder</string>
-    <string name="X_neither">Ingen av dem</string>
     <string name="X_style_type_defaults">Standardinställningar för stilar</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>

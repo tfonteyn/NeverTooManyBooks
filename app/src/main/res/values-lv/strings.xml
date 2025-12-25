@@ -101,7 +101,6 @@
     <string name="error_import_file_not_supported">Atlasīto datni nevar ievietot.</string>
     <string name="option_image_rotate_automatic">Automātiski</string>
     <string name="lbl_database">Datubāze</string>
-    <string name="X_lbl_folder">Mape</string>
     <string name="option_image_rotate">Pagriezt…</string>
     <string name="btn_just_this_shelf">Tikai šis grāmatu plaukts</string>
     <string name="option_level_expand">Izvērst visu</string>
@@ -117,15 +116,11 @@
     <string name="option_image_restore">Atjaunot iepriekšējo attēlu</string>
     <string name="option_level_collapse">Sakļaut visu</string>
     <string name="X_action_clear_credentials">Notīrīt akreditācijas datus</string>
-    <string name="X_action_execute">Izpildīt</string>
-    <string name="X_action_go">Doties uz</string>
     <string name="X_action_next">Tālāk</string>
     <string name="X_action_previous">Iepr.</string>
     <string name="X_action_reset">Atiestatīt</string>
     <string name="X_action_send">Sūtīt</string>
     <string name="X_action_try_again">Mēģināt vēlreiz</string>
-    <string name="X_lbl_general">Vispārīgi</string>
-    <string name="X_lbl_system">(Sistēma)</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>

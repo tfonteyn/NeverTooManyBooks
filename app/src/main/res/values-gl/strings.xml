@@ -134,8 +134,6 @@
     <string name="warning_import_failed_for_these_books_and_more">e %1$d máis.</string>
     <string name="warning_requires_site_and_id">Escolle un sitio e introduce unha identificación.</string>
     <string name="X_action_clear_credentials">Borrar credenciais</string>
-    <string name="X_action_execute">Executar</string>
-    <string name="X_action_go">Ir</string>
     <string name="X_action_move">Mover</string>
     <string name="X_action_next">Seguinte</string>
     <string name="X_action_previous">Ant.</string>
@@ -143,9 +141,6 @@
     <string name="X_action_send">Enviar</string>
     <string name="X_action_try_again">Tentar de novo</string>
     <string name="X_action_update">Actualizar</string>
-    <string name="X_lbl_folder">Cartafol</string>
-    <string name="X_lbl_general">Xeral</string>
-    <string name="X_lbl_system">(Sistema)</string>
     <string name="action_add">Engadir</string>
     <string name="action_apply">Aplicar</string>
     <string name="action_clear">Borrar</string>
@@ -842,8 +837,6 @@
     <string name="lbl_default_x">Predefinido: %1$s</string>
     <string name="X_action_customize">Personalizar…</string>
     <string name="X_action_use_default_setting">Usar valores predefinidos</string>
-    <string name="X_neither">Ningunha</string>
-    <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="X_lbl_anthologies">Antoloxías</string>
     <string name="X_style_type_defaults">Estilos predefinidos</string>
     <string name="X_error_network_site_has_problems">O sitio web non está funcionando conforme o esperado.</string>

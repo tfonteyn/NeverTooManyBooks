@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -50,7 +53,6 @@ A question mark is written as the character semicolon: ';'
     </plurals>
     <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
-    <string name="X_action_execute">Εκτέλεση</string>
     <string name="X_action_move">Μετακίνηση</string>
     <string name="X_action_next">Επόμενο</string>
     <string name="X_action_previous">Προηγ.</string>
@@ -66,12 +68,8 @@ A question mark is written as the character semicolon: ';'
     <string name="X_error_network_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
-    <string name="X_lbl_folder">Φάκελος</string>
     <string name="lbl_image">Εικόνα</string>
-    <string name="X_lbl_thumbnails">Μικρογραφίες</string>
-    <string name="X_neither">κανενα απο τα δυο</string>
     <string name="X_lbl_anthologies">Ανθολογίες</string>
-    <string name="X_lbl_general">Γενικά</string>
     <string name="tip_booklist_style_defaults">Χρησιμοποιήστε αυτή την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των στυλ. Αυτά χρησιμοποιούνται από όλα τα ενσωματωμένα στυλ και ως σημείο εκκίνησης για κάθε στυλ που δημιουργείτε εσείς.</string>
     <string name="X_action_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
     <string name="a_b">%1$s%2$s</string>
@@ -90,7 +88,6 @@ A question mark is written as the character semicolon: ';'
     <string name="action_edit">Επεξεργασία</string>
     <string name="action_edit_ellipsis">Επεξεργασία…</string>
     <string name="action_export">Εξαγωγή</string>
-    <string name="X_action_go">Μετάβαση</string>
     <string name="action_help">Βοήθεια</string>
     <string name="action_import">Εισαγωγή</string>
     <string name="action_merge">Συγχώνευση</string>
@@ -654,7 +651,6 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_defaults">Προεπιλογές</string>
     <string name="style_type_builtin">Ενσωματωμένο</string>
     <string name="style_type_user_defined">Ορισμένο από τον χρήστη</string>
-    <string name="X_lbl_system">(Σύστημα)</string>
     <string name="lbl_system_default">(Προεπιλογή συστήματος)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Αν τα βιβλία εμφανίζονται για κάθε συγγραφέα του βιβλίου, ενδέχεται να εμφανίζονται πολλές φορές στη λίστα. Η διαγραφή ενός από αυτά τα βιβλία έχει ως αποτέλεσμα την αφαίρεση όλων των αντιγράφων από τη λίστα.</string>
     <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια</string>

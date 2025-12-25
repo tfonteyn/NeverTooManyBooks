@@ -57,7 +57,6 @@
     </plurals>
     <string name="quoted">« %1$s »</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>
-    <string name="X_action_execute">Exécuter</string>
     <string name="X_action_move">Déplacer</string>
     <string name="X_action_next">Suivant</string>
     <string name="X_action_previous">Préc.</string>
@@ -73,12 +72,8 @@
     <string name="X_error_network_site_has_problems">Le site Web a des problèmes.</string>
     <string name="X_info_not_authorized">Non autorisé</string>
     <string name="X_info_site_authorization_successful">Autorisation %1$s accordée</string>
-    <string name="X_lbl_folder">Dossier</string>
     <string name="lbl_image">Image</string>
-    <string name="X_lbl_thumbnails">Miniatures</string>
-    <string name="X_neither">Non plus</string>
     <string name="X_lbl_anthologies">Des anthologies</string>
-    <string name="X_lbl_general">Général</string>
     <string name="tip_booklist_style_defaults">Cet écran permet de définir les caractéristiques par défaut de tous les styles. Celles-ci sont utilisées par tous les styles intégrés et comme point de départ pour tout style que vous définissez vous-même.</string>
     <string name="X_action_use_default_setting">Utiliser les paramètres par défaut</string>
     <string name="a_b">%1$s%2$s</string>
@@ -97,7 +92,6 @@
     <string name="action_edit">Modifier</string>
     <string name="action_edit_ellipsis">Modifier…</string>
     <string name="action_export">Exporter</string>
-    <string name="X_action_go">OK</string>
     <string name="action_help">Aide</string>
     <string name="action_import">Importer</string>
     <string name="action_merge">Fusionner</string>
@@ -657,7 +651,6 @@
     <string name="lbl_defaults">Paramètres par défaut</string>
     <string name="style_type_builtin">Par défaut</string>
     <string name="style_type_user_defined">Défini par l’utilisateur</string>
-    <string name="X_lbl_system">(Système)</string>
     <string name="lbl_system_default">(Paramètres par défaut)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Si des livres sont affichés pour chaque auteur du livre, ils peuvent apparaître plusieurs fois dans la liste. La suppression d’un de ces livres a pour effet de supprimer toutes les copies de la liste.</string>
     <string name="tip_authors_works">Icônes utilisées</string>

@@ -466,7 +466,6 @@
     <string name="X_action_clear_credentials">நற்சான்றிதழ்களை அழிக்கவும்</string>
     <string name="action_learn_more">மேலும் அறிக</string>
     <string name="action_email">மின்னஞ்சல்</string>
-    <string name="X_action_go">போ</string>
     <string name="action_search">தேடல்</string>
     <string name="X_action_send">அனுப்பு</string>
     <string name="X_action_next">அடுத்தது</string>
@@ -476,7 +475,6 @@
     <string name="action_more_ellipsis">மேலும்…</string>
     <string name="action_less_ellipsis">குறைவாக…</string>
     <string name="X_action_move">நகர்த்தவும்</string>
-    <string name="X_action_execute">செயல்படுத்தவும்</string>
     <string name="action_create">உருவாக்கு</string>
     <string name="action_merge">ஒன்றிணைக்கவும்</string>
     <string name="action_duplicate">நகல்</string>
@@ -846,14 +844,9 @@
     <string name="X_action_customize">தனிப்பயனாக்கு…</string>
     <string name="X_action_use_default_setting">இயல்புநிலை மதிப்புகளைப் பயன்படுத்தவும்</string>
     <string name="X_action_update">புதுப்பிப்பு</string>
-    <string name="X_lbl_folder">கோப்புறை</string>
-    <string name="X_lbl_general">பொது</string>
     <string name="lbl_image">படம்</string>
     <string name="lbl_image_2">படம் 3</string>
     <string name="lbl_image_3">படம் 4</string>
-    <string name="X_lbl_system">(அமைப்பு)</string>
-    <string name="X_neither">இல்லை</string>
-    <string name="X_lbl_thumbnails">சிறு உருவங்கள்</string>
     <string name="X_lbl_anthologies">தொகுதிகள்</string>
     <string name="X_style_type_defaults">ச்டைல்கள் இயல்புநிலை அமைப்புகள்</string>
     <string name="X_error_network_site_has_problems">வலைத்தளம் எதிர்பார்த்தபடி செயல்படவில்லை.</string>

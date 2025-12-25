@@ -50,7 +50,6 @@
     </plurals>
     <string name="quoted">„%1$s“</string>
     <string name="X_action_clear_credentials">Anmeldedaten löschen</string>
-    <string name="X_action_execute">Ausführen</string>
     <string name="X_action_move">Verschieben</string>
     <string name="X_action_next">Weiter</string>
     <string name="X_action_previous">Zurück</string>
@@ -66,12 +65,8 @@
     <string name="X_error_network_site_has_problems">Die Website funktioniert nicht erwartungsgemäß.</string>
     <string name="X_info_not_authorized">Nicht autorisiert</string>
     <string name="X_info_site_authorization_successful">Autorisierung bei %1$s erfolgreich</string>
-    <string name="X_lbl_folder">Ordner</string>
     <string name="lbl_image">Bild</string>
-    <string name="X_lbl_thumbnails">Vorschaubilder</string>
-    <string name="X_neither">Weder</string>
     <string name="X_lbl_anthologies">Anthologien</string>
-    <string name="X_lbl_general">Allgemein</string>
     <string name="tip_booklist_style_defaults">Auf dieser Seite kannst du die Standardmerkmale aller Stile festlegen. Diese werden von allen integrierten Stilen verwendet und dienen als Ausgangspunkt für jeden selbst definierten Stil.</string>
     <string name="X_action_use_default_setting">Standardeinstellungen verwenden</string>
     <string name="a_b">%1$s%2$s</string>
@@ -90,7 +85,6 @@
     <string name="action_edit">Bearbeiten</string>
     <string name="action_edit_ellipsis">Bearbeiten…</string>
     <string name="action_export">Exportieren</string>
-    <string name="X_action_go">Los</string>
     <string name="action_help">Hilfe</string>
     <string name="action_import">Importieren</string>
     <string name="action_merge">Vereinigen</string>
@@ -648,7 +642,6 @@
     <string name="lbl_defaults">Standardeinstellungen</string>
     <string name="style_type_builtin">Eingebaut</string>
     <string name="style_type_user_defined">Benutzerdefiniert</string>
-    <string name="X_lbl_system">(System)</string>
     <string name="lbl_system_default">(Systemstandardeinstellung)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Wenn Bücher für jeden Autor des Buches angezeigt werden, können sie mehrfach in der Liste erscheinen. Das Löschen eines dieser Bücher hat zur Folge, dass alle Exemplare aus der Liste entfernt werden.</string>
     <string name="tip_authors_works">Verwendete Icons</string>

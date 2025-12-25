@@ -1146,8 +1146,6 @@
     <!-- [VERIFIED] -->
     <string name="action_email">Email</string>
     <!-- [VERIFIED] -->
-    <string name="X_action_go">Go</string>
-    <!-- [VERIFIED] -->
     <string name="action_search">Search</string>
     <!-- [VERIFIED] -->
     <string name="X_action_send">Send</string>
@@ -1165,8 +1163,6 @@
     <string name="action_less_ellipsis">Less…</string>
     <!-- [VERIFIED] -->
     <string name="X_action_move">Move</string>
-    <!-- [VERIFIED] -->
-    <string name="X_action_execute">Execute</string>
     <!-- [VERIFIED] -->
     <string name="action_create">Create</string>
     <!-- merging two objects (e.g. two Bookshelves; two Author names... -->
@@ -2321,16 +2317,7 @@
     <string name="X_action_use_default_setting">Use default values</string>
     <!-- [VERIFIED] -->
     <string name="X_action_update">Update</string>
-    <!-- [VERIFIED] -->
-    <string name="X_lbl_folder">Folder</string>
-    <!-- [VERIFIED] -->
-    <string name="X_lbl_general">General</string>
-    <!-- [VERIFIED] -->
-    <string name="X_lbl_system">(System)</string>
 
-
-    <string name="X_neither">Neither</string>
-    <string name="X_lbl_thumbnails">Thumbnails</string>
     <string name="X_lbl_anthologies">Anthologies</string>
 
     <!-- The global default values used as defaults for the built-in styles. -->

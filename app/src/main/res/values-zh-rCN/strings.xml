@@ -51,8 +51,6 @@
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="X_action_clear_credentials">清除凭据</string>
     <string name="X_action_customize">自定义…</string>
-    <string name="X_action_execute">执行</string>
-    <string name="X_action_go">开始</string>
     <string name="X_action_move">移动</string>
     <string name="X_action_next">下一步</string>
     <string name="X_action_previous">上一页</string>
@@ -67,12 +65,7 @@
     <string name="X_info_site_authorization_successful">%1$s 认证成功</string>
     <string name="X_info_tap_on_image_to_select">点击大图来选择它。</string>
     <string name="X_lbl_anthologies">选集</string>
-    <string name="X_lbl_folder">文件夹</string>
-    <string name="X_lbl_general">常规</string>
     <string name="lbl_image">图片</string>
-    <string name="X_lbl_system">（系统）</string>
-    <string name="X_lbl_thumbnails">缩略图</string>
-    <string name="X_neither">都不是</string>
     <string name="X_style_type_defaults">默认样式设置</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -293,7 +296,6 @@
     <string name="X_action_clear_credentials">Vymazať prihlasovacie údaje</string>
     <string name="action_learn_more">Zistiť viac</string>
     <string name="action_email">E-mail</string>
-    <string name="X_action_go">Ísť</string>
     <string name="action_search">Hľadanie</string>
     <string name="X_action_send">Poslať</string>
     <string name="X_action_next">Ďalej</string>
@@ -303,7 +305,6 @@
     <string name="action_more_ellipsis">Viac…</string>
     <string name="action_less_ellipsis">Menej…</string>
     <string name="X_action_move">Presunúť</string>
-    <string name="X_action_execute">Vykonať</string>
     <string name="action_create">Vytvoriť</string>
     <string name="action_merge">Zlúčiť</string>
     <string name="action_duplicate">Duplikovať</string>
@@ -586,7 +587,6 @@
     <string name="X_action_customize">Prispôsobiť…</string>
     <string name="X_action_use_default_setting">Použiť predvolené hodnoty</string>
     <string name="X_action_update">Aktualizovať</string>
-    <string name="X_lbl_folder">Priečinok</string>
     <string name="X_info_site_authorization_successful">%1$s autorizácia úspešná</string>
     <string name="X_info_tap_on_image_to_select">Klepnite na väčší obrázok pre jeho výber.</string>
     <string name="name_colon_value">%1$s: %2$s</string>
@@ -837,12 +837,9 @@
     <string name="unknown_title">[Neznámý názov]</string>
     <string name="X_error_network_site_has_problems">Webová stránka nefunguje správne.</string>
     <string name="lbl_sorting">Triedenie</string>
-    <string name="X_neither">Ani jedno</string>
     <string name="lbl_settings">Nastavenia</string>
     <string name="lbl_image">Obrázok</string>
     <string name="lbl_select_website">Vyberte webovú stránku:</string>
-    <string name="X_lbl_general">Všeobecné</string>
-    <string name="X_lbl_system">(Systém)</string>
     <string name="lbl_calibre_content_server">Server s obsahom Calibre</string>
     <string name="size_x_large">X-Veľké</string>
     <string name="pt_allow_editing_external_id">Povoliť úpravu ID knihy na webovej stránke</string>
@@ -852,7 +849,6 @@
     <string name="lbl_sort_unsorted">Netriedené</string>
     <string name="X_lbl_anthologies">Antológie</string>
     <string name="X_tip_update_fields_from_internet">Odkazy na externé stránky sa spracujú, iba ak sa so stránkou skutočne nadviaže kontakt. V dôsledku toho ponuka „Zobraziť na…“ zobrazí iba to, čo je k dispozícii.</string>
-    <string name="X_lbl_thumbnails">Miniatúry</string>
     <string name="lbl_current_page">Aktuálna strana</string>
     <string name="lbl_tab_publication">Publikácia</string>
     <string name="X_info_not_authorized">Neautorizované</string>

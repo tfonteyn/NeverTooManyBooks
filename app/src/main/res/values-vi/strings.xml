@@ -45,8 +45,6 @@
     <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Xóa thông tin xác thực</string>
     <string name="X_action_customize">Tùy chỉnh…</string>
-    <string name="X_action_execute">Thực hiện</string>
-    <string name="X_action_go">Đến</string>
     <string name="X_action_move">Chuyển</string>
     <string name="X_action_next">Tiếp theo</string>
     <string name="X_action_previous">Trước</string>
@@ -61,12 +59,7 @@
     <string name="X_info_site_authorization_successful">Ủy quyền %1$s thành công</string>
     <string name="X_info_tap_on_image_to_select">Nhấn vào hình ảnh lớn hơn để chọn nó.</string>
     <string name="X_lbl_anthologies">Tuyển tập</string>
-    <string name="X_lbl_folder">Thư mục</string>
-    <string name="X_lbl_general">Chung</string>
     <string name="lbl_image">Hình ảnh</string>
-    <string name="X_lbl_system">(Hệ thống)</string>
-    <string name="X_lbl_thumbnails">Hình thu nhỏ</string>
-    <string name="X_neither">Không</string>
     <string name="X_style_type_defaults">Các thiết đặt phong cách mặc định</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>

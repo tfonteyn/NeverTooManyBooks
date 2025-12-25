@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -59,7 +62,6 @@
     </plurals>
     <string name="quoted">„%1$s“</string>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
-    <string name="X_action_execute">Spustit</string>
     <string name="X_action_move">Přesunout</string>
     <string name="X_action_next">Další</string>
     <string name="X_action_previous">Předch.</string>
@@ -75,12 +77,8 @@
     <string name="X_error_network_site_has_problems">Web má problémy.</string>
     <string name="X_info_not_authorized">Neautorizováno</string>
     <string name="X_info_site_authorization_successful">%1$s autorizace v pořádku</string>
-    <string name="X_lbl_folder">Složka</string>
     <string name="lbl_image">Obrázek</string>
-    <string name="X_lbl_thumbnails">Náhledy</string>
-    <string name="X_neither">Ani</string>
     <string name="X_lbl_anthologies">Anthology</string>
-    <string name="X_lbl_general">Obecné</string>
     <string name="tip_booklist_style_defaults">Na této obrazovce můžete nastavit výchozí vlastnosti všech stylů. Ty jsou používány všemi vestavěnými styly a jako výchozí bod pro jakýkoli styl, který si sami definujete.</string>
     <string name="X_action_use_default_setting">Použít výchozí nastavení</string>
     <string name="a_b">%1$s%2$s</string>
@@ -99,7 +97,6 @@
     <string name="action_edit">Upravit</string>
     <string name="action_edit_ellipsis">Upravit…</string>
     <string name="action_export">Exportovat</string>
-    <string name="X_action_go">Přejít</string>
     <string name="action_help">Nápověda</string>
     <string name="action_import">Importovat</string>
     <string name="action_merge">Spojit</string>
@@ -663,7 +660,6 @@
     <string name="lbl_defaults">Výchozí</string>
     <string name="style_type_builtin">Vestavěný</string>
     <string name="style_type_user_defined">Definován uživatelem</string>
-    <string name="X_lbl_system">(Systém)</string>
     <string name="lbl_system_default">(Výchozí nastavení systému)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Pokud jsou knihy zobrazeny u každého autora knihy, mohou se v seznamu objevit vícekrát. Odstranění jedné z těchto knih má za následek odstranění všech kopií ze seznamu.</string>
     <string name="tip_authors_works">Použité ikony</string>

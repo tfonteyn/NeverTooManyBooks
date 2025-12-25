@@ -56,17 +56,13 @@
     </plurals>
     <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Limpar credenciais</string>
-    <string name="X_action_execute">Executar</string>
-    <string name="X_action_go">Ir</string>
     <string name="X_action_move">Mover</string>
     <string name="X_action_next">Avançar</string>
     <string name="X_action_previous">Anter.</string>
     <string name="X_action_reset">Redefinir</string>
     <string name="X_action_send">Enviar</string>
     <string name="X_action_try_again">Tentar novamente</string>
-    <string name="X_lbl_folder">Pasta</string>
     <string name="lbl_image">Imagem</string>
-    <string name="X_lbl_system">(Sistema)</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="option_apply_to_all_related_books">Todos os livros relacionados</string>
@@ -518,7 +514,6 @@
     <string name="lbl_keywords">Palavras-chave</string>
     <string name="lbl_database">Base de dados</string>
     <string name="lbl_about">Sobre</string>
-    <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="lbl_number">Número</string>
     <string name="lbl_site_book_id">ID do livro do site</string>
     <string name="lbl_select_website">Selecione um site:</string>
@@ -625,7 +620,6 @@
     <string name="option_delete_removed_books">Excluir livros locais que já não estão presentes no servidor</string>
     <string name="lbl_sorting">Ordenação</string>
     <string name="X_info_not_authorized">Não Autorizado</string>
-    <string name="X_lbl_general">Geral</string>
     <string name="X_action_use_default_setting">Usar valores padrão</string>
     <string name="lbl_location_long">Localização do livro</string>
     <string name="pt_ui_system_locale">Idioma do sistema</string>
@@ -693,7 +687,6 @@
     <string name="menu_update_fields">Atualizar campos</string>
     <string name="option_field_usage_overwrite">Substitui os dados existentes</string>
     <string name="strict">Estrito</string>
-    <string name="X_neither">Nenhum</string>
     <string name="list_and">%1$s e %2$s</string>
     <string name="btn_this_book">Apenas este livro</string>
     <string name="lbl_local_search">Pesquisa Local</string>

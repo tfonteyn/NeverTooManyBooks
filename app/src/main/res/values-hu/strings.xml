@@ -97,8 +97,6 @@
     <string name="error_http_401_site_authorization_failed">%1$s engedélyezése hibát eredményezett.</string>
     <string name="error_http_403_site_forbidden">%1$s letiltotta a hozzáférést.</string>
     <string name="X_action_clear_credentials">Hitelesítési adatok törlése</string>
-    <string name="X_action_execute">Végrehajtás</string>
-    <string name="X_action_go">Ugrás</string>
     <string name="X_action_move">Áthelyezés</string>
     <string name="X_action_next">Tovább</string>
     <string name="X_action_previous">Előző</string>
@@ -106,10 +104,7 @@
     <string name="X_action_send">Küldés</string>
     <string name="X_action_try_again">Újrapróbálkozás</string>
     <string name="X_action_update">Frissítés</string>
-    <string name="X_lbl_folder">Mappa</string>
-    <string name="X_lbl_general">Általános</string>
     <string name="lbl_image">Kép</string>
-    <string name="X_lbl_system">(Rendszer)</string>
     <string name="action_add">Hozzáadás</string>
     <string name="action_apply">Alkalmaz</string>
     <string name="action_clear">Törlés</string>
@@ -861,8 +856,6 @@
     <string name="lbl_default_x">Alapértelmezett: %1$s</string>
     <string name="X_action_customize">Testreszabás…</string>
     <string name="X_action_use_default_setting">Alapértelmezett értékek használata</string>
-    <string name="X_neither">Egyik sem</string>
-    <string name="X_lbl_thumbnails">Miniatűrök</string>
     <string name="X_lbl_anthologies">Antológiák</string>
     <string name="X_style_type_defaults">Alapértelmezett stílus beállítások</string>
     <string name="X_error_network_site_has_problems">A webhely nem működik a várt módon.</string>
