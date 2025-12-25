@@ -172,7 +172,7 @@
     <string name="confirm_delete_book">Книга с названием «%1$s» будет полностью удалена %2$s.\n\n Вы уверены?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Действительно удалить книжную полку «%1$s»?\n\nОн будет удален с %2$s. Сами книги удалены не будут. Они по-прежнему будут присутствовать на любых других полках или на полке «%3$s».</string>
     <string name="confirm_delete_publisher_from_x_books">Действительно удалить издателя «%1$s»?\n\nОн будет удален с %2$s. Сами книги не будут удалены. Рассмотрите возможность изменения издателя и изменения имени издателя на имя другого издателя, чтобы сохранить эти данные.</string>
-    <string name="confirm_delete_series_from_x_books">Действительно удалить серию «%1$s»?\n\nОн будет удален с %2$s. Книги этой серии не будут удалены. Вместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами.</string>
+    <string name="confirm_delete_series_from_x_books">Действительно удалить серию «%1$s»?\n\nОна будет удалена с %2$s. Книги этой серии не будут удалены. Вместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами.</string>
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
     <string name="confirm_delete_identifier_from_x_books">Удалить идентификатор «%1$s»?\n\nОн будет удален с %2$s. Сами книги не будут удалены.</string>
     <string name="confirm_delete_substitutions">Удалить подстановки для «%1$s»?</string>
@@ -184,7 +184,7 @@
     <string name="confirm_merge_authors">Автор, которого вы изменяете, уже существует. Не хотите ли вы объединить их?</string>
     <string name="confirm_merge_bookshelves">Книжная полка, которую вы изменяете, уже существует. Не хотите ли вы объединить их?</string>
     <string name="confirm_merge_publishers">Издательство, которое вы изменяете, уже существует. Не хотите ли вы объединить их?</string>
-    <string name="confirm_merge_series">Серия, которую вы изменяете, уже существует. Не хотите ли вы объединить их?</string>
+    <string name="confirm_merge_series">Серия, которую вы изменяете, уже существует. Хотите ли вы объединить их?</string>
     <string name="confirm_overwrite_cover">Выбранные поля будут обновлены как показано, но миниатюры при желании можно загрузить для ВСЕХ книг.\n\nВы хотите перезаписать все миниатюры? Предупреждение: это может занять много времени. </string>
     <string name="confirm_rebuild_fts">Данные поискового индекса будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить?</string>
     <string name="confirm_rebuild_index">Индексы будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить?</string>
@@ -441,7 +441,7 @@
     <string name="lbl_author_pseudonym">Псевдоним автора</string>
     <string name="lbl_series">Серия</string>
     <string name="lbl_series_multiple">Серии</string>
-    <string name="lbl_series_num">№</string>
+    <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Настройки</string>
     <string name="lbl_tag">Тег</string>
     <string name="lbl_tags">Теги</string>
@@ -549,7 +549,7 @@
     <string name="option_bob_filter_signed_yes">Книги подписаны</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Всегда запускать упакованные</string>
     <string name="pe_bob_list_rebuild_state_expanded">Всегда запускать распакованные</string>
-    <string name="pe_bob_list_rebuild_state_preferred">Используйте предпочтительное состояние</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Использовать предпочтительное раскрытие</string>
     <string name="pe_bob_list_rebuild_state_preserve">Сохранить текущее состояние</string>
     <string name="loose">свободно</string>
     <string name="pe_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
@@ -610,7 +610,7 @@
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
     <string name="pt_bob_list_state_expansion_level">Уровень раскрытия по умолчанию</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
-    <string name="pt_edit_book_isbn_checks">ISBN проверки достоверности</string>
+    <string name="pt_edit_book_isbn_checks">Проверки действительности ISBN</string>
     <string name="pt_bob_row_menu">Контекстное меню строки</string>
     <string name="pe_bob_row_menu_button">Всегда показывать кнопку.</string>
     <string name="pe_bob_row_menu_button_when_space">Покажите кнопку, если есть место, в противном случае используйте долгий щелчок.</string>
@@ -618,7 +618,7 @@
     <string name="pt_fast_scroller_overlay">Текстовый пузырь при прокрутке.</string>
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="pt_maintenance">Обслуживание</string>
-    <string name="pt_main_author_type">Основной тип автора</string>
+    <string name="pt_main_author_type">Тип главного автора</string>
     <string name="pt_scanning_beep_on_barcode_found">Звуковой сигнал, когда штрих-код найден</string>
     <string name="pt_scanning_beep_on_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
     <string name="pt_scanning_beep_on_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
@@ -891,7 +891,7 @@
     <string name="vldt_blank_or_valid_url_required">Требуется пустое значение или действительный URL-адрес</string>
     <string name="info_identifier_editor"><![CDATA[Пожалуйста, прочитайте <a href="%1$s">документацию</a> по идентификаторам перед редактированием.]]></string>
     <string name="lbl_date_born">Род.</string>
-    <string name="pt_fetch_author_info">Получение информации об авторе</string>
+    <string name="pt_fetch_author_info">Загрузка информации об авторе</string>
     <string name="menu_search_updates">Поиск обновлений</string>
     <string name="lbl_author_role_foreword">Предисловие</string>
     <string name="lbl_image_2">Изображение 3</string>
