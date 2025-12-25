@@ -173,7 +173,7 @@
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu „%1$s“ od %2$s.\n\n Určitě chcete pokračovat?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Opravdu odstranit polici „%1$s“?\n\nBude odstraněna z %2$s. Knihy samotné smazány nebudou. Stále budou přítomny na jakýchkoli jiných policích nebo na polici „%3$s“.</string>
     <string name="confirm_delete_publisher_from_x_books">Opravdu smazat vydavatele „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou. Všechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
-    <string name="confirm_delete_series_from_x_books">Opravdu chcete smazat série „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou. Zvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
+    <string name="confirm_delete_series_from_x_books">Opravdu chcete smazat sérii „%1$s“?\n\nBude odstraněna z %2$s. Knihy samotné smazány nebudou. Zvažte prosím úpravu série a změnu názvu série s ohledem na zachování těchto dat.</string>
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
     <string name="confirm_delete_identifier_from_x_books">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_substitutions">Smazat náhrady za „%1$s“?</string>
@@ -495,7 +495,7 @@
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_search_books_by_author">Knihy tohoto autora</string>
-    <string name="option_search_books_by_author_in_series">Knihy podle autora / série</string>
+    <string name="option_search_books_by_author_in_series">Knihy podle autora/série</string>
     <string name="option_search_books_on">Hledat na…</string>
     <string name="option_search_books_in_series">Knihy v této sérii</string>
     <string name="option_author_details">Všechna díla tohoto autora</string>
@@ -538,7 +538,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Ne</string>
-    <string name="none">Žádné</string>
+    <string name="none">Nic</string>
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Chyba</string>
     <string name="notification_channel_info">Informace</string>
@@ -552,7 +552,7 @@
     <string name="option_bob_filter_signed_yes">Podepsané knihy</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Vždy spouštět sbalené</string>
     <string name="pe_bob_list_rebuild_state_expanded">Vždy spouštět rozbalené</string>
-    <string name="pe_bob_list_rebuild_state_preferred">Použijte upřednostňovaný stav</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Použít preferované rozbalení</string>
     <string name="pe_bob_list_rebuild_state_preserve">Zachovat aktuální stav</string>
     <string name="loose">Uvolněné</string>
     <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně úložného prostoru, rolování bude pomalejší)</string>
@@ -621,7 +621,7 @@
     <string name="pt_fast_scroller_overlay">Textová bublina při posouvání.</string>
     <string name="pt_line_spacing">Řádkování</string>
     <string name="pt_maintenance">Údržba</string>
-    <string name="pt_main_author_type">Typ primárního autora</string>
+    <string name="pt_main_author_type">Typ hlavního autora</string>
     <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípnout</string>
     <string name="pt_scanning_beep_on_invalid">Je-li naskenované číslo ISBN neplatné, pípnout</string>
     <string name="pt_scanning_beep_on_valid">Je-li naskenované číslo ISBN platné, pípnout</string>
@@ -893,7 +893,7 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžadována prázdná hodnota nebo platná adresa URL \"https\" s jedním zástupným znakem \"%s\"</string>
     <string name="info_identifier_editor"><![CDATA[Před editaci si prosím přečtěte <a href="%1$s">dokumentaci</a> k identifikátorům.]]></string>
     <string name="lbl_date_born">Nar.</string>
-    <string name="pt_fetch_author_info">Získat informace o autorovi</string>
+    <string name="pt_fetch_author_info">Načítaní informací o autorovi</string>
     <string name="menu_search_updates">Hledání aktualizací</string>
     <string name="lbl_author_role_foreword">Předmluva</string>
     <string name="lbl_image_2">Obrázek 3</string>
