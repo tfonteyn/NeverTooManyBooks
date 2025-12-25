@@ -453,7 +453,7 @@
     <string name="pt_collect_series_info_from_toc">Zhromažďovať informácie o sérii z prehľadu obsahu</string>
     <string name="pt_fetch_author_info_using_site_x">Získanie informácií o autorovi z %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovať názvoslovie (francúzskeho) formátu Bedetheque</string>
-    <string name="pt_main_author_type">Primárny typ autora</string>
+    <string name="pt_main_author_type">Typ hlavného autora</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
     <string name="pe_bob_list_rebuild_state_preferred">Použiť preferované rozbalenie</string>
     <string name="pe_bob_list_rebuild_state_expanded">Vždy spustiť rozbalené</string>
@@ -869,7 +869,7 @@
     <string name="list_and">%1$s a %2$s</string>
     <string name="lbl_tab_alternative_editions">Alt. vyd.</string>
     <string name="lbl_tab_alternative_editions_long">Alternatívne vydania</string>
-    <string name="none">Žiadne</string>
+    <string name="none">Nič</string>
     <string name="strict">Prísne</string>
     <string name="X_error_authentication_failed">Autentifikácia zlyhala</string>
     <string name="unknown_author">[Neznámý autor]</string>
@@ -882,7 +882,7 @@
     <string name="vldt_blank_or_valid_url_required">Vyžaduje sa prázdna hodnota alebo platná adresa URL</string>
     <string name="info_identifier_editor"><![CDATA[Pred úpravou si prosím prečítajte <a href="%1$s">dokumentáciu</a> k identifikátorom.]]></string>
     <string name="lbl_date_born">Nar.</string>
-    <string name="pt_fetch_author_info">Získať informácie o autorovi</string>
+    <string name="pt_fetch_author_info">Načítanie informácií o autorovi</string>
     <string name="menu_search_updates">Hľadanie aktualizácií</string>
     <string name="lbl_author_role_foreword">Predslov</string>
     <string name="lbl_image_2">Obrázok 3</string>
