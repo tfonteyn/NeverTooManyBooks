@@ -172,7 +172,7 @@
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s.\n\n Czy chcesz kontynuować?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Naprawdę usunąć półkę „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%3$s”.</string>
     <string name="confirm_delete_publisher_from_x_books">Naprawdę usunąć wydawcę „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Rozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
-    <string name="confirm_delete_series_from_x_books">Czy na pewno usunąć serię „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Rozważ zmianę nazwy serii by zachować te dane.</string>
+    <string name="confirm_delete_series_from_x_books">Czy na pewno usunąć serię „%1$s”?\n\nZostanie ona usunięta z %2$s. Same książki nie zostaną usunięte. Rozważ zmianę nazwy serii by zachować te dane.</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
     <string name="confirm_delete_identifier_from_x_books">Usunąć identyfikator „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_substitutions">Usunąć podstawienia dla „%1$s”?</string>
@@ -434,8 +434,8 @@
     <string name="option_bug_report">Zgłoszenie błędu</string>
     <string name="lbl_author_pseudonym">Pseudonim autora</string>
     <string name="lbl_series">Seria</string>
-    <string name="lbl_series_multiple">Serial</string>
-    <string name="lbl_series_num">tom#</string>
+    <string name="lbl_series_multiple">Serie</string>
+    <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Ustawienia</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tagi</string>
@@ -486,7 +486,7 @@
     <string name="list_element">• %s</string>
     <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_search_books_by_author">Książki tego autora</string>
-    <string name="option_search_books_by_author_in_series">Książki według autora / serii</string>
+    <string name="option_search_books_by_author_in_series">Książki według autora/serii</string>
     <string name="option_search_books_on">Szukać na…</string>
     <string name="option_search_books_in_series">Książki z tej serii</string>
     <string name="option_author_details">Wszystkie prace tego autora</string>
@@ -603,7 +603,7 @@
     <string name="pt_bob_header">Nagłówek</string>
     <string name="pt_bob_list_rebuild_state">Stan uruchamiania listy książek</string>
     <string name="pt_bob_list_state_expansion_level">Domyślny poziom rozwinięcia</string>
-    <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
+    <string name="pt_collect_series_info_from_toc">Zbierać informacje o serii z spisu treści</string>
     <string name="pt_edit_book_isbn_checks">Kontrole ważności ISBN</string>
     <string name="pt_bob_row_menu">Menu kontekstowe wiersza</string>
     <string name="pe_bob_row_menu_button">Zawsze pokazuj przycisk.</string>
@@ -612,7 +612,7 @@
     <string name="pt_fast_scroller_overlay">Dymek tekstowy podczas przewijania.</string>
     <string name="pt_line_spacing">Odstępy między wierszami</string>
     <string name="pt_maintenance">Konserwacja</string>
-    <string name="pt_main_author_type">Główny typ autora</string>
+    <string name="pt_main_author_type">Typ głównego autora</string>
     <string name="pt_scanning_beep_on_barcode_found">Sygnał dźwiękowy po znalezieniu kodu kreskowego</string>
     <string name="pt_scanning_beep_on_invalid">Sygnał dźwiękowy, jeśli zeskanowany numer ISBN jest nieprawidłowy</string>
     <string name="pt_scanning_beep_on_valid">Sygnał dźwiękowy, jeśli skanowany numer ISBN jest prawidłowy</string>
