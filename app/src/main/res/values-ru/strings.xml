@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -451,7 +448,7 @@
     <string name="option_storage_quit_and_reinsert_sdcard">Закройте приложение и вставьте правильную SD-карту</string>
     <string name="option_storage_select">Используйте «%1$s»</string>
     <string name="lbl_storage_settings">Хранилище</string>
-    <string name="pt_storage_volume">Объем хранилища</string>
+    <string name="pt_storage_volume">Том хранилища</string>
     <string name="info_read_contacts_permission">Доступ к контактам необязателен, но позволяет легко выбрать, кому вы одалживаете книгу.</string>
     <string name="info_story_in_multiple_books">«%1$s» присутствует в нескольких книгах:\n\n%2$s</string>
     <string name="option_isbn_strict">Строгий ISBN</string>
