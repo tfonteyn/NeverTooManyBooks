@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -445,7 +442,7 @@
     <string name="option_storage_quit_and_reinsert_sdcard">Zamknij aplikację i włóż właściwą kartę SD</string>
     <string name="option_storage_select">Użyj „%1$s”</string>
     <string name="lbl_storage_settings">Pamięć wewnętrzna</string>
-    <string name="pt_storage_volume">Pojemność pamięci</string>
+    <string name="pt_storage_volume">Wolumin pamięci</string>
     <string name="info_read_contacts_permission">Dostęp do kontaktów jest opcjonalny, ale pozwala łatwo wybrać osobę, której pożyczasz książkę.</string>
     <string name="info_story_in_multiple_books">„%1$s” jest obecna w wielu książkach:\n\n%2$s</string>
     <string name="option_isbn_strict">Ścisły ISBN</string>
