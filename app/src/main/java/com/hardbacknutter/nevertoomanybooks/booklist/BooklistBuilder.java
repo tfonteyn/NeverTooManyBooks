@@ -537,6 +537,9 @@ class BooklistBuilder {
         // Construct the INSERT INTO ... SELECT
         // to populate the list-table
         final String sqlBulkInsert = createSqlBulkInsert(userLocale, collationCaseSensitive);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger().d(TAG, "build", sqlBulkInsert);
+        }
 
         final long t0 = System.nanoTime();
 
@@ -551,8 +554,7 @@ class BooklistBuilder {
             LoggerFactory.getLogger()
                          .d(TAG, "build",
                             "insert(" + initialInsertCount + ")"
-                            + "|" + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms"
-                            + "|" + sqlBulkInsert);
+                            + "|" + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
         }
 
         if (!collationCaseSensitive) {
