@@ -122,21 +122,21 @@ public interface SeriesDao
     /**
      * Count the books for the given {@link Series}.
      *
-     * @param item to count the books of
+     * @param series to count the books of
      *
      * @return the number of books
      */
-    int countBooks(@NonNull Series item);
+    int countBooks(@NonNull Series series);
 
     /**
      * Get a list of book ID's for the given {@link Series}.
      *
-     * @param itemId id of the item
+     * @param seriesId id of the Series
      *
-     * @return list with book ID's linked to this item
+     * @return list with book ID's linked to this Series
      */
     @NonNull
-    List<Long> getBookIds(long itemId);
+    List<Long> getBookIds(long seriesId);
 
     /**
      * Get a list of the {@link Series} for a book.

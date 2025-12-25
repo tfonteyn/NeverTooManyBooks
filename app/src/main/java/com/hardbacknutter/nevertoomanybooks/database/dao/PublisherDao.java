@@ -98,21 +98,21 @@ public interface PublisherDao
     /**
      * Count the books for the given {@link Publisher}.
      *
-     * @param item to count the books of
+     * @param publisher to count the books of
      *
      * @return the number of books
      */
-    int countBooks(@NonNull Publisher item);
+    int countBooks(@NonNull Publisher publisher);
 
     /**
      * Get a list of book ID's for the given {@link Publisher}.
      *
-     * @param itemId id of the item
+     * @param publisherId id of the Publisher
      *
-     * @return list with book ID's linked to this item
+     * @return list with book ID's linked to this Publisher
      */
     @NonNull
-    List<Long> getBookIds(long itemId);
+    List<Long> getBookIds(long publisherId);
 
     /**
      * Get a list of the {@link Publisher} for a book.

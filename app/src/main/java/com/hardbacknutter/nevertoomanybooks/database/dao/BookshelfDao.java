@@ -154,12 +154,12 @@ public interface BookshelfDao {
     /**
      * Get a list of book ID's for the given {@link Bookshelf}.
      *
-     * @param itemId id of the item
+     * @param bookshelfId id of the Bookshelf
      *
-     * @return list with book ID's linked to this item
+     * @return list with book ID's linked to this Bookshelf
      */
     @NonNull
-    List<Long> getBookIds(long itemId);
+    List<Long> getBookIds(long bookshelfId);
 
     /**
      * Get a list of all the bookshelves this book is on.

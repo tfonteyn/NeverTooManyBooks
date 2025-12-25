@@ -120,21 +120,21 @@ public interface AuthorDao
     /**
      * Count the books for the given {@link Author}.
      *
-     * @param item to count the books of
+     * @param author to count the books of
      *
      * @return the number of books
      */
-    int countBooks(@NonNull Author item);
+    int countBooks(@NonNull Author author);
 
     /**
      * Get a list of book ID's for the given {@link Author}.
      *
-     * @param itemId id of the item
+     * @param authorId id of the Author
      *
-     * @return list with book ID's linked to this item
+     * @return list with book ID's linked to this Author
      */
     @NonNull
-    List<Long> getBookIds(long itemId);
+    List<Long> getBookIds(long authorId);
 
     /**
      * Fetch all the author picture UUIDs, and return them as a List.

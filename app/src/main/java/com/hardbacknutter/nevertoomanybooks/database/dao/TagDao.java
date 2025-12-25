@@ -194,12 +194,12 @@ public interface TagDao {
     /**
      * Get a list of book ID's for the given {@link Tag}.
      *
-     * @param itemId id of the item
+     * @param tagId id of the Tag
      *
-     * @return list with book ID's linked to this item
+     * @return list with book ID's linked to this Tag
      */
     @NonNull
-    List<Long> getBookIds(@IntRange(from = 1) long itemId);
+    List<Long> getBookIds(@IntRange(from = 1) long tagId);
 
     /**
      * Find all books with tags, and apply the currently configured
