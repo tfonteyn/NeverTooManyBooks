@@ -526,25 +526,17 @@ class BooklistBuilder {
         this.filters.addAll(searchCriteria);
         this.filters.addAll(createBookshelfFilters(context));
 
-        // All structures are in place now
-        // Construct the INSERT INTO ... SELECT
-        // to populate the list-table
-        final String sqlBulkInsert = createSqlBulkInsert(userLocale, collationCaseSensitive);
-
         // Create the list table
         //IMPORTANT: withDomainConstraints MUST BE false
         db.recreate(listTable, false);
 
-        // 2025-03-11: add indexes on the group-keys for use by the "sums" sql.
-        // Not entirely sure how much impact, or lack-of, this has.
-        style.getGroupList().stream()
-             .map(BooklistGroup::getGroupKey)
-             .map(GroupKey::getKeyDomainExpression)
-             .map(DomainExpression::getDomain)
-             .forEach(domain -> listTable.addIndex(domain.getName(), false, domain));
-
         // get the triggers in place, ready to act on our upcoming initial insert.
         createTriggers(db);
+
+        // All structures are in place now
+        // Construct the INSERT INTO ... SELECT
+        // to populate the list-table
+        final String sqlBulkInsert = createSqlBulkInsert(userLocale, collationCaseSensitive);
 
         final long t0 = System.nanoTime();
 
@@ -573,7 +565,7 @@ class BooklistBuilder {
                                                                      false))
                     .collect(Collectors.joining(",", "(", ")"));
 
-            db.execSQL("CREATE INDEX " + listTable.getName() + "_SDI ON "
+            db.execSQL(CREATE_INDEX_ + listTable.getName() + "_SDI" + _ON_
                        + listTable.getName() + indexCols);
         }
 
@@ -598,7 +590,7 @@ class BooklistBuilder {
                    + _FROM_ + listTable.getName()
                    // MUST be limited to BooklistGroup.BOOK;
                    // the FK_BOOK fields on other groups represents the book-count for that group
-                   + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
+                   + _WHERE_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.BOOK
                    + _ORDER_BY_ + DBKey.PK_ID);
 
         return new Pair<>(listTable, navTable);
@@ -844,9 +836,9 @@ class BooklistBuilder {
         final String join =
                 " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.getName() + _AS_ + tableAlias
                 + _ON_
-                + TBL_BOOKS.dot(bookTableColumn) + '=' + tableAlias + "." + DBKey.LANG_MAPPING.ISO3
+                + TBL_BOOKS.dot(bookTableColumn) + '=' + tableAlias + '.' + DBKey.LANG_MAPPING.ISO3
                 + _AND_
-                + tableAlias + "." + DBKey.LANG_MAPPING.ISO3_USER + "='" + userIso3Language + '\'';
+                + tableAlias + '.' + DBKey.LANG_MAPPING.ISO3_USER + "='" + userIso3Language + '\'';
         sb.append(join);
     }
 
@@ -958,14 +950,18 @@ class BooklistBuilder {
      *    CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_2 BEFORE INSERT ON tmp_book_list_1
      *    FOR EACH ROW WHEN NEW.node_level=3 AND
      *       -- is the current author+series different from the one inserted previously?
-     *       NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,'') AND COALESCE(tht.blg_sort_ser,'')=COALESCE(NEW.blg_sort_ser,''))
+     *       NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE
+     *                          COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,'')
+     *                          AND COALESCE(tht.blg_sort_ser,'')=COALESCE(NEW.blg_sort_ser,''))
      *         BEGIN
      *         -- insert the series
-     *            INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,node_expanded,node_visible,
+     *            INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,
+     *                        node_expanded,node_visible,
      *                        author_formatted,blg_sort_aut,author,author_complete,real_author,
      *                        series_name,blg_sort_ser,series_id,series_complete)
      *                   VALUES (2,2,NEW.node_key,0,0,
-     *                       NEW.author_formatted,NEW.blg_sort_aut,NEW.author,NEW.author_complete,NEW.real_author,
+     *                       NEW.author_formatted,NEW.blg_sort_aut,NEW.author,
+     *                       NEW.author_complete,NEW.real_author,
      *                       NEW.series_name,NEW.blg_sort_ser,NEW.series_id,NEW.series_complete);
      *         END
      *
@@ -973,20 +969,25 @@ class BooklistBuilder {
      *    CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_1 BEFORE INSERT ON tmp_book_list_1
      *    FOR EACH ROW WHEN NEW.node_level=2 AND
      *        -- is the current author different from the one inserted previously?
-     *        NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,''))
+     *        NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE
+     *                           COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,''))
      *          BEGIN
      *          -- insert an author
-     *             INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,node_expanded,node_visible,
+     *             INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,
+     *                         node_expanded,node_visible,
      *                         author_formatted,blg_sort_aut,author,author_complete,real_author)
      *                    VALUES (1,1,NEW.node_key,0,1,
-     *                         NEW.author_formatted,NEW.blg_sort_aut,NEW.author,NEW.author_complete,NEW.real_author);
+     *                         NEW.author_formatted,NEW.blg_sort_aut,NEW.author,
+     *                         NEW.author_complete,NEW.real_author);
      *         END
      *
      *    -- track the last inserted full group-hierarchy used
      *    CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_CURRENT AFTER INSERT ON tmp_book_list_1
      *    FOR EACH ROW WHEN NEW.node_level=2 BEGIN
      *        DELETE FROM tmp_book_list_1_th;
-     *        INSERT INTO tmp_book_list_1_th VALUES (NEW.node_level,NEW.blg_sort_aut,NEW.blg_sort_ser,NEW.blg_sort_ser_num_f,NEW.series_num,NEW.title_ob);
+     *        INSERT INTO tmp_book_list_1_th VALUES (NEW.node_level,NEW.blg_sort_aut,
+     *                                               NEW.blg_sort_ser,NEW.blg_sort_ser_num_f,
+     *                                               NEW.series_num,NEW.title_ob);
      *    END
      * </pre>
      *
@@ -998,7 +999,7 @@ class BooklistBuilder {
     @SuppressWarnings("JavadocReference")
     private void createTriggers(@NonNull final SynchronizedDb db) {
 
-        triggerHelperTable = new TableDefinition(listTable + "_th", "tht")
+        triggerHelperTable = new TableDefinition(listTable.getName() + "_th", "tht")
                 .setType(TableDefinition.TableType.Temporary);
 
         // VALUES clause to update the 'current' table
@@ -1007,16 +1008,17 @@ class BooklistBuilder {
         final Collection<String> sortedDomainNames = new HashSet<>();
 
         // Build the 'current' header table definition and the sort column list
-        orderByDomainExpressions.stream()
-                                .map(DomainExpression::getDomain)
-                                // don't add duplicate domains
-                                .filter(domain -> !sortedDomainNames.contains(domain.getName()))
-                                .forEach(domain -> {
-                                    sortedDomainNames.add(domain.getName());
-                                    currentValues.add("NEW." + domain.getName());
+        orderByDomainExpressions
+                .stream()
+                .map(DomainExpression::getDomain)
+                // don't add duplicate domains
+                .filter(domain -> !sortedDomainNames.contains(domain.getName()))
+                .forEach(domain -> {
+                    sortedDomainNames.add(domain.getName());
+                    currentValues.add("NEW." + domain.getName());
 
-                                    triggerHelperTable.addDomains(domain);
-                                });
+                    triggerHelperTable.addDomains(domain);
+                });
 
         /*
          * Create a temp table to store the most recent header details from the last row.
@@ -1251,7 +1253,7 @@ class BooklistBuilder {
                                      @SuppressWarnings("SameParameterValue")
                                      @NonNull final String table) {
         return keyColumns.stream()
-                         .map(k -> listTable.getName() + "." + k + "=" + table + "." + k)
+                         .map(k -> listTable.getName() + '.' + k + "=" + table + "." + k)
                          .collect(Collectors.joining(_AND_));
     }
 }
