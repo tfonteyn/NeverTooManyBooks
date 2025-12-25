@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -631,7 +628,7 @@
     <string name="warning_enable_at_least_1_website">Povoľte aspoň jednu webovú stránku pre každú kategóriu.</string>
     <string name="warning_import_csv">UPOZORNENIE: Import údajov môže aktualizovať existujúce záznamy kníh novými informáciami, ak stĺpec UUID nie je prítomný a ID v importovanom súbore je rovnaké ako existujúce ID. Zvyčajne je to v poriadku, ak ste zmenili pole v exportovanom súbore. Ak ste vytvorili nový záznam knihy alebo importujete knihy niekoho iného, uistite sa, že pole UUID je prítomné alebo je pole ID prázdne.</string>
     <string name="progress_msg_searching">Vyhľadáva sa…</string>
-    <string name="warning_cannot_delete_only_bookshelf">Máš iba jednu knižnicu, preto ju nemôžeš odstrániť.</string>
+    <string name="warning_cannot_delete_only_bookshelf">Máš iba jednu policu na knihy, preto ju nemôžeš odstrániť.</string>
     <string name="warning_already_in_list">Už je v zozname!</string>
     <string name="warning_no_matching_book_found">Žiadna zodpovedajúca kniha nebola nájdená</string>
     <string name="progress_msg_rebuilding_search_index">Obnovuje sa index vyhľadávania…</string>
@@ -697,7 +694,7 @@
     <string name="option_level_reset">Preferovaná úroveň rozbalenia</string>
     <string name="option_cover_replace_from_alt_editions">Z iných vydaní…</string>
     <string name="confirm_delete_toc_entry_from_x_books">Odstrániť „%1$s“ od %2$s?\n\nBude odstránená z %3$s. Samotné knihy nebudú odstránené.</string>
-    <string name="confirm_delete_bookshelf_from_x_books">Odstrániť knižnicu „%1$s“?\n\nBude odstránená z %2$s. Samotné knihy nebudú odstránené. Stále budú prítomné na všetkých ostatných policiach alebo na polici „%3$s“.</string>
+    <string name="confirm_delete_bookshelf_from_x_books">Odstrániť policu „%1$s“?\n\nBude odstránená z %2$s. Samotné knihy nebudú odstránené. Stále budú prítomné na všetkých ostatných policiach alebo na polici „%3$s“.</string>
     <string name="confirm_delete_series_from_x_books">Odstrániť sériu „%1$s“?\n\nBude odstránená z %2$s. Samotné knihy nebudú odstránené. Zvážte úpravu série a zmenu názvu série na názov inej série, aby ste zachovali tieto údaje.</string>
     <string name="option_level_expand">Rozbaliť všetko</string>
     <string name="confirm_merge_tags">Štítok, ktorý upravujete, už existuje. Chcete ich zlúčiť?</string>
