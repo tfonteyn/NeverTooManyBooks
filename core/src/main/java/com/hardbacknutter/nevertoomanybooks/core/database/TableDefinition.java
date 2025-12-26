@@ -37,6 +37,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 
@@ -131,7 +132,12 @@ public class TableDefinition {
                           final boolean withDomainConstraints) {
         final TableInfo ti = getTableInfo(db);
         if (!ti.exists()) {
-            db.execSQL(getCreateStatement(name, withDomainConstraints));
+            final String createStatement = getCreateStatement(name, withDomainConstraints);
+            if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "execute", createStatement);
+            }
+            db.execSQL(createStatement);
             return true;
         } else {
             LoggerFactory.getLogger().w(TAG, "create: table already exists: " + name);

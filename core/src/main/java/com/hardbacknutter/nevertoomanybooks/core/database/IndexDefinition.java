@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,10 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
+import com.hardbacknutter.util.logger.LoggerFactory;
+
 /**
  * Class to store an index using a table name and a list of domain definitions.
  */
 class IndexDefinition {
+
+    private static final String TAG = "IndexDefinition";
 
     /** Table to which index applies. */
     @NonNull
@@ -73,7 +79,12 @@ class IndexDefinition {
      */
     public void create(@NonNull final SQLiteDatabase db,
                        final boolean collationCaseSensitive) {
-        db.execSQL(getCreateStatement(collationCaseSensitive));
+        final String createStatement = getCreateStatement(collationCaseSensitive);
+        if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "execute", createStatement);
+        }
+        db.execSQL(createStatement);
     }
 
     /**
