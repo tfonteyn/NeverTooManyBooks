@@ -163,13 +163,13 @@ class CoverHelper {
             // 2. Uses the UiThread to display it.
             // 3. Start a subsequent task to send it to the cache.
             // Any errors are ignored
-            imageLoader.fromFile(coverView, oFile.get(), bitmap ->
+            imageLoader.fromFile(uuid, 0, oFile.get(), coverView, bitmap ->
                     coverStorage.saveToCache(uuid, 0, bitmap, cachedImageWidth));
         } else {
             // 1. Starts a task to get the image from the file system.
             // 2. Uses the UiThread to display it.
             // Any errors are ignored
-            imageLoader.fromFile(coverView, oFile.get(), null);
+            imageLoader.fromFile(uuid, 0, oFile.get(), coverView, null);
         }
         // the image was/will-be displayed or a placeholder was shown.
         return true;

@@ -393,7 +393,7 @@ class CoverBrowserDelegate
         if (imageFileInfo != null) {
             final Optional<File> file = imageFileInfo.getFile();
             if (file.isPresent()) {
-                previewLoader.fromFile(vb.preview, file.get(), bitmap -> {
+                previewLoader.fromFile(null, 0, file.get(), vb.preview, bitmap -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     vm.setSelectedFile(file.get());
                     vb.lblPreview.setVisibility(View.VISIBLE);
@@ -535,7 +535,7 @@ class CoverBrowserDelegate
                 final Optional<File> file = imageFileInfo.getFile();
                 if (file.isPresent()) {
                     // YES, load it into the view.
-                    imageLoader.fromFile(holder.vb.coverImage0, file.get(), null);
+                    imageLoader.fromFile(null, position, file.get(), holder.vb.coverImage0, null);
 
                     holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
                     holder.vb.coverImage0.setOnClickListener(

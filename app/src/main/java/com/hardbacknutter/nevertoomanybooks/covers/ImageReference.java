@@ -22,14 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.widget.ImageView;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
-import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -38,41 +35,27 @@ public class ImageReference {
     @NonNull
     private final WeakReference<ImageView> viewReference;
     @NonNull
-    private final UUID taskUuid;
+    private final String taskUuid;
 
-    @UiThread
-    public ImageReference(@NonNull final ImageView view) {
-        taskUuid = UUID.randomUUID();
+    ImageReference(@Nullable final String uuid,
+                   final int cIdx,
+                   @NonNull final ImageView view) {
+        taskUuid = uuid != null ? uuid + '_' + cIdx : String.valueOf(cIdx);
         view.setTag(R.id.TAG_THUMBNAIL_TASK, taskUuid);
         this.viewReference = new WeakReference<>(view);
     }
 
     /**
-     * Get the actual View.
-     * <p>
-     * The view association will be cleared.
-     * This method should only be called once after background work
-     * is finished.
+     * Get the View.
      *
-     * @return view, or {@code null} if the view was no longer associated.
+     * @return view, or {@code null} if the view was no longer available or associated.
      */
-    @UiThread
     @Nullable
     public ImageView getView() {
         final ImageView view = viewReference.get();
-        final boolean associated = isAssociated(view);
-        // always clear the association, but do NOT clear the local taskUuid.
-        view.setTag(R.id.TAG_THUMBNAIL_TASK, null);
-        return associated ? view : null;
+        if (view == null || !Objects.equals(taskUuid, view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
+            return null;
+        }
+        return view;
     }
-
-    @AnyThread
-    boolean isAssociated() {
-        return isAssociated(viewReference.get());
-    }
-
-    private boolean isAssociated(@Nullable final ImageView view) {
-        return view != null && Objects.equals(taskUuid, view.getTag(R.id.TAG_THUMBNAIL_TASK));
-    }
-
 }
