@@ -248,28 +248,27 @@
          Mainly of interest for comics and maybe audiobooks.
          See {@link AuthorRole} class for the values.
          MultiSelectListPreference, i.e. each item is a checkbox, the user can select any/all.
+
+         Not all values are listed to keep it simple... will add more when users ask/complain.
          -->
     <string-array name="pe_author_type">
         <item>@string/lbl_author_role_writer</item>
-        <item>@string/lbl_author_role_translator</item>
+        <item>@string/lbl_author_role_artist</item>
         <item>@string/lbl_author_role_editor</item>
         <item>@string/lbl_author_role_narrator</item>
-        <item>@string/lbl_author_role_artist</item>
-        <item>@string/lbl_author_role_colorist</item>
+        <item>@string/lbl_author_role_translator</item>
     </string-array>
     <!-- MultiSelectListPreference: use bitmask values: 1,2,4,8,...-->
     <string-array name="pv_author_type">
         <!-- writer: 1 -->
         <item>1</item>
-        <!-- translator: 1<<4 -->
-        <item>16</item>
+        <!-- artist: 1<<12 -->
+        <item>4096</item>
         <!-- editor: 1<<6 -->
         <item>64</item>
         <!-- narrator: 1<<10 -->
         <item>1024</item>
-        <!-- artist: 1<<12 -->
-        <item>4096</item>
-        <!-- colorist: 1<<15 -->
-        <item>32768</item>
+        <!-- translator: 1<<4 -->
+        <item>16</item>
     </string-array>
 </resources>
