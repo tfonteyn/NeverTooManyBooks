@@ -71,6 +71,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -128,12 +129,14 @@ class BooklistBuilder {
     private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_ = "SELECT ";
     private static final String UPDATE_ = "UPDATE ";
+    private static final String WITH_ = "WITH ";
 
     private static final String _AND_ = " AND ";
     private static final String _AS_ = " AS ";
     private static final String _BEGIN_ = " BEGIN ";
     private static final String _FROM_ = " FROM ";
     private static final String _GROUP_BY_ = " GROUP BY ";
+    private static final String _LIMIT_1 = " LIMIT 1";
     private static final String _ON_ = " ON ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _SET_ = " SET ";
@@ -146,9 +149,19 @@ class BooklistBuilder {
      * as used in the ViewPager displaying individual books.
      */
     private static final Domain DOM_FK_BL_ROW_ID;
-
+    /**
+     * Replaces {@link DBDefinitions#TBL_BOOK_AUTHOR} when there is
+     * a user preferred primary author role set.
+     **/
+    private static final TableDefinition TBL_WITH_AUTHOR;
 
     static {
+        TBL_WITH_AUTHOR =
+                new TableDefinition("with_author", TBL_BOOK_AUTHOR.getAlias())
+                        .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                        .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                        .addReference(TBL_PSEUDONYM_AUTHOR, DOM_FK_AUTHOR);
+
         DOM_FK_BL_ROW_ID =
                 new Domain.Builder(FK_ROW_ID, SqLiteDataType.Integer)
                         .notNull()
@@ -628,7 +641,22 @@ class BooklistBuilder {
                          .add("0" + _AS_ + DOM_BL_NODE_VISIBLE.getName());
         }
 
-        return INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
+        // Depending on these two flags, we join with the authors
+        // in 3 different ways.
+        final int primaryAuthorRole = style.getPrimaryAuthorRole();
+        final boolean underEach = style.isShowBooksUnderEachGroup(
+                Style.UnderEach.Author.getGroupId());
+        // Two of those need a temporary table as a WITH clause.
+        final CharSequence prefixWithAuthor;
+        if (primaryAuthorRole != AuthorRole.UNKNOWN && !underEach) {
+            prefixWithAuthor = withAuthor(primaryAuthorRole);
+        } else {
+            prefixWithAuthor = "";
+        }
+
+        //noinspection StringConcatenationMissingWhitespace
+        return prefixWithAuthor
+               + INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                + SELECT_ + sourceColumns + _FROM_ + buildFrom(userLocale) + buildWhere()
                + _ORDER_BY_ + buildOrderBy(collationCaseSensitive);
     }
@@ -696,7 +724,8 @@ class BooklistBuilder {
 
         // We always want the primary author id in the cursor.
         // We add that id in {@link #addBookLevelDomains} see comments there
-        joinWithAuthors(sb);
+        sb.append(joinWithAuthors());
+        // Make sure we don't link twice
         extraJoins.remove(TBL_BOOK_AUTHOR.getName());
 
         // URGENT: BooklistGroup joins need to be done via callbacks.
@@ -756,43 +785,106 @@ class BooklistBuilder {
         return sb.toString();
     }
 
-    private void joinWithAuthors(@NonNull final StringBuilder sb) {
-        // Join with the link table between Book and Author.
-        sb.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
-        // If the user wants the book to show ONLY under its primary Author...
-        if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Author.getGroupId())) {
-            // then extend the join filtering on the primary Author
-            sb.append(_AND_);
+    @NonNull
+    private CharSequence withAuthor(final int primaryAuthorRole) {
+        // Table alias
+        final String baOuter = "ba_outer";
 
-            @AuthorRole.Role
-            final int primaryAuthorRole = style.getPrimaryAuthorRole();
-            if (primaryAuthorRole == AuthorRole.UNKNOWN) {
-                // The user has no specific role set, so just grab the first one (i.e. pos==1)
-                sb.append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1");
-            } else {
-                // URGENT: #82 https://github.com/tfonteyn/NeverTooManyBooks/issues/82
-                // grab the desired role, or if no such role, grab the first one anyway
-                //   (
-                //      ((role & ROLE)<>0)
-                //   OR
-                //      (((role &~ ROLE)=0) AND pos=1)
-                //   )
-                sb.append("(((")
-                  // the role is an exact match
-                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_ROLE))
-                  .append(" & ").append(primaryAuthorRole).append(")<>0)")
-                  .append(" OR (((")
-                  // grab the first one
-                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_ROLE))
-                  .append(" &~ ").append(primaryAuthorRole).append(")=0)")
-                  .append(_AND_)
-                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1))");
-            }
+        // This sub-query picks the ID of the ONE author that is
+        // either the desired primary, or on position=1
+
+        final String subQuery =
+                SELECT_ + TBL_BOOK_AUTHOR.dotAs(DBKey.FK_AUTHOR)
+                + _FROM_ + TBL_BOOK_AUTHOR.ref()
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + '=' + baOuter + '.' + DBKey.FK_BOOK
+                + _ORDER_BY_
+                // Note the explicit ASC... the internet says its "safer" to add it for that
+                // bit compare clause (and the internet is always right...).
+                // The brackets around this part are mandatory.
+                + "(("
+                + TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_ROLE)
+                + '&' + primaryAuthorRole + ")==0) ASC"
+                + ','
+                // Added ASC for consistency.
+                + TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION) + " ASC"
+                + _LIMIT_1;
+
+        return WITH_ + TBL_WITH_AUTHOR.getName() + _AS_ + '('
+               + SELECT_ + baOuter + '.' + DBKey.FK_BOOK
+               + ',' + '(' + subQuery + ')' + _AS_ + DBKey.FK_AUTHOR
+               + _FROM_ + TBL_BOOK_AUTHOR.getName() + _AS_ + baOuter
+               + _GROUP_BY_ + baOuter + '.' + DBKey.FK_BOOK
+               // don't forget we're appending the bulk insert sql, so add the SPACE
+               + ") ";
+    }
+
+    @NonNull
+    private CharSequence joinWithAuthors() {
+        // Books with multiple authors are listed under each author
+        // The position or the preferred role is not applicable.
+        if (style.isShowBooksUnderEachGroup(
+                Style.UnderEach.Author.getGroupId())) {
+            return joinAuthorsUnderEach();
         }
+
+        // The user has a specific primary author role preference
+        if (style.getPrimaryAuthorRole() != AuthorRole.UNKNOWN) {
+            return joinAuthorsWithPreferredPrimaryRole();
+        }
+
+        // The default is to simply show the author in position==1
+        return joinAuthorsOnPosition1();
+    }
+
+    @NonNull
+    private CharSequence joinAuthorsOnPosition1() {
+        @NonNull
+        final StringBuilder sb = new StringBuilder();
+        // Join with the link table between Book and Author.
+        sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_AUTHOR));
+
+        // then extend the join filtering on the primary Author
+        sb.append(_AND_);
+        // The user has no specific role set, so just grab the first one (i.e. pos==1)
+        sb.append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1");
+
         // Join with Authors to make the names available
-        sb.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
-        // and potential 'real' names if this one is a pseudonym
+        sb.append(TBL_BOOK_AUTHOR.leftOuterJoin(TBL_AUTHORS));
+
+        // join with any 'real' names if this one is a pseudonym
         sb.append(TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR));
+        return sb;
+    }
+
+    @NonNull
+    private CharSequence joinAuthorsWithPreferredPrimaryRole() {
+        @NonNull
+        final StringBuilder sb = new StringBuilder();
+
+        // Join with the TBL_WITH_AUTHOR link table between Book and Author.
+        sb.append(TBL_BOOKS.leftOuterJoin(TBL_WITH_AUTHOR));
+
+        // Join with Authors to make the names available
+        sb.append(TBL_WITH_AUTHOR.leftOuterJoin(TBL_AUTHORS));
+
+        // join with any 'real' names if this one is a pseudonym
+        sb.append(TBL_WITH_AUTHOR.leftOuterJoin(TBL_PSEUDONYM_AUTHOR));
+        return sb;
+    }
+
+    @NonNull
+    private CharSequence joinAuthorsUnderEach() {
+        @NonNull
+        final StringBuilder sb = new StringBuilder();
+        // Join with the link table between Book and Author.
+        sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_AUTHOR));
+
+        // Join with Authors to make the names available
+        sb.append(TBL_BOOK_AUTHOR.leftOuterJoin(TBL_AUTHORS));
+
+        // join with any 'real' names if this one is a pseudonym
+        sb.append(TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR));
+        return sb;
     }
 
     private void joinWithSeries(@NonNull final StringBuilder sb) {
