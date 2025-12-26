@@ -103,7 +103,7 @@ class IndexDefinition {
         sql.append(" INDEX ").append(table.getName()).append("_IDX_").append(nameSuffix)
            .append(" ON ").append(table.getName())
            .append(domains.stream()
-                          .map(domain -> domain.getOrderByString(Sort.Unsorted,
+                          .map(domain -> domain.getOrderByString(domain.getIndexSortingOrder(),
                                                                  collationCaseSensitive))
                           .collect(Collectors.joining(",", "(", ")")));
 

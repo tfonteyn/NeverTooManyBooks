@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -711,12 +712,14 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.FIRST_PUBLICATION_DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
+                        .setIndexSortingOrder(Sort.Desc)
                         .build();
 
         DOM_LAST_UPDATED__UTC =
                 new Domain.Builder(DBKey.DATE_LAST_UPDATED__UTC, SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultCurrentTimeStamp()
+                        .setIndexSortingOrder(Sort.Desc)
                         .build();
 
         /* ======================================================================================
@@ -891,6 +894,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.PUBLICATION_DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
+                        .setIndexSortingOrder(Sort.Desc)
                         .build();
 
         DOM_BOOK_PRINT_RUN =
@@ -973,6 +977,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.DATE_ACQUIRED, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
+                        .setIndexSortingOrder(Sort.Desc)
                         .build();
 
         DOM_BOOK_PRICE_PAID =
@@ -991,6 +996,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.DATE_ADDED__UTC, SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultCurrentTimeStamp()
+                        .setIndexSortingOrder(Sort.Desc)
                         .build();
 
         DOM_BOOK_LOCATION =

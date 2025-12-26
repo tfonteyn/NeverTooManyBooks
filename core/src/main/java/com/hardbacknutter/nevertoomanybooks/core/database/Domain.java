@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,6 +61,9 @@ public class Domain {
     @NonNull
     private final String collationClause;
 
+    @NonNull
+    private Sort indexSortingOrder;
+
     /**
      * Full, private constructor.
      *
@@ -74,6 +77,7 @@ public class Domain {
         unique = builder.unique;
         defaultClause = builder.defaultClause;
         references = builder.references;
+        indexSortingOrder = builder.indexSortingOrder;
 
         if (builder.collationLocalized) {
             collationClause = " COLLATE LOCALIZED";
@@ -215,6 +219,11 @@ public class Domain {
         return defaultClause;
     }
 
+    @NonNull
+    public Sort getIndexSortingOrder() {
+        return indexSortingOrder;
+    }
+
     /**
      * toString() <strong>NOT DEBUG, must only ever return the column name</strong>.
      *
@@ -303,6 +312,8 @@ public class Domain {
         @Nullable
         private String references;
         private boolean collationLocalized;
+        @NonNull
+        private Sort indexSortingOrder = Sort.Unsorted;
 
         /**
          * Constructor.
@@ -433,6 +444,20 @@ public class Domain {
         @NonNull
         public Builder localized() {
             collationLocalized = true;
+            return this;
+        }
+
+        /**
+         * Explicitly set the order for the domain when used as an indexing column.
+         * The default is {@link Sort#Unsorted}.
+         *
+         * @param indexSortingOrder sort
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setIndexSortingOrder(@NonNull final Sort indexSortingOrder) {
+            this.indexSortingOrder = indexSortingOrder;
             return this;
         }
 

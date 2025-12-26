@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,11 @@ import androidx.annotation.NonNull;
 
 public enum Sort
         implements Parcelable {
+    /**
+     * Explicitly designate a field to be unsorted.
+     * In SQL, this means it will become {@code ASC}
+     * but in Java code we can handle it as true unsorted.
+     */
     Unsorted("", '˗'),
     // " ASC" is the default, so don't bother adding it
     Asc("", '˄'),
