@@ -147,10 +147,6 @@ class BooklistBuilder {
      */
     private static final Domain DOM_FK_BL_ROW_ID;
 
-    /** Table alias prefix. */
-    private static final String TA_SUMS_ = "sums_";
-    /** Column alias. */
-    private static final String CA_SUM = "cnt";
 
     static {
         DOM_FK_BL_ROW_ID =
@@ -1195,14 +1191,17 @@ class BooklistBuilder {
                                   @NonNull final List<String> keyColumns,
                                   final int level,
                                   @NonNull final String operation) {
-        final String taSums = TA_SUMS_ + level;
+        // table alias
+        final String taSums = "sums_" + level;
+        // Column alias.
+        final String caSum = "cnt";
 
         // Paranoia...
         db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
         // Temp table to hold the count/sums before we run the update
         final String selectKeys = String.join(",", keyColumns);
         db.execSQL(CREATE_TEMP_TABLE_ + taSums + _AS_
-                   + SELECT_ + selectKeys + ',' + operation + _AS_ + CA_SUM
+                   + SELECT_ + selectKeys + ',' + operation + _AS_ + caSum
                    + _FROM_ + listTable.getName()
                    + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + level
                    + _GROUP_BY_ + selectKeys);
@@ -1212,7 +1211,7 @@ class BooklistBuilder {
         final String whereKeys = createKeyEquality(keyColumns, taSums);
         final String s =
                 UPDATE_ + listTable.getName() + _SET_ + DBKey.FK_BOOK + '='
-                + '(' + SELECT_ + CA_SUM + _FROM_ + taSums + _WHERE_ + whereKeys + ')'
+                + '(' + SELECT_ + caSum + _FROM_ + taSums + _WHERE_ + whereKeys + ')'
                 + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + (level - 1)
                 + _AND_
                 + "EXISTS (" + SELECT_ + '1' + _FROM_ + taSums + _WHERE_ + whereKeys + ')';
