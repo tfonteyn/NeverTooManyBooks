@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -1068,28 +1069,46 @@ public class AuthorDaoImpl
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
 
 
+        /**
+         * 2025-12: we're using LEFT JOIN now... so eliminate nulls.
+         * This is paranoia... we're already/supposed to filter for null->""
+         * when we get the fields from the {@link DataHolder}
+         */
+        @SuppressWarnings("CheckStyle")
+        private static String COALESCE(@NonNull final String column) {
+            return "COALESCE(" + column + ",'')";
+        }
+
         /** Column definition for sorting by given-names first. */
         static final String SORT_AUTHOR_GIVEN_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
+                CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)) + "=''"
+                + _THEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB))
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)
                 + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
                 + _END;
 
         /** Column definition for sorting by family-name first. */
         static final String SORT_AUTHOR_FAMILY_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
+                CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)) + "=''"
+                + _THEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB))
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
                 + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)
                 + _END;
 
         /** Column definition for displaying by given-names first. */
         static final String DISPLAY_AUTHOR_GIVEN_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
+                CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)) + "=''"
+                + _THEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME))
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)
                 + "||' '||" + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
+                + _END;
+
+        /** Column definition for displaying by family-name first. */
+        static final String DISPLAY_AUTHOR_FAMILY_FIRST =
+                CASE_WHEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)) + "=''"
+                + _THEN_ + COALESCE(TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME))
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
+                + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)
                 + _END;
 
         /** Get a list of {@link Author} "given family" names for use in a dropdown selection. */
@@ -1098,14 +1117,6 @@ public class AuthorDaoImpl
                 + _FROM_ + TBL_AUTHORS.ref()
                 + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
-
-        /** Column definition for displaying by family-name first. */
-        static final String DISPLAY_AUTHOR_FAMILY_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
-                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
-                + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)
-                + _END;
 
         /** Get a list of {@link Author} "family, given" names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
