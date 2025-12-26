@@ -23,7 +23,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -203,7 +202,6 @@ public class TableDefinition {
      *
      * @return the table alias name
      */
-    @VisibleForTesting
     @NonNull
     public String getAlias() {
         return alias;
