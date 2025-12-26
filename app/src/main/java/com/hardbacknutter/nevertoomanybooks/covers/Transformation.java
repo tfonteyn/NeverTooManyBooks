@@ -203,7 +203,7 @@ class Transformation {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 if (scale) {
-                    bitmap = decodeAndScaleApi28(srcFile);
+                    bitmap = Api28Impl.decodeAndScaleApi28(srcFile, maxWidth, maxHeight);
                 } else {
                     bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(srcFile));
                 }
@@ -296,43 +296,6 @@ class Transformation {
         return rotation;
     }
 
-    /**
-     * Decode a file path into a bitmap and scale it to fit the given bounds
-     * while preserving the aspect ratio.
-     * <p>
-     * This is slightly different from the API-26 logic, where the calculation
-     * was the smallest possible larger than the requested dimensions
-     * and to leave the last step to the ImageView scaler.
-     *
-     * @param file to be decoded.
-     *
-     * @return the decoded bitmap
-     *
-     * @throws IOException on decoding failures
-     */
-    @RequiresApi(Build.VERSION_CODES.P)
-    @NonNull
-    private Bitmap decodeAndScaleApi28(@NonNull final File file)
-            throws IOException {
-        final ImageDecoder.Source source = ImageDecoder.createSource(file);
-
-        return ImageDecoder.decodeBitmap(source, (decoder, info, src) -> {
-            final int srcWidth = info.getSize().getWidth();
-            final int srcHeight = info.getSize().getHeight();
-
-            // Calculate scale to fit
-            final float scaleX = (float) maxWidth / srcWidth;
-            final float scaleY = (float) maxHeight / srcHeight;
-            final float scaling = Math.min(scaleX, scaleY);
-
-            if (scaling < 1.0f) {
-                final int targetWidth = (int) Math.ceil(srcWidth * scaling);
-                final int targetHeight = (int) Math.ceil(srcHeight * scaling);
-                decoder.setTargetSize(targetWidth, targetHeight);
-            }
-        });
-    }
-
     @Nullable
     private Bitmap decodeAndScaleApi26(@NonNull final String pathName) {
         // First decode with inJustDecodeBounds=true to get the dimensions ('out' values)
@@ -357,5 +320,48 @@ class Transformation {
         // Decode bitmap for real
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(pathName, options);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private static final class Api28Impl {
+        /**
+         * Decode a file path into a bitmap and scale it to fit the given bounds
+         * while preserving the aspect ratio.
+         * <p>
+         * This is slightly different from the API-26 logic, where the calculation
+         * was the smallest possible larger than the requested dimensions
+         * and to leave the last step to the ImageView scaler.
+         *
+         * @param file      to be decoded.
+         * @param maxWidth  Maximum desired width of the image
+         * @param maxHeight Maximum desired height of the image
+         *
+         * @return the decoded bitmap
+         *
+         * @throws IOException on decoding failures
+         */
+        @NonNull
+        static Bitmap decodeAndScaleApi28(@NonNull final File file,
+                                          final int maxWidth,
+                                          final int maxHeight)
+                throws IOException {
+            final ImageDecoder.Source source = ImageDecoder.createSource(file);
+
+            return ImageDecoder.decodeBitmap(source, (decoder, info, src) -> {
+                final int srcWidth = info.getSize().getWidth();
+                final int srcHeight = info.getSize().getHeight();
+
+                // Calculate scale to fit
+                final float scaleX = (float) maxWidth / srcWidth;
+                final float scaleY = (float) maxHeight / srcHeight;
+                final float scaling = Math.min(scaleX, scaleY);
+
+                if (scaling < 1.0f) {
+                    final int targetWidth = (int) Math.ceil(srcWidth * scaling);
+                    final int targetHeight = (int) Math.ceil(srcHeight * scaling);
+                    decoder.setTargetSize(targetWidth, targetHeight);
+                }
+            });
+        }
     }
 }
