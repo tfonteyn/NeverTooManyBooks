@@ -94,11 +94,12 @@ public class DBHelper
      * v7.8.2: 44
      * v7.8.3: 45
      * v7.10.0: 46
-     * v7.11.0: 47
+     * (47 was dev only)
+     * v7.11.0: 48
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 47;
+    public static final int DATABASE_VERSION = 48;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -478,6 +479,9 @@ public class DBHelper
             // github #216 fix/improvements
             CleanOptions.setOptions(context, Set.of(CleanOptions.ResolveAuthors));
             StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
+        }
+        if (oldVersion < 48) {
+            // Nothing, but we needed to trigger recreating the indexes
         }
 
         // We have to do this here as we're always inserting all columns,

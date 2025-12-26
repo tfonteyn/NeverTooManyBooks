@@ -1510,9 +1510,14 @@ public final class DBDefinitions {
                             DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY,
                             DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.STYLE.UUID, true, DOM_STYLE_UUID)
-                .addIndex(DBKey.STYLE.NAME, true, DOM_STYLE_NAME)
-                .addIndex(DBKey.STYLE.MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
+                .addIndex(DBKey.STYLE.UUID, true,
+                          DOM_STYLE_UUID)
+                .addIndex(DBKey.STYLE.NAME, true,
+                          DOM_STYLE_NAME)
+                .addIndex(DBKey.STYLE.MENU_POSITION, false,
+                          DOM_STYLE_MENU_POSITION,
+                          DOM_STYLE_NAME,
+                          DOM_PK_ID);
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
         /* ======================================================================================
@@ -1527,7 +1532,10 @@ public final class DBDefinitions {
                             DOM_BOOKSHELF_BL_TOP_OFFSET)
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_BOOKLIST_STYLES, DOM_FK_STYLE)
-                .addIndex(DBKey.BOOKSHELF.NAME, true, DOM_BOOKSHELF_NAME);
+                .addIndex("SORT", true,
+                          DOM_BOOKSHELF_NAME)
+                .addIndex(DBKey.FK_STYLE, false,
+                          DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOKSHELF.getName(), TBL_BOOKSHELF);
 
         TBL_BOOKSHELF_FILTERS
@@ -1548,14 +1556,21 @@ public final class DBDefinitions {
                             DOM_IDENTIFIER_BOOK_URI,
                             DOM_IDENTIFIER_AUTHOR_URI)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.IDENTIFIERS.KEY, true, DOM_IDENTIFIER_KEY);
+                .addIndex(DBKey.IDENTIFIERS.KEY, true,
+                          DOM_IDENTIFIER_KEY)
+                .addIndex(DBKey.IDENTIFIERS.NAME, false,
+                          DOM_IDENTIFIER_NAME,
+                          DOM_IDENTIFIER_KEY,
+                          DOM_IDENTIFIER_TYPE);
         ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);
 
         TBL_TAGS
                 .addDomains(DOM_PK_ID,
                             DOM_TAG)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.TAGS.TAG, false, DOM_TAG);
+                // for historic reasons NOT unique
+                .addIndex(DBKey.TAGS.TAG, false,
+                          DOM_TAG);
         ALL_TABLES.put(TBL_TAGS.getName(), TBL_TAGS);
 
         TBL_TAG_MAPPINGS
@@ -1587,10 +1602,14 @@ public final class DBDefinitions {
                             DOM_AUTHOR_PICTURE_UUID,
                             DOM_AUTHOR_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.AUTHOR.FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
-                .addIndex(DBKey.AUTHOR.FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
-                .addIndex(DBKey.AUTHOR.GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
-                .addIndex(DBKey.AUTHOR.GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
+                .addIndex("SORT", false,
+                          DOM_AUTHOR_FAMILY_NAME_OB,
+                          DOM_AUTHOR_GIVEN_NAMES_OB,
+                          DOM_AUTHOR_FAMILY_NAME,
+                          DOM_AUTHOR_GIVEN_NAMES)
+                .addIndex("DISPLAY", false,
+                          DOM_AUTHOR_FAMILY_NAME,
+                          DOM_AUTHOR_GIVEN_NAMES);
         ALL_TABLES.put(TBL_AUTHORS.getName(), TBL_AUTHORS);
 
         TBL_SERIES
@@ -1599,9 +1618,11 @@ public final class DBDefinitions {
                             DOM_SERIES_TITLE_OB,
                             DOM_SERIES_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DBKey.SERIES.TITLE_OB, false, DOM_SERIES_TITLE_OB)
-                .addIndex(DBKey.SERIES.TITLE, false, DOM_SERIES_TITLE);
+                .addIndex("SORT", false,
+                          DOM_SERIES_TITLE_OB,
+                          DOM_SERIES_TITLE)
+                .addIndex("DISPLAY", false,
+                          DOM_SERIES_TITLE);
         ALL_TABLES.put(TBL_SERIES.getName(), TBL_SERIES);
 
         TBL_PUBLISHERS
@@ -1609,9 +1630,11 @@ public final class DBDefinitions {
                             DOM_PUBLISHER_NAME,
                             DOM_PUBLISHER_NAME_OB)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DBKey.PUBLISHER.NAME_OB, false, DOM_PUBLISHER_NAME_OB)
-                .addIndex(DBKey.PUBLISHER.NAME, false, DOM_PUBLISHER_NAME);
+                .addIndex("SORT", false,
+                          DOM_PUBLISHER_NAME_OB,
+                          DOM_PUBLISHER_NAME)
+                .addIndex("DISPLAY", false,
+                          DOM_PUBLISHER_NAME);
         ALL_TABLES.put(TBL_PUBLISHERS.getName(), TBL_PUBLISHERS);
 
         TBL_BOOKS
@@ -1662,11 +1685,31 @@ public final class DBDefinitions {
                             DOM_LAST_UPDATED__UTC)
 
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB)
-                .addIndex(DBKey.TITLE, false, DOM_TITLE)
-                .addIndex(DBKey.ISBN, false, DOM_BOOK_ISBN)
-                .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID)
-                .addIndex(DBKey.PUBLICATION_DATE, false, DOM_BOOK_DATE_PUBLISHED);
+                .addIndex("SORT", false,
+                          DOM_TITLE_OB,
+                          DOM_TITLE)
+                .addIndex(DBKey.BOOK_UUID, true,
+                          DOM_BOOK_UUID)
+                .addIndex(DBKey.ISBN, false,
+                          DOM_BOOK_ISBN)
+
+                .addIndex(DBKey.TITLE, false,
+                          DOM_TITLE)
+
+                .addIndex(DBKey.DATE_LAST_UPDATED__UTC, false,
+                          DOM_LAST_UPDATED__UTC)
+                .addIndex(DBKey.DATE_ADDED__UTC, false,
+                          DOM_DATE_ADDED__UTC)
+                .addIndex(DBKey.DATE_ACQUIRED, false,
+                          DOM_BOOK_DATE_ACQUIRED)
+
+                .addIndex(DBKey.FIRST_PUBLICATION_DATE, false,
+                          DOM_DATE_FIRST_PUBLICATION,
+                          DOM_TITLE_OB)
+                .addIndex(DBKey.PUBLICATION_DATE, false,
+                          DOM_BOOK_DATE_PUBLISHED,
+                          DOM_TITLE_OB);
+
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
         TBL_DELETED_BOOKS.addDomains(DOM_BOOK_UUID,
@@ -1682,8 +1725,15 @@ public final class DBDefinitions {
                             DOM_DATE_FIRST_PUBLICATION)
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
-                .addIndex(DBKey.FK_AUTHOR, false, DOM_FK_AUTHOR)
-                .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB);
+                .addIndex(DBKey.TITLE_OB, false,
+                          DOM_TITLE_OB,
+                          DOM_TITLE,
+                          DOM_FK_AUTHOR)
+                .addIndex(DBKey.FK_AUTHOR, false,
+                          DOM_FK_AUTHOR,
+                          DOM_TITLE_OB)
+                .addIndex(DBKey.TITLE, false,
+                          DOM_TITLE);
         ALL_TABLES.put(TBL_TOC_ENTRIES.getName(), TBL_TOC_ENTRIES);
 
 
@@ -1707,8 +1757,11 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_AUTHOR_PSEUDONYM)
                 .addReference(TBL_AUTHORS, DOM_AUTHOR_PSEUDONYM)
                 .addReference(TBL_AUTHORS, DOM_AUTHOR_REAL_AUTHOR)
-                .addIndex(DBKey.FK_AUTHOR_PSEUDONYM, true, DOM_AUTHOR_PSEUDONYM)
-                .addIndex(DBKey.FK_AUTHOR_REAL_AUTHOR, false, DOM_AUTHOR_REAL_AUTHOR);
+                // Reverse lookup
+                // Not unique, an author can have multiple pseudonyms
+                .addIndex(DBKey.FK_AUTHOR_REAL_AUTHOR, false,
+                          DOM_AUTHOR_REAL_AUTHOR,
+                          DOM_AUTHOR_PSEUDONYM);
         ALL_TABLES.put(TBL_PSEUDONYM_AUTHOR.getName(), TBL_PSEUDONYM_AUTHOR);
 
 
@@ -1718,8 +1771,10 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_BOOKSHELF)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
-                .addIndex(DBKey.FK_BOOK, false, DOM_FK_BOOK)
-                .addIndex(DBKey.FK_BOOKSHELF, false, DOM_FK_BOOKSHELF);
+                // Reverse lookup
+                .addIndex(DBKey.FK_BOOKSHELF, true,
+                          DOM_FK_BOOKSHELF,
+                          DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_BOOKSHELF.getName(), TBL_BOOK_BOOKSHELF);
 
 
@@ -1734,12 +1789,19 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_AUTHOR, DOM_BOOK_AUTHOR_POSITION)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                // Forward
+                .addIndex(DBKey.FK_BOOK, true,
+                          DOM_FK_BOOK,
+                          DOM_BOOK_AUTHOR_POSITION,
+                          DOM_FK_AUTHOR)
+                // Reverse lookup
                 .addIndex(DBKey.FK_AUTHOR, true,
                           DOM_FK_AUTHOR,
                           DOM_FK_BOOK)
-                .addIndex(DBKey.FK_BOOK, true,
-                          DOM_FK_BOOK,
-                          DOM_FK_AUTHOR);
+                // Bitmask Optimizer: user has a preferred primary role
+                .addIndex("ROLE_POS", false,
+                          DOM_BOOK_AUTHOR_ROLE_BITMASK,
+                          DOM_BOOK_AUTHOR_POSITION);
         ALL_TABLES.put(TBL_BOOK_AUTHOR.getName(), TBL_BOOK_AUTHOR);
 
 
@@ -1758,14 +1820,16 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_SERIES_POSITION)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_SERIES, DOM_FK_SERIES)
-                .addIndex(DBKey.FK_SERIES, true,
-                          DOM_FK_SERIES,
-                          DOM_FK_BOOK,
-                          DOM_BOOK_SERIES_NUMBER)
+                // Forward
                 .addIndex(DBKey.FK_BOOK, true,
                           DOM_FK_BOOK,
+                          DOM_BOOK_SERIES_POSITION,
                           DOM_FK_SERIES,
-                          DOM_BOOK_SERIES_NUMBER);
+                          DOM_BOOK_SERIES_NUMBER)
+                // Reverse lookup; not unique, see above
+                .addIndex(DBKey.FK_SERIES, false,
+                          DOM_FK_SERIES,
+                          DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_SERIES.getName(), TBL_BOOK_SERIES);
 
 
@@ -1776,12 +1840,15 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_PUBLISHER, DOM_BOOK_PUBLISHER_POSITION)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_PUBLISHERS, DOM_FK_PUBLISHER)
-                .addIndex(DBKey.FK_PUBLISHER, true,
-                          DOM_FK_PUBLISHER,
-                          DOM_FK_BOOK)
+                // Forward
                 .addIndex(DBKey.FK_BOOK, true,
                           DOM_FK_BOOK,
-                          DOM_FK_PUBLISHER);
+                          DOM_BOOK_PUBLISHER_POSITION,
+                          DOM_FK_PUBLISHER)
+                // Reverse lookup
+                .addIndex(DBKey.FK_PUBLISHER, true,
+                          DOM_FK_PUBLISHER,
+                          DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_PUBLISHER.getName(), TBL_BOOK_PUBLISHER);
 
 
@@ -1792,8 +1859,15 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_TOC_ENTRY)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_TOC_ENTRIES, DOM_FK_TOC_ENTRY)
-                .addIndex(DBKey.FK_TOC_ENTRY, false, DOM_FK_TOC_ENTRY)
-                .addIndex(DBKey.FK_BOOK, false, DOM_FK_BOOK);
+                // Forward
+                .addIndex(DBKey.FK_BOOK, true,
+                          DOM_FK_BOOK,
+                          DOM_BOOK_TOC_ENTRY_POSITION,
+                          DOM_FK_TOC_ENTRY)
+                // Reverse lookup
+                .addIndex(DBKey.FK_TOC_ENTRY, true,
+                          DOM_FK_TOC_ENTRY,
+                          DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TOC_ENTRIES.getName(), TBL_BOOK_TOC_ENTRIES);
 
 
@@ -1803,7 +1877,14 @@ public final class DBDefinitions {
                             DOM_LOANEE)
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                .addIndex(DBKey.FK_BOOK, true, DOM_FK_BOOK);
+                // Forward
+                .addIndex(DBKey.FK_BOOK, true,
+                          DOM_FK_BOOK,
+                          DOM_LOANEE)
+                // Reverse lookup
+                .addIndex(DBKey.LOANEE_NAME, false,
+                          DOM_LOANEE,
+                          DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_LOANEE.getName(), TBL_BOOK_LOANEE);
 
         TBL_BOOK_TAG
@@ -1811,7 +1892,11 @@ public final class DBDefinitions {
                             DOM_FK_TAG)
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_TAG)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                .addReference(TBL_TAGS, DOM_FK_TAG);
+                .addReference(TBL_TAGS, DOM_FK_TAG)
+                // Reverse lookup
+                .addIndex(DBKey.FK_TAG, true,
+                          DOM_FK_TAG,
+                          DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TAG.getName(), TBL_BOOK_TAG);
 
         TBL_BOOK_IDENTIFIER
@@ -1821,7 +1906,17 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_IDENTIFIER)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
-                .addIndex(DBKey.FK_BOOK, false, DOM_FK_BOOK);
+                // Forward
+                .addIndex(DBKey.FK_BOOK, true,
+                          DOM_FK_BOOK,
+                          DOM_FK_IDENTIFIER,
+                          DOM_IDENTIFIER_SID)
+                // Reverse lookup
+                // not unique to allow for "bad data" during imports
+                .addIndex(DBKey.FK_IDENTIFIER, false,
+                          DOM_FK_IDENTIFIER,
+                          DOM_IDENTIFIER_SID,
+                          DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_IDENTIFIER.getName(), TBL_BOOK_IDENTIFIER);
 
         TBL_AUTHOR_IDENTIFIER
@@ -1831,7 +1926,16 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_AUTHOR, DOM_FK_IDENTIFIER)
                 .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
                 .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
-                .addIndex(DBKey.FK_AUTHOR, false, DOM_FK_AUTHOR);
+                // Forward
+                .addIndex(DBKey.FK_BOOK, true,
+                          DOM_FK_AUTHOR,
+                          DOM_FK_IDENTIFIER,
+                          DOM_IDENTIFIER_SID)
+                // Reverse lookup
+                .addIndex(DBKey.FK_IDENTIFIER, false,
+                          DOM_FK_IDENTIFIER,
+                          DOM_IDENTIFIER_SID,
+                          DOM_FK_AUTHOR);
         ALL_TABLES.put(TBL_AUTHOR_IDENTIFIER.getName(), TBL_AUTHOR_IDENTIFIER);
 
         TBL_CALIBRE_BOOKS
@@ -1843,8 +1947,15 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
-                // false: leave it open to have multiple calibre books (i.e. different formats)
-                .addIndex(DBKey.FK_BOOK, false, DOM_FK_BOOK);
+                // Forward
+                .addIndex(DBKey.FK_BOOK, false,
+                          DOM_FK_BOOK,
+                          DOM_CALIBRE_BOOK_ID,
+                          DOM_CALIBRE_BOOK_UUID,
+                          DOM_CALIBRE_BOOK_MAIN_FORMAT,
+                          DOM_FK_CALIBRE_LIBRARY)
+                .addIndex(DBKey.CALIBRE.BOOK_UUID, true,
+                          DOM_CALIBRE_BOOK_UUID);
         ALL_TABLES.put(TBL_CALIBRE_BOOKS.getName(), TBL_CALIBRE_BOOKS);
 
         TBL_CALIBRE_LIBRARIES
@@ -1858,7 +1969,11 @@ public final class DBDefinitions {
                 .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
                 .addIndex(DBKey.CALIBRE.LIBRARY_NAME, true,
                           DOM_CALIBRE_LIBRARY_STRING_ID,
-                          DOM_CALIBRE_LIBRARY_NAME);
+                          DOM_CALIBRE_LIBRARY_NAME)
+                .addIndex(DBKey.FK_BOOKSHELF, false,
+                          DOM_FK_BOOKSHELF)
+                .addIndex(DBKey.CALIBRE.LIBRARY_UUID, true,
+                          DOM_CALIBRE_LIBRARY_UUID);
         ALL_TABLES.put(TBL_CALIBRE_LIBRARIES.getName(), TBL_CALIBRE_LIBRARIES);
 
         TBL_CALIBRE_VIRTUAL_LIBRARIES
@@ -1872,7 +1987,9 @@ public final class DBDefinitions {
                 .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
                 .addIndex(DBKey.CALIBRE.LIBRARY_NAME, true,
                           DOM_FK_CALIBRE_LIBRARY,
-                          DOM_CALIBRE_LIBRARY_NAME);
+                          DOM_CALIBRE_LIBRARY_NAME)
+                .addIndex(DBKey.FK_BOOKSHELF, false,
+                          DOM_FK_BOOKSHELF);
         ALL_TABLES.put(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), TBL_CALIBRE_VIRTUAL_LIBRARIES);
 
         TBL_CALIBRE_CUSTOM_FIELDS
@@ -1895,7 +2012,8 @@ public final class DBDefinitions {
                             DOM_STRIP_INFO_LAST_SYNC__UTC)
                 .setPrimaryKey(DOM_FK_BOOK)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                .addIndex(DBKey.STRIP_INFO.BOOK_ID, true, DOM_STRIP_INFO_BOOK_ID);
+                .addIndex(DBKey.STRIP_INFO.BOOK_ID, true,
+                          DOM_STRIP_INFO_BOOK_ID);
         ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(), TBL_STRIPINFO_COLLECTION);
     }
 
@@ -1938,8 +2056,12 @@ public final class DBDefinitions {
                             DOM_BL_NODE_EXPANDED,
                             DOM_BL_NODE_VISIBLE)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex("BOOKSHELF_STYLE", false,
+                // for historic reasons NOT unique
+                .addIndex(DBKey.BL_NODE.KEY, false,
                           DOM_FK_BOOKSHELF,
+                          DOM_FK_STYLE,
+                          DOM_BL_NODE_KEY)
+                .addIndex(DBKey.FK_STYLE, false,
                           DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(),
                        TBL_BOOK_LIST_NODE_STATE);
