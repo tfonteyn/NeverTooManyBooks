@@ -28,14 +28,17 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
+import androidx.core.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -46,7 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * <li>{@link #dataCursorCache}: the cache where the above DataCursors are held.</li>
  * <li>{@link #currentCursor}: the current active window of rows.</li>
  * </ul>
- * TODO: https://developer.android.com/topic/libraries/architecture/paging/v3-overview
+ * Note: yes, androidx has a paging library. Given they are on incompatible version 3
+ * and google's reputation of killing / reinventing the wheel...
+ * ... we're sticking to our home-grown.
  */
 public class BooklistCursor
         implements DataHolder {
@@ -101,10 +106,27 @@ public class BooklistCursor
                 prefs.getInt(PK_LRU_LIST_MULTIPLIER, LRU_LIST_MULTIPLIER_DEFAULT),
                 LRU_LIST_MULTIPLIER_MIN, LRU_LIST_MULTIPLIER_MAX);
 
-        dataCursorCache = new DataCursorCache(lruSize, pageNum -> {
-            try (Cursor offsetCursor = this.booklist
-                    .getOffsetCursor(pageNum * pageSize, pageSize)) {
-                return new DataCursor(offsetCursor);
+        dataCursorCache = new DataCursorCache(lruSize, targetPage -> {
+
+            @NonNull
+            final Pair<Cursor, Boolean> pageData;
+            if (currentCursor == null) {
+                // Very first cursor; first/last values not used
+                pageData = this.booklist.getPageCursor(
+                        targetPage, null,
+                        -1, -1,
+                        pageSize);
+            } else {
+                pageData = this.booklist.getPageCursor(
+                        targetPage, currentCursor.getCurrentPage(),
+                        currentCursor.getFirstId(), currentCursor.getLastId(),
+                        pageSize);
+            }
+
+            // The DataCursor will read all rows from the cursor,
+            // so we can close the cursor immediately.
+            try (Cursor cursor = pageData.first) {
+                return new DataCursor(cursor, targetPage, pageData.second);
             }
         });
     }
@@ -313,19 +335,28 @@ public class BooklistCursor
     private static class DataCursor {
 
         private final List<DataManager> list = new ArrayList<>();
+        private final int currentPage;
 
         private int currentPosition = BEFORE_FIRST;
 
         /**
          * Constructor.
          *
-         * @param cursor to load. It's up to the caller to close this cursor.
+         * @param cursor      to load. It's up to the caller to close this cursor.
+         * @param currentPage the page number this cursor represents
+         * @param reverse     if {@code true} we will need to reverse the result list
          */
-        DataCursor(@NonNull final Cursor cursor) {
+        DataCursor(@NonNull final Cursor cursor,
+                   final int currentPage,
+                   final boolean reverse) {
+            this.currentPage = currentPage;
             while (cursor.moveToNext()) {
                 final DataManager rowData = new DataManager();
                 rowData.putAll(cursor);
                 list.add(rowData);
+            }
+            if (reverse) {
+                Collections.reverse(list);
             }
         }
 
@@ -362,6 +393,24 @@ public class BooklistCursor
         @NonNull
         DataManager getRow() {
             return list.get(currentPosition);
+        }
+
+        int getCurrentPage() {
+            return currentPage;
+        }
+
+        long getFirstId() {
+            if (list.isEmpty()) {
+                return -1;
+            }
+            return list.get(0).getLong(DBKey.PK_ID);
+        }
+
+        long getLastId() {
+            if (list.isEmpty()) {
+                return -1;
+            }
+            return list.get(list.size() - 1).getLong(DBKey.PK_ID);
         }
     }
 }

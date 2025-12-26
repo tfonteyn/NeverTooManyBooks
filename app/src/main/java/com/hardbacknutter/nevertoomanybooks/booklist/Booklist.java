@@ -63,16 +63,17 @@ public class Booklist
     @NonNull
     static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
 
-    private static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     private static final String SELECT_ = "SELECT ";
-    private static final String _FROM_ = " FROM ";
-    private static final String _AS_ = " AS ";
-    private static final String _WHERE_ = " WHERE ";
-    private static final String _LIKE_x = " LIKE ?";
-    private static final String _AND_ = " AND ";
-    private static final String _ORDER_BY_ = " ORDER BY ";
+    private static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     private static final String UPDATE_ = "UPDATE ";
+    private static final String _AND_ = " AND ";
+    private static final String _AS_ = " AS ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _LIKE_x = " LIKE ?";
+    private static final String _LIMIT_ = " LIMIT ";
+    private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _SET_ = " SET ";
+    private static final String _WHERE_ = " WHERE ";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
 
@@ -121,9 +122,8 @@ public class Booklist
     @NonNull
     private final String sqlSelectBooklistNodes;
 
-    /** {@link #getOffsetCursor(int, int)}. */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final String sqlGetOffsetCursor;
+    private final String baseCursorSql;
 
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int totalBooks = -1;
@@ -184,18 +184,18 @@ public class Booklist
                                  + _FROM_ + listTable.ref()
                                  + _WHERE_ + listTable.dot("%1s") + "=?";
 
-        sqlGetOffsetCursor = SELECT_
-                             // keep in sync with column list in #getListColumnNames() !
-                             + listTable.getDomains()
-                                        .stream()
-                                        .map(listTable::dot)
-                                        .collect(Collectors.joining(","))
-                             + ',' + (listTable.dot(DBKey.PK_ID)
-                                      + _AS_ + DBKey.BL_NODE.ROW_ID)
-                             + _FROM_ + listTable.ref()
-                             + _WHERE_ + listTable.dot(DBKey.BL_NODE.VISIBLE) + "=1"
-                             + _ORDER_BY_ + listTable.dot(DBKey.PK_ID)
-                             + " LIMIT ? OFFSET ?";
+        baseCursorSql = SELECT_
+                        // keep in sync with column list in #getListColumnNames() !
+                        + listTable.getDomains()
+                                   .stream()
+                                   .map(listTable::dot)
+                                   .collect(Collectors.joining(","))
+                        + ',' + (listTable.dot(DBKey.PK_ID)
+                                 + _AS_ + DBKey.BL_NODE.ROW_ID)
+                        + _FROM_ + listTable.ref()
+                        + _WHERE_ + listTable.dot(DBKey.BL_NODE.VISIBLE) + "=1";
+        // the WHERE will be completed depending on offset/sek cursor,
+        // and order/limit/offset set accordingly.
     }
 
     @VisibleForTesting
@@ -303,20 +303,47 @@ public class Booklist
     }
 
     /**
-     * Gets a 'window' on the result set, starting at 'offset' and 'pageSize' rows.
+     * Gets a 'window' on the result set.
      * We only retrieve visible rows.
      *
-     * @param offset   the offset position (SQL OFFSET clause)
-     * @param pageSize the amount of results maximum to return (SQL LIMIT clause)
+     * @param targetPage the page number to load
+     * @param pageSize   the amount of results maximum to return (SQL LIMIT clause)
      *
-     * @return a list cursor starting at a given offset, using a given limit.
+     * @return a list cursor + {@code true} if the results need to be reversed
+     *         or {@code false} if the results are in forward order
      */
     @NonNull
-    Cursor getOffsetCursor(final int offset,
-                           @SuppressWarnings("SameParameterValue") final int pageSize) {
-        return db.rawQuery(sqlGetOffsetCursor, new String[]{
-                String.valueOf(pageSize),
-                String.valueOf(offset)});
+    Pair<Cursor, Boolean> getPageCursor(final int targetPage,
+                                        @Nullable final Integer currentPage,
+                                        final long currentFirstId,
+                                        final long currentLastId,
+                                        @SuppressWarnings("SameParameterValue") final int pageSize) {
+
+        // If we don't have a current page, or the jump is too far, use OFFSET
+        if (currentPage == null || Math.abs(targetPage - currentPage) > 1) {
+            final int offset = targetPage * pageSize;
+            final String sql = baseCursorSql
+                               + _ORDER_BY_ + listTable.dot(DBKey.PK_ID)
+                               + _LIMIT_ + pageSize + " OFFSET " + offset;
+            return new Pair<>(db.rawQuery(sql, null), false);
+        }
+
+        // FORWARD one page
+        if (targetPage > currentPage) {
+            final String sql = baseCursorSql
+                               + _AND_ + listTable.dot(DBKey.PK_ID) + '>' + currentLastId
+                               + _ORDER_BY_ + listTable.dot(DBKey.PK_ID) + " ASC "
+                               + _LIMIT_ + pageSize;
+            return new Pair<>(db.rawQuery(sql, null), false);
+        } else {
+            // BACKWARD one page
+            final String sql = baseCursorSql
+                               + _AND_ + listTable.dot(DBKey.PK_ID) + '<' + currentFirstId
+                               + _ORDER_BY_ + listTable.dot(DBKey.PK_ID) + " DESC "
+                               + _LIMIT_ + pageSize;
+            // Results will be in reverse order! So return 'true' as the 'reverse' flag.
+            return new Pair<>(db.rawQuery(sql, null), true);
+        }
     }
 
     /**
