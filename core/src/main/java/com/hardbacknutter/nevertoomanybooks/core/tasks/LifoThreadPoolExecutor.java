@@ -60,16 +60,17 @@ public class LifoThreadPoolExecutor
 
             // Only call super.execute to trigger thread creation
             // IF core threads are not at capacity.
-            // This avoids infinite recursion
-            if (getActiveCount() < getCorePoolSize()) {
-                try {
+            // OR we already have a task waiting (other then this one)
+            try {
+                if (getPoolSize() < getCorePoolSize()
+                    || getPoolSize() < getMaximumPoolSize() && deque.size() > 1) {
+                    // no-op task; thread startup only
+                    // worker will pick up the next real task from the queue
                     super.execute(() -> {
-                        // no-op task; thread startup only
-                        // worker will pick up the next real task from the queue
                     });
-                } catch (@NonNull final RejectedExecutionException ignored) {
-                    // shutdown between check and execute
                 }
+            } catch (@NonNull final RejectedExecutionException ignored) {
+                // shutdown between check and execute
             }
 
         } catch (@NonNull final ClassCastException e) {
