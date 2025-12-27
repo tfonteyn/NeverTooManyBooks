@@ -20,20 +20,24 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.graphics.Bitmap;
-import android.os.Process;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.UiThread;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -43,9 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
  * Load & scale a Bitmap from a file; and populate the view.
  */
 public class ImageViewLoader {
-
-    /** Log tag. */
-    private static final String TAG = "ImageViewLoader";
 
     @NonNull
     private final ExecutorService executor;
@@ -60,6 +61,9 @@ public class ImageViewLoader {
 
     @NonNull
     private final ApplySizing applySizing;
+
+    private final Map<ImageView, Future<?>> runningTasks =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Constructor.
@@ -167,33 +171,48 @@ public class ImageViewLoader {
     /**
      * Load the file in a background thread and display it in the given view.
      *
-     * @param imageView   to populate
+     * @param uuid        of the book
+     * @param cIdx        0..n image index
      * @param file        to load, must be valid
+     * @param imageView   to populate
      * @param onDisplayed (optional) Consumer to execute after successfully displaying the image
      */
     @UiThread
-    public void fromFile(@NonNull final ImageView imageView,
+    public void fromFile(@Nullable final String uuid,
+                         @IntRange(from = 0, to = 3) final int cIdx,
                          @NonNull final File file,
+                         @NonNull final ImageView imageView,
                          @Nullable final Consumer<Bitmap> onDisplayed) {
 
-        final ImageReference imageReference = new ImageReference(imageView);
+        // CANCEL any previous task still trying to use this ImageView
+        final Future<?> oldTask = runningTasks.remove(imageView);
+        if (oldTask != null) {
+            oldTask.cancel(true);
+        }
 
-        STask.execute(
+        // CREATE the unique reference for THIS specific book+cover+view combo
+        final ImageReference imageReference = new ImageReference(uuid, cIdx, imageView);
+
+        final Future<?>[] task = new Future<?>[1];
+        task[0] = STask.execute(
                 executor,
                 () -> {
                     // Initial check, as this thread might have been started after a small delay
-                    if (!imageReference.isAssociated()) {
+                    // or even cancelled.
+                    if (imageReference.getView() == null
+                        || Thread.currentThread().isInterrupted()) {
                         return null;
                     }
 
                     // do the loading/scaling as background work.
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                    //Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
                     final Optional<Bitmap> oBitmap = new Transformation()
                             .setScale(this.width, this.height)
                             .setSource(file)
                             .transform();
 
-                    if (!imageReference.isAssociated()) {
+                    if (imageReference.getView() == null
+                        || Thread.currentThread().isInterrupted()) {
                         // We're not sending the bitmap (if we have one) as the result,
                         // instead we just recycle it.
                         // If we send it back, we'd be sending it to the file-based caching.
@@ -208,30 +227,34 @@ public class ImageViewLoader {
                     return oBitmap.orElse(null);
                 },
                 bitmap -> {
-                    // CHECK AGAIN, we might have lost the association while we switched threads.
                     final ImageView view = imageReference.getView();
-                    if (view == null) {
-                        if (bitmap != null) {
-                            bitmap.recycle();
+                    try {
+                        // Check if the view is still there and still wants THIS bitmap
+                        // Double check via runningTasks to ensure no newer task has started.
+                        if (view == null || runningTasks.get(imageView) != task[0]) {
+                            if (bitmap != null) {
+                                bitmap.recycle();
+                            }
+                            return;
                         }
-                        return;
-                    }
 
-                    if (bitmap != null) {
-                        // Finally, load it into the View
-                        fromBitmap(view, bitmap);
-                        if (onDisplayed != null) {
-                            onDisplayed.accept(bitmap);
+                        if (bitmap != null) {
+                            // Finally, load it into the View
+                            fromBitmap(view, bitmap);
+                            if (onDisplayed != null) {
+                                onDisplayed.accept(bitmap);
+                            }
+                        } else {
+                            // Found the image-file, but failed to load/decode it.
+                            // Use 'broken-image' icon and preserve the space.
+                            placeholder(view, R.drawable.broken_image_24px);
                         }
-                    } else {
-                        // Found the image-file, but failed to load/decode it.
-                        // Use 'broken-image' icon and preserve the space.
-                        placeholder(view, R.drawable.broken_image_24px);
+                    } finally {
+                        runningTasks.remove(imageView, task[0]);
                     }
                 },
-                e -> {
-                    // Transformation does not throw exceptions.
-                });
+                e -> runningTasks.remove(imageView, task[0]));
+        runningTasks.put(imageView, task[0]);
     }
 
     public enum ApplySizing {

@@ -28,7 +28,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
 import java.io.UncheckedIOException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -44,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageExcepti
  */
 public final class STask {
 
-    public static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
 
     private STask() {
     }
@@ -58,17 +59,25 @@ public final class STask {
      * @param onFailure  callback with an Exception, if it's an 'Unchecked' exception
      *                   it will be unpacked and the actual cause will be passed in instead.
      * @param <T>        result type
+     *
+     * @return task reference
      */
     @UiThread
-    public static <T> void execute(@NonNull final Executor executor,
-                                   @NonNull final Supplier<T> worker,
-                                   @NonNull final Consumer<T> onFinished,
-                                   @NonNull final Consumer<Throwable> onFailure) {
-        executor.execute(() -> {
+    public static <T> Future<?> execute(@NonNull final ExecutorService executor,
+                                        @NonNull final Supplier<T> worker,
+                                        @NonNull final Consumer<T> onFinished,
+                                        @NonNull final Consumer<Throwable> onFailure) {
+        return executor.submit(() -> {
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             //noinspection CheckStyle
             try {
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
                 final T result = worker.get();
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
                 UI_HANDLER.post(() -> onFinished.accept(result));
             } catch (@NonNull final UncheckedIOException
                                     | UncheckedStorageException
