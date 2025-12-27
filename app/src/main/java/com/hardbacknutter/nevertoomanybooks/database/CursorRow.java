@@ -26,7 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,8 @@ public class CursorRow
     @NonNull
     private final Cursor cursor;
 
+    private final Map<String, Integer> columnIndexCache = new HashMap<>();
+
     /**
      * Constructor.
      *
@@ -59,12 +62,17 @@ public class CursorRow
      */
     public CursorRow(@NonNull final Cursor cursor) {
         this.cursor = cursor;
+
+        final String[] names = cursor.getColumnNames();
+        for (int i = 0; i < names.length; i++) {
+            columnIndexCache.put(names[i], i);
+        }
     }
 
     @Override
     @NonNull
     public Set<String> keySet() {
-        return Set.copyOf(Arrays.asList(cursor.getColumnNames()));
+        return Set.copyOf(columnIndexCache.keySet());
     }
 
     /**
@@ -77,7 +85,7 @@ public class CursorRow
      */
     @Override
     public boolean contains(@NonNull final String key) {
-        return cursor.getColumnIndex(key) > -1;
+        return columnIndexCache.get(key) != null;
     }
 
     @Override
@@ -86,8 +94,8 @@ public class CursorRow
                             @Nullable final String defValue)
             throws ColumnNotPresentException {
 
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
+        final Integer col = columnIndexCache.get(key);
+        if (col == null) {
             throw new ColumnNotPresentException(key);
         }
         if (cursor.isNull(col)) {
@@ -97,12 +105,6 @@ public class CursorRow
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param key {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
@@ -112,20 +114,14 @@ public class CursorRow
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param key {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
     public int getInt(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
+        final Integer col = columnIndexCache.get(key);
+        if (col == null) {
             throw new ColumnNotPresentException(key);
         }
         // if (cursor.isNull(col)) {
@@ -135,20 +131,14 @@ public class CursorRow
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param key {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
     public long getLong(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
+        final Integer col = columnIndexCache.get(key);
+        if (col == null) {
             throw new ColumnNotPresentException(key);
         }
         // if (cursor.isNull(col)) {
@@ -158,13 +148,6 @@ public class CursorRow
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param key    {@inheritDoc}
-     * @param unused values from the database do not need parsing
-     *
-     * @return {@inheritDoc}
-     *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
@@ -172,8 +155,8 @@ public class CursorRow
                             @NonNull final RealNumberParser unused)
             throws NumberFormatException {
 
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
+        final Integer col = columnIndexCache.get(key);
+        if (col == null) {
             throw new ColumnNotPresentException(key);
         }
         // if (cursor.isNull(col)) {
@@ -183,13 +166,6 @@ public class CursorRow
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param key   {@inheritDoc}
-     * @param unused values from the database do not need parsing
-     *
-     * @return {@inheritDoc}
-     *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
@@ -197,8 +173,8 @@ public class CursorRow
                           @NonNull final RealNumberParser unused)
             throws NumberFormatException {
 
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
+        final Integer col = columnIndexCache.get(key);
+        if (col == null) {
             throw new ColumnNotPresentException(key);
         }
         // if (cursor.isNull(col)) {
@@ -208,18 +184,13 @@ public class CursorRow
     }
 
     //    /**
-    //     * Returns the value associated with the given key.
-    //     * @param key to get
-    //     *
-    //     * @return the byte array (blob) of the column
-    //     *
     //     * @throws ColumnNotPresentException if the column was not present.
     //     */
     //    public byte[] getBlob(@NonNull final String key)
     //            throws ColumnNotPresentException {
     //
-    //        final int col = cursor.getColumnIndex(key);
-    //        if (col == -1) {
+    //        final Integer col = columnIndexCache.get(key);
+    //        if (col == null) {
     //            throw new ColumnNotPresentException(key);
     //        }
     //        // if (cursor.isNull(col)) {
@@ -240,13 +211,10 @@ public class CursorRow
     @Override
     @NonNull
     public String toString() {
+        @SuppressWarnings("DataFlowIssue")
         final String obj = keySet()
                 .stream()
-                .map(key -> {
-                    final int col = cursor.getColumnIndex(key);
-                    final String value = cursor.getString(col);
-                    return key + "=" + value;
-                })
+                .map(key -> key + "=" + cursor.getString(columnIndexCache.get(key)))
                 .collect(Collectors.joining("; "));
 
         return "CursorRow{" + obj + "}";
