@@ -22,9 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.core.tasks;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import java.util.ArrayDeque;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -72,7 +70,7 @@ public final class ASyncExecutor {
      * The main purpose would be storage writes.
      */
     @SuppressWarnings("WeakerAccess")
-    public static final Executor SERIAL;
+    public static final ExecutorService SERIAL;
 
     /**
      * Dedicated {@link ExecutorService} for <strong>loading & scaling</strong> images
@@ -129,7 +127,7 @@ public final class ASyncExecutor {
         main.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
         PARALLEL = main;
 
-        SERIAL = new SerialExecutor(PARALLEL);
+        SERIAL = Executors.newSingleThreadExecutor();
 
         NETWORK = Executors.newCachedThreadPool(createThreadFactory("NETWORK"));
 
@@ -181,39 +179,5 @@ public final class ASyncExecutor {
                 createThreadFactory(threadName));
         executor.allowCoreThreadTimeOut(true);
         return executor;
-    }
-
-    static class SerialExecutor
-            implements Executor {
-
-        private final ArrayDeque<Runnable> tasks = new ArrayDeque<>();
-        @NonNull
-        private final Executor executor;
-        @Nullable
-        private Runnable active;
-
-        SerialExecutor(@NonNull final Executor executor) {
-            this.executor = executor;
-        }
-
-        public synchronized void execute(@NonNull final Runnable r) {
-            tasks.offer(() -> {
-                try {
-                    r.run();
-                } finally {
-                    scheduleNext();
-                }
-            });
-            if (active == null) {
-                scheduleNext();
-            }
-        }
-
-        synchronized void scheduleNext() {
-            active = tasks.poll();
-            if (active != null) {
-                executor.execute(active);
-            }
-        }
     }
 }
