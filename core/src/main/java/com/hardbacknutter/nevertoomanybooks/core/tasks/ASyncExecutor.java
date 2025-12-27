@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import java.util.concurrent.BlockingDeque;
@@ -30,16 +28,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.util.logger.BuildConfig;
-
 public final class ASyncExecutor {
+
+    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+    // Allow at least 2 threads
+    private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
+    private static final int MAXIMUM_POOL_SIZE = 20;
+
+    // Based on internet 3 seconds was too short and 30 or 60 seems to be more widely used...
+    // i.o.w a wild guess
+    private static final int KEEP_ALIVE_SECONDS = 60;
 
     /**
      * Dedicated {@link ExecutorService} for accessing the network.
@@ -51,13 +54,9 @@ public final class ASyncExecutor {
 
     /**
      * General purpose {@link ExecutorService} that can be used to execute tasks in parallel.
-     * This is also where the serialized tasks run.
      * <p>
      * <strong>Note:</strong> this executor uses a bounded
      * <strong>FIFO</strong> {@link BlockingQueue}.
-     * <p>
-     * Dev. note: it's configured identical to the deprecated {@code android.os.ASyncTask}
-     * including a backup-executor for rejections.
      */
     @NonNull
     public static final ExecutorService PARALLEL;
@@ -65,7 +64,6 @@ public final class ASyncExecutor {
     /**
      * An {@link Executor} that executes tasks <strong>one at a time</strong> in serial order.
      * This serialization is global to the app.
-     * Actual execution is done on {@link #PARALLEL}.
      * <p>
      * The main purpose would be storage writes.
      */
@@ -82,60 +80,32 @@ public final class ASyncExecutor {
     @NonNull
     public static final ExecutorService IMAGES;
 
-    /** Log tag. */
-    private static final String TAG = "ASyncExecutor";
 
-    // These values copied from the android.os.ASyncTask code
-    private static final int CORE_POOL_SIZE = 1;
-    private static final int MAXIMUM_POOL_SIZE = 20;
-    private static final int KEEP_ALIVE_SECONDS = 3;
-    private static final int BACKUP_POOL_SIZE = 5;
-
-    /**
-     * Used for rejected executions from the {@link #PARALLEL} service.
-     */
-    private static ThreadPoolExecutor sBackupExecutor;
-    private static final RejectedExecutionHandler REJECTED_EXECUTION_HANDLER =
-            new RejectedExecutionHandler() {
-                public void rejectedExecution(@NonNull final Runnable r,
-                                              @NonNull final ThreadPoolExecutor e) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.w(TAG, "Exceeded ThreadPoolExecutor pool size");
-                    }
-                    // As a last ditch fallback, run it on an executor with an unbounded queue.
-                    // Create this executor lazily, hopefully almost never.
-                    synchronized (this) {
-                        if (sBackupExecutor == null) {
-                            sBackupExecutor = new ThreadPoolExecutor(
-                                    BACKUP_POOL_SIZE, BACKUP_POOL_SIZE,
-                                    KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                                    new LinkedBlockingQueue<>(),
-                                    createThreadFactory("BACKUP_EXECUTOR"));
-                            sBackupExecutor.allowCoreThreadTimeOut(true);
-                        }
-                    }
-                    sBackupExecutor.execute(r);
-                }
-            };
 
     static {
+        STORAGE_WRITES = Executors.newSingleThreadExecutor(
+                createThreadFactory("STORAGE_WRITES", Thread.NORM_PRIORITY));
+
+        // Higher priority than images and network, but less than the UI.
         final ThreadPoolExecutor main = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                new SynchronousQueue<>(),
-                createThreadFactory("MAIN"));
-        main.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
+                new LinkedBlockingQueue<Runnable>(128),
+                createThreadFactory("PARALLEL", Thread.NORM_PRIORITY - 1));
+        main.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         PARALLEL = main;
 
-        STORAGE_WRITES = Executors.newSingleThreadExecutor();
+        // Higher priority than images, but less than the UI.
+        NETWORK = Executors.newCachedThreadPool(
+                createThreadFactory("NETWORK", Thread.NORM_PRIORITY - 2));
 
-        NETWORK = Executors.newCachedThreadPool(createThreadFactory("NETWORK"));
-
-        final int corePoolSize = Runtime.getRuntime().availableProcessors();
-        IMAGES = new LifoThreadPoolExecutor(corePoolSize, corePoolSize * 2,
-                                            1, TimeUnit.SECONDS,
-                                            new LinkedBlockingDeque<>(),
-                                            createThreadFactory("IMAGES"));
+        final LifoThreadPoolExecutor images = new LifoThreadPoolExecutor(
+                CPU_COUNT, CPU_COUNT,
+                KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(),
+                createThreadFactory("IMAGES", Thread.MIN_PRIORITY));
+        images.allowCoreThreadTimeOut(true);
+        IMAGES = images;
     }
 
     private ASyncExecutor() {
@@ -145,17 +115,23 @@ public final class ASyncExecutor {
      * Create a <strong>new</strong> ThreadFactory.
      *
      * @param threadName to use for the base thread names
+     * @param priority   to use
      *
      * @return a new ThreadFactory
      */
     @NonNull
-    private static ThreadFactory createThreadFactory(@NonNull final String threadName) {
+    private static ThreadFactory createThreadFactory(@NonNull final String threadName,
+                                                     final int priority) {
         return new ThreadFactory() {
             private final AtomicInteger threadIdCounter = new AtomicInteger();
 
             @NonNull
             public Thread newThread(@NonNull final Runnable r) {
-                return new Thread(r, threadName + "#" + threadIdCounter.incrementAndGet());
+                final Thread t =
+                        new Thread(r, threadName + "#" + threadIdCounter.incrementAndGet());
+                t.setPriority(priority);
+                t.setDaemon(true);
+                return t;
             }
         };
     }
@@ -167,16 +143,18 @@ public final class ASyncExecutor {
      * <strong>Note:</strong> this ExecutorService uses a bound {@link BlockingQueue}.
      *
      * @param threadName to use for the ThreadFactory base thread names
+     * @param priority   to use
      *
      * @return a new ExecutorService
      */
     @NonNull
-    public static ExecutorService create(@NonNull final String threadName) {
+    public static ExecutorService create(@NonNull final String threadName,
+                                         final int priority) {
         final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(),
-                createThreadFactory(threadName));
+                createThreadFactory(threadName, priority));
         executor.allowCoreThreadTimeOut(true);
         return executor;
     }
