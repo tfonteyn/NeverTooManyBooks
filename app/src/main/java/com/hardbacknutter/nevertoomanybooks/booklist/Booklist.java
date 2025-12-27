@@ -27,6 +27,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.io.File;
@@ -124,7 +125,10 @@ public class Booklist
 
     @SuppressWarnings("FieldNotUsedInToString")
     private final String baseCursorSql;
-
+    @SuppressWarnings("FieldNotUsedInToString")
+    private byte[] rowGroupIds;
+    @SuppressWarnings("FieldNotUsedInToString")
+    private long[] rowIds;
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int totalBooks = -1;
 
@@ -238,6 +242,45 @@ public class Booklist
         }
     }
 
+    @WorkerThread
+    public void preScanRows() {
+        final long[] ids;
+        final byte[] groups;
+        try (Cursor cursor = db.rawQuery(SELECT_ + DBKey.PK_ID + ',' + DBKey.BL_NODE.GROUP
+                                         + _FROM_ + listTable.getName()
+                                         + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=1"
+                                         + _ORDER_BY_ + DBKey.PK_ID,
+                                         null)) {
+
+            final int count = cursor.getCount();
+            ids = new long[count];
+            groups = new byte[count];
+            int pos = 0;
+            while (cursor.moveToNext()) {
+                ids[pos] = cursor.getLong(0);
+                groups[pos] = (byte) cursor.getInt(1);
+                pos++;
+            }
+        }
+        rowIds = ids;
+        rowGroupIds = groups;
+    }
+
+    public long getRowId(final int position) {
+        if (rowIds == null || position >= rowIds.length) {
+            return 1;
+        }
+        return rowIds[position];
+    }
+
+    @BooklistGroup.Id
+    public int getRowGroupId(final int position) {
+        if (rowGroupIds == null || position >= rowGroupIds.length) {
+            return BooklistGroup.BOOK;
+        }
+        return rowGroupIds[position];
+    }
+
     /**
      * Count the total number of book records in the list.
      *
@@ -299,6 +342,7 @@ public class Booklist
         }
 
         listCursor = new BooklistCursor(this);
+        listCursor.moveToPosition(0);
         return listCursor;
     }
 
@@ -306,8 +350,11 @@ public class Booklist
      * Gets a 'window' on the result set.
      * We only retrieve visible rows.
      *
-     * @param targetPage the page number to load
-     * @param pageSize   the amount of results maximum to return (SQL LIMIT clause)
+     * @param targetPage     the page number to load
+     * @param currentPage    so we can determine whether we need to go forward or backwards
+     * @param currentFirstId id of the first row in the currentPage
+     * @param currentLastId  id of the last row in the currentPage
+     * @param pageSize       the amount of results maximum to return (SQL LIMIT clause)
      *
      * @return a list cursor + {@code true} if the results need to be reversed
      *         or {@code false} if the results are in forward order
@@ -521,7 +568,7 @@ public class Booklist
         final Deque<Pair<Long, Integer>> nodes = new ArrayDeque<>();
         for (int level = node.getLevel() - 1; level >= 1; level--) {
             try (Cursor cursor = db.rawQuery(sqlEnsureNodeIsVisible, new String[]{
-                    nodeKey + "%",
+                    nodeKey + '%',
                     String.valueOf(level)})) {
 
                 while (cursor.moveToNext()) {
@@ -563,7 +610,7 @@ public class Booklist
                         UPDATE_ + listTable.getName()
                         + _SET_ + DBKey.AUTHOR.COMPLETE + "=?"
                         + _WHERE_ + DBKey.FK_AUTHOR + "=?"
-                        + _AND_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.AUTHOR;
+                        + _AND_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.AUTHOR;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateAuthorIsComplete)) {
@@ -593,7 +640,7 @@ public class Booklist
                         UPDATE_ + listTable.getName()
                         + _SET_ + DBKey.SERIES.COMPLETE + "=?"
                         + _WHERE_ + DBKey.FK_SERIES + "=?"
-                        + _AND_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.SERIES;
+                        + _AND_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.SERIES;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateSeriesIsComplete)) {
@@ -629,7 +676,7 @@ public class Booklist
                         ",",
                         UPDATE_ + listTable.getName() + _SET_,
                         _WHERE_ + DBKey.FK_BOOK + "=?"
-                        + _AND_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK);
+                        + _AND_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.BOOK);
 
                 if (addReadFlag) {
                     sj.add(DBKey.READ__BOOL + "=?");
@@ -673,7 +720,7 @@ public class Booklist
                         UPDATE_ + listTable.getName()
                         + _SET_ + DBKey.LOANEE_NAME + "=?"
                         + _WHERE_ + DBKey.FK_BOOK + "=?"
-                        + _AND_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK;
+                        + _AND_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.BOOK;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookLoanee)) {
@@ -704,7 +751,7 @@ public class Booklist
                     SELECT_ + DBKey.FK_BOOK
                     + _FROM_ + listTable.getName()
                     + _WHERE_ + DBKey.BL_NODE.KEY + _LIKE_x
-                    + _AND_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
+                    + _AND_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.BOOK
                     + _ORDER_BY_ + DBKey.FK_BOOK;
         }
 

@@ -194,6 +194,7 @@ public class BooklistAdapter
             booklistCursor = null;
         } else {
             this.booklist = booklist;
+            this.booklist.preScanRows();
             booklistCursor = booklist.getBooklistCursor();
         }
         notifyDataSetChanged();
@@ -268,12 +269,10 @@ public class BooklistAdapter
 
     @Override
     public long getItemId(final int position) {
-        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
-            // return the rowId of the list-table
-            return booklistCursor.getLong(DBKey.PK_ID);
-        } else {
-            return RecyclerView.NO_ID;
+        if (booklist != null) {
+            return booklist.getRowId(position);
         }
+        return RecyclerView.NO_ID;
     }
 
     @Override
@@ -291,12 +290,11 @@ public class BooklistAdapter
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
-        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
-            return booklistCursor.getInt(DBKey.BL_NODE.GROUP);
-        } else {
-            // bogus, should not happen
-            return BooklistGroup.BOOK;
+        if (booklist != null) {
+            return booklist.getRowGroupId(position);
         }
+        // bogus, should not happen
+        return BooklistGroup.BOOK;
     }
 
     @SuppressLint("SwitchIntDef")

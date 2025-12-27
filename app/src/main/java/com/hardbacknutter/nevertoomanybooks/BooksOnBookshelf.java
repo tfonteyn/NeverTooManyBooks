@@ -754,15 +754,14 @@ public class BooksOnBookshelf
             public int getSpanSize(final int position) {
                 final int dataPosition = position - headerAdapter.getItemCount();
                 if (dataPosition >= 0) {
-                    //noinspection DataFlowIssue
-                    final DataHolder rowData = adapter.readDataAt(dataPosition);
-                    //noinspection DataFlowIssue
-                    if (rowData.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
+                    final Booklist booklist = vm.getBooklist();
+                    if (booklist != null
+                        && booklist.getRowGroupId(dataPosition) == BooklistGroup.BOOK) {
                         // A book, i.e. a cover, is always 1 cell.
                         return 1;
                     }
                 }
-                // all other BooklistGroup's use the full width.
+                // The header and all other BooklistGroup's use the full width.
                 return spanCount;
             }
         });
