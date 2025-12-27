@@ -154,6 +154,8 @@ public class CoverBrowserViewModel
     protected void onCleared() {
         cancelAllTasks();
 
+        galleryDisplayExecutor.shutdownNow();
+
         if (fileManager != null) {
             fileManager.purge();
         }
