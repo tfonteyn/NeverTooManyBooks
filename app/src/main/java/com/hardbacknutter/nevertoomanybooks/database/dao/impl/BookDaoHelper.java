@@ -563,7 +563,8 @@ public class BookDaoHelper {
                 if (fileSpec.isEmpty()) {
                     // A *present* but empty fileSpec indicates we need to delete the cover
                     final int finalCIdx = cIdx;
-                    ASyncExecutor.SERIAL.execute(() -> coverStorage.delete(uuid, finalCIdx));
+                    ASyncExecutor.STORAGE_WRITES.execute(
+                            () -> coverStorage.delete(uuid, finalCIdx));
                 } else {
                     // Rename the temp file to the uuid permanent file name
                     coverStorage.persist(new File(fileSpec), uuid, cIdx);

@@ -516,7 +516,7 @@ public class SearchBookUpdatesViewModel
     void processOne(@NonNull final Context context,
                     @Nullable final Book remoteBook) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context c = ServiceLocator.getInstance().getLocalizedAppContext();
                     if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {

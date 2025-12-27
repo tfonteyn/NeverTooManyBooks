@@ -70,7 +70,7 @@ public final class ASyncExecutor {
      * The main purpose would be storage writes.
      */
     @SuppressWarnings("WeakerAccess")
-    public static final ExecutorService SERIAL;
+    public static final ExecutorService STORAGE_WRITES;
 
     /**
      * Dedicated {@link ExecutorService} for <strong>loading & scaling</strong> images
@@ -127,7 +127,7 @@ public final class ASyncExecutor {
         main.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
         PARALLEL = main;
 
-        SERIAL = Executors.newSingleThreadExecutor();
+        STORAGE_WRITES = Executors.newSingleThreadExecutor();
 
         NETWORK = Executors.newCachedThreadPool(createThreadFactory("NETWORK"));
 

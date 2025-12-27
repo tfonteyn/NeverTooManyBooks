@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageExcepti
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.
  * <p>
- * By default, all tasks are executed on the {@link ASyncExecutor#SERIAL}.
+ * By default, all tasks are executed on the {@link ASyncExecutor#STORAGE_WRITES}.
  * Override with {@link #setExecutor(Executor)} as needed.
  *
  * @param <Result> the type of the result of the background computation.
@@ -65,7 +65,7 @@ public abstract class TaskBase<Result>
     private Status status = Status.Created;
     /** Use {@link #setExecutor(Executor)} to override. */
     @NonNull
-    private Executor executor = ASyncExecutor.SERIAL;
+    private Executor executor = ASyncExecutor.STORAGE_WRITES;
 
     /** If progress is not indeterminate, the current position. */
     private int progressCurrentPos;
@@ -90,7 +90,7 @@ public abstract class TaskBase<Result>
     /**
      * Set a custom {@link Executor} to use.
      * <p>
-     * When not set, the default is {@link ASyncExecutor#SERIAL}.
+     * When not set, the default is {@link ASyncExecutor#STORAGE_WRITES}.
      *
      * @param executor to use
      */

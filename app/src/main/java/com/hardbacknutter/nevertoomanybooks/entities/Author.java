@@ -1116,7 +1116,7 @@ public class Author
         }
         // we have a uuid, remove the physical file, if any
         final String uuid = oUuid.get();
-        ASyncExecutor.SERIAL.execute(
+        ASyncExecutor.STORAGE_WRITES.execute(
                 () -> ServiceLocator.getInstance()
                                     .getCoverStorage()
                                     .delete(uuid, cIdx));

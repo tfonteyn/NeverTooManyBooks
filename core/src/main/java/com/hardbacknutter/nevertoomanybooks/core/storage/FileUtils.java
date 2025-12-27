@@ -185,26 +185,26 @@ public final class FileUtils {
     }
 
     /**
-     * Convenience wrapper for {@link #delete(File)} which executes on {@link ASyncExecutor#SERIAL}.
+     * Convenience wrapper for {@link #delete(File)} which executes on {@link ASyncExecutor#STORAGE_WRITES}.
      *
      * @param file to delete
      */
     @AnyThread
     public static void backgroundDelete(@Nullable final File file) {
         if (file != null) {
-            ASyncExecutor.SERIAL.execute(() -> delete(file));
+            ASyncExecutor.STORAGE_WRITES.execute(() -> delete(file));
         }
     }
 
     /**
-     * Convenience wrapper for {@link #delete(File)} which executes on {@link ASyncExecutor#SERIAL}.
+     * Convenience wrapper for {@link #delete(File)} which executes on {@link ASyncExecutor#STORAGE_WRITES}.
      *
      * @param files to delete
      */
     @AnyThread
     public static void backgroundDelete(@Nullable final Collection<File> files) {
         if (files != null && !files.isEmpty()) {
-            ASyncExecutor.SERIAL.execute(() -> files.forEach(FileUtils::delete));
+            ASyncExecutor.STORAGE_WRITES.execute(() -> files.forEach(FileUtils::delete));
         }
     }
 

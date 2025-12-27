@@ -361,7 +361,7 @@ public class AuthorWorksViewModel
      */
     void delete(@NonNull final Context context,
                 final int position) {
-        ASyncExecutor.PARALLEL.execute(() -> {
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
             final AuthorWork work = works.get(position);
 
             final boolean success;

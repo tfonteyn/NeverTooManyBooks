@@ -139,7 +139,7 @@ public class ImageHandlerViewModel
     void prepareEditor(@NonNull final ImageOwner imageOwner,
                        @IntRange(from = 0, to = 3) final int cIdx) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     try {
@@ -187,7 +187,7 @@ public class ImageHandlerViewModel
     void prepareCropper(@NonNull final ImageOwner imageOwner,
                         @IntRange(from = 0, to = 3) final int cIdx) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     try {
@@ -259,7 +259,7 @@ public class ImageHandlerViewModel
                        @IntRange(from = 0, to = 3) final int cIdx,
                        final int angle) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     try {
@@ -316,7 +316,7 @@ public class ImageHandlerViewModel
         final NextAction action = NextAction.getAction(context);
 
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
                         return null;
@@ -357,7 +357,7 @@ public class ImageHandlerViewModel
      */
     void onPictureResult(@NonNull final File file) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
                         return null;
@@ -397,7 +397,7 @@ public class ImageHandlerViewModel
      */
     void onPictureResult(@NonNull final Uri uri) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     // 2025-11-05: bug report #197:
                     // java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
@@ -462,7 +462,7 @@ public class ImageHandlerViewModel
         }
 
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     final File file = new File(fileSpec);
@@ -486,7 +486,7 @@ public class ImageHandlerViewModel
                   @IntRange(from = 0, to = 3) final int cIdx,
                   @NonNull final File file) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     try {
@@ -505,7 +505,7 @@ public class ImageHandlerViewModel
     void removeImage(@NonNull final ImageOwner imageOwner,
                      @IntRange(from = 0, to = 3) final int cIdx) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     imageOwner.removeImage(context, cIdx);

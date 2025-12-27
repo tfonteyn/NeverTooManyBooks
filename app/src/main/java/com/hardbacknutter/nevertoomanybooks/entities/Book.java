@@ -1840,7 +1840,7 @@ public class Book
                 }
             } else {
                 // a null file indicates we need to delete the cover
-                ASyncExecutor.SERIAL.execute(
+                ASyncExecutor.STORAGE_WRITES.execute(
                         () -> ServiceLocator.getInstance()
                                             .getCoverStorage()
                                             .delete(uuid, cIdx));

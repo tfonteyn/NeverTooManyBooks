@@ -395,7 +395,7 @@ public class BookDaoImpl
 
             // At this point all database actions were successful.
             // Now delete the covers for the actually deleted books.
-            ASyncExecutor.SERIAL.execute(
+            ASyncExecutor.STORAGE_WRITES.execute(
                     () -> ServiceLocator.getInstance().getCoverStorage().delete(actuallyDeleted));
 
             if (txLock != null) {

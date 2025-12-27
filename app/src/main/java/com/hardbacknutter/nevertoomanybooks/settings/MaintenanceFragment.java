@@ -234,7 +234,7 @@ public class MaintenanceFragment
     private void doPurgeFiles(@NonNull final ServiceLocator serviceLocator,
                               @NonNull final CoverStorage coverStorage,
                               @NonNull final FileFilter coverFilter) {
-        ASyncExecutor.SERIAL.execute(() -> {
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
             try {
                 FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
                 FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
@@ -313,7 +313,7 @@ public class MaintenanceFragment
                 .setMessage(R.string.info_maintenance_clear_deleted_book_records)
                 .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.ok, (d, w) -> {
-                    ASyncExecutor.SERIAL.execute(
+                    ASyncExecutor.STORAGE_WRITES.execute(
                             () -> ServiceLocator.getInstance().getDeletedBooksDao().purge());
                     //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();

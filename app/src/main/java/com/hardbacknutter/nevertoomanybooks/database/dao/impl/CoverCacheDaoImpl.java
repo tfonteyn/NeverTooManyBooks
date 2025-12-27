@@ -191,7 +191,7 @@ public class CoverCacheDaoImpl
                           final int width) {
         // Start a task to send it to the cache.
         // Use the default serial executor as we only want a single write thread at a time.
-        ASyncExecutor.SERIAL.execute(() -> {
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
             RUNNING_TASKS.incrementAndGet();

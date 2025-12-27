@@ -754,7 +754,7 @@ public class AuthorDaoImpl
      */
     private void deletePicture(@NonNull final Author author) {
         author.getImageUuid().ifPresent(pictureUuid -> {
-            ASyncExecutor.SERIAL.execute(
+            ASyncExecutor.STORAGE_WRITES.execute(
                     () -> ServiceLocator.getInstance()
                                         .getCoverStorage()
                                         .delete(pictureUuid, 0));

@@ -138,7 +138,7 @@ public class CropImageViewModel
      */
     void save(@NonNull final Bitmap bitmap) {
         STask.execute(
-                ASyncExecutor.SERIAL,
+                ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final File destination = new File(destinationPath);
                     try {
