@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public class PFilterViewHolder
+public abstract class PFilterViewHolder<T>
         extends RecyclerView.ViewHolder {
 
     @NonNull
@@ -50,4 +50,11 @@ public class PFilterViewHolder
             delBtn.setOnClickListener(v -> listener.onDelete(getBindingAdapterPosition()));
         }
     }
+
+    /**
+     * Bind the given data to the views in the holder.
+     *
+     * @param data to bind
+     */
+    abstract void onBind(@NonNull T data);
 }

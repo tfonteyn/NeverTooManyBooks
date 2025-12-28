@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,11 +26,9 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PBooleanFilter;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBooleanBinding;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class BooleanHolder
-        extends PFilterViewHolder
-        implements BindableViewHolder<PBooleanFilter> {
+        extends PFilterViewHolder<PBooleanFilter> {
 
     @NonNull
     private final RowEditBookshelfFilterBooleanBinding vb;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,12 +30,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilt
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterStringEqualityBinding;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 @SuppressWarnings("WeakerAccess")
 public class StringEqualityHolder
-        extends PFilterViewHolder
-        implements BindableViewHolder<PStringEqualityFilter> {
+        extends PFilterViewHolder<PStringEqualityFilter> {
 
     @NonNull
     private final RowEditBookshelfFilterStringEqualityBinding vb;

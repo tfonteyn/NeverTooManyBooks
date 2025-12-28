@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,8 +30,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PFilterListAdapter
         extends RecyclerView.Adapter<PFilterViewHolder> {
 
@@ -68,8 +68,7 @@ public class PFilterListAdapter
     public void onBindViewHolder(@NonNull final PFilterViewHolder holder,
                                  final int position) {
         final PFilter<?> pFilter = filters.get(position);
-        //noinspection unchecked
-        ((BindableViewHolder<PFilter<?>>) holder).onBind(pFilter);
+        holder.onBind(pFilter);
     }
 
     @Override

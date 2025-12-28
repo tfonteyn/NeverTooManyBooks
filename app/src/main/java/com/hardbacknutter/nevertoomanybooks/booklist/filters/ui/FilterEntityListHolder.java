@@ -32,11 +32,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterEntityListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
 public class FilterEntityListHolder<T extends Entity>
-        extends PFilterViewHolder
-        implements BindableViewHolder<PEntityListFilter<T>> {
+        extends PFilterViewHolder<PEntityListFilter<T>> {
 
     @NonNull
     private final RowEditBookshelfFilterEntityListBinding vb;
