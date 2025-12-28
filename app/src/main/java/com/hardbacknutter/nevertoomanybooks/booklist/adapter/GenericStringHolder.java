@@ -63,6 +63,8 @@ public class GenericStringHolder
      */
     @BooklistGroup.Id
     private final int groupId;
+    @NonNull
+    private final View contentView;
     /*** View to populate. */
     @NonNull
     private final TextView textView;
@@ -117,6 +119,7 @@ public class GenericStringHolder
 
         final Context context = itemView.getContext();
 
+        contentView = itemView.findViewById(R.id.content);
         bookCountView = itemView.findViewById(R.id.level_book_count);
         bookCountView.setVisibility(showGroupBookCount ? View.VISIBLE : View.GONE);
 
@@ -166,7 +169,13 @@ public class GenericStringHolder
     }
 
     @Override
+    public void onFastScroll(final boolean isDragging) {
+        contentView.setVisibility(isDragging ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    @Override
     public void onBind(@NonNull final DataHolder rowData) {
+        contentView.setVisibility(View.VISIBLE);
 
         textView.setText(formatter.format(groupId, rowData, key));
         if (showGroupBookCount) {

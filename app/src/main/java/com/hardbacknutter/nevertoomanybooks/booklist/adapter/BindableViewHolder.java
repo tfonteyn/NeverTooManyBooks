@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
  *
  * @param <T> type of data to bind
  */
-@FunctionalInterface
 interface BindableViewHolder<T> {
 
     /**
@@ -38,4 +37,6 @@ interface BindableViewHolder<T> {
      * @param data to bind
      */
     void onBind(@NonNull T data);
+
+    void onFastScroll(boolean isDragging);
 }

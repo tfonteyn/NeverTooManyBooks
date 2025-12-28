@@ -183,6 +183,11 @@ public class BookHolder
         }
     }
 
+    @Override
+    public void onFastScroll(final boolean isDragging) {
+        vb.content.setVisibility(isDragging ? View.INVISIBLE : View.VISIBLE);
+    }
+
     /**
      * NEWTHINGS: BookLevelField: add an if (use.contains(DBKey....)) {...
      * <p>
@@ -190,6 +195,8 @@ public class BookHolder
      */
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
+        vb.content.setVisibility(View.VISIBLE);
+
         final Context context = itemView.getContext();
         if (use == null) {
             // Init once. We do this here because we want to check the rowData (once)

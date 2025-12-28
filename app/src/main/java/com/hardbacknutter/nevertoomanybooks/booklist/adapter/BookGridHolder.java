@@ -179,7 +179,13 @@ public class BookGridHolder
     }
 
     @Override
+    public void onFastScroll(final boolean isDragging) {
+        vb.content.setVisibility(isDragging ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    @Override
     public void onBind(@NonNull final DataHolder rowData) {
+        vb.content.setVisibility(View.VISIBLE);
 
         final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
                                                           rowData.getString(DBKey.BOOK_UUID));

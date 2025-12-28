@@ -220,6 +220,17 @@ public class BooklistAdapter
         this.contextMenuMode = contextMenuMode;
     }
 
+    private boolean isDragging;
+
+    public void setDragging(final boolean dragging) {
+        if (this.isDragging == dragging) {
+            return;
+        }
+        this.isDragging = dragging;
+        // reminder: do NOT call notifyDataSetChanged();
+        // NOT NEEDED!
+    }
+
     /**
      * Read the data row on the given position.
      *
@@ -405,11 +416,13 @@ public class BooklistAdapter
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
 
-        //noinspection DataFlowIssue
-        booklistCursor.moveToPosition(position);
+        ((BindableViewHolder<DataHolder>) holder).onFastScroll(isDragging);
 
-        //noinspection unchecked
-        ((BindableViewHolder<DataHolder>) holder).onBind(booklistCursor);
+        if (!isDragging) {
+            //noinspection DataFlowIssue
+            booklistCursor.moveToPosition(position);
+            ((BindableViewHolder<DataHolder>) holder).onBind(booklistCursor);
+        }
     }
 
     private void scaleTextViews(@NonNull final View view,

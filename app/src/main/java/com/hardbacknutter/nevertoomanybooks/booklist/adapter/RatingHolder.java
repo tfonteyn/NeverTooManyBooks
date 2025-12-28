@@ -47,6 +47,8 @@ public class RatingHolder
     @NonNull
     private final String key;
     @NonNull
+    private final View contentView;
+    @NonNull
     private final RatingBar ratingBar;
     @NonNull
     private final TextView bookCountView;
@@ -73,13 +75,21 @@ public class RatingHolder
                    .getName();
         showGroupBookCount = style.isShowGroupBookCount();
 
+        contentView = itemView.findViewById(R.id.content);
         ratingBar = itemView.findViewById(R.id.rating);
         bookCountView = itemView.findViewById(R.id.level_book_count);
         bookCountView.setVisibility(showGroupBookCount ? View.VISIBLE : View.GONE);
     }
 
     @Override
+    public void onFastScroll(final boolean isDragging) {
+        contentView.setVisibility(isDragging ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    @Override
     public void onBind(@NonNull final DataHolder rowData) {
+        contentView.setVisibility(View.VISIBLE);
+
         ratingBar.setRating(rowData.getFloat(key, realNumberParser));
         if (showGroupBookCount) {
             bookCountView.setText(String.valueOf(rowData.getLong(DBKey.FK_BOOK)));

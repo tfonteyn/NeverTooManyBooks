@@ -66,6 +66,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.fastscroller.OnFastScrollStateChangeListener;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
@@ -782,7 +784,35 @@ public class BooksOnBookshelf
         // Custom fastscroller which actually works (as opposed to the built-in android one).
         // Provides an optional overlay.
         if (vb.content.list.getLayoutManager() instanceof LinearLayoutManager) {
-            FastScrollerMode.create(this).attach(vb.content.list);
+            final FastScroller fastScroller =
+                    FastScrollerMode.create(this).attach(vb.content.list);
+            fastScroller.setOnFastScrollStateChangeListener(new OnFastScrollStateChangeListener() {
+                @Override
+                public void onFastScrollStarted() {
+                    if (adapter != null) {
+                        adapter.setDragging(true);
+                        // 1. Manually hide every view currently on screen
+                        for (int i = 0; i < vb.content.list.getChildCount(); i++) {
+                            final View child = vb.content.list.getChildAt(i);
+                            if (child != null) {
+                                final View details = child.findViewById(R.id.card);
+                                if (details != null) {
+                                    details.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onFastScrollEnded() {
+                    if (adapter != null) {
+                        adapter.setDragging(false);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            });
         }
         // attach the FAB scroll-listener which will hide the FAB while scrolling
         fabMenu.attach(vb.content.list);
