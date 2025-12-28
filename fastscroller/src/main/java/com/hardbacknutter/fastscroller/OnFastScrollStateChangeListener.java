@@ -20,11 +20,8 @@
 
 package com.hardbacknutter.fastscroller;
 
-import androidx.annotation.Nullable;
+public interface OnFastScrollStateChangeListener {
+    void onFastScrollStarted();
 
-public interface FastScroller {
-
-    void setOverlayProvider(@Nullable OverlayProvider overlayProvider);
-
-    void setOnFastScrollStateChangeListener(@Nullable OnFastScrollStateChangeListener listener);
+    void onFastScrollEnded();
 }

@@ -57,6 +57,7 @@ import java.lang.annotation.RetentionPolicy;
  *         VERTICAL SCROLL ONLY</li>
  *     <li>Option to add an index-overlay.
  *         VERTICAL SCROLL ONLY</li>
+ *     <li>Added {@link OnFastScrollStateChangeListener}</li>
  * </ul>
  */
 @SuppressWarnings("ALL")
@@ -138,6 +139,8 @@ public class FastScrollerImpl
     private final int mExpandedTouchArea;
     @Nullable
     private OverlayProvider mOverlayProvider;
+    @Nullable
+    private OnFastScrollStateChangeListener mStateListener;
     // HARDBACKNUTTER - END
 
     private int mRecyclerViewWidth = 0;
@@ -175,7 +178,7 @@ public class FastScrollerImpl
      * @param defaultWidth
      * @param scrollbarMinimumRange
      * @param margin
-     * @param thumbMinSize            the minimal height the thumb can decrease to.
+     * @param minimalThumbSize        the minimal height the thumb can decrease to.
      *                                In pixels.
      * @param expandedTouchArea       the padding to add to the thumb to use as touch area.
      *                                In pixels.
@@ -224,6 +227,12 @@ public class FastScrollerImpl
     public void setOverlayProvider(@Nullable final OverlayProvider overlayProvider) {
         mOverlayProvider = overlayProvider;
     }
+
+    @Override
+    public void setOnFastScrollStateChangeListener(@Nullable final OnFastScrollStateChangeListener listener) {
+        mStateListener = listener;
+    }
+
     // HARDBACKNUTTER - END
 
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView) {
@@ -258,6 +267,29 @@ public class FastScrollerImpl
     }
 
     void setState(@State int state) {
+        // HARDBACKNUTTER - BEGIN
+        if (mStateListener != null) {
+            // 1. If we are physically dragging, ignore any request to stop dragging
+            // unless that request is coming from our own ACTION_UP (which sets DRAG_NONE).
+            if (mDragState != DRAG_NONE && state != STATE_DRAGGING) {
+                return;
+            }
+
+            // 2. Only trigger the listener if the state is ACTUALLY changing
+            if (state != mState) {
+                if (state == STATE_DRAGGING) {
+                    mStateListener.onFastScrollStarted();
+                } else if (mState == STATE_DRAGGING) {
+                    // We were dragging, now we aren't
+                    mStateListener.onFastScrollEnded();
+                }
+
+                // Update the internal state immediately
+                mState = state;
+            }
+        }
+        // HARDBACKNUTTER - END
+
         if (state == STATE_DRAGGING && mState != STATE_DRAGGING) {
             mVerticalThumbDrawable.setState(PRESSED_STATE_SET);
             cancelHide();
@@ -473,12 +505,27 @@ public class FastScrollerImpl
     @Override
     public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView,
                                          @NonNull MotionEvent ev) {
+
+        // HARDBACKNUTTER - BEGIN
+        // If we are already dragging, we MUST return true to keep
+        // receiving the events (like ACTION_UP) in our onTouchEvent.
+        if (mState == STATE_DRAGGING) {
+            return true;
+        }
+        // HARDBACKNUTTER - END
+
         final boolean handled;
         if (mState == STATE_VISIBLE) {
             boolean insideVerticalThumb = isPointInsideVerticalThumb(ev.getX(), ev.getY());
             boolean insideHorizontalThumb = isPointInsideHorizontalThumb(ev.getX(), ev.getY());
             if (ev.getAction() == MotionEvent.ACTION_DOWN
                 && (insideVerticalThumb || insideHorizontalThumb)) {
+
+                // HARDBACKNUTTER - BEGIN
+                // Tell parents not to steal the focus now that we've grabbed the thumb
+                recyclerView.getParent().requestDisallowInterceptTouchEvent(true);
+                // HARDBACKNUTTER - END
+
                 if (insideHorizontalThumb) {
                     mDragState = DRAG_X;
                     mHorizontalDragX = (int) ev.getX();
@@ -508,6 +555,14 @@ public class FastScrollerImpl
         if (mState == STATE_HIDDEN) {
             return;
         }
+
+        // HARDBACKNUTTER - BEGIN
+        // Tell parents not to steal touch while we are dragging
+        if (mState == STATE_DRAGGING) {
+            recyclerView.getParent().requestDisallowInterceptTouchEvent(true);
+        }
+        // HARDBACKNUTTER - END
+
         if (me.getAction() == MotionEvent.ACTION_DOWN) {
             boolean insideVerticalThumb = isPointInsideVerticalThumb(me.getX(), me.getY());
             boolean insideHorizontalThumb = isPointInsideHorizontalThumb(me.getX(), me.getY());
@@ -524,8 +579,11 @@ public class FastScrollerImpl
         } else if (me.getAction() == MotionEvent.ACTION_UP && mState == STATE_DRAGGING) {
             mVerticalDragY = 0;
             mHorizontalDragX = 0;
-            setState(STATE_VISIBLE);
+            // HARDBACKNUTTER - BEGIN
+            // Clear DragState BEFORE calling setState
             mDragState = DRAG_NONE;
+            setState(STATE_VISIBLE);
+            // HARDBACKNUTTER - END
         } else if (me.getAction() == MotionEvent.ACTION_MOVE && mState == STATE_DRAGGING) {
             show();
             if (mDragState == DRAG_X) {
@@ -539,24 +597,41 @@ public class FastScrollerImpl
 
     // HARDBACKNUTTER - BEGIN
     private void jumpToPositionFromTrack(final float y) {
-        RecyclerView.Adapter adapter = mRecyclerView.getAdapter();
+        final RecyclerView.Adapter adapter = mRecyclerView.getAdapter();
         if (adapter == null) {
             return;
         }
 
-        int itemCount = adapter.getItemCount();
-        int viewHeight = mRecyclerViewHeight;
+        // 1. Determine the available height of the RecyclerView
+        final int rvHeight = mRecyclerView.getHeight();
 
-        float scrollRatio = y / (float) viewHeight;
-        int targetPosition = (int) (scrollRatio * itemCount);
-        targetPosition = Math.max(0, Math.min(targetPosition, itemCount - 1));
+        // 2. Calculate the percentage
+        // If you want the jump to be relative to the total height:
+        float percentage = y / (float) rvHeight;
 
-        if (mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-            ((LinearLayoutManager) mRecyclerView.getLayoutManager())
-                    .scrollToPositionWithOffset(targetPosition, 0);
+        // Clamp the value to 0.0 - 1.0 range
+        percentage = Math.max(0.0f, Math.min(1.0f, percentage));
+
+        // 3. Map to Item Count
+        final int totalItems = adapter.getItemCount();
+        final int targetPosition = (int) (percentage * (totalItems - 1));
+
+        // 4. Execute the Jump
+        final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+        if (layoutManager instanceof LinearLayoutManager) {
+            // Use 0 offset to snap the item to the very top of the screen
+            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(targetPosition, 0);
         } else {
             mRecyclerView.scrollToPosition(targetPosition);
         }
+
+        // 5. Visual Cleanup
+        // This tells the thumb it needs to move to where the user clicked
+        mVerticalThumbCenterY = (int) y;
+        requestRedraw();
+
+        // This will ensure the row hides/shows correctly... turns out not really needed.
+        // setState(STATE_VISIBLE);
     }
     // HARDBACKNUTTER - END
 
@@ -640,8 +715,8 @@ public class FastScrollerImpl
         }
 
         // Vertically expand hit area
-        float topBound = mVerticalThumbCenterY - mVerticalThumbHeight / 2 - mExpandedTouchArea;
-        float bottomBound = mVerticalThumbCenterY + mVerticalThumbHeight / 2 + mExpandedTouchArea;
+        final float topBound = mVerticalThumbCenterY - mVerticalThumbHeight / 2 - mExpandedTouchArea;
+        final float bottomBound = mVerticalThumbCenterY + mVerticalThumbHeight / 2 + mExpandedTouchArea;
 
         return y >= topBound && y <= bottomBound;
         // HARDBACKNUTTER - END
@@ -659,9 +734,10 @@ public class FastScrollerImpl
     private boolean isPointInsideTrack(final float x,
                                        final float y) {
 
-        return (y >= 0 && y <= mRecyclerViewHeight)
-               && (x >= (mRecyclerViewWidth - mVerticalTrackWidth)
-                   && x <= mRecyclerViewWidth);
+        return y >= 0
+               && y <= mRecyclerViewHeight
+               && x >= mRecyclerViewWidth - mVerticalTrackWidth
+               && x <= mRecyclerViewWidth;
     }
     // HARDBACKNUTTER - END
 
