@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -355,8 +354,7 @@ public class PreferredStylesFragment
     }
 
     private static class Holder
-            extends CheckableDragDropViewHolder
-            implements BindableViewHolder<Style> {
+            extends CheckableDragDropViewHolder {
 
         @NonNull
         private final RowEditPreferredStylesBinding vb;
@@ -366,8 +364,7 @@ public class PreferredStylesFragment
             this.vb = vb;
         }
 
-        @Override
-        public void onBind(@NonNull final Style style) {
+        void onBind(@NonNull final Style style) {
             final Context context = itemView.getContext();
             vb.styleName.setText(style.getLabel(context));
             vb.type.setText(style.getType().getLabel(context));
