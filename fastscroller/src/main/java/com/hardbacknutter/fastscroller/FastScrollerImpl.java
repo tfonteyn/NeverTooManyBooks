@@ -62,7 +62,11 @@ import java.lang.annotation.RetentionPolicy;
 @SuppressWarnings("ALL")
 public class FastScrollerImpl
         extends RecyclerView.ItemDecoration
-        implements RecyclerView.OnItemTouchListener {
+        implements RecyclerView.OnItemTouchListener,
+        // HARDBACKNUTTER - BEGIN
+                   FastScroller
+        // HARDBACKNUTTER - END
+{
 
     // Scroll thumb not showing
     private static final int STATE_HIDDEN = 0;
@@ -216,7 +220,8 @@ public class FastScrollerImpl
     }
 
     // HARDBACKNUTTER - BEGIN
-    void setOverlayProvider(@Nullable final OverlayProvider overlayProvider) {
+    @Override
+    public void setOverlayProvider(@Nullable final OverlayProvider overlayProvider) {
         mOverlayProvider = overlayProvider;
     }
     // HARDBACKNUTTER - END

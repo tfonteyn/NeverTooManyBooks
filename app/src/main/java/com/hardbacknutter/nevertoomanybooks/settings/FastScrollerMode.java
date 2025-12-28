@@ -26,7 +26,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.fastscroller.FastScrollerBuilder;
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 
@@ -54,16 +54,16 @@ public final class FastScrollerMode {
     }
 
     /**
-     * Create a new {@link FastScroller} with the desired user options applied.
-     * The caller should just add a call to {@link FastScroller#attach(RecyclerView)}.
+     * Create a new {@link FastScrollerBuilder} with the desired user options applied.
+     * The caller should just add a call to {@link FastScrollerBuilder#attach(RecyclerView)}.
      *
      * @param context Current context
      *
-     * @return new unattached {@link FastScroller} instance
+     * @return new unattached {@link FastScrollerBuilder} instance
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     @NonNull
-    public static FastScroller create(@NonNull final Context context) {
+    public static FastScrollerBuilder create(@NonNull final Context context) {
         final int overlayType = IntListPref.getInt(context, PK_OVERLAY,
                                                    OverlayProviderFactory.TYPE_MD2);
 
@@ -71,7 +71,7 @@ public final class FastScrollerMode {
 
         switch (mode) {
             case DRAG_HANDLE_LARGE: {
-                return new FastScroller(context)
+                return new FastScrollerBuilder(context)
                         .setExpandedTouchArea(24)
                         .setOverlayType(overlayType)
                         // default: 8
@@ -81,7 +81,7 @@ public final class FastScrollerMode {
             }
             case DRAG_HANDLE_SYSTEM:
             default: {
-                return new FastScroller(context)
+                return new FastScrollerBuilder(context)
                         .setExpandedTouchArea(24)
                         .setOverlayType(overlayType);
             }
