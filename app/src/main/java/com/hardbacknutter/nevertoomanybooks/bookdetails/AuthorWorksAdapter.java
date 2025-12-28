@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -229,8 +228,7 @@ public class AuthorWorksAdapter
     }
 
     public static class AuthorWorkHolder
-            extends RowViewHolder
-            implements BindableViewHolder<AuthorWork> {
+            extends RowViewHolder {
 
         @NonNull
         final RowAuthorWorkBinding vb;
@@ -261,7 +259,6 @@ public class AuthorWorksAdapter
             }
         }
 
-        @Override
         public void onBind(@NonNull final AuthorWork work) {
 
             final Context context = itemView.getContext();
