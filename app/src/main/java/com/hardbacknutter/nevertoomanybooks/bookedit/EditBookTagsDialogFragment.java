@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -234,8 +233,7 @@ public class EditBookTagsDialogFragment
     }
 
     private static class Holder
-            extends RecyclerView.ViewHolder
-            implements BindableViewHolder<Tag> {
+            extends RecyclerView.ViewHolder {
 
         @NonNull
         private final RowEditBookTagListBinding vb;
@@ -249,8 +247,7 @@ public class EditBookTagsDialogFragment
                     .onClick(v, getBindingAdapterPosition()));
         }
 
-        @Override
-        public void onBind(@NonNull final Tag tag) {
+        void onBind(@NonNull final Tag tag) {
             vb.name.setText(tag.getName());
         }
     }

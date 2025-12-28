@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -433,8 +432,7 @@ public class EditBookSeriesListDialogFragment
      * Holder for each row.
      */
     private static class Holder
-            extends CheckableDragDropViewHolder
-            implements BindableViewHolder<Series> {
+            extends CheckableDragDropViewHolder {
 
         @NonNull
         private final TextView seriesView;
@@ -444,8 +442,7 @@ public class EditBookSeriesListDialogFragment
             seriesView = itemView.findViewById(R.id.row_series);
         }
 
-        @Override
-        public void onBind(@NonNull final Series series) {
+        void onBind(@NonNull final Series series) {
             final Context context = itemView.getContext();
             seriesView.setText(series.getLabel(context));
             final int dc = series.isComplete() ? R.drawable.done_all_24px : 0;

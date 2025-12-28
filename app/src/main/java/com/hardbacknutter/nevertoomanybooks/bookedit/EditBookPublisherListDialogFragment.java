@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -431,8 +430,7 @@ public class EditBookPublisherListDialogFragment
      * Holder for each row.
      */
     private static class Holder
-            extends CheckableDragDropViewHolder
-            implements BindableViewHolder<Publisher> {
+            extends CheckableDragDropViewHolder {
 
         @NonNull
         private final TextView publisherView;
@@ -442,8 +440,7 @@ public class EditBookPublisherListDialogFragment
             publisherView = itemView.findViewById(R.id.row_publisher);
         }
 
-        @Override
-        public void onBind(@NonNull final Publisher publisher) {
+        void onBind(@NonNull final Publisher publisher) {
             final Context context = itemView.getContext();
             publisherView.setText(publisher.getLabel(context));
         }

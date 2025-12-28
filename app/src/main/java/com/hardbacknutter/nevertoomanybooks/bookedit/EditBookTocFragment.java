@@ -83,7 +83,6 @@ import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.AltEditionIsfdb;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -784,8 +783,7 @@ public class EditBookTocFragment
      * Holder for each row.
      */
     private static class Holder
-            extends CheckableDragDropViewHolder
-            implements BindableViewHolder<TocEntry> {
+            extends CheckableDragDropViewHolder {
 
         @NonNull
         private final RowEditTocEntryBinding vb;
@@ -795,8 +793,7 @@ public class EditBookTocFragment
             this.vb = vb;
         }
 
-        @Override
-        public void onBind(@NonNull final TocEntry tocEntry) {
+        void onBind(@NonNull final TocEntry tocEntry) {
             final Context context = itemView.getContext();
             vb.title.setText(tocEntry.getTitle());
             vb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
