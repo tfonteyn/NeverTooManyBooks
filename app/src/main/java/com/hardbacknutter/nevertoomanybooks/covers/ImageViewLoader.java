@@ -204,8 +204,6 @@ public class ImageViewLoader {
                         return null;
                     }
 
-                    // do the loading/scaling as background work.
-                    //Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
                     final Optional<Bitmap> oBitmap = new Transformation()
                             .setScale(this.width, this.height)
                             .setSource(file)

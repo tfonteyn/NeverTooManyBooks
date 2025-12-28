@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
-import android.os.Process;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -142,7 +140,6 @@ public abstract class TaskBase<Result>
         executor.execute(() -> {
             status = Status.Running;
             Thread.currentThread().setName(taskName);
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
             //noinspection CheckStyle
             try {

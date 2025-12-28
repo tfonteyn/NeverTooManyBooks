@@ -23,7 +23,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Process;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -192,8 +191,6 @@ public class CoverCacheDaoImpl
         // Start a task to send it to the cache.
         // Use the default serial executor as we only want a single write thread at a time.
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-
             RUNNING_TASKS.incrementAndGet();
             //noinspection CheckStyle
             try {

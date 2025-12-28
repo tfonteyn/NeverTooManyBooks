@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Process;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -68,7 +67,6 @@ public final class STask {
                                         @NonNull final Consumer<T> onFinished,
                                         @NonNull final Consumer<Throwable> onFailure) {
         return executor.submit(() -> {
-            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             //noinspection CheckStyle
             try {
                 if (Thread.currentThread().isInterrupted()) {

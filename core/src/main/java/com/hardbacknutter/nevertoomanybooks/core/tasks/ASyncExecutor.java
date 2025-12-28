@@ -84,26 +84,30 @@ public final class ASyncExecutor {
 
     static {
         STORAGE_WRITES = Executors.newSingleThreadExecutor(
-                createThreadFactory("STORAGE_WRITES", Thread.NORM_PRIORITY));
+                createThreadFactory("STORAGE_WRITES",
+                                    android.os.Process.THREAD_PRIORITY_DEFAULT));
 
         // Higher priority than images and network, but less than the UI.
         final ThreadPoolExecutor main = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(128),
-                createThreadFactory("PARALLEL", Thread.NORM_PRIORITY - 1));
+                new LinkedBlockingQueue<>(128),
+                createThreadFactory("PARALLEL",
+                                    android.os.Process.THREAD_PRIORITY_BACKGROUND));
         main.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         PARALLEL = main;
 
         // Higher priority than images, but less than the UI.
         NETWORK = Executors.newCachedThreadPool(
-                createThreadFactory("NETWORK", Thread.NORM_PRIORITY - 2));
+                createThreadFactory("NETWORK",
+                                    android.os.Process.THREAD_PRIORITY_BACKGROUND));
 
         final LifoThreadPoolExecutor images = new LifoThreadPoolExecutor(
                 CPU_COUNT, CPU_COUNT,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
                 new LinkedBlockingDeque<>(),
-                createThreadFactory("IMAGES", Thread.MIN_PRIORITY));
+                createThreadFactory("IMAGES",
+                                    android.os.Process.THREAD_PRIORITY_LOWEST));
         images.allowCoreThreadTimeOut(true);
         IMAGES = images;
     }
@@ -115,7 +119,7 @@ public final class ASyncExecutor {
      * Create a <strong>new</strong> ThreadFactory.
      *
      * @param threadName to use for the base thread names
-     * @param priority   to use
+     * @param priority   one of the {@link android.os.Process#THREAD_PRIORITY_LOWEST} values.
      *
      * @return a new ThreadFactory
      */
@@ -125,11 +129,24 @@ public final class ASyncExecutor {
         return new ThreadFactory() {
             private final AtomicInteger threadIdCounter = new AtomicInteger();
 
+            @SuppressWarnings({"CheckStyle", "OverlyBroadCatchBlock"})
             @NonNull
             public Thread newThread(@NonNull final Runnable r) {
-                final Thread t =
-                        new Thread(r, threadName + "#" + threadIdCounter.incrementAndGet());
-                t.setPriority(priority);
+                // We wrap the runnable so the priority is set
+                // the moment the thread is actually started
+                final Runnable priorityWrapper = () -> {
+                    try {
+                        // This is the Android-specific Linux 'Nice' call
+                        android.os.Process.setThreadPriority(priority);
+                    } catch (@NonNull final Throwable ignored) {
+                        // ignore
+                    }
+                    r.run();
+                };
+
+                final Thread t = new Thread(priorityWrapper,
+                                            threadName + "#" + threadIdCounter.incrementAndGet());
+
                 t.setDaemon(true);
                 return t;
             }

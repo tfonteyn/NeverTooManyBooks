@@ -78,7 +78,7 @@ public class CoverBrowserViewModel
      * We want a separate executor from the 'preview' one.
      */
     private final ExecutorService galleryDisplayExecutor =
-            ASyncExecutor.create("gallery/d", Thread.MIN_PRIORITY);
+            ASyncExecutor.create("gallery/d", android.os.Process.THREAD_PRIORITY_LOWEST);
     /** Executor for displaying preview images. */
     private final ExecutorService previewDisplayExecutor = ASyncExecutor.IMAGES;
 
