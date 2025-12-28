@@ -165,7 +165,7 @@
     <string name="lbl_certificate_issued_to">Выдан для: %1$s</string>
     <string name="confirm_delete_book">Книга с названием «%1$s» будет полностью удалена %2$s.\n\n Вы уверены?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Действительно удалить книжную полку «%1$s»?\n\nОн будет удален с %2$s. Сами книги удалены не будут. Они по-прежнему будут присутствовать на любых других полках или на полке «%3$s».</string>
-    <string name="confirm_delete_publisher_from_x_books">Действительно удалить издателя «%1$s»?\n\nОн будет удален с %2$s. Сами книги не будут удалены. Рассмотрите возможность изменения издателя и изменения имени издателя на имя другого издателя, чтобы сохранить эти данные.</string>
+    <string name="confirm_delete_publisher_from_x_books">Действительно удалить издателя «%1$s»?\n\nОн будет удален из %2$s. Сами книги не будут удалены. Рассмотрите возможность редактирования издателя и изменения его названия на имя другого издателя, чтобы сохранить эти данные.</string>
     <string name="confirm_delete_series_from_x_books">Действительно удалить серию «%1$s»?\n\nОна будет удалена с %2$s. Книги этой серии не будут удалены. Вместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами.</string>
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
     <string name="confirm_delete_identifier_from_x_books">Удалить идентификатор «%1$s»?\n\nОн будет удален с %2$s. Сами книги не будут удалены.</string>
@@ -617,8 +617,8 @@
     <string name="pt_scanning_beep_on_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
     <string name="pt_scanning_beep_on_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
     <string name="pt_search_prefer_isbn10">Используйте ISBN-10, когда это возможно</string>
-    <string name="pt_search_reformat_color">Стандартизировать названия книг</string>
-    <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
+    <string name="pt_search_reformat_color">Стандартизировать названия цветов книг</string>
+    <string name="pt_search_reformat_format">Стандартизировать названия формата книги</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
     <string name="pt_cover_undo_enabled">Отмена операций на обложках книг</string>
     <string name="ps_cover_undo_disabled">Редактирование/замена обложки не может быть отменено (используется меньший объем памяти)</string>
@@ -629,8 +629,8 @@
     <string name="pt_ui_system_locale">Язык системы</string>
     <string name="pt_ui_theme">Тема</string>
     <string name="pt_website_search_order_and_enable">Приоритет, включить и отключить</string>
-    <string name="ps_show_author_name_family_first">Отображать сначала фамилии,\nнапример «Достоевский, Фёдор»</string>
-    <string name="ps_show_author_name_given_first">Отобразить сначала фамилии,\nнапример «Фёдор Достоевский»</string>
+    <string name="ps_show_author_name_family_first">Отобразить сначала фамилии,\nнапример «Достоевский, Фёдор»</string>
+    <string name="ps_show_author_name_given_first">Отобразить сначала имена,\nнапример «Фёдор Достоевский»</string>
     <string name="ps_bob_books_under_multiple_authors_each">Под каждым автор</string>
     <string name="ps_bob_books_under_multiple_publishers_each">под каждым издателем</string>
     <string name="ps_bob_books_under_multiple_series_each">под каждой серией</string>
@@ -745,7 +745,7 @@
     <string name="info_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Импортируйте текстовый файл с номерами ISBN. Файл должен иметь один ISBN в каждой строке. Результаты будут помещены в очередь.</string>
     <string name="lbl_date_added">Дата добавления</string>
-    <string name="lbl_group_1st_char_author_family_name">1-й символ фамилии автора</string>
+    <string name="lbl_group_1st_char_author_family_name">1-я буква фамилии автора</string>
     <string name="lbl_group_1st_char_series_title">1-й знак названия серии</string>
     <string name="lbl_group_1st_char_publisher_name">1-й символ имени издателя</string>
     <string name="lbl_group_1st_char_book_title">1-й символ названия книги</string>
@@ -762,7 +762,7 @@
     <string name="book_format_softcover_oblong">Мягкое покрытие - продолговатый</string>
     <string name="lbl_purge_blns">Очистить состояние узла</string>
     <string name="info_purge_blns_all">Очистить состояние узла из всех списков</string>
-    <string name="info_purge_blns_item_name">Очистить состояние узла %1$s «%2$s»\?</string>
+    <string name="info_purge_blns_item_name">Очистить состояние узла для %1$s «%2$s»?</string>
     <string name="error_updates_aborted">Обновления прерваны</string>
     <string name="lbl_country">Страна</string>
     <string name="pt_search_show_menu_options">Показать меню поиска</string>
@@ -822,8 +822,8 @@
     <string name="lbl_certificate_validity_period">Срок действия: %1$s - %2$s</string>
     <string name="lbl_reading">Читаю</string>
     <string name="action_edit_defaults">Редактирование настроек по умолчанию</string>
-    <string name="ps_sort_author_name_given_first">Отсортировать по фамилиям,\nнапример «Фёдор Достоевский»</string>
-    <string name="ps_sort_author_name_family_first">Сортировка по фамилии в первую очередь,\nнапример «Достоевский, Фёдор»</string>
+    <string name="ps_sort_author_name_given_first">Сортировать сначала по именам,\nнапример «Фёдор Достоевский»</string>
+    <string name="ps_sort_author_name_family_first">Сортировать сначала по фамилии,\nнапример «Достоевский, Фёдор»</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Назначение книжных полок</string>
     <string name="site_description_comics">комиксы</string>
