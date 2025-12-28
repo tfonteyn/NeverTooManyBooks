@@ -90,12 +90,12 @@ public class BookGridHolder
         // Note that Integer.MAX_VALUE is in fact the default for this View.
         // but Android "logic" works in mysterious ways...
         // i.e. if we don't set/force it here, it will not be the default (huh?)
-        vb.gridCell.setMaxWidth(Integer.MAX_VALUE);
+        vb.content.setMaxWidth(Integer.MAX_VALUE);
 
         // Note: we COULD reserve the space for an image.
         // pro: ensures cells without an image are still the same height
         // con: a row without images takes a lot of white space.
-        //    vb.gridCell.setMinHeight(maxHeight);
+        //    vb.content.setMinHeight(maxHeight);
 
         // Enforce the width/height of the image itself.
         final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
@@ -105,7 +105,7 @@ public class BookGridHolder
         this.coverHelper = coverHelper;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-            dbgRowIdView = new BookDebugRowIdView(vb.gridCell);
+            dbgRowIdView = new BookDebugRowIdView(vb.content);
         }
     }
 
