@@ -343,7 +343,7 @@
     <string name="lbl_date_last_updated">Datum poslední aktualizace</string>
     <string name="lbl_date_published">Datum vydání</string>
     <string name="lbl_day">Den</string>
-    <string name="option_delete_removed_books">Odstraňte knihy, které již na serveru nejsou</string>
+    <string name="option_delete_removed_books">Odstranit místní knihy, které již nejsou na serveru přítomny</string>
     <string name="lbl_description">Popis</string>
     <string name="lbl_details_have_changed">Podrobnosti se změnily</string>
     <string name="lbl_duplicate_book">Duplicitní kniha</string>
@@ -390,7 +390,7 @@
     <string name="option_level_collapse">Sbalit vše</string>
     <string name="option_level_expand">Rozbalit vše</string>
     <string name="option_level_reset">Upřednostňovaná úroveň expanze</string>
-    <string name="lbl_library">Knihovny</string>
+    <string name="lbl_library">Knihovna</string>
     <string name="lbl_local_search">Místní vyhledávání</string>
     <string name="lbl_local_search_long">Rozšířené místní vyhledávání</string>
     <string name="lbl_location">Umístění</string>
@@ -401,7 +401,7 @@
     <string name="lbl_moving_data">Probíhá přesun dat</string>
     <string name="lbl_name">Jméno</string>
     <string name="option_goto_next_book_without_cover">Přeskočit na další knihu bez obálky</string>
-    <string name="lbl_number">Číslo</string>
+    <string name="lbl_number">Počet</string>
     <string name="lbl_owned">Vlastněno</string>
     <string name="lbl_images">Obrázky</string>
     <string name="lbl_image_3">Obrázek 4</string>
@@ -433,7 +433,7 @@
     <string name="lbl_search_for_books">Hledat knihy</string>
     <string name="lbl_search_isbn">Hledat ISBN</string>
     <string name="lbl_select_fields">Zvolit pole</string>
-    <string name="lbl_select_website">Vyberte web.:</string>
+    <string name="lbl_select_website">Vyberte webovou stránku:</string>
     <string name="option_bug_report">Hlášení chyb</string>
     <string name="lbl_author_pseudonym">Pseudonym autora</string>
     <string name="lbl_series">Série</string>
@@ -444,7 +444,7 @@
     <string name="lbl_tags">Štítky</string>
     <string name="lbl_substitutions">Náhrady</string>
     <string name="lbl_signed">Podepsaná</string>
-    <string name="lbl_site_book_id">ID webové stránky</string>
+    <string name="lbl_site_book_id">ID knihy na webové stránce</string>
     <string name="option_sort_and_style_ellipsis">Třídění &amp; Styly…</string>
     <string name="lbl_sorting">Třídění</string>
     <string name="lbl_sql_query">SQL dotaz</string>
