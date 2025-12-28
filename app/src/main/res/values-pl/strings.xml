@@ -390,7 +390,7 @@
     <string name="lbl_login_to_search">Zaloguj się, aby wyszukać</string>
     <string name="lbl_month">Miesiąc</string>
     <string name="lbl_moving_data">Przenoszę dane</string>
-    <string name="lbl_name">Imię i nazwisko</string>
+    <string name="lbl_name">Nazwa</string>
     <string name="option_goto_next_book_without_cover">Przejdź do następnej książki bez okładki</string>
     <string name="lbl_number">Liczba</string>
     <string name="lbl_owned">Posiadane</string>
@@ -611,8 +611,8 @@
     <string name="pt_scanning_beep_on_invalid">Sygnał dźwiękowy, jeśli zeskanowany numer ISBN jest nieprawidłowy</string>
     <string name="pt_scanning_beep_on_valid">Sygnał dźwiękowy, jeśli skanowany numer ISBN jest prawidłowy</string>
     <string name="pt_search_prefer_isbn10">Jeśli to możliwe, użyj ISBN-10</string>
-    <string name="pt_search_reformat_color">Standaryzuj nazwy „kolorów książek”</string>
-    <string name="pt_search_reformat_format">Standaryzuj nazwy „formatu książki”</string>
+    <string name="pt_search_reformat_color">Standaryzować nazwy „kolorów książek”</string>
+    <string name="pt_search_reformat_format">Standaryzować nazwy „formatu książki”</string>
     <string name="pt_sort_title_reordered">Sortuj tytuły według</string>
     <string name="pt_cover_undo_enabled">Cofanie operacji na okładkach książek</string>
     <string name="ps_cover_undo_disabled">Edycji/zmiany okładki nie można cofnąć (zużywa mniej pamięci)</string>
@@ -623,8 +623,8 @@
     <string name="pt_ui_system_locale">Język systemu</string>
     <string name="pt_ui_theme">Motyw</string>
     <string name="pt_website_search_order_and_enable">Priorytet, włączyć i wyłączyć</string>
-    <string name="ps_show_author_name_family_first">Wyświetl najpierw nazwisko rodowe,\nnp. „Lem, Stanisław”</string>
-    <string name="ps_show_author_name_given_first">Wyświetlanie z podanymi imionami w pierwszej kolejności,\nnp. „Stanisław Lem”</string>
+    <string name="ps_show_author_name_family_first">Wyświetlać najpierw nazwisko,\nnp. „Lem, Stanisław”</string>
+    <string name="ps_show_author_name_given_first">Wyświetlać najpierw imiona,\nnp. „Stanisław Lem”</string>
     <string name="ps_bob_books_under_multiple_authors_each">Pod każdym autor</string>
     <string name="ps_bob_books_under_multiple_publishers_each">pod każdym wydawcą</string>
     <string name="ps_bob_books_under_multiple_series_each">pod każdą serią</string>
@@ -757,7 +757,7 @@
     <string name="book_format_softcover_oblong">Miękka okładka - podłużna</string>
     <string name="lbl_purge_blns">Wyczyść stan węzła</string>
     <string name="info_purge_blns_all">Wyczyść stan węzła ze wszystkich list</string>
-    <string name="info_purge_blns_item_name">Wyczyścić stan węzła %1$s „%2$s”\?</string>
+    <string name="info_purge_blns_item_name">Wyczyścić stan węzła dla %1$s „%2$s”?</string>
     <string name="error_updates_aborted">Aktualizacje przerwane</string>
     <string name="lbl_country">Kraj</string>
     <string name="pt_search_show_menu_options">Pokaż menu wyszukiwania</string>
@@ -816,8 +816,8 @@
     <string name="lbl_certificate_validity_period">Ważność: %1$s - %2$s</string>
     <string name="lbl_reading">Czytam</string>
     <string name="action_edit_defaults">Edycja ustawień domyślnych</string>
-    <string name="ps_sort_author_name_given_first">Sortuj według imion w pierwszej kolejności,\nnp. „Stanisław Lem”</string>
-    <string name="ps_sort_author_name_family_first">Sortuj według nazwiska w pierwszej kolejności,\nnp. „Lem, Stanisław”</string>
+    <string name="ps_sort_author_name_given_first">Sortować najpierw według imion,\nnp. „Stanisław Lem”</string>
+    <string name="ps_sort_author_name_family_first">Sortować najpierw według nazwiska,\nnp. „Lem, Stanisław”</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Przypisanie półek na książki</string>
     <string name="site_description_comics">Komiksy</string>
@@ -852,7 +852,7 @@
     <string name="pe_ui_theme_colors_blue_grey">Niebieskoszary</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamiczne kolory</string>
     <string name="warning_requires_android_x">Wymaga systemu Android %1$d lub nowszego</string>
-    <string name="anonymous_author">[Anonimowy]</string>
+    <string name="anonymous_author">[Anonim]</string>
     <string name="pt_search_result_order">Wyszukiwanie zwraca najnowszą lub pierwszą znalezioną książkę.</string>
     <string name="pe_search_result_order_most_recent">Ostatnio znaleziona książka</string>
     <string name="pe_search_result_order_first_found">Pierwsza znaleziona książka</string>
