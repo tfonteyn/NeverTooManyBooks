@@ -132,9 +132,13 @@ class CoverHelper {
         //
         // Given the Glide tests + the extended threading tests either don't make a
         // difference or just don't work.... no further work/attempts to be done for now.
+        //
+        // 2025-12-28: tried prescanning the cover folder + reading uuid... and storing
+        // a bit-flag (see Booklist#preScanRows()) to avoid the getPersistedFile/file.exists()
+        // on the UI thread, but this meant a 1.2 second delay each time the booklist gets build
+        // -> abandoned the idea.
 
-
-        // 1. If caching is used, check it.
+        // 1. If Bitmap pre-scaled caching is used, check it.
         if (imageCachingEnabled) {
             // BAD: database access on UI thread
             // Problem: we need to report back whether we have an image or not.
@@ -146,7 +150,7 @@ class CoverHelper {
             }
         }
 
-        // 2. Cache did not have it, or it was busy.
+        // 2. Bitmap pre-scaled caching did not have it, or it was busy.
         //    (the cache does not allow read-access while it is doing a write)
         // Check on the file system for the original image file.
         // BAD: file-system access on UI thread
