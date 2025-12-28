@@ -192,7 +192,7 @@
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
     <string name="acra_dialog_message">Wygląda na to, że aplikacja &APP_NAME; uległa awarii. Naciśnij „%1$s”, aby zapisać raport w wybranej lokalizacji. Możesz użyć tego raportu do zgłoszenia nowego błędu na stronie projektu.</string>
-    <string name="disabled">Wyłączony</string>
+    <string name="disabled">Wyłączone</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamiczny</string>
     <string name="enabled">Włączone</string>
     <string name="error_http_401_authorization_failed">Autoryzacja nie powiodła się</string>
@@ -523,12 +523,12 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Nie</string>
-    <string name="none">Brak</string>
+    <string name="none">Nic</string>
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Błąd</string>
     <string name="notification_channel_info">Informacja</string>
     <string name="notification_channel_warn">Uwaga</string>
-    <string name="password">hasło</string>
+    <string name="password">Hasło</string>
     <string name="option_bob_filter_isbn_no">Bez numeru ISBN</string>
     <string name="option_bob_filter_isbn_yes">Z ISBN</string>
     <string name="option_bob_filter_lend_out_no">Książki dostępne</string>
@@ -683,10 +683,10 @@
     <string name="X_info_tap_on_image_to_select">Stuknij większy obraz, aby go wybrać.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Stuknij miniaturę, aby wyświetlić większy obraz.</string>
     <string name="info_x_pages">%1$d stron</string>
-    <string name="unknown">Brak informacji</string>
+    <string name="unknown">Nieznany</string>
     <string name="unknown_author">[Nieznany autor]</string>
     <string name="unknown_title">[Nieznany tytuł]</string>
-    <string name="username">nazwa użytkownika</string>
+    <string name="username">Nazwa użytkownika</string>
     <string name="vldt_blank_required_for_x">Oczekiwana wartość pusta dla „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Oczekiwana wartość logiczna (0,1,t,f,true,false) dla „%1$s”</string>
     <string name="vldt_date_expected_for_x">Oczekiwana data „%1$s”</string>
