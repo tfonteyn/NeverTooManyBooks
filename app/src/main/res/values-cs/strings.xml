@@ -166,7 +166,7 @@
     <string name="lbl_certificate_issued_to">Vydán pro: %1$s</string>
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu „%1$s“ od %2$s.\n\n Určitě chcete pokračovat?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Opravdu odstranit polici „%1$s“?\n\nBude odstraněna z %2$s. Knihy samotné smazány nebudou. Stále budou přítomny na jakýchkoli jiných policích nebo na polici „%3$s“.</string>
-    <string name="confirm_delete_publisher_from_x_books">Opravdu smazat vydavatele „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou. Všechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
+    <string name="confirm_delete_publisher_from_x_books">Chcete odstranit vydavatele „%1$s“?\n\nBude odstraněn z %2$s. Samotné knihy nebudou odstraněny. Zvažte úpravu vydavatele a změnu jeho názvu na jméno jiného vydavatele, aby byla tato data zachována.</string>
     <string name="confirm_delete_series_from_x_books">Opravdu chcete smazat sérii „%1$s“?\n\nBude odstraněna z %2$s. Knihy samotné smazány nebudou. Zvažte prosím úpravu série a změnu názvu série s ohledem na zachování těchto dat.</string>
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
     <string name="confirm_delete_identifier_from_x_books">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
@@ -632,8 +632,8 @@
     <string name="pt_ui_system_locale">Jazyk systému</string>
     <string name="pt_ui_theme">Téma</string>
     <string name="pt_website_search_order_and_enable">Priorita, zapnutí a vypnutí</string>
-    <string name="ps_show_author_name_family_first">Zobrazení s příjmením na prvním místě,\ntj. „Čapek, Karel“</string>
-    <string name="ps_show_author_name_given_first">Zobrazení s křestními jmény na prvním místě,\ntj. „Karel Čapek“</string>
+    <string name="ps_show_author_name_family_first">Zobrazení nejprve příjmení,\nnapř. „Čapek, Karel“</string>
+    <string name="ps_show_author_name_given_first">Zobrazení nejprve křestních jmen,\nnapř. „Karel Čapek“</string>
     <string name="ps_bob_books_under_multiple_authors_each">Pod každým autorem</string>
     <string name="ps_bob_books_under_multiple_publishers_each">Pod každým vydavatelem</string>
     <string name="ps_bob_books_under_multiple_series_each">pod každou sérií</string>
@@ -748,7 +748,7 @@
     <string name="tip_import_isbn_list">Importujte textový soubor s čísly ISBN. Soubor by měl mít na každém řádku jedno ISBN. Výsledky budou zařazeny do fronty.</string>
     <string name="lbl_date_added">Datum přidání</string>
     <string name="debug_select_items">Vyberte, co chcete zahrnout:</string>
-    <string name="lbl_group_1st_char_author_family_name">1. znak příjmení autora</string>
+    <string name="lbl_group_1st_char_author_family_name">1. písmeno příjmení autora</string>
     <string name="lbl_group_1st_char_series_title">1. znak názvu série</string>
     <string name="lbl_group_1st_char_publisher_name">1. znak jména vydavatele</string>
     <string name="lbl_group_1st_char_book_title">1. znak názvu knihy</string>
@@ -764,7 +764,7 @@
     <string name="book_format_softcover_oblong">Měkká vazba - podlouhlá</string>
     <string name="lbl_purge_blns">Vymazat stav uzlu</string>
     <string name="info_purge_blns_all">Vymazat stav uzlu ze všech seznamů</string>
-    <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“\?</string>
+    <string name="info_purge_blns_item_name">Vymazat stav uzlu pro %1$s „%2$s“?</string>
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
     <string name="pt_search_show_menu_options">Zobrazit nabídky pro vyhledávání</string>
@@ -822,8 +822,8 @@
     <string name="lbl_certificate_validity_period">Platnost: %1$s - %2$s</string>
     <string name="lbl_reading">Čtu</string>
     <string name="action_edit_defaults">Úprava výchozího nastavení</string>
-    <string name="ps_sort_author_name_given_first">Řazení podle prvních křestních jmen,\ntj. „Karel Čapek“</string>
-    <string name="ps_sort_author_name_family_first">Řazení podle příjmení na prvním místě,\ntj. „Čapek, Karel“</string>
+    <string name="ps_sort_author_name_given_first">Řazení nejprve podle křestních jmen,\nnapř. „Karel Čapek“</string>
+    <string name="ps_sort_author_name_family_first">Řazení nejprve podle příjmení,\nnapř. „Čapek, Karel“</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Přiřazení polic na knihy</string>
     <string name="site_description_comics">Komiksy</string>
