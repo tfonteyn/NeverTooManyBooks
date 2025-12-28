@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
+package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,7 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @param <T> type of data to bind
  */
 @FunctionalInterface
-public interface BindableViewHolder<T> {
+interface BindableViewHolder<T> {
 
     /**
      * Bind the given data to the views in the holder.
