@@ -158,7 +158,7 @@
     <string name="pe_camera_front">Фронтальная камера</string>
     <string name="camera_next_action">Действие после съемки</string>
     <string name="pe_camera_other">Другое</string>
-    <string name="cancelled">Печать отменена</string>
+    <string name="cancelled">Отменено</string>
     <string name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке</string>
     <string name="cd_clear_text_end_icon">Очистить текстовое поле</string>
     <string name="lbl_certificate_issued_by">Кем выдан: %1$s</string>
@@ -198,7 +198,7 @@
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
     <string name="acra_dialog_message">Похоже, что приложение &APP_NAME; потерпело крах. Нажмите «%1$s», чтобы сохранить отчет в выбранном вами месте. Этот отчет можно использовать для сообщения о новой проблеме на сайте проекта.</string>
-    <string name="disabled">Выключен</string>
+    <string name="disabled">Выключенo</string>
     <string name="pe_fast_scroller_overlay_dynamic">Динамический</string>
     <string name="enabled">Включено</string>
     <string name="error_http_401_authorization_failed">Авторизация не удалась</string>
@@ -315,7 +315,7 @@
     <string name="lbl_color">Цвет</string>
     <string name="lbl_condition">Состояние</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Отсутствует/приемлемо</string>
-    <string name="lbl_condition_dust_cover_none">Никто</string>
+    <string name="lbl_condition_dust_cover_none">Нет</string>
     <string name="lbl_condition_fair">Приемлемо</string>
     <string name="lbl_condition_fine">Как новая</string>
     <string name="lbl_condition_good">Хорошо</string>
@@ -529,7 +529,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Нет</string>
-    <string name="none">Нет</string>
+    <string name="none">Ничто</string>
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Ошибка</string>
     <string name="notification_channel_info">Информация</string>
@@ -688,10 +688,10 @@
     <string name="X_info_tap_on_image_to_select">Нажмите на увеличенное изображение, чтобы выбрать его.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Нажмите на миниатюру, чтобы отобразить увеличенное изображение.</string>
     <string name="info_x_pages">Страниц: %1$d</string>
-    <string name="unknown">Неизвестно</string>
+    <string name="unknown">Неизвестный</string>
     <string name="unknown_author">[Неизвестный автор]</string>
     <string name="unknown_title">[Неизвестное название]</string>
-    <string name="username">имя пользователя</string>
+    <string name="username">Имя пользователя</string>
     <string name="vldt_blank_required_for_x">Требуется пустое значение: «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">Введите дату: «%1$s»</string>
