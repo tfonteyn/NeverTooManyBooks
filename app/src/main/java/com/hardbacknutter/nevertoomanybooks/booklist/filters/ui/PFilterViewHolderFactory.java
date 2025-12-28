@@ -50,6 +50,7 @@ public final class PFilterViewHolderFactory {
      *
      * @throws IllegalArgumentException for an unsupported filter type
      */
+    @SuppressWarnings("rawtypes")
     @NonNull
     public static PFilterViewHolder create(@NonNull final LayoutInflater inflater,
                                            @NonNull final ViewGroup parent,

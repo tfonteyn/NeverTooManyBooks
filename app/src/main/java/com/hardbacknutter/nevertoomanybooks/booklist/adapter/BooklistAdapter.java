@@ -412,6 +412,7 @@ public class BooklistAdapter
         return holder;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {

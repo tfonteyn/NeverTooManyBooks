@@ -822,9 +822,10 @@ public class BooksOnBookshelf
 
         // 2025-05-23: experiment for github #147; rapid scrolling.
         // The defaults are '5' for each viewType. We may want to add other groups later.
-//        final RecyclerView.RecycledViewPool pool = new RecyclerView.RecycledViewPool();
-//        pool.setMaxRecycledViews(BooklistGroup.BOOK, 20);
-//        vb.content.list.setRecycledViewPool(pool);
+        //   final RecyclerView.RecycledViewPool pool = new RecyclerView.RecycledViewPool();
+        //   pool.setMaxRecycledViews(BooklistGroup.BOOK, 20);
+        //   pool.setMaxRecycledViews(BooklistGroup.AUTHOR, 20);
+        //   vb.content.list.setRecycledViewPool(pool);
     }
 
     private void createSearchViewHelper() {
