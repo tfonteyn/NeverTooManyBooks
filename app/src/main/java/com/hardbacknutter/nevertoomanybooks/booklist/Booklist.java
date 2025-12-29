@@ -33,6 +33,7 @@ import androidx.core.util.Pair;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
@@ -125,9 +126,7 @@ public class Booklist
 
     @SuppressWarnings("FieldNotUsedInToString")
     private final String baseCursorSql;
-    @SuppressWarnings("FieldNotUsedInToString")
     private byte[] rowGroupIds;
-    @SuppressWarnings("FieldNotUsedInToString")
     private long[] rowIds;
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int totalBooks = -1;
@@ -243,7 +242,7 @@ public class Booklist
     }
 
     @WorkerThread
-    public void preScanRows() {
+    private void preScanRows() {
         final long[] ids;
         final byte[] groups;
         try (Cursor cursor = db.rawQuery(SELECT_ + DBKey.PK_ID + ',' + DBKey.BL_NODE.GROUP
@@ -344,6 +343,9 @@ public class Booklist
         listCursor = new BooklistCursor(this);
         listCursor.moveToPosition(0);
 
+        // This MUST be done here after we created a new cursor.
+        // At this point the visibility of the nodes is stable,
+        // so we can read the right rows.
         preScanRows();
 
         return listCursor;
@@ -940,6 +942,8 @@ public class Booklist
                + ", distinctBooks=" + distinctBooks
                + ", listTable=" + listTable.getName()
                + ", navTable=" + navTable.getName()
+               + ", rowGroupIds=" + Arrays.toString(rowGroupIds)
+               + ", rowIds=" + Arrays.toString(rowIds)
                + '}';
     }
 }
