@@ -84,6 +84,7 @@ public final class GroupKeyFactory {
     private static final String _WHEN_ = " WHEN ";
     private static final String _THEN_ = " THEN ";
     private static final String _ELSE_ = " ELSE ";
+    private static final String _ELSE_EMPTY_STRING = " ELSE ''";
     private static final String _END = " END";
 
     private static final String GLOB_YYYY =
@@ -98,7 +99,7 @@ public final class GroupKeyFactory {
             " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'";
     private static final String GLOB_YYYY_MM_D =
             " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'";
-    private static final String GLOB_YYY_M_D =
+    private static final String GLOB_YYYY_M_D =
             " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'";
 
     /**
@@ -754,15 +755,13 @@ public final class GroupKeyFactory {
                                @NonNull final String... fieldSpec) {
 
         final StringBuilder sb = new StringBuilder(CASE);
+        for (final String field : fieldSpec) {
+            final String expr = toLocal ? localDateTimeExpression(field) : field;
 
-        for (int i = 0; i < fieldSpec.length; i++) {
-            if (toLocal) {
-                fieldSpec[i] = localDateTimeExpression(fieldSpec[i]);
-            }
-            sb.append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY)
-              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",1,4)");
+            sb.append(_WHEN_).append(expr).append(GLOB_YYYY)
+              .append(_THEN_).append(SUBSTR).append(expr).append(",1,4)");
         }
-        sb.append(" ELSE ''").append(_END);
+        sb.append(_ELSE_EMPTY_STRING).append(_END);
         return sb.toString();
     }
 
@@ -782,16 +781,15 @@ public final class GroupKeyFactory {
                                 @NonNull final String... fieldSpec) {
         final StringBuilder sb = new StringBuilder(CASE);
 
-        for (int i = 0; i < fieldSpec.length; i++) {
-            if (toLocal) {
-                fieldSpec[i] = localDateTimeExpression(fieldSpec[i]);
-            }
-            sb.append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_MM)
-              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",6,2)")
-              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_M)
-              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",6,1)");
+        for (final String field : fieldSpec) {
+            final String expr = toLocal ? localDateTimeExpression(field) : field;
+
+            sb.append(_WHEN_).append(expr).append(GLOB_YYYY_MM)
+              .append(_THEN_).append(SUBSTR).append(expr).append(",6,2)")
+              .append(_WHEN_).append(expr).append(GLOB_YYYY_M)
+              .append(_THEN_).append(SUBSTR).append(expr).append(",6,1)");
         }
-        sb.append(" ELSE ''").append(_END);
+        sb.append(_ELSE_EMPTY_STRING).append(_END);
         return sb.toString();
     }
 
@@ -812,22 +810,21 @@ public final class GroupKeyFactory {
                               @NonNull final String... fieldSpec) {
         final StringBuilder sb = new StringBuilder(CASE);
 
-        for (int i = 0; i < fieldSpec.length; i++) {
-            if (toLocal) {
-                fieldSpec[i] = localDateTimeExpression(fieldSpec[i]);
-            }
+        for (final String field : fieldSpec) {
+            final String expr = toLocal ? localDateTimeExpression(field) : field;
+
             // Look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
             // YYYY-MM-DD or YYYY-M-DD or YYYY-MM-D or YYYY-M-D
-            sb.append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_MM_DD)
-              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",9,2)")
-              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_M_DD)
-              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",8,2)")
-              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYYY_MM_D)
-              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",9,1)")
-              .append(_WHEN_).append(fieldSpec[i]).append(GLOB_YYY_M_D)
-              .append(_THEN_).append(SUBSTR).append(fieldSpec[i]).append(",8,1)");
+            sb.append(_WHEN_).append(expr).append(GLOB_YYYY_MM_DD)
+              .append(_THEN_).append(SUBSTR).append(expr).append(",9,2)")
+              .append(_WHEN_).append(expr).append(GLOB_YYYY_M_DD)
+              .append(_THEN_).append(SUBSTR).append(expr).append(",8,2)")
+              .append(_WHEN_).append(expr).append(GLOB_YYYY_MM_D)
+              .append(_THEN_).append(SUBSTR).append(expr).append(",9,1)")
+              .append(_WHEN_).append(expr).append(GLOB_YYYY_M_D)
+              .append(_THEN_).append(SUBSTR).append(expr).append(",8,1)");
         }
-        sb.append(" ELSE ''").append(_END);
+        sb.append(_ELSE_EMPTY_STRING).append(_END);
         return sb.toString();
     }
 
