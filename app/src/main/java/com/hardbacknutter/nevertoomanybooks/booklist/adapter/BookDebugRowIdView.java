@@ -20,9 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,14 +40,7 @@ class BookDebugRowIdView {
     private final TextView dbgRowIdView;
 
     BookDebugRowIdView(@NonNull final ConstraintLayout parentLayout) {
-        // Add a text view to display the "position/rowId" for a book.
-        // Displayed on top of the image so the layout is not changed.
-        dbgRowIdView = new TextView(parentLayout.getContext());
-        dbgRowIdView.setId(View.generateViewId());
-        dbgRowIdView.setTextColor(Color.BLUE);
-        dbgRowIdView.setBackgroundColor(Color.WHITE);
-        dbgRowIdView.setZ(5);
-        dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+        dbgRowIdView = createDbgView(parentLayout.getContext());
 
         parentLayout.addView(dbgRowIdView, 0);
 
@@ -58,6 +53,32 @@ class BookDebugRowIdView {
         set.setVerticalBias(dbgRowIdView.getId(), 1.0f);
 
         set.applyTo(parentLayout);
+    }
+
+    BookDebugRowIdView(@NonNull final LinearLayout parentLayout) {
+        dbgRowIdView = createDbgView(parentLayout.getContext());
+        dbgRowIdView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        parentLayout.addView(dbgRowIdView);
+    }
+
+    /**
+     * Create a text view to display the "position/rowId" for a book.
+     * Displayed on top of the image so the layout is not changed.
+     *
+     * @param context Current context
+     *
+     * @return view
+     */
+    @NonNull
+    private TextView createDbgView(@NonNull final Context context) {
+        final TextView v = new TextView(context);
+        v.setId(View.generateViewId());
+        v.setTextColor(Color.BLUE);
+        v.setBackgroundColor(Color.WHITE);
+        v.setZ(5);
+        v.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+        return v;
     }
 
     void onBind(final int bindingAdapterPosition,

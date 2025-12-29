@@ -19,58 +19,50 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     tools:viewBindingIgnore="true">
 
     <TextView
         android:id="@+id/level_text"
         style="@style/BoB.Group.Label"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/level_book_count"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="Level"
-        />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:text="Level" />
 
     <TextView
         android:id="@+id/level_book_count"
         style="@style/BoB.Group.Label"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/field_margin_start"
         android:layout_marginEnd="@dimen/field_margin_start"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/cbx_is_complete"
-        app:layout_constraintStart_toEndOf="@id/level_text"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="#34"
-        />
+        tools:text="#34" />
 
-    <!-- uses visibility="invisible" to preserve the space. -->
+    <!-- uses visibility="invisible" to preserve the space,
+         even when it's not used by the row. -->
     <ImageView
         android:id="@+id/cbx_is_complete"
         style="@style/Flag.Complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/level_text"
-        app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
         tools:ignore="ContentDescription"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@id/ROW_MENU_BTN"
+        android:id="@+id/ROW_MENU_BTN"
         style="@style/Button.MenuPopup.More"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        tools:visibility="visible" />
+
+</LinearLayout>

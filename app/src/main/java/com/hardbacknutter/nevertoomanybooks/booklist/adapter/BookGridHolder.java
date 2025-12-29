@@ -86,17 +86,6 @@ public class BookGridHolder
         this.style = style;
         useAuthor = style.isShowField(FieldVisibility.Screen.List, DBKey.FK_AUTHOR);
 
-        // This is needed to allow the cells taking up the entire width of the screen.
-        // Note that Integer.MAX_VALUE is in fact the default for this View.
-        // but Android "logic" works in mysterious ways...
-        // i.e. if we don't set/force it here, it will not be the default (huh?)
-        vb.content.setMaxWidth(Integer.MAX_VALUE);
-
-        // Note: we COULD reserve the space for an image.
-        // pro: ensures cells without an image are still the same height
-        // con: a row without images takes a lot of white space.
-        //    vb.content.setMinHeight(maxHeight);
-
         // Enforce the width/height of the image itself.
         final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
         lp.width = imageViewSize.width;
@@ -190,10 +179,6 @@ public class BookGridHolder
         final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
                                                           rowData.getString(DBKey.BOOK_UUID));
         if (hasImage) {
-            final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-            // Use start and end-constraints
-            lp.width = 0;
-            vb.coverImage0.setLayoutParams(lp);
             vb.coverImage0.setVisibility(View.VISIBLE);
 
             vb.title.setText(null);

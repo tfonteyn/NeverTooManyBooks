@@ -155,7 +155,7 @@ public class BookHolder
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-            dbgRowIdView = new BookDebugRowIdView(itemView.findViewById(R.id.card_frame));
+            dbgRowIdView = new BookDebugRowIdView(vb.cardFrame);
         }
     }
 
