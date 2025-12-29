@@ -660,8 +660,10 @@ class BooklistBuilder {
         //noinspection StringConcatenationMissingWhitespace
         return prefixWithAuthor
                + INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
-               + SELECT_ + sourceColumns + _FROM_ + buildFrom(userLocale) + buildWhere()
-               + _ORDER_BY_ + buildOrderBy(collationCaseSensitive);
+               + '\n' + SELECT_ + sourceColumns
+               + '\n' + _FROM_ + buildFrom(underEachAuthor, hasPreferredPrimaryAuthor, userLocale)
+               + '\n' + buildWhere()
+               + '\n' + _ORDER_BY_ + buildOrderBy(collationCaseSensitive);
     }
 
     /**
