@@ -318,6 +318,14 @@ class BooklistBuilder {
 
         // If required, add the domainExpression to the order-by domains
         if (domainExpression.getSort() != Sort.Unsorted) {
+            // We're always adding it to the end of the list.
+            // The reason being:
+            // - we should not have duplicates in normal usage
+            // - we WILL have duplicates when adding year/month/day parts
+            //   Each of those comes with the full date as a basedomain
+            //   We need to be sure those full date domains are AFTER
+            //  all the year/month/day domains.
+            orderByDomainExpressions.remove(domainExpression);
             orderByDomainExpressions.add(domainExpression);
         }
     }
