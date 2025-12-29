@@ -114,6 +114,8 @@ public class BooklistAdapter
     private OnRowClickListener rowShowMenuListener;
     @Nullable
     private ExtMenuButton contextMenuMode;
+    /** Fastscroller/scrollbar is being dragged by the user. */
+    private boolean isDragging;
 
     /**
      * Constructor.
@@ -220,8 +222,11 @@ public class BooklistAdapter
         this.contextMenuMode = contextMenuMode;
     }
 
-    private boolean isDragging;
-
+    /**
+     * Pass in the status of the Fastscroller/scrollbar: is it being dragged by the user.
+     *
+     * @param dragging flag
+     */
     public void setDragging(final boolean dragging) {
         if (this.isDragging == dragging) {
             return;
