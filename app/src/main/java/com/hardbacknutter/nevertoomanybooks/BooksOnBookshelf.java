@@ -806,16 +806,6 @@ public class BooksOnBookshelf
                 public void onFastScrollStarted() {
                     if (adapter != null) {
                         adapter.setDragging(true);
-                        // 1. Manually hide every view currently on screen
-                        for (int i = 0; i < vb.content.list.getChildCount(); i++) {
-                            final View child = vb.content.list.getChildAt(i);
-                            if (child != null) {
-                                final View details = child.findViewById(R.id.card);
-                                if (details != null) {
-                                    details.setVisibility(View.INVISIBLE);
-                                }
-                            }
-                        }
                         adapter.notifyDataSetChanged();
                     }
                 }
