@@ -743,6 +743,9 @@ public final class GroupKeyFactory {
      *
      * @param toLocal   if set, first convert the fieldSpec to local time from UTC
      * @param fieldSpec fully qualified field name
+     *                  It will try parsing the first one,
+     *                  if it fails try the second one,...
+     *                  Falls back to a {@code ''} if all fail.
      *
      * @return expression
      */
