@@ -644,11 +644,14 @@ class BooklistBuilder {
         // Depending on these two flags, we join with the authors
         // in 3 different ways.
         final int primaryAuthorRole = style.getPrimaryAuthorRole();
-        final boolean underEach = style.isShowBooksUnderEachGroup(
+        final boolean hasPreferredPrimaryAuthor = primaryAuthorRole != AuthorRole.UNKNOWN;
+
+        final boolean underEachAuthor = style.isShowBooksUnderEachGroup(
                 Style.UnderEach.Author.getGroupId());
+
         // Two of those need a temporary table as a WITH clause.
         final CharSequence prefixWithAuthor;
-        if (primaryAuthorRole != AuthorRole.UNKNOWN && !underEach) {
+        if (hasPreferredPrimaryAuthor && !underEachAuthor) {
             prefixWithAuthor = withAuthor(primaryAuthorRole);
         } else {
             prefixWithAuthor = "";
@@ -686,13 +689,16 @@ class BooklistBuilder {
      * and any pre-defined leftOuterJoin's
      * and {@link Style#getBookLevelFieldsOrderBy()} fields.
      *
-     * @param userLocale Current Locale
+     * @param underEachAuthor           flag
+     * @param hasPreferredPrimaryAuthor flag
+     * @param userLocale                Current Locale
      *
      * @return FROM clause
      */
     @NonNull
-    private String buildFrom(@NonNull final Locale userLocale) {
-
+    private String buildFrom(final boolean underEachAuthor,
+                             final boolean hasPreferredPrimaryAuthor,
+                             @NonNull final Locale userLocale) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "build|joins=" + extraJoins);
             LoggerFactory.getLogger().d(TAG, "build|filters=" + filters);
@@ -724,7 +730,7 @@ class BooklistBuilder {
 
         // We always want the primary author id in the cursor.
         // We add that id in {@link #addBookLevelDomains} see comments there
-        sb.append(joinWithAuthors());
+        sb.append(joinWithAuthors(underEachAuthor, hasPreferredPrimaryAuthor));
         // Make sure we don't link twice
         extraJoins.remove(TBL_BOOK_AUTHOR.getName());
 
@@ -819,16 +825,16 @@ class BooklistBuilder {
     }
 
     @NonNull
-    private CharSequence joinWithAuthors() {
+    private CharSequence joinWithAuthors(final boolean underEachAuthor,
+                                         final boolean hasPreferredPrimaryAuthor) {
         // Books with multiple authors are listed under each author
         // The position or the preferred role is not applicable.
-        if (style.isShowBooksUnderEachGroup(
-                Style.UnderEach.Author.getGroupId())) {
+        if (underEachAuthor) {
             return joinAuthorsUnderEach();
         }
 
         // The user has a specific primary author role preference
-        if (style.getPrimaryAuthorRole() != AuthorRole.UNKNOWN) {
+        if (hasPreferredPrimaryAuthor) {
             return joinAuthorsWithPreferredPrimaryRole();
         }
 
