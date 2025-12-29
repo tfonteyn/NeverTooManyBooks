@@ -756,9 +756,24 @@ public class BooksOnBookshelf
             public int getSpanSize(final int position) {
                 final int dataPosition = position - headerAdapter.getItemCount();
                 if (dataPosition >= 0) {
+                    // 2025-12-29: "new" way: read the type from a cache
+                    int rowType = -1;
                     final Booklist booklist = vm.getBooklist();
-                    if (booklist != null
-                        && booklist.getRowGroupId(dataPosition) == BooklistGroup.BOOK) {
+                    if (booklist != null) {
+                        rowType = booklist.getRowGroupId(dataPosition);
+                    }
+                    // Old way: read it from the cursor.
+//                    //noinspection DataFlowIssue
+//                    final DataHolder rowData = adapter.readDataAt(dataPosition);
+//                    //noinspection DataFlowIssue
+//                    final int live = rowData.getInt(DBKey.BL_NODE.GROUP);
+//
+//                    if (live != cached) {
+//                        throw new IllegalStateException("getSpanSize|pos=" + position
+//                                                        + "|live=" + live + "|cache=" + cached);
+//                    }
+
+                    if (rowType == BooklistGroup.BOOK) {
                         // A book, i.e. a cover, is always 1 cell.
                         return 1;
                     }

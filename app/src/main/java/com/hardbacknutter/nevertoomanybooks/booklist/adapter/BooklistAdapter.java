@@ -195,7 +195,6 @@ public class BooklistAdapter
             booklistCursor = null;
         } else {
             this.booklist = booklist;
-            this.booklist.preScanRows();
             booklistCursor = booklist.getBooklistCursor();
         }
         notifyDataSetChanged();
@@ -284,10 +283,27 @@ public class BooklistAdapter
 
     @Override
     public long getItemId(final int position) {
+        // 2025-12-29: "new" way: read it from a cache
+        final long rowId;
         if (booklist != null) {
-            return booklist.getRowId(position);
+            rowId = booklist.getRowId(position);
+        } else {
+            rowId = RecyclerView.NO_ID;
         }
-        return RecyclerView.NO_ID;
+        // Old way: read it from the cursor.
+//        final long live;
+//        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
+//            // return the rowId of the list-table
+//            live = booklistCursor.getLong(DBKey.PK_ID);
+//        } else {
+//            live = RecyclerView.NO_ID;
+//        }
+//
+//        if (live != cached) {
+//            throw new IllegalStateException("getItemId|pos=" + position
+//                                            + "|live=" + live + "|cache=" + cached);
+//        }
+        return rowId;
     }
 
     @Override
@@ -305,11 +321,27 @@ public class BooklistAdapter
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
+        // 2025-12-29: "new" way: read it from a cache
+        final int rowType;
         if (booklist != null) {
-            return booklist.getRowGroupId(position);
+            rowType = booklist.getRowGroupId(position);
+        } else {
+            // bogus, should not happen
+            rowType = BooklistGroup.BOOK;
         }
-        // bogus, should not happen
-        return BooklistGroup.BOOK;
+        // Old way: read it from the cursor.
+//        final int live;
+//        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
+//            live = booklistCursor.getInt(DBKey.BL_NODE.GROUP);
+//        } else {
+//            // bogus, should not happen
+//            live = BooklistGroup.BOOK;
+//        }
+//        if (live != cached) {
+//            throw new IllegalStateException("getItemViewType|pos=" + position
+//                                            + "|live=" + live + "|cache=" + cached);
+//        }
+        return rowType;
     }
 
     @SuppressLint("SwitchIntDef")

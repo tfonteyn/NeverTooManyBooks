@@ -343,6 +343,9 @@ public class Booklist
 
         listCursor = new BooklistCursor(this);
         listCursor.moveToPosition(0);
+
+        preScanRows();
+
         return listCursor;
     }
 
