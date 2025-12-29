@@ -298,14 +298,9 @@ public class EditBookViewModel
                     // It should always be a new book here, but paranoia...
                     if (book.isNew()) {
                         // DATE_ACQUIRED is always used
-                        if (!book.contains(DBKey.DATE_ACQUIRED)) {
-                            book.putLocalDateTime(DBKey.DATE_ACQUIRED, LocalDateTime.now());
-                        }
+                        book.ensureDateAcquired();
                         // if BOOK_CONDITION is wanted, assume the user got a new book.
-                        if (serviceLocator.isFieldEnabled(DBKey.CONDITION_BOOK)
-                            && !book.contains(DBKey.CONDITION_BOOK)) {
-                            book.putInt(DBKey.CONDITION_BOOK, Book.CONDITION_AS_NEW);
-                        }
+                        book.ensureCondition();
                         // it's all new data, not saved yet, hence 'Dirty'
                         book.setStage(EntityStage.Stage.Dirty);
                     }

@@ -1508,6 +1508,27 @@ public class Book
     }
 
     /**
+     * Ensure the book has a condition set.
+     * If the book does not, set it to {@link Book#CONDITION_AS_NEW}.
+     */
+    public void ensureCondition() {
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.CONDITION_BOOK)
+            && !contains(DBKey.CONDITION_BOOK)) {
+            putInt(DBKey.CONDITION_BOOK, Book.CONDITION_AS_NEW);
+        }
+    }
+
+    /**
+     * Ensure the book has a date-acquired set.
+     * If the book does not, set it to {@code now}.
+     */
+    public void ensureDateAcquired() {
+        if (!contains(DBKey.DATE_ACQUIRED)) {
+            putLocalDateTime(DBKey.DATE_ACQUIRED, LocalDateTime.now());
+        }
+    }
+
+    /**
      * Get the name of the loanee (if any).
      *
      * @return {@link Optional} with a non-blank loanee name

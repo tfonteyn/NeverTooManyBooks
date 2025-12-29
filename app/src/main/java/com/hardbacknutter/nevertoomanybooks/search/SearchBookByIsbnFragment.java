@@ -1075,6 +1075,11 @@ public class SearchBookByIsbnFragment
     }
 
     private void onSearchResultsSaveBook(@NonNull final Book book) {
+        // DATE_ACQUIRED is always used
+        book.ensureDateAcquired();
+        // if BOOK_CONDITION is wanted, assume the user got a new book.
+        book.ensureCondition();
+
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         final Context context = getContext();
         try {
