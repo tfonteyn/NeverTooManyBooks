@@ -150,6 +150,68 @@ class FastScrollerOverlay
     public void showOverlay(final boolean isDragging,
                             final int thumbCenter) {
 
+        if (mIsDragging != isDragging) {
+            mIsDragging = isDragging;
+            if (mIsDragging) {
+                mRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
+                mAnimationHelper.showPopup(mPopupView);
+            } else {
+                mAnimationHelper.hidePopup(mPopupView);
+            }
+        }
+
+        // Are we done?
+        if (!mIsDragging) {
+            return;
+        }
+
+        final RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter = selectAdapter();
+        final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+
+        if (!(adapter instanceof PopupTextProvider)
+            || !(layoutManager instanceof LinearLayoutManager)) {
+            // gone: we will never show it.
+            mPopupView.setVisibility(View.GONE);
+            return;
+        }
+
+        final int position = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+        if (position == RecyclerView.NO_POSITION) {
+            // There wasn't anything before, just bail out
+            return;
+        }
+
+        final CharSequence text = getCachedPopupText((PopupTextProvider) adapter, position);
+        if (text == null || text.length() == 0) {
+            // invisible: we're not showing this time, but will likely in the future
+            mPopupView.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        // we have text to show
+        mPopupView.setVisibility(View.VISIBLE);
+
+        final int viewWidth = mRecyclerView.getWidth();
+        final int viewHeight = mRecyclerView.getHeight();
+        final Rect padding = getPadding();
+        final int layoutDirection = mRecyclerView.getLayoutDirection();
+        final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)
+                mPopupView.getLayoutParams();
+
+        preparePopupView(viewWidth, viewHeight, padding, lp, layoutDirection,
+                         text);
+        performPopupLayout(viewWidth, viewHeight, padding, lp, layoutDirection,
+                           thumbCenter);
+    }
+
+    /**
+     * Select the first adapter which is a {@link PopupTextProvider}.
+     *
+     * @return adapter
+     */
+    @Nullable
+    private RecyclerView.Adapter<? extends RecyclerView.ViewHolder> selectAdapter() {
+
         RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter =
                 (RecyclerView.Adapter<? extends RecyclerView.ViewHolder>)
                         mRecyclerView.getAdapter();
@@ -166,118 +228,94 @@ class FastScrollerOverlay
                 adapter = first.get();
             }
         }
+        return adapter;
+    }
 
-        if (!(adapter instanceof PopupTextProvider)) {
-            return;
-        }
-
-        final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-        if (!(layoutManager instanceof LinearLayoutManager)) {
-            return;
-        }
-
-        final int position = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
-        if (position == RecyclerView.NO_POSITION) {
-            return;
-        }
-
-        final CharSequence popupText;
-
+    @Nullable
+    private CharSequence getCachedPopupText(@NonNull final PopupTextProvider provider,
+                                            final int position) {
         // no need to check on previousPopupText being null, as it just
         // means the very first few requests won't get any text... that's fine
-        if (Math.abs(position - previousPopupTextPosition) < popupInterval) {
-            popupText = previousPopupText;
-        } else {
-            popupText = ((PopupTextProvider) adapter).getPopupText(position);
-            previousPopupText = popupText;
+        if (Math.abs(position - previousPopupTextPosition) >= popupInterval) {
+            previousPopupText = provider.getPopupText(position);
             previousPopupTextPosition = position;
         }
+        return previousPopupText;
+    }
 
-        final boolean hasPopup = popupText != null && popupText.length() > 0;
-
-        mPopupView.setVisibility(hasPopup ? View.VISIBLE : View.INVISIBLE);
-        if (hasPopup) {
-            final int layoutDirection = mRecyclerView.getLayoutDirection();
-            mPopupView.setLayoutDirection(layoutDirection);
-
-            final boolean isLayoutRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL;
-            final int viewWidth = mRecyclerView.getWidth();
-            final int viewHeight = mRecyclerView.getHeight();
-
-            final Rect padding = getPadding();
-
-            final FrameLayout.LayoutParams popupLayoutParams = (FrameLayout.LayoutParams)
-                    mPopupView.getLayoutParams();
-
-            // Only need to (re)measure if the text is different.
-            if (!Objects.equals(mPopupView.getText(), popupText)) {
-                mPopupView.setText(popupText);
-
-                final int widthMeasureSpec = ViewGroup.getChildMeasureSpec(
-                        View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY),
-                        padding.left + padding.right + mThumbWidth
-                        + popupLayoutParams.leftMargin + popupLayoutParams.rightMargin,
-                        popupLayoutParams.width);
-
-                final int heightMeasureSpec = ViewGroup.getChildMeasureSpec(
-                        View.MeasureSpec.makeMeasureSpec(viewHeight, View.MeasureSpec.EXACTLY),
-                        padding.top + padding.bottom
-                        + popupLayoutParams.topMargin + popupLayoutParams.bottomMargin,
-                        popupLayoutParams.height);
-
-                mPopupView.measure(widthMeasureSpec, heightMeasureSpec);
-            }
-
-            final int popupWidth = mPopupView.getMeasuredWidth();
-            final int popupHeight = mPopupView.getMeasuredHeight();
-            final int popupLeft;
-            if (isLayoutRtl) {
-                popupLeft = padding.left + mThumbWidth + popupLayoutParams.leftMargin;
-            } else {
-                popupLeft = viewWidth - padding.right - mThumbWidth - popupLayoutParams.rightMargin
-                            - popupWidth;
-            }
-
-            final int popupAnchorY;
-            switch (popupLayoutParams.gravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-                case Gravity.CENTER_HORIZONTAL:
-                    popupAnchorY = popupHeight / 2;
-                    break;
-
-                case Gravity.RIGHT:
-                    // RIGHT! not end!
-                    popupAnchorY = popupHeight;
-                    break;
-
-                case Gravity.LEFT:
-                    // LEFT! not start!
-                default:
-                    popupAnchorY = 0;
-                    break;
-            }
-
-            // zhanghai: thumbCenter = thumbTop + thumbAnchorY
-            final int popupTop = MathUtils.clamp(thumbCenter - popupAnchorY,
-                                                 padding.top + popupLayoutParams.topMargin,
-                                                 viewHeight - padding.bottom
-                                                 - popupLayoutParams.bottomMargin - popupHeight);
-
-            layoutView(mRecyclerView, mPopupView, popupWidth, popupHeight, popupLeft, popupTop);
+    private void preparePopupView(final int viewWidth,
+                                  final int viewHeight,
+                                  @NonNull final Rect padding,
+                                  @NonNull final FrameLayout.LayoutParams lp,
+                                  final int layoutDirection,
+                                  @NonNull final CharSequence text) {
+        // Only measure if the text has changed.
+        if (Objects.equals(mPopupView.getText(), text)) {
+            return;
         }
 
-        if (mIsDragging != isDragging) {
-            mIsDragging = isDragging;
+        mPopupView.setText(text);
+        mPopupView.setLayoutDirection(layoutDirection);
 
-            if (mIsDragging) {
-                mRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-            }
+        final int widthMeasureSpec = ViewGroup.getChildMeasureSpec(
+                View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY),
+                padding.left + padding.right + mThumbWidth
+                + lp.leftMargin + lp.rightMargin,
+                lp.width);
 
-            if (mIsDragging) {
-                mAnimationHelper.showPopup(mPopupView);
-            } else {
-                mAnimationHelper.hidePopup(mPopupView);
-            }
+        final int heightMeasureSpec = ViewGroup.getChildMeasureSpec(
+                View.MeasureSpec.makeMeasureSpec(viewHeight, View.MeasureSpec.EXACTLY),
+                padding.top + padding.bottom
+                + lp.topMargin + lp.bottomMargin,
+                lp.height);
+
+        mPopupView.measure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private void performPopupLayout(final int viewWidth,
+                                    final int viewHeight,
+                                    @NonNull final Rect padding,
+                                    @NonNull final FrameLayout.LayoutParams lp,
+                                    final int layoutDirection,
+                                    final int thumbCenter) {
+
+        final int popupWidth = mPopupView.getMeasuredWidth();
+        final int popupHeight = mPopupView.getMeasuredHeight();
+
+        // Horizontal: Positioning relative to thumb and RTL direction
+        final int popupLeft;
+        if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            popupLeft = padding.left + mThumbWidth + lp.leftMargin;
+        } else {
+            popupLeft = viewWidth - padding.right - mThumbWidth - lp.rightMargin - popupWidth;
         }
+
+        // Vertical: Anchor alignment using VERTICAL_GRAVITY_MASK
+        final int popupAnchorY;
+        switch (lp.gravity & Gravity.VERTICAL_GRAVITY_MASK) {
+            case Gravity.CENTER_VERTICAL:
+                // Popup centers itself on the thumb
+                popupAnchorY = popupHeight / 2;
+                break;
+
+            case Gravity.BOTTOM:
+                // Popup sits entirely ABOVE the thumb center
+                popupAnchorY = popupHeight;
+                break;
+
+            case Gravity.TOP:
+            default:
+                // Popup sits entirely BELOW the thumb center
+                popupAnchorY = 0;
+                break;
+        }
+
+        final int popupTop = MathUtils.clamp(
+                thumbCenter - popupAnchorY,
+                padding.top + lp.topMargin,
+                viewHeight - padding.bottom - lp.bottomMargin - popupHeight);
+
+        layoutView(mRecyclerView, mPopupView, popupWidth, popupHeight, popupLeft, popupTop);
     }
 
     /**
