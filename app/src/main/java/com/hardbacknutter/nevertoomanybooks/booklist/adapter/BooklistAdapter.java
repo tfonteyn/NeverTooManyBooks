@@ -283,27 +283,20 @@ public class BooklistAdapter
 
     @Override
     public long getItemId(final int position) {
-        // 2025-12-29: "new" way: read it from a cache
-        final long rowId;
-        if (booklist != null) {
-            rowId = booklist.getRowId(position);
+        // 2025-12-30: we implemented caching of the rowId and the RowType
+        // so that the methods getItemViewType, getItemId
+        // and the GridLayoutManager getSpanSize method
+        // no longer needed to access the database
+        // but that got out of sync too fast each time the cursor had to switch pages.
+        // See commit 21b6c0dab687a5d01dc23aa72feb60fbdf9fa842
+        // and 7610189c9f94beb2651a98a737e1deee0f037a96
+        // Reversed those maybe to investigate again in the future.
+        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
+            return booklistCursor.getLong(DBKey.PK_ID);
         } else {
-            rowId = RecyclerView.NO_ID;
+            // empty list
+            return RecyclerView.NO_ID;
         }
-        // Old way: read it from the cursor.
-//        final long live;
-//        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
-//            // return the rowId of the list-table
-//            live = booklistCursor.getLong(DBKey.PK_ID);
-//        } else {
-//            live = RecyclerView.NO_ID;
-//        }
-//
-//        if (live != cached) {
-//            throw new IllegalStateException("getItemId|pos=" + position
-//                                            + "|live=" + live + "|cache=" + cached);
-//        }
-        return rowId;
     }
 
     @Override
@@ -321,27 +314,12 @@ public class BooklistAdapter
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
-        // 2025-12-29: "new" way: read it from a cache
-        final int rowType;
-        if (booklist != null) {
-            rowType = booklist.getRowGroupId(position);
+        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
+            return booklistCursor.getInt(DBKey.BL_NODE.GROUP);
         } else {
-            // bogus, should not happen
-            rowType = BooklistGroup.BOOK;
+            // should not happen / empty list
+            return BooklistGroup.BOOK;
         }
-        // Old way: read it from the cursor.
-//        final int live;
-//        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
-//            live = booklistCursor.getInt(DBKey.BL_NODE.GROUP);
-//        } else {
-//            // bogus, should not happen
-//            live = BooklistGroup.BOOK;
-//        }
-//        if (live != cached) {
-//            throw new IllegalStateException("getItemViewType|pos=" + position
-//                                            + "|live=" + live + "|cache=" + cached);
-//        }
-        return rowType;
     }
 
     @SuppressLint("SwitchIntDef")

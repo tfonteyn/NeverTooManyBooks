@@ -27,13 +27,11 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
@@ -126,8 +124,7 @@ public class Booklist
 
     @SuppressWarnings("FieldNotUsedInToString")
     private final String baseCursorSql;
-    private byte[] rowGroupIds;
-    private long[] rowIds;
+
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int totalBooks = -1;
 
@@ -241,45 +238,6 @@ public class Booklist
         }
     }
 
-    @WorkerThread
-    private void preScanRows() {
-        final long[] ids;
-        final byte[] groups;
-        try (Cursor cursor = db.rawQuery(SELECT_ + DBKey.PK_ID + ',' + DBKey.BL_NODE.GROUP
-                                         + _FROM_ + listTable.getName()
-                                         + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=1"
-                                         + _ORDER_BY_ + DBKey.PK_ID,
-                                         null)) {
-
-            final int count = cursor.getCount();
-            ids = new long[count];
-            groups = new byte[count];
-            int pos = 0;
-            while (cursor.moveToNext()) {
-                ids[pos] = cursor.getLong(0);
-                groups[pos] = (byte) cursor.getInt(1);
-                pos++;
-            }
-        }
-        rowIds = ids;
-        rowGroupIds = groups;
-    }
-
-    public long getRowId(final int position) {
-        if (rowIds == null || position >= rowIds.length) {
-            return 1;
-        }
-        return rowIds[position];
-    }
-
-    @BooklistGroup.Id
-    public int getRowGroupId(final int position) {
-        if (rowGroupIds == null || position >= rowGroupIds.length) {
-            return BooklistGroup.BOOK;
-        }
-        return rowGroupIds[position];
-    }
-
     /**
      * Count the total number of book records in the list.
      *
@@ -342,11 +300,6 @@ public class Booklist
 
         listCursor = new BooklistCursor(this);
         listCursor.moveToPosition(0);
-
-        // This MUST be done here after we created a new cursor.
-        // At this point the visibility of the nodes is stable,
-        // so we can read the right rows.
-        preScanRows();
 
         return listCursor;
     }
@@ -942,8 +895,6 @@ public class Booklist
                + ", distinctBooks=" + distinctBooks
                + ", listTable=" + listTable.getName()
                + ", navTable=" + navTable.getName()
-               + ", rowGroupIds=" + Arrays.toString(rowGroupIds)
-               + ", rowIds=" + Arrays.toString(rowIds)
                + '}';
     }
 }

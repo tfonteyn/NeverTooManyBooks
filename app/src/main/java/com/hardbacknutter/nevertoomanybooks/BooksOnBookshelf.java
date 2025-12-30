@@ -751,37 +751,7 @@ public class BooksOnBookshelf
         final int spanCount = vm.getStyle().getCoverScale().getGridSpanCount(this);
         final GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
 
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(final int position) {
-                final int dataPosition = position - headerAdapter.getItemCount();
-                if (dataPosition >= 0) {
-                    // 2025-12-29: "new" way: read the type from a cache
-                    int rowType = -1;
-                    final Booklist booklist = vm.getBooklist();
-                    if (booklist != null) {
-                        rowType = booklist.getRowGroupId(dataPosition);
-                    }
-                    // Old way: read it from the cursor.
-//                    //noinspection DataFlowIssue
-//                    final DataHolder rowData = adapter.readDataAt(dataPosition);
-//                    //noinspection DataFlowIssue
-//                    final int live = rowData.getInt(DBKey.BL_NODE.GROUP);
-//
-//                    if (live != cached) {
-//                        throw new IllegalStateException("getSpanSize|pos=" + position
-//                                                        + "|live=" + live + "|cache=" + cached);
-//                    }
-
-                    if (rowType == BooklistGroup.BOOK) {
-                        // A book, i.e. a cover, is always 1 cell.
-                        return 1;
-                    }
-                }
-                // The header and all other BooklistGroup's use the full width.
-                return spanCount;
-            }
-        });
+        layoutManager.setSpanSizeLookup(new GridSpanSizeLookup(spanCount));
         return layoutManager;
     }
 
@@ -2769,6 +2739,30 @@ public class BooksOnBookshelf
                 .setIcon(R.drawable.cloud_download_24px);
         }
 
+    }
+
+    private final class GridSpanSizeLookup
+            extends GridLayoutManager.SpanSizeLookup {
+        private final int spanCount;
+
+        private GridSpanSizeLookup(final int spanCount) {
+            this.spanCount = spanCount;
+        }
+
+        @Override
+        public int getSpanSize(final int position) {
+            final int dataPosition = position - headerAdapter.getItemCount();
+            if (dataPosition >= 0) {
+                //noinspection DataFlowIssue
+                if (adapter.readDataAt(dataPosition).getInt(DBKey.BL_NODE.GROUP)
+                    == BooklistGroup.BOOK) {
+                    // A book is always 1 cell.
+                    return 1;
+                }
+            }
+            // The header and all other BooklistGroup's use the full width.
+            return spanCount;
+        }
     }
 
     /**
