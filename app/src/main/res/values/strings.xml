@@ -770,13 +770,15 @@
     <string name="lbl_condition_very_good">Very good</string>
     <!-- Book / Dust cover condition -->
     <string name="lbl_condition_good">Good</string>
-    <!-- Book / Dust cover condition -->
+    <!-- Book condition -->
     <string name="lbl_condition_fair">Acceptable</string>
-    <!-- Book / Dust cover condition -->
+    <!-- Book condition; might fall apart, have missing title pag(s),
+         but all text pages are there so can be read. -->
     <string name="lbl_condition_reading_copy">Reading copy</string>
-    <!-- Book / Dust cover condition -->
+    <!-- Dust cover condition; the book was issued with a cover,
+         but it's missing, or is in a bad/fair condition. -->
     <string name="lbl_condition_dust_cover_missing_or_bad">Missing/Fair</string>
-    <!-- Book / Dust cover condition -->
+    <!-- Dust cover condition; the book was issued without a dust cover. -->
     <string name="lbl_condition_dust_cover_none">None</string>
     <!-- endregion -->
     <!-- region ========== Author roles. -->
