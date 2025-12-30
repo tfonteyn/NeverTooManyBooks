@@ -254,7 +254,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_book_type_anthology">Ανθολογία</string>
     <string name="lbl_archive_format">Μορφή</string>
     <string name="option_info_archive_format_db">Βάση δεδομένων SQLite.</string>
-    <string name="option_info_archive_format_json">Όλα τα δεδομένα σε μορφή JSON</string>
+    <string name="option_info_archive_format_json">Όλα τα δεδομένα σε μορφή JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Μόνο για εξαγωγή δεδομένων· η εισαγωγή δεν υποστηρίζεται.</string>
     <string name="option_info_lbl_archive_type_backup">Πλήρες αντίγραφο ασφαλείας / επαναφοράς</string>
     <string name="option_archive_type_backup_zip">Αντίγραφο ασφαλείας (.zip)</string>
@@ -305,12 +305,12 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_color">Χρώμα</string>
     <string name="lbl_condition">Κατάσταση</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Ελλειπές/Μέτρια</string>
-    <string name="lbl_condition_dust_cover_none">Κενό</string>
-    <string name="lbl_condition_fair">Αποδεκτή</string>
+    <string name="lbl_condition_dust_cover_none">Χωρίς κάλυμμα</string>
+    <string name="lbl_condition_fair">Αποδεκτό</string>
     <string name="lbl_condition_fine">Σαν καινούργιο</string>
-    <string name="lbl_condition_good">Καλή</string>
+    <string name="lbl_condition_good">Καλό</string>
     <string name="lbl_condition_reading_copy">Αντίτυπο για ανάγνωση</string>
-    <string name="lbl_condition_very_good">Πολύ καλή</string>
+    <string name="lbl_condition_very_good">Πολύ καλό</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Συγχώνευση πεζών/κεφαλαίων</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Διαγραφή αχρησιμοποίητων ετικετών</string>
     <string name="lbl_connection_timeout">Χρονικό όριο σύνδεσης (δευτερόλεπτα)</string>
@@ -345,7 +345,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_edition_slipcase">Έκδοση με θήκη</string>
     <string name="lbl_export_books_option_all">Όλα τα βιβλία</string>
     <string name="lbl_export_books_option_since_last_full_backup">Νέα και ενημερωμένα βιβλία</string>
-    <string name="lbl_export_options">Επιλέξτε τι θα εξαχθεί</string>
+    <string name="lbl_export_options">Επιλέξτε τι θα εξαχθεί.</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="option_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="option_field_usage_copy_if_blank">Αντιγραφή αν ειναι κενό</string>
