@@ -47,6 +47,16 @@ public interface OverlayProvider {
                     int bottom);
 
     /**
+     * Set the interval, i.e. number of rows, which can be skipped when
+     * showing the popup text while dragging.
+     * <p>
+     * Default: {@code 5}
+     *
+     * @param interval number of rows
+     */
+    void setInterval(int interval);
+
+    /**
      * The adapter should implement this interface.
      * The OverlayProvider will call the method to get the text to display.
      */

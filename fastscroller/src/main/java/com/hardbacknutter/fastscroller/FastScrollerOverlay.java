@@ -65,6 +65,11 @@ class FastScrollerOverlay
     /** Current status. */
     private boolean mIsDragging;
 
+    private int popupInterval = 5;
+    private int previousPopupTextPosition;
+    @Nullable
+    private CharSequence previousPopupText;
+
     /**
      * Constructor.
      *
@@ -95,6 +100,11 @@ class FastScrollerOverlay
         overlay.add(mPopupView);
 
         mPopupView.setAlpha(0);
+    }
+
+    @Override
+    public void setInterval(final int interval) {
+        popupInterval = interval;
     }
 
     @Override
@@ -171,8 +181,17 @@ class FastScrollerOverlay
             return;
         }
 
-        final CharSequence popupText = ((PopupTextProvider) adapter)
-                .getPopupText(position);
+        final CharSequence popupText;
+
+        // no need to check on previousPopupText being null, as it just
+        // means the very first few requests won't get any text... that's fine
+        if (Math.abs(position - previousPopupTextPosition) < popupInterval) {
+            popupText = previousPopupText;
+        } else {
+            popupText = ((PopupTextProvider) adapter).getPopupText(position);
+            previousPopupText = popupText;
+            previousPopupTextPosition = position;
+        }
 
         final boolean hasPopup = popupText != null && popupText.length() > 0;
 
