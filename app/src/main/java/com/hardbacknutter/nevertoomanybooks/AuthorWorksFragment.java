@@ -79,7 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
-import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * Display all {@link TocEntry}'s for an Author.
@@ -179,8 +178,7 @@ public class AuthorWorksFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
-        InsetsListenerBuilder.apply(vb.authorWorks);
+        // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()

@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
-import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 // 2024-05-05: Tried using a SideSheetDialog on phone screens, but they are just that: a "Dialog"
 // and not a DialogFragment. No life cycle entry points.
@@ -169,8 +168,7 @@ public class TocFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
-        InsetsListenerBuilder.apply(vb.toc);
+        // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
 
         final Context context = getContext();
 

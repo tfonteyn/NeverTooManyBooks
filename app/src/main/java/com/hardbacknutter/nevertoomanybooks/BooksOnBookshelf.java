@@ -329,7 +329,7 @@ public class BooksOnBookshelf
         // The status bar will still be transparent, but the background will be the same
         // as the toolbar.
         InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
-        InsetsListenerBuilder.apply(vb.content.list);
+        // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
 
         createActivityLaunchers();
         createFragmentLaunchers();
