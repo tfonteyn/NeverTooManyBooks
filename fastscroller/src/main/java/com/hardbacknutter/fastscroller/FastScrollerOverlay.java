@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
@@ -238,10 +239,16 @@ class FastScrollerOverlay
                                             final int position) {
         // no need to check on previousPopupText being null, as it just
         // means the very first few requests won't get any text... that's fine
-        if (Math.abs(position - previousPopupTextPosition) >= popupInterval) {
-            previousPopupText = provider.getPopupText(position);
-            previousPopupTextPosition = position;
+        if (Math.abs(position - previousPopupTextPosition) < popupInterval) {
+            return previousPopupText;
         }
+
+        final CharSequence text = provider.getPopupText(position);
+        if (text != null && !text.equals(previousPopupText)) {
+            mRecyclerView.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+        }
+        previousPopupText = text;
+        previousPopupTextPosition = position;
         return previousPopupText;
     }
 
