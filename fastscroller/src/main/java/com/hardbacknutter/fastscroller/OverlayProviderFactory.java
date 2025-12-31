@@ -40,6 +40,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -75,11 +76,15 @@ public final class OverlayProviderFactory {
         popupView.setMinimumWidth(minimumSize);
         popupView.setMinimumHeight(minimumSize);
 
-        final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+        final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
-        layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_md_popup_margin_end));
-        popupView.setLayoutParams(layoutParams);
+        lp.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_md_popup_margin_end));
+
+        final boolean isRtl = popupView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        final int horizontalGravity = isRtl ? Gravity.START : Gravity.END;
+        lp.gravity = horizontalGravity | Gravity.CENTER_VERTICAL;
+
+        popupView.setLayoutParams(lp);
 
         final Context context = popupView.getContext();
         popupView.setBackground(context.getDrawable(R.drawable.fastscroll_overlay_default));
@@ -98,11 +103,15 @@ public final class OverlayProviderFactory {
         popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_width));
         popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_height));
 
-        final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+        final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
-        layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_classic_popup_margin_end));
-        popupView.setLayoutParams(layoutParams);
+        lp.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_classic_popup_margin_end));
+
+        final boolean isRtl = popupView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        final int horizontalGravity = isRtl ? Gravity.START : Gravity.END;
+        lp.gravity = horizontalGravity | Gravity.CENTER_VERTICAL;
+
+        popupView.setLayoutParams(lp);
 
         final Context context = popupView.getContext();
         popupView.setBackground(context.getDrawable(R.drawable.fastscroll_overlay_classic));
@@ -120,11 +129,15 @@ public final class OverlayProviderFactory {
         popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.fs_md2_popup_min_width));
         popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.fs_md2_popup_min_height));
 
-        final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+        final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
-        layoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_margin_end));
-        popupView.setLayoutParams(layoutParams);
+        lp.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_margin_end));
+
+        final boolean isRtl = popupView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        final int horizontalGravity = isRtl ? Gravity.START : Gravity.END;
+        lp.gravity = horizontalGravity | Gravity.CENTER_VERTICAL;
+
+        popupView.setLayoutParams(lp);
 
         final Context context = popupView.getContext();
         // reminder: don't use colorSurface; that's already used for the list view background.
