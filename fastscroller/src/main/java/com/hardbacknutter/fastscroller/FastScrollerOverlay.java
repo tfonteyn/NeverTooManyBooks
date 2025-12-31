@@ -92,6 +92,8 @@ class FastScrollerOverlay
         mThumbWidth = thumbWidth;
 
         mPopupView = new TextView(context);
+
+        // Gravity is set by the popupStyle
         mPopupView.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         popupStyle.accept(mPopupView);
@@ -294,19 +296,23 @@ class FastScrollerOverlay
         final int popupAnchorY;
         switch (lp.gravity & Gravity.VERTICAL_GRAVITY_MASK) {
             case Gravity.CENTER_VERTICAL:
-                // Popup centers itself on the thumb
+                // Center of thumb
                 popupAnchorY = popupHeight / 2;
                 break;
 
             case Gravity.BOTTOM:
-                // Popup sits entirely ABOVE the thumb center
-                popupAnchorY = popupHeight;
+                // Near the bottom of the thumb
+                popupAnchorY = (int) (popupHeight * 0.9f);
                 break;
 
             case Gravity.TOP:
+                // Near the top of the thumb
+                popupAnchorY = (int) (popupHeight * 0.1f);
+                break;
+
             default:
-                // Popup sits entirely BELOW the thumb center
-                popupAnchorY = 0;
+                // Fallback to center
+                popupAnchorY = popupHeight / 2;
                 break;
         }
 
