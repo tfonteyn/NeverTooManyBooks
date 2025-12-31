@@ -127,13 +127,13 @@ public class EditBookTagsDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         InsetsListenerBuilder.create(vb.tagAvailable)
-                             .margins(Side.Start, Side.Bottom)
+                             .padding(Side.Start, Side.Bottom)
                              .systemBars()
                              .displayCutout()
                              .ime()
                              .apply();
         InsetsListenerBuilder.create(vb.tagsInBook)
-                             .margins(Side.End, Side.Bottom)
+                             .padding(Side.End, Side.Bottom)
                              .systemBars()
                              .displayCutout()
                              .ime()
