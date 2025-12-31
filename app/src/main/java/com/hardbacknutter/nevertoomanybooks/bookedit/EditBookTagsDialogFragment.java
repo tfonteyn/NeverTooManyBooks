@@ -268,6 +268,9 @@ public class EditBookTagsDialogFragment
             inflater = LayoutInflater.from(context);
 
             onRowClickListener = (v, position) -> {
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
+                }
                 final Tag tag = tags.get(position);
                 destination.add(tag);
                 tags.remove(tag);

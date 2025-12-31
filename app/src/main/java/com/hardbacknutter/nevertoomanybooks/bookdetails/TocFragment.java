@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -177,6 +178,9 @@ public class TocFragment
 
         adapter = new AuthorWorksAdapter(context, aVm.getStyle(), vm.getAuthors(), vm.getWorks());
         adapter.setOnRowClickListener((v, position) -> {
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
             final TocEntry tocEntry = vm.getWorks().get(position);
 
             if (v.getId() == R.id.author) {

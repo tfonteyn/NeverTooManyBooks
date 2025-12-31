@@ -167,6 +167,9 @@ public class IdentifiersEditorFragment
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
+                    }
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
 
                     final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);

@@ -40,6 +40,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -195,10 +196,18 @@ public class EditBookPublisherListDialogFragment
         //noinspection DataFlowIssue
         adapter = new PublisherListAdapter(context, publisherList,
                                            vh -> itemTouchHelper.startDrag(vh));
-        adapter.setOnRowClickListener((v, position) -> editEntry(position));
+        adapter.setOnRowClickListener((v, position) -> {
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
+            editEntry(position);
+        });
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
+                    }
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
                     //noinspection DataFlowIssue
                     final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);

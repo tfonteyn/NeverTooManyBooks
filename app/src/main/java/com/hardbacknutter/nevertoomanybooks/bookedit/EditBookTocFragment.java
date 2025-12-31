@@ -253,11 +253,18 @@ public class EditBookTocFragment
         adapter = new TocListEditAdapter(context, tocEntryList,
                                          vh -> itemTouchHelper.startDrag(vh));
 
-        adapter.setOnRowClickListener(
-                (v, position) -> editEntry(tocEntryList.get(position), position));
+        adapter.setOnRowClickListener((v, position) -> {
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
+            editEntry(tocEntryList.get(position), position);
+        });
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
+                    }
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
                     //noinspection DataFlowIssue
                     final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);

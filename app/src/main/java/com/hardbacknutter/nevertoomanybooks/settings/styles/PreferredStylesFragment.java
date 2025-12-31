@@ -197,6 +197,9 @@ public class PreferredStylesFragment
         adapter = new StylesAdapter(getContext(), vm.getList(), positionHandler,
                                     vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> {
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
             // click -> set the row as 'selected'.
             // Do NOT modify the 'preferred' state of the row here.
 

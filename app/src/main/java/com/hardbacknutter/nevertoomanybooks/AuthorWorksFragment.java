@@ -42,6 +42,7 @@ import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -214,10 +215,15 @@ public class AuthorWorksFragment
 
         // click -> get the book(s) for that entry and display.
         adapter.setOnRowClickListener(
-                (v, position) -> displayBookLauncher.launch(
-                        this,
-                        vm.getWorks(), position,
-                        vm.getBookshelf(), vm.isAllBookshelves()));
+                (v, position) -> {
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
+                    }
+                    displayBookLauncher.launch(
+                            this,
+                            vm.getWorks(), position,
+                            vm.getBookshelf(), vm.isAllBookshelves());
+                });
 
         rowMenu = MenuUtils.create(context);
         rowMenu.add(Menu.NONE, R.id.MENU_DELETE,
