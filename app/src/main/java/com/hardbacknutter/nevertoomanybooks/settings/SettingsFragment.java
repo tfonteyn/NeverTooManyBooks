@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagAdminContract;
@@ -92,6 +93,7 @@ public class SettingsFragment
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
     private static final String PSK_TAGS = "psk_tags";
+    private static final String PSK_IDENTIFIERS = "psk_identifiers";
     private static final String PSK_USER_INTERFACE = "psk_user_interface";
 
     private static final int ANDROID_9 = 9;
@@ -104,6 +106,14 @@ public class SettingsFragment
 
     private final ActivityResultLauncher<Void> manageTagsLauncher =
             registerForActivityResult(new TagAdminContract(), o -> o.ifPresent(
+                    settingsOutput -> {
+                        if (settingsOutput.isForceRebuildBooklist()) {
+                            vm.setForceRebuildBooklist();
+                        }
+                    }));
+
+    private final ActivityResultLauncher<Void> manageIdentitiesLauncher =
+            registerForActivityResult(new IdentifiersEditorContract(), o -> o.ifPresent(
                     settingsOutput -> {
                         if (settingsOutput.isForceRebuildBooklist()) {
                             vm.setForceRebuildBooklist();
@@ -153,6 +163,11 @@ public class SettingsFragment
         //noinspection DataFlowIssue
         findPreference(PSK_TAGS).setOnPreferenceClickListener(p -> {
             manageTagsLauncher.launch(null);
+            return true;
+        });
+        //noinspection DataFlowIssue
+        findPreference(PSK_IDENTIFIERS).setOnPreferenceClickListener(p -> {
+            manageIdentitiesLauncher.launch(null);
             return true;
         });
 
