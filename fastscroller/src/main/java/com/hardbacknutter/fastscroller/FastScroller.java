@@ -24,7 +24,25 @@ import androidx.annotation.Nullable;
 
 public interface FastScroller {
 
+    /**
+     * Set the provider to use.
+     *
+     * @param overlayProvider to use, {@code null} for none.
+     */
     void setOverlayProvider(@Nullable OverlayProvider overlayProvider);
 
+    /**
+     * Set a listener to receive feedback.
+     *
+     * @param listener to use
+     */
     void setOnFastScrollStateChangeListener(@Nullable OnFastScrollStateChangeListener listener);
+
+    /**
+     * Allow updating the margin, typically from inside
+     * an {@code Insets} listener set on the {@code RecyclrView}.
+     *
+     * @param margin to use
+     */
+    void setMargin(int margin);
 }

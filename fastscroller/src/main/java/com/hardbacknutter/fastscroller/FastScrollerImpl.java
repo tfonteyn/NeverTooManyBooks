@@ -34,6 +34,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -97,7 +100,9 @@ public class FastScrollerImpl
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     final ValueAnimator mShowHideAnimator = ValueAnimator.ofFloat(0, 1);
     private final int mScrollbarMinimumRange;
-    private final int mMargin;
+    // HARDBACKNUTTER - BEGIN
+    private int mMargin;
+    // HARDBACKNUTTER - END
     private final int mVerticalThumbWidth;
     private final int mVerticalTrackWidth;
     // Final values for the horizontal scroll bar
@@ -233,6 +238,18 @@ public class FastScrollerImpl
         mStateListener = listener;
     }
 
+    @Override
+    public void setMargin(final int margin) {
+        if (this.mMargin != margin) {
+            this.mMargin = margin;
+            // We need to recompute the thumb position immediately
+            if (mRecyclerView != null) {
+                updateScrollPosition(mRecyclerView.computeHorizontalScrollOffset(),
+                                     mRecyclerView.computeVerticalScrollOffset());
+                requestRedraw();
+            }
+        }
+    }
     // HARDBACKNUTTER - END
 
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView) {
@@ -394,10 +411,27 @@ public class FastScrollerImpl
     private void drawVerticalScrollbar(Canvas canvas) {
         int viewWidth = mRecyclerViewWidth;
         int left = viewWidth - mVerticalThumbWidth;
+
+        // HARDBACKNUTTER - BEGIN
+        // 1. Calculate the raw top position
         int top = mVerticalThumbCenterY - mVerticalThumbHeight / 2;
+
+        // 2. Clamp the drawing bounds to the Safe Zone (mMargin)
+        // This ensures the drawable never physically enters the rounded corner area
+        if (top < mMargin) {
+            top = mMargin;
+        } else if (top + mVerticalThumbHeight > mRecyclerViewHeight - mMargin) {
+            top = mRecyclerViewHeight - mMargin - mVerticalThumbHeight;
+        }
+
+        // 3. Set bounds
         mVerticalThumbDrawable.setBounds(0, 0, mVerticalThumbWidth, mVerticalThumbHeight);
-        mVerticalTrackDrawable
-                .setBounds(0, 0, mVerticalTrackWidth, mRecyclerViewHeight);
+
+        // The track itself should also respect the margin so it doesn't look cut off
+        mVerticalTrackDrawable.setBounds(0, mMargin, mVerticalTrackWidth,
+                                         mRecyclerViewHeight - mMargin);
+        // HARDBACKNUTTER - END
+
         if (isLayoutRTL()) {
             mVerticalTrackDrawable.draw(canvas);
             canvas.translate(mVerticalThumbWidth, top);
@@ -417,16 +451,62 @@ public class FastScrollerImpl
     private void drawHorizontalScrollbar(Canvas canvas) {
         int viewHeight = mRecyclerViewHeight;
         int top = viewHeight - mHorizontalThumbHeight;
+
+        // HARDBACKNUTTER - BEGIN
+        // 1. Calculate the raw left position
         int left = mHorizontalThumbCenterX - mHorizontalThumbWidth / 2;
-        mHorizontalThumbDrawable.setBounds(0, 0, mHorizontalThumbWidth, mHorizontalThumbHeight);
-        mHorizontalTrackDrawable
-                .setBounds(0, 0, mRecyclerViewWidth, mHorizontalTrackHeight);
+
+        // 2. Clamp the drawing bounds to the Safe Zone (mMargin)
+        if (left < mMargin) {
+            left = mMargin;
+        } else if (left + mHorizontalThumbWidth > mRecyclerViewWidth - mMargin) {
+            left = mRecyclerViewWidth - mMargin - mHorizontalThumbWidth;
+        }
+
+        // 3. Set bounds
+        mHorizontalThumbDrawable.setBounds(0, 0,
+                                           mHorizontalThumbWidth,
+                                           mHorizontalThumbHeight);
+
+        // The track respects left/right margins
+        mHorizontalTrackDrawable.setBounds(mMargin, 0,
+                                           mRecyclerViewWidth - mMargin,
+                                           mHorizontalTrackHeight);
+
         canvas.translate(0, top);
         mHorizontalTrackDrawable.draw(canvas);
         canvas.translate(left, 0);
         mHorizontalThumbDrawable.draw(canvas);
-        canvas.translate(-left, -top);
+        // Reset X
+        canvas.translate(-left, 0);
+        // Reset Y
+        canvas.translate(0, -top);
+        // HARDBACKNUTTER - END
     }
+
+    // HARDBACKNUTTER - BEGIN
+    private void updateMarginFromInsets() {
+        if (mRecyclerView == null) {
+            return;
+        }
+
+        // Fetch the insets directly from the root of the view hierarchy
+        final WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(mRecyclerView);
+        if (insets != null) {
+            final Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            // Take the larger of the two to clear corners & nav bar
+            final int newMargin = Math.max(systemBars.top, systemBars.bottom);
+
+            // Only update if it actually changed to avoid infinite loops
+            if (this.mMargin != newMargin) {
+                this.mMargin = newMargin;
+                // We don't call requestRedraw here because updateScrollPosition
+                // is already in the middle of a logic pass.
+            }
+        }
+    }
+    // HARDBACKNUTTER - END
 
     /**
      * Notify the scroller of external change of the scroll, e.g. through dragging or flinging on
@@ -437,6 +517,11 @@ public class FastScrollerImpl
      */
     void updateScrollPosition(int offsetX,
                               int offsetY) {
+        // HARDBACKNUTTER - BEGIN
+        // Pull the hardware margins first
+        updateMarginFromInsets();
+        // HARDBACKNUTTER - END
+
         int verticalContentLength = mRecyclerView.computeVerticalScrollRange();
         int verticalVisibleLength = mRecyclerViewHeight;
         mNeedVerticalScrollbar = verticalContentLength - verticalVisibleLength > 0
@@ -452,50 +537,69 @@ public class FastScrollerImpl
             return;
         }
         if (mNeedVerticalScrollbar) {
-            // HARDBACKNUTTER: disabled ORIGINAL, see below for new calc
-//            float middleScreenPos = offsetY + verticalVisibleLength / 2.0f;
-//            mVerticalThumbCenterY =
-//                    (int) ((verticalVisibleLength * middleScreenPos) / verticalContentLength);
-            mVerticalThumbHeight = Math.min(verticalVisibleLength,
-                                            (verticalVisibleLength * verticalVisibleLength)
-                                            / verticalContentLength);
             // HARDBACKNUTTER - BEGIN
-            // Apply the minimal thumb size
+            // This calculates thumb size based on how many items are on screen vs total items
+            final LinearLayoutManager layoutManager = (LinearLayoutManager)
+                    mRecyclerView.getLayoutManager();
+            if (layoutManager == null) {
+                return;
+            }
+
+            final int totalItemCount = layoutManager.getItemCount();
+            if (totalItemCount == 0) {
+                return;
+            }
+
+            // 1. Calculate Progress based on Item Index, not Pixels
+            final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
+            final int lastVisiblePos = layoutManager.findLastVisibleItemPosition();
+            final int visibleItemCount = lastVisiblePos - firstVisiblePos + 1;
+
+            // 1. Calculate Thumb Height based on visible item ratio
+            final float itemsVisibleRatio = (float) visibleItemCount / totalItemCount;
+            mVerticalThumbHeight = (int) (itemsVisibleRatio * (mRecyclerViewHeight - 2 * mMargin));
             mVerticalThumbHeight = Math.max(mVerticalThumbHeight, mMinimalThumbSize);
-            // Improve corner/end-of-track behaviour
-            mVerticalThumbCenterY = (int) (
-                    (
-                            ((verticalVisibleLength - mVerticalThumbHeight)
-                             /
-                             ((float) (verticalContentLength - verticalVisibleLength)))
-                            * offsetY
-                    )
-                    + (mVerticalThumbHeight / 2.0f)
-            );
+
+            // 2. Define the Safe Drawing Range for the center of the thumb
+            final int safeAreaTop = mMargin;
+            final int safeAreaBottom = mRecyclerViewHeight - mMargin;
+
+            final float minCenter = safeAreaTop + (mVerticalThumbHeight / 2.0f);
+            final float maxCenter = safeAreaBottom - (mVerticalThumbHeight / 2.0f);
+            final float travelRange = maxCenter - minCenter;
+
+            // 3. Calculate Scroll Fraction (0.0 to 1.0) based on Index
+            float scrollFraction;
+            if (visibleItemCount >= totalItemCount) {
+                scrollFraction = 0;
+            } else {
+                // This ensures that when the last item is visible, fraction is exactly 1.0
+                scrollFraction = (float) firstVisiblePos / (totalItemCount - visibleItemCount);
+            }
+            scrollFraction = Math.max(0f, Math.min(1.0f, scrollFraction));
+
+            // 4. Set the final Center Y
+            mVerticalThumbCenterY = (int) (minCenter + (scrollFraction * travelRange));
             // HARDBACKNUTTER - END
         }
         if (mNeedHorizontalScrollbar) {
-            // HARDBACKNUTTER: disabled ORIGINAL, see below for new calc
-            // float middleScreenPos = offsetX + horizontalVisibleLength / 2.0f;
-            // mHorizontalThumbCenterX =
-            //      (int) ((horizontalVisibleLength * middleScreenPos) / horizontalContentLength);
-            mHorizontalThumbWidth = Math.min(horizontalVisibleLength,
-                                             (horizontalVisibleLength * horizontalVisibleLength)
-                                             / horizontalContentLength);
             // HARDBACKNUTTER - BEGIN
-            // Apply the minimal thumb size
+            // Horizontal often uses standard pixel math as items usually have fixed widths
+            final float maxScrollOffset = (float) (horizontalContentLength - horizontalVisibleLength);
+            final float scrollFraction = maxScrollOffset > 0 ? (offsetX / maxScrollOffset) : 0;
+
+            mHorizontalThumbWidth = Math.min(horizontalVisibleLength,
+                                             (horizontalVisibleLength * horizontalVisibleLength) / horizontalContentLength);
             mHorizontalThumbWidth = Math.max(mHorizontalThumbWidth, mMinimalThumbSize);
-            // Improve corner/end-of-track behaviour
-            mHorizontalThumbCenterX = (int) (
-                    (
-                            ((horizontalVisibleLength - mHorizontalThumbWidth)
-                             /
-                             ((float) (horizontalContentLength - horizontalVisibleLength)))
-                            * offsetX
-                    )
-                    + (mHorizontalThumbWidth / 2.0f)
-            );
-            // HARDBACKNUTTER - END
+
+            final int safeAreaLeft = mMargin;
+            final int safeAreaRight = mRecyclerViewWidth - mMargin;
+
+            final float minCenter = safeAreaLeft + (mHorizontalThumbWidth / 2.0f);
+            final float maxCenter = safeAreaRight - (mHorizontalThumbWidth / 2.0f);
+            final float travelRange = maxCenter - minCenter;
+
+            mHorizontalThumbCenterX = (int) (minCenter + (scrollFraction * travelRange));        // HARDBACKNUTTER - END
         }
         if (mState == STATE_HIDDEN || mState == STATE_VISIBLE) {
             setState(STATE_VISIBLE);
@@ -602,36 +706,55 @@ public class FastScrollerImpl
             return;
         }
 
-        // 1. Determine the available height of the RecyclerView
         final int rvHeight = mRecyclerView.getHeight();
 
-        // 2. Calculate the percentage
-        // If you want the jump to be relative to the total height:
-        float percentage = y / (float) rvHeight;
+        // 1. Establish the "Safe Track" boundaries (same as updateScrollPosition)
+        final int safeAreaTop = mMargin;
+        final int safeAreaBottom = rvHeight - mMargin;
 
-        // Clamp the value to 0.0 - 1.0 range
+        // 2. Define the range the THUMB CENTER can actually move in
+        final float minCenter = safeAreaTop + (mVerticalThumbHeight / 2.0f);
+        final float maxCenter = safeAreaBottom - (mVerticalThumbHeight / 2.0f);
+        final float travelRange = maxCenter - minCenter;
+
+        // 3. Clamp the touch 'y' to the allowed center range
+        // This forces a tap at the absolute screen edge to be treated
+        // as a tap at the "max possible" thumb position.
+        final float clampedY = Math.max(minCenter, Math.min(maxCenter, y));
+
+        // 4. Calculate Percentage based on TRAVEL RANGE
+        // If clampedY == maxCenter, percentage will be exactly 1.0 (100%)
+        float percentage = (clampedY - minCenter) / travelRange;
         percentage = Math.max(0.0f, Math.min(1.0f, percentage));
 
-        // 3. Map to Item Count
+        // 5. Map to Item Count
         final int totalItems = adapter.getItemCount();
-        final int targetPosition = (int) (percentage * (totalItems - 1));
+        int targetPosition;
+        if (percentage >= 0.98f) {
+            // If we are within 2% of the bottom, force the last item
+            targetPosition = totalItems - 1;
+        } else if (percentage <= 0.02f) {
+            // Force the first item at the top
+            targetPosition = 0;
+        } else {
+            targetPosition = (int) (percentage * totalItems);
+        }
 
-        // 4. Execute the Jump
+        // Ensure it's never out of bounds
+        targetPosition = Math.max(0, Math.min(totalItems - 1, targetPosition));
+
+        // 6. Execute the Jump with Snapping
         final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
-            // Use 0 offset to snap the item to the very top of the screen
+            // Offset 0 ensures the item is at the VERY TOP
             ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(targetPosition, 0);
         } else {
             mRecyclerView.scrollToPosition(targetPosition);
         }
 
-        // 5. Visual Cleanup
-        // This tells the thumb it needs to move to where the user clicked
-        mVerticalThumbCenterY = (int) y;
+        // 7. Sync the thumb position visually immediately
+        mVerticalThumbCenterY = (int) clampedY;
         requestRedraw();
-
-        // This will ensure the row hides/shows correctly... turns out not really needed.
-        // setState(STATE_VISIBLE);
     }
     // HARDBACKNUTTER - END
 
@@ -640,31 +763,61 @@ public class FastScrollerImpl
     }
 
     private void verticalScrollTo(float y) {
-        final int[] scrollbarRange = getVerticalRange();
-        y = Math.max(scrollbarRange[0], Math.min(scrollbarRange[1], y));
-        if (Math.abs(mVerticalThumbCenterY - y) < 2) {
+        // HARDBACKNUTTER - BEGIN
+        final LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+        if (lm == null) {
             return;
         }
-        int scrollingBy = scrollTo(mVerticalDragY, y, scrollbarRange,
-                                   mRecyclerView.computeVerticalScrollRange(),
-                                   mRecyclerView.computeVerticalScrollOffset(),
-                                   mRecyclerViewHeight);
-        if (scrollingBy != 0) {
-            mRecyclerView.scrollBy(0, scrollingBy);
-        }
-        mVerticalDragY = y;
+
+        // 1. Same Travel Range logic
+        final int safeAreaTop = mMargin;
+        final int safeAreaBottom = mRecyclerViewHeight - mMargin;
+        final float minCenter = safeAreaTop + (mVerticalThumbHeight / 2.0f);
+        final float maxCenter = safeAreaBottom - (mVerticalThumbHeight / 2.0f);
+        final float travelRange = maxCenter - minCenter;
+
+        // 2. Calculate Percentage of the physical drag
+        final float clampedY = Math.max(minCenter, Math.min(maxCenter, y));
+        final float percentage = (clampedY - minCenter) / travelRange;
+
+        // 3. Map to Item Index
+        final int totalItems = lm.getItemCount();
+        final int targetPosition = (int) (percentage * (totalItems - 1));
+
+        // 4. Scroll to the exact item
+        // This is much more reliable for variable heights than scrollBy(pixels)
+        lm.scrollToPositionWithOffset(targetPosition, 0);
+
+        mVerticalThumbCenterY = (int) clampedY;
+        requestRedraw();
+        // HARDBACKNUTTER - END
     }
 
     private void horizontalScrollTo(float x) {
-        final int[] scrollbarRange = getHorizontalRange();
-        x = Math.max(scrollbarRange[0], Math.min(scrollbarRange[1], x));
+        // HARDBACKNUTTER - BEGIN
+        // 1. Define the range the thumb center is allowed to move in
+        final int safeAreaLeft = mMargin;
+        final int safeAreaRight = mRecyclerViewWidth - mMargin;
+
+        final float minCenter = safeAreaLeft + (mHorizontalThumbWidth / 2.0f);
+        final float maxCenter = safeAreaRight - (mHorizontalThumbWidth / 2.0f);
+
+        // 2. Clamp the input X
+        x = Math.max(minCenter, Math.min(maxCenter, x));
+
         if (Math.abs(mHorizontalThumbCenterX - x) < 2) {
             return;
         }
-        int scrollingBy = scrollTo(mHorizontalDragX, x, scrollbarRange,
-                                   mRecyclerView.computeHorizontalScrollRange(),
-                                   mRecyclerView.computeHorizontalScrollOffset(),
-                                   mRecyclerViewWidth);
+
+        // 3. Perform the scroll
+        // Note: We use the clamped range (maxCenter - minCenter) as the scrollbarLength
+        final int scrollbarLength = (int) (maxCenter - minCenter);
+        final int scrollingBy = scrollTo(mHorizontalDragX, x,
+                                         new int[]{0, scrollbarLength}, // relative range
+                                         mRecyclerView.computeHorizontalScrollRange(),
+                                         mRecyclerView.computeHorizontalScrollOffset(),
+                                         mRecyclerViewWidth);
+        // HARDBACKNUTTER - END
         if (scrollingBy != 0) {
             mRecyclerView.scrollBy(scrollingBy, 0);
         }
@@ -696,27 +849,27 @@ public class FastScrollerImpl
     boolean isPointInsideVerticalThumb(float x,
                                        float y) {
         // HARDBACKNUTTER - BEGIN
-        // replace entire method with code below the commented out original
-        //  return (isLayoutRTL() ? x <= mVerticalThumbWidth
-        //                        : x >= mRecyclerViewWidth - mVerticalThumbWidth)
-        //         && y >= mVerticalThumbCenterY - mVerticalThumbHeight / 2
-        //         && y <= mVerticalThumbCenterY + mVerticalThumbHeight / 2;
-
+        // 1. Horizontal Check (respecting RTL and Expanded Touch Area)
+        final boolean isInsideX;
         if (isLayoutRTL()) {
-            // Expand hit area to right of thumb
-            if (x > mVerticalThumbWidth + mExpandedTouchArea) {
-                return false;
-            }
+            // In RTL, the thumb is on the left. Expand to the right.
+            isInsideX = x <= mVerticalThumbWidth + mExpandedTouchArea;
         } else {
-            // Expand hit area to left of thumb
-            if (x < mRecyclerViewWidth - mVerticalThumbWidth - mExpandedTouchArea) {
-                return false;
-            }
+            // In LTR, the thumb is on the right. Expand to the left.
+            isInsideX = x >= mRecyclerViewWidth - mVerticalThumbWidth - mExpandedTouchArea;
         }
 
-        // Vertically expand hit area
-        final float topBound = mVerticalThumbCenterY - mVerticalThumbHeight / 2 - mExpandedTouchArea;
-        final float bottomBound = mVerticalThumbCenterY + mVerticalThumbHeight / 2 + mExpandedTouchArea;
+        if (!isInsideX) {
+            return false;
+        }
+
+        // 2. Vertical Check
+        // We calculate the top and bottom based on the center.
+        // Because mVerticalThumbCenterY is now clamped to mMargin,
+        // these bounds will correctly follow the thumb even near rounded corners.
+        final float halfHeight = mVerticalThumbHeight / 2.0f;
+        final float topBound = mVerticalThumbCenterY - halfHeight - mExpandedTouchArea;
+        final float bottomBound = mVerticalThumbCenterY + halfHeight + mExpandedTouchArea;
 
         return y >= topBound && y <= bottomBound;
         // HARDBACKNUTTER - END
@@ -733,11 +886,17 @@ public class FastScrollerImpl
     // HARDBACKNUTTER - BEGIN
     private boolean isPointInsideTrack(final float x,
                                        final float y) {
+        // Only register track taps within the Safe Zone (mMargin)
+        final boolean isInsideY = y >= mMargin && y <= (mRecyclerViewHeight - mMargin);
 
-        return y >= 0
-               && y <= mRecyclerViewHeight
-               && x >= mRecyclerViewWidth - mVerticalTrackWidth
-               && x <= mRecyclerViewWidth;
+        final boolean isInsideX;
+        if (isLayoutRTL()) {
+            isInsideX = x <= mVerticalTrackWidth;
+        } else {
+            isInsideX = x >= mRecyclerViewWidth - mVerticalTrackWidth;
+        }
+
+        return isInsideY && isInsideX;
     }
     // HARDBACKNUTTER - END
 
