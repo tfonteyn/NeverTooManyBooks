@@ -176,7 +176,7 @@ public final class InsetsListenerBuilder {
      */
     public static void apply(@NonNull final RecyclerView view) {
         new InsetsListenerBuilder(view)
-                .margins(Side.Start, Side.End, Side.Bottom)
+                .padding(Side.Start, Side.End, Side.Bottom)
                 .systemBars()
                 .displayCutout()
                 .ime()
