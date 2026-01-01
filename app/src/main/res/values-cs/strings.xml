@@ -317,12 +317,12 @@
     <string name="lbl_ebook_file_type">Typ souboru e-knihy</string>
     <string name="lbl_color">Barva</string>
     <string name="lbl_condition">Stav</string>
-    <string name="lbl_condition_dust_cover_missing_or_bad">Chybějící/špatný</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Chybějící/uspokojivý</string>
     <string name="lbl_condition_dust_cover_none">Žádný</string>
     <string name="lbl_condition_fair">Přijatelný</string>
     <string name="lbl_condition_fine">Jako nová</string>
     <string name="lbl_condition_good">Dobrý</string>
-    <string name="lbl_condition_reading_copy">Čtená kopie</string>
+    <string name="lbl_condition_reading_copy">Zlý</string>
     <string name="lbl_condition_very_good">Velmi dobrý</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Slučování velkých a malých písmen</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Odstranění nepoužívaných štítků</string>
