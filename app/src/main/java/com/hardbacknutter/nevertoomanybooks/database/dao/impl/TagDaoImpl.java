@@ -607,8 +607,7 @@ public class TagDaoImpl
                 + _WHERE_ + DBKey.TAGS.TAG + "=?";
 
         static final String FIND_BY_BOOK_ID =
-                SELECT_ + TBL_TAGS.dotAs(DBKey.PK_ID)
-                + ',' + TBL_TAGS.dotAs(DBKey.TAGS.TAG)
+                SELECT_ + TBL_TAGS.dotAs(DBKey.PK_ID, DBKey.TAGS.TAG)
                 + _FROM_ + TBL_BOOK_TAG.startJoin(TBL_TAGS)
                 + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK) + "=?"
                 + _ORDER_BY_ + DBKey.TAGS.TAG;
