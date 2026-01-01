@@ -86,12 +86,14 @@ public class Money
     /** Cached EURO currency. */
     public static final Currency EURO = Currency.getInstance(EUR_STR);
     private static final Map<String, Double> EUROS = Map.ofEntries(
+            // Andorra
+            Map.entry("ADP", 166.386d),
             // Austria
             Map.entry("ATS", 13.7603d),
             // Belgium
             Map.entry("BEF", 40.3399d),
-            // Luxembourg
-            Map.entry("LUF", 40.3399d),
+            // Bulgaria
+            Map.entry("BGN", 1.95583d),
             // Croatia
             Map.entry("HRK", 7.53450d),
             // Cyprus
@@ -102,8 +104,6 @@ public class Money
             Map.entry("FIM", 5.94573d),
             // France
             Map.entry("FRF", 6.55957d),
-            // Monaco
-            Map.entry("MCF", 6.55957d),
             // Germany
             Map.entry("DEM", 1.95583d),
             // Greece
@@ -112,26 +112,30 @@ public class Money
             Map.entry("IEP", 0.787564d),
             // Italy
             Map.entry("ITL", 1936.27d),
-            // San Marino
-            Map.entry("SML", 1936.27d),
-            // Vatican City
-            Map.entry("VAL", 1936.27d),
             // Latvia
             Map.entry("LVL", 0.702804d),
             // Lithuania
             Map.entry("LTL", 3.45280d),
+            // Luxembourg
+            Map.entry("LUF", 40.3399d),
             // Malta
             Map.entry("MTL", 0.429300d),
+            // Monaco
+            Map.entry("MCF", 6.55957d),
             // Netherlands
-            Map.entry("NLD", 2.20371d),
+            Map.entry("NLG", 2.20371d),
             // Portugal
             Map.entry("PTE", 200.482d),
+            // San Marino
+            Map.entry("SML", 1936.27d),
             // Slovakia
             Map.entry("SKK", 30.1260d),
             // Slovenia
             Map.entry("SIT", 239.640d),
             // Spain
-            Map.entry("ESP", 166.386d)
+            Map.entry("ESP", 166.386d),
+            // Vatican City
+            Map.entry("VAL", 1936.27d)
     );
 
     private static final long serialVersionUID = -8273127556226893529L;
