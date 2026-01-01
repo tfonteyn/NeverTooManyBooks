@@ -141,7 +141,16 @@
         <!-- <module name="MissingCtor" />-->
         <!-- <module name="MissingSwitchDefault" />-->
         <module name="ModifiedControlVariable" />
-        <module name="MultipleStringLiterals" />
+        <module name="MultipleStringLiterals">
+            <!-- ignore SQL snippets
+                "=?"
+                "=1"
+                "=''"
+                "||"
+            -->
+            <property name="ignoreStringsRegexp"
+                      value="^&quot;=\?&quot;$|&quot;=1&quot;$|^&quot;=&apos;&apos;&quot;$|^&quot;\|\|&quot;$" />
+        </module>
         <module name="MultipleVariableDeclarations" />
         <module name="NestedForDepth">
             <property name="max"
