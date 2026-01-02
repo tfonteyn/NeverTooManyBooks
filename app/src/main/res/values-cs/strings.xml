@@ -133,7 +133,7 @@
     <string name="book_format_dimensions">Rozměry</string>
     <string name="book_format_ebook">E-kniha</string>
     <string name="book_format_hardcover">Pevná vazba</string>
-    <string name="book_format_paperback">Brožovaná kniha</string>
+    <string name="book_format_paperback">Brožovaná vazba</string>
     <string name="book_format_paperback_large">Velká brožovaná vazba</string>
     <string name="book_format_softcover">Měkká vazba</string>
     <string name="bookshelf_all_books">Všechny knihy</string>
