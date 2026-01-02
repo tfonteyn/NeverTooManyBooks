@@ -238,18 +238,6 @@ public class FastScrollerImpl
         mStateListener = listener;
     }
 
-    @Override
-    public void setMargin(final int margin) {
-        if (this.mMargin != margin) {
-            this.mMargin = margin;
-            // We need to recompute the thumb position immediately
-            if (mRecyclerView != null) {
-                updateScrollPosition(mRecyclerView.computeHorizontalScrollOffset(),
-                                     mRecyclerView.computeVerticalScrollOffset());
-                requestRedraw();
-            }
-        }
-    }
     // HARDBACKNUTTER - END
 
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView) {
