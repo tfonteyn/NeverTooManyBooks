@@ -308,12 +308,12 @@
     <string name="lbl_ebook_file_type">Typ pliku eBook</string>
     <string name="lbl_color">Kolor</string>
     <string name="lbl_condition">Stan</string>
-    <string name="lbl_condition_dust_cover_missing_or_bad">Brakujący/zadowalający</string>
-    <string name="lbl_condition_dust_cover_none">Brak</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Brakująca/zadowalający</string>
+    <string name="lbl_condition_dust_cover_none">Żadna</string>
     <string name="lbl_condition_fair">Dopuszczalny</string>
     <string name="lbl_condition_fine">Jak nowa</string>
     <string name="lbl_condition_good">Dobry</string>
-    <string name="lbl_condition_reading_copy">Czytana kopia</string>
+    <string name="lbl_condition_reading_copy">Zły</string>
     <string name="lbl_condition_very_good">Bardzo dobry</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Łączenie wielkich/małych liter</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Usuń nieużywane tagi</string>
