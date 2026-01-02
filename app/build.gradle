@@ -276,6 +276,8 @@ dependencies {
     implementation(libs.google.material)
 
     implementation(libs.jsoup)
+    implementation libs.re2j
+
     implementation(libs.okhttp)
     implementation(libs.okhttp.urlconnection)
     implementation(libs.okhttp.logging.interceptor)

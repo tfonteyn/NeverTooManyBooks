@@ -40,6 +40,8 @@ material = '1.13.0'
 
 # jsoup HTML parser library @ https://jsoup.org/
 jsoup = "1.22.1"
+# jsoup uses/needs https://github.com/google/re2j
+re2j = "1.8"
 
 # https://github.com/square/okhttp
 okhttpAndroid = "5.3.2"
@@ -128,6 +130,7 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 okhttp-urlconnection = { group = "com.squareup.okhttp3", name = "okhttp-urlconnection", version.ref = "okhttpAndroid" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpAndroid" }
 okhttp-authentication-diggest = { group = "io.github.rburgst", name = "okhttp-digest", version.ref = "okhttpAuthenticationDiggest" }
+re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxingCore" }
 
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter" }
