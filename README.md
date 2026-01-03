@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
-### Download the latest release: 7.10.3
+### Download the latest release: 7.11.0
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
 <img src="metadata/en-US/images/get-it-on-github.png" 
@@ -48,9 +48,9 @@ df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
 ## User Interface languages:
 
 - Chinese Simplified(CN), Chinese Traditional(TW),
-  Czech, Dutch, English, French, Galician, German, Hungarian, Italian, Polish
+  Czech, Dutch, English, French, Galician, German, Greek, Hungarian, Italian, Polish
   Portuguese, Portuguese(Brazil), Russian, Slovak, Spanish, Tamil, Turkish, Vietnamese.
-- Machine translated, no guarantees for quality: Greek, Swedish.
+- Machine translated, no guarantees for quality: Swedish.
 
 Translations are editable on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
 
@@ -81,6 +81,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **Bertrand.pt** (Portuguese and more; Shop)
+- **Biblionet.gr** (Greek; Catalogue)
 - **Bibliotece.pl** (Polish; Catalogue)
 - **BOL.com** (Dutch and more; Shop)
 - **databazeknih.cz** (Czech and more; Catalogue)
@@ -120,10 +121,10 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
+- Greek translation: [oddfff](https://github.com/oddfff)
 - Hungarian translation: [boldizsar-nagy](https://hosted.weblate.org/user/boldizsar-nagy/)
 - Galician translation: [Vaicheboa O'Loubam](https://hosted.weblate.org/user/vaicheboa/)
-- Slovak translation + major improvements to the Czech
-  translation: [Milan](https://hosted.weblate.org/user/Milan/)
+- Czech, Slovak, Polish and Russian translations: [Milan](https://hosted.weblate.org/user/Milan/)
 - Tamil translation: [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
 - Portuguese(Brazil) translation: [Suburbanno](https://github.com/Suburbanno)
 - Chinese (Simplified) translation: [CloneWith](https://github.com/CloneWith)
