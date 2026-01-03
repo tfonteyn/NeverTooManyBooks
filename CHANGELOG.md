@@ -1,3 +1,29 @@
+### 7.11.0
+
+NEW:
+
+- #204 Added https://biblionet.gr for Greek book searches.
+- #212 Fully revised Greek translation.
+- #214 Support "digest" authentication for Calibre
+- #82 fix and improve setting a preferred author role to use in the book list
+- Batch scanning now offers a "save" without needing to "edit" first.
+- Performance improvements:
+    - calculating number of books in complicated styles has vastly improved.
+    - image loading strategy improved
+    - The Fast-Scroller and Scrollbar-Jump behaviour have been vastly improved.
+    - Dragging the scrollbar no longer attempts to display rows (and failing to keep up)
+      but now simply shows the text-bubble for navigation only.
+
+FIXES:
+
+- #207 book level sorting fields no longer need to be displayed to be active.
+- #213 better filtering on invisible characters
+- #216 fix a potential circular reference between author-pseudonym
+- #218 editing Bedetheque options was crashing
+- #220 Identifiers back button doesn't work as expected
+
+---
+
 ### 7.10.3
 
 FIXES

@@ -1,0 +1,15 @@
+NEW:
+- #204 Added https://biblionet.gr for Greek books.
+- #212 Revised Greek translation.
+- #214 Support "digest" authentication for Calibre
+- #82 set a preferred author role in the book list
+- Batch scanning "save" option.
+- Performance improvements:
+  - calculating number of books in complicated styles
+  - image loading
+  - Scrolling
+  - Scrollbar-jump
+  - Dragging the scrollbar simply shows the text-bubble for navigation.
+
+FIXES:
+- #207, #213, #216, #218, #220
