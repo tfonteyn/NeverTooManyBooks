@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,10 +46,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -335,28 +335,28 @@ public class EditBookFragment
             super(container);
 
             // Build the tab class/title list.
-            tabList.add(new TabInfo(EditBookFieldsFragment.class,
+            tabList.add(new TabInfo(EditBookFieldsFragment::new,
                                     R.string.lbl_tab_details,
                                     R.string.lbl_tab_details));
-            tabList.add(new TabInfo(EditBookPublicationFragment.class,
+            tabList.add(new TabInfo(EditBookPublicationFragment::new,
                                     R.string.lbl_tab_publication,
                                     R.string.lbl_publication));
 
             // On tablets the notes fields are incorporated in the publication fragment
             // On small screens (i.e. phones) they get their own tab
             if (!container.getResources().getBoolean(R.bool.combine_book_edit_tabs)) {
-                tabList.add(new TabInfo(EditBookNotesFragment.class,
+                tabList.add(new TabInfo(EditBookNotesFragment::new,
                                         R.string.lbl_tab_notes,
                                         R.string.lbl_personal_notes));
             }
 
             if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_TOC_ENTRY)) {
-                tabList.add(new TabInfo(EditBookTocFragment.class,
+                tabList.add(new TabInfo(EditBookTocFragment::new,
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));
             }
             if (isShowExternalIdTab(container)) {
-                tabList.add(new TabInfo(EditBookExternalIdFragment.class,
+                tabList.add(new TabInfo(EditBookExternalIdFragment::new,
                                         R.string.lbl_tab_lbl_ext_id,
                                         R.string.lbl_tab_lbl_ext_id));
             }
@@ -382,30 +382,23 @@ public class EditBookFragment
         private static class TabInfo {
 
             @NonNull
-            private final Class<? extends Fragment> clazz;
+            private final Supplier<Fragment> fragmentSupplier;
             @StringRes
             private final int titleId;
             @StringRes
             private final int contentDescriptionId;
 
-            TabInfo(@NonNull final Class<? extends Fragment> clazz,
+            TabInfo(@NonNull final Supplier<Fragment> supplier,
                     @StringRes final int titleId,
                     @StringRes final int contentDescriptionId) {
-                this.clazz = clazz;
+                this.fragmentSupplier = supplier;
                 this.titleId = titleId;
                 this.contentDescriptionId = contentDescriptionId;
             }
 
             @NonNull
             Fragment createFragment() {
-                try {
-                    return clazz.getConstructor().newInstance();
-
-                } catch (@NonNull final IllegalAccessException | java.lang.InstantiationException
-                                        | NoSuchMethodException | InvocationTargetException e) {
-                    // We'll never get here...
-                    throw new IllegalStateException(e);
-                }
+                return fragmentSupplier.get();
             }
 
             @StringRes
