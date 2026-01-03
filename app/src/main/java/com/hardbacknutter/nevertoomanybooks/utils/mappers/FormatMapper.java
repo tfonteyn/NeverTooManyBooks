@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -143,7 +143,7 @@ public final class FormatMapper
 
         // ################## Special ##################
         MAPPINGS.put("digest", R.string.book_format_digest);
-        MAPPINGS.put("unknown", R.string.unknown);
+        MAPPINGS.put("unknown", R.string.book_format_unknown);
         // english - GoogleBooks
         MAPPINGS.put("dimensions", R.string.book_format_dimensions);
         // goodreads... this is a weird one. Normally specific to children/baby books

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -638,6 +638,8 @@
     <string name="book_format_comic">Comic</string>
     <!-- -book format -->
     <string name="book_format_other">Other</string>
+    <!-- -book format -->
+    <string name="book_format_unknown">Unknown</string>
     <!--  book format - mostly used for magazines like 'readers digest'
           A lot of english monthly magazines use the same format.
           In French this is semi-officially known as "Petit format" or "Small size". -->
@@ -764,22 +766,33 @@
     <string name="lbl_edition_book_club">Bookclub edition</string>
     <!-- endregion -->
     <!-- region ========== Book / Dust cover condition values. -->
-    <!-- Book / Dust cover condition -->
-    <string name="lbl_condition_fine">As new</string>
-    <!-- Book / Dust cover condition -->
-    <string name="lbl_condition_very_good">Very good</string>
-    <!-- Book / Dust cover condition -->
-    <string name="lbl_condition_good">Good</string>
+    <!-- Book condition; new, unread, once read very carefully. -->
+    <string name="lbl_condition_book_fine">As new</string>
     <!-- Book condition -->
-    <string name="lbl_condition_fair">Acceptable</string>
+    <string name="lbl_condition_book_very_good">Very good</string>
+    <!-- Book condition -->
+    <string name="lbl_condition_book_good">Good</string>
+    <!-- Book condition -->
+    <string name="lbl_condition_book_fair">Acceptable</string>
     <!-- Book condition; might fall apart, have missing title pag(s),
          but all text pages are there so can be read. -->
-    <string name="lbl_condition_reading_copy">Reading copy</string>
+    <string name="lbl_condition_book_reading_copy">Reading copy</string>
+    <!-- Book condition -->
+    <string name="lbl_condition_book_unknown">Unknown</string>
+
+    <!-- Dust cover condition -->
+    <string name="lbl_condition_dust_cover_fine">As new</string>
+    <!-- Dust cover condition -->
+    <string name="lbl_condition_dust_cover_very_good">Very good</string>
+    <!-- Dust cover condition -->
+    <string name="lbl_condition_dust_cover_good">Good</string>
     <!-- Dust cover condition; the book was issued with a cover,
          but it's missing, or is in a bad/fair condition. -->
     <string name="lbl_condition_dust_cover_missing_or_bad">Missing/Fair</string>
     <!-- Dust cover condition; the book was issued without a dust cover. -->
     <string name="lbl_condition_dust_cover_none">None</string>
+    <!-- Dust cover condition -->
+    <string name="lbl_condition_dust_cover_unknown">Unknown</string>
     <!-- endregion -->
     <!-- region ========== Author roles. -->
     <!-- Author role: the author is the primary or only writer. -->
@@ -2221,7 +2234,7 @@
     <string name="yes">Yes</string>
     <!-- [VERIFIED] -->
     <string name="no">No</string>
-    <!-- [VERIFIED] e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
+    <!-- [VERIFIED] a generic term for something which is unknown; e.g. "the reason is unknown"; "status is unknown" -->
     <string name="unknown">Unknown</string>
     <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>

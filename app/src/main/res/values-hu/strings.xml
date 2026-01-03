@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -387,11 +387,11 @@
     <string name="lbl_edition_first_impression">Első nyomat</string>
     <string name="lbl_edition_slipcase">Könyvtok</string>
     <string name="lbl_edition_book_club">Könyvklub kiadás</string>
-    <string name="lbl_condition_very_good">Kiváló</string>
-    <string name="lbl_condition_good">Jó</string>
-    <string name="lbl_condition_fair">Elfogadható</string>
-    <string name="lbl_condition_reading_copy">Olvasási példány</string>
-    <string name="lbl_condition_fine">Új</string>
+    <string name="lbl_condition_book_very_good">Kiváló</string>
+    <string name="lbl_condition_book_good">Jó</string>
+    <string name="lbl_condition_book_fair">Elfogadható</string>
+    <string name="lbl_condition_book_reading_copy">Olvasási példány</string>
+    <string name="lbl_condition_book_fine">Új</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Hiányzó/Elég jó</string>
     <string name="lbl_author_role_writer">Író</string>
     <string name="lbl_author_role_translator">Fordító</string>
@@ -880,5 +880,11 @@
     <string name="tip_bookshelf_management">A kiemelt sor mutatja az aktuális könyvespolcodat.\n\nAz alapértelmezett polc (csillaggal * jelölve) automatikusan használva lesz, ha az aktuális valamilyen okból nem elérhető.</string>
     <string name="pt_search_tag_use_subject_number">A tárgycímkék numerikus előtagjának megtartása</string>
     <string name="site_description_greek">Görög</string>
+    <string name="book_format_unknown">Ismeretlen</string>
+    <string name="lbl_condition_book_unknown">Ismeretlen</string>
+    <string name="lbl_condition_dust_cover_unknown">Ismeretlen</string>
+    <string name="lbl_condition_dust_cover_fine">Új</string>
+    <string name="lbl_condition_dust_cover_very_good">Kiváló</string>
+    <string name="lbl_condition_dust_cover_good">Jó</string>
 
 </resources>

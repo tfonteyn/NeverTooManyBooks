@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -361,10 +361,10 @@
     <string name="lbl_edition_limited">Ed. Limitada</string>
     <string name="lbl_edition_slipcase">Funda</string>
     <string name="lbl_edition_book_club">Edición de club de libros</string>
-    <string name="lbl_condition_fine">Impecable</string>
-    <string name="lbl_condition_very_good">Moi ben</string>
-    <string name="lbl_condition_good">Ben</string>
-    <string name="lbl_condition_fair">Aceptable</string>
+    <string name="lbl_condition_book_fine">Impecable</string>
+    <string name="lbl_condition_book_very_good">Moi ben</string>
+    <string name="lbl_condition_book_good">Ben</string>
+    <string name="lbl_condition_book_fair">Aceptable</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Ausente/Mal</string>
     <string name="lbl_author_role_writer">manuscrito</string>
     <string name="lbl_author_role_translator">tradución</string>
@@ -437,7 +437,7 @@
     <string name="lbl_group_read_and_unread">Lido e Non lido</string>
     <string name="lbl_group_1st_char_author_family_name">1º carácter do apelido</string>
     <string name="lbl_assign_bookshelves">Asignar andeis</string>
-    <string name="lbl_condition_reading_copy">Copia de lectura</string>
+    <string name="lbl_condition_book_reading_copy">Copia de lectura</string>
     <string name="lbl_author_role_editor">edición</string>
     <string name="lbl_author_role_lettering">rotulación</string>
     <string name="lbl_author_role_cover_artist">deseño de cuberta</string>
@@ -879,5 +879,11 @@
     <string name="tip_bookshelf_management">A liña resaltada indica o teu andel actual.\n\nO andel predeterminado (marcado con *) usarase automaticamente se o actual non está dispoñible por calquera motivo.</string>
     <string name="pt_search_tag_use_subject_number">Manter o prefixo numérico nas etiquetas de asunto</string>
     <string name="site_description_greek">Grego</string>
+    <string name="book_format_unknown">Descoñécese</string>
+    <string name="lbl_condition_book_unknown">Descoñécese</string>
+    <string name="lbl_condition_dust_cover_unknown">Descoñécese</string>
+    <string name="lbl_condition_dust_cover_fine">Impecable</string>
+    <string name="lbl_condition_dust_cover_very_good">Moi ben</string>
+    <string name="lbl_condition_dust_cover_good">Ben</string>
 
 </resources>

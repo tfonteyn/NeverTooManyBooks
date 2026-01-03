@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -306,11 +309,11 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_condition">Κατάσταση</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Ελλειπές/Μέτρια</string>
     <string name="lbl_condition_dust_cover_none">Χωρίς κάλυμμα</string>
-    <string name="lbl_condition_fair">Αποδεκτό</string>
-    <string name="lbl_condition_fine">Σαν καινούργιο</string>
-    <string name="lbl_condition_good">Καλό</string>
-    <string name="lbl_condition_reading_copy">Αντίτυπο για ανάγνωση</string>
-    <string name="lbl_condition_very_good">Πολύ καλό</string>
+    <string name="lbl_condition_book_fair">Αποδεκτό</string>
+    <string name="lbl_condition_book_fine">Σαν καινούργιο</string>
+    <string name="lbl_condition_book_good">Καλό</string>
+    <string name="lbl_condition_book_reading_copy">Αντίτυπο για ανάγνωση</string>
+    <string name="lbl_condition_book_very_good">Πολύ καλό</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Συγχώνευση πεζών/κεφαλαίων</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Διαγραφή αχρησιμοποίητων ετικετών</string>
     <string name="lbl_connection_timeout">Χρονικό όριο σύνδεσης (δευτερόλεπτα)</string>
@@ -878,4 +881,10 @@ A question mark is written as the character semicolon: ';'
     <string name="tip_bookshelf_management">Η επισημασμένη γραμμή δείχνει τη τρέχουσα βιβλιοθήκη σας.\n\nΗ προεπιλεγμένη βιβλιοθήκη (με ένδειξη *) θα χρησιμοποιηθεί αυτόματα αν η τρέχουσα δεν είναι διαθέσιμη για οποιονδήποτε λόγο.</string>
     <string name="pt_search_tag_use_subject_number">Διατήρηση του αριθμητικού προθέματος στις ετικέτες θεμάτων</string>
     <string name="site_description_greek">Ελληνικά</string>
+    <string name="book_format_unknown">Άγνωστο</string>
+    <string name="lbl_condition_book_unknown">Άγνωστο</string>
+    <string name="lbl_condition_dust_cover_unknown">Άγνωστο</string>
+    <string name="lbl_condition_dust_cover_fine">Σαν καινούργιο</string>
+    <string name="lbl_condition_dust_cover_very_good">Πολύ καλό</string>
+    <string name="lbl_condition_dust_cover_good">Καλό</string>
 </resources>

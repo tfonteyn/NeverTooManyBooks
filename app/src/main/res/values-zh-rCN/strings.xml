@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -322,11 +322,11 @@
     <string name="lbl_condition">状况</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">缺失/尚可</string>
     <string name="lbl_condition_dust_cover_none">无</string>
-    <string name="lbl_condition_fair">可接受</string>
-    <string name="lbl_condition_fine">全新</string>
-    <string name="lbl_condition_good">好</string>
-    <string name="lbl_condition_reading_copy">阅读拷贝</string>
-    <string name="lbl_condition_very_good">非常好</string>
+    <string name="lbl_condition_book_fair">可接受</string>
+    <string name="lbl_condition_book_fine">全新</string>
+    <string name="lbl_condition_book_good">好</string>
+    <string name="lbl_condition_book_reading_copy">阅读拷贝</string>
+    <string name="lbl_condition_book_very_good">非常好</string>
     <string name="lbl_connection_timeout">连接超时（秒）</string>
     <string name="lbl_country">国家/地区</string>
     <string name="lbl_cover_back">封底</string>
@@ -875,5 +875,11 @@
     <string name="tip_bookshelf_management">高亮的行表示你当前的书架。\n\n当当前书架因任何原因不可用时，带有 * 的默认书架会自动使用。</string>
     <string name="pt_search_tag_use_subject_number">保留主题标签中的数字前缀</string>
     <string name="site_description_greek">希腊语</string>
+    <string name="book_format_unknown">未知</string>
+    <string name="lbl_condition_book_unknown">未知</string>
+    <string name="lbl_condition_dust_cover_unknown">未知</string>
+    <string name="lbl_condition_dust_cover_fine">全新</string>
+    <string name="lbl_condition_dust_cover_very_good">非常好</string>
+    <string name="lbl_condition_dust_cover_good">好</string>
 
 </resources>

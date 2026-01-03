@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -322,11 +322,11 @@
     <string name="lbl_edition_limited">வரையறுக்கப்பட்ட</string>
     <string name="lbl_edition_slipcase">ச்லிப்கேச்</string>
     <string name="lbl_edition_book_club">புத்தக கிளப் பதிப்பு</string>
-    <string name="lbl_condition_fine">புதியது</string>
-    <string name="lbl_condition_very_good">மிகவும் நல்லது</string>
-    <string name="lbl_condition_good">நல்லது</string>
-    <string name="lbl_condition_fair">ஏற்றுக்கொள்ளத்தக்கது</string>
-    <string name="lbl_condition_reading_copy">நகல் படித்தல்</string>
+    <string name="lbl_condition_book_fine">புதியது</string>
+    <string name="lbl_condition_book_very_good">மிகவும் நல்லது</string>
+    <string name="lbl_condition_book_good">நல்லது</string>
+    <string name="lbl_condition_book_fair">ஏற்றுக்கொள்ளத்தக்கது</string>
+    <string name="lbl_condition_book_reading_copy">நகல் படித்தல்</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">காணவில்லை/நியாயமானது</string>
     <string name="lbl_condition_dust_cover_none">எதுவுமில்லை</string>
     <string name="lbl_author_role_writer">எழுத்தாளர்</string>
@@ -879,5 +879,11 @@
     <string name="tip_bookshelf_management">ஒளிவிடப்பட்ட வரி உன் தற்போதைய புத்தக அலமாரியைக் காட்டுகிறது.\n\nஇயல்புநிலை அலமாரி (* கொண்டு குறிக்கப்பட்டது) தற்போதையது எந்த காரணத்திற்காகவோ கிடைக்காவிட்டால் தானாகப் பயன்படுத்தப்படும்.</string>
     <string name="pt_search_tag_use_subject_number">பொருள் குறிச்சொற்களில் எண் முன்னொட்டை வைத்திருக்கவும்</string>
     <string name="site_description_greek">கிரேக்கம்</string>
+    <string name="book_format_unknown">தெரியவில்லை</string>
+    <string name="lbl_condition_book_unknown">தெரியவில்லை</string>
+    <string name="lbl_condition_dust_cover_unknown">தெரியவில்லை</string>
+    <string name="lbl_condition_dust_cover_fine">புதியது</string>
+    <string name="lbl_condition_dust_cover_very_good">மிகவும் நல்லது</string>
+    <string name="lbl_condition_dust_cover_good">நல்லது</string>
 
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -307,11 +307,11 @@
     <string name="lbl_condition">Condición</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Desaparecido/aceptable</string>
     <string name="lbl_condition_dust_cover_none">Ninguno</string>
-    <string name="lbl_condition_fair">Aceptable</string>
-    <string name="lbl_condition_fine">Como nuevo</string>
-    <string name="lbl_condition_good">Bueno</string>
-    <string name="lbl_condition_reading_copy">Copia de lectura</string>
-    <string name="lbl_condition_very_good">Muy bueno</string>
+    <string name="lbl_condition_book_fair">Aceptable</string>
+    <string name="lbl_condition_book_fine">Como nuevo</string>
+    <string name="lbl_condition_book_good">Bueno</string>
+    <string name="lbl_condition_book_reading_copy">Copia de lectura</string>
+    <string name="lbl_condition_book_very_good">Muy bueno</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Combinación de mayúsculas y minúsculas</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Eliminar etiquetas no utilizadas</string>
     <string name="lbl_connection_timeout">Tiempo de espera de conexión (segundos)</string>
@@ -884,5 +884,10 @@
     <string name="tip_bookshelf_management">La línea resaltada indica tu estantería actual.\n\nLa estantería predeterminada (marcada con *) se usará automáticamente si la actual no está disponible por cualquier motivo.</string>
     <string name="pt_search_tag_use_subject_number">Mantener el prefijo numérico en las etiquetas de materia</string>
     <string name="site_description_greek">Griego</string>
-
+    <string name="book_format_unknown">Desconocido</string>
+    <string name="lbl_condition_book_unknown">Desconocido</string>
+    <string name="lbl_condition_dust_cover_unknown">Desconocido</string>
+    <string name="lbl_condition_dust_cover_fine">Como nuevo</string>
+    <string name="lbl_condition_dust_cover_very_good">Muy bueno</string>
+    <string name="lbl_condition_dust_cover_good">Bueno</string>
 </resources>

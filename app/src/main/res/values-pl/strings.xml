@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -310,11 +313,11 @@
     <string name="lbl_condition">Stan</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Brakująca/zadowalający</string>
     <string name="lbl_condition_dust_cover_none">Żadna</string>
-    <string name="lbl_condition_fair">Dopuszczalny</string>
-    <string name="lbl_condition_fine">Jak nowa</string>
-    <string name="lbl_condition_good">Dobry</string>
-    <string name="lbl_condition_reading_copy">Zły</string>
-    <string name="lbl_condition_very_good">Bardzo dobry</string>
+    <string name="lbl_condition_book_fair">Dopuszczalny</string>
+    <string name="lbl_condition_book_fine">Jak nowa</string>
+    <string name="lbl_condition_book_good">Dobry</string>
+    <string name="lbl_condition_book_reading_copy">Zły</string>
+    <string name="lbl_condition_book_very_good">Bardzo dobry</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Łączenie wielkich/małych liter</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Usuń nieużywane tagi</string>
     <string name="lbl_connection_timeout">Limit czasu połączenia (sekundy)</string>
@@ -890,4 +893,11 @@
     <string name="tip_bookshelf_management">Podświetlony wiersz pokazuje twoją obecną półkę.\n\nDomyślna półka (oznaczona *) zostanie użyta automatycznie, jeśli obecna z jakiegokolwiek powodu nie będzie dostępna.</string>
     <string name="pt_search_tag_use_subject_number">Zachowaj numeryczny przedrostek w tagach tematycznych</string>
     <string name="site_description_greek">Grecki</string>
+    <string name="book_format_unknown">Nieznany</string>
+    <string name="lbl_condition_book_unknown">Nieznany</string>
+    <string name="lbl_condition_dust_cover_unknown">Nieznany</string>
+    <string name="lbl_condition_dust_cover_fine">Jak nowa</string>
+    <string name="lbl_condition_dust_cover_very_good">Bardzo dobry</string>
+    <string name="lbl_condition_dust_cover_good">Dobry</string>
+
 </resources>

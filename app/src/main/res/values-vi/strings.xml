@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -333,11 +333,11 @@
     <string name="lbl_condition">Điều kiện</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Thiếu/Khá</string>
     <string name="lbl_condition_dust_cover_none">Không có</string>
-    <string name="lbl_condition_fair">Có thể chấp nhận được</string>
-    <string name="lbl_condition_fine">Như mới</string>
-    <string name="lbl_condition_good">Tốt</string>
-    <string name="lbl_condition_reading_copy">Đọc bản sao</string>
-    <string name="lbl_condition_very_good">Rất tốt</string>
+    <string name="lbl_condition_book_fair">Có thể chấp nhận được</string>
+    <string name="lbl_condition_book_fine">Như mới</string>
+    <string name="lbl_condition_book_good">Tốt</string>
+    <string name="lbl_condition_book_reading_copy">Đọc bản sao</string>
+    <string name="lbl_condition_book_very_good">Rất tốt</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Ghép chữ hoa/thường</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Xóa các thẻ không sử dụng</string>
     <string name="lbl_connection_timeout">Hết thời gian kết nối (giây)</string>
@@ -873,5 +873,11 @@
     <string name="tip_bookshelf_management">Dòng được tô sáng cho biết giá sách hiện tại của bạn.\n\nGiá sách mặc định (được đánh dấu bằng *) sẽ được dùng tự động nếu giá sách hiện tại không khả dụng vì bất kỳ lý do nào.</string>
     <string name="pt_search_tag_use_subject_number">Giữ tiền tố số trong thẻ Chủ đề</string>
     <string name="site_description_greek">Tiếng Hy Lạp</string>
+    <string name="book_format_unknown">Không rõ</string>
+    <string name="lbl_condition_book_unknown">Không rõ</string>
+    <string name="lbl_condition_dust_cover_unknown">Không rõ</string>
+    <string name="lbl_condition_dust_cover_fine">Như mới</string>
+    <string name="lbl_condition_dust_cover_very_good">Rất tốt</string>
+    <string name="lbl_condition_dust_cover_good">Tốt</string>
 
 </resources>

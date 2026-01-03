@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -307,11 +307,11 @@
     <string name="lbl_condition">Condizione</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Mancante/accettabile</string>
     <string name="lbl_condition_dust_cover_none">Nessuna</string>
-    <string name="lbl_condition_fair">Accettabile</string>
-    <string name="lbl_condition_fine">Come nuovo</string>
-    <string name="lbl_condition_good">Buona</string>
-    <string name="lbl_condition_reading_copy">Lettura copia</string>
-    <string name="lbl_condition_very_good">Molto buona</string>
+    <string name="lbl_condition_book_fair">Accettabile</string>
+    <string name="lbl_condition_book_fine">Come nuovo</string>
+    <string name="lbl_condition_book_good">Buona</string>
+    <string name="lbl_condition_book_reading_copy">Lettura copia</string>
+    <string name="lbl_condition_book_very_good">Molto buona</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Unione di maiuscole e minuscole</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Eliminare i tag inutilizzati</string>
     <string name="lbl_connection_timeout">Timeout connessione (secondi)</string>
@@ -885,5 +885,11 @@
     <string name="tip_bookshelf_management">La riga evidenziata indica la tua libreria attuale.\n\nLa libreria predefinita (contrassegnata con *) verrà usata automaticamente se quella attuale non è disponibile per qualsiasi motivo.</string>
     <string name="pt_search_tag_use_subject_number">Mantenere il prefisso numerico nelle etichette dei soggetti</string>
     <string name="site_description_greek">Greco</string>
+    <string name="book_format_unknown">Sconosciuto</string>
+    <string name="lbl_condition_book_unknown">Sconosciuto</string>
+    <string name="lbl_condition_dust_cover_unknown">Sconosciuto</string>
+    <string name="lbl_condition_dust_cover_fine">Come nuovo</string>
+    <string name="lbl_condition_dust_cover_very_good">Molto buona</string>
+    <string name="lbl_condition_dust_cover_good">Buona</string>
 
 </resources>

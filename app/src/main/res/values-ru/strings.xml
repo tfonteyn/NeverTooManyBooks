@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -316,11 +319,11 @@
     <string name="lbl_condition">Состояние</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Отсутствует/Удовлетворительное</string>
     <string name="lbl_condition_dust_cover_none">Нет</string>
-    <string name="lbl_condition_fair">Приемлемое</string>
-    <string name="lbl_condition_fine">Как новая</string>
-    <string name="lbl_condition_good">Хорошее</string>
-    <string name="lbl_condition_reading_copy">Плохое</string>
-    <string name="lbl_condition_very_good">Очень хорошее</string>
+    <string name="lbl_condition_book_fair">Приемлемое</string>
+    <string name="lbl_condition_book_fine">Как новая</string>
+    <string name="lbl_condition_book_good">Хорошее</string>
+    <string name="lbl_condition_book_reading_copy">Плохое</string>
+    <string name="lbl_condition_book_very_good">Очень хорошее</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Объединение верхнего и нижнего регистров</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Удаление неиспользуемых тегов</string>
     <string name="lbl_connection_timeout">Тайм-аут подключения (секунды)</string>
@@ -897,4 +900,11 @@
     <string name="tip_bookshelf_management">Выделенная строка показывает твою текущую полку.\n\nПолка по умолчанию (отмеченная *) будет использоваться автоматически, если текущая по какой-либо причине недоступна.</string>
     <string name="pt_search_tag_use_subject_number">Сохранять числовой префикс в тематических метках</string>
     <string name="site_description_greek">Греческий</string>
+    <string name="book_format_unknown">Неизвестный</string>
+    <string name="lbl_condition_book_unknown">Неизвестный</string>
+    <string name="lbl_condition_dust_cover_unknown">Неизвестный</string>
+    <string name="lbl_condition_dust_cover_fine">Как новая</string>
+    <string name="lbl_condition_dust_cover_very_good">Очень хорошее</string>
+    <string name="lbl_condition_dust_cover_good">Хорошее</string>
+
 </resources>

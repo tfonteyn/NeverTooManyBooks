@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -299,11 +299,11 @@
     <string name="lbl_condition">Staat</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Missend/pover</string>
     <string name="lbl_condition_dust_cover_none">Geen</string>
-    <string name="lbl_condition_fair">Aanvaardbaar</string>
-    <string name="lbl_condition_fine">Als nieuw</string>
-    <string name="lbl_condition_good">Goed</string>
-    <string name="lbl_condition_reading_copy">Lees exemplaar</string>
-    <string name="lbl_condition_very_good">Zeer goed</string>
+    <string name="lbl_condition_book_fair">Aanvaardbaar</string>
+    <string name="lbl_condition_book_fine">Als nieuw</string>
+    <string name="lbl_condition_book_good">Goed</string>
+    <string name="lbl_condition_book_reading_copy">Lees exemplaar</string>
+    <string name="lbl_condition_book_very_good">Zeer goed</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Samenvoegen van hoofdletters en kleine letters</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Ongebruikte tags verwijderen</string>
     <string name="lbl_connection_timeout">Time-out verbinding (seconden)</string>
@@ -878,4 +878,11 @@
     <string name="tip_bookshelf_management">De gemarkeerde regel geeft je huidige boekenplank aan.\n\nDe standaardboekenplank (gemarkeerd met *) wordt automatisch gebruikt als je huidige om wat voor reden dan ook niet beschikbaar is.</string>
     <string name="pt_search_tag_use_subject_number">Numeriek voorvoegsel in onderwerpstags behouden</string>
     <string name="site_description_greek">Grieks</string>
+    <string name="book_format_unknown">Onbekend</string>
+    <string name="lbl_condition_book_unknown">Onbekend</string>
+    <string name="lbl_condition_dust_cover_unknown">Onbekend</string>
+    <string name="lbl_condition_dust_cover_fine">Als nieuw</string>
+    <string name="lbl_condition_dust_cover_very_good">Zeer goed</string>
+    <string name="lbl_condition_dust_cover_good">Goed</string>
+
 </resources>

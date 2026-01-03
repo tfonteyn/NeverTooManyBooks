@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -106,20 +106,20 @@
     </string-array>
 
     <string-array name="lbl_book_condition">
-        <item>@string/unknown</item>
-        <item>@string/lbl_condition_reading_copy</item>
-        <item>@string/lbl_condition_fair</item>
-        <item>@string/lbl_condition_good</item>
-        <item>@string/lbl_condition_very_good</item>
-        <item>@string/lbl_condition_fine</item>
+        <item>@string/lbl_condition_book_unknown</item>
+        <item>@string/lbl_condition_book_reading_copy</item>
+        <item>@string/lbl_condition_book_fair</item>
+        <item>@string/lbl_condition_book_good</item>
+        <item>@string/lbl_condition_book_very_good</item>
+        <item>@string/lbl_condition_book_fine</item>
     </string-array>
     <string-array name="lbl_dust_cover_condition">
-        <item>@string/unknown</item>
+        <item>@string/lbl_condition_dust_cover_unknown</item>
         <item>@string/lbl_condition_dust_cover_none</item>
         <item>@string/lbl_condition_dust_cover_missing_or_bad</item>
-        <item>@string/lbl_condition_good</item>
-        <item>@string/lbl_condition_very_good</item>
-        <item>@string/lbl_condition_fine</item>
+        <item>@string/lbl_condition_dust_cover_good</item>
+        <item>@string/lbl_condition_dust_cover_very_good</item>
+        <item>@string/lbl_condition_dust_cover_fine</item>
     </string-array>
 
     <!-- used for Spinners as placeholder text. Can't seem to use "@tools:sample/" there. -->

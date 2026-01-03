@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -300,11 +300,11 @@
     <string name="lbl_condition">Zustand</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Fehlend/Mäßig</string>
     <string name="lbl_condition_dust_cover_none">Keiner</string>
-    <string name="lbl_condition_fair">Akzeptabel</string>
-    <string name="lbl_condition_fine">Wie neu</string>
-    <string name="lbl_condition_good">Gut</string>
-    <string name="lbl_condition_reading_copy">Leseexemplar</string>
-    <string name="lbl_condition_very_good">Sehr gut</string>
+    <string name="lbl_condition_book_fair">Akzeptabel</string>
+    <string name="lbl_condition_book_fine">Wie neu</string>
+    <string name="lbl_condition_book_good">Gut</string>
+    <string name="lbl_condition_book_reading_copy">Leseexemplar</string>
+    <string name="lbl_condition_book_very_good">Sehr gut</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Zusammenführung von Groß- und Kleinschreibung</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Nicht verwendete Tags löschen</string>
     <string name="lbl_connection_timeout">Zeitüberschreitung beim Verbindung (Sekunden)</string>
@@ -878,5 +878,10 @@
     <string name="tip_bookshelf_management">Die markierte Zeile zeigt dein aktuelles Bücherregal an.\n\nDas Standardregal (mit * markiert) wird automatisch verwendet, wenn dein aktuelles Regal aus irgendeinem Grund nicht verfügbar ist.</string>
     <string name="pt_search_tag_use_subject_number">Numerisches Präfix bei Sachschlagwörtern beibehalten</string>
     <string name="site_description_greek">Griechisch</string>
-
+    <string name="book_format_unknown">Unbekannt</string>
+    <string name="lbl_condition_book_unknown">Unbekannt</string>
+    <string name="lbl_condition_dust_cover_unknown">Unbekannt</string>
+    <string name="lbl_condition_dust_cover_fine">Wie neu</string>
+    <string name="lbl_condition_dust_cover_very_good">Sehr gut</string>
+    <string name="lbl_condition_dust_cover_good">Gut</string>
 </resources>

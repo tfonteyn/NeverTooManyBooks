@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -302,11 +302,11 @@
     <string name="lbl_condition">Şart</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Eksik/kabul edilebilir</string>
     <string name="lbl_condition_dust_cover_none">Yok</string>
-    <string name="lbl_condition_fair">Kabul edilebilir</string>
-    <string name="lbl_condition_fine">Yeni gibi</string>
-    <string name="lbl_condition_good">İyi</string>
-    <string name="lbl_condition_reading_copy">Kopya okunuyor</string>
-    <string name="lbl_condition_very_good">Çok iyi</string>
+    <string name="lbl_condition_book_fair">Kabul edilebilir</string>
+    <string name="lbl_condition_book_fine">Yeni gibi</string>
+    <string name="lbl_condition_book_good">İyi</string>
+    <string name="lbl_condition_book_reading_copy">Kopya okunuyor</string>
+    <string name="lbl_condition_book_very_good">Çok iyi</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Büyük/küçük harf birleştirme</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Kullanılmayan etiketleri silme</string>
     <string name="lbl_connection_timeout">Bağlantı zaman aşımı (saniye)</string>
@@ -882,5 +882,11 @@
     <string name="tip_bookshelf_management">Vurgulanan satır mevcut kitaplığını gösterir.\n\nVarsayılan kitaplık (* ile işaretli), mevcut kitaplık herhangi bir nedenle kullanılamadığında otomatik olarak kullanılır.</string>
     <string name="pt_search_tag_use_subject_number">Konu etiketlerinde sayısal öneki koru</string>
     <string name="site_description_greek">Yunanca</string>
+    <string name="book_format_unknown">Bilinmiyor</string>
+    <string name="lbl_condition_book_unknown">Bilinmiyor</string>
+    <string name="lbl_condition_dust_cover_unknown">Bilinmiyor</string>
+    <string name="lbl_condition_dust_cover_fine">Yeni gibi</string>
+    <string name="lbl_condition_dust_cover_very_good">Çok iyi</string>
+    <string name="lbl_condition_dust_cover_good">İyi</string>
 
 </resources>
