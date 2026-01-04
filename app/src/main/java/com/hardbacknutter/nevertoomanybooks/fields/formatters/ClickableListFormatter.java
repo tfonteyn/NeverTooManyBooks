@@ -137,7 +137,7 @@ public class ClickableListFormatter<T>
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         for (int i = 0; i < rawValue.size(); i++) {
             final T entity = rawValue.get(i);
-            final ImageSpan imageSpan = new ImageSpan(icon, ImageSpan.ALIGN_BOTTOM);
+            final ImageSpan imageSpan = new CenteredImageSpan(icon);
 
             final Spanned text = Html.fromHtml(textSupplier.apply(entity),
                                                Html.FROM_HTML_MODE_COMPACT);
@@ -163,5 +163,41 @@ public class ClickableListFormatter<T>
 
         }
         return builder;
+    }
+
+    private static class CenteredImageSpan
+            extends ImageSpan {
+
+        CenteredImageSpan(@NonNull final Drawable drawable) {
+            super(drawable);
+        }
+
+        @Override
+        public void draw(@NonNull final Canvas canvas,
+                         @NonNull final CharSequence text,
+                         final int start,
+                         final int end,
+                         final float x,
+                         final int top,
+                         final int y,
+                         final int bottom,
+                         @NonNull final Paint paint) {
+            final Drawable b = getDrawable();
+            canvas.save();
+
+            // 1. Get font metrics to find the center of the text
+            final Paint.FontMetricsInt fm = paint.getFontMetricsInt();
+
+            // 2. Calculate the center of the text line.
+            // 'y' is the baseline. (y + fm.descent) is the bottom, (y + fm.ascent) is the top.
+            final int textCenter = y + (fm.descent + fm.ascent) / 2;
+
+            // 3. Calculate the translation needed to put the center of the icon at the text center
+            final int transY = textCenter - (b.getBounds().height() / 2);
+
+            canvas.translate(x, transY);
+            b.draw(canvas);
+            canvas.restore();
+        }
     }
 }
