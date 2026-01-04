@@ -307,42 +307,15 @@ public class ShowBookDetailsFragment
 
     private void onAuthorClicked(@NonNull final TextView v,
                                  @NonNull final MotionEvent event) {
-        final android.text.Layout layout = v.getLayout();
-        if (layout != null) {
-            final int y = (int) event.getY() + v.getScrollY();
-            final int line = layout.getLineForVertical(y);
-            final int offset = layout.getOffsetForHorizontal(line, event.getX());
 
-            final char lineSeparator = ClickableListFormatter.LINE_SEPARATOR;
-            final CharSequence text = v.getText();
-
-            // Find start of the Author name
-            int start = offset;
-            while (start > 0 && text.charAt(start - 1) != lineSeparator) {
-                start--;
-            }
-
-            // Find end of the Author name
-            int end = offset;
-            while (end < text.length() && text.charAt(end) != lineSeparator) {
-                end++;
-            }
-
-            // Compute index by counting the number of lineSeparator before 'start'
-            int index = 0;
-            for (int i = 0; i < start; i++) {
-                if (text.charAt(i) == lineSeparator) {
-                    index++;
-                }
-            }
-
+        ClickableListFormatter.getIndex(v, event).ifPresent(index -> {
             final List<Author> authors = vm.getBook().getAuthors();
             if (index < authors.size()) {
                 authorWorksLauncher.launch(new AuthorWorksContract.Input(
                         authors.get(index).getId(),
                         aVm.getBookshelf()));
             }
-        }
+        });
     }
 
     /**

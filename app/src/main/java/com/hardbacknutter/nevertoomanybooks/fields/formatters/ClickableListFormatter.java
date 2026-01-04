@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,17 +22,22 @@ package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -49,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ClickableListFormatter<T>
         implements FieldFormatter<List<T>> {
 
-    public static final char LINE_SEPARATOR = '\n';
+    private static final char LINE_SEPARATOR = '\n';
 
     @NonNull
     private final Function<T, String> textSupplier;
@@ -76,6 +81,49 @@ public class ClickableListFormatter<T>
                                          : R.drawable.chevron_right_24px);
         //noinspection DataFlowIssue
         icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+    }
+
+    /**
+     * Given the event (from a click) on the view, calculate which line was clicked.
+     *
+     * @param view  on which the click happened
+     * @param event the click
+     *
+     * @return the index of the clicked line
+     */
+    @NonNull
+    public static Optional<Integer> getIndex(@NonNull final TextView view,
+                                             @NonNull final MotionEvent event) {
+        final android.text.Layout layout = view.getLayout();
+        if (layout == null) {
+            return Optional.empty();
+        }
+
+        final CharSequence text = view.getText();
+        final int y = (int) event.getY() + view.getScrollY();
+        final int line = layout.getLineForVertical(y);
+        final int offset = layout.getOffsetForHorizontal(line, event.getX());
+
+        // Find start of the line
+        int start = offset;
+        while (start > 0 && text.charAt(start - 1) != LINE_SEPARATOR) {
+            start--;
+        }
+
+        // Find end of the line
+        int end = offset;
+        while (end < text.length() && text.charAt(end) != LINE_SEPARATOR) {
+            end++;
+        }
+
+        // Compute index by counting the number of lineSeparator before 'start'
+        int index = 0;
+        for (int i = 0; i < start; i++) {
+            if (text.charAt(i) == LINE_SEPARATOR) {
+                index++;
+            }
+        }
+        return Optional.of(index);
     }
 
     @NonNull
