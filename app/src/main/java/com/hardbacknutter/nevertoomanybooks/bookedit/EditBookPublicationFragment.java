@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,9 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadStatusFragmentFactory;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -75,10 +77,15 @@ public class EditBookPublicationFragment
         if (vb.notes != null) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
 
+            // Always active as fields other than the read/readProgress fragment depend on it
             vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onReadStatusUpdate);
 
-            ReadStatusFragmentFactory.createEditor(getChildFragmentManager(), R.id.fragment_read,
-                                                   vm.getStyle());
+            if (ServiceLocator.getInstance().isFieldEnabled(DBKey.READ__BOOL)
+                || ServiceLocator.getInstance().isFieldEnabled(DBKey.READ_PROGRESS)) {
+                ReadStatusFragmentFactory.createEditor(getChildFragmentManager(),
+                                                       R.id.fragment_read,
+                                                       vm.getStyle());
+            }
             // Update *this* fragment + the ReadStatusFragment
             vm.updateReadStatus(false);
         }

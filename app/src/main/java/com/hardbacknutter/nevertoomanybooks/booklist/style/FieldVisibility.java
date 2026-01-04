@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -124,6 +124,8 @@ public class FieldVisibility {
             DBKey.PERSONAL_NOTES,
             DBKey.RATING,
             DBKey.SIGNED__BOOL,
+            // This is the icon/flag only.
+            // The detailed status is determined by DBKey.READ_PROGRESS (bit 34)
             DBKey.READ__BOOL,
 
             // bit 28..31
@@ -137,7 +139,7 @@ public class FieldVisibility {
             // represents "show the real author if 'this' is a pen-name"
             DBKey.FK_AUTHOR_REAL_AUTHOR,
             // This is the detailed progress only.
-            // The read/unread status is always displayed.
+            // The read/unread status is determined by DBKey.READ__BOOL (bit 27)
             DBKey.READ_PROGRESS,
             DBKey.PRINT_RUN,
 

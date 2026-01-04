@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -193,7 +193,12 @@
             android:key="signed"
             android:title="@string/lbl_signed" />
 
-        <!-- bit 27: Read status is always visible -->
+        <!-- bit 27; This is the icon/flag only.
+             The detailed status is determined by DBKey.READ_PROGRESS (bit 34) -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="read"
+            android:title="@string/lbl_read" />
 
         <!-- bit: 28 -->
         <SwitchPreference
@@ -232,7 +237,7 @@
             android:title="@string/lbl_author_pseudonym" />
 
         <!-- bit 34; This is the detailed progress only.
-            The read/unread status is always displayed. -->
+             The read/unread status is determined by DBKey.READ__BOOL (bit 27) -->
         <SwitchPreference
             android:defaultValue="true"
             android:key="read_progress"

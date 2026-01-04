@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -292,8 +292,8 @@ public class ShowBookDetailsFragment
         createSyncDelegates();
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
+        // Always active as fields other than the read/readProgress fragment depend on it
         vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onUpdateReadStatus);
-
 
         final TextView authorsView = view.findViewById(R.id.author);
 
@@ -518,8 +518,11 @@ public class ShowBookDetailsFragment
 
         // We're only creating this here instead of in onViewCreated
         // so we are sure the book is loaded when the read-progress fragment displays
-        ReadStatusFragmentFactory.createShow(getChildFragmentManager(), R.id.fragment_read,
-                                             aVm.getStyle(), vm.isEmbedded());
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.READ__BOOL)
+            || ServiceLocator.getInstance().isFieldEnabled(DBKey.READ_PROGRESS)) {
+            ReadStatusFragmentFactory.createShow(getChildFragmentManager(), R.id.fragment_read,
+                                                 aVm.getStyle(), vm.isEmbedded());
+        }
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);

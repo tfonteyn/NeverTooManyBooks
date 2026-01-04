@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -173,6 +173,7 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "edition", DBKey.EDITION);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "loanee", DBKey.LOANEE_NAME);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "reading.progress", DBKey.READ_PROGRESS);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "read", DBKey.READ__BOOL);
 
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "date.added", DBKey.DATE_ADDED__UTC);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "date.updated", DBKey.DATE_LAST_UPDATED__UTC);

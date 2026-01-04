@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -611,6 +611,13 @@ public final class LegacyUpgrades {
         // and rebuild both OB columns and the indexes
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_INDEXES, true);
 
+    }
+
+    static void v49onUpgrade(@NonNull final SQLiteDatabase db) {
+        db.execSQL(UPDATE_ + TBL_BOOKLIST_STYLES.getName()
+                   + _SET_ + DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY
+                   + '=' + DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY
+                   + '|' + FieldVisibility.getBitValue(Set.of(DBKey.READ__BOOL)));
     }
 
     private static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,

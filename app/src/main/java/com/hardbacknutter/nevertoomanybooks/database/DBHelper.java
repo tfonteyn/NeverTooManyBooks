@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -96,10 +96,11 @@ public class DBHelper
      * v7.10.0: 46
      * (47 was dev only)
      * v7.11.0: 48
+     * v7.x     49
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 48;
+    public static final int DATABASE_VERSION = 49;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -482,6 +483,9 @@ public class DBHelper
         }
         if (oldVersion < 48) {
             // Nothing, but we needed to trigger recreating the indexes
+        }
+        if (oldVersion < 49) {
+            LegacyUpgrades.v49onUpgrade(db);
         }
 
         // We have to do this here as we're always inserting all columns,

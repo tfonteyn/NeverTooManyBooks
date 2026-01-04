@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,6 +58,7 @@ public class BookLevelFieldVisibility
             DBKey.LOCATION,
             DBKey.PAGES,
             DBKey.RATING,
+            DBKey.READ__BOOL,
             DBKey.SIGNED__BOOL,
             DBKey.TRANSLATION_ORIGINAL_TITLE,
             DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
@@ -74,7 +75,8 @@ public class BookLevelFieldVisibility
             DBKey.FK_SERIES,
             DBKey.SIGNED__BOOL,
             DBKey.EDITION,
-            DBKey.LOANEE_NAME);
+            DBKey.LOANEE_NAME,
+            DBKey.READ__BOOL);
 
     /**
      * Constructor.

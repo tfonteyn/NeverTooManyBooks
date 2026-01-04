@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -221,9 +221,9 @@ public class BookHolder
         // and slows down scrolling to much.
         vb.title.setText(rowData.getString(DBKey.TITLE));
 
-        // Always show the 'read' icon.
-        showOrHide(vb.iconRead, rowData.getBoolean(DBKey.READ__BOOL));
-
+        if (use.contains(DBKey.READ__BOOL)) {
+            showOrHide(vb.iconRead, rowData.getBoolean(DBKey.READ__BOOL));
+        }
         if (use.contains(DBKey.READ_PROGRESS)) {
             showOrHideReadingProgress(rowData);
         }
