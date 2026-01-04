@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -133,9 +133,12 @@
             android:id="@+id/rating"
             style="@style/Field.ZRatingBar.Indicator"
             android:layout_width="0dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/barrier_titles" />
+            app:layout_constraintTop_toBottomOf="@id/barrier_titles"
+            tools:visibility="visible"
+            />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_read"
