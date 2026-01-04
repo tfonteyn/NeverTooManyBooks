@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,6 +46,14 @@ public final class ReadStatusFragmentFactory {
     private ReadStatusFragmentFactory() {
     }
 
+    /**
+     * To be called from the hosting {@link Fragment#onViewCreated(View, Bundle)}.
+     *
+     * @param fm                      FragmentManager to use
+     * @param fragmentContainerViewId where to add the new fragment
+     * @param style                   to use
+     * @param embedded                flag, whether we're running in tablet-landscape (embedded)
+     */
     public static void createShow(@NonNull final FragmentManager fm,
                                   @IdRes final int fragmentContainerViewId,
                                   @NonNull final Style style,
@@ -53,6 +61,13 @@ public final class ReadStatusFragmentFactory {
         create(fm, fragmentContainerViewId, style, Mode.Show, embedded);
     }
 
+    /**
+     * To be called from the hosting {@link Fragment#onViewCreated(View, Bundle)}.
+     *
+     * @param fm                      FragmentManager to use
+     * @param fragmentContainerViewId where to add the new fragment
+     * @param style                   to use
+     */
     public static void createEditor(@NonNull final FragmentManager fm,
                                     @IdRes final int fragmentContainerViewId,
                                     @NonNull final Style style) {
@@ -60,14 +75,14 @@ public final class ReadStatusFragmentFactory {
     }
 
     /**
-     * To be called from the hosting {@link Fragment#onViewCreated(View, Bundle)}.
+     * Constructor.
      *
-     * @param fm                      to use
+     * @param fm                      FragmentManager to use
      * @param fragmentContainerViewId where to add the new fragment
      * @param style                   to use
      * @param mode                    the required ViewModel mode
-     * @param embedded                flag, whether we're running in tablet-landscape (embedded)
-     *                                (only applicable to Mode.Edit)
+     * @param embedded                flag, whether we're running in tablet-landscape (embedded).
+     *                                Only applicable to {@link Mode#Show}.
      */
     private static void create(@NonNull final FragmentManager fm,
                                @IdRes final int fragmentContainerViewId,
@@ -77,14 +92,16 @@ public final class ReadStatusFragmentFactory {
 
         if (style.useReadProgress()) {
             if (fm.findFragmentByTag(ReadProgressFragment.TAG) == null) {
-                create(fm, fragmentContainerViewId, ReadProgressFragment.TAG,
-                       new ReadProgressFragment(), mode, embedded);
+                create(fm, fragmentContainerViewId,
+                       ReadProgressFragment.TAG, new ReadProgressFragment(),
+                       mode, embedded);
             }
         } else {
             // Traditional Read/Unread.
             if (fm.findFragmentByTag(ReadStatusFragment.TAG) == null) {
-                create(fm, fragmentContainerViewId, ReadStatusFragment.TAG,
-                       new ReadStatusFragment(), mode, embedded);
+                create(fm, fragmentContainerViewId,
+                       ReadStatusFragment.TAG, new ReadStatusFragment(),
+                       mode, embedded);
             }
         }
     }
@@ -120,7 +137,7 @@ public final class ReadStatusFragmentFactory {
                                                 @NonNull final Bundle args) {
         final Mode mode = Objects.requireNonNull(args.getParcelable(BKEY_VIEWMODEL_MODE));
         switch (mode) {
-            case Show:
+            case Show: {
                 // See class docs for ShowBookDetailsFragment
                 final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
                 if (embedded) {
@@ -130,12 +147,14 @@ public final class ReadStatusFragmentFactory {
                     return new ViewModelProvider(fragment.requireParentFragment())
                             .get(ShowBookDetailsViewModel.class);
                 }
-            case Edit:
+            }
+            case Edit: {
                 // MUST be in the Activity scope
                 // The editor fragments all exchange data via the Activity.
                 //noinspection DataFlowIssue
                 return new ViewModelProvider(fragment.getActivity())
                         .get(EditBookViewModel.class);
+            }
             default:
                 throw new IllegalArgumentException(mode.toString());
         }
