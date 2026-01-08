@@ -57,6 +57,7 @@ public class ClickableListFormatter<T>
         implements FieldFormatter<List<T>> {
 
     private static final char LINE_SEPARATOR = '\n';
+    private static final String ZERO_WIDTH_SPACE = "\u200B";
 
     @NonNull
     private final Function<T, String> textSupplier;
@@ -79,8 +80,7 @@ public class ClickableListFormatter<T>
         isRTL = context.getResources().getConfiguration()
                        .getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         //noinspection DataFlowIssue
-        icon = context.getDrawable(isRTL ? R.drawable.chevron_left_24px
-                                         : R.drawable.chevron_right_24px);
+        icon = context.getDrawable(R.drawable.chevron);
         //noinspection DataFlowIssue
         icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
     }
@@ -145,17 +145,17 @@ public class ClickableListFormatter<T>
                                                Html.FROM_HTML_MODE_COMPACT);
             if (isRTL) {
                 // Text first, then icon
-                builder.append(text);
+                builder.append(text).append(" ");
                 final int start = builder.length();
                 // placeholder text, will be replaced with imageSpan
-                builder.append(" ");
+                builder.append(ZERO_WIDTH_SPACE);
                 builder.setSpan(imageSpan, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
                 // Icon first, then text
                 final int start = builder.length();
-                builder.append(" ");
+                builder.append(ZERO_WIDTH_SPACE);
                 builder.setSpan(imageSpan, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.append(text);
+                builder.append(" ").append(text);
             }
             // add spacing so tapping is easier (but not after the last row)
             // This is also essential for the detecting the correct line clicked!
