@@ -188,7 +188,7 @@
     <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
-    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Tocca «%1$s» per salvare un rapporto in una posizione a scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
+    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Tocca «%1$s» per salvare un rapporto in una posizione ha scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
     <string name="disabled">Disattivata</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamico</string>
     <string name="enabled">Abilitato</string>
@@ -586,7 +586,7 @@
     <string name="pt_bob_books_under_multiple_publishers">Mostra libri con più editori</string>
     <string name="pt_bob_books_under_multiple_series">Libri in serie multiple</string>
     <string name="pt_bob_cover_long_click">Aprire il menu contestuale del libro.</string>
-    <string name="pe_bob_cover_long_click_ignore">Con un pulsante.</string>
+    <string name="pe_bob_cover_long_click_ignore">Con une pulsante.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Con un clic prolungato sull’immagine di copertina.</string>
     <string name="pt_bob_cover_scale">Dimensioni dell’immagine di copertina</string>
     <string name="pt_bob_cover_show">Mostra miniature</string>
@@ -634,7 +634,7 @@
     <string name="pv_bob_header_filters">Filtri</string>
     <string name="pv_bob_header_nr_of_books">Mostra numero di libri</string>
     <string name="pv_bob_header_style_name">Nome dello stile</string>
-    <!-- use the default single quote character and NOT the stylized! -->
+    <!-- use the default single quote character and NOT the stylised! -->
     <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">il|Il|lo|Lo|la|La|l\'|L\'|i|I|gli|Gli|le|Le|un\'|Un\'|uno|Uno|una|Una|un|Un</string>
     <string name="size_hidden">Nascosto</string>
     <string name="size_large">Grande</string>
@@ -669,7 +669,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Se i libri sono mostrati in tutte le serie a cui il libro appartiene, possono comparire più volte nell’elenco. L’eliminazione di uno di questi libri ha l’effetto di rimuovere tutte le copie dall’elenco.</string>
     <string name="X_tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu «Visualizza su…» mostrerà solo ciò che è disponibile.</string>
     <string name="tip_view_only_help">Puoi scorrere verso sinistra o verso destra per visualizzare altri libri.</string>
-    <string name="info_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l’applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
+    <string name="info_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD a ogni aggiornamento, a ogni backup del database o quando l’applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d libri, in %2$d voci</string>
     <string name="info_export_books_option_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall’ultimo backup completo.</string>
     <string name="option_info_import_books_option_all">Importa nuovi libri e sovrascrivi i libri esistenti. Usalo per ripristinare un backup.</string>
@@ -708,7 +708,7 @@
     <string name="warning_book_not_found">Impossibile trovare il libro specificato.</string>
     <string name="warning_enable_at_least_1_website">Abilita almeno un sito Web per ogni categoria.</string>
     <string name="warning_export_contains_no_data">Non c’era niente da esportare.</string>
-    <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>
+    <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese e anno.</string>
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l’anno.</string>
     <string name="warning_image_copy_failed">L’immagine non può essere copiata.</string>
     <string name="warning_image_not_found">L’immagine non è stata trovata.</string>
