@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -48,7 +45,6 @@
         <item quantity="one">முன்னர் ISBN குறியீட்டில் நுழைந்த %1$d உள்ளது. அதற்கான தேடலைத் தொடங்க விரும்புகிறீர்களா, அல்லது அதை அகற்ற வேண்டுமா?</item>
         <item quantity="other">முன்னர் நுழைந்த %1$d உள்ளது. அவற்றுக்கான தேடல்களைத் தொடங்க விரும்புகிறீர்களா, அல்லது அவை அகற்றப்பட வேண்டுமா?</item>
     </plurals>
-
     <string name="quoted">“%1$s”</string>
     <string name="list_element">• %s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -885,5 +881,4 @@
     <string name="lbl_condition_dust_cover_fine">புதியது</string>
     <string name="lbl_condition_dust_cover_very_good">மிகவும் நல்லது</string>
     <string name="lbl_condition_dust_cover_good">நல்லது</string>
-
 </resources>
