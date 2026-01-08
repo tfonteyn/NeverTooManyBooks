@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * <p>
  * This formatter provides the visual formatting only.
  * Actual 'click' functionality must be implemented elsewhere.
+ * The static method {@link #getIndex(TextView, MotionEvent)} can be used to compute
+ * the index of the clicked item.
  */
 @SuppressWarnings("WeakerAccess")
 public class ClickableListFormatter<T>
