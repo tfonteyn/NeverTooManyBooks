@@ -69,7 +69,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="acra_dialog_message">Det verkar som att &APP_NAME; har kraschat. Tryck på ”%1$s” för att spara en rapport till valfri plats. Du kan använda denna rapport för att rapportera ett nytt problem på projektets webbplats.</string>
-    <string name="acra_report_saved">Du kan nu besöka projektets sida på Github och skapa en ny ärende. Vänligen bifoga den sparade rapporten till ärendet. Om du inte har ett Github-konto måste du skapa ett.</string>
+    <string name="acra_report_saved">Du kan nu besöka projektets sida på GitHub och skapa en ny ärende. Vänligen bifoga den sparade rapporten till ärendet. Om du inte har ett Github-konto måste du skapa ett.</string>
     <string name="action_add">Lägg till</string>
     <string name="action_add_with_details">Lägg till med detaljer</string>
     <string name="action_apply">Tillämpa</string>

@@ -805,7 +805,7 @@
     <string name="pe_bob_cover_click_zoom">Aumentará o zoom da imagem da capa.</string>
     <string name="pe_bob_cover_click_details">Abre a página de detalhes do livro.</string>
     <string name="X_style_type_defaults">Predefinições de estilo</string>
-    <string name="acra_report_saved">Pode agora visitar a página do projeto no Github e registar um novo problema. Anexe o relatório guardado anteriormente ao problema. Se ainda não tiver uma conta no Github, terá de criar uma.</string>
+    <string name="acra_report_saved">Pode agora visitar a página do projeto no GitHub e registar um novo problema. Anexe o relatório guardado anteriormente ao problema. Se ainda não tiver uma conta no Github, terá de criar uma.</string>
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Endereço inválido (URL)</string>
     <string name="lbl_certificate_validity_period">Validade: %1$s - %2$s</string>

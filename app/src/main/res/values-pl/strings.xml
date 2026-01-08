@@ -813,7 +813,7 @@
     <string name="pe_bob_cover_click_zoom">Powiększy obraz okładki.</string>
     <string name="pe_bob_cover_click_details">Otworzy stronę szczegółów książki.</string>
     <string name="X_style_type_defaults">Domyślne ustawienia stylu</string>
-    <string name="acra_report_saved">Możesz teraz odwiedzić stronę projektu na Github i zarejestrować nowe zgłoszenie. Do zgłoszenia należy dołączyć wcześniej zapisany raport. Jeśli nie masz jeszcze konta Github, musisz je utworzyć.</string>
+    <string name="acra_report_saved">Możesz teraz odwiedzić stronę projektu na GitHub i zarejestrować nowe zgłoszenie. Do zgłoszenia należy dołączyć wcześniej zapisany raport. Jeśli nie masz jeszcze konta Github, musisz je utworzyć.</string>
     <string name="action_report">Zgłoś</string>
     <string name="error_invalid_url">Nieprawidłowy adres (URL)</string>
     <string name="lbl_certificate_validity_period">Ważność: %1$s - %2$s</string>

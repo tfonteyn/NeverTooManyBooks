@@ -91,7 +91,7 @@
     <string name="error_unexpected">Váratlan hiba történt.</string>
     <string name="error_unexpected_long">Váratlan hiba történt. Ha a probléma továbbra is fennáll, lépjen kapcsolatba az ügyfélszolgálattal a beállítások oldal alján található „%1$s” opció segítségével.</string>
     <string name="error_site_access_blocked">A hozzáférést a webhely letiltotta.</string>
-    <string name="acra_report_saved">Meglátogathatja most a projekt Github oldalát és naplózhat egy új feladatot. Kérjük, csatolja a korábban elmentett jelentést a feladathoz. Ha még nincs Github-fiókja, létre kell hoznia egyet.</string>
+    <string name="acra_report_saved">Meglátogathatja most a projekt GitHub oldalát és naplózhat egy új feladatot. Kérjük, csatolja a korábban elmentett jelentést a feladathoz. Ha még nincs Github-fiókja, létre kell hoznia egyet.</string>
     <string name="httpErrorFileNotFound">Nem található a kért fájl.</string>
     <string name="error_http_403_forbidden">A webhely letiltotta a hozzáférést.</string>
     <string name="error_http_401_site_authorization_failed">%1$s engedélyezése hibát eredményezett.</string>

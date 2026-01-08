@@ -799,7 +799,7 @@
     <string name="pe_bob_cover_click_zoom">Amplía la imagen de la cubierta.</string>
     <string name="pe_bob_cover_click_details">Abrirá la página de detalles del libro.</string>
     <string name="X_style_type_defaults">Valores predeterminados del estilo</string>
-    <string name="acra_report_saved">Ya puedes visitar la página del proyecto en Github y registrar una nueva incidencia. Adjunta a la incidencia el informe guardado anteriormente. Si aún no tienes una cuenta de Github, tendrás que crear una.</string>
+    <string name="acra_report_saved">Ya puedes visitar la página del proyecto en GitHub y registrar una nueva incidencia. Adjunta a la incidencia el informe guardado anteriormente. Si aún no tienes una cuenta de Github, tendrás que crear una.</string>
     <string name="action_report">Informar</string>
     <string name="error_invalid_url">Dirección no válida (URL)</string>
     <string name="lbl_certificate_validity_period">Validez: %1$s - %2$s</string>

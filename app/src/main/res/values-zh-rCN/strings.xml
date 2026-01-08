@@ -71,7 +71,7 @@
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="acra_dialog_message">看起来 &APP_NAME; 崩溃了。点击 “%1$s” 将报告保存到您选择的位置。您可以使用此报告在项目网站上报告新问题。</string>
-    <string name="acra_report_saved">您现在可以访问 Github 上的项目页面并报告新问题了。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
+    <string name="acra_report_saved">您现在可以访问 GitHub 上的项目页面并报告新问题了。请将之前保存的报告附加到问题中。如果您还没有 Github 账户，则需要创建一个。</string>
     <string name="action_add">添加</string>
     <string name="action_add_with_details">随详情添加</string>
     <string name="action_clear">创建</string>

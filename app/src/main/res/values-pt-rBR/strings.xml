@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -57,7 +57,7 @@
     <string name="notification_channel_error">Erro</string>
     <string name="notification_channel_warn">Aviso</string>
     <string name="notification_channel_info">Informações</string>
-    <string name="acra_report_saved">Agora você pode visitar a página do projeto no Github e registrar um novo problema. Anexe o relatório salvo anteriormente ao problema. Se você ainda não tem uma conta no Github, precisará criar uma.</string>
+    <string name="acra_report_saved">Agora você pode visitar a página do projeto no GitHub e registrar um novo problema. Anexe o relatório salvo anteriormente ao problema. Se você ainda não tem uma conta no Github, precisará criar uma.</string>
     <string name="httpErrorTimeout">A conexão com o servidor expirou.</string>
     <string name="httpErrorFailedSslHandshake">Não foi possível estabelecer uma conexão segura.</string>
     <string name="httpErrorFile">Não foi possível acessar o arquivo.</string>

@@ -109,7 +109,7 @@
     <string name="error_import_file_not_supported">Non se pode importar o ficheiro seleccionado.</string>
     <string name="httpErrorFailedSslHandshake">Non se puido establecer unha conexión segura.</string>
     <string name="error_email_failed">Fallou o envío do correo electrónico.</string>
-    <string name="acra_report_saved">Xa podes visitar a páxina do proxecto en Github e engadir unha nova incidencia. Adxunta o informe que gardaches antes. Se non tes conta en Github, terás que crear unha.</string>
+    <string name="acra_report_saved">Xa podes visitar a páxina do proxecto en GitHub e engadir unha nova incidencia. Adxunta o informe que gardaches antes. Se non tes conta en Github, terás que crear unha.</string>
     <string name="error_unexpected">Produciuse un erro inesperado.</string>
     <string name="error_import_csv_missing_columns_x">O ficheiro debe conter unha columna cun destes nomes: %1$s</string>
     <string name="error_http_401_authorization_failed">Fallou a autorización</string>
