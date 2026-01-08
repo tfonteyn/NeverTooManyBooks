@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -49,7 +46,6 @@
         <item quantity="one">Korábban %1$d ISBN kódot adtak meg. Szeretne keresést indítani rá, vagy törölni kell?</item>
         <item quantity="other">Korábban %1$d ISBN-kódot adtak meg. Szeretne keresést indítani rájuk, vagy törölni kell őket?</item>
     </plurals>
-
     <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -886,5 +882,4 @@
     <string name="lbl_condition_dust_cover_fine">Új</string>
     <string name="lbl_condition_dust_cover_very_good">Kiváló</string>
     <string name="lbl_condition_dust_cover_good">Jó</string>
-
 </resources>
