@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,8 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
  * Class to wrap common storage related functions.
  * <p>
  * "External Storage" == what Android considers non-application-private storage.
- * i.e the user has access to it.
- * ('external' refers to old android phones where Shared Storage was *always* on an sdcard)
+ * i.e. the user has access to it.
+ * ('external' refers to old android phones where Shared Storage was *always* on a sdcard)
  * Also referred to as "Shared Storage" because all apps have access to it.
  * For the sake of clarity (confusion?) we'll call it "Shared Storage" only.
  * <p>

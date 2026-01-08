@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -157,7 +157,7 @@ public class Synchronizer {
         // Synchronize with other code
         mainLock.lock();
         while (true) {
-            // Cleanup any old threads that are dead.
+            // Clean-up any old threads that are dead.
             purgeOldLocks();
             //noinspection CheckStyle
             try {

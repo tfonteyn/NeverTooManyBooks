@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,7 +65,7 @@ public interface ProgressListener
 
     /**
      * Get the max position. Useful if a routine wants to adjust the max only if the
-     * new value it intents to use is larger than the current max.
+     * new value it intends to use is larger than the current max.
      *
      * @return max position
      */

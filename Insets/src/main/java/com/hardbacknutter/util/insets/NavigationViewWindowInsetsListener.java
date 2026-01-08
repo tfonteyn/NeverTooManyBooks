@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import com.google.android.material.navigation.NavigationView;
 
 /**
  * The internal (single) child of the navigationView is a RecyclerView
- * with the header being a child inside of the row {@code 0} ViewHolder,
+ * with the header being a child inside the row {@code 0} ViewHolder,
  * and the other rows being the menu items.
  */
 class NavigationViewWindowInsetsListener

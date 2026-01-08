@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,7 @@
  */
 
 /**
- * Drag and Swipe with RecyclerView
+ * Drag and Swipe with RecyclerView.
  * Paul Burke
  * Jul 22, 2015
  * https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-b9456d2b1aaf

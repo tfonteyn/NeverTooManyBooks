@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -128,7 +128,7 @@ public class SynchronizedDb
     /**
      * Constructor.
      * <p>
-     * The javadoc for setMaxSqlCacheSize says the default is 10,
+     * The Javadoc for setMaxSqlCacheSize says the default is 10,
      * but if you check the source code (verified API 30):
      * android/database/sqlite/SQLiteDatabaseConfiguration.java: public int maxSqlCacheSize;
      * the default is in fact 25 as set in the constructor of that class.
@@ -159,7 +159,7 @@ public class SynchronizedDb
     }
 
     /**
-     * Check if the collation this database uses is case sensitive.
+     * Check if the collation this database uses is case-sensitive.
      *
      * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
      */
@@ -225,7 +225,7 @@ public class SynchronizedDb
 
         // We're being paranoid here... we should always be called in a transaction,
         // which means we should not bother with LOCK_EXCLUSIVE.
-        // But having the logic in place because: 1) future proof + 2) developer boo-boo,
+        // But having the logic in place because: 1) future-proof + 2) developer boo-boo,
         if (!sqLiteDatabase.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
         }
@@ -310,7 +310,7 @@ public class SynchronizedDb
      * Locking-aware wrapper for underlying database method.
      * <p>
      * <strong>Note:</strong> SQLite maintains a Statement cache in its
-     * <strong>native code</strong> based on sql string matching.
+     * <strong>native code</strong> based on SQL string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
      *
@@ -353,7 +353,7 @@ public class SynchronizedDb
      * Locking-aware wrapper for underlying database method.
      * <p>
      * <strong>Note:</strong> SQLite maintains a Statement cache in its
-     * <strong>native code</strong> based on sql string matching.
+     * <strong>native code</strong> based on SQL string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
      *
@@ -399,7 +399,7 @@ public class SynchronizedDb
      * Locking-aware wrapper for underlying database method.
      * <p>
      * <strong>Note:</strong> SQLite maintains a Statement cache in its
-     * <strong>native code</strong> based on sql string matching.
+     * <strong>native code</strong> based on SQL string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
      * <p>
@@ -580,9 +580,9 @@ public class SynchronizedDb
             // all code-paths lead to android.database.sqlite.SQLiteCursor
             // which in fact does NOT use the parameter at all (and it's private).
             // The only place where it could be used, is when using a cursory factory,
-            // which in our case means the typedCursorFactory -> TypedCursor
+            // which in our case means the typedCursorFactory -> TypedCursor,
             // and we don't use it.... so passing in null is no issue.
-            // If the SQLiteCursor ever starts using.. we might crash... that'll be the day...
+            // If the SQLiteCursor ever starts using... we might crash... that'll be the day...
             //noinspection DataFlowIssue
             return (TypedCursor) sqLiteDatabase
                     .rawQueryWithFactory(typedCursorFactory, sql, selectionArgs, editTable);

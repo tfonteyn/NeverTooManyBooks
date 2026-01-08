@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ public final class IntListPref {
 
     /**
      * {@link ListPreference} stores the selected value as a String.
-     * But they are really Integer values. Hence this transmogrification....
+     * But they are really Integer values. Hence, this transmogrification....
      *
      * @param context  Current context
      * @param key      The name of the preference to retrieve.

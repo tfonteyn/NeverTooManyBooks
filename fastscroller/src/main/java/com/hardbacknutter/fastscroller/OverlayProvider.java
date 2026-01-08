@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ public interface OverlayProvider {
      * Draw the overlay.
      *
      * @param isDragging  flag
-     * @param thumbCenter the offset from the top to the center of the thumb/drag-handle
+     * @param thumbCenter the offset from the top to the centre of the thumb/drag-handle
      */
     void showOverlay(boolean isDragging,
                      int thumbCenter);

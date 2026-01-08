@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -167,7 +167,7 @@ public class FileLogger
      * i.e. the number of the copy is added as a SUFFIX to the name.
      * <p>
      * Upon success, the "file" is no longer available.
-     * Any exception is ignored. The presence of "file" is not defined, and should be assume
+     * Any exception is ignored. The presence of "file" is not defined, and should be assumed
      * to be no longer available.
      * <p>
      * <strong>Important:</strong> it's a 'rename', so single volume use only!

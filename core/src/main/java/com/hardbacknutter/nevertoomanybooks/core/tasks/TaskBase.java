@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -250,7 +250,7 @@ public abstract class TaskBase<Result>
     }
 
     /**
-     * Only takes effect when the next {@link TaskProgress} is send to the client.
+     * Only takes effect when the next {@link TaskProgress} is sent to the client.
      *
      * @param indeterminate true/false to enable/disable the indeterminate mode
      *                      or {@code null} to tell the receiver to revert back to its initial mode.
@@ -268,7 +268,7 @@ public abstract class TaskBase<Result>
     }
 
     /**
-     * Only takes effect when the next {@link TaskProgress} is send to the client.
+     * Only takes effect when the next {@link TaskProgress} is sent to the client.
      *
      * @param maxPosition value
      */

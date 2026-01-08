@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ import androidx.annotation.Nullable;
 /**
  * "@Keep" is REQUIRED!
  */
-// AppCompatRatingBar will add undesired measuring behavior.
+// AppCompatRatingBar will add undesired measuring behaviour.
 @SuppressLint("AppCompatCustomView")
 @Keep
 @SuppressWarnings("WeakerAccess")
@@ -139,7 +139,7 @@ public class MaterialRatingBar
     public void setNumStars(final int numStars) {
         super.setNumStars(numStars);
 
-        // drawable can be null during super class initialization.
+        // drawable can be null during super class initialisation.
         if (drawable != null) {
             drawable.setStarCount(numStars);
         }
@@ -159,7 +159,7 @@ public class MaterialRatingBar
     public void setProgressDrawable(final Drawable d) {
         super.setProgressDrawable(d);
 
-        // progressTintInfo can be null during super class initialization.
+        // progressTintInfo can be null during super class initialisation.
         if (tintInfo != null) {
             applyProgressTints();
         }
@@ -169,7 +169,7 @@ public class MaterialRatingBar
     public void setIndeterminateDrawable(final Drawable d) {
         super.setIndeterminateDrawable(d);
 
-        // progressTintInfo can be null during super class initialization.
+        // progressTintInfo can be null during super class initialisation.
         if (tintInfo != null) {
             applyIndeterminateTint();
         }

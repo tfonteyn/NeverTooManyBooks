@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Dedicated 403 HTTP_FORBIDDEN providing a user readable/localized message.
+ * Dedicated 403 HTTP_FORBIDDEN providing a user readable/localised message.
  */
 public class HttpForbiddenException
         extends HttpStatusException {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -117,7 +117,7 @@ public enum SqLiteDataType
      * <a href="https://sqlite.org/datatype3.html#determination_of_column_affinity">
      * determination of column affinity</a>
      * <p>
-     * We only lookup the more common types.
+     * We only look up the more common types.
      *
      * @param typeName one of the {@link #MAP} keys
      *

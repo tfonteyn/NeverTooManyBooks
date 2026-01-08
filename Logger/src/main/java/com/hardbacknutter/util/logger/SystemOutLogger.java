@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * This is really a test-logger only, but due to some gradle dependency issues
- * it's just so much easier to dump it into the regular source set. Oh well...
+ * This is really a test-logger only, but due to some Gradle dependency issues
+ * it's just so much easier to dump it into the regular source set. Oh, well...
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class SystemOutLogger

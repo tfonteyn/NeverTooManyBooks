@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,15 +31,15 @@ import androidx.annotation.NonNull;
 
 /**
  * Why not use MaterialColors.getColor(context, attr) :
- * If the resource is a plain color, then this is the same as the code used above.
+ * If the resource is a plain colour, then this is the same as the code used above.
  * However, if the resource is a reference (using a string) then
  * - MaterialColors.getColor  DOES NOT RESOLVE THIS
- * - context.getColor(..) will resolve it correctly.
+ * - context.getColor(...) will resolve it correctly.
  * <p>
  * example, for "R.attr.colorControlNormal" we get:
  * TypedValue{t=0x3/d=0x9f3 "res/color/text_color_secondary.xml" a=1 r=0x1060233}
  * - MaterialColors.getColor returns the data part: 0x9f3  (tv.data)
- * - context.getColor(..) resolves it and return the correct color int.
+ * - context.getColor(...) resolves it and return the correct colour int.
  */
 public final class AttrUtils {
 
@@ -76,12 +76,12 @@ public final class AttrUtils {
     }
 
     /**
-     * Get a color int value for the given attribute.
+     * Get a colour int value for the given attribute.
      *
      * @param context Current context
      * @param attr    attribute id to resolve
      *
-     * @return A single color value in the form 0xAARRGGBB.
+     * @return A single colour value in the form 0xAARRGGBB.
      *
      * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.Locale;
  * A price field with content "10.45".
  * The inputType field on the screen was set to "numberDecimal"
  * the keypad does NOT allow the use of ',' as used in Dutch for the decimal separator.
- * Using the Dutch Locale, parsing returns "1045" as the '.' is seen as the thousands separator.
+ * Using the Dutch Locale, parsing returns "1045" as the '.' is seen as the thousands' separator.
  * <p>
  * 2nd test with the device running in Dutch, and the app set to system Locale.
  * Again the keypad only allowed the '.' to be used.

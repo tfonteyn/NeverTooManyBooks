@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public interface ResponseProcessor<T, R> {
     /**
      * Applies this function to the given arguments.
      *
-     * @param con for getting headers, url,..
+     * @param con for getting headers, url,...
      *            Do <strong>NOT</strong> call {@link HttpURLConnection#getInputStream()}!
      *            This is (2025-04-20) only really needed by JSoup as
      *            we need to access the final url and response headers.

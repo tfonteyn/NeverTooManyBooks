@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ public final class TextNormalizerApi29 {
     }
 
     /**
-     * Normalize the given string.
+     * Normalise the given string.
      * The case is preserved.
      *
      * @param text to process

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -193,7 +193,7 @@ public class Domain {
     /**
      * Check if this domain has a default set.
      *
-     * @return {@code true} if is has.
+     * @return {@code true} if it has.
      */
     public boolean hasDefault() {
         return defaultClause != null;

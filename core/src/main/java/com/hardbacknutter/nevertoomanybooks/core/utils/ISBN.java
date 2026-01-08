@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * alphanumeric identifier for printed music
  * See <a href="https://en.wikipedia.org/wiki/International_Standard_Music_Number">ISMN</a>
  * <p>
- * An Universal Product Code (UPC) is a barcode symbology that is widely used
+ * A Universal Product Code (UPC) is a barcode symbology that is widely used
  * worldwide for tracking trade items in stores.
  * See <a href="https://en.wikipedia.org/wiki/Universal_Product_Code">UPC_A</a>
  * and <a href="https://www.cbr.com/comic-book-covers-upc-meaning/">Specifics for comics</a>
@@ -337,7 +337,7 @@ public class ISBN {
      */
     public boolean isType(@NonNull final Type type) {
         if (type == Type.Ean13) {
-            // ISBN-13 and ISSN-13 are sub-types of EAN13
+            // ISBN-13 and ISSN-13 are subtypes of EAN13
             return codeType == Type.Ean13 || codeType == Type.Isbn13 || codeType == Type.Issn13;
         }
         return codeType == type;
@@ -868,7 +868,7 @@ public class ISBN {
         /** None of the below. */
         Invalid,
 
-        /** The original ISBN number. 10 digits. */
+        /** The original ISBN. 10 digits. */
         Isbn10,
         /** ISBN-13 is a subtype of EAN-13. 13 digits. */
         Isbn13,
@@ -1002,7 +1002,8 @@ public class ISBN {
                     //
                     // Note we DELIBERATELY do not attempt to clean other lengths.
                     // (at first we did... this proved to be annoying to the user who wanted
-                    // to enter a custom code. Even this 13/17 length rule might be to restrictive?)
+                    // to enter a custom code.
+                    // Even this 13/17 length rule might be too restrictive?)
                     if (text.length() != 13 && text.length() != 17) {
                         return;
                     }
@@ -1131,7 +1132,7 @@ public class ISBN {
 
                 } else if (length >= 12) {
                     // UPC or Legacy SBN with price digits
-                    // Disregard the strict setting, as a 12 digit code MAY be a valid ISBN-10.
+                    // Disregard the strict setting, as a 12-digit code MAY be a valid ISBN-10.
                     // We'll explicitly check the type below.
                     final ISBN isbn = new ISBN(str, false);
 

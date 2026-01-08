@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -143,8 +143,8 @@ public final class ParcelUtils {
     }
 
     /**
-     * {@link Bundle} has no built-in support for parceling an {@code ArrayList<Long>}
-     * other then classic serialisation.
+     * {@link Bundle} has no built-in support for parcelling an {@code ArrayList<Long>}
+     * other than classic serialisation.
      * <p>
      * Use {@link #wrap(List)} and {@link #unwrap(Bundle, String)} which will use
      * this helper class to get around that limitation.

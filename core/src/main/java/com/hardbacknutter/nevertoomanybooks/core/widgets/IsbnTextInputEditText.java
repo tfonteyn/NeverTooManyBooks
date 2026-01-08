@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,11 +34,11 @@ import androidx.core.view.SoftwareKeyboardControllerCompat;
 import com.google.android.material.textfield.TextInputEditText;
 
 /**
- * Provides a {@code TextInputEditText} field specific to editing an ISBN number.
+ * Provides a {@code TextInputEditText} field specific to editing an ISBN.
  * <p>
  * This hides & facilitates the internal needs for the inputType, and the virtual keyboard.
  * <ul>
- *     <li>Sets a {@link DigitsKeyListener} to workaround the inputType issue;
+ *     <li>Sets a {@link DigitsKeyListener} to work around the inputType issue;
  *          see {@link #getInputType()}</li>
  *      <li><strong>Deliberately</strong> not adding a TextWatcher here to keep this flexible</li>
  *      <li>the virtual keyboard can only add one 'X' character in the entire field</li>
@@ -140,13 +140,13 @@ public class IsbnTextInputEditText
     }
 
     /**
-     * <strong>THIS IS CRUCIAL</strong>
+     * <strong>THIS IS CRUCIAL.</strong>
      * <p>
      * {@link #setInputType} and {@link #setKeyListener} seem to initiate a race condition
      * that one overrides the other no matter in which order they are called.
      * It seems the solution is:
      * <ol>
-     *     <li>make this method return {@code null} (thereby disregarding the xml attribute</li>
+     *     <li>make this method return {@code null} (thereby disregarding the XML attribute</li>
      *     <li>Add a key listener in the constructor</li>
      * </ol>
      *

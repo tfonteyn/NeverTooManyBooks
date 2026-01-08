@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -132,7 +132,7 @@ public class MoneyParser {
      * The key in the map must be <strong>LOWER-case</strong>.
      * The value in the map must be <strong>UPPER-case</strong>.
      * <p>
-     * We can't add all possible values, so we add the ones from english speaking countries,
+     * We can't add all possible values, so we add the ones from English-speaking countries,
      * the Euro countries (and their legacy currencies) and the ones we specifically
      * support by having a locale (translation) for.
      * <p>
@@ -207,7 +207,7 @@ public class MoneyParser {
     @NonNull
     public Optional<Money> parse(@NonNull final CharSequence valueWithCurrency) {
         try {
-            // website html cleaning: replace any "&nbsp;" by " "
+            // website HTML cleaning: replace any "&nbsp;" by " "
             // and strip the whole thing
             final String vwc = NBSP_LITERAL.matcher(valueWithCurrency)
                                            .replaceAll(" ")
@@ -266,7 +266,7 @@ public class MoneyParser {
             try {
                 // We MUST use the users Locale here as currencies can use local characters.
                 String currencyCode = currencyStr.strip().toUpperCase(locale);
-                // if we don't have a normalized ISO3 code, see if we can convert it to one.
+                // if we don't have a normalised ISO3 code, see if we can convert it to one.
                 if (currencyCode.length() != 3) {
                     currencyCode = fromSymbol(currencyStr);
                 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@ import java.util.StringJoiner;
 
 public final class HttpLanguageHeader {
 
-    /** Helper to randomize some urls to avoid fingerprinting by the servers. */
+    /** Helper to randomise some urls to avoid fingerprinting by the servers. */
     @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
     private static final Random RANDOM = new Random();
@@ -40,8 +40,8 @@ public final class HttpLanguageHeader {
 
     /**
      * Create a suitable "Accept-Language" header with site and user languages.
-     * The site locale is send first.
-     * The priorities (q) will be a little randomized to help prevent fingerprinting.
+     * The site locale is sent first.
+     * The priorities (q) will be a little randomised to help prevent fingerprinting.
      *
      * @param siteLocale for the primary language tag
      * @param userLocale for the secondary language tag
@@ -62,7 +62,7 @@ public final class HttpLanguageHeader {
         accept.add(addLangTag(siteLocale.toLanguageTag(), siteLocale.getLanguage(),
                               8 + offset, noDups));
         // use 0.5 or 0.4
-        // Always add english if not there already.
+        // Always add English if not there already.
         accept.add(addLangTag(userLocale.toLanguageTag(), userLocale.getLanguage(),
                               4 + offset, noDups));
         // use 0.3 or 0.2

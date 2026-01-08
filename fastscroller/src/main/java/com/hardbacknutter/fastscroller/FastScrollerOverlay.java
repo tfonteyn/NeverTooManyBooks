@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -143,7 +143,7 @@ class FastScrollerOverlay
      * Draw the overlay.
      *
      * @param isDragging  flag
-     * @param thumbCenter the offset from the top to the center of the thumb/drag-handle
+     * @param thumbCenter the offset from the top to the centre of the thumb/drag-handle
      *
      * @see <a href="https://github.com/zhanghai/AndroidFastScroll/blob/93af2c0481bba5e1e8ebc1c6437713afe46abfc2/library/src/main/java/me/zhanghai/android/fastscroll/FastScroller.java#L170">
      *         github.com/zhanghai/AndroidFastScroll</a>
@@ -303,7 +303,7 @@ class FastScrollerOverlay
         final int popupAnchorY;
         switch (lp.gravity & Gravity.VERTICAL_GRAVITY_MASK) {
             case Gravity.CENTER_VERTICAL:
-                // Center of thumb
+                // Centre of thumb
                 popupAnchorY = popupHeight / 2;
                 break;
 
@@ -318,7 +318,7 @@ class FastScrollerOverlay
                 break;
 
             default:
-                // Fallback to center
+                // Fallback to centre
                 popupAnchorY = popupHeight / 2;
                 break;
         }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,18 +43,16 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
  * <pre>
  *  1. Normally we should use the flag:
  *          {@code Pattern.UNICODE_CHARACTER_CLASS}
- *     but android does not need/support it as it always uses
- *     unicode (it says...)
- *     When using {Alnum} Android will NOT use unicode contradicting
- *     the above.
+ *     but android does not need/support it as it always uses unicode (it says...)
+ *     When using {Alnum} Android will NOT use Unicode contradicting the above.
  *
- *  2. Combining explicit unicode {IsAlphabetic} with 'd' for digits
+ *  2. Combining explicit Unicode {IsAlphabetic} with 'd' for digits
  *     Pattern.compile("[^\\p{IsAlphabetic}\\d ]");
  *     and unit testing on JDK 17 (Windows) works fine, but fails
  *     with on-device test.
  *     google bug: https://issuetracker.google.com/issues/181655428
  *
- *  3. Using as per google bug:
+ *  3. Using as per Google bug:
  *     Pattern.compile("[^\\p{Alpha}\\d ]");
  *     unit testing fails on the hosting JDK 17 for non-latin
  *     (works for latin), but works with on-device test.
@@ -125,12 +123,12 @@ public final class SqlEncode {
     /**
      * Prepare a string to be inserted in the 'Order By' column.
      * e.g. Author names, the Title of a book
-     * Keep normalized basic characters and digits, strip spaces, make all lowercase.
+     * Keep normalised basic characters and digits, strip spaces, make all lowercase.
      *
-     * @param text   to normalize
+     * @param text   to normalise
      * @param locale Current Locale
      *
-     * @return normalized text; always lowercase
+     * @return normalised text; always lowercase
      */
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence text,
@@ -139,10 +137,10 @@ public final class SqlEncode {
     }
 
     /**
-     * Normalize the given string and remove any non-alpha/digit/space characters.
+     * Normalise the given string and remove any non-alpha/digit/space characters.
      * The case is preserved.
      *
-     * @param text to normalize
+     * @param text to normalise
      *
      * @return normalized text
      */
@@ -152,13 +150,13 @@ public final class SqlEncode {
     }
 
     /**
-     * Normalize the given string and apply the given pattern.
+     * Normalise the given string and apply the given pattern.
      * The case is preserved.
      *
-     * @param text to normalize
+     * @param text to normalise
      * @param keep negated pattern of characters to keep after transliteration
      *
-     * @return normalized text
+     * @return normalised text
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text,

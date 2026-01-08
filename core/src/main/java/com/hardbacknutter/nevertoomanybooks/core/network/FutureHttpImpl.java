@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -149,7 +149,7 @@ public class FutureHttpImpl<R>
 
     /**
      * If already connected, simply check the response code.
-     * Otherwise implicitly connect by getting the response code.
+     * Otherwise, implicitly connect by getting the response code.
      *
      * @param request to check
      *
@@ -596,7 +596,7 @@ public class FutureHttpImpl<R>
      * If the site fails to connect, we will attempt up to {@link #NR_OF_TRIES}.
      * This is always enabled.
      * <p>
-     * If the site sends a redirect which Android (in it's mysterious ways...) interprets
+     * If the site sends a redirect which Android (in its mysterious ways...) interprets
      * as a {@code 404}, we will try to follow it manually up to {@link #MAX_REDIRECTS}.
      * To enable this, set {@link #setEnable404Redirect(boolean)} to {@code true}.
      * The default is {@code false}.
@@ -720,7 +720,7 @@ public class FutureHttpImpl<R>
                 // These exceptions CAN be retried:
                 // InterruptedIOException / SocketTimeoutException: connection timeout
                 // UnknownHostException: DNS or other low-level network issue
-                // FileNotFoundException: seen on some sites. A retry and the site was ok.
+                // FileNotFoundException: seen on some sites. A retry and the site was OK.
                 if (isLoggingEnabled()) {
                     LoggerFactory.getLogger()
                                  .e(TAG, e, "doGetConnect|recoverable error",

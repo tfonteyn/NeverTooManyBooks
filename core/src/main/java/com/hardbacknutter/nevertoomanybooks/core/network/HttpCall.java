@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -262,7 +262,7 @@ public class HttpCall {
 
         // The "Sec-GPC" header above is documented as EXPERIMENTAL at
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-GPC
-        // It seems only firefox is sending it and it's not used by any other browser.
+        // It seems only firefox is sending it, and it's not used by any other browser.
         // We're not sending it for now.
 
         // TODO: could add Platform in combo with the Randomizer
@@ -298,7 +298,7 @@ public class HttpCall {
                 .header(HttpConstants.SEC_FETCH_MODE,
                         HttpConstants.SEC_FETCH_MODE_NAVIGATE)
 
-                // The request was send by a "user" (our app) and not some auto/link/etc...
+                // The request was sent by a "user" (our app) and not some auto/link/etc...
                 .header(HttpConstants.SEC_FETCH_SITE,
                         HttpConstants.SEC_FETCH_SITE_NONE)
                 .header(HttpConstants.SEC_FETCH_USER, "?1");
@@ -337,7 +337,7 @@ public class HttpCall {
      */
     public void head(@NonNull final Request request)
             throws IOException {
-        // silly, sure...  but lets keep the calls clear by calling this method "head"
+        // silly, sure...  but let's keep the calls clear by calling this method "head"
         get(request, null);
     }
 
@@ -626,7 +626,7 @@ public class HttpCall {
 
         call = httpClient.newCall(request);
         try (Response response = getResponse(request)) {
-            // This code SHOULD have worked but it does not unzip correctly!?
+            // This code SHOULD have worked, but it does not unzip correctly!?
             // response.body().string();
             //noinspection DataFlowIssue
             return readBody(response, (r, is) -> {
@@ -863,7 +863,7 @@ public class HttpCall {
         /**
          * Applies this function to the given arguments.
          *
-         * @param response for getting headers, url,..
+         * @param response for getting headers, url,...
          *                 This is (2025-04-20) only really needed by JSoup as
          *                 we need to access the final url and response headers.
          * @param is       to read and parse

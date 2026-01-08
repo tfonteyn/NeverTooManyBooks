@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
 /**
- * A data class representing a domain + the sql column expression + a sorting flag.
+ * A data class representing a domain + the SQL column expression + a sorting flag.
  * <p>
  * Immutable.
  */

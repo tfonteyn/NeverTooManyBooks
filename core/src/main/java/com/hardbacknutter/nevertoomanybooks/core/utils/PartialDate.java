@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 /**
- * Provides storage for an partial/incomplete date.
+ * Provides storage for a partial/incomplete date.
  * <strong>Immutable</strong>.
  * A partial date can consist of just a year, a year+month, or year+month+day value.
  */
@@ -252,7 +252,7 @@ public class PartialDate
      * @param defValue default string to return if the date is not-set.
      *                 If {@code null} an empty string will be used.
      *
-     * @return human readable date string.
+     * @return human-readable date string.
      */
     @NonNull
     public String toDisplay(@NonNull final Locale locale,

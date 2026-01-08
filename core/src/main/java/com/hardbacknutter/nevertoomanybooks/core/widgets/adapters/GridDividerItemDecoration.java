@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,7 +80,7 @@ public class GridDividerItemDecoration
     /**
      * Constructor.
      * <p>
-     * The default color is {@code ?attr/colorOutline}.
+     * The default colour is {@code ?attr/colorOutline}.
      * The default thickness is {@code 1dp}.
      *
      * @param context           Current content
@@ -139,10 +139,10 @@ public class GridDividerItemDecoration
     }
 
     /**
-     * Sets the color of the divider.
+     * Sets the colour of the divider.
      *
      * @param context Current context
-     * @param colorId The id of the color resource to be set.
+     * @param colorId The id of the colour resource to be set.
      *
      * @see #getDividerColor()
      */
@@ -152,7 +152,7 @@ public class GridDividerItemDecoration
     }
 
     /**
-     * Returns the divider color.
+     * Returns the divider colour.
      *
      * @return color int
      *
@@ -164,9 +164,9 @@ public class GridDividerItemDecoration
     }
 
     /**
-     * Sets the color of the divider.
+     * Sets the colour of the divider.
      *
-     * @param color The color to be set.
+     * @param color The colour to be set.
      *
      * @see #getDividerColor()
      */

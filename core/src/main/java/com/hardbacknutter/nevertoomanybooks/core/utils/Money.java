@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,11 +56,11 @@ import java.util.Objects;
  * Shilling/Pence as subdivisions of the pound.
  * UK Shilling was written as "1/-", for example:
  * three shillings and six pence => 3/6
- * It's used on the ISFDB web site. We convert it to GBP. See
+ * It's used on the ISFDB website. We convert it to GBP. See
  * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
  * <p>
  * Dev. note: this class <strong>MUST</strong> extend {@link Number} as
- * it will be casted to one when editing.
+ * it will be cast to one when editing.
  */
 public class Money
         extends Number

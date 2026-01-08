@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ public class UpgradeFailedException
     /**
      * Constructor.
      *
-     * @param localizedMessage a <strong>localized</strong> message which
+     * @param localizedMessage a <strong>localised</strong> message which
      *                         <strong>will</strong> be shown to the user
      */
     public UpgradeFailedException(@NonNull final String localizedMessage) {

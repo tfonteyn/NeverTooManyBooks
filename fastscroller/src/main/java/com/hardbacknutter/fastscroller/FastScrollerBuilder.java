@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,11 +55,11 @@ import androidx.recyclerview.widget.RecyclerView;
  * <ul>
  *     <li>
  *         {@code  android:scrollbarSize} is ignored!
- *         Instead the size of the passed {@code Drawable} is used.
+ *         Instead, the size of the passed {@code Drawable} is used.
  *     </li>
  *     <li>
  *         {@code android:scrollbarStyle} is ignored!
- *         Instead set the RecyclerView {@code padding} sufficiently large to contain
+ *         Instead, set the RecyclerView {@code padding} sufficiently large to contain
  *         the scrollbar
  *     </li>
  *     <li>
@@ -176,7 +176,7 @@ public class FastScrollerBuilder {
 
     /**
      * Set the scrollbar thumb expanded touch-area.
-     * This is basically an invisible padding around the thumb for easir grabbing.
+     * This is basically an invisible padding around the thumb for easier grabbing.
      *
      * @param padding in dp
      *

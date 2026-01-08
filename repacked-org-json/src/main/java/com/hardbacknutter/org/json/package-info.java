@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,7 @@
  */
 
 /**
- * We are using an updated/repacked  version 20250107.
+ * We are using an updated/repacked copy of the sources.
  * <p>
  * No modification, except nullable/nonnull annotations added in some places.
  * Package name and imports adjusted to new structure.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ public class ISODateParser
 
     @NonNull
     private final Locale locale;
-    /** List of patterns we'll use to parse ISO datetime stamps.. */
+    /** List of patterns we'll use to parse ISO datetime stamps... */
     private Collection<DateTimeFormatter> parsers;
 
     /**

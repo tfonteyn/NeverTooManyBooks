@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,14 +53,14 @@ public class LifoThreadPoolExecutor
         try {
             final BlockingDeque<Runnable> deque = (BlockingDeque<Runnable>) getQueue();
 
-            // Push to the front of the deque for LIFO behavior
+            // Push to the front of the deque for LIFO behaviour
             if (!deque.offerFirst(command)) {
                 throw new RejectedExecutionException(ERROR_TASK_QUEUE_IS_FULL);
             }
 
             // Only call super.execute to trigger thread creation
             // IF core threads are not at capacity.
-            // OR we already have a task waiting (other then this one)
+            // OR we already have a task waiting (other than this one)
             try {
                 if (getPoolSize() < getCorePoolSize()
                     || getPoolSize() < getMaximumPoolSize() && deque.size() > 1) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Signals that a HTTP request resulted in a not OK HTTP response.
+ * Signals that an HTTP request resulted in a not OK HTTP response.
  */
 public class HttpStatusException
         extends IOException {

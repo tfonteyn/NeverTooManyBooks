@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,12 +34,12 @@ public final class AttrUtils {
     }
 
     /**
-     * Get a color int value for the given attribute.
+     * Get a colour int value for the given attribute.
      *
      * @param context Current context
      * @param attr    attribute id to resolve
      *
-     * @return A single color value in the form 0xAARRGGBB.
+     * @return A single colour value in the form 0xAARRGGBB.
      *
      * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
      */

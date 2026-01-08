@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  * Display a label-style overlay, always at the same place near the top of the screen.
  * <p>
  * The height wil adjust with the minimum as set in {@link R.dimen#fs_classic_popup_min_height}.
- * The width ignores the dimen value in favor of being fixed to 80% of the available screen width.
+ * The width ignores the dimen value in favour of being fixed to 80% of the available screen width.
  */
 class ClassicOverlay
         extends FastScrollerOverlay {

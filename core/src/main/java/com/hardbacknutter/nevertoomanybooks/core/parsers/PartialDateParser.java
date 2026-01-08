@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * In addition, this parser also accept the following, but only with positive 4 digit years.
  * - MMM_YYYY and DD_MMM_YYYY: where MMM is a short or long alpha month string.
- * - MM_YYYY: specifically only a numeric 1 or 2 digit month + a 4 digit year
+ * - MM_YYYY: specifically only a numeric 1 or 2-digit month + a 4 digit year
  * <p>
  * The result is always a {@link PartialDate}.
  * <p>
@@ -67,18 +67,18 @@ public class PartialDateParser
             Pattern.compile("^(-?\\d{1,4})$");
     /**
      * Numeric 4-digit year. Negative years supported.
-     * Followed by 1 or 2 digit month.
+     * Followed by 1 or 2-digit month.
      */
     private static final Pattern PATTERN_YYYY_MM =
             Pattern.compile("^(-?\\d{1,4})[\\s/-](\\d{1,2})$");
     /**
      * Numeric 4-digit year. Negative years supported.
-     * Followed by 1 or 2 digit month.
+     * Followed by 1 or 2-digit month.
      */
     private static final Pattern PATTERN_YYYY_MM_DD_TIMESTAMP =
             Pattern.compile("^(-?\\d{1,4})[\\s/-](\\d{1,2})[/-](\\d{1,2}).*");
     /**
-     * Numeric 1 or 2 digit month.
+     * Numeric 1 or 2-digit month.
      * Followed by 4 digit year. Positive only.
      */
     private static final Pattern PATTERN_MM_YYYY =

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -271,7 +271,7 @@ public class ExtSQLiteStatement
         try {
             // Reminder, the native code of SqLite:
             //     return err == SQLITE_DONE ? sqlite3_changes(connection->db) : -1;
-            // the Java docs do NOT MENTION THE RETURN OF -1 !
+            // the Javadocs do NOT MENTION THE RETURN OF -1 !
             // In addition, the SqLite/Android Java code can still throw RuntimeExceptions.
             rowsAffected = statement.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public final class ConstraintRadioGroup
     /** The currently checked radio button id. */
     @IdRes
     private int mCheckedId = View.NO_ID;
-    /** individual button listener. */
+    /** Individual button listener. */
     @NonNull
     private final CompoundButton.OnCheckedChangeListener mChildOnCheckedChangeListener =
             (buttonView, isChecked) -> {

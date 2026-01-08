@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,7 @@ public final class StringCoder {
      * The escape char is '\'.
      *
      * @param source      String to encode
-     * @param escapeChars additional characters to escape. Case sensitive.
+     * @param escapeChars additional characters to escape. Case-sensitive.
      *
      * @return encoded string
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -356,7 +356,7 @@ public class TableDefinition {
      *
      * @param nameSuffix unique (for this table) suffix to add to the name of this index.
      *                   Alphanumeric Only.
-     * @param unique     FLag indicating index is UNIQUE
+     * @param unique     Flag indicating index is UNIQUE
      * @param domains    List of domains index
      *
      * @return {@code this} (for chaining)
@@ -555,7 +555,7 @@ public class TableDefinition {
      * Alter the physical table in the database: add the given domain(s).
      * <p>
      * Will only add a domain if it's not already present.
-     * Otherwise it is silently skipped.
+     * Otherwise, it is silently skipped.
      *
      * @param db      Database Access
      * @param domains to add
@@ -614,7 +614,7 @@ public class TableDefinition {
      *  <li>Copy data</li>
      *  <li>Drop old table</li>
      *  <li>Rename new into old</li>
-     *  <li>commit transaction</li>
+     *  <li>Commit transaction</li>
      *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
      * </ol>
      *

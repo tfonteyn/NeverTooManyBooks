@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public final class BooleanParser {
             }
         }
 
-        // we only do english terms, as it's expected that these come from some
+        // we only do English terms, as it's expected that these come from some
         // sort of program code during imports etc...
         final String stringValue = source.strip().toLowerCase(Locale.ENGLISH);
         switch (stringValue) {
