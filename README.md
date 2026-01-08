@@ -68,7 +68,7 @@ Translations are editable on [Weblate](https://hosted.weblate.org/engage/neverto
 ## Data sources
 
 Data is fetched on-demand from multiple internet sites.
-You can enable/disable and prioritize the sites in Settings/Search/Websites..
+You can enable/disable and prioritize the sites in Settings/Search/Websites...
 
 - **Amazon** with support for .com, .co.uk, .fr, .de, .nl, .com.be, .es sites.
   Other sites *may* work.

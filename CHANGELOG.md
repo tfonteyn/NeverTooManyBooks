@@ -77,7 +77,7 @@ FIXES:
 
 NEW:
 
-- #196 Add "w.bibliotece.pl" as a source for polish language books.
+- #196 Add "w.bibliotece.pl" as a source for Polish language books.
   There are some limitations with this site. See the project documentation for details.
 - #198 Allow choosing a different bookshelf as a default.
   This finally allows users to delete the "My Books" (also known as "1st") bookshelf.
@@ -149,8 +149,8 @@ FIXES:
 NEW:
 
 - #164: adding 2 extra image slots for books.
-  When upgrading, all styles will get images 3+4 enabled/visible. As usual you can change their
-  visibility in the style settings..
+  When upgrading, all styles will get images 3+4 enabled/visible. As usual, you can change their
+  visibility in the style settings...
 - The code for fetching images was rewritten. This finally fixes the issues with OpenLibrary.
 - DatabazeKnihSearchEngine & BOL parsers updated for site changes
 
@@ -299,8 +299,8 @@ FIXES:
 
 - #114 aka https://issuetracker.google.com/issues/309593253
   Swipe left trough book-details screens for long enough (40..50 times or more)
-  and the app would crash due to the above google caching issue.
-  Fixed by forking/fixing the google component.
+  and the app would crash due to the above Google caching issue.
+  Fixed by forking/fixing the Google component.
 - #109 sorting by dates on the book level now supports mixing partial-dates
 - Citations have been tweaked to better conform to the standards
 
@@ -545,7 +545,7 @@ NEW:
 
 - Track your reading progress (see #16 ) options: [read/unread] (default)
   or [percentage] / [page x of y], configurable for each Style
-- New search site: StripWeb (www.bdweb.be) for dutch/french comics.
+- New search site: StripWeb (www.bdweb.be) for Dutch/French comics.
 - Author roles added: storyboard, lettering
 
 FIXES:
@@ -746,7 +746,7 @@ FIXES:
 ### 4.4.1
 
 - fix GoogleBooks engine compression support.
-- fix setting a books read-status from from the book-list row menus.
+- fix setting a books read-status from the book-list row menus.
 
 ---
 
@@ -756,7 +756,7 @@ NEW:
 
 - performance improvement: automatic support for compression when fetching data from the web.
 
-- improved compatibility with web sites.
+- improved compatibility with websites.
 
 - New field to hold the original-title of a translated book. None of the current information
   sources provide this data automatically; manual entry required. Displayed by default,
@@ -772,7 +772,7 @@ FIXES:
 
 - fix #11:
     - OpenCamera on Android 10 and lower will now work as expected. Android 11+ prevents
-      any non-standard camera apps to be used automatically however.
+      any non-standard camera apps to be used automatically, however.
     - The option to crop the image immediately after using the camera will now work as expected.
 
 - date-added + date-last-updated are now displayed in the local timezone (previously shown in UTC).
@@ -816,7 +816,7 @@ FIXES:
 
 - BUG fix for Android 8.x new installations which could crash on first start (as seen in #3).
 - Unifies the UI for the filter-dialog and the style-picker making them consistent. This fixes #8.
-- Apply workaround for google issue 181655428. This fixes #9.
+- Apply workaround for Google issue 181655428. This fixes #9.
 - Improved/added runtime catching and reporting of Android errors.
 - Minor layout fixes.
 - Spanish and Italian translation improvements - with thanks to the contributors on
