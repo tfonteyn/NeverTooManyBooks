@@ -548,7 +548,7 @@
     <string name="lbl_add_or_edit_substitution">Hinzufügen/Bearbeiten einer Ersetzungsregel</string>
     <string name="info_substitutions_one_per_line">Füge eine Ersetzung pro Zeile hinzu, oder lass es leer, um das Tag zu löschen</string>
     <string name="info_download_successful">Herunterladen erfolgreich</string>
-    <string name="info_export_report">Eine %1$s-Datei namens “%2$s“ wurde im ausgewählten Ordner erstellt. Sie sollte manuell an einen anderen Ort kopiert werden, um die Daten zu schützen, falls das Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>
+    <string name="info_export_report">Eine %1$s-Datei namens „%2$s“ wurde im ausgewählten Ordner erstellt. Sie sollte manuell an einen anderen Ort kopiert werden, um die Daten zu schützen, falls das Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>
     <string name="info_export_successful">Export erfolgreich</string>
     <string name="option_info_delete_removed_books">Bücher, die auf dem anderen Gerät gelöscht wurden, werden auch auf diesem Gerät gelöscht.</string>
     <string name="info_import_complete">Import abgeschlossen</string>
@@ -650,7 +650,7 @@
     <string name="tip_authors_works_single_book">Der Titel ist in einem einzigen Buch vorhanden.</string>
     <string name="tip_autorotate_camera_images">Wenn du feststellst, dass du Kamerabilder immer in dieselbe Richtung drehst, versuche, in den Programmeinstellungen eine automatische Drehung festzulegen.</string>
     <string name="tip_book_list">Tippe auf ein Buch, um Details anzuzeigen. Ein langer Druck auf einen Listeneintrag zeigt weitere Optionen.</string>
-    <string name="tip_book_search_by_text">Das Hinzufügen der Bücher über die ISBN ist genauer als das Hinzufügen über Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachte, dass der korrekte Barcode manchmal auf der Innenseite des Cover zu finden ist.</string>
+    <string name="tip_book_search_by_text">Das Hinzufügen der Bücher über die ISBN ist genauer als das Hinzufügen über Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachte, dass der korrekte Barcode manchmal auf der Innenseite das Cover zu finden ist.</string>
     <string name="tip_booklist_style_groups">Auf dieser Seite kannst du die Hierarchie der Gruppen für einen bestimmten Stil ändern. Verwende das Kontrollkästchen, um auszuwählen, welche Gruppen in der Liste angezeigt werden sollen, und ordne die Hierarchie neu an, indem du das Symbol am Ende der Zeile nach oben oder unten ziehst.</string>
     <string name="tip_booklist_style_properties">Auf dieser Seite kannst du die Merkmale eines bestimmten Stils festlegen. Du kannst den Namen ändern, die Gruppierungen bearbeiten, um die Hierarchie zu ändern, und eine Vielzahl anderer Einstellungen vornehmen, um einen für dich nützlichen Stil zu erstellen.</string>
     <string name="tip_booklist_styles_editor">Auf dieser Seite kannst du die Liste der Stile, die im Standardmenü angezeigt werden, anpassen. Verwende das Kontrollkästchen, um auszuwählen, welche Stile in der Liste angezeigt werden sollen. Sind keine Stile ausgewählt, werden alle Stile angezeigt. Ordne die Hierarchie neu, indem du das Symbol am Ende der Zeile nach oben oder unten ziehst. Wenn du an einer irgendwo anders in einer Reihe lange drückst, kannst du die Details eines bestimmten Stils bearbeiten oder klonen. Wenn du einen Stil geklont hast und deine Meinung änderst, musst du ihn selbst löschen.</string>

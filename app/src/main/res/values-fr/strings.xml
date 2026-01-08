@@ -171,17 +171,17 @@
     <string name="confirm_delete_substitutions">Supprimer les substitutions pour « %1$s » ?</string>
     <string name="confirm_delete_tag_from_x_books">Supprimer l’étiquette « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Vraiment supprimer le titre « %1$s » (par %2$s) ?\n\nIl sera supprimée de %3$s. Les livres eux-mêmes ne seront pas supprimés.</string>
-    <string name="confirm_duplicate_book_message">Le livre que vous tentez d’ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
+    <string name="confirm_duplicate_book_message">Le livre que vous tentez d’ajouter existe déjà dans la base de donnnées. Êtes-vous certain de vouloir en ajouter une nouvelle copie ?</string>
     <string name="confirm_email_file">Souhaitez-vous envoyer ce fichier par e-mail à quelqu’un ?</string>
     <string name="confirm_merge_authors">L’auteur que vous modifiez existe déjà. Souhaitez-vous les fusionner ?</string>
     <string name="confirm_merge_bookshelves">L’étagère que vous modifiez existe déjà. Souhaitez-vous les fusionner ?</string>
     <string name="confirm_merge_publishers">L’éditeur que vous modifiez existe déjà. Souhaitez-vous les fusionner ?</string>
     <string name="confirm_merge_series">La série que vous modifiez existe déjà. Souhaitez-vous les fusionner ?</string>
     <string name="confirm_merge_tags">L’étiquette que vous modifiez existe déjà. Souhaitez-vous les fusionner ?</string>
-    <string name="confirm_overwrite_cover">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les couvertures peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les couvertures existantes ? Attention, cela peut prendre du temps.</string>
-    <string name="confirm_rebuild_fts">Les données de l’index de recherche seront reconstruites au redémarrage de l’application. Es-tu sur de vouloir continuer ?</string>
-    <string name="confirm_rebuild_index">Les index seront reconstruits au redémarrage de l’application. Es-tu sur de vouloir continuer ?</string>
-    <string name="confirm_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l’application. Es-tu sur de vouloir continuer ?</string>
+    <string name="confirm_overwrite_cover">Les champs sélectionnés vont être mis à jour tel que montré ; en option, les couvertures peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les couvertures existantes ? Attention, cela peut prendre du temps.</string>
+    <string name="confirm_rebuild_fts">Les données de l’index de recherche seront reconstruites au redémarrage de l’application. Es-tu sûr de vouloir continuer ?</string>
+    <string name="confirm_rebuild_index">Les index seront reconstruits au redémarrage de l’application. Es-tu sûr de vouloir continuer ?</string>
+    <string name="confirm_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l’application. Es-tu sûr de vouloir continuer ?</string>
     <string name="confirm_registration_benefits">Cette fonctionnalité bénéficie d’une inscription avec %1$s. Souhaitez-vous avoir plus d’informations ou désactiver ce message ?\nVous trouverez ces informations ultérieurement dans la section « %2$s » des paramètres.</string>
     <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s. Souhaitez-vous avoir plus d’informations ?</string>
     <string name="confirm_leave_isbn_search">Il y a des recherches en cours et/ou des résultats non sauvegardés.</string>
@@ -189,7 +189,7 @@
     <string name="confirm_scope_for_change">Vous avez changé :\n « %1$s »\n en\n « %2$s »\n\nComment souhaitez-vous appliquer ce changement ?\nNote : votre choix « %3$s » sera pris en compte instantanément. Si vous choisissez « %4$s », alors un nouveau %5$s sera créé.</string>
     <string name="confirm_scope_for_delete">Supprimer le titre « %1$s » par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
-    <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
+    <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant, elles seront perdues.</string>
     <string name="disabled">Désactivé</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamique</string>
     <string name="enabled">Activée</string>
@@ -405,7 +405,7 @@
     <string name="lbl_date_published_year">Année de parution</string>
     <string name="lbl_publisher">Éditeur</string>
     <string name="lbl_publishers">Éditeurs</string>
-    <string name="pe_ui_context_menu_mode_by_size">Les écrans plus petits affichent des menus longs en bas de l’écran et des menus courts sous la forme de menus contextuels classiques.\nLes écrans plus grands, tels que les tablettes, utilisent toujours des menus contextuels classiques.</string>
+    <string name="pe_ui_context_menu_mode_by_size">Les écrans plus petits affichent des longs menus en bas de l’écran et des menus courts sous la forme de menus contextuels classiques.\nLes écrans plus grands, tels que les tablettes, utilisent toujours des menus contextuels classiques.</string>
     <string name="option_purge_files">Nettoyer les fichiers</string>
     <string name="option_purge_image_cache">Effacer le cache des images</string>
     <string name="lbl_rating">Appreciation</string>
@@ -588,7 +588,7 @@
     <string name="pt_bob_books_under_multiple_series">Livres appartenant à des séries multiples</string>
     <string name="pt_bob_cover_long_click">Ouvrir le menu contextuel du livre.</string>
     <string name="pe_bob_cover_long_click_ignore">Avec un bouton.</string>
-    <string name="pe_bob_cover_long_click_popupmenu">Par un clic long sur l’image de couverture.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Par un long clic sur l’image de couverture.</string>
     <string name="pt_bob_cover_scale">Taille de couverture</string>
     <string name="pt_bob_cover_show">Montrer les couvertures</string>
     <string name="pt_bob_font_size">Taille de la police</string>
@@ -599,8 +599,8 @@
     <string name="pt_edit_book_isbn_checks">Vérifications de validité ISBN</string>
     <string name="pt_bob_row_menu">Menu contextuel de ligne</string>
     <string name="pe_bob_row_menu_button">Toujours afficher un bouton.</string>
-    <string name="pe_bob_row_menu_button_when_space">Afficher un bouton s’il y a de l’espace, sinon utiliser un clic long.</string>
-    <string name="pe_bob_row_menu_long_click">Utilisez toujours le clic long.</string>
+    <string name="pe_bob_row_menu_button_when_space">Afficher un bouton s’il y a de l’espace, sinon utiliser un long clic.</string>
+    <string name="pe_bob_row_menu_long_click">Utilisez toujours le long clic.</string>
     <string name="pt_fast_scroller_overlay">Bulle de texte lors du défilement.</string>
     <string name="pt_line_spacing">Interligne</string>
     <string name="pt_maintenance">Entretien</string>
@@ -635,7 +635,7 @@
     <string name="pv_bob_header_filters">Filtres</string>
     <string name="pv_bob_header_nr_of_books">Montrer le nombre de livres</string>
     <string name="pv_bob_header_style_name">Nom du style</string>
-    <!-- use the default escaped single quote character and NOT the stylized! -->
+    <!-- use the default escaped single quote character and NOT the stylised! -->
     <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une|des|Des</string>
     <string name="size_hidden">Caché</string>
     <string name="size_large">Grand</string>
@@ -658,11 +658,11 @@
     <string name="tip_authors_works_multiple_books">Le titre est présent dans plusieurs livres.</string>
     <string name="tip_authors_works_single_book">Le titre est présent dans un seul livre.</string>
     <string name="tip_autorotate_camera_images">Si vous devez systematiquement tourner vos photos dans le même sens, envisagez d’autoriser la rotation automatique en changeant vos paramètres.</string>
-    <string name="tip_book_list">Cliquez sur un livre vous montrera les détails du livre, un appui long sur un livre dans la liste vous donnera d’autres options.</string>
+    <string name="tip_book_list">Cliquez sur un livre vous montrera les détails du livre, un long appui sur un livre dans la liste vous donnera d’autres options.</string>
     <string name="tip_book_search_by_text">L’ajout de livres par ISBN est plus précis que par auteur ou titre, et généralement préférable. Rappelez-vous qu’il est parfois possible de trouver le bon code barre à l’intérieur de la couverture.</string>
     <string name="tip_booklist_style_groups">Cet écran permet de modifier la hiérarchie des groupes pour un style spécifique. Utilisez la case à cocher pour sélectionner les groupes qui seront affichés dans la liste et réorganisez la hiérarchie en faisant glisser l’icône située à l’extrémité de chaque ligne vers le haut ou vers le bas.</string>
     <string name="tip_booklist_style_properties">Cet écran permet de définir les caractéristiques d’un style spécifique. Vous pouvez changer le nom, modifier les groupes pour changer la hiérarchie et ajuster une variété d’autres préférences pour construire un style que vous trouvez utile.</string>
-    <string name="tip_booklist_styles_editor">Utilisez cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Utilisez la case à cocher pour sélectionner les styles qui seront affichés dans la liste.  Si aucun style n’est sélectionné, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne vers le haut ou vers le bas. Un appui long sur une autre ligne vous permettra de modifier ou de cloner les détails d’un style spécifique. Si vous avez cloné un style et que vous changez d’avis, vous devrez le supprimer vous-même.</string>
+    <string name="tip_booklist_styles_editor">Utilisez cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Utilisez la case à cocher pour sélectionner les styles qui seront affichés dans la liste. Si aucun style n’est sélectionné, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l’icône située à l’extrême droite de chaque ligne vers le haut ou vers le bas. Un long appui sur une autre ligne vous permettra de modifier ou de cloner les détails d’un style spécifique. Si vous avez cloné un style et que vous changez d’avis, vous devrez le supprimer vous-même.</string>
     <string name="lbl_tip">Astuce</string>
     <string name="option_reset_all_tips">Réinitialiser les astuces</string>
     <string name="site_description_german">Allemand </string>

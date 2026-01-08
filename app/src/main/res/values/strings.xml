@@ -358,7 +358,7 @@
          if we indeed got the right content. So ask the user first. -->
     <string name="warning_toc_confirm">Please confirm that these titles are (mostly) correct.</string>
     <!-- Periodic reminder to make a backup -->
-    <string name="warning_backup_request">Would you like to backup your database to your sdcard?</string>
+    <string name="warning_backup_request">Would you like to back up your database to your sdcard?</string>
     <!-- If the user has enabled/disabled  website to search on and for example disabled 
          ALL sites which can search by ISBN, and then the user tries to search by ISBN.
          Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
@@ -493,7 +493,7 @@
 
     <!-- Searching books by "text":
          Not all sites will support all search-fields. -->
-    <string name="info_site_search_field_optional">Optional. Not supported by all web sites.</string>
+    <string name="info_site_search_field_optional">Optional. Not supported by all websites.</string>
 
     <!-- Param 1: url to the documentation.
          HTML string, must be inside a CDATA section;
@@ -554,7 +554,7 @@
     <!-- Help text shown in a dialog. -->
     <string name="tip_booklist_style_properties">Use this screen to set the characteristics of a specific style. You can change the name, edit the groupings to change the hierarchy, and adjust a variety of other preferences to build a style that you find useful.</string>
     <!-- Help text shown in a dialog. -->
-    <string name="tip_import_isbn_list">Import a text file with ISBN numbers. The file should have a single ISBN on each line. The results will be placed in the queue.</string>
+    <string name="tip_import_isbn_list">Import a text file with ISBNs. The file should have a single ISBN on each line. The results will be placed in the queue.</string>
     <!-- Help text shown in a dialog. -->
     <string name="tip_authors_book_may_appear_more_than_once">If books are shown for every author of the book, they may appear multiple times in the list. Deleting one of those books has the effect of removing all copies from the list.</string>
     <!-- Help text shown in a dialog. -->
@@ -1568,7 +1568,7 @@
     <!-- progress final message - all data was exported. -->
     <string name="info_export_successful">Export successful</string>
     <!-- progress final message - displayed when a Backup is done: 1: file size; 2: filename.  -->
-    <string name="info_export_report">A %1$s file called “%2$s” was created in the selected folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
+    <string name="info_export_report">A %1$s file called “%2$s” was created in the selected folder, and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
     <string name="info_backup_email_subject"
             translatable="false">@string/lbl_backup</string>
     <!-- Dialog import all options. -->
@@ -1873,7 +1873,7 @@
     <!-- Cleanup log and other temp files -->
     <string name="option_purge_files">Cleanup Files</string>
     <!-- param 1: file size; param 2: button text -->
-    <string name="info_cleanup_files">Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card at each upgrade, when you backup the database, or when the application crashes. Tap the button below to purge these files from your SD card. If you have been experiencing crashing or other errors, please consider using the “%2$s” button first.</string>
+    <string name="info_cleanup_files">Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card at each upgrade, when you back up the database, or when the application crashes. Tap the button below to purge these files from your SD card. If you have been experiencing crashing or other errors, please consider using the “%2$s” button first.</string>
     <!-- Clear the cached images -->
     <string name="option_purge_image_cache">Clear image cache</string>
     <!-- author lists from the Bedetheque are cached to resolve pseudonyms faster. -->
@@ -2370,7 +2370,7 @@
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
-            translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
+            translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advise to take a backup before proceeding!</string>
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="option_tuning"
             translatable="false">Tuning</string>

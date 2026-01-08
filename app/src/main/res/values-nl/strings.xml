@@ -159,11 +159,11 @@
     <string name="confirm_delete_toc_entry_from_x_books">De titel „%1$s” (door %2$s) echt verwijderen?\n\nHet wordt verwijderd uit %3$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
     <string name="confirm_email_file">Wilt je dit bestand naar iemand e-mailen?</string>
-    <string name="confirm_merge_authors">De auteur die je wijzigt bestaat al. Wil je ze samenvoegen?</string>
-    <string name="confirm_merge_bookshelves">De boekenplank die je wijzigt bestaat al. Wil je ze samenvoegen?</string>
-    <string name="confirm_merge_publishers">De uitgever die je wijzigt bestaat al. Wil je ze samenvoegen?</string>
-    <string name="confirm_merge_series">De reeks die je wijzigt bestaat al. Wil je ze samenvoegen?</string>
-    <string name="confirm_merge_tags">De tag die je wijzigt bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_authors">De auteur die je wijzigt, bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_bookshelves">De boekenplank die je wijzigt, bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_publishers">De uitgever die je wijzigt, bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_series">De reeks die je wijzigt, bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_tags">De tag die je wijzigt, bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_toc_list_update_with_books_main_author">De auteur van alle items vervangen door de hoofdauteur van het boek „%1$s” ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Alle boeken onder deze rij hebben omslagen. Opnieuw zoeken vanaf de top?</string>
     <string name="confirm_overwrite_cover">Dit zal de geselecteerde velden zoals getoond bijwerken, maar afbeeldingen kunnen desgewenst voor alle boeken worden gedownload.\n\nWil je alle afbeeldingen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen.</string>
@@ -210,8 +210,8 @@
     <string name="error_insufficient_storage">Niet voldoende opslagruimte.</string>
     <string name="error_http_403_site_forbidden">%1$s heeft de toegang geblokkeerd.</string>
     <string name="error_http_403_forbidden">De website heeft de toegang geblokkeerd.</string>
-    <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>
-    <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
+    <string name="error_storage_not_accessible">Controleer a.u.b. of opslag toegankelijk is.</string>
+    <string name="error_storage_not_writable">Controleer a.u.b. of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
     <string name="error_unexpected">Er is een onbekende fout opgetreden.</string>
     <string name="error_unexpected_long">Er is een onverwachte fout opgetreden. Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_unknown_host">Er was een connectie probleem naar de service op „%1$s”.</string>
@@ -229,7 +229,7 @@
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_backup_successful">Back-up succesvol</string>
     <string name="info_calibre_content_server_extension">Calibre inhoudsserver extensie is niet geïnstalleerd. Virtuele bibliotheken zijn niet beschikbaar.</string>
-    <string name="info_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
+    <string name="info_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervindt of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="info_tap_to_move_tag">Tik op een tag om deze te verplaatsen van/naar het boek.</string>
     <string name="lbl_add_or_edit_substitution">Een substitutieregel toevoegen/bewerken</string>
@@ -520,7 +520,7 @@
     <string name="option_import_books_option_new_and_updated">Nieuwe en bijgewerkte boeken</string>
     <string name="option_import_books_option_new_only">Alleen nieuwe boeken</string>
     <string name="option_info_archive_format_db">De SQLite-database.</string>
-    <string name="option_info_archive_format_json">Alle gegevens in JSON formaat.</string>
+    <string name="option_info_archive_format_json">Alle gegevens in JSON-formaat.</string>
     <string name="option_info_archive_type_csv">Export van de boeken naar een CSV-bestand</string>
     <string name="option_info_import_books_option_all">Importeer nieuwe boeken en overschrijf bestaande boeken. Gebruik dit om een back-up te herstellen.</string>
     <string name="option_info_import_books_option_new_and_updated">Importeer nieuwe boeken en synchroniseer bestaande boeken op basis van hun laatste wijzigingsdatum.</string>
@@ -615,7 +615,7 @@
     <string name="ps_show_titles_reordered_on">Verplaats een lidwoord aan de start van een titel naar het einde,\nbvb. „schat van Beersel, De”</string>
     <string name="pt_allow_editing_external_id">Sta bewerken van website-boek-ID toe</string>
     <string name="lbl_capitalize_full">Alles in hoofdletters</string>
-    <string name="pt_allow_metered_network_data">Sta mobiel dataverbruik toe</string>
+    <string name="pt_allow_metered_network_data">Sta mobiel-dataverbruik toe</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>
     <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Franse) naamgeving</string>
     <string name="pt_bob_show_group_book_count">Toon het aantal boeken in elke groep.</string>
@@ -718,7 +718,7 @@
     <string name="vldt_real_expected_for_x">Verwachtte een reëele waarde voor „%1$s”</string>
     <string name="warning_cannot_delete_only_bookshelf">Je hebt maar één boekenplank, dus je kunt die niet verwijderen.</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
-    <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken?</string>
+    <string name="warning_backup_request">Wil je een back-up van uw database op uw SD-kaart maken?</string>
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
     <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden.</string>
     <string name="warning_enable_at_least_1_website">Schakel ten minste één website in voor elke categorie.</string>
