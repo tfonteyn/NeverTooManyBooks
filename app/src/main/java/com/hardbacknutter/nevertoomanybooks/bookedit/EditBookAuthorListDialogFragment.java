@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -162,6 +162,7 @@ public class EditBookAuthorListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // vb.author is centered, so does not need insets
         InsetsListenerBuilder.apply(vb.authorList);
 
         initToolbar(this, DialogType.Fullscreen, vb.toolbar);

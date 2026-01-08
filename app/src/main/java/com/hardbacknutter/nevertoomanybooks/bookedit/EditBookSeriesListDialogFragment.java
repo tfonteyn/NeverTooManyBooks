@@ -158,6 +158,7 @@ public class EditBookSeriesListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // vb.seriesTitle/seriesNum are centered, so do not need insets
         InsetsListenerBuilder.apply(vb.seriesList);
 
         initToolbar(this, DialogType.Fullscreen, vb.toolbar);

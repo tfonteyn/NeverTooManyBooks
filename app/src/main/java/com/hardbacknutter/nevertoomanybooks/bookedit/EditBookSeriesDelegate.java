@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLaunc
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.Side;
 
 /**
  * Add/Edit a single {@link Series} from the book's series list.
@@ -115,18 +117,27 @@ class EditBookSeriesDelegate
         return view;
     }
 
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
-    }
-
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
     }
 
     @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
+
+        InsetsListenerBuilder.create(vb.dialogContent.getRootView())
+                             .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
+                             .systemBars()
+                             .displayCutout()
+                             .ime()
+                             .systemGestures()
+                             .apply();
+
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
                 toolbar.inflateMenu(R.menu.toolbar_action_save);

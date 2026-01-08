@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -126,17 +126,12 @@ public class EditBookTagsDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        InsetsListenerBuilder.create(vb.tagAvailable)
-                             .padding(Side.Start, Side.Bottom)
+        InsetsListenerBuilder.create(vb.dialogContent.getRootView())
+                             .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
                              .systemBars()
                              .displayCutout()
                              .ime()
-                             .apply();
-        InsetsListenerBuilder.create(vb.tagsInBook)
-                             .padding(Side.End, Side.Bottom)
-                             .systemBars()
-                             .displayCutout()
-                             .ime()
+                             .systemGestures()
                              .apply();
 
         initToolbar(this, DialogType.Fullscreen, vb.toolbar);

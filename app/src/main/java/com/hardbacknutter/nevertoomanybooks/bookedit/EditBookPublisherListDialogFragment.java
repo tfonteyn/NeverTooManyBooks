@@ -158,6 +158,7 @@ public class EditBookPublisherListDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // vb.publisherName is centered, so does not need insets
         InsetsListenerBuilder.apply(vb.publisherList);
 
         initToolbar(this, DialogType.Fullscreen, vb.toolbar);

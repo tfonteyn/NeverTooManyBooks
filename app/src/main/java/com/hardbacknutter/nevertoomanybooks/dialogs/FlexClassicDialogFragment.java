@@ -45,7 +45,6 @@ import java.util.function.IntFunction;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
-import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -111,6 +110,7 @@ public abstract class FlexClassicDialogFragment
      * <strong>Must</strong> be called from the child class {@link #onCreate(Bundle)}
      * after it has called {@link FlexClassicDialogFragment#onCreate(Bundle)}.
      */
+    @SuppressWarnings("unused")
     protected void forceFullscreen() {
         fullscreen = true;
     }
@@ -126,24 +126,7 @@ public abstract class FlexClassicDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Dialog dialog;
         if (fullscreen) {
-            // Exhaustive testing always showed "something" wrong...
-            // - we tried to get the status-bar visible
-            // - we tried use "Theme_App" versus "Theme_App_FullScreen"
-            // - we tried adding/removing Window.FEATURE_NO_TITLE
-            // - we tried variations of InsetsListenerBuilder in onViewCreated
-            // - tried all this on API 30,33 and 35
-            // Bottom line: Android is [bleeped].
-            // Compromise seems to be:
-            // - use the normal theme (NOT fullscreen)
-            // - the toolbar consumes insets
-            // - this DOES show the status-bar
-            // - shows fine on a portrait screen with or without camera inset
-            // - shows sort-of OK on a landscape screen with a camera inset.
-            // - small screens may cause the subtitle to be touching the bottom of the toolbar.
-            // - small screens will not always set insets on the toolbar correctly.
-            // - The underlying app toolbar can show through while
-            //   the dialog is despite all efforts not showing fully fullscreen.
-            // ... all this will have to [bleeping] do for now... what a [bleeping] mess...
+            // Reminder: do NOT use "Theme_App_FullScreen"
             dialog = new Dialog(requireContext(), R.style.Theme_App);
         } else {
             dialog = new Dialog(requireContext(), R.style.ThemeOverlay_App_CustomDialog);
@@ -176,9 +159,9 @@ public abstract class FlexClassicDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (fullscreen) {
-            InsetsListenerBuilder.fragmentRootView(view);
-        }
+        // Reminder: do not apply insets to the root view.
+        // This will not work, and in fact stop the toolbar from getting the insets
+        // See {@link FlexToolbar#initToolbar}.
 
         initDragHandle(view);
         initToolbar(view);

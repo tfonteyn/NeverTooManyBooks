@@ -76,10 +76,6 @@ public interface FlexDialogDelegate
      * {@link DialogType#Fullscreen}.
      * <p>
      * Called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * <p>
-     * URGENT: we try to apply Window insets on the toolbar
-     *  in {@link FlexToolbar#initToolbar} but they have effect?
-     *  The toolbar is fully functional but overlaps the systembar.
      *
      * @param inflater  LayoutInflater
      * @param container parent view

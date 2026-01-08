@@ -82,7 +82,6 @@ public interface FlexToolbar {
                              @NonNull final Toolbar toolbar) {
 
         if (dialogType == DialogType.Fullscreen) {
-            //FIXME: this does not seem to work...
             InsetsListenerBuilder.apply(toolbar);
         }
 

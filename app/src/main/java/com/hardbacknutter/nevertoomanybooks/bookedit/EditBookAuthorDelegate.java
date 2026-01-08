@@ -54,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorVi
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.Side;
 
 /**
  * Add/Edit a single {@link Author} from the book's author list.
@@ -160,6 +162,15 @@ class EditBookAuthorDelegate
 
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
+
+        InsetsListenerBuilder.create(vb.dialogContent.getRootView())
+                             .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
+                             .systemBars()
+                             .displayCutout()
+                             .ime()
+                             .systemGestures()
+                             .apply();
+
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
                 toolbar.inflateMenu(R.menu.edit_book_author);
