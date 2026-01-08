@@ -28,7 +28,7 @@
 
 
     ENTITY:
-    Define entities that can be used inside of other string (not possible with standard Android
+    Define entities that can be used inside another string (not possible with standard Android
     resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
     cannot put these into an external file: https://issuetracker.google.com/issues/68434088
 
@@ -187,7 +187,7 @@
         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
     <string name="httpErrorTimeout">The connection to the server timed out.</string>
-    <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
+    <!-- [VERIFIED] - Displayed when a web request failed because a secure connection couldn't be made to the server.-->
     <string name="httpErrorFailedSslHandshake">Couldn’t establish a secure connection.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the authentication failed. -->
     <string name="httpErrorAuth">Couldn’t authenticate.</string>
@@ -197,7 +197,7 @@
     <string name="httpErrorFile">Couldn’t access the file.</string>
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Couldn’t find the requested file.</string>
-    <!-- In a few places in the app the user will be asked to enter a HTTPS://... address/url.
+    <!-- In a few places in the app the user will be asked to enter an HTTPS://... address/url.
          This message is displayed if that address/url is invalid in some way. -->
     <string name="error_invalid_url">Invalid address (URL)</string>
     <!-- endregion -->
@@ -237,7 +237,7 @@
     <string name="error_http_403_forbidden">The website has blocked access.</string>
     <!-- Shared Storage file system access fails for some reason. No specifics. -->
     <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
-    <!-- Displayed when a write (usually a cover image) to Shared Storage fails -->
+    <!-- Displayed when a write operation (usually a cover image) to storage fails -->
     <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
     <!-- [VERIFIED] -->
     <string name="error_insufficient_storage">Not enough storage space.</string>
@@ -266,7 +266,7 @@
     This is either a bug in the Android systems we tested on, or some weird caching is going on.
     Either way: not something we can fix.  -->
     <string name="error_file_not_found">File not found: %1$s</string>
-    <!-- The user selected a file to import that was not recognised as a valid archive. -->
+    <!-- The user selected a file to import that was not recognized as a valid archive. -->
     <string name="error_file_not_recognized">The selected file is not recognized.</string>
     <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
     <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
@@ -281,7 +281,7 @@
     <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
     <!-- CSV import fails: the line was not readable / could not be decoded -->
     <string name="error_import_csv_line">Unknown error in row %1$d</string>
-    <!-- CSV import fails: the line was to long to be handled (not enough memory available) -->
+    <!-- CSV import fails: the line was too long to be handled (not enough memory available) -->
     <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
     <!-- CSV import fails: the number of columns in a line does not match the number of headers -->
     <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
@@ -359,8 +359,9 @@
     <string name="warning_toc_confirm">Please confirm that these titles are (mostly) correct.</string>
     <!-- Periodic reminder to make a backup -->
     <string name="warning_backup_request">Would you like to backup your database to your sdcard?</string>
-    <!-- If the user has enabled/disabled  website to search on and for example disabled ALL sites which can search by ISBN, and then the user tries to to search by ISBN.
-        Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
+    <!-- If the user has enabled/disabled  website to search on and for example disabled 
+         ALL sites which can search by ISBN, and then the user tries to search by ISBN.
+         Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <string name="warning_restart_required">App restart required</string>
     <string name="warning_requires_android_x">Requires Android %1$d or higher</string>
@@ -370,7 +371,7 @@
     <!-- region ========== ValidatorException error messages. -->
     <!-- Dialog title for validation messages. -->
     <string name="vldt_failure">Validation failure</string>
-    <!-- param 1: number 1..; param 2: the error message. -->
+    <!-- param 1: number 1...; param 2: the error message. -->
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <!-- generic type errors; e.g. the user entered text in a number field. -->
     <string name="vldt_integer_expected_for_x">Expected an integer value for “%1$s”</string>
@@ -422,7 +423,7 @@
     <string name="progress_msg_searching_site">Searching %1$s</string>
     <!-- displayed while searching for alternative editions of the book, to get cover images. -->
     <string name="progress_msg_searching_editions">Searching for other editions…</string>
-    <!-- [VERIFIED] Progress dialog message displayed when doing a long network operation to a web site -->
+    <!-- [VERIFIED] Progress dialog message displayed when doing a long network operation to a website -->
     <string name="progress_msg_connecting">Connecting…</string>
     <string name="progress_msg_downloading">Downloading…</string>
     <!-- Progress message displayed when automatically updating book fields. Param 1: a book title  -->
@@ -577,28 +578,28 @@
     <!-- Help text shown in a dialog. See "tip_authors_works": shown next to related icon / contentDescription for button. -->
     <string name="tip_authors_works_single_book">The title is present in a single book.</string>
     <!-- endregion -->
-    <!-- region ========== BoB specific place holder text for empty fields. -->
-    <!-- BoB generic place holder text for EMPTY fields. -->
+    <!-- region ========== BoB specific placeholder text for empty fields. -->
+    <!-- BoB generic placeholder text for EMPTY fields. -->
     <string name="bob_empty_field">(None)</string>
-    <!-- BoB specific place holder text for Author rows.
+    <!-- BoB specific placeholder text for Author rows.
      Theoretically this string will never be shown unless there is ever bad data. -->
     <string name="bob_empty_author">(The author is missing)</string>
-    <!-- BoB specific place holder text for Series rows. -->
+    <!-- BoB specific placeholder text for Series rows. -->
     <string name="bob_empty_series">(No Series)</string>
-    <!-- BoB specific place holder text for Publisher rows. -->
+    <!-- BoB specific placeholder text for Publisher rows. -->
     <string name="bob_empty_publisher">(No Publisher)</string>
-    <!-- BoB specific place holder text for Language rows. -->
+    <!-- BoB specific placeholder text for Language rows. -->
     <string name="bob_empty_language">(Language not set)</string>
-    <!-- BoB specific place holder text for Read/Unread rows.
+    <!-- BoB specific placeholder text for Read/Unread rows.
          Theoretically this string will never be shown unless there is ever bad data. -->
     <string name="bob_empty_read_status">(Read status unknown)</string>
-    <!-- BoB specific place holder text for Rating rows. -->
+    <!-- BoB specific placeholder text for Rating rows. -->
     <string name="bob_empty_rating">(Not rated)</string>
-    <!-- BoB specific place holder text for Year rows. -->
+    <!-- BoB specific placeholder text for Year rows. -->
     <string name="bob_empty_year">(Year not set)</string>
-    <!-- BoB specific place holder text for Month rows. -->
+    <!-- BoB specific placeholder text for Month rows. -->
     <string name="bob_empty_month">(Month not set)</string>
-    <!-- BoB specific place holder text for Day rows. -->
+    <!-- BoB specific placeholder text for Day rows. -->
     <string name="bob_empty_day">(Day not set)</string>
     <!-- endregion -->
     <!-- region ========== Size measurements. -->
@@ -640,7 +641,7 @@
     <string name="book_format_other">Other</string>
     <!-- -book format -->
     <string name="book_format_unknown">Unknown</string>
-    <!--  book format - mostly used for magazines like 'readers digest'
+    <!--  book format - mostly used for magazines like 'Reader's Digest'
           A lot of english monthly magazines use the same format.
           In French this is semi-officially known as "Petit format" or "Small size". -->
     <string name="book_format_digest">Digest</string>
@@ -813,7 +814,7 @@
     <!-- Author role: the person who wrote a foreword at the start of the book.
          A book can have both an "Introduction" and a "Foreword".-->
     <string name="lbl_author_role_foreword">Foreword</string>
-    <!-- Author role: the person who wrote a afterword (thanks, references, comments...)
+    <!-- Author role: the person who wrote an afterword (thanks, references, comments...)
          at the end of the book. -->
     <string name="lbl_author_role_afterword">Afterword</string>
     <!-- Author role: audiobooks -->
@@ -828,7 +829,7 @@
          Comics: the artist who coloured in the original ink drawing.-->
     <string name="lbl_author_role_colorist">Colorist</string>
     <!-- Author role.
-         Books based on movies. Typically the steps are:
+         Books based on movies. Typically, the steps are:
          "story writer" -> "Screenplay" and/or "Storyboard" -> "book adaptation" -->
     <string name="lbl_author_role_storyboard">Storyboard</string>
     <!-- Author role.
@@ -1091,13 +1092,13 @@
     <string name="confirm_apply_substitutions">Apply the substitution rules? All applicable books will be updated.</string>
 
     <!-- Displayed when the user changes their sorting preference.
-         When doing this, the sorting information in the database needs to be rebuild. -->
+         When doing this, the sorting information in the database needs to be rebuilt. -->
     <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue?</string>
     <!-- Displayed when the user changes their sorting preference.
-         When doing this, the search indexes information in the database needs to be rebuild. -->
+         When doing this, the search indexes information in the database needs to be rebuilt. -->
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue?</string>
     <!-- Displayed when the user changes their sorting preference.
-         When doing this, the internal indexing in the database needs to be rebuild. -->
+         When doing this, the internal indexing in the database needs to be rebuilt. -->
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue?</string>
     <!-- Param 1: website name -->
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
@@ -1305,7 +1306,7 @@
     <string name="lbl_book">Book</string>
     <!-- Multiple Books. -->
     <string name="lbl_books">Books</string>
-    <!-- Generic label for the type of a book (book, collection, anthology,...) -->
+    <!-- Generic label for the type of book (book, collection, anthology,...) -->
     <string name="lbl_book_type">Book type</string>
     <string name="lbl_book_type_book"
             translatable="false">@string/lbl_book</string>
@@ -1368,14 +1369,14 @@
     <string name="lbl_color">Color</string>
     <!-- [VERIFIED] Field label -->
     <string name="lbl_language">Language</string>
-    <!-- Label for the genre of the book (e.g. Romance, Crime, etc..)
+    <!-- Label for the genre of the book (e.g. Romance, Crime, etc...)
          Used in combination wth "lbl_tag" only.
     -->
     <string name="lbl_genre">Genre</string>
-    <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..)
+    <!-- Label for tagging a book (i.e. assign a set of labels/tags to a book: Romance, Crime, etc..)
         Single. -->
     <string name="lbl_tag">Tag</string>
-    <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..)
+    <!-- Label for tagging a book (i.e. assign a set of labels/tags to a book: Romance, Crime, etc..)
         Plural. -->
     <string name="lbl_tags">Tags</string>
 
@@ -1404,8 +1405,8 @@
     <string name="lbl_location">Location</string>
     <!-- long label for the Location  (where is the book?) field -->
     <string name="lbl_location_long">Location of the book</string>
-    <!-- The location (where is the book?) field as a single unicode 9.0 character/symbol.
-         By default: 📍 == u+0001f4cd or in utf16: \ud83d\udccd
+    <!-- The location (where is the book?) field as a single Unicode 9.0 character/symbol.
+         Default: 📍 == u+0001f4cd or in utf16: \ud83d\udccd
          (the color will be set by the app theme)
     -->
     <string name="lbl_location_symbol">\ud83d\udccd</string>
@@ -1460,8 +1461,8 @@
     <string name="lbl_day">Day</string>
     <!-- The date a book was added to the database. -->
     <string name="lbl_date_added">Date Added</string>
-    <!-- "The date the book was last updated." as a single unicode 9.0 character/symbol.
-         By default:  ➕  \u2795
+    <!-- "The date the book was last updated." as a single Unicode 9.0 character/symbol.
+         Default:  ➕  \u2795
          (the color will be set by the app theme)
      -->
     <string name="lbl_date_added_as_single_char">\u2795</string>
@@ -1486,8 +1487,8 @@
     <string name="lbl_read_end">Date finished reading</string>
     <!-- The date the book was last updated. -->
     <string name="lbl_date_last_updated">Date last updated</string>
-    <!-- "The date the book was last updated." as a single unicode 9.0 character/symbol.
-         By default:  🔄  u+0001f504 or in utf16: \ud83d\udd04
+    <!-- "The date the book was last updated." as a single Unicode 9.0 character/symbol.
+         Default:  🔄  u+0001f504 or in utf16: \ud83d\udd04
          (the color will be set by the app theme)
      -->
     <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
@@ -1496,8 +1497,8 @@
     <string name="lbl_date_last_updated_day">Day last updated</string>
     <!-- The date a user acquired the book. -->
     <string name="lbl_date_acquired">Date Acquired</string>
-    <!-- "The date a user acquired the book." as a single unicode 9.0 character/symbol.
-         By default:  🏠  == u+0001f3e0 or in utf16: \ud83c\udfe0
+    <!-- "The date a user acquired the book." as a single Unicode 9.0 character/symbol.
+         Default:  🏠  == u+0001f3e0 or in utf16: \ud83c\udfe0
          (the color will be set by the app theme)
          -->
     <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
@@ -1515,8 +1516,8 @@
     <string name="lbl_date_published_month">Publication Month</string>
     <!-- First Publication Date for the CONTENT of the book. e.g. magazine pub... etc... -->
     <string name="lbl_date_first_publication">First Publication</string>
-    <!-- "First Publication Date" as a single unicode 9.0 character/symbol.
-         By default:  1️⃣  == \u0031\ufe0f\u20e3
+    <!-- "First Publication Date" as a single Unicode 9.0 character/symbol.
+         Default:  1️⃣  == \u0031\ufe0f\u20e3
          (the color will be set by the app theme)
          -->
     <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
@@ -1525,7 +1526,7 @@
     <!-- First publication month.  Translations should be abbreviated and be more or less the same text length. -->
     <string name="lbl_date_first_publication_month">First Pub. Month</string>
 
-    <!-- Author birth date -->
+    <!-- Author birthdate -->
     <string name="lbl_date_born">Born</string>
     <!-- Author death date -->
     <string name="lbl_date_died">Died</string>
@@ -1581,7 +1582,7 @@
     <!-- Info text for "option_import_books_option_new_and_updated" -->
     <string name="option_info_import_books_option_new_and_updated">Import new books and synchronize existing books based on their last modification date.</string>
     <!-- Text above an EditText which has a label of "Since" and contains a date.
-         Hence this string can/should be read as "Only import books modified since this date"
+         Hence, this string can/should be read as "Only import books modified since this date"
          Translated strings are usually longer... add one or more '\n' as needed.
       . -->
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Only import books modified since</string>
@@ -1609,7 +1610,7 @@
     <!-- region ========== Global settings. -->
     <!-- [VERIFIED] -->
     <string name="lbl_defaults">Defaults</string>
-    <!-- Generic place holder text for preference fields which are NOT SET.
+    <!-- Generic placeholder text for preference fields which are NOT SET.
          The actual text is different from hint_empty_field in Translations.
          [VERIFIED] Copied from androidx.preferences# not_set; WITHOUT brackets-->
     <string name="preference_not_set">Not Set</string>
@@ -1700,9 +1701,9 @@
     <!-- Option: title capitalization: the whole title will be capitalized. -->
     <string name="lbl_capitalize_full">All in uppercase</string>
 
-    <!-- SwitchPreference title: allow mobile network usage or limit to use wifi/ethernet only. -->
+    <!-- SwitchPreference title: allow mobile network usage or limit to use Wi-Fi/ethernet only. -->
     <string name="pt_allow_metered_network_data">Allow mobile data usage</string>
-    <!-- SwitchPreference - Some web sites expose their website book id.
+    <!-- SwitchPreference - Some websites expose their website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_editing_external_id">Allow editing website book id</string>
     <!-- SwitchPreference title: Enable or disable all lending functionality. -->
@@ -1744,7 +1745,7 @@
          Subject tags on the site look like this:
          [808.838 762 09] Science fiction - Interpretation and criticism
 
-         This is an option to  either keep (true) or strip (false) the prefixed number.
+         This is an option to  either keep or strip the prefixed number.
     -->
     <string name="pt_search_tag_use_subject_number">Keep numeric prefix in Subject tags</string>
 
@@ -1890,13 +1891,13 @@
     <string name="option_clear_deleted_book_records">Clear the deleted books history</string>
     <!-- Maintenance screen menu option information -->
     <string name="info_maintenance_clear_deleted_book_records">This will clear the deleted books history. No actual books will be deleted.</string>
-    <!-- Dialog title - Internal cleanup of Booklist node states... collapsed/expanded etc. -->
+    <!-- Dialog title - Internal clean-up of Booklist node states... collapsed/expanded etc. -->
     <string name="lbl_purge_blns">Clear the node state</string>
     <!-- Maintenance menu - clear all the stored node status's everywhere. -->
     <string name="info_purge_blns_all">Clear the node state for all lists</string>
     <!-- Clear the status for a single type. e.g. a style, a shelf, ...
         param 1: type of item; param 2: item name.
-         e.g.: "Clear the node status for Bookshelf “ToRead” -->
+         e.g.: Clear the node status for Bookshelf “ToRead” -->
     <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s”?</string>
     <!-- [VERIFIED]  Collect debug information and prepare a zip file to send to the developer -->
     <string name="option_bug_report">Bug report</string>
@@ -2058,7 +2059,7 @@
     <string name="ps_bob_books_under_multiple_authors_each">under each author</string>
     <!-- Style option.
       This is a special situation where a book/comic can be part of multiple series.
-      For example, it can be part of it's own series, i.e. a writer just writes multiple books in a series.
+      For example, it can be part of its own series, i.e. a writer just writes multiple books in a series.
       But at the SAME TIME , those same books could be part of a publisher series.
       Let's say author series "My Detective", nr 5.
       But at the same time "Great detectives", nr 1234, i.e. ALL detectives this publisher does.
