@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -150,7 +150,7 @@ public abstract class BaseField<T, V extends View>
     /**
      * Set the "used" preference key.
      * <p>
-     * Optional. By default set to the {@link #fieldKey}  in the constructor.
+     * Optional. By default, set to the {@link #fieldKey}  in the constructor.
      *
      * @param prefKey The preference key to check if this Field is used or not
      *
@@ -165,7 +165,7 @@ public abstract class BaseField<T, V extends View>
     }
 
     /**
-     * set the field ID's which should follow visibility with this Field.
+     * set the field IDs which should follow visibility with this Field.
      * <p>
      * <strong>Dev. note:</strong> this could be done using
      * {@link androidx.constraintlayout.widget.Group}

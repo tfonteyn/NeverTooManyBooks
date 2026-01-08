@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -97,7 +97,7 @@ public class DnbSearchEngine
 
     static final String KATALOG_DNB_DE = "https://katalog.dnb.de";
 
-    // we could probable just use the bare "https://katalog.dnb.de"...
+    // we could probably just use the bare "https://katalog.dnb.de"...
     private static final Map<String, String> ROOT_REFERER = Map.of(
             HttpConstants.REFERER,
             KATALOG_DNB_DE + "/DE/home.html?pr=0&sortA=bez&sortD=-dat&v=plist");
@@ -401,7 +401,7 @@ public class DnbSearchEngine
                             }
                             case "Umfang":
                             case "Extent": {
-                                // can also contain color and format
+                                // can also contain colour and format
                                 parsePageNumber(context, td, book);
                                 break;
                             }

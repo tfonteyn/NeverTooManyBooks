@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,16 +84,16 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
  * <p>
- * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
+ * Dutch language (and to an extent French and a minimal amount of other languages) comics website.
  * <p>
  * Implementing {@link SearchEngine.ByText} is problematic due to the site search-field
- * not being a true "search-terms" field. Instead it expects a single search-term
+ * not being a true "search-terms" field. Instead, it expects a single search-term
  * which it will then use to search in distinct columns and list the results in a table
  * with the results in different areas.
  * (try the site to see what the above means...)
  * <p>
  * {@link SearchEngine.ByBarcode}: for barcodes (explicitly supported by the site
- * and invalid ISBN numbers (which the site stores as-is on purpose)
+ * and invalid ISBNs (which the site stores as-is on purpose)
  * <p>
  * ENHANCE: check if we can implement {@link SearchEngine.AlternativeEditions}
  * and consequently {@link SearchEngine.CoverByEdition}
@@ -116,7 +116,7 @@ public class StripInfoSearchEngine
     static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY + ".login.to.search";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
-    /** Color string values as used on the site. Complete 2019-10-29. */
+    /** Colour string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
 
     /** Param 1: external book ID; really a 'long'. */
@@ -135,7 +135,7 @@ public class StripInfoSearchEngine
             "https://.*/auteur/index/(\\d+)_.*");
     /**
      * When a multi-result page is returned, its title will start with this text.
-     * (dutch for: Searching for...)
+     * (Dutch for: Searching for...)
      */
     private static final String MULTI_RESULT_PAGE_TITLE = "Zoeken naar";
     /** The site specific 'no cover' image. Correct 2019-12-19. */
@@ -235,7 +235,7 @@ public class StripInfoSearchEngine
     @Override
     public void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
-        // depending if we get here from a search or from a sync,
+        // Depending on if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
             siteAuthModule = new StripInfoAuth(cookieManager);
@@ -549,7 +549,7 @@ public class StripInfoSearchEngine
                                 }
                                 case "Cycli":
                                     // not currently used. Example: Cyclus 2 nr. 1
-                                    // This is sub-series 2, book 1, inside a series.
+                                    // This is subseries 2, book 1, inside a series.
                                     // (also known as 'story-arc')
                                     break;
 
@@ -621,7 +621,7 @@ public class StripInfoSearchEngine
 
         authorResolverHelper.resolve(context, this, book);
 
-        // It's extremely unlikely, but should the language be missing, add dutch.
+        // It's extremely unlikely, but should the language be missing, add Dutch.
         if (!book.contains(DBKey.LANGUAGE)) {
             book.setLanguage("nld");
         }
@@ -650,11 +650,11 @@ public class StripInfoSearchEngine
     }
 
     /**
-     * Try and replace potential invalid ISBN numbers
+     * Try and replace potential invalid ISBNs
      * with the barcode as found on the site.
-     * We do this because the site will ON PURPOSE list invalid ISBN
-     * numbers as present of the physical book,
-     * while the barcode field will (usually) contain the correct ISBN number.
+     * We do this because the site will ON PURPOSE list invalid ISBNs
+     * as present of the physical book,
+     * while the barcode field will (usually) contain the correct ISBN.
      *
      * @param searchIsbnText the ISBN which we searched for
      * @param book           Bundle to update
@@ -783,7 +783,7 @@ public class StripInfoSearchEngine
      * as an individual book, and declare a Book TOC as a list of books.
      * i.o.w. the database structure would need to become
      * table: titles (book and toc-entry titles) each entry referencing 1..n authors.
-     * table: books, with a primary title, and a list of secondary titles (i.e the toc).
+     * table: books, with a primary title, and a list of secondary titles (i.e. the toc).
      * (All of which referencing the 'titles' table)
      * <p>
      * This is not practical in the scope of this application.
@@ -823,7 +823,7 @@ public class StripInfoSearchEngine
 
                                 // the number is not used in the TOC as we don't support
                                 // linking a TOC entry to another book.
-                                // Instead prepend it to the title as a reference.
+                                // Instead, prepend it to the title as a reference.
                                 if (number != null) {
                                     title = number + ' ' + a.text();
                                 } else {
@@ -901,7 +901,7 @@ public class StripInfoSearchEngine
      * We inspect the value to try and guess the type.
      * <p>
      * Currently known (2019-10-11):
-     * - the color scheme of the comic.
+     * - the colour scheme of the comic.
      *
      * @param td   label td
      * @param book Bundle to update
@@ -914,7 +914,7 @@ public class StripInfoSearchEngine
         if (dataElement != null && dataElement.childNodeSize() == 1) {
             final String text = dataElement.text().strip();
 
-            // is it a color ?
+            // is it a colour ?
             if (COLOR_STRINGS.contains(text)) {
                 book.setColor(text);
             }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * Base class for all Activity's (except the startup and ACRA activity).
  * <p>
- * Provides EdgeToEdge basics and localized-context for the ui-language setting.
+ * Provides EdgeToEdge basics and localised-context for the ui-language setting.
  */
 public abstract class BaseActivity
         extends AppCompatActivity {
@@ -51,7 +51,7 @@ public abstract class BaseActivity
         // There are some serious insets listener issues on API 28/29,
         // at least in the emulator, I don't have a physical device on those versions.
         // ViewPager2 also documents a serious bug when using API < 30.
-        // Therefore we're only supporting edge-to-edge starting from API-30
+        // Therefore, we're only supporting edge-to-edge starting from API-30
         // being drawn under the bottom 3-btn-nav-bar, i.e. the insets not being passed in.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             EdgeToEdge.enable(this);

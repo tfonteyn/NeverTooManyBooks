@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -119,7 +119,7 @@ public class IsoLanguageDaoImpl
 
     /**
      * We've seen {@link Locale#getISO3Language()} throw {@link MissingResourceException}
-     * on a HUAWEI model "ADA-AL10U" with Android 12; see github #58
+     * on a HUAWEI model "ADA-AL10U" with Android 12; see GitHub #58
      * The OS code returned the invalid code "zz" for a language
      * in {@link Locale#getAvailableLocales()}.
      *
@@ -127,7 +127,7 @@ public class IsoLanguageDaoImpl
      *
      * @return iso3/2 code
      *
-     * @see <a href="https://github.com/tfonteyn/NeverTooManyBooks/issues/58">github #58</a>
+     * @see <a href="https://github.com/tfonteyn/NeverTooManyBooks/issues/58">GitHub #58</a>
      */
     @NonNull
     private String getIsoCode(@NonNull final Locale locale) {

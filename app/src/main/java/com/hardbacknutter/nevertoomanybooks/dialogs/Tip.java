@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -163,7 +163,7 @@ public enum Tip {
 
     private void setMessage(@NonNull final View root,
                             @Nullable final String text) {
-        // Setup the message; this is an optional View but present in the default layout.
+        // Set up the message; this is an optional View but present in the default layout.
         final TextView messageView = root.findViewById(R.id.message);
         if (messageView != null) {
             if (text != null) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -229,7 +229,7 @@ public class SeriesDaoImpl
 
         final EntityMergeHelper<Series> mergeHelper = new SeriesMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
-                                 // Don't lookup the locale a 2nd time.
+                // Don't look up the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));
     }
 
@@ -305,7 +305,7 @@ public class SeriesDaoImpl
                 } else if (doUpdates) {
                     // https://stackoverflow.com/questions/6677517/update-if-different-changed
                     // ONLY update if there are actual changes.
-                    // Otherwise the trigger "after_update_on" + TBL_SERIES
+                    // Otherwise, the trigger "after_update_on" + TBL_SERIES
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that series
                     // while not needed.
                     final Optional<Series> oFound = findById(series.getId());

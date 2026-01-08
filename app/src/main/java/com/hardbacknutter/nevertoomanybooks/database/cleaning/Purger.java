@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public class Purger {
      * Purge anything that is no longer in use.
      * <p>
      * Purging is no longer done at every occasion where it *might* be needed.
-     * It was noticed (in the logs) that it was done far to often. It is now called only:
+     * It was noticed (in the logs) that it was done far too often. It is now called only:
      * <ul>
      *  <li>Before a (Zip) backup.</li>
      *  <li>After an import of data (all sources).</li>

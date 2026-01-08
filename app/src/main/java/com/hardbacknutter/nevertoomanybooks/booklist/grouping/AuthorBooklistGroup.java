@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,9 +70,9 @@ public class AuthorBooklistGroup
      *
      * @param groupKey           of group to create
      * @param showGivenNameFirst whether to <strong>show</strong> the given name
-     *                           before (@code true} or after {@code false} the family name
+     *                           before {@code true} or after {@code false} the family name
      * @param sortByGivenName    whether to <strong>sort</strong> by the given name
-     *                           first (@code true} or by  the family name
+     *                           first {@code true} or by  the family name
      *                           {@code false} first
      */
     AuthorBooklistGroup(@NonNull final GroupKey groupKey,

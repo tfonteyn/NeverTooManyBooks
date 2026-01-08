@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -119,10 +119,10 @@ class CoverHelper {
         // was there any difference. The most extreme test with 7000 books/covers
         // all visible/expanded, and Glide made no difference whatsoever.
 
-        // 2025-11-27: tried multiple ways to get all of the below moved to a background
+        // 2025-11-27: tried multiple ways to get all the below moved to a background
         // thread with callbacks to display the images (or when none, any text).
         //
-        // Due to the ViewHolders bing reused/recycled, it became VERY cumbersome
+        // Due to the ViewHolders being reused/recycled, it became VERY cumbersome
         // to keep track of things. No solution really worked.
         //
         // Current implementation:
@@ -135,7 +135,7 @@ class CoverHelper {
         //
         // 2025-12-28: tried prescanning the cover folder + reading uuid... and storing
         // a bit-flag (see Booklist#preScanRows()) to avoid the getPersistedFile/file.exists()
-        // on the UI thread, but this meant a 1.2 second delay each time the booklist gets build
+        // on the UI thread, but this meant a 1.2-second delay each time the booklist gets build
         // -> abandoned the idea.
 
         // 1. If Bitmap pre-scaled caching is used, check it.

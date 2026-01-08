@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -318,11 +318,11 @@ class ResultsAccumulator {
      * <p>
      * Data is always appended to any previous data.
      * There are <strong>NO CHECKS FOR DUPLICATION</strong>:
-     * After a search, the final resulting Book (data) is send to the child
+     * After a search, the final resulting Book (data) is sent to the child
      * classes of {@code EditBookBaseFragment},
      * where in the {@code onPopulateViews} method the lists are pruned.
      * We do it there because each list might/does need some specific
-     * handling. Similar pruning is done when an "Update from .." is run during
+     * handling. Similar pruning is done when an "Update from ..." is run during
      * the database save.
      *
      * @param <T>      type of items in the ArrayList

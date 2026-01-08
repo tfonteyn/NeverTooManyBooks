@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -158,17 +158,17 @@ public class BookDaoHelper {
             book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obTitle, bookLocale));
         }
 
-        // normalize/store only valid bits
+        // normalise/store only valid bits
         if (book.contains(DBKey.CONTENT_TYPE)) {
             book.setContentType(book.getContentType());
         }
 
-        // normalize/store only valid bits
+        // normalise/store only valid bits
         if (book.contains(DBKey.EDITION)) {
             book.setEdition(book.getEdition());
         }
 
-        // cleanup/build all price related fields
+        // clean-up/build all price related fields
         DBKey.getMoneyKeys().forEach(key -> processPrice(book, key, moneyParser));
 
         // Try to cross-pollinate the ReadingProgress and page-count fields.
@@ -182,14 +182,14 @@ public class BookDaoHelper {
             processExternalIds(book);
         }
 
-        // lastly, cleanup null and blank fields as needed.
+        // lastly, clean-up null and blank fields as needed.
         processNullsAndBlanks(book, isNew, realNumberParser);
 
         return filterValues(book, realNumberParser);
     }
 
     /**
-     * If the {@link DBKey#PAGES} field is empty and we have
+     * If the {@link DBKey#PAGES} field is empty, and we have
      * a total-pages value from the {@link DBKey#READ_PROGRESS} field,
      * copy the value across.
      * We do NOT overwrite existing {@link DBKey#PAGES} values!

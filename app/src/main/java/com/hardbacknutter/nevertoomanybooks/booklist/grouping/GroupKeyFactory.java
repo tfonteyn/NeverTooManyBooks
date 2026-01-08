@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -452,7 +452,7 @@ public final class GroupKeyFactory {
 
             case BooklistGroup.AUTHOR_FAMILY_NAME_1ST_CHAR: {
                 // Uses the OrderBy column so we get the re-ordered version if applicable.
-                // Formatting is done in the sql expression.
+                // Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_group_1st_char_author_family_name, "af1",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -467,7 +467,7 @@ public final class GroupKeyFactory {
             }
             case BooklistGroup.SERIES_TITLE_1ST_CHAR: {
                 // Uses the OrderBy column so we get the re-ordered version if applicable.
-                // Formatting is done in the sql expression.
+                // Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_group_1st_char_series_title, "st1",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -482,7 +482,7 @@ public final class GroupKeyFactory {
             }
             case BooklistGroup.PUBLISHER_NAME_1ST_CHAR: {
                 // Uses the OB column so we get the re-ordered version if applicable.
-                // Formatting is done in the sql expression.
+                // Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_group_1st_char_publisher_name, "p1",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -497,7 +497,7 @@ public final class GroupKeyFactory {
             }
             case BooklistGroup.BOOK_TITLE_1ST_CHAR: {
                 // Uses the OB column so we get the re-ordered version if applicable.
-                // Formatting is done in the sql expression.
+                // Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_group_1st_char_book_title, "bt1",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -538,7 +538,7 @@ public final class GroupKeyFactory {
 
 
             case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR: {
-                // UTC. Formatting is done in the sql expression.
+                // UTC. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_first_publication_year, "yfp",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -564,7 +564,7 @@ public final class GroupKeyFactory {
 
 
             case BooklistGroup.DATE_ACQUIRED_YEAR: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_acquired_year, "yac",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -590,7 +590,7 @@ public final class GroupKeyFactory {
                         .addBaseDomain(BD_DATE_ACQUIRED);
             }
             case BooklistGroup.DATE_ACQUIRED_DAY: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_acquired_day, "dac",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -605,7 +605,7 @@ public final class GroupKeyFactory {
 
 
             case BooklistGroup.DATE_ADDED_YEAR: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_added_year, "ya",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -629,7 +629,7 @@ public final class GroupKeyFactory {
                         .addBaseDomain(BD_DATE_ADDED);
             }
             case BooklistGroup.DATE_ADDED_DAY: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_added_day, "da",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -643,7 +643,7 @@ public final class GroupKeyFactory {
 
 
             case BooklistGroup.DATE_LAST_UPDATE_YEAR: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_last_updated_year, "yu",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -667,7 +667,7 @@ public final class GroupKeyFactory {
                         .addBaseDomain(BD_DATE_LAST_UPDATED);
             }
             case BooklistGroup.DATE_LAST_UPDATE_DAY: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_last_updated_day, "du",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -681,7 +681,7 @@ public final class GroupKeyFactory {
 
 
             case BooklistGroup.DATE_READ_YEAR: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_read_year, "yr",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -707,7 +707,7 @@ public final class GroupKeyFactory {
                         .addGroupDomain(BD_BOOK_IS_READ);
             }
             case BooklistGroup.DATE_READ_DAY: {
-                // Local for the user. Formatting is done in the sql expression.
+                // Local for the user. Formatting is done in the SQL expression.
                 return new GroupKey(id, R.string.lbl_date_read_day, "dr",
                                     new DomainExpression(
                                             new Domain.Builder(
@@ -720,7 +720,7 @@ public final class GroupKeyFactory {
                         .addGroupDomain(BD_BOOK_IS_READ);
             }
 
-            // The key domain for a book is not used but we define one
+            // The key domain for a book is not used, but we define one
             // to prevents any potential null issues.
             case BooklistGroup.BOOK: {
                 return new GroupKey(id, R.string.lbl_book, "b",

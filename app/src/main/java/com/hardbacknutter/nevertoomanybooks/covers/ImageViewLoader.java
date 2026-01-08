@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -110,7 +110,7 @@ public class ImageViewLoader {
         imageView.setMaxHeight(Integer.MAX_VALUE);
         imageView.setMaxWidth(Integer.MAX_VALUE);
 
-        // essential, so lets not rely on it having been set in xml
+        // essential, so lets not rely on it having been set in XML
         imageView.setAdjustViewBounds(true);
 
         // theoretically not needed as we've already scaled
@@ -161,7 +161,7 @@ public class ImageViewLoader {
                 throw new IllegalArgumentException(applySizing.toString());
         }
 
-        // essential, so lets not rely on it having been set in xml
+        // essential, so lets not rely on it having been set in XML
         imageView.setAdjustViewBounds(true);
 
         imageView.setScaleType(scaleType);

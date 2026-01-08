@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PS
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
 /**
- * Cleanup routines for some columns/tables which can be run at upgrades, import, startup.
+ * Clean-up routines for some columns/tables which can be run at upgrades, import, startup.
  * <p>
  *  FIXME: implement proper cleaning of ALL orphaned images in the cleaner
  *  - book covers:
@@ -74,7 +74,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  *  - remove rows from the cache db where the referenced book uuid does not exist
  * <p>
  *  HOWEVER: SEE {@link com.hardbacknutter.nevertoomanybooks.settings.MaintenanceFragment}
- *  where we offer a cleanup of orphaned book covers.
+ *  where we offer a clean-up of orphaned book covers.
  */
 public class DBCleaner {
 

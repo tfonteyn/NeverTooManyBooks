@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.List;
  * We combine three distinct types of criteria in a single object.
  * <ul>
  *     <li>a list of book-ids. When present, all other criteria are ignored.</li>
- *     <li>FTS based fields which can be used to construct an FTS 'MATCH' sql clause</li>
+ *     <li>FTS based fields which can be used to construct an FTS 'MATCH' SQL clause</li>
  *     <li>Simple string criteria (currently only 'lender')</li>
  * </ul>
  */

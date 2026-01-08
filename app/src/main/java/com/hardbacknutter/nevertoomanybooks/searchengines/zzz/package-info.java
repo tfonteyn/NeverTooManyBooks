@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,7 @@
 
 /**
  * The classes in this package are wanna-be SearchEngines.
- * Basically a centralized register of URL's needed for those sites
+ * Basically a centralised register of URL's needed for those sites
  * without them being searchable.
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;

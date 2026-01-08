@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,11 +74,11 @@ import org.jsoup.select.Elements;
 /**
  * Chinese language books & comics.
  * <p>
- * It seems that Chinese publishers reuse ISBN numbers for different editions of the same book.
+ * It seems that Chinese publishers reuse ISBNs for different editions of the same book.
  * This sort-of violates the intention of an ISBN:
- * - reuse for different print-runs is ok
+ * - reuse for different print-runs is OK
  * - reuse for different edition is normally a big NO.
- * We try to workaround this limitation.
+ * We try to work around this limitation.
  */
 public class DoubanSearchEngine
         extends JsoupSearchEngineBase
@@ -245,7 +245,7 @@ public class DoubanSearchEngine
 
 
     /**
-     * Parse the given Document for the embedded javascript element containing
+     * Parse the given Document for the embedded JavaScript element containing
      * the list of books found and extract the best suited book (url).
      *
      * @param context  Current context
@@ -279,7 +279,7 @@ public class DoubanSearchEngine
     }
 
     /**
-     * Parse the given Document for the embedded javascript element containing
+     * Parse the given Document for the embedded JavaScript element containing
      * the list of books found.
      *
      * <pre>
@@ -703,7 +703,7 @@ public class DoubanSearchEngine
         if (relInfo != null) {
             // Then can be multiple "intro" blocks, as this is used for description, author, ...
             // We normally grab the first with the description only,
-            // but check for an "a" element with javascript to "Expand".
+            // but check for an "a" element with JavaScript to "Expand".
             // If found, this means the text was very long, and was partially hidden.
             // In that case we grad the 2nd "intro" block which is the full description.
             final Elements introElements = relInfo.select("div.intro");

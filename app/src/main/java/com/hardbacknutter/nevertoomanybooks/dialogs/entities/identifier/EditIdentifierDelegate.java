@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,7 +55,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * This is the editor for the {@link IdentifiersEditorFragment}.
- * Can also be used for a BoB row-menu of a Identifier grouping if needed/implemented.
+ * Can also be used for a BoB row-menu of an Identifier grouping if needed/implemented.
  *
  * <ul>
  * <li>{@link EditAction#EditInPlace}</li>

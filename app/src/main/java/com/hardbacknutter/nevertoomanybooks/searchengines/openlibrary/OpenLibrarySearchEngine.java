@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,10 +82,10 @@ import okhttp3.Request;
  * "covers": [
  * 5546156
  * ],
- * section is hit and miss. Due to the servers multiple redirect
+ * section is hit-and-miss. Due to the servers multiple redirect
  * we sometimes get a cover and sometimes not. We see error 500, sometimes 403.
  * <p>
- * Leaving as-is for now. Based on past experience, and now this one...
+ * Leaving as-is for now. Based on experience, and now this one...
  * OpenLibrary does not seem to be the most stable server ...
  */
 public class OpenLibrarySearchEngine
@@ -237,7 +237,7 @@ public class OpenLibrarySearchEngine
     @Override
     public void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
-        // depending if we get here from a search or from a sync,
+        // Depending on if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
             siteAuthModule = new OpenLibraryAuth(cookieManager);
@@ -637,7 +637,7 @@ public class OpenLibrarySearchEngine
         //  and concatenate it with the title
         // s = document.optString("subtitle");
 
-        // Re-parse for fields which should have been in the "work"
+        // Reparse for fields which should have been in the "work"
         // This is OL... better parse twice to be sure
         parseBookOrWork(context, document, book);
 
@@ -1164,7 +1164,7 @@ public class OpenLibrarySearchEngine
      * have a prefix "10.1604" and will NOT resolve.
      * Example: 10.1604/9780910663519
      * See <a href="https://doi.org/10.1604">https://doi.org/10.1604</a>
-     * --> Took away permissions 3/21/13.. do not think this is really a bowker prefix.
+     * --> Took away permissions 3/21/13... do not think this is really a bowker prefix.
      *
      * @param document to parse
      * @param book     to update

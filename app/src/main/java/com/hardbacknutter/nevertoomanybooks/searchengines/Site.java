@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,7 +69,7 @@ public final class Site
      * whether this site is active <strong>for the list it belongs to</strong>.
      * <p>
      * <strong>Dev. note:</strong> code uses 'active' as in the user can activate/deactivate
-     * a site, while enabled/disabled is used at compile time from the gradle script.
+     * a site, while enabled/disabled is used at compile time from the Gradle script.
      * <p>
      * This key uses 'enabled' for backwards compatibility.
      */

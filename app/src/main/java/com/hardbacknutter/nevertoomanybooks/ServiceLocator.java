@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -113,7 +113,7 @@ import okhttp3.OkHttpClient;
 public class ServiceLocator {
 
     /**
-     * Sub directory of {@link Context#getFilesDir()}.
+     * Subdirectory of {@link Context#getFilesDir()}.
      * Database backup taken during app upgrades.
      */
     private static final String DIR_UPGRADES = "upgrades";
@@ -332,7 +332,7 @@ public class ServiceLocator {
     }
 
     /**
-     * Get a <strong>new</strong> localized Application Context.
+     * Get a <strong>new</strong> localised Application Context.
      *
      * @return Application Context using the user preferred Locale
      */
@@ -403,7 +403,7 @@ public class ServiceLocator {
 
     /**
      * Convenience method to make it easier to identify where we use the global.
-     * (i.e. differentiate between 'isVisible' on a List/Detail screen versus the global.
+     * i.e. differentiate between 'isVisible' on a List/Detail screen versus the global.
      *
      * @param dbKey to check
      *
@@ -448,7 +448,7 @@ public class ServiceLocator {
     }
 
     /**
-     * Get the single/shared OkHttp client initialized with the global CookieManager.
+     * Get the single/shared OkHttp client initialised with the global CookieManager.
      *
      * @return client
      */
@@ -502,7 +502,7 @@ public class ServiceLocator {
      * Main entry point for clients to get the main database.
      * <p>
      * <strong>Dev. note:</strong> This method always returns the same object for
-     * the duration of the apps life. Our DBHelper caches a single SynchronizedDb,
+     * the duration of the apps' life. Our DBHelper caches a single SynchronizedDb,
      * which in turn caches the database from the underlying SQLiteOpenHelper
      * which in turn caches the actual database.
      * Or in short: it's safe to use this as a singleton.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -120,7 +120,7 @@ public class TocEntryDaoImpl
 
         final EntityMergeHelper<TocEntry> mergeHelper = new TocEntryMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
-                                 // Don't lookup the locale a 2nd time.
+                // Don't look up the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));
     }
 
@@ -365,7 +365,7 @@ public class TocEntryDaoImpl
                 // complicated the code and frankly ended in a chain of special condition
                 // code branches during processing of internet search data.
                 // So... let's just catch the SQL constraint exception and ignore it.
-                // (do not use the sql 'REPLACE' command! We want to keep the original position)
+                // (do not use the SQL 'REPLACE' command! We want to keep the original position)
                 try {
                     position++;
                     stmt.bindLong(1, tocEntry.getId());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,8 +86,8 @@ public abstract class StyleBaseFragment
         vm.init(getContext(), requireArguments());
 
         // redirect storage to the database
-        // This MUST be done in onCreate/onCreatePreferences
-        // and BEFORE we inflate the xml screen definition
+        // This MUST be done in onCreate/onCreatePreferences,
+        // and BEFORE we inflate the XML screen definition
         getPreferenceManager().setPreferenceDataStore(vm.getStyleDataStore());
 
         super.onCreatePreferences(savedInstanceState, rootKey);

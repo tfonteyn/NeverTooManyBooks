@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -174,8 +174,8 @@ public interface Style {
     default ScreenLayout getLayout(final boolean hasEmbeddedDetailsFrame) {
         if (hasEmbeddedDetailsFrame) {
             // We tested with using the grid when having the embedded frame,
-            // but it was just to confusing and a mess to look at.
-            // Hence just use the list layout in this setup.
+            // but it was just too confusing, and a mess to look at.
+            // Hence, just use the list layout in this setup.
             return ScreenLayout.List;
         } else {
             return getLayout();
@@ -397,7 +397,7 @@ public interface Style {
     boolean isShowBooksUnderEachGroup(@BooklistGroup.Id int groupId);
 
     /**
-     * Should we use the extended "Read progress" settings, or the simple "Read/Unread" status.
+     * Should we use the extended "Read progress" settings, or the simple "Read/Unread" status?
      *
      * @return {@code true} to use the extended options,
      *         {@code false} to use the traditional "Read/Unread" status.

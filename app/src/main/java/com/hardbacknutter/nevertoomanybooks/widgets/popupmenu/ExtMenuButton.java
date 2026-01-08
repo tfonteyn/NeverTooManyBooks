@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,7 @@ public enum ExtMenuButton
         }
     };
     /**
-     * How ACCESS to context/row menus is provide.
+     * How ACCESS to context/row menus is provided.
      * <p>
      * {@code int}
      *

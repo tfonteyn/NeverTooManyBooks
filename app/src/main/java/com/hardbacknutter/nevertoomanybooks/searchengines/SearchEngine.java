@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,7 +122,7 @@ public interface SearchEngine
 
     /**
      * Set the caller to allow <strong>PULL</strong> checks if we should cancel the search.
-     * i.e. the engine will ask the caller at semi-regular intervals if it should quit.
+     * i.e. the engine will ask the caller at semiregular intervals if it should quit.
      *
      * @param caller to check with
      */
@@ -163,11 +163,11 @@ public interface SearchEngine
          */
         ExternalId(ByExternalId.class),
         /**
-         * Search with a <strong>VALID</strong> ISBN number.
+         * Search with a <strong>VALID</strong> ISBN.
          */
         Isbn(ByIsbn.class),
         /**
-         * Search with an <strong>INVALID</strong> ISBN number or actual barcode.
+         * Search with an <strong>INVALID</strong> ISBN or actual barcode.
          * i.e. a code which is specifically supported by the site.
          */
         Barcode(ByBarcode.class),
@@ -297,7 +297,7 @@ public interface SearchEngine
     /**
      * Optional.
      * Implement if the engine can search generic bar codes,
-     * or is known to store/support invalid ISBN numbers.
+     * or is known to store/support invalid ISBNs.
      * <p>
      * <strong>IMPORTANT</strong>: only use the default implementation
      * if the engine's implementation of {@link ByIsbn} supports searching for non-valid
@@ -400,7 +400,7 @@ public interface SearchEngine
         boolean isLoginToSearch(@NonNull Context context);
 
         /**
-         * For use by synchronization if implemented to avoid multiple logins.
+         * For use by synchronisation if implemented to avoid multiple logins.
          *
          * @param authModule to use
          */

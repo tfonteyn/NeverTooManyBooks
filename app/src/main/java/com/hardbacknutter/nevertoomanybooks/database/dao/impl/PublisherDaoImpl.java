@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -180,7 +180,7 @@ public class PublisherDaoImpl
 
         final EntityMergeHelper<Publisher> mergeHelper = new EntityMergeHelper<>();
         return mergeHelper.merge(context, list, localeSupplier,
-                                 // Don't lookup the locale a 2nd time.
+                // Don't look up the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));
     }
 
@@ -257,7 +257,7 @@ public class PublisherDaoImpl
                 } else if (doUpdates) {
                     // https://stackoverflow.com/questions/6677517/update-if-different-changed
                     // ONLY update if there are actual changes.
-                    // Otherwise the trigger "after_update_on" + TBL_PUBLISHER
+                    // Otherwise, the trigger "after_update_on" + TBL_PUBLISHER
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that publisher
                     // while not needed.
                     final Optional<Publisher> oFound = findById(publisher.getId());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -134,8 +134,8 @@ public final class CoverVolume {
             if (!Environment.MEDIA_MOUNTED.equals(storageVolumes.get(volume).getState())) {
                 // The second most obvious issue:
                 // Storage was configured to be on SDCARD (index==1),
-                // but the SDCARD was eject and NOT removed: status wil be MEDIA_UNMOUNTED.
-                // There are plenty of other possible issues but they are not as easy to handle
+                // but the SDCARD was ejected and NOT removed: status wil be MEDIA_UNMOUNTED.
+                // There are plenty of other possible issues, but they are not as easy to handle
                 // so we won't...
                 available = false;
 

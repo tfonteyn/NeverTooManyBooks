@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,8 +58,8 @@ public final class StandardDialogs {
      * @param itemType   The name of the type of object (e.g. 'Author', 'Publisher' ...)
      * @param original   entity label
      * @param modified   entity label
-     * @param onAllBooks Runnable to execute if the user picks 'all books''
-     * @param onThisBook Runnable to execute if the user picks 'this book''
+     * @param onAllBooks Runnable to execute if the user picks 'all books'
+     * @param onThisBook Runnable to execute if the user picks 'this book'
      */
     public static void confirmScopeForChange(@NonNull final Context context,
                                              @NonNull final String itemType,

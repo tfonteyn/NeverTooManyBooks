@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -183,7 +183,7 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * This is where all fields should be populate with the values coming from the book.
+     * This is where all fields should be populated with the values coming from the book.
      * The base class (this one) manages all the actual fields, but 'special' fields can/should
      * be handled in overrides, calling super as the first step.
      * <p>
@@ -273,7 +273,7 @@ public abstract class EditBookBaseFragment
 
 
     /**
-     * Setup a date picker for selecting a date range.
+     * Set up a date picker for selecting a date range.
      * <p>
      * Clicking on the start-date field will allow the user to set just the start-date.
      * Clicking on the end-date will prompt to select both the start and end dates.
@@ -282,9 +282,9 @@ public abstract class EditBookBaseFragment
      *
      * @param titleId      title for the picker
      * @param startTitleId title of the picker if the end-date is not in use
-     * @param startFieldId to setup for the start-date
+     * @param startFieldId to set up for the start-date
      * @param endTitleId   title of the picker if the start-date is not in use
-     * @param endFieldId   to setup for the end-date
+     * @param endFieldId   to set up for the end-date
      */
     private void addDateRangePicker(@StringRes final int titleId,
                                     final int startTitleId,
@@ -320,7 +320,7 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Setup a date picker for selecting a single, full date.
+     * Set up a date picker for selecting a single, full date.
      *
      * @param pickerTitleId title for the picker window
      * @param fieldId       the field to hookup
@@ -341,7 +341,7 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Setup a date picker for selecting a partial date.
+     * Set up a date picker for selecting a partial date.
      *
      * @param pickerTitleId title for the picker window
      * @param fieldId       the field to hookup

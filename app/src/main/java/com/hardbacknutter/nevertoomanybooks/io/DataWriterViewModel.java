@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,7 +89,7 @@ public abstract class DataWriterViewModel<RESULTS>
     protected abstract DataWriterHelperBase<RESULTS> getDataWriterHelper();
 
     /**
-     * Get a user-displayable name for the destination of the write.
+     * Get a user-displayable name for the destination of the write operation.
      *
      * @param context Current context
      *

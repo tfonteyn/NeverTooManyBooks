@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public interface BedethequeCacheDao {
      * Create the {@link BdtAuthor}s as supplied into the database.
      * We store the name as it is coming from the list page (and the author url for later lookups).
      * <p>
-     * There can be 100's or even 1000's of Authors. Pass an Supplier
+     * There can be 100's or even 1000's of Authors. Pass a Supplier
      * to the insert method so we can read/insert one-by-one.
      *
      * @param locale         Current Locale

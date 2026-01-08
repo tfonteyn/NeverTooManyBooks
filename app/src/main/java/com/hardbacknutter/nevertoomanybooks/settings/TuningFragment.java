@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ public class TuningFragment
         final SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
 
         SeekBarPreference p;
-        // set all values from code to avoid the xml being out-of-sync
+        // set all values from code to avoid the XML being out-of-sync
 
         p = findPreference(BooksOnBookshelf.PK_OFFSCREEN_CACHE_SIZE);
         //noinspection DataFlowIssue

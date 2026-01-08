@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,8 +58,8 @@ public class FieldVisibilityPreferenceFragment
         vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         // redirect storage to a single long value
-        // This MUST be done in onCreate/onCreatePreferences
-        // and BEFORE we inflate the xml screen definition
+        // This MUST be done in onCreate/onCreatePreferences,
+        // and BEFORE we inflate the XML screen definition
         dataStore = new VSDataStore();
         //noinspection DataFlowIssue
         dataStore.load(PreferenceManager.getDefaultSharedPreferences(getContext()));

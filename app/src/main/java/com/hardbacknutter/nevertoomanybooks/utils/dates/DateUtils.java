@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public final class DateUtils {
      * @param context       Current context
      * @param localDateTime to format
      *
-     * @return human readable datetime string; if the input is null, {@code ""} is returned
+     * @return human-readable datetime string; if the input is null, {@code ""} is returned
      */
     @NonNull
     public static String displayDateTime(@NonNull final Context context,
@@ -80,7 +80,7 @@ public final class DateUtils {
      * @param context       Current context
      * @param localDateTime to format
      *
-     * @return human readable date string; if the input is null, {@code ""} is returned
+     * @return human-readable date string; if the input is null, {@code ""} is returned
      */
     @NonNull
     public static String displayDate(@NonNull final Context context,
@@ -97,9 +97,9 @@ public final class DateUtils {
     }
 
     /**
-     * Normalize the given date string.
+     * Normalise the given date string.
      *
-     * @param dateStr     to normalize
+     * @param dateStr     to normalise
      * @param todayIfNone {@code true} if we should use 'today' if the field was empty.
      *
      * @return date string

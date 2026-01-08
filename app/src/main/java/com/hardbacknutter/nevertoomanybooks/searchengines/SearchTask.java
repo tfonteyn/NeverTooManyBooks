@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -239,7 +239,7 @@ final class SearchTask
                 break;
             }
             case Text: {
-                // FIXME: github #131 "ISBN: 01-001-86" allow searches with null/empty criteria
+                // FIXME: GitHub #131 "ISBN: 01-001-86" allow searches with null/empty criteria
                 //  when there is an isbnStr
                 //  => must update code in ALL SearchEngines to allow this!
                 final String isbnStr = isbnToString();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,7 +80,7 @@ public class FabMenu {
                 @Override
                 public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
                                                  final int newState) {
-                    // This method is not called when the fast scroller stops scrolling but
+                    // This method is not called when the fast scroller stops scrolling, but
                     // we can ignore that as in practice a minuscule swipe brings the FAB back.
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {

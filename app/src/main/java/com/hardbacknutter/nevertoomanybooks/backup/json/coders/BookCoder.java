@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * Supports all types from {@link DataManager#put} with the exception of {@link Serializable}.
+ * Supports all types from {@link DataManager#put} except {@link Serializable}.
  * <p>
  * {@link #encode} omits {@code null} values, numeric {@code 0} values and empty lists.
  * <p>

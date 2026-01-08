@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -127,13 +127,13 @@ public final class ImageHandler {
     private final CoverBrowserLauncher coverBrowserLauncher;
     /**
      * Book use only; {@code null} otherwise.
-     * We always us the <strong>current</strong> value (e.g. when editing).
+     * We always use the <strong>current</strong> value (e.g. when editing).
      */
     @Nullable
     private final Supplier<String> coverBrowserIsbnSupplier;
     /**
      * Book use only; {@code null} otherwise.
-     * We always us the <strong>current</strong> value (e.g. when editing).
+     * We always use the <strong>current</strong> value (e.g. when editing).
      */
     @Nullable
     private final Supplier<String> coverBrowserTitleSupplier;
@@ -408,7 +408,7 @@ public final class ImageHandler {
      * Use the isbn to fetch other possible images from the internet
      * and present to the user to choose one.
      * <p>
-     * The results comes back in {@link #onPictureSelected(String)}
+     * The results come back in {@link #onPictureSelected(String)}
      */
     private void startBookCoverBrowser() {
         Objects.requireNonNull(coverBrowserIsbnSupplier, "coverBrowserIsbnSupplier");
@@ -726,7 +726,7 @@ public final class ImageHandler {
          * <strong>Mandatory if the {@link #setImageOwner} supplier returns a book</strong>.
          * <p>
          * Tell the handler where it can get the current ISBN from.
-         * This is can either be directly from the book,
+         * This can either be directly from the book,
          * or via a Supplier which reads it from a TextView on the screen.
          *
          * @param supplier which can provide the current ISBN
@@ -743,7 +743,7 @@ public final class ImageHandler {
          * <strong>Mandatory if the {@link #setImageOwner} supplier returns a book</strong>.
          * <p>
          * Tell the handler where it can get the current book-title from.
-         * This is can either be directly from the book,
+         * This can either be directly from the book,
          * or via a Supplier which reads it from a TextView on the screen.
          *
          * @param supplier which can provide the current book-title

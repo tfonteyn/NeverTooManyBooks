@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ final class Triggers {
      *
      * <p>
      * Update FTS when:
-     * - Book: delete (update,insert is to complicated to use a trigger)
+     * - Book: delete (update,insert is too complicated to use a trigger)
      *
      * <p>
      * Others:
@@ -253,7 +253,7 @@ final class Triggers {
                + "  WHERE " + DBKey.FTS.PK_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
                // we must use IGNORE for when we do a sync. i.e.
                // the TBL_DELETED_BOOKS contains a UUID which we imported from another device,
-               // and we're syncing the delete on the local device.
+               // and we're syncing the delete operation on the local device.
                + " INSERT OR IGNORE INTO " + TBL_DELETED_BOOKS.getName()
                + " (" + DBKey.BOOK_UUID + ") VALUES(OLD." + DBKey.BOOK_UUID + ");"
                + " END";

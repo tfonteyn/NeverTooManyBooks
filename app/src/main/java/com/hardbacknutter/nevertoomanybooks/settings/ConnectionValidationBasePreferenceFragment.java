@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,7 +76,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
     }
 
     /**
-     * Setup the connection validator for the given site id.
+     * Set up the connection validator for the given site id.
      * <p>
      * Must be called immediately after calling {@link #setPreferencesFromResource}.
      *
@@ -87,7 +87,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
     }
 
     /**
-     * Setup the credentials preferences with the required listeners
+     * Set up the credentials preferences with the required listeners
      * and summary providers.
      *
      * @param pkHostUser preference key for the username field
@@ -203,7 +203,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                         .show();
                 getView().postDelayed(this::popBackStackOrFinish, Delay.SHORT_MS);
             } else {
-                //For now we don't get here, instead we would be in onFailure.
+                //For now, we don't get here, instead we would be in onFailure.
                 // But keeping this here to guard against future changes in the task logic
                 //noinspection DataFlowIssue
                 Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();

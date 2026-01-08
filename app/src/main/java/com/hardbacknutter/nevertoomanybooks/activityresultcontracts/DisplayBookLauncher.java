@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@ public class DisplayBookLauncher {
     }
 
     /**
-     * ENHANCE: github #151 potential replacement for {@link #launcher}
+     * ENHANCE: GitHub #151 potential replacement for {@link #launcher}
      *  when we decided on inconsistencies between TocFragment/AuthorWorksFragment
      * <p>
      * Launch the Book pager screen with the list of books derived
@@ -159,7 +159,7 @@ public class DisplayBookLauncher {
 
     /**
      * If there is only a single Book, just display that Book.
-     * Otherwise open a new BoB with the list of books.
+     * Otherwise, open a new BoB with the list of books.
      *
      * @param fragment       hosting fragment
      * @param bookIdList       to open
@@ -185,7 +185,7 @@ public class DisplayBookLauncher {
                     // which can be quite confusing to the user.
                     .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
                               (Parcelable) RebuildBooklist.Expanded)
-                    // The Bookshelf id! NOT the parceled Bookshelf object!
+                    // The Bookshelf id! NOT the parcelled Bookshelf object!
                     .putExtra(DBKey.FK_BOOKSHELF, bookshelfId);
 
             fragment.startActivity(intent);

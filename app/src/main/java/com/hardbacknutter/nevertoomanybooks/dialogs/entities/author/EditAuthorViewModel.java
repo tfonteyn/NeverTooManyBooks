@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public class EditAuthorViewModel
     private Author currentEdit;
     /**
      * Current edit. We don't use the real-author directly to avoid unneeded validation
-     * at each key-stroke from the user.
+     * at each keystroke from the user.
      */
     @Nullable
     private String currentRealAuthorName;
@@ -174,8 +174,8 @@ public class EditAuthorViewModel
      * @param create  {@code true} if a non-existent Author should be created
      *
      * @return {@code true} if the 'real' Author was validated and set.
-     *         {@code false} if the real author did not exist and we were not allowed to create them
-     *         (or if creating threw an error)
+     *         {@code false} if the real author did not exist, and we were not allowed to
+     *         create them (or if creating threw an error)
      */
     public boolean validateAndSetRealAuthor(@NonNull final Context context,
                                             @NonNull final Locale locale,
@@ -267,7 +267,7 @@ public class EditAuthorViewModel
             return Optional.empty();
         }
 
-        // Check if there is an another one with the same new name.
+        // Check if there is another one with the same new name.
         final Optional<Author> existingEntity = dao.findByName(context, original, locale);
         if (existingEntity.isPresent()) {
             return existingEntity;

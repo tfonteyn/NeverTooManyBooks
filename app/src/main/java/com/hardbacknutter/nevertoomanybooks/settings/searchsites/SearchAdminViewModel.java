@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ public class SearchAdminViewModel
     /**
      * Pseudo constructor.
      * <p>
-     * If the {@link #BKEY_LIST} argument is present,, we read a single list/type from it.
+     * If the {@link #BKEY_LIST} argument is present, we read a single list/type from it.
      * Otherwise, we get the system/user preferred lists.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}

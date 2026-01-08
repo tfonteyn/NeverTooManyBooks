@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,13 +86,13 @@ public interface PFilter<T>
 
 
     /**
-     * UI usage: get a human readable name for this filter.
+     * UI usage: get a human-readable name for this filter.
      * <p>
      * Returns the localized text "Filter" for generic/dynamic filters.
      *
      * @param context Current context
      *
-     * @return a human readable label/name for this filter.
+     * @return a human-readable label/name for this filter.
      */
     @NonNull
     default String getLabel(@NonNull final Context context) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@ public class AltEditionOpenLibrary
      * Constructor.
      *
      * @param olid      {@link Identifier#SID_OPEN_LIBRARY}
-     * @param isbn      of the book book
+     * @param isbn      of the book
      * @param langIso3  language ISO3 code of the book
      * @param publisher primary publisher name
      * @param covers    the OL native cover id(s).

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *             <li>There MUST be a public constructor annotated with {@code @Keep}
  *                 and with arguments ({@link Context},{@link SearchEngineConfig})
  *                 The context received is the <strong>application</strong> context;
- *                 i.e. a NON-localized context which cannot be used to lookup
+ *                 i.e. a NON-localised context which cannot be used to lookup
  *                 string resources but can be used for preference-value lookups.
  *             </li>
  *             <li>Add a public static method {@code
@@ -100,7 +100,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *              </li>
  *              <li>If needed, add a preference fragment for the user to configure the engine.
  *                  The class MUST be annotated with {@code @Keep}.
- *                  See existing engines for examples: add a class, an xml file,
+ *                  See existing engines for examples: add a class, an XML file,
  *                  and add it in the above {@code init()}.
  *              </li>
  *          </ul>
@@ -185,7 +185,7 @@ public enum EngineId
     /** The implementation class for this engine. */
     @NonNull
     private final Class<? extends SearchEngine> clazz;
-    /** Set at compile time from the gradle script. */
+    /** Set at compile time from the Gradle script. */
     private final boolean enabled;
     /** {@link SearchEngine.CoverByEdition} only. */
     private final boolean multipleCoverSizes;
@@ -276,7 +276,7 @@ public enum EngineId
                 // {@link SearchEngine.ByBarcode}
                 // {@link SearchEngine.ByText}
 
-                // Try to optimize by putting the most-likely-wanted at the top
+                // Try to optimise by putting the most-likely-wanted at the top
                 if (isPolish) {
                     type.addSite(BibliotecePl, true);
                 }
@@ -340,7 +340,7 @@ public enum EngineId
             case Covers: {
                 // Only add sites here that implement {@link SearchEngine.CoverByEdition}.
 
-                // Try to optimize by putting the most-likely-wanted at the top
+                // Try to optimise by putting the most-likely-wanted at the top
                 if (isChinese) {
                     type.addSite(Douban, true);
                 }
@@ -365,7 +365,7 @@ public enum EngineId
             case AltEditions: {
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
 
-                // Try to optimize by putting the most-likely-wanted at the top
+                // Try to optimise by putting the most-likely-wanted at the top
                 if (isChinese) {
                     type.addSite(Douban, true);
                 }

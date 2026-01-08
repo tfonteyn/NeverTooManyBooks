@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ class FetchImageTask
             throws StorageException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
-        // We need to catch the exceptions we really want to thrown, but catch all others.
+        // We need to catch the exceptions we really want to throw, but catch all others.
         //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
             return fileManager.search(context, this, edition, cIdx, sizes);
@@ -97,7 +97,7 @@ class FetchImageTask
             throw e;
 
         } catch (@NonNull final Exception ignore) {
-            // failing is ok, but we need to return the isbn + null fileSpec
+            // failing is OK, but we need to return the isbn + null fileSpec
             return new ImageFileInfo(edition);
         }
     }

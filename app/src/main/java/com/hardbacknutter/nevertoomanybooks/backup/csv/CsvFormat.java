@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -110,7 +110,7 @@ public enum CsvFormat
                     // We only support read == true/false
                 case "owned copies":
                     // We do not have a concept of multiple copies
-                    // (although could be a valid enhancement as we support lending out books)
+                    // (although this could be a valid enhancement as we support lending out books)
 
                     // Just use a bogus name which will be ignored
                     return CsvGoodreads.PREFIX + name;

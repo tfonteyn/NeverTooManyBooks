@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -218,11 +218,11 @@ public class ExtMenuItem
     /**
      * Resolve and load the icon.
      * <p>
-     * Notes on parceling...
+     * Notes on parcelling...
      * When converting a {@link MenuItem} to an ExtMenuItem, we copy the actual
      * {@link #icon} drawable, but resort to {@link IconMapper} to create/copy
      * the {@link #iconResId} which ends up being {@code 0} if there is mapping.
-     * <strong>If/when</strong> parceling is not actually called upon when sending
+     * <strong>If/when</strong> parcelling is not actually called upon when sending
      * the structure to a Fragment using {@code #setArguments(args)} then all is well
      * as the {@link #icon} is used and {@link #iconResId} is disregarded.
      * <p>
@@ -239,7 +239,7 @@ public class ExtMenuItem
     public Drawable getIcon(@NonNull final Context context) {
         // No icon at all, use a blank space.
         // We did not set R.drawable.ic_blank_placeholder as the default on purpose
-        // to avoid any complications with the parceling/mapping of icons
+        // to avoid any complications with the parcelling/mapping of icons
         // See {@link IconMapper}
         if (icon == null && iconResId == 0) {
             icon = context.getResources().getDrawable(R.drawable.blank_placeholder_24px,
@@ -328,7 +328,7 @@ public class ExtMenuItem
         // might not have an iconResId set.... not much we can do about that.
         // However, it's been seen that Parcelling this class
         // does not actually (ever?) calls the Parcelable interface?
-        // Instead it seems Android proxies back to the original
+        // Instead, it seems Android proxies back to the original
         // and the icon Drawable IS FOUND AND USED anyhow.
         // Either way, the above is a reminder/info only.
         // Solved by using {@link IconMapper}

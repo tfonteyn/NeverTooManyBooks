@@ -218,7 +218,7 @@ public class BookHolder
 
         // Titles (book/series) are NOT reordered here.
         // It does not make much sense in this particular view/holder,
-        // and slows down scrolling to much.
+        // and slows down scrolling too much.
         vb.title.setText(rowData.getString(DBKey.TITLE));
 
         if (use.contains(DBKey.READ__BOOL)) {

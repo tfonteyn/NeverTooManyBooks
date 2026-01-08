@@ -23,7 +23,7 @@ to keep track of your books and comics.
 
 Add books by scanning their barcode, ISBN, or generic text searches.
 
-Scan the QR code to open this page on your phone and use the "Get it on Github" button below to
+Scan the QR code to open this page on your phone and use the "Get it on GitHub" button below to
 download.<br>
 ![QR Code](qr-code.png)
 
@@ -58,7 +58,7 @@ Translations are editable on [Weblate](https://hosted.weblate.org/engage/neverto
 - Contact me by logging an [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues) if you want
   to provide translations in another way.
 - Please log a GitHub [issue](https://github.com/tfonteyn/NeverTooManyBooks/issues)
-  if you want to be credited by name (instead of github alias) with your help.
+  if you want to be credited by name (instead of GitHub alias) with your help.
 
 <a href="https://hosted.weblate.org/engage/nevertoomanybooks/">
 <img src="https://hosted.weblate.org/widget/nevertoomanybooks/multi-auto.svg"

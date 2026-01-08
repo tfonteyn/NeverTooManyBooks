@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -199,11 +199,11 @@ public class Series
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Checks if a number consists of digits only; i.e. it's an positive integer.
+     * Checks if a number consists of digits only; i.e. it's a positive integer.
      */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^\\d+$");
 
-    /** Simple lookup for roman numerals 1..5 to arabic. */
+    /** Simple lookup for roman numerals 1..5 to Arabic. */
     private static final Map<String, String> ROMAN_TO_ARABIC = Map.of(
             "I", "1.", "II", "2.", "III", "3", "IV", "4.", "V", "5."
     );

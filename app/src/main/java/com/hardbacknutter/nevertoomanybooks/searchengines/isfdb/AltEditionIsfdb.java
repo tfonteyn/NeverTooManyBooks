@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class AltEditionIsfdb
      * If we get (at least) 2 editions, then this will always be {@code null}.
      * <p>
      * IMPORTANT: the document is NOT parcelled. This is acceptable as all code
-     * will assume the it's potentially {@code null} and (re)fetch it when needed.
+     * will assume it's potentially {@code null} and (re)fetch it when needed.
      */
     @Nullable
     private Document document;

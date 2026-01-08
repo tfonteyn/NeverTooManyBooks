@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
-// the site redirects to the local country... loosing the
+// the site redirects to the local country... losing the
 // book/author part... the user will need to update the url's manually
 public final class Audible {
 

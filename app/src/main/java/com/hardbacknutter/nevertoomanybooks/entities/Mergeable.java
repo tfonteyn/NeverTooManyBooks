@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public interface Mergeable {
     List<String> getNameFields();
 
     /**
-     * Convenience method to <strong>diacritics-NOT-sensitive</strong> compare two Mergeable's.
+     * Convenience method to <strong>diacritics-NOT-sensitive</strong> compare two Mergeables.
      * Always <strong>case-sensitive</strong>.
      *
      * @param that the one to compare with
@@ -76,7 +76,7 @@ public interface Mergeable {
     }
 
     /**
-     * Convenience method to <strong>diacritics-sensitive</strong> compare two Mergeable's.
+     * Convenience method to <strong>diacritics-sensitive</strong> compare two Mergeables.
      * Always <strong>case-sensitive</strong>.
      *
      * @param that the one to compare with

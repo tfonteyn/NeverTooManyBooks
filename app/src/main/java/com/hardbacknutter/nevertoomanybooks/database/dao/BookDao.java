@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,7 +118,7 @@ public interface BookDao {
      * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
      *  and eventually to other linked objects.
      * <p>
-     * This will update <strong>ONLY</strong> the fields present in the passed in Book.
+     * This will update <strong>ONLY</strong> the fields present in the given Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
      * <p>
      * TRIGGERS:
@@ -143,7 +143,7 @@ public interface BookDao {
      * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
      *  and eventually to other linked objects.
      * <p>
-     * This will update <strong>ONLY</strong> the fields present in the passed in Book.
+     * This will update <strong>ONLY</strong> the fields present in the given Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
      *
      * @param context Current context
@@ -270,7 +270,7 @@ public interface BookDao {
     TypedCursor fetchById(@IntRange(from = 1) long id);
 
     /**
-     * Return an Cursor with all Books for the given external book ID.
+     * Return a Cursor with all Books for the given external book ID.
      * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
      *
      * @param key        to use
@@ -283,7 +283,7 @@ public interface BookDao {
                            @NonNull String externalId);
 
     /**
-     * Return an Cursor with all Books for the given list of {@link Book} ID's.
+     * Return a Cursor with all Books for the given list of {@link Book} ID's.
      *
      * @param idList List of book ID's to retrieve; should not be empty!
      *
@@ -296,9 +296,9 @@ public interface BookDao {
     TypedCursor fetchForAutoUpdate(@NonNull List<Long> idList);
 
     /**
-     * Return an Cursor with all Books for the given list of ISBN numbers.
+     * Return a Cursor with all Books for the given list of ISBNs.
      *
-     * @param isbnList list of ISBN numbers; should not be empty!
+     * @param isbnList list of ISBNs; should not be empty!
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      *
@@ -309,7 +309,7 @@ public interface BookDao {
 
 
     /**
-     * Return an Cursor with all Books where the {@link Book} id > the given id.
+     * Return a Cursor with all Books where the {@link Book} id > the given id.
      * Pass in {@code 0} for all books.
      *
      * @param id the lowest book id to start from.
@@ -333,7 +333,7 @@ public interface BookDao {
     int countBooksForExport(@Nullable LocalDateTime sinceDateTime);
 
     /**
-     * Return an Cursor with all Books, or with all updated Books since the given date/time.
+     * Return a Cursor with all Books, or with all updated Books since the given date/time.
      *
      * @param sinceDateTime (optional) select all books modified or added since that
      *                      date/time (UTC based). Set to {@code null} for *all* books.

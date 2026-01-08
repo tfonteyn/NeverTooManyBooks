@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,7 +105,7 @@ class KbNlBookHandler
             }
         }
 
-        // There is no language field; e.g. french books data is the same as dutch ones.
+        // There is no language field; e.g. French books data is the same as Dutch ones.
         // just add Dutch and hope for the best.
         if (!book.isEmpty() && !book.contains(DBKey.LANGUAGE)) {
             book.setLanguage("nld");
@@ -151,7 +151,7 @@ class KbNlBookHandler
             case "Kunstenaar":
                 // artist is for comics etc
             case "Illustrator":
-                // illustrator (label is same in dutch) is for books
+                // illustrator (label is same in Dutch) is for books
                 // Just put them both down as artists
                 parseAuthor(currentData, AuthorRole.ARTIST);
                 break;
@@ -224,16 +224,16 @@ class KbNlBookHandler
             case "Note":
             case "Annotatie":
                 // It's unclear if this is just an alternative field used
-                // for the same type of information. But as usual,.. it's unstructured.
+                // for the same type of information. But as usual,... it's unstructured.
             case "Annotation edition":
             case "Annotatie editie":
                 parseAnnotation(currentData);
                 break;
 
-            // case "Note": in english used a second time for the field above (Annotatie, in dutch)
-            // So if we're parsing in english, we HAVE to skip this.
-            // Normally we should not be parsing in english though... flw
-            // Unique in dutch.
+            // case "Note": in English used a second time for the field above (Annotatie, in Dutch)
+            // So if we're parsing in English, we HAVE to skip this.
+            // Normally we should not be parsing in English though... flw
+            // Unique in Dutch.
             case "Noot":
                 break;
 
@@ -563,7 +563,7 @@ class KbNlBookHandler
                 }
             } else if (text.charAt(0) == '(') {
                 if (!book.contains(DBKey.FORMAT)) {
-                    // Skip the 1th bracket, and split either on closing or on semicolon
+                    // Skip the 1st bracket, and split either on closing or on semicolon
                     book.setFormat(ISBN_BOUNDARY_PATTERN.split(text.substring(1))[0].strip());
                 }
             }

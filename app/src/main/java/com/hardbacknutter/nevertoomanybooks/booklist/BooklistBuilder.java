@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -261,9 +261,9 @@ class BooklistBuilder {
         /*
          * Temporary table used to store a flattened booklist tree structure.
          * This table should always be created without column constraints applied,
-         * with the exception of the "_id" primary key autoincrement
+         * except the "_id" primary key autoincrement
          *
-         * We setup the tables here with the primary key only.
+         * We set up the tables here with the primary key only.
          * Other domains will be added as needed.
          */
         listTable = new TableDefinition("tmp_book_list_" + instanceId, "bl")
@@ -322,7 +322,7 @@ class BooklistBuilder {
             // The reason being:
             // - we should not have duplicates in normal usage
             // - we WILL have duplicates when adding year/month/day parts
-            //   Each of those comes with the full date as a basedomain
+            //   Each of those comes with the full date as a base domain
             //   We need to be sure those full date domains are AFTER
             //  all the year/month/day domains.
             orderByDomainExpressions.remove(domainExpression);
@@ -363,7 +363,7 @@ class BooklistBuilder {
 
         /*
          * Copy all current groups to this group; this effectively accumulates
-         * 'GROUP BY' domains down each level so that the top has fewest groups and
+         * 'GROUP BY' domains down each level so that the top has the fewest groups and
          * the bottom level has groups for all levels.
          *
          * Since BooklistGroup objects are processed in order, this allows us to get
@@ -677,7 +677,7 @@ class BooklistBuilder {
     /**
      * Create the expression for the {@link DBKey.BL_NODE#KEY} column of a Book.
      * <p>
-     * This string value contains one key-value pair for each each group level, and
+     * This string value contains one key-value pair for each group level, and
      * ALWAYS ends with a '/'.
      * <p>
      * i.e: "/key=value/key=value/[key=value/]"
@@ -830,7 +830,7 @@ class BooklistBuilder {
                + ',' + '(' + subQuery + ')' + _AS_ + DBKey.FK_AUTHOR
                + _FROM_ + TBL_BOOK_AUTHOR.getName() + _AS_ + baOuter
                + _GROUP_BY_ + baOuter + '.' + DBKey.FK_BOOK
-               // don't forget we're appending the bulk insert sql, so add the SPACE
+               // don't forget we're appending the bulk insert SQL, so add the SPACE
                + ") ";
     }
 

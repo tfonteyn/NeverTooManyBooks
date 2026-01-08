@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -106,14 +106,14 @@ public class JsonArchiveWriter
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        // do a cleanup before we start writing
+        // do a clean-up before we start writing
         new Purger().purge();
 
         int steps = 0;
         if (recordTypes.contains(RecordType.Books)) {
             steps = serviceLocator.getBookDao().countBooksForExport(sinceDateTime);
             if (steps == 0) {
-                // no books to backup. We ignore all other record types!
+                // no books to back up. We ignore all other record types!
                 return new ExportResults();
             }
         }

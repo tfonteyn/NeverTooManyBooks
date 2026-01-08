@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a Context that must be localized (Activity or similar),
+ * Marks a Context that must be localised (Activity or similar),
  * not the Application context.
  * <p>
  * There are no checks done, this is merely for reminders/documentation.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ public class PartialDatePickerLauncher
 
     static final String BKEY_EXTRAS = TAG + ":extras";
 
-    /** A standard sql style (partial) date string, must/will be valid. */
+    /** A standard SQL style (partial) date string, must/will be valid. */
     static final String BKEY_EDIT = TAG + ":edit";
     private static final String BKEY_ORIGINAL = TAG + ":original";
 
@@ -93,7 +93,7 @@ public class PartialDatePickerLauncher
     }
 
     /**
-     * Set the results listener.
+     * Set the results' listener.
      *
      * @param resultListener to use
      */

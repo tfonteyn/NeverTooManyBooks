@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -125,7 +125,7 @@ public class OpenLibraryAuth
     /**
      * Get the user id for the <strong>current</strong> session.
      * <p>
-     * In the website html code sometimes referred to as "member".
+     * In the website HTML code sometimes referred to as "member".
      *
      * @return a valid non-empty user id if present
      */

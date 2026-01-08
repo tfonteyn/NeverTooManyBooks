@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
- * System wide book format representation.
+ * System-wide book format representation.
  * <p>
  * Good description at
  * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format">isfdb</a>
@@ -65,11 +65,11 @@ public final class FormatMapper
         MAPPINGS.put("relié", R.string.book_format_hardcover);
         // german - Amazon
         MAPPINGS.put("gebundenes buch", R.string.book_format_hardcover);
-        // portuguese
+        // Portuguese
         MAPPINGS.put("capa dura", R.string.book_format_hardcover);
         // simplified chinese - Douban
         MAPPINGS.put("精装", R.string.book_format_hardcover);
-        // czech
+        // Czech
         MAPPINGS.put("pevná / vázaná", R.string.book_format_hardcover);
         MAPPINGS.put("pevná / vázaná s přebalem", R.string.book_format_hardcover);
         // Greek
@@ -87,11 +87,11 @@ public final class FormatMapper
         MAPPINGS.put("pbk.", R.string.book_format_paperback);
         // french - BOL
         MAPPINGS.put("broché", R.string.book_format_paperback);
-        // portuguese
+        // Portuguese
         MAPPINGS.put("capa mole", R.string.book_format_paperback);
         // simplified chinese - Douban
         MAPPINGS.put("平装", R.string.book_format_paperback);
-        // czech
+        // Czech
         MAPPINGS.put("měkká / brožovaná", R.string.book_format_paperback);
         // Greek
         MAPPINGS.put("Μαλακό εξώφυλλο", R.string.book_format_paperback);
@@ -119,7 +119,7 @@ public final class FormatMapper
         MAPPINGS.put("livre numérique", R.string.book_format_ebook);
         // simplified chinese - Douban
         MAPPINGS.put("电子图书", R.string.book_format_ebook);
-        // czech
+        // Czech
         MAPPINGS.put("ekniha", R.string.book_format_ebook);
 
         // ################## Audio-books ##################
@@ -133,18 +133,18 @@ public final class FormatMapper
         MAPPINGS.put("livre audio numérique", R.string.book_format_audiobook);
         // german
         MAPPINGS.put("hörbuch", R.string.book_format_audiobook);
-        // portuguese
+        // Portuguese
         MAPPINGS.put("audiolivro", R.string.book_format_audiobook);
-        // spanish
+        // Spanish
         MAPPINGS.put("audiolibro", R.string.book_format_audiobook);
-        // czech
+        // Czech
         MAPPINGS.put("audiokniha", R.string.book_format_audiobook);
 
 
         // ################## Special ##################
         MAPPINGS.put("digest", R.string.book_format_digest);
         MAPPINGS.put("unknown", R.string.book_format_unknown);
-        // english - GoogleBooks
+        // English - GoogleBooks
         MAPPINGS.put("dimensions", R.string.book_format_dimensions);
         // goodreads... this is a weird one. Normally specific to children/baby books
         // it seems, but seen used on goodreads for hardcover comics.

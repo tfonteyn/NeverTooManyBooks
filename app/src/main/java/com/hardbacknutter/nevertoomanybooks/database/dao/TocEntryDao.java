@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -133,7 +133,7 @@ public interface TocEntryDao
      *
      * @param context        Current context
      * @param list           List to clean up
-     * @param normalize      flag, whether to normalize the title
+     * @param normalize      flag, whether to normalise the title
      * @param localeSupplier deferred supplier for a {@link Locale}.
      *
      * @return {@code true} if the list was modified.

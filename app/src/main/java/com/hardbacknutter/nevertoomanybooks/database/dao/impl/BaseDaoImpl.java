@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,10 +40,10 @@ class BaseDaoImpl {
      * LOCALIZED: using the user's primary Locale,
      * UNICODE  : Unicode Collation Algorithm and not tailored to the Locale.
      * <p>
-     * We tried 'COLLATE UNICODE' but it is case sensitive.
+     * We tried 'COLLATE UNICODE' but it is case-sensitive.
      * We ended up with 'Ursula Le Guin' and 'Ursula le Guin'.
      * <p>
-     * We now use COLLATE LOCALE and check to see if it is case sensitive.
+     * We now use COLLATE LOCALE and check to see if it is case-sensitive.
      * Maybe in the future Android will add LOCALE_CI (or equivalent).
      *
      * @see <a href="https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase">

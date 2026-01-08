@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 /**
  * A delegate used by ViewModels which holds common settings and logic
- * for doing a write to a remote.
+ * for doing a write operation to a remote.
  *
  * <ul>
  *     <li>{@link CredentialsException}: We cannot authenticate to the site,

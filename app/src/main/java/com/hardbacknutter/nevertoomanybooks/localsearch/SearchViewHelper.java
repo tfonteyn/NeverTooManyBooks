@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
 
 /**
- * github #107 => https://issuetracker.google.com/issues/135594222
+ * GitHub #107 => https://issuetracker.google.com/issues/135594222
  * <p>
  * 2025-02-22 Reminder: the old provider-based search is still active,
  * but no longer hooked up to the menus. It could all be deleted but it's
@@ -83,7 +83,7 @@ public class SearchViewHelper {
         // The callback comes from the timer thread, hence use "post"
         timerDelegate = new TimerDelegate(() -> this.searchView.post(this::fetchResults));
 
-        // Detect when user touches something outside of the EditText
+        // Detect when user touches something outside the EditText
         touchListener = (v, event) -> {
             timerDelegate.userIsActive(false);
             return false;

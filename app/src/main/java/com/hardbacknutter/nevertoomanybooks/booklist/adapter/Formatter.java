@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -239,7 +239,7 @@ class Formatter
         }
 
         // yes, we're using the 'title'. Adding specific publisher logic was
-        // to much overhead for a presumably little used feature
+        // too much overhead for a presumably little used feature
         if (style.isShowReorderedTitle()) {
             // We don't have full Objects here for Series/Publisher so we can't use
             // their methods for auto-reordering.
@@ -331,7 +331,7 @@ class Formatter
     }
 
     /**
-     * This formatter fixes an issue that when we have one ore more of the groups
+     * This formatter fixes an issue that when we have one or more of the groups
      * DATE_READ_YEAR/DATE_READ_MONTH/DATE_READ_DAY
      * there will be a duplicate "(Year not set)" (and similar for the others).
      * Reproduce this by creating a style with DATE_READ_YEAR, DATE_READ_MONTH, AUTHOR
@@ -342,7 +342,7 @@ class Formatter
      * The first "(Year not set)" contains books which have been 'read'
      * but for which the date-read is NOT set.
      * The second "(Year not set)" contains books which have NOT been 'read'
-     * But this is confusing to the user (and myself...)
+     * But this is confusing to the user (and me...)
      * <p>
      * Solution 1: remove the BD_BOOK_IS_READ from those 3 group definitions now we
      * have a single "(Year not set)"

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -147,7 +147,7 @@ public class IdentifierValueDaoImpl
             stmt.bindString(2, key);
 
             final String sid = stmt.simpleQueryForStringOrNull();
-            // null check sure.. the rest is paranoia
+            // null check sure... the rest is paranoia
             if (sid != null && !sid.isEmpty() && !"0".equals(sid)) {
                 return Optional.of(sid);
             }

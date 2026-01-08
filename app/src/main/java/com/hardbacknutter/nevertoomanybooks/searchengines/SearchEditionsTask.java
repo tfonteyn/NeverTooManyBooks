@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Fetch alternative edition isbn numbers.
+ * Fetch alternative edition ISBNs.
  * <p>
  * The sites are contacted one by one, in the order as set in user preferences.
  */

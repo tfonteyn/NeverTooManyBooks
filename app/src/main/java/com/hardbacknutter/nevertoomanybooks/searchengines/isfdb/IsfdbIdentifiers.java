@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,7 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
  *     28                  34  COBISS.SR             Co-operative Online Bibliographic Systems and Services - Serbia
  * </pre>
  * The patterns can have TWO groups which will be concatenated.
- * Can be generalized when needed in {@link IsfdbSearchEngine#parseSid(CharSequence)}.
+ * Can be generalised when needed in {@link IsfdbSearchEngine#parseSid(CharSequence)}.
  */
 @SuppressWarnings("LongLine")
 final class IsfdbIdentifiers {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -163,9 +163,9 @@ public enum ArchiveReaderEncoding
                     return Optional.of(Csv);
                 }
 
-                // json file as we write them out, offset 0, the string "{\""
+                // JSON file as we write them out, offset 0, the string "{\""
                 // This is very shaky, the { and " can have all sorts of whitespace in between.
-                // We check for none as this is how we write our own json files.
+                // We check for none as this is how we write our own JSON files.
                 // Aside of that, checking only two bytes is of questionable quality.
                 // HOWEVER: top-level json files are not supported by the UI!
                 // We use them for testing only.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,17 +105,17 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * A Spanish book (written in Spanish) should return the Spanish Locale.
  * i.e. an original language book, should (obviously) return its original Locale.
- * A Spanish book (translated from English) should return an Spanish Locale.
+ * A Spanish book (translated from English) should return a Spanish Locale.
  * i.e. a translated book, should return its translation Locale.
  * <p>
  * A Series should return the Locale as set by the user for that Series (not implemented yet).
  * If not set, then the Locale of the first book in the series.
- * Edge-case: books original in English, user has first book in Spanish, second book in English
+ * Edge-case: books original in English, user has a first book in Spanish, second book in English
  * -> the Series is wrongly designated as Spanish. Solution; user manually sets the Series Locale.
  * <p>
- * A Author should return the Locale as set by the user for that Author (not implemented yet),
+ * An Author should return the Locale as set by the user for that Author (not implemented yet),
  * This should normally be the primary language the author writes in.
- * i.e. usually the author's native language, but some authors will e.g. use english/french...
+ * i.e. usually the author's native language, but some authors will e.g. use english/French...
  * to reach a larger market without translation needs.
  * If not set, then the Locale of the first book (oldest copyright? oldest 'added'?) of that author.
  * <p>
@@ -191,8 +191,8 @@ public class Book
     public static final int RATING_STARS = 5;
 
     /**
-     * A book (and dustcover) condition goes from 1(worst)..5(best) or 0 for not-set.
-     * In code we only need 5(best) which is used as default when adding a new book.
+     * A book (and dustcover) condition goes from 1(worst) to 5(best) or 0 for not-set.
+     * In code, we only need 5(best) which is used as default when adding a new book.
      * <p>
      * <string-array name="conditions_book">
      * <item>@string/unknown</item>
@@ -403,8 +403,8 @@ public class Book
         //  The internal map is cloned, but the keys and values to which it refers are
         //  copied by reference.
         // ==> by reference...  so we would in effect be removing fields from the original book.
-        // This would be ok if we discard the original object (in memory only)
-        // but lets play this safe.
+        // This would be OK if we discard the original object (in memory only)
+        // but let's play this safe.
 
         // Do not copy any identifiers:
         // PK_ID
@@ -768,7 +768,7 @@ public class Book
     }
 
     /**
-     * Set the color.
+     * Set the colour.
      *
      * @param color to set; a {@code null} or an empty string will remove the field
      */
@@ -1674,7 +1674,7 @@ public class Book
         final String now = SqlEncode.dateTime(LocalDateTime.now());
         final String endDate = read ? now : "";
 
-        // If the separate page-count field is empty and we have a total-pages value,
+        // If the separate page-count field is empty, and we have a total-pages value,
         // set it as well.
         // Keep in sync with {@link BookDaoHelper#processReadProgress()} !
         String pageCount = getString(DBKey.PAGES);
@@ -1690,7 +1690,7 @@ public class Book
      * {@link #setReadNow(boolean)} and
      * {@link BookDao#setRead(Book, boolean)}.
      * <p>
-     * Dev. note: using this method forces us to keep a the related fields in a consistent state.
+     * Dev. note: using this method forces us to keep the related fields in a consistent state.
      *
      * @param read    value for {@link DBKey#READ__BOOL}
      * @param endDate value for {@link DBKey#READ_END__DATE}
@@ -1707,7 +1707,7 @@ public class Book
      * {@link #setReadingProgress(ReadingProgress)} and
      * {@link BookDao#setReadingProgress(Book, ReadingProgress)}.
      * <p>
-     * Dev. note: using this method forces us to keep a the related fields in a consistent state.
+     * Dev. note: using this method forces us to keep the related fields in a consistent state.
      *
      * @param readingProgress value for {@link DBKey#READ_PROGRESS}
      * @param endDate         value for {@link DBKey#READ_END__DATE}
@@ -1824,8 +1824,8 @@ public class Book
                                     + "|deleting"
                                  );
                 }
-                // explicitly set to "" to let BookDaoHelper#persistCovers do a delete
-                // at the time of insert/update -ing the book
+                // explicitly set to "" to let BookDaoHelper#persistCovers delete
+                // the file at the time of insert/update -ing the book
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
             }
 
@@ -2195,7 +2195,7 @@ public class Book
         /** This edition comes in a slipcase. */
         @VisibleForTesting
         public static final int SLIPCASE = 1 << 3;
-        /** This edition is signed. i.e the whole print-run of this edition is signed. */
+        /** This edition is signed. i.e. the whole print-run of this edition is signed. */
         @VisibleForTesting
         public static final int SIGNED = 1 << 4;
         /** It's a bookclub edition. */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@ public class LanguageDaoImpl
     }
 
     /**
-     * Get the list of all language <strong>ISO codes</strong>; sorted by by last-updated date.
+     * Get the list of all language <strong>ISO codes</strong>; sorted by last-updated date.
      * i.e. the language last used when updating a book will show first in the list.
      *
      * @return list with unique iso3 language codes

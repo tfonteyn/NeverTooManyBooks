@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -323,7 +323,7 @@ public class StripInfoReader
             dataToMerge = siBook;
             // but while we don't need the back cover, we might need the front cover
             // which *is* available on the collection page.
-            // Try to get get it, and stick it straight into the BKEY_TMP_FILE_SPEC[0]
+            // Try to get it, and stick it straight into the BKEY_TMP_FILE_SPEC[0]
             if (coversWanted[0]) {
                 final String url = dataToMerge.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
                 if (url != null && !url.isEmpty()) {

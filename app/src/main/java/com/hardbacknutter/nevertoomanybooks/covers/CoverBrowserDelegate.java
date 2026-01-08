@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -223,7 +223,7 @@ class CoverBrowserDelegate
 
     @Override
     public void onResume(@NonNull final LifecycleOwner lifecycleOwner) {
-        // if the task is NOT already running and we have no editions loaded before
+        // if the task is NOT already running, and we have no editions loaded before
         if (!vm.isSearchEditionsTaskRunning() && vm.getEditions().isEmpty()) {
             // start the task
             vb.statusMessage.setText(R.string.progress_msg_searching_editions);
@@ -335,7 +335,7 @@ class CoverBrowserDelegate
                     // Hide the now useless gallery and fetch/show the single image.
                     // This does mean that if the user saw the gallery image,
                     // and decided it's not the one they want...
-                    // we STILL potentially fetch a larger copy. Oh well...
+                    // we STILL potentially fetch a larger copy. Oh, well...
                     vb.statusMessage.setVisibility(View.GONE);
                     vb.gallery.setVisibility(View.GONE);
                     setSelectedImage(onlyOne, true);
@@ -356,7 +356,7 @@ class CoverBrowserDelegate
      * The 'verify' flag:
      * <ul>
      *     <li>{@code true} if the user clicked on a gallery image,
-     *                      but it still needs to be verified and we
+     *                      but it still needs to be verified, and we
      *                      potentially need to search for a better image.</li>
      *     <li>{@code false} if the image is already verified, and
      *                       we should just display it</li>

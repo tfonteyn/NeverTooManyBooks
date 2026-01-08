@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -127,9 +127,9 @@ class Ext2EditTextPreferenceDelegate
     }
 
     private boolean hasPendingShowSoftInputRequest() {
-        return (showRequestTime != -1 &&
-                ((showRequestTime + Ext2EditTextPreferenceDelegate.SHOW_REQUEST_TIMEOUT)
-                 > SystemClock.currentThreadTimeMillis()));
+        return showRequestTime != -1
+               && showRequestTime + Ext2EditTextPreferenceDelegate.SHOW_REQUEST_TIMEOUT
+                  > SystemClock.currentThreadTimeMillis();
     }
 
     private void setPendingShowSoftInputRequest(final boolean pendingShowSoftInputRequest) {

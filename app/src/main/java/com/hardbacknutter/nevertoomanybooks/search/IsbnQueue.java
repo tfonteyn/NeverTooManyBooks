@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -92,9 +92,9 @@ class IsbnQueue {
     }
 
     /**
-     * Import a list of ISBN numbers from a text file.
+     * Import a list of ISBNs from a text file.
      * <p>
-     * Format supported:  one or more (CSV) ISBN number on each line of the text file.
+     * Format supported:  one or more (CSV) ISBN on each line of the text file.
      * Whitespace and '-' are taken care of as usual, any other text will either
      * cause the line to be skipped, or the import to fail completely.
      *
@@ -226,7 +226,7 @@ class IsbnQueue {
     }
 
     /**
-     * Write the current queue as a csv list of ISBN numbers to preferences.
+     * Write the current queue as a csv list of ISBNs to preferences.
      *
      * @param context Current context
      */

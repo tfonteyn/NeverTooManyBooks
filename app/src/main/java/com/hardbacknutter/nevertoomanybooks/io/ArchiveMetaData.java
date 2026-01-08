@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -170,7 +170,7 @@ public class ArchiveMetaData
      *
      * @param context Current context
      *
-     * @throws DataReaderException on failure to recognise a supported archive
+     * @throws DataReaderException on failure to recognize a supported archive
      */
     public void validate(@NonNull final Context context)
             throws DataReaderException {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public final class Prefs {
     /**
      * Retrieve a float value from the preferences.
      * <p>
-     * Github #211 some android-variations seem to 'optimize' floating point numbers
+     * GitHub #211 some android-variations seem to 'optimise' floating point numbers
      * when storing them in SharedPreferences,  with the results that a {@code 0.0} value
      * will be written as {@code 0}, and subsequently fails to read as the OS thinks
      * it's an integer.

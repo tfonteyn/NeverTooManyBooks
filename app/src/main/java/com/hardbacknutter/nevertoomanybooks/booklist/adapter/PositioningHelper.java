@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -234,7 +234,7 @@ public class PositioningHelper {
             // Find the target which is closest to the current centered position
             // Assume first is best
             best = targetNodes.get(0);
-            // distance from currently visible center row
+            // distance from currently visible centre row
             int distance = Math.abs(best.getAdapterPosition() - centerPos);
             // Loop all other rows, looking for a nearer one
             int row = 1;

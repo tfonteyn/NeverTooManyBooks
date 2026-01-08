@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -168,7 +168,7 @@ public class Languages {
 
     /**
      * Map an ISO 639-2 (3-char) language code to a language code suited
-     * to be use with {@code new Locale(x)}.
+     * to be used with {@code new Locale(x)}.
      * <pre>
      * Rant:
      * Java 8 as bundled with Android Studio 3.5 on Windows:
@@ -185,7 +185,7 @@ public class Languages {
      * A possible explanation is that Android use ICU classes internally.<br>
      * Also see {@link #toBibliographic} and {@link #toTerminology}.
      * <br><br>
-     * <strong>Note:</strong> check the javadoc on {@link Locale#getISOLanguages()} for caveats.
+     * <strong>Note:</strong> check the Javadoc on {@link Locale#getISOLanguages()} for caveats.
      *
      * @param iso3   ISO 639-2 (3-char) language code
      *               (either bibliographic or terminology coded)
@@ -455,7 +455,7 @@ public class Languages {
 
     /**
      * We've seen {@link Locale#getISO3Language()} throw {@link MissingResourceException}
-     * on a HUAWEI model "ADA-AL10U" with Android 12; see github #58
+     * on a HUAWEI model "ADA-AL10U" with Android 12; see GitHub #58
      * The OS code returned the invalid code "zz" for a language
      * in {@link Locale#getAvailableLocales()}.
      *
@@ -463,7 +463,7 @@ public class Languages {
      *
      * @return iso3/2 code
      *
-     * @see <a href="https://github.com/tfonteyn/NeverTooManyBooks/issues/58">github #58</a>
+     * @see <a href="https://github.com/tfonteyn/NeverTooManyBooks/issues/58">GitHub #58</a>
      */
     @NonNull
     private String getIsoCode(@NonNull final Locale locale) {
@@ -481,7 +481,7 @@ public class Languages {
      * Check if the device or user Locales has the given language enabled.
      * <p>
      * Non-english sites are by default only enabled if either the device or
-     * this app is has the specified language enabled.
+     * this app has the specified language enabled.
      * The user can still enable/disable them at will of course.
      *
      * @param context Current context

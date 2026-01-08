@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ import org.jsoup.select.Elements;
  * <p>
  * Goodreads is owned by Amazon and has shut their API down.
  * <p>
- * But in 2022 the html pages started to contain a json blob making them easy to parse.
+ * But in 2022 the HTML pages started to contain a JSON blob making them easy to parse.
  */
 public class GoodreadsSearchEngine
         extends JsoupSearchEngineBase
@@ -569,7 +569,7 @@ public class GoodreadsSearchEngine
      * <p>
      * A broken entry, this one has two names squashed into one record.
      * We're not going to attempt/parse this in any special way.
-     * Github #139.
+     * GitHub #139.
      *
      * <pre>{@code
      *     "Contributor:kca://author/amzn1.gr.author.v1.SSat0nVoXAkYHijbhiK5WA": {

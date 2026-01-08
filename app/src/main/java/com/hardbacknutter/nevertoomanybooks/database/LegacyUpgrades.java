@@ -98,7 +98,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
- * A garbage bin with code used only during upgrades.
+ * Code used only during upgrades.
  *
  * @noinspection CheckStyle
  */
@@ -253,7 +253,7 @@ public final class LegacyUpgrades {
     }
 
     private static void v35AddCitationType(@NonNull final SQLiteDatabase db) {
-        // depending on the install/upgrade path, we might already have
+        // depending on the installation/upgrade path, we might already have
         // added the CITATION_TYPE column
         final ColumnInfo citationType = TBL_BOOKLIST_STYLES
                 .getTableInfo(db).getColumn(DBKey.STYLE.CITATION_TYPE);
@@ -439,7 +439,7 @@ public final class LegacyUpgrades {
     }
 
     private static void v39AddIdentifierAuthorUrl(@NonNull final SQLiteDatabase db) {
-        // depending on the install/upgrade path, we might already have
+        // depending on the installation/upgrade path, we might already have
         // added the AUTHOR_URI column and the identifier updates.
         final ColumnInfo authorUri = TBL_IDENTIFIERS
                 .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.AUTHOR_URI);
@@ -552,7 +552,7 @@ public final class LegacyUpgrades {
 
     static void v42onUpgrade(@NonNull final SQLiteDatabase db,
                              @NonNull final Context context) {
-        // depending on the install/upgrade path, we might already have
+        // depending on the installation/upgrade path, we might already have
         // added the WIKIDATA_CLAIM_AUTHOR_ID column
         final ColumnInfo wdCId = TBL_IDENTIFIERS
                 .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID);
@@ -584,7 +584,7 @@ public final class LegacyUpgrades {
     }
 
     static void v45onUpgrade(@NonNull final Context context) {
-        // Github #193: rebuild to restore the spaces
+        // GitHub #193: rebuild to restore the spaces
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
     }
 
@@ -596,7 +596,7 @@ public final class LegacyUpgrades {
         DBHelper.runWithoutConstraints(db, () ->
                 DBDefinitions.TBL_BOOK_AUTHOR.recreate(db));
 
-        // Github #200: in short: #193 introduced a bug where the order-by column
+        // GitHub #200: in short: #193 introduced a bug where the order-by column
         // could contain spaces. This led to "mergeable" data not being found,
         // which in turn led to creating duplicates.
         CleanOptions.setOptions(context, Set.of(
@@ -699,7 +699,7 @@ public final class LegacyUpgrades {
 
     /**
      * Add the given Identifier.
-     * Does nothing if it already exists..
+     * Does nothing if it already exists.
      *
      * @param db         Database Access
      * @param identifier to add
@@ -768,7 +768,7 @@ public final class LegacyUpgrades {
     /**
      * Called at the end of {@link DBHelper#onUpgrade(SQLiteDatabase, int, int)}.
      * Depending on the upgrade path of some users... add the global style
-     * if it does not already exists.
+     * if it does not already exist.
      *
      * @param context Current context
      * @param db      Database Access

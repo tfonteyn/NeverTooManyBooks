@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -97,7 +97,7 @@ public class ImportResults
     /** #bookshelves (new only) we imported. */
     public int bookshelves;
 
-    /** #deletedBook uuids we imported. */
+    /** #deletedBook uuid we imported. */
     public int deletedBookRecords;
 
     /**
@@ -170,7 +170,7 @@ public class ImportResults
                 .orElseGet(() -> context.getString(R.string.error_import_csv_line, row)));
 
         // Limit the amount of reporting (to the user) so we don't
-        // - overrun the Parceling max message size
+        // - overrun the Parcelling max message size
         // - overwhelm the user with to many (maybe identical) messages.
         // but we DO log ALL message (see below)
         if (booksFailed < MAX_FAIL_LINES_REPORTED) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
  * <a href="https://medium.com/revolut/customising-android-app-ui-with-themes-a251e42b1451">
  * Customising Android app UI with themes</a> which all Android devs should read.
  * <p>
- * Setup the style:
+ * Set up the style:
  * <pre>
  *     {@code
  *          <style name="Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
@@ -71,7 +71,7 @@ public final class ThemeColorController {
 
     /** {@link #PK_UI_THEME_COLOR} value - the original NeverTooManyBooks blue-grey theme. */
     private static final int PK_UI_THEME_COLOR_BLUE_GREY = 0;
-    /** {@link #PK_UI_THEME_COLOR} value - the Dynamic-Colors theme available on Android 12+ */
+    /** {@link #PK_UI_THEME_COLOR} value - the Dynamic-Colours theme available on Android 12+ */
     private static final int PK_UI_THEME_COLOR_DYNAMIC = 1;
 
     @SuppressWarnings("StaticVariableMayNotBeInitialized")
@@ -81,7 +81,7 @@ public final class ThemeColorController {
     }
 
     /**
-     * Init support for custom themes and dynamic colors.
+     * Init support for custom themes and dynamic colours.
      * <p>
      * Must be called from {@link Application#onCreate()}.
      *

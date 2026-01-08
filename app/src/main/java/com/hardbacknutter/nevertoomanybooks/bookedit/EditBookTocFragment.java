@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -92,7 +92,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * The ISFDB direct interaction should be seen as temporary as this class
- * should not have to know about any specific search web site.
+ * should not have to know about any specific search website.
  * <p>
  * This is still not obsolete as the standard search engines can only return a
  * single book, and hence a single TOC. The interaction here with ISFDB allows

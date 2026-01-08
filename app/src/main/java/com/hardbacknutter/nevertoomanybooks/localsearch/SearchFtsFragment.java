@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -112,7 +112,7 @@ public class SearchFtsFragment
         });
         vm.onSearchFinished().observe(getViewLifecycleOwner(), aVoid -> onSearchFinished());
 
-        // Detect when user touches something outside of the EditText
+        // Detect when user touches something outside the EditText
         touchListener = (v, event) -> {
             vm.userIsActive(false);
             return false;
@@ -141,7 +141,7 @@ public class SearchFtsFragment
         vb.author.addTextChangedListener(textWatcher);
         vb.publisher.addTextChangedListener(textWatcher);
         vb.keywords.addTextChangedListener(textWatcher);
-        // Detect when user touches something outside of the EditText
+        // Detect when user touches something outside the EditText
         vb.contentBody.setOnTouchListener(touchListener);
 
         // trigger a search if needed
@@ -211,7 +211,7 @@ public class SearchFtsFragment
     @Override
     @CallSuper
     public void onDestroy() {
-        // onPause is not always called! Hence making absolutely sure to shutdown the timer.
+        // onPause is not always called! Hence, making absolutely sure to shut down the timer.
         vm.shutdownTimer();
         super.onDestroy();
     }

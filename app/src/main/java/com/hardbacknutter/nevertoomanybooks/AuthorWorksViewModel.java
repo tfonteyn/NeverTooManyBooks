@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -176,9 +176,9 @@ public class AuthorWorksViewModel
         }
 
         // The author id from the arguments has priority if we get here a second time.
-        // 1. If the author list is empty -> load the author etc etc
+        // 1. If the author list is empty -> load the author etc
         // 2. If we already have an author loaded, check if it's the one from the author id
-        //      if not reload the author etc etc; otherwise don't bother reloading.
+        //      if not reload the author etc; otherwise don't bother reloading.
         // Note we only use/add a single author. Using a list for future compatibility though
         if (authors.isEmpty() || getPrimaryAuthor().getId() != authorId) {
             authors.clear();
@@ -270,7 +270,7 @@ public class AuthorWorksViewModel
 
     /**
      * Are we / should we display the list for 'All Bookshelves' or only for the
-     * previously set single Bookshelf.
+     * previously set single Bookshelf?
      *
      * @return {@code true} for all shelves.
      */

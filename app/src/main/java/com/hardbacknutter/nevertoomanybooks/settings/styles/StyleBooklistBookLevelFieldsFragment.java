@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,8 +52,8 @@ public class StyleBooklistBookLevelFieldsFragment
         vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
 
         // redirect storage to the database
-        // This MUST be done in onCreate/onCreatePreferences
-        // and BEFORE we inflate the xml screen definition
+        // This MUST be done in onCreate/onCreatePreferences,
+        // and BEFORE we inflate the XML screen definition
         getPreferenceManager().setPreferenceDataStore(vm.getStyleDataStore());
 
         super.onCreatePreferences(savedInstanceState, rootKey);

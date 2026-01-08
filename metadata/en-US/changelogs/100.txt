@@ -9,6 +9,6 @@ NEW:
 FIXES:
 
 - dnb.de workaround added for an ongoing certificate/security issue on the site.
-- github #137: dnb.de blocked requests without a 'referer'.
-- github #135: creating duplicate style names caused a crash
+- GitHub #137: dnb.de blocked requests without a 'referer'.
+- GitHub #135: creating duplicate style names caused a crash
 - fixes for Android 8..10 devices where merging Authors (etc) would sometimes fail.

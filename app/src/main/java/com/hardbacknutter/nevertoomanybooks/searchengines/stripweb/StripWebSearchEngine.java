@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,7 +74,7 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.stripweb.be">StripWeb</a>
  * <p>
- * Dutch language (and to some extend other languages) comics.
+ * Dutch language (and to some extent other languages) comics.
  * <p>
  * The site can be accessed in Dutch,French,English. We use the Dutch site for access.
  * The main reason for this one is having access to current list-prices;
@@ -82,7 +82,7 @@ import org.jsoup.select.Elements;
  * {@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId#StripInfoBe}
  * and {@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId#LastDodoNl}.
  * <p>
- * {@link SearchEngine.ByBarcode}: for barcodes and invalid ISBN numbers
+ * {@link SearchEngine.ByBarcode}: for barcodes and invalid ISBNs
  * The site also sells comic related merchandise, which has a site-specific code
  * and can be searched as a generic code.
  * The site treats this as a plain (but invalid) ISBN code.
@@ -110,7 +110,7 @@ public class StripWebSearchEngine
 
     /**
      * Some titles have suffixes which we need to strip.
-     * A big mess.... there is no structure on the website for these.. seems
+     * A big mess.... there is no structure on the website for these... seems
      * to depend on the mood of the person entering the title...
      * However, these books are generally NOT listed under their ISBN,
      * so unless the user enters the private site code they won't show up anyhow.
@@ -476,7 +476,7 @@ public class StripWebSearchEngine
                                @NonNull final Element td) {
         final String langCode = cleanText(td);
         if (!langCode.isBlank()) {
-            // Another mess.. the site uses an abbreviation for the language,
+            // Another mess... the site uses an abbreviation for the language,
             // but NOT a standard one.
             // Seen in use: NL,FR,Fr,EN
             switch (langCode.toLowerCase(Locale.ROOT)) {
@@ -501,7 +501,7 @@ public class StripWebSearchEngine
         final Element desc = document.selectFirst("div.detail-description");
         if (desc != null) {
             String html = desc.html();
-            // Potentially contains an iframe (e.g. to youtube content); remove it.
+            // Potentially contains an iframe (e.g. to YouTube content); remove it.
             final int iStart = html.indexOf("<iframe");
             if (iStart > 0) {
                 final int iEnd = html.indexOf("</iframe>");
@@ -572,7 +572,7 @@ public class StripWebSearchEngine
                              @AuthorRole.Role final int type,
                              @NonNull final Book book) {
         // The site actually uses "lastname firstname" or just "lastname".
-        // This create additional issues with names like "Van Hamme" which is a "lastname"
+        // This creates additional issues with names like "Van Hamme" which is a "lastname"
         // with a space in... nice mess...
         // So far this is the only site doing so consistently (other sites 'sometimes' do it).
         // We decode as usual,

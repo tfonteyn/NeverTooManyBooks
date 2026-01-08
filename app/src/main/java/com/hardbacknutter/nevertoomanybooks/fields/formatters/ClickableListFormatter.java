@@ -185,14 +185,14 @@ public class ClickableListFormatter<T>
             final Drawable b = getDrawable();
             canvas.save();
 
-            // 1. Get font metrics to find the center of the text
+            // 1. Get font metrics to find the centre of the text
             final Paint.FontMetricsInt fm = paint.getFontMetricsInt();
 
-            // 2. Calculate the center of the text line.
+            // 2. Calculate the centre of the text line.
             // 'y' is the baseline. (y + fm.descent) is the bottom, (y + fm.ascent) is the top.
             final int textCenter = y + (fm.descent + fm.ascent) / 2;
 
-            // 3. Calculate the translation needed to put the center of the icon at the text center
+            // 3. Calculate the translation needed to put the centre of the icon at the text centre
             final int transY = textCenter - (b.getBounds().height() / 2);
 
             canvas.translate(x, transY);

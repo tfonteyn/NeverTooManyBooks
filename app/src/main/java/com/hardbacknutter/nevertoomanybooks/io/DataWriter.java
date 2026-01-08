@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public interface DataWriter<RESULT>
     /**
      * Called when the operation is cancelled.
      * <p>
-     * Override if the implementation needs to cleanup/cancel something.
+     * Override if the implementation needs to clean up or cancel something.
      */
     default void cancel() {
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,7 +86,7 @@ public class CoverStorage {
      */
     private static final String PK_CACHE_RESIZED_IMAGES = "image.cache.resized";
 
-    /** Sub directory of the Covers directory. */
+    /** Subdirectory of the Covers directory. */
     private static final String TMP_SUB_DIR = "tmp";
 
     /** The minimum side (height/width) an image must be to be considered valid; in pixels. */
@@ -170,7 +170,7 @@ public class CoverStorage {
             }
         }
 
-        // Create the temporary sub directory if not done yet
+        // Create the temporary subdirectory if not done yet
         final File tmpDir = new File(coverDir, TMP_SUB_DIR);
         if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
             throw new CoverStorageException("Failed to create covers directory: Pictures/tmp");
@@ -230,7 +230,7 @@ public class CoverStorage {
     public File getDir()
             throws CoverStorageException {
         synchronized (this) {
-            // This should never be possible, but see github #184
+            // This should never be possible, but see GitHub #184
             if (coverDir == null) {
                 coverDir = ensureDir();
             }
@@ -273,7 +273,7 @@ public class CoverStorage {
 
     /**
      * Get the <strong>temporary</strong> directory where we store covers.
-     * Currently this is a sub directory of the permanent one to facilitate move==renames.
+     * Currently, this is a subdirectory of the permanent one to facilitate move==renames.
      *
      * @return directory
      *
@@ -544,7 +544,7 @@ public class CoverStorage {
                     LoggerFactory.getLogger().e(TAG, e);
                 }
             } else {
-                // no undo, just trash it
+                // no undo, just delete it
                 FileUtils.delete(file);
             }
 
@@ -552,7 +552,7 @@ public class CoverStorage {
             // Note we also delete the ones where != index.
             // and if the user flipped the cache on/off we're not
             // always cleaning up correctly.
-            // Oh well... we don't care; it's a cache.
+            // Oh, well... we don't care; it's a cache.
             if (isImageCachingEnabled()) {
                 coverCacheDaoSupplier.get().delete(uuid);
             }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -220,8 +220,8 @@ public final class IsfdbAuthorResolver
      *         we end up with "Brian W. Aldiss" as the real-author.
      *         Technically this is 'good', but users might find this annoying (including myself)
      *         but there is not much we can do about it.
-     *         We could add an (yet another) option in the settings to let the user
-     *         decide to ass this redirect as the real-author, or to overwrite.
+     *         We could add yet another option in the settings to let the user
+     *         decide: redirect as the real-author, or overwrite.
      *         But that would complicate things even more for actual pen-name handling.
      *         Bottom-line: the site does not differentiate between an "alternative name"
      *         and a "pen-name".

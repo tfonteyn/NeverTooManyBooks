@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -222,7 +222,7 @@ public class CalibreLibraryCoder
     }
 
 
-    // ok, this is nasty... up-to and including Backup format v3 we wrote
+    // This is nasty... up-to and including Backup format v3 we wrote
     // only the bookshelf id to the data object.
     // Importing that data ONLY works IF the bookshelf
     // a) exists and b) has the same id. This led to data loss on full imports to a clean

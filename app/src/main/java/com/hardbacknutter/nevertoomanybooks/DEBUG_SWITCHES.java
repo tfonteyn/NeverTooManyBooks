@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
  * Use something like this:
  * <p>
  * if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
- * Logger.info("some debug info);
+ * Logger.info("some debug info");
  * }
  * <p>
  * RELEASE: set all to false ! in case you forgot to '&&' with BuildConfig.DEBUG anywhere...

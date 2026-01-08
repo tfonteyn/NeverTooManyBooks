@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 public class ExportHelper
         extends DataWriterHelperBase<ExportResults> {
 
-    /** Number of app startup's between offers to backup. */
+    /** Number of app startup's between offers to back up. */
     public static final int BACKUP_COUNTDOWN_DEFAULT = 5;
     /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
     public static final String PK_BACKUP_COUNTDOWN = "startup.backupCountdown";
@@ -199,7 +199,7 @@ public class ExportHelper
             // As a ZipException has no 'error-code' to tell us what was really wrong,
             // other than reading the text... we avoid getting the ZipException
             // by skipping the close() altogether.
-            // Due to how the JDK Zip code works, we'll still end up
+            // Due to how the JDK zip compression code works, we'll still end up
             // with a zero-bytes file being written to the uri location.
             if (!isEmpty) {
                 close();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -279,7 +279,7 @@ public class EditTextField<T, V extends EditText>
         /**
          * The default value for all fields.
          * <p>
-         * Don't change, use/keep xml or manual code settings.
+         * Don't change, use/keep XML or manual code settings.
          */
         DoNotChange("", 0),
 

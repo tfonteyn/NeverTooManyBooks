@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -160,8 +160,8 @@ public final class ReorderHelper {
      * <strong>Unconditionally</strong> reorder the given text.
      * <p>
      * This method does the actual re-ordering.
-     * It move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
-     * This is case sensitive on purpose.
+     * It moves "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
+     * This is case-sensitive on purpose.
      *
      * @param context     Current context
      * @param title       to reorder
@@ -175,7 +175,7 @@ public final class ReorderHelper {
                           @Nullable final Locale firstLocale) {
 
         final String[] titleWords = title.split(" ");
-        // Single word titles (or empty titles).. just return.
+        // Single word titles (or empty titles)... just return.
         if (titleWords.length < 2) {
             return title;
         }

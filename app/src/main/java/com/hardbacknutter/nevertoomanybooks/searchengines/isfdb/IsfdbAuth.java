@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -128,7 +128,7 @@ public class IsfdbAuth
     //
     // in short: due to the missing timezone, we get a 'null' date...
     // which leads to max-age being set to zero... which means the cookie
-    // is immediately seen as expired and it gets deleted before we have a chance
+    // is immediately seen as expired, and it gets deleted before we have a chance
     // to access it.
     //
     // Note that we cannot modify the BiscuitStore to update/correct the max-age

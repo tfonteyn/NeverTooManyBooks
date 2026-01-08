@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.bedetheque.com/">bedetheque</a>
  * <p>
- * French language (and to some extend other languages) comics.
+ * French language (and to some extent other languages) comics.
  * <p>
  * Implementing {@link SearchEngine.ByText} is not possible.
  * The form on the site seems to insist on doing lookups for each field individually
@@ -98,11 +98,11 @@ public class BedethequeSearchEngine
     /** MM-YYYY. */
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
 
-    /** Whether we can map as usual, or (true) if we want to keep the french format names. */
+    /** Whether we can map as usual, or (true) if we want to keep the French format names. */
     private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES =
             PREFERENCE_KEY + ".resolve.formats";
 
-    /** These are generic author names which are really the color. */
+    /** These are generic author names which are really the colour. */
     private static final List<String> AUTHOR_NAME_COLOR =
             List.of("<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>");
 
@@ -153,7 +153,7 @@ public class BedethequeSearchEngine
 
     /**
      * 'x' is normally the title, which the site will ignore.
-     * The site recognizes the url by the prefix 'BD-' and the last '-' followed by the sid
+     * The site recognises the url by the prefix 'BD-' and the last '-' followed by the sid
      */
     private static final String BY_EXTERNAL_ID = "/BD-x-%s.html";
 
@@ -432,7 +432,7 @@ public class BedethequeSearchEngine
         final Element titleElement = albumMain.selectFirst("h3.titre");
         if (titleElement != null) {
             // <h3 class="titre">9<span class="numa">a1978/01</span> . Les soucoupes volantes</h3>
-            // grab the html, to avoid the concatenation of the text
+            // grab the HTML, to avoid the concatenation of the text
             // in the span. We might later want to extract that text as well
             final Matcher matcher = NR_TITLE_PATTERN.matcher(titleElement.html());
             if (matcher.find()) {
@@ -681,7 +681,7 @@ public class BedethequeSearchEngine
 
                         final String colorOrColorist = a.text();
                         if (AUTHOR_NAME_COLOR.contains(colorOrColorist)) {
-                            // REMOVE the "<>" as we really don't want fake html tags
+                            // REMOVE the "<>" as we really don't want fake HTML tags
                             book.setColor(
                                     colorOrColorist.substring(1, colorOrColorist.length() - 1));
                         } else {
@@ -822,7 +822,7 @@ public class BedethequeSearchEngine
                              @AuthorRole.Role final int role,
                              @NonNull final Book book) {
 
-        // REMOVE potential "<>" as we really don't want fake html tags
+        // REMOVE potential "<>" as we really don't want fake HTML tags
         String names = text;
         if (names.startsWith("<")) {
             names = names.substring(1);
@@ -831,7 +831,7 @@ public class BedethequeSearchEngine
             names = names.substring(0, names.length() - 1);
         }
 
-        // colors - handled by "Couleurs"
+        // Colours - handled by "Couleurs"
         //"<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>"
         // scenario author for an art-book; ignore
         // "<Art Book>"
@@ -929,7 +929,7 @@ public class BedethequeSearchEngine
     }
 
     /**
-     * Map Bedetheque specific formats to our generalized ones if allowed.
+     * Map Bedetheque specific formats to our generalised ones if allowed.
      *
      * @param context       Current context
      * @param currentFormat original french format string

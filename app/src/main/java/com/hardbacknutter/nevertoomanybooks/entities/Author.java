@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,7 +115,7 @@ public class Author
      * A. E. Van Vogt
      * Rip Von Ronkel
      * <p>
-     * Typical dutch: there are too many to list them all...
+     * Typical Dutch: there are too many to list them all...
      * "van der X"  added as quite common
      * "van den X"  not added, usually all in one word
      * <p>
@@ -126,9 +126,9 @@ public class Author
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Handles recognition of a (typical american?) name suffix.
+     * Handles recognition of a (typical American?) name suffix.
      * <p>
-     * First character "j" and "s" can be lower or upper case.
+     * First character "j" and "s" can be lower- or upper-case.
      * <p>
      * Foo Bar Jr.
      * Foo Bar Jr
@@ -1384,7 +1384,7 @@ public class Author
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.
      * <p>
-     * <strong>github #200</strong>: adding the below notes for easy reference:
+     * <strong>GitHub #200</strong>: adding the below notes for easy reference:
      * <pre>
      * Author equality is based on:
      *

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public class SearchException
      *
      * @param engineId         the SearchEngine which threw the exception
      * @param logMessage       (optional) a message intended to be logged and NOT shown to the user
-     * @param localizedMessage (optional) a <strong>localized</strong> message which
+     * @param localizedMessage (optional) a <strong>localised</strong> message which
      *                         <strong>will</strong> be shown to the user
      */
     public SearchException(@NonNull final EngineId engineId,
@@ -70,7 +70,7 @@ public class SearchException
     }
 
     /**
-     * Get (and create if needed) the localized message to show to the user.
+     * Get (and create if needed) the localised message to show to the user.
      *
      * @param context Current context
      *

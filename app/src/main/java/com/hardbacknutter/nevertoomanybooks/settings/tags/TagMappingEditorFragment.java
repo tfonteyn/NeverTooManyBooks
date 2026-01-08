@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -377,7 +377,7 @@ public class TagMappingEditorFragment
         message.process(optionsCount -> reportMappingsDone(R.string.action_done, optionsCount));
     }
 
-    // as so often.. the reporting code is longer than the action code... is this really needed?
+    // as so often... the reporting code is longer than the action code... is this really needed?
     private void reportMappingsDone(@StringRes final int titleId,
                                     @NonNull final Map<TagMapperTask.Options, Integer>
                                             optionsCount) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -231,7 +231,7 @@ class BookSearch {
                 .collect(Collectors.toList());
 
         // Merge the data we have in the order as decided upon above.
-        // no synchronized needed, at this point all other threads have finished.
+        // no synchronisation needed, at this point all other threads have finished.
         resultsAccumulator.process(context, results, book);
 
         // If we did not get an ISBN, use the one we originally searched for.
@@ -290,7 +290,7 @@ class BookSearch {
         final Optional<ISBN> oIsbn = criteria.getIsbn();
 
         activeEngines.forEach(engineId -> {
-            // no synchronized needed, at this point all other threads have finished.
+            // no synchronisation needed, at this point all other threads have finished.
             final SearchTaskResult siteData = resultsByEngineId.get(engineId);
             if (siteData != null) {
                 siteData.getResult().ifPresent(result -> {
@@ -310,7 +310,7 @@ class BookSearch {
                             sitesInOrder.add(engineId);
                         } else {
                             // The ISBN found does not match the ISBN we searched for;
-                            // 2023-05-30: don't just skip; add it to the less reliables
+                            // 2023-05-30: don't just skip; add it to the lesser reliables
                             sitesWithoutIsbn.add(engineId);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
@@ -343,7 +343,7 @@ class BookSearch {
      */
     @Nullable
     private String accumulateErrors(@NonNull final Context context) {
-        // no synchronized needed, at this point all other threads have finished.
+        // no synchronisation needed, at this point all other threads have finished.
         if (!errorsByEngineId.isEmpty()) {
             final String msg = errorsByEngineId
                     .values()

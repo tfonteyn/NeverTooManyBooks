@@ -1,4 +1,4 @@
 FIXES
-- github #106: DNB Identifier is text (not a number)
-- github #108: Settings/identifiers was crashing
-- github #110: crash after upgrade when there was an active filter on genre
+- GitHub #106: DNB Identifier is text (not a number)
+- GitHub #108: Settings/identifiers was crashing
+- GitHub #110: crash after upgrade when there was an active filter on genre

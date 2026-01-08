@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,7 +81,7 @@ public class TocViewModel
     }
 
     /**
-     * Are we running in embedded mode.
+     * Are we running in embedded mode?
      *
      * @return flag
      */
@@ -101,7 +101,7 @@ public class TocViewModel
     void reloadBook(@NonNull final Book book) {
         // All fragments in the ViewPager might/will be called,
         // If we're in embedded mode, we always need to reload.
-        // Otherwise only continue with the reload if the incoming data is OUR book.
+        // Otherwise, only continue with the reload if the incoming data is OUR book.
         if (!embedded && book.getId() != this.book.getId()) {
             return;
         }

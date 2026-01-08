@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,7 +55,7 @@ public abstract class BaseStyle
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
     /**
-     * IMPORTANT: this is the ALMOST the same set as used by {@link BookLevelFieldVisibility}
+     * IMPORTANT: this is ALMOST the same set as used by {@link BookLevelFieldVisibility}
      * and should be kept in sync.
      * but note the differences:
      * <ul>
@@ -327,7 +327,7 @@ public abstract class BaseStyle
     }
 
     /**
-     * Copy all the <strong>group</strong> options (but not he actual groups)
+     * Copy all the <strong>group</strong> options (but not the actual groups)
      * from the given style into this style.
      *
      * @param from to copy from
@@ -536,7 +536,7 @@ public abstract class BaseStyle
 
     @NonNull
     public Map<String, Sort> getBookLevelFieldsOrderBy() {
-        // do NOT use Map.copyOf ! We'd loose the order!
+        // do NOT use Map.copyOf ! We'd lose the order!
         return new LinkedHashMap<>(bookLevelFieldsOrderBy);
     }
 

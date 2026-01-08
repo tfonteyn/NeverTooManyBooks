@@ -8,7 +8,7 @@ NEW:
 - "Share" allows several "Citation" formats.
 
 FIXES:
-- github #84 renaming default bookshelf
-- github #89, #92, #94 field visibility
-- 979 isbn numbers are now shown as 'valid'
+- GitHub #84 renaming default bookshelf
+- GitHub #89, #92, #94 field visibility
+- 979 ISBNs are now shown as 'valid'
 - some author names like "Kim Stanley Robinson" were wrongly parsed

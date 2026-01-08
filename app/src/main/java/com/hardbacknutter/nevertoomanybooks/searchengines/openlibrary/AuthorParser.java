@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -96,7 +96,7 @@ public class AuthorParser {
 
     /**
      * Parse an author json-blob.
-     * This method <strong>should</strong> be able to deal with a json blob coming from.
+     * This method <strong>should</strong> be able to deal with a JSON blob coming from.
      * the <a href="https://openlibrary.org/dev/docs/api/authors">author API</a>
      * as a direct OLID link or as a query.
      * <p>

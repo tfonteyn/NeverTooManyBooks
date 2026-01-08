@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,7 +115,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
                     }
 
                     endIconView.setOnFocusChangeListener(focusChangeListener);
-                    // Make sure there's always only one clear text text watcher added
+                    // Make sure there's always only one clear text watcher added
                     editText.removeTextChangedListener(clearTextEndIconTextWatcher);
                     editText.addTextChangedListener(clearTextEndIconTextWatcher);
                 }

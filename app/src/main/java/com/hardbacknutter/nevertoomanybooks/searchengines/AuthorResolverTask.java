@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public class AuthorResolverTask
      * <p>
      * See {@link AuthorResolverHelper} for detailed docs.
      *
-     * @return {@code true} if the any {@link Author}s were modified; {@code false} otherwise
+     * @return {@code true} if any {@link Author}s were modified; {@code false} otherwise
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search

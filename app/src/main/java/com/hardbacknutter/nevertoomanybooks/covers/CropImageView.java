@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -173,7 +173,7 @@ public class CropImageView
     private boolean noTouching;
 
     /**
-     * Constructor used by the xml inflater.
+     * Constructor used by the XML inflater.
      *
      * @param context This will be the hosting {@link CropImageFragment}
      * @param attrs   The attributes of the XML tag that is inflating the view.
@@ -187,7 +187,7 @@ public class CropImageView
     }
 
     /**
-     * Setup the view with the given bitmap.
+     * Set up the view with the given bitmap.
      *
      * @param bitmap to edit
      */
@@ -282,7 +282,7 @@ public class CropImageView
         // ALWAYS give it ALL events! This seems to be crucial to the detector working properly.
         scaleGestureDetector.onTouchEvent(event);
 
-        // If the detector has just gone through "onScaleEnd", reset it and we're done here.
+        // If the detector has just gone through "onScaleEnd", reset it, and we're done here.
         if (inScaleGestureStep == InScaleGestureStep.Ended) {
             inScaleGestureStep = InScaleGestureStep.NotActive;
             return true;
@@ -400,7 +400,7 @@ public class CropImageView
     }
 
     /**
-     * Setup the base matrix so that the image is centered and scaled properly.
+     * Set up the base matrix so that the image is centered and scaled properly.
      *
      * @param bitmap to use
      */
@@ -446,9 +446,9 @@ public class CropImageView
 
 
     /**
-     * Center as much as possible in one or both axis. Centering is defined as follows:
+     * Centre as much as possible in one or both axis. Centering is defined as follows:
      * <ul>
-     *     <li>If the image is scaled down below the view's dimensions then center it (literally).
+     *     <li>If the image is scaled down below the view's dimensions then centre it (literally).
      *     </li>
      *     <li>If the image is scaled larger than the view and is translated out of view then
      *         translate it back into view (i.e. eliminate black bars).</li>
@@ -495,7 +495,7 @@ public class CropImageView
 
     /**
      * If the cropping rectangle's size changed significantly, change the
-     * view's center and scale according to the cropping rectangle.
+     * view's centre and scale according to the cropping rectangle.
      *
      * @param highlightView to process
      */
@@ -676,7 +676,7 @@ public class CropImageView
                 return MOVE;
             }
 
-            // Outside of the highlighted rectangle
+            // Outside the highlighted rectangle
             return NO;
         }
     }
@@ -695,7 +695,7 @@ public class CropImageView
         private static final float MAX_RESIZE_FACTOR = 0.5f;
 
         /**
-         * The minimum width an height of the cropping rectangle.
+         * The minimum width a height of the cropping rectangle.
          * Using 26 means the two handle-icons will just not touch.
          */
         private static final float CROP_RECT_MIN_SIZE = 26.0f;

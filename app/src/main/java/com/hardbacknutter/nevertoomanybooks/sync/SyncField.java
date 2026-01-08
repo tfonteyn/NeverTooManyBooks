@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -141,7 +141,7 @@ public final class SyncField
     }
 
     /**
-     * Get the key (colum name) for this field.
+     * Get the key (column name) for this field.
      *
      * @return key
      */

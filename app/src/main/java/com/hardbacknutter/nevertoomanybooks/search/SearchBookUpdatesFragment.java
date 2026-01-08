@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -161,7 +161,7 @@ public class SearchBookUpdatesFragment
 
         // The full list was processed
         vm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
-        // Something really bad happened and we're aborting
+        // Something terrible happened and we're aborting
         vm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
 
         final FloatingActionButton fab = getFab();

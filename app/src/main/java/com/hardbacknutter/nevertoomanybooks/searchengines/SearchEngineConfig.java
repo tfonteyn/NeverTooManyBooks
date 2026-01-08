@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -252,7 +252,7 @@ public class SearchEngineConfig {
     /**
      * Timeout we allow for a connection to be established.
      *
-     * @return milli seconds
+     * @return milliseconds
      */
     public int getConnectTimeoutInMs() {
         return getTimeoutValueInMs(engineId.getPreferenceKey()
@@ -263,7 +263,7 @@ public class SearchEngineConfig {
     /**
      * Timeout we allow for getting a response from the remote server.
      *
-     * @return milli seconds
+     * @return milliseconds
      */
     public int getReadTimeoutInMs() {
         return getTimeoutValueInMs(engineId.getPreferenceKey()

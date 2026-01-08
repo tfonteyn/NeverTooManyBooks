@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class StringEqualityHolder
         vb.filter.setText(filter.getValueText(context));
 
         // We cannot share this adapter/formatter between multiple Holder instances
-        // as they depends on the DBKey of the filter.
+        // as they depend on the DBKey of the filter.
         @Nullable
         final ExtArrayAdapter<String> adapter = FilterFactory
                 .createAdapter(context, filter.getDBKey());

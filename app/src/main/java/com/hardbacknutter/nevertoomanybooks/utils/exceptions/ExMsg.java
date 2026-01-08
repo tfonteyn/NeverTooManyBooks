@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public final class ExMsg {
     /**
      * Map an Exception to a user readable error message.
      * <p>
-     * Dev Note: the return value should preferable fit on a single line
+     * Dev Note: the return value should preferably fit on a single line
      *
      * @param context Current context
      * @param e       Throwable to process
@@ -96,11 +96,11 @@ public final class ExMsg {
             return ((SearchException) e).getUserMessage(context);
 
         } else if (e instanceof ValidatorException) {
-            // The ValidatorException expects a localized message, so just use it
+            // The ValidatorException expects a localised message, so just use it
             return e.getLocalizedMessage();
 
         } else if (e instanceof UpgradeFailedException) {
-            // The UpgradeFailedException expects a localized message, so just use it
+            // The UpgradeFailedException expects a localised message, so just use it
             return e.getLocalizedMessage();
 
         } else if (e instanceof CoverStorageException) {

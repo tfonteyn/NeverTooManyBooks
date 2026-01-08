@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -164,7 +164,7 @@ public class LibraryThingSearchEngine
     /**
      * Search for edition data.
      * <p>
-     * <strong>Note:</strong> we assume the isbn numbers retrieved from the site are valid.
+     * <strong>Note:</strong> we assume the ISBNs retrieved from the site are valid.
      * No extra checks are made.
      *
      * <br>{@inheritDoc}
@@ -194,7 +194,7 @@ public class LibraryThingSearchEngine
         }
 
         final String url = getHostUrl() + String.format("/api/%1$s/thingISBN/%2$s",
-                                                               apiToken, validIsbn);
+                                                        apiToken, validIsbn);
         final SAXParser parser;
         try {
             parser = SAXParserFactory.newInstance().newSAXParser();
@@ -240,7 +240,7 @@ public class LibraryThingSearchEngine
     private static final class LibraryThingEditionHandler
             extends DefaultHandler {
 
-        /** isbn tag in an editions xml response. */
+        /** isbn tag in an editions XML response. */
         private static final String XML_ISBN = "isbn";
 
         /** XML content. */
@@ -272,7 +272,7 @@ public class LibraryThingSearchEngine
             // Always reset the length. This is not entirely the right thing to do, but works
             // because we always want strings from the lowest level (leaf) XML elements.
             // To be completely correct, we should maintain a stack of builders that are pushed and
-            // popped as each startElement/endElement is called. But lets not be pedantic for now.
+            // popped as each startElement/endElement is called. But let's not be pedantic for now.
             builder.setLength(0);
         }
 

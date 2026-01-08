@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,9 +44,9 @@ public class ExportViewModel
         extends DataWriterViewModel<ExportResults> {
 
     private static final String TAG = "ExportViewModel";
-    private static final String ERROR_GITHUB_128 = "github #128";
+    private static final String ERROR_GITHUB_128 = "GitHub #128";
     private static final String ERROR_DUP_TASK =
-            "github #128: preventing starting a backup task twice";
+            "GitHub #128: preventing starting a backup task twice";
 
     /**
      * The encodings we currently (fully or limited) support writing.
@@ -139,7 +139,7 @@ public class ExportViewModel
     }
 
     /**
-     * Get the list of options (and initial position) for the drop down menu
+     * Get the list of options (and initial position) for the drop-down menu
      * for the archive format.
      *
      * @param context Current context
@@ -166,7 +166,7 @@ public class ExportViewModel
 
     @Override
     public boolean isReadyToGo() {
-        // github #128; see also startExport
+        // GitHub #128; see also startExport
         if (isRunning()) {
             LoggerFactory.getLogger().e(TAG, new Throwable(ERROR_GITHUB_128), ERROR_DUP_TASK);
             return false;
@@ -180,10 +180,10 @@ public class ExportViewModel
     }
 
     void startExport(@NonNull final Uri uri) {
-        // github #128
+        // GitHub #128
         if (isRunning()) {
             // this is not a "solution" but we can only get here
-            // from registerForActivityResult(new GetContentUriForWritingContract(),...
+            // from registerForActivityResult(new GetContentUriForWritingContract(),...)
             // which makes no sense. There is not enough info to make
             // a real conclusion; this way we at least prevent a crash.
             LoggerFactory.getLogger().e(TAG, new Throwable(ERROR_GITHUB_128), ERROR_DUP_TASK);

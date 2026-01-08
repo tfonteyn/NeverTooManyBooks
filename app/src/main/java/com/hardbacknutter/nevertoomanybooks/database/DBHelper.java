@@ -227,8 +227,8 @@ public class DBHelper
     }
 
     /**
-     * Method to detect if collation implementations are case sensitive.
-     * This was built because ICS broke the UNICODE collation (making it case sensitive (CS))
+     * Method to detect if collation implementations are case-sensitive.
+     * This was built because ICS broke the UNICODE collation (making it case-sensitive (CS))
      * and we needed to check for collation case-sensitivity.
      * <p>
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
@@ -477,7 +477,7 @@ public class DBHelper
             LegacyUpgrades.v46onUpgrade(db, context);
         }
         if (oldVersion < 47) {
-            // github #216 fix/improvements
+            // GitHub #216 fix/improvements
             CleanOptions.setOptions(context, Set.of(CleanOptions.ResolveAuthors));
             StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
         }
@@ -491,11 +491,11 @@ public class DBHelper
         // We have to do this here as we're always inserting all columns,
         // which may be created at various points in the updates.
         // Any identifier already existing will simply be skipped.
-        // See github #185
+        // See GitHub #185
         LegacyUpgrades.addIdentifiersIfNotYetDone(context, db);
 
-        // We have to do this here due to some users skipping updates (see github #30)
-        // The issue is that this only works ok if the TBL_BOOKLIST_STYLES contains
+        // We have to do this here due to some users skipping updates (see GitHub #30)
+        // The issue is that this only works OK if the TBL_BOOKLIST_STYLES contains
         // ALL columns at the time we're executing it.
         LegacyUpgrades.insertGlobalStyleIfNotYetDone(context, db);
 

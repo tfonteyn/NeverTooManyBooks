@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ public final class SoundManager {
     }
 
     /**
-     * Play a generic tone. If as tone is longer than 500ms, it will be cutoff.
+     * Play a generic tone. If as tone is longer than 500ms, it will be cut off.
      *
      * @param tone one of {@link #POSITIVE}, {@link #NEGATIVE} or {@link #EVENT}
      *             or any of the {@link ToneGenerator} predefined tones.

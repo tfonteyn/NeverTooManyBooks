@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public class ConnectionValidatorTask
      * Constructor.
      * <p>
      * Dev. note: we use the siteResId instead of EngineId because this class
-     * needs to support non-searchengines as well, e.g Calibre.
+     * needs to support non-searchengines as well, e.g. Calibre.
      *
      * @param siteResId string resource for the site name
      */

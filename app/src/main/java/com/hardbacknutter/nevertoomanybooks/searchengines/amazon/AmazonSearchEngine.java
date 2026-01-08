@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -642,7 +642,7 @@ public class AmazonSearchEngine
                         book.setIsbn(ISBN.cleanText(text[1]));
 
                     } else if (LABEL_FORMAT.contains(lcLabel)) {
-                        // we might already have the format, but we'll overwrite it - that's ok.
+                        // we might already have the format, but we'll overwrite it - that's OK.
                         book.setFormat(label);
                         // 2025-06-01: we can likely remove this, as there is now LABEL_PAGES
                         final String data = cleanText(text[1]);

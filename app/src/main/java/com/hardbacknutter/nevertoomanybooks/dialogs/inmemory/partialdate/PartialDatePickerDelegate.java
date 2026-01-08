@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ class PartialDatePickerDelegate
     private static final int START_YEAR = -3000;
 
     /**
-     * How many years into the future we show the calender for.
+     * How many years into the future we show the calendar for.
      * We set it 10 years in the future for user who want to add books
      * which are announced, but not available yet.
      */
@@ -240,7 +240,7 @@ class PartialDatePickerDelegate
                 // make 'now' the last position
                 lm.scrollToPositionWithOffset(initialPos, offset);
             } else {
-                // center the selected year
+                // centre the selected year
                 lm.scrollToPositionWithOffset(initialPos, offset / 2);
             }
         });

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -131,8 +131,8 @@ public interface FlexDialogDelegate
      * There are 4 potential types of toolbar:
      * <ol>
      *     <li>None at all; pass in a {@code null}</li>
-     *     <li>Fullscreen/top toolbar with all the menus as configured in xml</li>
-     *     <li>BottomSheet toolbar with all the menus as configured in xml</li>
+     *     <li>Fullscreen/top toolbar with all the menus as configured in XML</li>
+     *     <li>BottomSheet toolbar with all the menus as configured in XML</li>
      *     <li>Dialog toolbar where the 'positive', 'negative' and 'neutral'
      *         menu options <strong>should</strong> be removed
      *         in favour of using the bottom button panel for those.</li>

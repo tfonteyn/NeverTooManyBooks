@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,8 +44,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 /**
- * Provide a more or less robust base to load a url and parse the html with Jsoup.
- * The extra safeguards are needed due to the size of some html pages we're parsing.
+ * Provide a more or less robust base to load a url and parse the HTML with Jsoup.
+ * The extra safeguards are needed due to the size of some HTML pages we're parsing.
  */
 public class JsoupLoader {
 
@@ -76,7 +76,7 @@ public class JsoupLoader {
 
     /**
      * Optionally override the website character set.
-     * Used when the html page contains an incorrect header charset.
+     * Used when the HTML page contains an incorrect header charset.
      *
      * @param charSetName to use; or {@code null} to auto-select.
      */
@@ -252,7 +252,7 @@ public class JsoupLoader {
             return location;
          }
 
-        However that is WRONG (org.jsoup:jsoup:1.11.3)
+        However, that is WRONG (org.jsoup:jsoup:1.11.3)
         It will NOT resolve the redirect itself and 'location' == 'baseUri'
         */
         final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -116,7 +116,7 @@ public interface BookshelfDao {
 
     /**
      * Check all data for potential issues.
-     * This is a cleanup operation for Styles and Filters
+     * This is a clean-up operation for Styles and Filters
      * which are not database reference enforced.
      * Updates all affected Bookshelves as needed.
      *

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,7 +81,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * If the user asked for "new and updated books" only,
  * the 'last-sync-date' from the library is used to only fetch books added/modified
- * later then this timestamp FROM THE SERVER.
+ * later than this timestamp FROM THE SERVER.
  * <p>
  * Each remote book is compared to the local book 'last-modified' date to
  * decide to update it or not.
@@ -130,7 +130,7 @@ public class CalibreContentServerReader
 
     private final boolean doCovers;
 
-    /** cached localized "eBooks" string. */
+    /** cached localised "eBooks" string. */
     @NonNull
     private final String eBookString;
 
@@ -255,7 +255,7 @@ public class CalibreContentServerReader
         progressListener.setIndeterminate(null);
 
         try {
-            // Always (re)read the meta data here.
+            // Always (re)read the metadata here.
             // Don't assume we still have the same instance as when readMetaData was called.
             readLibraryMetaData();
 
@@ -274,7 +274,7 @@ public class CalibreContentServerReader
                 || updateOption == DataReader.Updates.OnlyNewer) {
 
                 // last_modified:">2021-01-15", so we do a "minusDays(1)" first
-                // Due to rounding, we might get some books we don't need, but that's ok.
+                // Due to rounding, we might get some books we don't need, but that's OK.
                 if (syncDate != null) {
                     query = CalibreBookJsonKey.LAST_MODIFIED + ":%22%3E"
                             + syncDate.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
@@ -389,7 +389,7 @@ public class CalibreContentServerReader
 
                         // Both should always be present, but paranoia...
                         final boolean isNewer = localDate.isPresent() && remoteDate.isPresent()
-                                                // is the server data newer then our data ?
+                                                // is the server data newer than our data ?
                                                 && remoteDate.get().isAfter(localDate.get());
                         if (isNewer) {
                             // update according to the syncProcessor

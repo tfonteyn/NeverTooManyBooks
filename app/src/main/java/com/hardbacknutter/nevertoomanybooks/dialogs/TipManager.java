@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,7 +82,7 @@ public final class TipManager {
     }
 
     /**
-     * Create the required tip, if the user has not disabled it and it's not been shown
+     * Create the required tip, if the user has not disabled it, and it's not been shown
      * before during this app run.
      *
      * @param context Current context
@@ -94,7 +94,7 @@ public final class TipManager {
     }
 
     /**
-     * Create the required tip, if the user has not disabled it and it's not been shown
+     * Create the required tip, if the user has not disabled it, and it's not been shown
      * before during this app run.
      *
      * @param context  Current context

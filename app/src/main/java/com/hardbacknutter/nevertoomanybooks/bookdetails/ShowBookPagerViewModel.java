@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -98,7 +98,7 @@ public class ShowBookPagerViewModel
             // If present, the user can swipe to the next/previous book in the list.
             final String navTableName = args.getString(BKEY_NAV_TABLE_NAME, null);
             if (navTableName != null && !navTableName.isEmpty()) {
-                // github #90 + #140
+                // GitHub #90 + #140
                 // When the app was displaying a book-detail, and the user switched to other apps,
                 // it's possible that Android freezes us (or kills us, but that is of no concern).
                 // In a "warm start", the 'SaveState' was preserved, i.e. the fact that we're

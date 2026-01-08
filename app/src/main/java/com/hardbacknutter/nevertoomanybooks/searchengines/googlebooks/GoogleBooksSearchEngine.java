@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ import com.hardbacknutter.org.json.JSONObject;
 /**
  * <a href="https://books.google.com">Google books</a>.
  * <p>
- * {@link SearchEngine.ByExternalId} can be supported, but the id's are for example "9ygPPQAACAAJ".
+ * {@link SearchEngine.ByExternalId} can be supported, but the IDs are for example "9ygPPQAACAAJ".
  * It's not practical for the user to enter those manually.
  * <p>
  * There is a query parameter "langRestrict" but that does not seem to work properly.
@@ -545,7 +545,7 @@ public class GoogleBooksSearchEngine
      * Common code to do the actual cover search.
      *
      * @param context    Current context
-     * @param imageLinks the list (json object) with image links
+     * @param imageLinks the list (JSON object) with image links
      * @param size       of image to get.
      * @param isbn       of the book
      *

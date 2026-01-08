@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ public class TocEntryCoder
      * Result is found in group 1.
      * <p>
      * This is done so we can easily remove the string from the title.
-     * Actual date parsing is don with the {@link #partialDateParser}.
+     * Actual date parsing is done with the {@link #partialDateParser}.
      */
     private static final Pattern DATE_PATTERN =
             Pattern.compile("\\("

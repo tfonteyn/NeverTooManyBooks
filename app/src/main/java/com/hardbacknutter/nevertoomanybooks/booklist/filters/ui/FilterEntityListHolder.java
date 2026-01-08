@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ public class FilterEntityListHolder<T extends Entity>
                                                 .collect(Collectors.toList());
 
             // This will potentially be called upon from inside a BottomSheet.
-            // Hence we stick with using a Dialog.
+            // Hence, we stick with using a Dialog.
             // - Note this is NOT rotation-safe
             new MultiChoiceAlertDialogBuilder<Long>(context)
                     .setTitle(filter.getLabel(context))

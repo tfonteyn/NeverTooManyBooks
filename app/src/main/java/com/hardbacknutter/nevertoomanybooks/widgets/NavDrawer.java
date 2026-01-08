@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public final class NavDrawer {
         navigationView.setItemMaxLines(2);
         navigationView.setNavigationItemSelectedListener(listener);
 
-        // edg2edge: Do NOT set a WindowInsetListener on the drawerlayout here!
+        // EdgeToEdge: Do NOT set a WindowInsetListener on the drawerlayout here!
         InsetsListenerBuilder.apply(navigationView);
     }
 

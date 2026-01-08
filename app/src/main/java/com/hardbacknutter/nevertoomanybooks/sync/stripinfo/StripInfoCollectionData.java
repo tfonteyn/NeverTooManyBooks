@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,11 +49,11 @@ public class StripInfoCollectionData
     };
     private static final String TAG = "StripInfoCollectionData";
     public static final String BKEY = TAG + ":data";
-    /** StripInfo book-id; i.e our external-id. */
+    /** StripInfo book-id; i.e. our external-id. */
     private long sid;
     /**
      * The "CollectieId"; a secondary id used by the website for all books flagged
-     * as being in the users collection.
+     * as being in the users' collection.
      */
     private long collectionId;
     private boolean wanted;

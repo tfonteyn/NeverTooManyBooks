@@ -91,19 +91,19 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * This Fragment can run either in a ViewPager2, or embedded in the BoB activity.
- * Hence there is NO OnBackPressedCallback in this Fragment.
+ * Hence, there is NO OnBackPressedCallback in this Fragment.
  *
  * <ul>
  *     <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code false}
  *         <ul>
  *             <li>{@link ShowBookPagerFragment}</li>
- *             <li>The vm is a the local scope</li>
+ *             <li>The vm is the local scope</li>
  *         </ul>
  *     </li>
  *     <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code true}
  *          <ul>
  *              <li>{@link BooksOnBookshelf}</li>
- *              <li>The vm is a the Activity scope</li>
+ *              <li>The vm is the Activity scope</li>
  *              <li>{@link #bookChangedListener} is valid</li>
  *          </ul>
  *     </li>
@@ -463,7 +463,7 @@ public class ShowBookDetailsFragment
      * Called when the ViewModel triggers an update.
      * Dev. note: this will get called FOR EACH fragment currently existing
      * in the ViewPager ... so ALSO for the fragments off-screen.
-     * Hence DO NOT update the toolbar title here!
+     * Hence, DO NOT update the toolbar title here!
      *
      * @param book to display
      */
@@ -535,7 +535,7 @@ public class ShowBookDetailsFragment
     }
 
     /**
-     * Inflates 'lend-to' field showing a person the book was lend to.
+     * Inflates 'lend-to' field showing a person the book was lent to.
      *
      * @param book to load
      */
@@ -649,7 +649,7 @@ public class ShowBookDetailsFragment
                   .commit();
             } else {
                 // The above TocFragment will have created a vm in its
-                // parent-fragment (i.e THIS fragment)  scope
+                // parent-fragment (i.e. THIS fragment)  scope
                 final TocViewModel childVm = new ViewModelProvider(this)
                         .get(TocViewModel.class);
                 childVm.reloadBook(book);
@@ -658,7 +658,7 @@ public class ShowBookDetailsFragment
     }
 
     /**
-     * If all field Views are View.GONE, set the section View to View.GONE as well.
+     * If all field Views are {@link View#GONE}, set the section View to {@link View#GONE} as well.
      * Otherwise, set the section View to View.VISIBLE.
      *
      * @param sectionLabel field to set
@@ -712,7 +712,7 @@ public class ShowBookDetailsFragment
             menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
             menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
-            // Always check LOANEE_NAME usage independent from the style in use.
+            // Always check LOANEE_NAME usage independent of the style in use.
             if (ServiceLocator.getInstance().isFieldEnabled(DBKey.LOANEE_NAME)) {
                 final boolean isLendOut = book.getLoanee().isPresent();
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);

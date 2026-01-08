@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -218,7 +218,7 @@ public class SiteSearchMenuHandler
         //noinspection DataFlowIssue
         final String url = engines.get(engineId).createSearchOnSiteUrl(context, author, series);
         // Start the intent even if for some reason the fields string is empty.
-        // If we don't the user will not see anything happen / we'd need to popup
+        // If we don't the user will not see anything happen / we'd need to pop up
         // an explanation why we cannot search.
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }

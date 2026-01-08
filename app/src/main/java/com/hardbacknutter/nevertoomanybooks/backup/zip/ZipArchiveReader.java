@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -339,8 +339,8 @@ public class ZipArchiveReader
         progressListener.setMaxPos(estimatedSteps);
 
         // On any semi-decent device the user won't see the record progress updates
-        // other than the actual books/images but we're showing them regardless as "why-not".
-        // Also: show this HERE, before the json (or other readers) start reading
+        // other than the actual books/images, but we're showing them regardless as "why-not".
+        // Also: show this HERE, before the JSON (or other readers) start reading
         // as they could take some time before the actual first entry is read.
         try {
             // Seek the styles record first.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -92,7 +92,7 @@ public abstract class SearchEngineBase
      * It's a <strong>request</strong> to cancel while running.
      */
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
-    /** Helper to randomize some urls to avoid fingerprinting by the servers. */
+    /** Helper to randomise some urls to avoid fingerprinting by the servers. */
     @NonNull
     private final Random random;
     private final IdentifierDao identifierDao;
@@ -183,7 +183,7 @@ public abstract class SearchEngineBase
                 return Locale.US;
 
             case "uk":
-                // country code is GB (july 2020: for now...)
+                // country code is GB
                 return Locale.UK;
 
             default:
@@ -314,7 +314,7 @@ public abstract class SearchEngineBase
 
         // The "Sec-GPC" header above is documented as EXPERIMENTAL at
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-GPC
-        // It seems only firefox is sending it and it's not used by any other browser.
+        // It seems only firefox is sending it, and it's not used by any other browser.
         // We're not sending it for now.
 
         httpGet.setRequestProperty(HttpConstants.ACCEPT,
@@ -340,7 +340,7 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE,
                                    HttpConstants.SEC_FETCH_MODE_NAVIGATE);
 
-        // The request was send by a "user" (our app) and not some auto/link/etc...
+        // The request was sent by a "user" (our app) and not some auto/link/etc...
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
                                    HttpConstants.SEC_FETCH_SITE_NONE);
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
@@ -444,7 +444,7 @@ public abstract class SearchEngineBase
 
     /**
      * Create a suitable "Accept-Language" with user and site language.
-     * The priorities will be a little randomized to help prevent fingerprinting
+     * The priorities will be a little randomised to help prevent fingerprinting
      *
      * @param context Current context
      *
@@ -550,7 +550,7 @@ public abstract class SearchEngineBase
      * <p>
      * If the given date-string consists of 4 characters, it is assumed it's
      * a year-value and the simplified form will be set on the book.
-     * Otherwise full parsing is done.
+     * Otherwise, full parsing is done.
      * <p>
      * Note that the input <strong>MUST</strong> be either a 4-digit year,
      * or a full-date string in one of the supported formats.

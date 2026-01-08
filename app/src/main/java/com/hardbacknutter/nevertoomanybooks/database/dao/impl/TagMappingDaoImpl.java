@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TA
 
 /**
  * The external tag names are stored as all-lowercase.
- * Hence comparing/lookups must likewise be done in lowercase.
+ * Hence, comparing/lookups must likewise be done in lowercase.
  */
 public class TagMappingDaoImpl
         extends BaseDaoImpl
@@ -78,7 +78,7 @@ public class TagMappingDaoImpl
                 // splitting of combinations into multiple tags
                 new Pair<>("science fiction fantasy", Set.of("Science Fiction", "Fantasy")),
                 new Pair<>("Science Fiction & Fantasy", Set.of("Science Fiction", "Fantasy"))
-                // and so on... up to the user to setup theirs obviously
+                // and so on... up to the user to set up theirs obviously
         );
     }
 

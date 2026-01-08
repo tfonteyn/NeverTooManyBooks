@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,7 +76,7 @@ public class SingleChoiceBottomSheet
 
         final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 
-        // Due to multi-use of the layouts, we don't set these in xml:
+        // Due to multi-use of the layouts, we don't set these in XML:
         final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
         // Close fully when the user is dragging us down
         behavior.setSkipCollapsed(true);

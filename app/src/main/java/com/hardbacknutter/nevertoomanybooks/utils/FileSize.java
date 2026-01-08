@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ public final class FileSize {
     }
 
     /**
-     * Format a number of bytes in a human readable form.
+     * Format a number of bytes in a human-readable form.
      *
      * @param context Current context
      * @param bytes   to format

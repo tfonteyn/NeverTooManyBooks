@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -197,7 +197,7 @@ public final class DBDefinitions {
     /** The mapping of a Calibre Library/Virtual Library to a Bookshelf. */
     public static final TableDefinition TBL_CALIBRE_VIRTUAL_LIBRARIES;
 
-    /** A bridge to the stripinfo.be site. Site specific imported data. */
+    /** A bridge to the stripinfo.be website. Site specific imported data. */
     public static final TableDefinition TBL_STRIPINFO_COLLECTION;
 
     /* ======================================================================================
@@ -1063,14 +1063,14 @@ public final class DBDefinitions {
          *  Tags
          * ====================================================================================== */
 
-        // localized but with non-unique index, so these are case-sensitive and diacritic aware
+        // localised but with non-unique index, so these are case-sensitive and diacritic aware
         DOM_TAG =
                 new Domain.Builder(DBKey.TAGS.TAG, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
-        // localized but with non-unique index, so these are case-sensitive and diacritic aware
+        // localised but with non-unique index, so these are case-sensitive and diacritic aware
         DOM_TAG_MAPPING =
                 new Domain.Builder(DBKey.TAGS.TAG_MAPPING, SqLiteDataType.Text)
                         .notNull()
@@ -1813,8 +1813,8 @@ public final class DBDefinitions {
                 // enforce: only one series on a particular position for a book.
                 // allow: multiple copies of that series and multiple numbers.
                 // The latter has some restrictions handled in code.
-                // in contract to TBL_BOOK_AUTHOR we don't want to add the DOM_FK_SERIES
-                // to the primary key, as want want to allow a single book to be
+                // In contract to TBL_BOOK_AUTHOR we don't want to add the DOM_FK_SERIES
+                // to the primary key, as want to allow a single book to be
                 // present in a series multiple times at different positions
                 // (each entry with a different number in the series).
                 .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_SERIES_POSITION)

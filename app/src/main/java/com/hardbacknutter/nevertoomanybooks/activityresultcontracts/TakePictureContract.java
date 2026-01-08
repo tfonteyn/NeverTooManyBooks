@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ public class TakePictureContract
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
-        // GitHub #11: the google camera app returns an empty Intent, while
+        // GitHub #11: the Google camera app returns an empty Intent, while
         // OpenCamera returns a null for the Intent.
         // Hence ONLY test on the resultCode here.
         if (resultCode != Activity.RESULT_OK) {

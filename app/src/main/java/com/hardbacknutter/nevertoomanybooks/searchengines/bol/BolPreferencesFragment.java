@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@ public class BolPreferencesFragment
         p.setEntryValues(entryValues);
 
         // The ListPreference has an issue that the initial value is set during the inflation
-        // step. At that time, the default value is ONLY available from xml.
+        // step. At that time, the default value is ONLY available from XML.
         // Internally it will then use this to set the value.
         // Workaround: set the default, and if the pref has no value, set it as well...
         p.setDefaultValue(DEF_COUNTRY);

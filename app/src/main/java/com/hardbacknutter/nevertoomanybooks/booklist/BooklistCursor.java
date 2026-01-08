@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * <li>{@link #currentCursor}: the current active window of rows.</li>
  * </ul>
  * Note: yes, androidx has a paging library. Given they are on incompatible version 3
- * and google's reputation of killing / reinventing the wheel...
+ * and Google's reputation of killing / reinventing the wheel...
  * ... we're sticking to our home-grown.
  */
 public class BooklistCursor

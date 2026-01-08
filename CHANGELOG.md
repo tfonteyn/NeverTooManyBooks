@@ -246,8 +246,8 @@ NEW:
 FIXES:
 
 - dnb.de workaround added for an ongoing certificate/security issue on the site.
-- github #137: dnb.de blocked requests without a 'referer'.
-- github #135: creating duplicate style names caused a crash
+- GitHub #137: dnb.de blocked requests without a 'referer'.
+- GitHub #135: creating duplicate style names caused a crash
 - fixes for Android 8..10 devices where merging Authors (etc) would sometimes fail.
 
 ---
@@ -314,7 +314,7 @@ REMOVED:
 
 FIXES
 
-- github #115: when filtering on bookshelves and **not** grouping by them, a crash occurred.
+- GitHub #115: when filtering on bookshelves and **not** grouping by them, a crash occurred.
 
 ---
 
@@ -322,9 +322,9 @@ FIXES
 
 FIXES
 
-- github #106: DNB Identifier is text (not a number)
-- github #108: Settings/dentifiers was crashing
-- github #110: crash after upgrade when there was an active filter on genre
+- GitHub #106: DNB Identifier is text (not a number)
+- GitHub #108: Settings/dentifiers was crashing
+- GitHub #110: crash after upgrade when there was an active filter on genre
 
 ---
 
@@ -332,7 +332,7 @@ FIXES
 
 FIXES
 
-- github #102
+- GitHub #102
 
 ---
 
@@ -357,10 +357,10 @@ NEW:
 
 FIXES:
 
-- github #84 read default bookshelf from db as the user might have renamed it,
+- GitHub #84 read default bookshelf from db as the user might have renamed it,
   or might have switched Locale (language)
-- github #89, #92, #94 field visibility and sorting
-- 979 isbn numbers are now shown as 'valid'
+- GitHub #89, #92, #94 field visibility and sorting
+- 979 ISBNs are now shown as 'valid'
 - some author names with multiple parts like "Kim Stanley Robinson" were wrongly parsed and split,
   i.e. we got "Kim" and "Stanley Robinson" instead of "Kim Stanley" and "Robinson".
 
@@ -374,7 +374,7 @@ NEW:
   - Portuguese/Brazil. Contributed by [Suburbanno](https://github.com/Suburbanno)
   - Traditional Chinese (zh-TW)
 - New/updated search sites:
-  - Added https://www.bertrand.pt for looking up portuguese books (see github #15)
+  - Added https://www.bertrand.pt for looking up Portuguese books (see GitHub #15)
   - Complete rewrite of GoogleBooks searches. Supports more fields, multiple sizes of cover
     lookup, ...
   - Dnb, LastDodo, StripWeb sites: now supporting searching "by title"
@@ -639,7 +639,7 @@ NEW:
   which have a read-start-date set, but which you have not finished yet.
 - The filter for 'Read' also provides the 'Reading' option.
 - A crash-report can now be saved to storage, and users get redirected to
-  the project Github issues page.
+  the project GitHub issues page.
 
 FIXES:
 

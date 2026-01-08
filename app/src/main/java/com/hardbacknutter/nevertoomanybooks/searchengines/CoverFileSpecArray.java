@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public final class CoverFileSpecArray {
         final BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inJustDecodeBounds = true;
 
-        // Loop, finding biggest image
+        // Loop, finding the largest image
         for (int i = 0; i < imageList.size(); i++) {
             final String fileSpec = imageList.get(i);
             final File file = new File(fileSpec);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,10 +46,10 @@ public class EditPreferredStylesContract
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
      * @param styleUuid Return the currently selected style UUID, so the caller can apply it.
-     *                  This is independent from any modification to this or another style,
+     *                  This is independent of any modification to this or another style,
      *                  or the order of the styles.
      * @param modified  flag indicating if <strong>anything at all</strong> was modified.
-     *                  This is independent from the returned style
+     *                  This is independent of the returned style
      *
      * @return Intent
      */

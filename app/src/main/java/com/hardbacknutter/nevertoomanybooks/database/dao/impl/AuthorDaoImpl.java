@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -401,7 +401,7 @@ public class AuthorDaoImpl
 
         final EntityMergeHelper<Author> mergeHelper = new AuthorMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
-                                 // Don't lookup the locale a 2nd time.
+                // Don't look up the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale))
                || modified;
     }
@@ -483,7 +483,7 @@ public class AuthorDaoImpl
                 } else if (doUpdates) {
                     // https://stackoverflow.com/questions/6677517/update-if-different-changed
                     // ONLY update if there are actual changes.
-                    // Otherwise the trigger "after_update_on" + TBL_AUTHORS
+                    // Otherwise, the trigger "after_update_on" + TBL_AUTHORS
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that author
                     // while not needed.
                     final Optional<Author> oFound = findById(author.getId());
@@ -874,7 +874,7 @@ public class AuthorDaoImpl
                 final String givenNames = cursor.getString(3);
                 final String givenNamesOb = cursor.getString(4);
 
-                // reordering is not applicable, we just want to re-normalize.
+                // reordering is not applicable, we just want to re-normalise.
                 final String newFamilyOb = SqlEncode.orderByColumn(familyName, locale);
                 final String newGivenOb = SqlEncode.orderByColumn(givenNames, locale);
 

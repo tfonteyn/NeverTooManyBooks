@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public class OrValidator
         for (final DataValidator validator : validators) {
             try {
                 validator.validate(context, dataManager, key, errorLabelResId);
-                // as soon as one is reporting 'ok' by NOT throwing an exception, we're done.
+                // as soon as one is reporting 'OK' by NOT throwing an exception, we're done.
                 return;
             } catch (@NonNull final ValidatorException e) {
                 // Do nothing...try next validator

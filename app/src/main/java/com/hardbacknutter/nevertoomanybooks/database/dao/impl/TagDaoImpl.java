@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -171,7 +171,7 @@ public class TagDaoImpl
 
         final EntityMergeHelper<Tag> mergeHelper = new EntityMergeHelper<>();
         return mergeHelper.merge(context, list, localeSupplier,
-                                 // Don't lookup the locale a 2nd time.
+                // Don't look up the locale a 2nd time.
                                  (current, locale) -> fixId(current));
     }
 
@@ -251,7 +251,7 @@ public class TagDaoImpl
                 } else {
                     // https://stackoverflow.com/questions/6677517/update-if-different-changed
                     // ONLY update if there are actual changes.
-                    // Otherwise the trigger "after_update_on" + TBL_TAG
+                    // Otherwise, the trigger "after_update_on" + TBL_TAG
                     // would set DATE_LAST_UPDATED__UTC for ALL books with that tag
                     // while not needed.
                     final Optional<Tag> oFound = findById(tag.getId());

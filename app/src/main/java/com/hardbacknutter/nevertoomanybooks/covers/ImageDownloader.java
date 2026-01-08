@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,7 +74,7 @@ public class ImageDownloader {
      * <p>
      * When running as a JUnit test, the file.renameTo done during the
      * {@link CoverStorage#persist(InputStream, File)} operation will fail.
-     * As that is independent from the JUnit test/purpose, we will fake success here.
+     * As that is independent of the JUnit test/purpose, we will fake success here.
      */
     @VisibleForTesting
     public static boolean IGNORE_RENAME_FAILURE;

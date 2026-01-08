@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -229,7 +229,7 @@ public enum CoverScale {
      * Calculate the maximum width in pixels, depending on the available screen width.
      *
      * @param context Current context
-     * @param layout  mode for which to lookup the width
+     * @param layout  mode for which to look up the width
      *
      * @return max size in pixels
      */

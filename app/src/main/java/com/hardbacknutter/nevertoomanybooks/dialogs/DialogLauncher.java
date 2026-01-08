@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,7 +138,7 @@ public abstract class DialogLauncher
     }
 
     /**
-     * Create the dialog, setup the arguments adding the requestKey and show it.
+     * Create the dialog, set up the arguments adding the requestKey and show it.
      *
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.

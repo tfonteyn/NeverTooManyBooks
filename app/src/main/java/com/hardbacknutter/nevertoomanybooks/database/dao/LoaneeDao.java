@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,7 +78,7 @@ public interface LoaneeDao {
      *
      * @param bookId book to search for
      *
-     * @return Who the book is lend to, or {@code null} when not lend out
+     * @return Who the book is lent to, or {@code null} when not lend out
      */
     @Nullable
     String findLoaneeByBookId(@IntRange(from = 1) long bookId);

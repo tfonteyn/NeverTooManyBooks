@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -157,7 +157,7 @@ public class ExtMenuPopupWindow {
      * <p>
      * Line numbers based on API 34 source.
      * {@link PopupWindow} lines 1418 is where things start to go wrong.
-     * 'p' is initialized to the original width/height -> WRAP_CONTENT
+     * 'p' is initialised to the original width/height -> WRAP_CONTENT
      * instead of the ACTUAL width/height....
      * line 2440 states:
      * <pre>

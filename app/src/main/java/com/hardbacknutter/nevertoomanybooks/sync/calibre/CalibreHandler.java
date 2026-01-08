@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -141,7 +141,7 @@ public class CalibreHandler {
     }
 
     /**
-     * Initializer for use from within an Fragment.
+     * Initializer for use from within a Fragment.
      *
      * @param fragment the hosting Fragment
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ public class OptimizeDbTask
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
-        // Cleanup temp files. Out of precaution we only trash ".jpg", ".jpg.1", ... files
+        // Clean-up temp files. Out of precaution we only delete ".jpg", ".jpg.1", ... files
         final Pattern p = Pattern.compile(".+\\.jpg\\d*|.+\\.jpg\\.\\d*",
                                           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         TaskFileUtils.deleteDirectory(serviceLocator.getCoverStorage().getTempDir(),

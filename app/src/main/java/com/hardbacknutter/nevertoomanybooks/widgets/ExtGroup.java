@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * 'androidx.constraintlayout:constraintlayout:2.1.3'
  * 'androidx.constraintlayout:constraintlayout-core:1.0.3'
  * <p>
- * It allow and propagates:
+ * It allows and propagates:
  * <ul>
  * <li>visibility</li>
  * <li>setting tags</li>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * </ul>
  * The numerical value {@link #id} is used in SQL but not stored other than in the
  * temporary book-list table.
- * The UI then uses that value to lookup the enum,
+ * The UI then uses that value to look up the enum,
  * and calls {@link #getLabel(Context)} for formatting/displaying.
  * <p>
  *  <strong>Never change the ID values</strong>, they get stored in the db.

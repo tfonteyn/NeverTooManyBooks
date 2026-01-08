@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -132,7 +132,7 @@ public class StripInfoAuth
      * Get the user id for the <strong>current</strong> session.
      * This is not necessarily the same as the username.
      * <p>
-     * In the website html sometimes referred to as "member".
+     * In the website HTML sometimes referred to as "member".
      *
      * @return a valid non-empty user id if present
      *

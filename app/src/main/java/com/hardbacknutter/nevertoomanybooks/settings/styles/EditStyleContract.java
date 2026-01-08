@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -135,7 +135,7 @@ public class EditStyleContract
         final String styleUuid;
 
         /**
-         * If set to {@code true} the edited/cloned style will be set to preferred.
+         * If set to {@code true} the edited/cloned style will be set as preferred.
          * If set to {@code false} the preferred state will not be touched.
          */
         final boolean setAsPreferred;

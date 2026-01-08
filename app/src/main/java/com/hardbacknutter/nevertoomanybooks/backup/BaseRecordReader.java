@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -83,7 +83,7 @@ public abstract class BaseRecordReader
      *     <li>If there is a no UUID, but there is an ID, either update an existing book
      *         by looking up the ID,
      *         or insert a new book.</li>
-     *     <li>Neither UUID or ID, just insert a new book</li>
+     *     <li>Neither UUID nor ID, just insert a new book</li>
      * </ol>
      *
      * @param context Current context
@@ -205,7 +205,7 @@ public abstract class BaseRecordReader
 
                 // Both should always be present, but paranoia...
                 final boolean isNewer = localDate.isPresent() && importDate.isPresent()
-                                        // is the imported data newer then our data ?
+                                        // is the imported data newer than our data ?
                                         && importDate.get().isAfter(localDate.get());
                 if (isNewer) {
                     updateBook(context, book);

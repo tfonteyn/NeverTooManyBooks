@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public enum RecordEncoding {
     /**
      * Detect the encoding based on the passed name.
      *
-     * @param entryName to get the type of (case insensitive)
+     * @param entryName to get the type of (case-insensitive)
      *
      * @return the encoding
      */

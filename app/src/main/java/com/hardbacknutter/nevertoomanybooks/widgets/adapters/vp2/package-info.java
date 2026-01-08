@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
  * <a href="https://developer.android.com/jetpack/androidx/releases/viewpager2">
  * viewpager2</a>
  * <a href="https://github.com/androidx/androidx/tree/androidx-main/viewpager2/viewpager2/src/main/java/androidx/viewpager2/adapter">
- *     on github</a>
+ *     on GitHub</a>
  * <p>
  * androidx.viewpager2.adapter.FragmentStateAdapter
  * <p>
@@ -34,7 +34,7 @@
  * All modifications annotated with HARDBACKNUTTER.
  * <p>
  * We no longer keep state for all fragments created during the lifetime
- * of this class. Instead we <strong>only</strong> keep state
+ * of this class. Instead, we <strong>only</strong> keep state
  * for the current set of live Fragment objects.
  * <p>
  * This means... swipe left, 1x more than the view window, the first fragment AND

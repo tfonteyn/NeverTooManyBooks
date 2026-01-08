@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public class BookSearchCriteria {
     /**
      * Constructor.
      * <p>
-     * The 'strictIsbn' flag is initialized from the global user-settings.
+     * The 'strictIsbn' flag is initialised from the global user-settings.
      *
      */
     public BookSearchCriteria() {
@@ -307,8 +307,7 @@ public class BookSearchCriteria {
 
     /**
      * Reset all criteria; empty strings, empty list.
-     * The 'strictIsbn' flag is initialized from the global user-settings.
-     *
+     * The 'strictIsbn' flag is initialised from the global user-settings.
      */
     public void reset() {
         title = "";

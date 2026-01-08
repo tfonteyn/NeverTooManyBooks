@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 
 /**
- * Manage the custom Locale our app can run in, independently from the system Locale.
+ * Manage the custom Locale our app can run in, independently of the system Locale.
  * <p>
  * How to use: see {@link BaseActivity} #attachBaseContext(Context)
  * and {@link BaseActivity}#recreateIfNeeded()
@@ -46,7 +46,7 @@ public interface AppLocale {
     /**
      * Set the context's Locale to the user preferred localeSpec and return the updated context.
      * <p>
-     * Set the system wide default Locale to the user preferred localeSpec.
+     * Set the system-wide default Locale to the user preferred localeSpec.
      *
      * @param context to set the Locale on
      *

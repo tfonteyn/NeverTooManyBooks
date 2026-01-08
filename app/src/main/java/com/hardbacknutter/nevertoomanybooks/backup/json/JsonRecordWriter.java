@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -389,7 +389,7 @@ public class JsonRecordWriter
                 }
             }
 
-            // Write the complete json output in one go
+            // Write the complete JSON output in one go
             if (!jsonData.isEmpty()) {
                 // can throw StackOverflowError;
                 // but we've only ever seen that in the emulator... flw

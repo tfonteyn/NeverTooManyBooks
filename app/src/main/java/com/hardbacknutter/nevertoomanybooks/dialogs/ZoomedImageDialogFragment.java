@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -120,7 +120,7 @@ public class ZoomedImageDialogFragment
         // WindowMetricsCalculator no longer provides insets (it did in 1.3.0...)
         // So back to old behaviour for calculating the windowWidthInPx/windowHeightInPx
         // In portrait mode, the below is perfectly fine.
-        // In Landscape mode, we overlap the bottom-navigation bar. Oh well...
+        // In Landscape mode, we overlap the bottom-navigation bar. Oh, well...
 
         //noinspection DataFlowIssue
         final Rect bounds = WindowMetricsCalculator

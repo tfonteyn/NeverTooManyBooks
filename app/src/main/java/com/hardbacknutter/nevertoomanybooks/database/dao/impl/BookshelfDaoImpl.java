@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ public class BookshelfDaoImpl
         implements BookshelfDao {
 
     /**
-     * Preference name - the bookshelf to load next time we startup.
+     * Preference name - the bookshelf to load next time we start up.
      * Storing the name and not the id. If you export/import... the id will be different.
      * <p>
      * The CamelCase is legacy...
@@ -114,7 +114,7 @@ public class BookshelfDaoImpl
      */
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {
-        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
+        // inserts an 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         db.execSQL(INSERT_INTO_ + TBL_BOOKSHELF
                    + '(' + DBKey.PK_ID
                    + ',' + DBKey.BOOKSHELF.NAME
@@ -455,7 +455,7 @@ public class BookshelfDaoImpl
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final EntityMergeHelper<Bookshelf> mergeHelper = new EntityMergeHelper<>();
         return mergeHelper.merge(context, list, current -> userLocale,
-                                 // Don't lookup the locale a 2nd time.
+                // Don't look up the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));
     }
 
@@ -636,7 +636,7 @@ public class BookshelfDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Bookshelf bookshelf) {
-        // Sanity check; we cannot delete 0==new; or -1==all_books
+        // Sanity check; we cannot delete 0==new; or -1==all_books,
         // and we're not allowed to delete the default shelf
         // The latter is normally prevented in the UI, but paranoia...
         if (bookshelf.getId() <= 0 || bookshelf.getId() == getDefault().getId()) {

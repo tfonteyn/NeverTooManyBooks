@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -405,7 +405,7 @@ public class Booklist
     }
 
     /**
-     * Get the node for the the given row id (any row, not limited to books).
+     * Get the node for the given row id (any row, not limited to books).
      * It will contain the current state of the node as stored in the database.
      *
      * @param rowId to get
@@ -521,7 +521,7 @@ public class Booklist
         node.setFullyVisible();
         String nodeKey = node.getNodeKey();
 
-        // levels are 1.. based; start with lowest level above books, working up to root.
+        // levels are 1.. based; start with the lowest level above books, working up to root.
         // Pair: rowId/Level
         final Deque<Pair<Long, Integer>> nodes = new ArrayDeque<>();
         for (int level = node.getLevel() - 1; level >= 1; level--) {
@@ -811,7 +811,7 @@ public class Booklist
      * @return flag
      */
     public boolean isOpen() {
-        // The reason for this call is github #90 + #140.
+        // The reason for this call is GitHub #90 + #140.
         // When the user switches apps, our own app might get "frozen",
         // which means the database gets closed, and our temp tables are deleted.
         // But... our 'SaveState' was preserved, so we 'think' we're still alive...
@@ -822,7 +822,7 @@ public class Booklist
     /**
      * Cleanup.
      * <p>
-     * We cleanup temporary tables to free up no longer needed resources NOW.
+     * We clean up temporary tables to free up no longer needed resources NOW.
      */
     @Override
     public void close() {
@@ -872,7 +872,7 @@ public class Booklist
     }
 
     /**
-     * Simple equality: two builders are equal if their ID's are the same.
+     * Simple equality: two builders are equal if their IDs are the same.
      */
     @Override
     public boolean equals(@Nullable final Object o) {

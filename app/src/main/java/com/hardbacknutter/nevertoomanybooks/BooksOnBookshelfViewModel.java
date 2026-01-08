@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -247,7 +247,7 @@ public class BooksOnBookshelfViewModel
     @Nullable
     private ScreenLayout currentLayout;
     /**
-     * The book id we want the new list to display more-or-less in the center.
+     * The book id we want the new list to display more-or-less in the centre.
      */
     private long selectedBookId;
     /**
@@ -379,7 +379,7 @@ public class BooksOnBookshelfViewModel
                 // when we want to show a list of books retrieved from a TocEntry.
                 // (reminder: this comment might not be updated lately and hence incorrect)
                 if (args.containsKey(DBKey.FK_BOOKSHELF)) {
-                    // might be null, that's ok.
+                    // might be null, that's OK.
                     bookshelf = bookshelfDao
                             .getBookshelf(context, args.getLong(DBKey.FK_BOOKSHELF))
                             .orElse(null);
@@ -409,7 +409,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Get a Group-name: value" string representation from the given row-data.
+     * Get a "Group-name: value" string representation from the given row-data.
      *
      * @param context Current context
      * @param rowData to read the group/label from.
@@ -774,7 +774,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Set the book id around which we want to center the list after a rebuild.
+     * Set the book id around which we want to centre the list after a rebuild.
      * Set and propagate the new adapter position to highlight the current row.
      * <p>
      * Dev. note: reminder: book can appear on multiple positions hence the need for both params.
@@ -929,7 +929,7 @@ public class BooksOnBookshelfViewModel
      *
      * @param context Current context
      *
-     * @return a fully initialized input object
+     * @return a fully initialised input object
      */
     @NonNull
     UpdateBooklistContract.Input createUpdateBooklistContractInput(
@@ -950,7 +950,7 @@ public class BooksOnBookshelfViewModel
      * @param rowData       the data at the selected row
      * @param onlyThisShelf flag
      *
-     * @return a fully initialized input object
+     * @return a fully initialised input object
      *
      * @throws IllegalArgumentException for an unsupported group
      */
@@ -1018,7 +1018,7 @@ public class BooksOnBookshelfViewModel
      * @param context Current context
      * @param rowData the data at the selected row
      *
-     * @return a fully initialized input object
+     * @return a fully initialised input object
      */
     @NonNull
     UpdateBooklistContract.Input createDateRowUpdateBooklistContractInput(
@@ -1428,7 +1428,7 @@ public class BooksOnBookshelfViewModel
         }
         // We don't try to remove the row without a rebuild as this could quickly become complex...
         // e.g. if there is(was) only a single book on the level, we'd have to recursively
-        // cleanup each level above the book
+        // clean up each level above the book
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
@@ -1445,7 +1445,7 @@ public class BooksOnBookshelfViewModel
             // to find out if we updated a list, use data.getLastBookIdProcessed()
         }
 
-        // If we got an reposition id back, make any potential rebuild re-position to it.
+        // If we got a reposition id back, make any potential rebuild re-position to it.
         if (data.getRepositionToBookId() > 0) {
             selectedBookId = data.getRepositionToBookId();
         }
@@ -1463,7 +1463,7 @@ public class BooksOnBookshelfViewModel
         // we get the UUID for the selected style back.
         data.getUuid().ifPresent(uuid -> onStyleChanged(context, uuid));
 
-        // This is independent from the above style having been modified or not.
+        // This is independent of the above style having been modified or not.
         if (data.isModified()) {
             forceRebuildInOnResume = true;
         }
@@ -1574,11 +1574,11 @@ public class BooksOnBookshelfViewModel
         Objects.requireNonNull(bookshelf, ERROR_NULL_BOOKLIST);
         Objects.requireNonNull(searchCriteria, "searchCriteria");
 
-        // make sure we pickup the current style, filters, ...
+        // make sure we pick up the current style, filters, ...
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         bookshelfDao.refresh(context, bookshelf, locale);
 
-        // someday the searchCriteria will BE filters.. for now, convert them here.
+        // someday the searchCriteria will BE filters... for now, convert them here.
         final Collection<Filter> criteriaFilters;
         if (searchCriteria.isEmpty()) {
             criteriaFilters = List.of();

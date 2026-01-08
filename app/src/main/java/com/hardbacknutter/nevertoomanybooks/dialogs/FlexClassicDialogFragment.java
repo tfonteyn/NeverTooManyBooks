@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,7 +138,7 @@ public abstract class FlexClassicDialogFragment
             // - the toolbar consumes insets
             // - this DOES show the status-bar
             // - shows fine on a portrait screen with or without camera inset
-            // - shows sort-of ok on a landscape screen with a camera inset.
+            // - shows sort-of OK on a landscape screen with a camera inset.
             // - small screens may cause the subtitle to be touching the bottom of the toolbar.
             // - small screens will not always set insets on the toolbar correctly.
             // - The underlying app toolbar can show through while
@@ -196,7 +196,7 @@ public abstract class FlexClassicDialogFragment
     }
 
     /**
-     * Setup the toolbar: use either the fragment toolbar in fullscreen mode,
+     * Set up the toolbar: use either the fragment toolbar in fullscreen mode,
      * or else the floating dialog toolbar.
      *
      * @param parent root view
@@ -223,7 +223,7 @@ public abstract class FlexClassicDialogFragment
     }
 
     /**
-     * Setup the (optional) button-bar at the bottom of the dialog:
+     * Set up the (optional) button-bar at the bottom of the dialog:
      * hidden in fullscreen mode and shown in floating dialog mode.
      *
      * @param parent root view
@@ -306,7 +306,7 @@ public abstract class FlexClassicDialogFragment
         // lp.width=WRAP_CONTENT|lp.height=WRAP_CONTENT|
         // width=Compact|height=Expanded|
         // lpWidth=MATCH_PARENT|lpHeight=WRAP_CONTENT|.
-        //==> the filter/style dialogs show ok!
+        //==> the filter/style dialogs show OK!
 
         // So we can't rely on Android being consistent (surprise...)
         // 2023-06-09: patch 4.4.2: adjust the recyclerView manually

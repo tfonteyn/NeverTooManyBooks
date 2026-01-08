@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,7 +82,7 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.bol.com">www.bol.com</a>
  * <p>
- * All genres; dutch and many other languages.
+ * All genres; Dutch and many other languages.
  * <p>
  * This site is a company based in The Netherlands and is <strong>NOT</strong>> related to
  * the german website <a href="https://www.bol.de">www.bol.de</a>.
@@ -98,9 +98,9 @@ import org.jsoup.select.Elements;
  * The first suffix is the country: either Belgium (be) or The Netherlands (nl).
  * The second is the language: either Dutch (nl) or French (fr).
  * <p>
- * We support selecting the belgian or the netherlands site via a user setting
+ * We support selecting the Belgian or the Netherlands site via a user setting
  * to accommodate price differences between the two countries.
- * We <strong>only</strong> access the site via the dutch language suffix as it makes
+ * We <strong>only</strong> access the site via the Dutch language suffix as it makes
  * no difference at all in getting results.
  * <p>
  * 2025-02-15: bol.com blocks all requests coming from outside the country (EU?)
@@ -187,7 +187,7 @@ public class BolSearchEngine
 
     /**
      * Get the country for the website: nl or be.
-     * By default we use the country the user is in, defined as either Belgium or
+     * By default, we use the country the user is in, defined as either Belgium or
      * The Netherlands+rest-of-the-world.
      * The user can set their personal preference to BE or NL in the settings.
      *
@@ -374,8 +374,8 @@ public class BolSearchEngine
         final Element titleElement = document.selectFirst("span[data-test='title']");
         if (titleElement == null || titleElement.text().isEmpty()) {
             // well, this is unexpected...
-            // This is seen when accessing the site in french and looking for
-            // a dutch (or german...) book....
+            // This is seen when accessing the site in French and looking for
+            // a Dutch (or german...) book....
             // The site simply does not list the title... anywhere! ... ouch...
             return;
         }
@@ -567,7 +567,7 @@ public class BolSearchEngine
                 // text() will get "22 99", so add a "," as decimal separator and parse as normal
                 final String priceStr = priceElement.text().replace(" ", ",");
                 // The currency is not part of the string, so just parse it as a number
-                // and than add the EURO.
+                // and then add the EURO.
                 final double price = realNumberParser.parseDouble(priceStr);
                 book.putMoney(DBKey.PRICE_LISTED,
                               new Money(BigDecimal.valueOf(price), Money.EURO));
@@ -580,7 +580,7 @@ public class BolSearchEngine
 
     private void processTags(@NonNull final Element value,
                              @NonNull final Book book) {
-        // its an 'ul' with 'li' each containing an 'a'
+        // it's an 'ul' with 'li' each containing an 'a'
         final List<String> tagNames = value.select("a")
                                            .stream()
                                            .map(Element::text)

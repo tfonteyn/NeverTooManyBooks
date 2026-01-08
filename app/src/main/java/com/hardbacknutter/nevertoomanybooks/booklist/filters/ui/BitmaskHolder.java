@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,7 +66,7 @@ public class BitmaskHolder
             final List<String> labels = new ArrayList<>(bitsAndLabels.values());
 
             // This will potentially be called upon from inside a BottomSheet.
-            // Hence we stick with using a Dialog.
+            // Hence, we stick with using a Dialog.
             // - Note this is NOT rotation-safe
             new MultiChoiceAlertDialogBuilder<Integer>(context)
                     .setTitle(R.string.lbl_edition)

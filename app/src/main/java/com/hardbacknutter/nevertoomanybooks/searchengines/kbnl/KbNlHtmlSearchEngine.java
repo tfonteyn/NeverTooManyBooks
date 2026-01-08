@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -375,7 +375,7 @@ public class KbNlHtmlSearchEngine
             }
         }
 
-        // There is no language field; e.g. french books data is the same as dutch ones.
+        // There is no language field; e.g. French books data is the same as Dutch ones.
         // just add Dutch and hope for the best.
         if (!book.contains(DBKey.LANGUAGE)) {
             book.setLanguage("nld");

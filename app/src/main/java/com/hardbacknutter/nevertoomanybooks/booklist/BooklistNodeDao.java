@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,7 +55,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  *      <li>{@link #restoreSavedState()}: restore the tree view for all nodes from storage.</li>
  * </ul>
  * <p>
- * Dev. note: purging by Style/Bookshelf is not provided here but can instead by found in their
+ * Dev. note: purging by Style/Bookshelf is not provided here but can instead be found in their
  * respective DAOs.
  * This because there is no single BooklistNodeDao during the lifetime of the app,
  * but instead a new one is created alongside a BooklistBuilder instance.
@@ -621,7 +621,7 @@ public class BooklistNodeDao {
     /**
      * {@link #restoreSavedState()} 1. Update visibility/expanded flag (single column at a time)
      *
-     * @param sqlTemplate sql with placeholders for the column name
+     * @param sqlTemplate SQL with placeholders for the column name
      * @param columnName  to use
      *
      * @throws TransactionException (debug)
@@ -889,7 +889,7 @@ public class BooklistNodeDao {
                 + _AND_ + "%s." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
                 + ')';
 
-        // github #209: aliases in the target table of UPDATE (and DELETE)
+        // GitHub #209: aliases in the target table of UPDATE (and DELETE)
         // require SQLite 3.33.0 => Android 12 (API 31).
 //        private static final String ADJUST_VISIBILITY_UPDATE2 =
 //                UPDATE_ + /* listTable.getName() */ "%s" + " AS target"

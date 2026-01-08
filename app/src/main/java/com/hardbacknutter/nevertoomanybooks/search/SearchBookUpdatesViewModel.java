@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -206,7 +206,7 @@ public class SearchBookUpdatesViewModel
         // Note how we do NOT add DBKey.RATING
         // Rating is taken when a book is initially added to the app,
         // it is then assumed to user may update it with their personal rating.
-        // Hence we NEVER fetch it from the sites again.
+        // Hence, we NEVER fetch it from the sites again.
 
         map.put(context.getString(R.string.lbl_color),
                 new SyncFieldDef(DBKey.COLOR));
@@ -556,7 +556,7 @@ public class SearchBookUpdatesViewModel
 
 
     /**
-     * Cleanup up and report the final outcome.
+     * Clean-up up and report the final outcome.
      * <p>
      * Callers:
      * <ul>
@@ -613,7 +613,7 @@ public class SearchBookUpdatesViewModel
 
     /**
      * There was an Exception thrown during the search;
-     * Cleanup up and report the final outcome.
+     * Clean-up up and report the final outcome.
      *
      * @param e error
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -145,8 +145,7 @@ public class StyleGroupsFragment
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.groupList.setHasFixedSize(true);
 
-        // setup the adapter
-        // The adapter for the list.
+        // Set up the adapter for the list.
         final GroupWrapperListAdapter listAdapter =
                 new GroupWrapperListAdapter(context,
                                             vm.createWrappedGroupList(),

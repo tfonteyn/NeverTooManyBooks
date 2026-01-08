@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,8 +88,8 @@ public class BibliotecePlSearchEngine
      *      o: author(s)
      *      w: publisher
      *      r: publication year
-     *      isbn: ISBN numbers
-     *      issn: ISSN numbers
+     *      isbn: ISBNs
+     *      issn: ISSNs
      *      tag: tag names
      * </pre>
      *
@@ -492,7 +492,7 @@ public class BibliotecePlSearchEngine
         // Rather annoying...
         // all authors names are listed with the "o" indicator.
         //     <span data-ipub-search="o" itemprop="name">blah</span>
-        // These span's are inside a div with an itemprop set to one of these values:
+        // These spans are inside a div with an itemprop set to one of these values:
         //    creator, contributor
         // But the actual type can only be derived from the label.
         bookData.select("th")
@@ -662,7 +662,7 @@ public class BibliotecePlSearchEngine
         //noinspection DataFlowIssue
         final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
         // the cssQuery is based on the page source, and not on the page-inspect
-        // as the td.tags element is transformed by javascript by the time we inspect it.
+        // as the td.tags element is transformed by JavaScript by the time we inspect it.
         // The sub element can be a 'div' or a 'span'
         final List<Tag> tags = bookData.select(subElement)
                                        .stream()

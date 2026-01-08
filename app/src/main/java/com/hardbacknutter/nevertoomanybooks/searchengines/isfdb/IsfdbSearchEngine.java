@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -116,7 +116,7 @@ public class IsfdbSearchEngine
      * {@code <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">}
      * </pre>
      * but the real encoding seems to be Windows-1252.
-     * For example, a books list price with a specific currency symbol (e.g. dutch guilders)
+     * For example, a books list price with a specific currency symbol (e.g. Dutch guilders)
      * fails to be decoded unless we force Windows-1252
      * (tested with UTF-8 similarly fails to decode those symbols)
      */
@@ -206,7 +206,7 @@ public class IsfdbSearchEngine
     private static final String LANGUAGE_DEFAULT = "eng";
 
     /**
-     * Format string for searches. A maximum of 6 use's can be send.
+     * Format string for searches. A maximum of 6 use's can be sent.
      * They can be "OR or "AND" combined, but <strongly>not grouped</strongly>.
      * We hardcode "AND".
      * <p>
@@ -349,7 +349,7 @@ public class IsfdbSearchEngine
     @Override
     public void login(@NonNull final Context context)
             throws CredentialsException, SearchException {
-        // depending if we get here from a search or from a sync,
+        // Depending on if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
             siteAuthModule = new IsfdbAuth(cookieManager);
@@ -378,7 +378,7 @@ public class IsfdbSearchEngine
             parse(context, document, fetchCovers, book);
             // ISFDB only shows the books language on the publications page.
             // We use that page in all other searches.
-            // However when searching by their native id, we're not visiting that page.
+            // However, when searching by their native id, we're not visiting that page.
             // Default to English...
             if (!book.contains(DBKey.LANGUAGE)) {
                 book.setLanguage(LANGUAGE_DEFAULT);
@@ -472,7 +472,7 @@ public class IsfdbSearchEngine
     /**
      * Search for edition data.
      * <p>
-     * <strong>Note:</strong> we assume the isbn numbers retrieved from the site are valid.
+     * <strong>Note:</strong> we assume the ISBNs retrieved from the site are valid.
      * No extra checks are made at this point.
      *
      * <br>{@inheritDoc}
@@ -716,7 +716,7 @@ public class IsfdbSearchEngine
                     final Optional<PartialDate> oTocDate = partialDateParser.parse(yearStr);
                     if (oTocDate.isPresent()) {
                         tocDate = oTocDate.get();
-                        // If this entry has the same title as the book title
+                        // If this entry has the same title as the book title,
                         // and we did not find the date in a previous toc entry,
                         // use it as the first publication year for the book.
                         if (title.equalsIgnoreCase(bookTitle) && firstPublicationYear == null) {
@@ -1156,7 +1156,7 @@ public class IsfdbSearchEngine
     private void parseFormat(@NonNull final Element labelElement,
                              @NonNull final Book book) {
         // <li><b>Format:</b> <div ...>tp<sup ...>?</sup>
-        // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
+        // <span class="tooltiptext tooltipnarrow">Trade paperback. blah blah...
         // need to extract the "tp".
         final Element data = labelElement.nextElementSibling();
         if (data != null) {
@@ -1239,7 +1239,7 @@ public class IsfdbSearchEngine
 
     /**
      * Right now we only access the site without a login, but the parser
-     * can cope with both. We could optimize this...
+     * can cope with both. We could optimise this...
      * <p>
      * When NOT logged in:
      * <pre>
@@ -1545,7 +1545,7 @@ public class IsfdbSearchEngine
      * <a href="https://www.amazon.com/dp/B003ODIWEG?">US</a>)
      * }
      * </pre>
-     * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
+     * So for Amazon we only get a single link which is OK as the ASIN is the same in all.
      * 2025: at least this is true for books! Not necessarily true for non-book products.
      * <p>
      * Much more information can be found on the
@@ -1709,7 +1709,7 @@ public class IsfdbSearchEngine
     }
 
     /**
-     * Fetch a (list of) publications by REST-url which returns an xml doc.
+     * Fetch a (list of) publications by REST-url which returns an XML doc.
      *
      * @param context     Current context
      * @param url         to fetch

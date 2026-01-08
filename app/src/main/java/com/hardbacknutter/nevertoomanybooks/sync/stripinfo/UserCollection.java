@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
- * <strong>Used by the synchronization logic, i.e. the {@link StripInfoReader}.</strong>
+ * <strong>Used by the synchronisation logic, i.e. the {@link StripInfoReader}.</strong>
  * <p>
  * Fetches and parses the <strong>user collection list page</strong> from the site.
  * This list is available from the site top row menu bar.
@@ -205,7 +205,7 @@ class UserCollection {
         if (last != null) {
             try {
                 final int count = Integer.parseInt(last.text());
-                // If the last page has less books, this is to high... oh well...
+                // If the last page has fewer books, this is too high... oh well...
                 progressListener.setMaxPos(count * COLLECTION_CONTENT_ROWS);
                 progressListener.setIndeterminate(false);
                 progressListener.publishProgress(0, null);
@@ -251,7 +251,7 @@ class UserCollection {
     }
 
     /**
-     * Parse a "collectionContent".
+     * Parse "collectionContent".
      *
      * @param root of the section to parse
      *

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -135,13 +135,13 @@ public final class DnbAuthorResolver
         if (oIv.isEmpty()) {
             return false;
         }
-        // We investigates searching by author name, but this seems hard to achieve.
+        // We investigated searching by author name, but this seems hard to achieve.
         // e.g. a search for "Isaac Asimov" returned:
         // Ihre Suchanfrage ergab 528 Treffer.
         //   506 Treffer in Medien
         //   und 22 Treffer im Wissensnetz
         // => the Wissensnetz list of links does contain an entry "Person" as the 4th or 5th
-        // element (the link does NOT have the authro id) which we then need to follow
+        // element (the link does NOT have the author id) which we then need to follow
         // to get to the author page. The request/response and parsing overhead is just
         // too large.
 
@@ -189,7 +189,7 @@ public final class DnbAuthorResolver
                     if (td != null) {
                         final String s = label.text();
                         // We should get the german labels, but it seems we might get the
-                        // english ones despite the "DE" in the url. So... check on both!
+                        // English ones despite the "DE" in the url. So... check on both!
                         switch (s) {
                             case "Name": {
                                 author = Author.from(td.text());

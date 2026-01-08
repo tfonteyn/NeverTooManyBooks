@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -159,7 +159,7 @@ public class ZipArchiveWriter
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        // do a cleanup before we start writing
+        // do a clean-up before we start writing
         new Purger().purge();
 
         try {
@@ -167,7 +167,7 @@ public class ZipArchiveWriter
             if (recordTypes.contains(RecordType.Books)) {
                 steps = serviceLocator.getBookDao().countBooksForExport(sinceDateTime);
                 if (steps == 0) {
-                    // no books to backup. We ignore all other record types!
+                    // no books to back up. We ignore all other record types!
                     return results;
                 }
             }
@@ -418,7 +418,7 @@ public class ZipArchiveWriter
                 return;
             }
 
-            // We're using jpg, png.. don't bother compressing.
+            // We're using jpg, png... don't bother compressing.
             // Compressing might actually make some image files bigger!
             putFile(filename, new File(coverDir, filename), false);
             exported++;
@@ -448,7 +448,7 @@ public class ZipArchiveWriter
             throw new IllegalArgumentException(RecordType.Database.toString());
         }
 
-        // everything else is now json
+        // everything else is now JSON
         return RecordEncoding.Json;
     }
 

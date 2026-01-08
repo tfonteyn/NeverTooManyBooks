@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,7 +122,7 @@ public class ImportViewModel
 
         // If the user checked the option to import books,
         // we also imported the deleted-book records for future syncs
-        // which is independent from the sync option.
+        // which is independent of the sync option.
 
         // Here we are effectively deleting the actual books if sync was enabled.
         if (importHelper.getRecordTypes().contains(RecordType.Books)

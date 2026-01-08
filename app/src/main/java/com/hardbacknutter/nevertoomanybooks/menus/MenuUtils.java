@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,7 +99,7 @@ public final class MenuUtils {
 
     /**
      * Customize the given menu item title to give it the same look as preference categories.
-     * The color is set to 'colorAccent' + the text is scaled 0.88 (16sp versus default 18sp).
+     * The colour is set to 'colorAccent' + the text is scaled 0.88 (16sp versus default 18sp).
      *
      * @param context    Current context
      * @param menu       hosting menu
@@ -116,7 +116,7 @@ public final class MenuUtils {
         title.setSpan(new RelativeSizeSpan(TEXT_SCALING_PERCENTAGE), 0, title.length(), 0);
         item.setTitle(title);
 
-        // can be set in xml, but here for paranoia
+        // can be set in XML, but here for paranoia
         item.setCheckable(false);
         item.setEnabled(false);
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -141,7 +141,7 @@ class ReadingProgressDelegate
         }
 
         updateUI();
-        // Call BEFORE we setup any listeners!
+        // Call BEFORE we set up any listeners!
         modelToView();
 
         vb.rbGroup.setOnCheckedChangeListener((group, checkedId) -> {

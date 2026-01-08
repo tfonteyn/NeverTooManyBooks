@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,12 +22,12 @@
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportViewModel}
  * serves as the glue between the UI and the
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportHelper}
- * The user has choosen an output format:
+ * The user has chosen an output format:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterEncoding}
  * <p>
  * The helper is passed to:
  * {@link com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel}.DataWriterTask
- * The task gets an writer from the ExportHelper, and delegates the job to it:
+ * The task gets a writer from the ExportHelper, and delegates the job to it:
  * {@link com.hardbacknutter.nevertoomanybooks.io.DataWriter}
  * <p>
  * The writer gets the desired list of entries it needs to write from the helper.
@@ -38,7 +38,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.io.RecordWriter}
  * The output from the RecordWriter is then streamed into the actual archive.
  * <p>
- * When done, the writer copies the archive file to to a {@link android.net.Uri}
+ * When done, the writer copies the archive file to a {@link android.net.Uri}
  * and reports back to the task... back to the user UI with:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportResults}.
  * <p>
@@ -75,7 +75,7 @@
  * <ul>
  * <li>db: a copy of the internal database</li>
  * <li>json: all data except covers</li>
- * <li>zip: all data in json format + covers == full backup</li>
+ * <li>zip: all data in JSON format + covers == full backup</li>
  * </ul>
  * <p>
  * Archives read:

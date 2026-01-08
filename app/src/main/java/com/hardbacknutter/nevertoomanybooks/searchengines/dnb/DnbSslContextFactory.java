@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -125,7 +125,7 @@ final class DnbSslContextFactory {
             throw new CertificateException(e);
 
         } catch (@NonNull final IOException | KeyStoreException | NoSuchAlgorithmException ignore) {
-            // All these exceptions, can be ignored and we are assuming
+            // All these exceptions can be ignored, and we are assuming
             // that the server does not need a cert, or that the cert is
             // loaded in the Android system keystore.
         }

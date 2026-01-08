@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -135,7 +135,7 @@ public final class AuthorResolverFactory {
      * given SID keys.
      *
      * @param context Current context
-     * @param sidKeys available sids
+     * @param sidKeys available SIDs
      *
      * @return list
      */
@@ -166,7 +166,7 @@ public final class AuthorResolverFactory {
                           EngineId.Dnb,
                           EngineId.Goodreads)
                       .filter(engineId -> isEnabled(context, engineId))
-                      // Sanity check, all engines here should have keys
+                      // Sanity check, all engines here should have keys,
                       // or we should not have added them!
                       .filter(engineId -> engineId.getIdentifierKey() != null)
                       .filter(engineId -> sidKeys.contains(engineId.getIdentifierKey()))
@@ -179,7 +179,7 @@ public final class AuthorResolverFactory {
     }
 
     /**
-     * An engine using it's own resolver.
+     * An engine using its own resolver.
      *
      * @param context  Current context
      * @param engineId the engine == resolver id

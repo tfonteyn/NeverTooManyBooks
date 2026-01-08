@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ public class ExportResults
     public int calibreLibraries;
     /** #calibreLibraries we exported. */
     public int calibreCustomFields;
-    /** #deletedBook uuids we exported. */
+    /** #deletedBook uuid we exported. */
     public int deletedBooks;
 
     /** whether we exported the actual database. */
@@ -166,7 +166,7 @@ public class ExportResults
     }
 
     /**
-     * Do we have <strong>anything</strong> at all, or is the export set empty.
+     * Do we have <strong>anything</strong> at all, or is the export set empty?
      *
      * @return {@code true} if the results are all {@code 0}
      */
@@ -258,7 +258,7 @@ public class ExportResults
      * Return the full list of cover filenames as collected with {@link #addCover}.
      * <p>
      * This is used/needed for the two-step backup process, where step one exports books,
-     * and collects cover filenames, and than (calling this method)
+     * and collects cover filenames, and then (calling this method)
      * in a second step exports the images.
      *
      * @return list
@@ -272,7 +272,7 @@ public class ExportResults
      * Return the full list of cover filenames as collected with {@link #addImage}.
      * <p>
      * This is used/needed for the two-step backup process, where step one exports books,
-     * and collects author image filenames, and than (calling this method)
+     * and collects author image filenames, and then (calling this method)
      * in a second step exports the images.
      *
      * @return list

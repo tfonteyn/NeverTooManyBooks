@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
  * MLA specifies the title must be in italics.
- * We're <strong>assuming</strong> that the user will be using html.
+ * We're <strong>assuming</strong> that the user will be using HTML.
  * If not... oh well :/
  * <p>
  * Note we don't add edition information.

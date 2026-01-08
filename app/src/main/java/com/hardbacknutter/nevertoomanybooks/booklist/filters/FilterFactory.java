@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ public final class FilterFactory {
 
     /**
      * UI usage: get a label/dbKey Map for all supported filters.
-     * The map will be sorted alphabetically on the labels according to to the Locale
+     * The map will be sorted alphabetically on the labels according to the Locale
      * <p>
      * Key: the label, value: the DBKey
      *
@@ -101,14 +101,14 @@ public final class FilterFactory {
     }
 
     /**
-     * UI usage: get a human readable name for the given {@code dbKey} filter.
+     * UI usage: get a human-readable name for the given {@code dbKey} filter.
      * <p>
      * Returns the localized text "Filter" for generic/dynamic filters.
      *
      * @param context Current context
      * @param dbKey   for the filter
      *
-     * @return a human readable label/name
+     * @return a human-readable label/name
      */
     public static String getLabel(@NonNull final Context context,
                                   @NonNull final String dbKey) {
@@ -139,7 +139,7 @@ public final class FilterFactory {
                 // Reminder: the BooklistBuilder#createBookshelfFilters
                 // will always add the current Bookshelf to the existing filter
                 // if the user is viewing an actual Bookshelf.
-                // Hence this filter should be seen as "show books from ADDITIONAL bookshelves.
+                // Hence, this filter should be seen as "show books from ADDITIONAL bookshelves".
                 return new PEntityListFilter<>(
                         dbKey, DBDefinitions.TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll());

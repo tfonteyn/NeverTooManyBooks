@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@
  * Site/SearchEngine pairs are unique PER LIST:
  * <ul>
  *     <li>there is only one instance of a Site inside a single List</li>
- *     <li>a SearchEngine is cached by a Site, but re-created each time the Site is Parceled.</li>
+ *     <li>a SearchEngine is cached by a Site, but re-created each time the Site is parcelled.</li>
  *     <li>two Site for the SAME website (i.e. same engine id),
  *         but in a different List, will have the same SearchEngine class,
  *         but a different instance of that SearchEngine </li>

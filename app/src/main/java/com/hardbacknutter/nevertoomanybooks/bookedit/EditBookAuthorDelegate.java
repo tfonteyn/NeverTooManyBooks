@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -375,7 +375,7 @@ class EditBookAuthorDelegate
         if (authorVm.showAuthorRole()) {
             // Always set these when globally enabled
             // even when disabled for the current edit.
-            // This is more user friendly if the user flips the switch more than once.
+            // This is more user-friendly if the user flips the switch more than once.
             int role = AuthorRole.UNKNOWN;
             for (int i = 0; i < roleButtons.size(); i++) {
                 if (roleButtons.valueAt(i).isChecked()) {

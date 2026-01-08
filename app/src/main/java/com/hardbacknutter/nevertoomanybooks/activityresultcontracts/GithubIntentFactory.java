@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ public final class GithubIntentFactory {
     }
 
     /**
-     * Create an Intent to take us to the project help/wiki page on Github.
+     * Create an Intent to take us to the project help/wiki page on GitHub.
      *
      * @param context Current context
      *
@@ -47,7 +47,7 @@ public final class GithubIntentFactory {
     }
 
     /**
-     * Create an Intent to take us to the project issues page on Github.
+     * Create an Intent to take us to the project issues page on GitHub.
      *
      * @param context Current context
      *

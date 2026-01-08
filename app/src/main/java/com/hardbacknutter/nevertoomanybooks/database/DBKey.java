@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -520,15 +520,15 @@ public final class DBKey {
         /** FTS Primary key. */
         public static final String PK_BOOK_ID = "docid";
         /**
-         * {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Authors.
+         * {@link DBDefinitions#TBL_FTS_BOOKS}. Semicolon concatenated Authors.
          * Example: "stephen baxter;arthur c. clarke;"
          */
         public static final String AUTHOR_NAME = "author_name";
-        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Series. */
+        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semicolon concatenated Series. */
         public static final String SERIES_NAMES = "series_name";
-        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Publishers. */
+        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semicolon concatenated Publishers. */
         public static final String PUBLISHER_NAMES = "publisher_name";
-        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated TOC titles. */
+        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semicolon concatenated TOC titles. */
         public static final String TOC_ENTRY_TITLE = "toc_title";
 
         private FTS() {
@@ -541,7 +541,7 @@ public final class DBKey {
     @SuppressWarnings("CheckStyle")
     public static final class IDENTIFIERS {
 
-        /** The keyword. Not localized. */
+        /** The keyword. Not localised. */
         public static final String KEY = "key";
         /** Type: a char: S or L. */
         public static final String TYPE = "type";
@@ -552,13 +552,13 @@ public final class DBKey {
         /** URL to the main page of the site. */
         public static final String SITE_URL = "site_url";
         /**
-         * <strong>URI</strong> with a "%s" taking a sid.
-         * Typically a url, but we allow/use all uri style values.
+         * <strong>URI</strong> with an "%s" taking a sid.
+         * Typically, a url, but we allow/use all uri style values.
          */
         public static final String BOOK_URI = "book_uri";
         /**
-         * <strong>URI</strong> with a "%s" taking a sid.
-         * Typically a url, but we allow/use all uri style values.
+         * <strong>URI</strong> with an "%s" taking a sid.
+         * Typically, a url, but we allow/use all uri style values.
          */
         public static final String AUTHOR_URI = "author_uri";
         /**
@@ -611,8 +611,8 @@ public final class DBKey {
         /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
         public static final String LIBRARY_STRING_ID = "clb_lib_id";
         /**
-         * @link DBDefinitions#TBL_CALIBRE_LIBRARIES}.
-         *         Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
+         * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}.
+         * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
          */
         public static final String LIBRARY_UUID = "clb_lib_uuid";
         /**
@@ -650,7 +650,7 @@ public final class DBKey {
         public static final String BOOK_ID = "si_book_id";
         /**
          * The "CollectieId"; a secondary id used by the website for all books flagged
-         * as being in the users collection. This is the case as soon as they set "some"
+         * as being in the users' collection. This is the case as soon as they set "some"
          * private date/flags on it.
          */
         public static final String COLLECTION_ID = "si_coll_id";

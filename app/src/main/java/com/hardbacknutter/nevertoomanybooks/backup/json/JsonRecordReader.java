@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,7 +90,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Supports two levels of Archive records.
  * <ol>
- *     <li>Single level (one record == one json file): a record will contain ONE of
+ *     <li>Single level (one record == one JSON file): a record will contain ONE of
  *     <ul>
  *         <li>{@link RecordType#MetaData}</li>
  *         <li>{@link RecordType#Styles}</li>
@@ -105,7 +105,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *         <li>{@link RecordType#Books}</li>
  *     </ul>
  *     </li>
- *     <li>All-in-one (single json file): top level: {@link JsonCoder#TAG_APPLICATION_ROOT},
+ *     <li>All-in-one (single JSON file): top level: {@link JsonCoder#TAG_APPLICATION_ROOT},
  *     which contains:
  *     <ul>
  *         <li>{@link RecordType#MetaData}</li>
@@ -182,8 +182,8 @@ public class JsonRecordReader
 
             // We should now be 'in' the MetaData object, but we need to do another
             // sanity check by explicitly checking for the INFO_ARCHIVER_VERSION field,
-            // as we might be inside a generic json file instead and we do not
-            // want the BundleCoder to crash!
+            // as we might be inside a generic JSON file instead. We do not
+            // want the BundleCoder to crash.
             if (root.has(ArchiveMetaData.INFO_ARCHIVER_VERSION)) {
                 final Bundle data = new BundleCoder(context).decode(root);
                 if (data.isEmpty()) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -277,7 +277,7 @@ public class BiblionetGrSearchEngine
                     } else {
                         // The "Notes" field when present is kept at the start.
                         // Example of notes:
-                        //    Freely available under a Creative Commons license via
+                        //    Freely available under a Creative Commons licence via
                         //    the website www.saitapublications.gr
                         book.setDescription(description + "\n\n" + text);
                     }
@@ -490,7 +490,7 @@ public class BiblionetGrSearchEngine
                 continue;
             }
 
-            // The english label SHOW as uppercase on the site, but ARE LOWERCASE in the html.
+            // The English label SHOW as uppercase on the site, but ARE LOWERCASE in the HTML.
             switch (label) {
                 case "Εκδοτης":
                 case "Publisher": {

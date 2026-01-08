@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -270,7 +270,7 @@ public class TarArchiveReader
         progressListener.setMaxPos(estimatedSteps);
 
         // On any semi-decent device the user won't see the record progress updates
-        // other than the actual books/images but we're showing them regardless as "why-not".
+        // other than the actual books/images, but we're showing them regardless as "why-not".
         // Also: show this HERE, before the csv reader start reading
         // as it could take some time before the actual first entry is read.
         try {

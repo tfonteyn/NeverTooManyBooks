@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class RadioGroupRecyclerAdapter<T>
      * @param items         List of items
      * @param labelSupplier given the position in the list, supply a label for the item
      * @param selection     (optional) the pre-selected item
-     * @param listener      (optional) when provided, the user selection will be send
+     * @param listener      (optional) when provided, the user selection will be sent
      *                      to this listener each time it changes;
      *                      Alternatively use {@link #getSelection()} when done.
      */

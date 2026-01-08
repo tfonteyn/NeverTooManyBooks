@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import java.util.Optional;
 
 /**
  * Interface provided by every record read from an archive file.
- * This class effectively should wrap an archive record in a encoding-agnostic record.
+ * This class effectively should wrap an archive record in an encoding-agnostic record.
  * <p>
  * Note we're also forcing the encapsulation of the {@link DataReader} input stream.
  */

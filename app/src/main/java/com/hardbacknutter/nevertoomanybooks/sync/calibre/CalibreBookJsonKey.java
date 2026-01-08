@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 /**
  * These are the field names the Calibre Content Server uses/expects in its AJAX API.
- * See the constructor javadoc for an example of the json blob.
+ * See the constructor Javadoc for an example of the JSON blob.
  */
 final class CalibreBookJsonKey {
 

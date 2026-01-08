@@ -44,7 +44,7 @@ Tried it out for the ViewPager2 usage:
 
 - book details + book edit
   Effect is not really visible, but touching area is indeed as per gesture docs.
-  Not sure this is really useful on these screens.
+  Not sure if this is really useful on these screens.
   Not enabling for now.
 - search-admin (settings)
   Effect is very visible making the site lists narrow.
@@ -90,7 +90,7 @@ ENHANCE: add a UUID to bookshelves
 
 
 - restore same device
-- all shelves recognized by uuid
+- all shelves recognised by uuid
 - done
 
 
@@ -120,7 +120,7 @@ https://issuetracker.google.com/issues/388867281
 
 2025-02-19: allegedly fixed in aug-2024, but not available in any image for the emulator...
 
-On Android 15 (emulator standard image + ext-14 image), when the user changes the Theme Colors,
+On Android 15 (emulator standard image + ext-14 image), when the user changes the Theme Colours,
 ... THE ACTIVITY WILL RESTART as is normal...
 the toolbar is automatically changed, but the background of the status bar
 will switch to transparent.
@@ -177,7 +177,7 @@ You can either:
 The node-management, i.e. storing the tree-state of the nodes in the booklist
 is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
 the display from time to time. There are no plans to fix this for now as the foolproof solution
-would take far to much disk space.
+would take far too much disk space.
 
 <hr style="border:1px solid red;">
 

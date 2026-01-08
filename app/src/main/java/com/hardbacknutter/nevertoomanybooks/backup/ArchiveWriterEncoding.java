@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ public enum ArchiveWriterEncoding
         implements Parcelable {
     /**
      * The default full backup/restore support.
-     * Will contain all data as json files + all cover images.
+     * Will contain all data as JSON files + all cover images.
      */
     Zip("zip",
         R.string.option_archive_type_backup_zip,

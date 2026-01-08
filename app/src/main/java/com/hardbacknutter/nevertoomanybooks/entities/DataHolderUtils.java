@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -338,7 +338,7 @@ public final class DataHolderUtils {
             return ((IdentifierOwner) dataHolder).getIdentifierValue(identifierKey);
         }
 
-        // Paranoia.. DO NOT throw here; Not entirely sure we can never get here..
+        // Paranoia... DO NOT throw here; Not entirely sure if we can never get here...
         // e.g. if this method was called in error on for example a Series.
         return Optional.empty();
     }
@@ -381,7 +381,7 @@ public final class DataHolderUtils {
             return ((IdentifierOwner) dataHolder).getIdentifiers();
         }
 
-        // Paranoia.. DO NOT throw here; Not entirely sure we can never get here..
+        // Paranoia... DO NOT throw here; Not entirely sure if we can never get here...
         // e.g. if this method was called in error
         return List.of();
     }

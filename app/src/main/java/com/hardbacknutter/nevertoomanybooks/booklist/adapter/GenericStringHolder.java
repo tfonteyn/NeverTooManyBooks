@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public class GenericStringHolder
 
     /**
      * The group this holder represents.
-     * It's ok to store this as it's intrinsically linked with the ViewType.
+     * It's OK to store this as it's intrinsically linked with the ViewType.
      */
     @BooklistGroup.Id
     private final int groupId;
@@ -76,7 +76,7 @@ public class GenericStringHolder
     private final FormatFunction formatter;
     /**
      * Key of the related data column.
-     * It's ok to store this as it's intrinsically linked with the BooklistGroup.
+     * It's OK to store this as it's intrinsically linked with the BooklistGroup.
      */
     @NonNull
     private final String key;
@@ -188,7 +188,7 @@ public class GenericStringHolder
     }
 
     void dbgPosition(@NonNull final DataHolder rowData) {
-        // Debugger help: color the row according to state
+        // Debugger help: colour the row according to state
         if (DEBUG_SWITCHES.BOB_NODE_STATE) {
             //noinspection DataFlowIssue
             itemView.setBackgroundColor(

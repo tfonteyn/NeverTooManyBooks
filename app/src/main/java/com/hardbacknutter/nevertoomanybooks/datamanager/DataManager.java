@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -232,7 +232,7 @@ public class DataManager
     }
 
     /**
-     * Store a Object value. The object will be cast to one of the supported types.
+     * Store an Object value. The object will be cast to one of the supported types.
      *
      * @param key   Key of data object
      * @param value to store
@@ -243,7 +243,7 @@ public class DataManager
                     @Nullable final Object value) {
         // This code is a subset of Bundle#putObject(String, Object)
         // which is not part of the public API.
-        // In addition we support BigInteger/BigDecimal
+        // In addition, we support BigInteger/BigDecimal
 
         if (value instanceof Money) {
             // special handling
@@ -448,7 +448,7 @@ public class DataManager
      * Get a {@link Money} value.
      * <p>
      * <strong>NOT for normal use; it's too easy to get this wrong.
-     * Should only used by {@link #get(String, RealNumberParser)} or in tests.</strong>
+     * Should only be used by {@link #get(String, RealNumberParser)} or in tests.</strong>
      * <p>
      * This method should really return an "Either". i.e.
      * Either return the Money object, or return a String with the raw value.

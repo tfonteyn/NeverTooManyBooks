@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -454,7 +454,7 @@ class IsfdbPublicationListHandler
         // Always reset the length. This is not entirely the right thing to do, but works
         // because we always want strings from the lowest level (leaf) XML elements.
         // To be completely correct, we should maintain a stack of builders that are pushed and
-        // popped as each startElement/endElement is called. But lets not be pedantic for now.
+        // popped as each startElement/endElement is called. But let's not be pedantic for now.
         builder.setLength(0);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 /**
  * <strong>External-id</strong> or <strong>sid</strong>:
  * a book-id/author-id as defined by an external (to this app) source,
- * usually a website. Hence <strong>sid</strong>: site-id.
+ * usually a website. Hence, <strong>sid</strong>: site-id.
  * <p>
  * <strong>{@link Identifier}</strong>: a NAME for an external/site book-id/author-id.
  * <p>

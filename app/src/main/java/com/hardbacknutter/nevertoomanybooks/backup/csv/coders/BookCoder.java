@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -235,7 +235,7 @@ public class BookCoder {
         // BC (sometimes?) produces CSV files where a book can have:
         // "read"=0
         // "read_end"="a valid date"
-        // github #205: force the "read" flag to =1 if a read_end" is present
+        // GitHub #205: force the "read" flag to =1 if a read_end" is present
         // after the above validation of the date fields.
         if (book.contains(DBKey.READ_END__DATE)) {
             book.putBoolean(DBKey.READ__BOOL, true);
@@ -339,7 +339,7 @@ public class BookCoder {
                         list.add(author);
                     }
                 });
-                // In addition we can have the following duplicates:
+                // In addition, we can have the following duplicates:
                 //
                 // Author,Author l-f,Additional Authors
                 // Liu Cixin,"Cixin, Liu","Ken Liu, Cixin Liu"
@@ -583,7 +583,7 @@ public class BookCoder {
     @SuppressWarnings("IfStatementWithNegatedCondition")
     private void processRating(@NonNull final Book book) {
         // Read the values as String and parse to verify they are valid.
-        // The order of the if's is important!
+        // The order of the "if" statements is important!
 
         if (book.contains(DBKey.RATING)) {
             // If the key DBKey.RATING is present, we ALWAYS use it even if it's 0/empty

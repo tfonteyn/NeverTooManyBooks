@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ public final class InfoPopup {
     }
 
     /**
-     * Show a popup info text. A tap outside of the popup will make it go away again.
+     * Show a popup info text. A tap outside the popup will make it go away again.
      *
      * @param anchor the view on which to pin the popup window
      * @param xoff   A horizontal offset from the anchor in pixels

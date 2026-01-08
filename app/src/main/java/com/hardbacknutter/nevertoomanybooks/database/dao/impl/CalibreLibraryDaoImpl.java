@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -262,7 +262,7 @@ public class CalibreLibraryDaoImpl
     }
 
     /**
-     * Get the list of Calibre <strong>virtual</strong>libraries for the given library id.
+     * Get the list of Calibre <strong>virtual</strong> libraries for the given library id.
      *
      * @param libraryId row id for the physical library
      *

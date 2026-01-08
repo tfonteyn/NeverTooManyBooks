@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ public interface AuthorResolver {
      *     <li>Resolve pen-names</li>
      *     <li>Fix author names with any missing diacritics</li>
      *     <li>Add {@code Identifier}s if possible</li>
-     *     <li>Add any fields which have no data yet (e.g. birth/death dates, picture, ...</li>
+     *     <li>Add any fields which have no data yet (e.g. birth/death dates, picture, ...)</li>
      * </ul>
      *
      * Implementation <strong>MUST NOT</strong> write the changes to the database.

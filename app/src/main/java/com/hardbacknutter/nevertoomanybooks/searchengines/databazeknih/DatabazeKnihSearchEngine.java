@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
- * Catalog site serving Czech and Slovak mainly.
+ * Catalogue site serving Czech and Slovak mainly.
  * <p>
  * The site uses different id's for different types of authors.
  * Example:
@@ -110,7 +110,7 @@ public class DatabazeKnihSearchEngine
      */
     private static final String MORE_DETAILS_URL = "/book-detail-more-info/%1$s";
 
-    /** The html title attribute starts with this if we get a list back. */
+    /** The HTML title attribute starts with this if we get a list back. */
     private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
     /** a link txt we need to remove from the description field. */
     private static final String CELY_TEXT = "... celý text";
@@ -401,7 +401,7 @@ public class DatabazeKnihSearchEngine
         element = document.selectFirst("span:contains(Originální název:)");
         if (element != null) {
             // The Case of the Left-Handed Lady<span class="gray">,</span> 2007
-            // bit tricky.. there is no verification possible that this is a title
+            // bit tricky, there is no verification possible that this is a title
             textNode = element.nextSibling();
             if (textNode != null) {
                 final String text = cleanText(textNode);
@@ -489,7 +489,7 @@ public class DatabazeKnihSearchEngine
         String text = desc.wholeText();
         // Check/skip if it is "no description"
         if (!NO_DESCRIPTION_TEXT.equals(text)) {
-            // text contains \n and lots of whitespace, cleanup
+            // text contains \n and lots of whitespace, clean-up
             text = Arrays.stream(text.split("\n"))
                          .map(String::strip)
                          // remove the "click to see more" if present
@@ -602,7 +602,7 @@ public class DatabazeKnihSearchEngine
             }
         }
 
-        // Audio books duration
+        // Audiobooks duration
         if (book.getString(DBKey.PAGES).isEmpty()) {
             element = root.selectFirst("span:contains(Délka:)");
             if (element != null) {

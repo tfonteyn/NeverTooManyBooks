@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.OnEditListener;
 /**
  * Launcher for one of the inline-string fields in the Books table.
  * <ul>
- * <li>used for direct/in-place editing of an inline field text; e.g. Book Color, Format...</li>
+ * <li>used for direct/in-place editing of an inline field text; e.g. Book Colour, Format...</li>
  * <li>modifications <strong>ARE STORED</strong> in the database</li>
  * <li>returns the original and the modified/stored text</li>
  * </ul>
@@ -60,7 +60,7 @@ public class EditInLineStringLauncher
      * Constructor.
      *
      * @param requestKey          FragmentResultListener request key to use for our response.
-     *                            Typically the {@code DBKey} for the column we're editing.
+     *                            Typically, the {@code DBKey} for the column we're editing.
      * @param dialogSupplier      a supplier for a new plain DialogFragment
      * @param bottomSheetSupplier a supplier for a new BottomSheetDialogFragment.
      */

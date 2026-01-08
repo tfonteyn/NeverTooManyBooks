@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,7 +66,7 @@ public final class FtsDaoHelper {
      * Prepare a search string for doing an FTS search.
      * <p>
      * All diacritic characters are converted to ASCII.
-     * Remove punctuation from the search string to TRY to match the tokenizer.
+     * Remove punctuation from the search string to TRY to match the tokeniser.
      * The only punctuation we allow is a hyphen preceded by a space => negate
      * the next word.
      * Everything else is translated to a space.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,11 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 public class StartupViewModel
         extends ViewModel {
 
-    /** Flag to indicate the OrderBy column for titles must be rebuild at startup. */
+    /** Flag to indicate the OrderBy column for titles must be rebuilt at startup. */
     @StartupAction
     public static final String PK_REBUILD_TITLE_OB = "startup.task.rebuild.title.sorting";
 
-    /** Flag to indicate all indexes must be rebuild at startup. */
+    /** Flag to indicate all indexes must be rebuilt at startup. */
     @StartupAction
     public static final String PK_REBUILD_INDEXES = "startup.task.rebuild.index";
 

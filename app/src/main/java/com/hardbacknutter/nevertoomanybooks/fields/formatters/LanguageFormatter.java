@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,7 +66,7 @@ public class LanguageFormatter
     }
 
     /**
-     * Extract a localised language name to its ISO equivalent.
+     * Extract a localized language name to its ISO equivalent.
      *
      * @return the ISO3 code for the language
      */

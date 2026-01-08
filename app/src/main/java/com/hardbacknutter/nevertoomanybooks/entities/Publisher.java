@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -144,7 +144,7 @@ public class Publisher
                            @NonNull final Style style) {
 
         // yes, we're using the 'title'. Adding specific publisher logic was
-        // to much overhead for a presumably little used feature
+        // too much overhead for a presumably little used feature
         if (style.isShowReorderedTitle()) {
             final ReorderHelper reorderHelper = new ReorderHelper(
                     LocaleListUtils.asList(context.getResources().getConfiguration().getLocales()));

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,7 +82,7 @@ public class EditLenderViewModel
 
             // get previously used lender names
             final List<String> list = dao.getList();
-            // We have seen an NPE in github #70 which almost certainly can be attributed
+            // We have seen an NPE in GitHub #70 which almost certainly can be attributed
             // to the Contacts application returning null data. See #getContact
             // but to make sure we never crash again here, adding a sanity/paranoia
             // check for null here as well.
@@ -164,7 +164,7 @@ public class EditLenderViewModel
                 while (cursor.moveToNext()) {
                     final String name = cursor.getString(cursor.getColumnIndexOrThrow(
                             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                    // sanity check added due to github #70
+                    // sanity check added due to GitHub #70
                     if (name != null && !name.isBlank()) {
                         contacts.add(name);
                     }

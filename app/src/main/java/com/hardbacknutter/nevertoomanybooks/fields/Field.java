@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <ul>
  *      <li>Handling of visibility via preferences / 'usedKey' property of a field.</li>
  *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
- *          will work as expected as will setting the value of an ExposedDropDownMenu).
+ *          will work as expected as will set the value of an ExposedDropDownMenu).
  *          As new view types are added, it will be necessary to add new {@link Field}
  *          implementations.</li>
  *      <li>Data formatters to provide application-specific data rules.</li>
@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * but should leave the real formatter to the format method.
  * <p>
  * This way, other code can access {@link FieldFormatter#format(Context, Object)}
- * without side-effects.
+ * without side effects.
  * <p>
  * Data flows to and from a view as follows:
  * <ul>
@@ -215,7 +215,7 @@ public interface Field<T, V extends View> {
     void setValue(@Nullable T value);
 
     /**
-     * Put the <strong>native typed value</strong> in the passed {@link DataManager}.
+     * Put the <strong>native typed value</strong> in the given {@link DataManager}.
      *
      * @param target {@link DataManager} to save the Field value into.
      *

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 
 /**
  * An SQL WHERE clause  (column LIKE '%text%').
- * Note that the LIKE usage means this is case insensitive.
+ * Note that the LIKE usage means this is case-insensitive.
  * <p>
  * Yes, this is a security risk. We ARE aware that concatenation with a user-entered
  * value should never be done. Given the nature of this app, oh well...

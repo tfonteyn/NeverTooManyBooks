@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,7 +66,7 @@ public interface FlexToolbar {
     boolean onToolbarButtonClick(@Nullable View button);
 
     /**
-     * Setup the Toolbar.
+     * Set up the Toolbar.
      * <p>
      * Dev. Note: If we want an outline to be drawn AROUND the icon, then we seem
      * forced to use an "actionLayout" with an icon-Button using the outline style.

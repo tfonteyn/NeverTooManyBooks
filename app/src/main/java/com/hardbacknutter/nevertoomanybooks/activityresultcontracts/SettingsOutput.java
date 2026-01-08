@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ public final class SettingsOutput {
      * @param recreateActivity     flag indicating if the BoB <strong>Activity</strong>
      *                             should be recreated
      * @param forceRebuildBooklist flag indicating if the BoB <strong>Booklist</strong>
-     *                             should be rebuild
+     *                             should be rebuilt
      *
      * @return Intent
      */

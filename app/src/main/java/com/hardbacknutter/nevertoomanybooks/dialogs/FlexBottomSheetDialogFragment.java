@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public class FlexBottomSheetDialogFragment
 
         final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 
-        // Due to multi-use of the layouts, we don't set these in xml:
+        // Due to multi-use of the layouts, we don't set these in XML:
         final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
         // Close fully when the user is dragging us down
         behavior.setSkipCollapsed(true);
@@ -107,7 +107,7 @@ public class FlexBottomSheetDialogFragment
     }
 
     private void initToolbar(@NonNull final View parent) {
-        // the dialog toolbar == bottom-sheet toolbar; can be null, that's ok
+        // the dialog toolbar == bottom-sheet toolbar; can be null, that's OK
         delegate.setToolbar(parent.findViewById(R.id.dialog_toolbar));
     }
 

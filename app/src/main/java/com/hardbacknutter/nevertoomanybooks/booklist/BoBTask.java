@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class BoBTask
     private RebuildBooklist rebuildMode;
     /** Search Filters. */
     private Collection<Filter> criteriaFilters;
-    /** The row id we want the new list to display more-or-less in the center. */
+    /** The row id we want the new list to display more-or-less in the centre. */
     private long desiredCentralBookId;
 
     /**
@@ -83,7 +83,7 @@ public class BoBTask
      * @param mode                 see {@link RebuildBooklist}
      * @param criteriaFilters      filters
      * @param desiredCentralBookId the book id we want the new list to display
-     *                             more-or-less in the center of the screen
+     *                             more-or-less in the centre of the screen
      */
     public void start(@NonNull final Bookshelf bookshelf,
                       @NonNull final RebuildBooklist mode,

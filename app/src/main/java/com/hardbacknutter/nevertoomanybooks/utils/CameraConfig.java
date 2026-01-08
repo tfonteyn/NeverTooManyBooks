@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public final class CameraConfig {
     /**
      * Show or hide the zoom-control slider.
      * <p>
-     * 2025-08-18 see github #181:
+     * 2025-08-18 see GitHub #181:
      * User reported that their Xiaomi Note 12 Pro+, Android 13
      * was having trouble focusing and more than half of the time, when
      * focus finally worked, the image was not properly decoded.
@@ -186,7 +186,7 @@ public final class CameraConfig {
     }
 
     /**
-     * Whether auto-focus should be
+     * Whether autofocus should be
      * {@code false}: left to the device,
      * or {@code true}: controlled by the app .
      * <p>

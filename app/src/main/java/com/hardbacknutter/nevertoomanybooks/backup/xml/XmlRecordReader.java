@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,8 +88,8 @@ public class XmlRecordReader
 
     /**
      * Stack for popping tags on if we go into one.
-     * This is of course overkill, just to handle the list/set set,
-     * but it's clean and future proof
+     * This is of course overkill, just to handle the list/set,
+     * but it's clean and future-proof
      */
     private final Deque<TagInfo> tagStack = new ArrayDeque<>();
     private final RealNumberParser realNumberParser;
@@ -263,13 +263,13 @@ public class XmlRecordReader
 
                     case XmlUtils.TAG_SET:
                         accessor.putStringSet(currentTag.name, currentStringList);
-                        // cleanup, ready for the next Set
+                        // clean-up, ready for the next Set
                         currentStringList.clear();
                         break;
 
                     case XmlUtils.TAG_LIST:
                         accessor.putStringList(currentTag.name, currentStringList);
-                        // cleanup, ready for the next List
+                        // clean-up, ready for the next List
                         currentStringList.clear();
                         break;
 
@@ -355,7 +355,7 @@ public class XmlRecordReader
                     // No support for list/set inside a list/set (no point)
                     case XmlUtils.TAG_SERIALIZABLE:
                         // serializable is indeed just added as a string...
-                        // this 'case' is only here for completeness sake.
+                        // this 'case' is only here for completeness’s sake.
                     case XmlUtils.TAG_STRING:
                         // body strings use CDATA
                         currentStringList.add(elementContext.getBody());
@@ -373,11 +373,11 @@ public class XmlRecordReader
         };
 
 
-        // Set<String>. The String's are body based.
+        // Set<String>. The Strings are body based.
         rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_SET, XmlUtils.TAG_STRING)
                   .setStartAction(startElementInCollection)
                   .setEndAction(endElementInCollection);
-        // List<String>. The String's are body based.
+        // List<String>. The Strings are body based.
         rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_LIST, XmlUtils.TAG_STRING)
                   .setStartAction(startElementInCollection)
                   .setEndAction(endElementInCollection);

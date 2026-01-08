@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -204,7 +204,7 @@ public class FtsDaoImpl
                 db.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
-            // we're running as a task thread, just cleanup, and let the task handle the exception
+            // we're running as a task thread, just clean-up, and let the task handle the exception
             LoggerFactory.getLogger().e(TAG, e);
             db.drop(TMP_TABLE_FOR_REBUILDING);
             throw e;
@@ -337,7 +337,7 @@ public class FtsDaoImpl
                     if (givenNameFirst) {
                         name = givenName.isBlank() ? familyName : givenName + ' ' + familyName;
                     } else {
-                        // don't add comma, it would be removed when normalizing anyhow
+                        // don't add comma, it would be removed when normalising anyhow
                         name = familyName + (givenName.isBlank() ? "" : " " + givenName);
                     }
                     authorList.add(name);

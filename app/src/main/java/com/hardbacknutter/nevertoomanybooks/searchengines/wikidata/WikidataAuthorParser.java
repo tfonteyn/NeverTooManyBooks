@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -119,7 +119,7 @@ class WikidataAuthorParser {
         final JSONObject authorData = document.getJSONObject("entities")
                                               .getJSONObject(sid);
         // to get the name, we should use claims "P734" + "P735" which are entity-data
-        // and require an extra call for each. Instead we'll use the "labels"
+        // and require an extra call for each. Instead, we'll use the "labels"
         // and rely on our Author name splitting as usual.
         final JSONObject labels = authorData.getJSONObject("labels");
         JSONObject label = labels.optJSONObject(langCode);

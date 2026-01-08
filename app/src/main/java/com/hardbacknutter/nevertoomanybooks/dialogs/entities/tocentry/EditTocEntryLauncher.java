@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public class EditTocEntryLauncher
      * @param fragment   the calling DialogFragment
      * @param requestKey to use
      * @param tocEntry   the modified entry
-     * @param position   the position in the list we we're editing
+     * @param position   the position in the list we're editing
      *
      * @see #onFragmentResult(String, Bundle)
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -192,7 +192,7 @@ public class BookDaoImpl
                 cv.put(DBKey.DATE_LAST_UPDATED__UTC, addedOrUpdatedNow);
             }
 
-            // if we have an id and we're allowed, use it as-is.
+            // if we have an id, and we're allowed, use it as-is.
             if (book.getId() > 0 && flags.contains(BookFlag.UseIdIfPresent)) {
                 cv.put(DBKey.PK_ID, book.getId());
             } else {
@@ -369,7 +369,7 @@ public class BookDaoImpl
      *
      * @param uuids list of book UUIDs
      *
-     * @return the number of books deleted (i.e rowsAffected)
+     * @return the number of books deleted (i.e. rowsAffected)
      */
     @Override
     public int deleteByUuid(@NonNull final Collection<String> uuids) {
@@ -382,8 +382,8 @@ public class BookDaoImpl
             }
 
             // Delete the book, and remember which ones were really deleted.
-            // We can't do a delete with uuid IN (...) as we need the individual successful
-            // uuid deletions.
+            // We can't do a delete operation with uuid IN (...) as we need the
+            // individual successful uuid deletions.
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_UUID)) {
                 for (final String uuid : uuids) {
                     stmt.bindString(1, uuid);
@@ -496,7 +496,7 @@ public class BookDaoImpl
         if (book.contains(Book.BKEY_IDENTIFIER_LIST)) {
             // These are two steps away; they can exist in other books.
             // However, we in fact do NOT use id's except for the internal database references.
-            // Instead we always work with the String key.
+            // Instead, we always work with the String key.
             // We will insert new entries
             // but there is nothing to update as such.
             serviceLocator.getBookIdentifierDao().insertOrUpdate(book.getId(),
@@ -507,13 +507,13 @@ public class BookDaoImpl
             serviceLocator.getLoaneeDao().setLoanee(book);
         }
 
-        // Handle synchronization field.
+        // Handle synchronisation field.
         if (book.contains(DBKey.CALIBRE.BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
             serviceLocator.getCalibreDao().insertOrUpdate(context, book);
         }
 
-        // Handle synchronization field.
+        // Handle synchronisation field.
         if (book.getIdentifierValue(Identifier.SID_STRIP_INFO).isPresent()) {
             serviceLocator.getStripInfoDao().insertOrUpdate(book);
         }
@@ -613,7 +613,7 @@ public class BookDaoImpl
 
         final boolean success;
 
-        // If the separate page-count field is empty and we have a total-pages value,
+        // If the separate page-count field is empty, and we have a total-pages value,
         // set it as well.
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoHelper#processReadProgress()} !
         String pageCount = book.getString(DBKey.PAGES);
@@ -648,7 +648,7 @@ public class BookDaoImpl
     }
 
     /**
-     * Return an Cursor with all Books selected by the passed arguments.
+     * Return a Cursor with all Books selected by the passed arguments.
      *
      * @param whereClause   without the 'where' keyword, can be {@code null} or {@code ""}
      * @param selectionArgs You may include ?s in where clause in the query,
@@ -714,7 +714,7 @@ public class BookDaoImpl
         }
 
         if (idList.size() == 1) {
-            // optimize for single book
+            // optimise for single book
             return getBookCursor(TBL_BOOKS.dot(DBKey.AUTO_UPDATE) + "=1"
                                  + _AND_ + TBL_BOOKS.dot(DBKey.PK_ID) + "=?",
                                  new String[]{String.valueOf(idList.get(0))},
@@ -851,7 +851,7 @@ public class BookDaoImpl
         }
 
         if (isbnList.size() == 1) {
-            // optimize for single book
+            // optimise for single book
             return getBookCursor(TBL_BOOKS.dot(DBKey.ISBN) + "=?",
                                  new String[]{isbnList.get(0).asText()}, null);
         } else {
@@ -1019,7 +1019,7 @@ public class BookDaoImpl
                 DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + DBKey.BOOK_UUID + "=?";
 
         /**
-         * The base sql to update a {@link Book}. Sets the last-updated column to 'now'.
+         * The base SQL to update a {@link Book}. Sets the last-updated column to 'now'.
          * Append columns and other clauses as needed.
          * <p>
          * This should always be used when updating the books table!
@@ -1100,7 +1100,7 @@ public class BookDaoImpl
                 SELECT_EXISTS_ + '(' + FIND_BY_ISBN + ')';
 
         /**
-         * Check if a {@link Book} exists with a either a {@link DBKey#ISBN}
+         * Check if a {@link Book} exists with either a {@link DBKey#ISBN}
          * ISBN-10, or an ISBN-13 in the 978 range.
          * The result will be {@code 0} or {@code 1}.
          */
@@ -1115,7 +1115,7 @@ public class BookDaoImpl
          * The SELECT clause for getting a book (list).
          * <p>
          * Note we could use TBL_BOOKS.dot("*")
-         * We'd fetch the unneeded TITLE_OB field, but that would be ok.
+         * We'd fetch the unneeded TITLE_OB field, but that would be OK.
          * Nevertheless, listing the fields here gives a better understanding
          * <p>
          * NEWTHINGS: adding fields ? Now is a good time to update {@link Book#duplicate}
@@ -1161,7 +1161,7 @@ public class BookDaoImpl
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /**
-         * Create an sql fragment "column IN (csv-list)".
+         * Create an SQL fragment "column IN (csv-list)".
          *
          * @param column to use
          * @param idList the ids

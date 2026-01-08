@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ public interface SiteAuthModule {
     /**
      * Performs a login using the stored credentials.
      * <p>
-     * Implementations should check (e.g check the cookie locally) if we're already
+     * Implementations should check (e.g. check the cookie locally) if we're already
      * logged in during this session* and return with success immediately.
      *
      * @param context Current context

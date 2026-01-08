@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -110,7 +110,7 @@ public class UserInterfacePreferenceFragment
     }
 
     private void initThemeColors() {
-        // We offer the standard Blue/Grey color scheme, or the Android 12 Dynamic Colors.
+        // We offer the standard Blue/Grey colour scheme, or the Android 12 Dynamic Colours.
         // For simplicity, we just disable the setting when it's not 12+
         // If we (ever) add additional themes, then we'll need to ONLY enable/disable the DC option.
         final Preference pUiThemeColor = findPreference(ThemeColorController.PK_UI_THEME_COLOR);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -57,9 +58,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  * </ul>
  *
  * <strong>IMPORTANT</strong>: there <strong>may</strong> be invalid/deleted ids
- * in this set. An example is a filter based on DBKey.TAG when a tag gets deleted.
+ * in this set. An example is a filter based on {@link DBKey.TAGS#TAG} when a tag gets deleted.
  * The code is annotated when needed.
- * See the BookshelfDao validation methods where the cleanup is done.
+ * See the BookshelfDao validation methods where the clean-up is done.
  *
  * @param <T> type of Entity value.
  */

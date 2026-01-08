@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * It's a little unreliable... see comments inside {@link AuthorParser}.
  * <p>
  * Available:
- * - birth date
+ * - birthdate
  * - death date
  * - picture
  * - bio: text, or type/value(text)
@@ -142,8 +142,8 @@ public final class OpenLibraryAuthorResolver
     }
 
     /**
-     * As usual with OpenLibrary, the json returned here is (slightly) DIFFERENT
-     * from the json returned in {@link #searchByName}. Sigh...
+     * As usual with OpenLibrary, the JSON returned here is (slightly) DIFFERENT
+     * from the JSON returned in {@link #searchByName}. Sigh...
      *
      * @param context Current context
      * @param sid     to search
@@ -173,8 +173,8 @@ public final class OpenLibraryAuthorResolver
     }
 
     /**
-     * As usual with OpenLibrary, the json (docs[0]) returned here is (slightly) DIFFERENT
-     * from the json returned in {@link #searchBySid}. Sigh...
+     * As usual with OpenLibrary, the JSON (docs[0]) returned here is (slightly) DIFFERENT
+     * from the JSON returned in {@link #searchBySid}. Sigh...
      *
      * @param context Current context
      * @param names   to search for

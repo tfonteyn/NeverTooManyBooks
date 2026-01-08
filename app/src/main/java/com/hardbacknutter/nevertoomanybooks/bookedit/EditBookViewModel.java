@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -713,12 +713,12 @@ public class EditBookViewModel
     }
 
     /**
-     * Get a unique list of all book-colors in the database, ordered alphabetically.
+     * Get a unique list of all book-colours in the database, ordered alphabetically.
      * It's extended with a set of defaults.
      *
      * @param context Current context
      *
-     * @return List of colors
+     * @return List of colours
      */
     @NonNull
     private List<String> getAllColors(@NonNull final Context context) {
@@ -939,7 +939,7 @@ public class EditBookViewModel
         final List<Author> list = book.getAuthors();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
-        // That's ok, it will get garbage collected from the database sooner or later.
+        // That's OK, it will get garbage collected from the database sooner or later.
         list.remove(original);
         list.add(modified);
         book.setAuthors(list);
@@ -971,7 +971,7 @@ public class EditBookViewModel
         final List<Series> list = book.getSeries();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
-        // That's ok, it will get garbage collected from the database sooner or later.
+        // That's OK, it will get garbage collected from the database sooner or later.
         list.remove(original);
         list.add(modified);
         book.setSeries(list);
@@ -1003,7 +1003,7 @@ public class EditBookViewModel
         final List<Publisher> list = book.getPublishers();
         // unlink the original, and link with the new one
         // Note that the original *might* be orphaned at this time.
-        // That's ok, it will get garbage collected from the database sooner or later.
+        // That's OK, it will get garbage collected from the database sooner or later.
         list.remove(original);
         list.add(modified);
         book.setPublishers(list);
@@ -1379,7 +1379,7 @@ public class EditBookViewModel
                                            DBKey.AUTO_UPDATE));
         // We're no longer using the LongNumberFormatter as we don't
         // need the extraction to a 'long'. Identifiers are now all 'String' values.
-        // Instead use a custom {@link Identifier#TYPE_LONG} formatter
+        // Instead, use a custom {@link Identifier#TYPE_LONG} formatter
         // to keep the field empty instead of displaying any "0" values.
         final FieldFormatter<String> sidLongFormatter =
                 (context, value) -> value != null && !"0".equals(value) ? value : "";
@@ -1458,7 +1458,7 @@ public class EditBookViewModel
         return allFields.stream()
                         // This will return a single field (or none)
                         .filter(field -> field.getFieldViewId() == fieldId)
-                        // lets see if its owned by the given fragment
+                        // let's see if it's owned by the given fragment
                         .anyMatch(field -> field.getFragmentId() == fragmentId);
     }
 }

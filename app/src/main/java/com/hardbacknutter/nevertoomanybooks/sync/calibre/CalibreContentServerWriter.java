@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,7 +74,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * If the user asked for "new and updated books" only,
  * the 'last-sync-date' from the library is used to only fetch books added/modified
- * later then this timestamp FROM THE LOCAL DATABASE.
+ * later than this timestamp FROM THE LOCAL DATABASE.
  * <p>
  * Each local book is compared to the remote book 'last-modified' date to
  * decide to update it or not.
@@ -274,7 +274,7 @@ public class CalibreContentServerWriter
      * with field names {@link CalibreBookJsonKey} as needed by Calibre.
      *
      * @param context                Current context
-     * @param library                the library to which the given books belongs
+     * @param library                the library to which the given books belong
      * @param calibreBookIdentifiers the <strong>full</strong> list of identifiers for this
      *                               book as <strong>fetched from the Calibre server</strong>
      * @param localBook              the Book we're syncing
@@ -291,7 +291,7 @@ public class CalibreContentServerWriter
                                       @NonNull final Book localBook)
             throws JSONException, IOException {
 
-        // Empty fields MUST be send to make the server remove the data.
+        // Empty fields MUST be included to make the server remove the data.
 
         final JSONObject changes = new JSONObject();
         changes.put(CalibreBookJsonKey.TITLE,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ public class App
 
     private static final String TAG = "App";
 
-    /** Sub directory of {@link Context#getFilesDir()}. */
+    /** Subdirectory of {@link Context#getFilesDir()}. */
     private static final String LOG_DIR = "log";
     /** Base name of the logfile. */
     private static final String LOG_FILE = "error.log";
@@ -97,7 +97,7 @@ public class App
                     .detectActivityLeaks();
 
 
-            // Disabled, we ran with it for a while and detected no issues with OUR code
+            // Disabled, we ran with it for a while and detected no issues with OUR code,
             // but we get many reports from Android not following their own rules... oh well...
             // https://developer.android.com/guide/app-compatibility/restrictions-non-sdk-interfaces#test-strictmode-api
             //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -134,13 +134,13 @@ public class App
 
         // Theoretically not needed, as we're not using Acra senders; but paranoia....
         if (!ACRA.isACRASenderServiceProcess()) {
-            // Only setup the SearchEngines if this is NOT the Acra process.
+            // Only set up the SearchEngines if this is NOT the Acra process.
             final Languages languages = ServiceLocator.getInstance().getLanguages();
             SearchEngineConfig.createRegistry(getApplicationContext(), languages);
         }
 
         ActivityRestarter.init(this);
-        // setup support for custom themes, dynamic colors and day/night modes.
+        // setup support for custom themes, dynamic colours and day/night modes.
         ThemeColorController.init(this);
         NightMode.init(this);
     }
@@ -157,7 +157,7 @@ public class App
     }
 
     /**
-     * Initialize ACRA reporting.
+     * Initialise ACRA reporting.
      */
     @SuppressWarnings("StringConcatenationMissingWhitespace")
     private void initAcra() {
@@ -193,7 +193,7 @@ public class App
                         // a uuid for the report, not related to the device
                         ReportField.REPORT_ID,
 
-                        // All of the below is Application, and NOT device.
+                        // All the below is Application, and NOT device.
                         ReportField.APP_VERSION_CODE,
 
                         ReportField.APPLICATION_LOG,

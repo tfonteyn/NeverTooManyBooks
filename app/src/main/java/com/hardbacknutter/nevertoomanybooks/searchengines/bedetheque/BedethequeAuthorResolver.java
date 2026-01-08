@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,7 +65,7 @@ import org.jsoup.select.Elements;
  * Aside of Bedetheque itself, this class is also used by StripInfo and LastDodo.
  * <p>
  * Available:
- * - birth date (and country)
+ * - birthdate (and country)
  * - death date
  * - picture
  * - website(s)
@@ -230,7 +230,7 @@ public class BedethequeAuthorResolver
             final char c1 = firstChar(author.getFamilyName());
             // and the list-page was never fetched before,
             if (!cacheDao.isAuthorPageCached(c1)) {
-                // go fetch the the list-page on which the author should/could be
+                // go fetch the list-page on which the author should/could be
                 if (pageLoader.fetch(c1)) {
                     // If the author was on the list page, we should find it in the cache now.
                     bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
@@ -241,7 +241,7 @@ public class BedethequeAuthorResolver
     }
 
     /**
-     * Take the first character from the given name and normalize it to [0A-Z]
+     * Take the first character from the given name and normalise it to [0A-Z]
      * for use with the other class methods.
      *
      * @param name to use

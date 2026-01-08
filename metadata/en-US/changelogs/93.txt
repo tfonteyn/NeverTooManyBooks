@@ -8,8 +8,8 @@ NEW:
 - "Share" allows several "Citation" formats.
 
 FIXES:
-- github #102
-- github #84
-- github #89, #92, #94
-- 979 isbn numbers are now shown as 'valid'
+- GitHub #102
+- GitHub #84
+- GitHub #89, #92, #94
+- 979 ISBNs are now shown as 'valid'
 - some author names like "Kim Stanley Robinson" were wrongly parsed

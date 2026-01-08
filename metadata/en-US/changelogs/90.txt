@@ -1,11 +1,11 @@
 NEW:
 - UI languages added: Portuguese/Brazil; Traditional Chinese (TW)
 - New/updated search sites:
-  - https://www.bertrand.pt for portuguese books (see github #15)
+  - https://www.bertrand.pt for Portuguese books (see GitHub #15)
   - Complete rewrite of GoogleBooks searches.
   - Dnb, LastDodo, StripWeb sites: various enhancements
 - Added filters for Location and Genre
-- Title capitalization is now configurable
+- Title capitalisation is now configurable
 - Menu-option to set the Location for all books for a selected node in the list
 
 FIXES:

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>title (number) * {json}</li>
  *      <li>title * {json}</li>
  * </ul>
- * number: alpha-numeric, a proposed format is "1","1.0","1a", "1|omnibus" etc.
+ * number: alphanumeric, a proposed format is "1","1.0","1a", "1|omnibus" etc.
  * i.e. starting with a number (int or float) with optional alphanumeric characters trailing.
  * <p>
  * <strong>Note:</strong> the " * {json}" suffix is optional and can be missing.

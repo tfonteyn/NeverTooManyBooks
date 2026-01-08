@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -158,7 +158,7 @@ public class CalibrePreferencesFragment
                 // This was seen on API 26 running in the emulator when selecting the 'download'
                 //TEST: could this be due to having TWO download folders ? (device+sdcard)
                 if (name == null) {
-                    // not nice, but better then nothing...
+                    // not nice, but better than nothing...
                     name = uri.getLastPathSegment();
                 }
                 preference.setSummary(name);

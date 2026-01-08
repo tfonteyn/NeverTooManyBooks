@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -373,7 +373,7 @@ public class EditBookSeriesListDialogFragment
             adapter.notifyDataSetChanged();
 
         } else {
-            // Object was modified and it's used in more than one place.
+            // Object was modified, and it's used in more than one place.
             // We need to ask the user if they want to make the changes globally.
             StandardDialogs.confirmScopeForChange(
                     context, context.getString(R.string.lbl_series),
@@ -404,7 +404,7 @@ public class EditBookSeriesListDialogFragment
                                    @NonNull final Series modified) {
         // treat the new data as a new Series; save it so we have a valid id.
         // Note that if the user abandons the entire book edit,
-        // we will orphan this new Series. That's ok, it will get
+        // we will orphan this new Series. That's OK, it will get
         // garbage collected from the database sooner or later.
         try {
             //noinspection DataFlowIssue

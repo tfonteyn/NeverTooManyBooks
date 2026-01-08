@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public enum RecordType {
 
     /**
-     * Archive meta data.
+     * Archive metadata.
      * Contains a list of key=value pairs.
      * ONLY ONE PER ARCHIVE.
      * <p>
@@ -79,7 +79,7 @@ public enum RecordType {
     Preferences("preferences"),
 
     /**
-     * Contains sub sections:
+     * Contains subsections:
      * {@code DBKey.TAG}:         all defined {@code Tag}s.
      * {@code DBKey.TAG_MAPPING}: all defined {@code TagMapping}s.
      * <p>
@@ -174,7 +174,7 @@ public enum RecordType {
     /**
      * Detect the type of the passed name.
      *
-     * @param entryName to get the type of (case insensitive)
+     * @param entryName to get the type of (case-insensitive)
      *
      * @return the record type
      */

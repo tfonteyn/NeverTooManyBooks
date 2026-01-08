@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,7 +66,7 @@ public class ShowBookDetailsActivityViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link DBKey#FK_BOOKSHELF} the parceled Bookshelf
+     * @param args {@link DBKey#FK_BOOKSHELF} the parcelled Bookshelf
      */
     void init(@NonNull final Bundle args) {
         if (style == null) {

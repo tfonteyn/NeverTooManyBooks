@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -103,7 +103,7 @@ public final class SearchEngineUtils {
      * Clean the given text.
      * <p>
      * Currently cleans up {@code &}, {@code div} and {@code \n}
-     * and a range of unicode control characters.
+     * and a range of Unicode control characters.
      *
      * @param s to clean
      *
@@ -124,7 +124,7 @@ public final class SearchEngineUtils {
 
         // Special rules:
 
-        // replace any html encoded ampersands.
+        // replace any HTML encoded ampersands.
         if (text.contains("&")) {
             text = AMPERSAND_LITERAL.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
         }
@@ -140,7 +140,7 @@ public final class SearchEngineUtils {
     }
 
     /**
-     * Variant of {@link #cleanText(String)} which does additional cleanup
+     * Variant of {@link #cleanText(String)} which does additional clean-up
      * specific to author names and titles.
      *
      * @param s to clean
@@ -155,7 +155,7 @@ public final class SearchEngineUtils {
     }
 
     /**
-     * Sanitize a parameter string for use in a url search.
+     * Sanitise a parameter string for use in a url search.
      *
      * @param s to clean
      *

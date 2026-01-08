@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,8 +40,8 @@ public class RatingHolder
 
     /**
      * Key of the related data column.
-     * It's ok to store this as it's intrinsically linked with the ViewType.
-     * And yes, we could just hardcode it in this class, but it's
+     * It's OK to store this as it's intrinsically linked with the ViewType.
+     * And yes, we could just hard-code it in this class, but it's
      * easier this way to protect ourselves against changes.
      */
     @NonNull

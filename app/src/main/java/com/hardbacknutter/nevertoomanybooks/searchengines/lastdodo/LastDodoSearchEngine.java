@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,12 +68,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Dutch language (and to some extend other languages) comics.
+ * Dutch language (and to some extent other languages) comics.
  * <p>
  * Current hardcoded to only search comics; could be extended to also search generic books.
  * <p>
  * {@link SearchEngine.ByBarcode}: for barcodes (explicitly supported by the site
- * and invalid ISBN numbers (which the site stores as-is on purpose)
+ * and invalid ISBNs (which the site stores as-is on purpose)
  * <p>
  * ENHANCE: check if we can implement {@link SearchEngine.AlternativeEditions}
  * and consequently {@link SearchEngine.CoverByEdition}
@@ -99,7 +99,7 @@ public class LastDodoSearchEngine
     /**
      * Hardcoded to: 147==comics.
      * Param 1: The search word(s)
-     * When searching for an ISBN number, it must include the '-' characters! (2022-05-31)
+     * When searching for an ISBN, it must include the '-' characters! (2022-05-31)
      */
     private static final String SEARCH = "/nl/areas/search?type_id=147&q=%1$s";
     private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
@@ -175,9 +175,9 @@ public class LastDodoSearchEngine
      * </ol>
      * 1+2: The () part are pseudonyms.
      * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
-     * 4: presumably there are 3 Don's?
+     * 4: presumably there are 3 "Don"'s?
      * <p>
-     * Assumption is that if the part between brackets starts with a alpha char,
+     * Assumption is that if the part between brackets starts with an alpha char,
      * then we assume that part to be a csv list of pseudonyms.
      * We decode the part before the brackets as a normal name.
      * <p>
@@ -225,9 +225,9 @@ public class LastDodoSearchEngine
     }
 
     /**
-     * Takes a string which (hopefully) contains a 10 or 13 digit ISBN number,
+     * Takes a string which (hopefully) contains a 10 or 13 digit ISBN,
      * and formats it in the traditional way with '-' characters.
-     * Any non valid string is returned as-is;  a {@code null} becomes {@code ""}
+     * Any non-valid string is returned as-is;  a {@code null} becomes {@code ""}
      *
      * @param s to format
      *
@@ -414,7 +414,7 @@ public class LastDodoSearchEngine
      * as an individual book, and declare a Book TOC as a list of books.
      * i.o.w. the database structure would need to become
      * table: titles (book and toc-entry titles) each entry referencing 1..n authors.
-     * table: books, with a primary title, and a list of secondary titles (i.e the toc).
+     * table: books, with a primary title, and a list of secondary titles (i.e. the toc).
      * (All of which referencing the 'titles' table)
      * <p>
      * This is not practical in the scope of this application.
@@ -672,7 +672,7 @@ public class LastDodoSearchEngine
 
         authorResolverHelper.resolve(context, this, book);
 
-        // It's extremely unlikely, but should the language be missing, add dutch.
+        // It's extremely unlikely, but should the language be missing, add Dutch.
         if (!book.contains(DBKey.LANGUAGE)) {
             book.setLanguage("nld");
         }

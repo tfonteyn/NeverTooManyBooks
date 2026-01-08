@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -210,7 +210,7 @@ public enum SyncServer
         }
     },
 
-    /** StripInfo web site. */
+    /** StripInfo website. */
     StripInfo(R.string.site_stripinfo_be, false, false) {
         public boolean isEnabled() {
             return StripInfoHandler.isSyncEnabled();
@@ -389,7 +389,7 @@ public enum SyncServer
 
     /**
      * Check whether each book has a specific last-update date to
-     * (help) sync it with the server/web site.
+     * (help) sync it with the server/website.
      *
      * @return {@code true} if a last-update date is available
      */
@@ -432,7 +432,7 @@ public enum SyncServer
      *
      * @throws CertificateException on failures related to a user installed CA.
      * @throws CredentialsException on authentication/login failures
-     * @throws DataReaderException  if the input is not recognized
+     * @throws DataReaderException  if the input is not recognised
      * @throws IOException          on generic/other IO failures
      * @see DataReader
      */

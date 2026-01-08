@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -207,7 +207,7 @@ public class BooksOnBookshelf
 
     public static final String PK_OFFSCREEN_CACHE_SIZE = "booklist.view.cache.size";
     /**
-     * Number of views to cache offscreen arbitrarily set to 15 based on google "advice".
+     * Number of views to cache offscreen arbitrarily set to 15 based on Google "advice".
      * The default is 2.
      */
     public static final int MIN_OFFSCREEN_CACHE_SIZE = 2;
@@ -246,10 +246,10 @@ public class BooksOnBookshelf
     private HeaderAdapter headerAdapter;
 
 
-    /** Bring up the synchronization options. */
+    /** Bring up the synchronisation options. */
     @Nullable
     private ActivityResultLauncher<Void> stripInfoSyncLauncher;
-    /** Bring up the synchronization options. */
+    /** Bring up the synchronisation options. */
     @Nullable
     private ActivityResultLauncher<Void> calibreSyncLauncher;
 
@@ -270,7 +270,7 @@ public class BooksOnBookshelf
     private ActivityResultLauncher<String> editStylesLauncher;
     /** Edit an individual style. */
     private ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher;
-    /** Manage the book shelves. */
+    /** Manage the bookshelves. */
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
     /** Display a Book. */
     private ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher;
@@ -348,7 +348,7 @@ public class BooksOnBookshelf
 
         createLayoutManager();
 
-        // setup the list related stuff; the actual list data is generated in onResume
+        // Set up the list related stuff; the actual list data is generated in onResume
         createBooklistView();
 
         // Remove the potentially embedded fragment and its children.
@@ -525,7 +525,7 @@ public class BooksOnBookshelf
     }
 
     private void createViewModel() {
-        // Does not use the full progress dialog. Instead uses the overlay progress bar.
+        // Does not use the full progress dialog. Instead, uses the overlay progress bar.
         vm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
         vm.init(this, getIntent().getExtras());
 
@@ -585,7 +585,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Something is REALLY BAD.
+     * Something is TERRIBLE.
      * This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
      * with the Styles. i.e. the style used to build is very likely corrupt.
      * Another reason can be during development when the database structure
@@ -603,7 +603,7 @@ public class BooksOnBookshelf
                                     "Style=" + vm.getStyle(),
                                     "Filters=" + vm.getBookshelf().getFilters());
 
-        // Reset the style to hopefully recover.. restarting the app should work now.
+        // Reset the style to hopefully recover... restarting the app should work now.
         // This may fail if the user added Filters to the hard-default style
         // but only if those filters ALSO contain bugs.
         vm.onStyleChanged(this, BuiltinStyle.HARD_DEFAULT_UUID);
@@ -617,7 +617,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Create the optional synchronization launchers and delegates.
+     * Create the optional synchronisation launchers and delegates.
      * <p>
      * Reminder: this method <strong>cannot be called from onResume</strong>.
      * registerForActivityResult can only be called from onCreate
@@ -670,7 +670,7 @@ public class BooksOnBookshelf
         setNavIcon();
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {
-                // Show or hide the synchronization menu.
+                // Show or hide the synchronisation menu.
                 // Note this is only effective for the actual sync switches.
                 // The launchers MUST have been created at Activity startup,
                 // due to how "registerForActivityResult" works.
@@ -795,7 +795,7 @@ public class BooksOnBookshelf
         vb.content.list.setItemViewCacheSize(getOffscreenCacheSize());
         vb.content.list.setHasFixedSize(true);
 
-        // 2025-05-23: experiment for github #147; rapid scrolling.
+        // 2025-05-23: experiment for GitHub #147; rapid scrolling.
         // The defaults are '5' for each viewType. We may want to add other groups later.
         //   final RecyclerView.RecycledViewPool pool = new RecyclerView.RecycledViewPool();
         //   pool.setMaxRecycledViews(BooklistGroup.BOOK, 20);
@@ -1058,7 +1058,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called by the embedded details frame to match-up the list position with the displayed book.
+     * Called by the embedded details frame to match up the list position with the displayed book.
      *
      * @param bookId to scroll the list to.
      */
@@ -1216,10 +1216,10 @@ public class BooksOnBookshelf
 
         View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
         // Paranoia check to protect from the adapterPosition having
-        // scrolled off screen.
+        // scrolled off-screen.
         if (view == null) {
             // While we never should get a null here, tests have shown that
-            // using the list view as a substitute works ok,
+            // using the list view as a substitute works OK,
             // as the bottom-sheet does not need that view as an anchor anyhow.
             view = vb.content.list;
         }
@@ -1629,7 +1629,7 @@ public class BooksOnBookshelf
             removeEmbeddedDetailsFragment();
 
             // force the adapter to stop displaying by disabling the list.
-            // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
+            // DO NOT REMOVE THE ADAPTER FROM THE VIEW;
             // i.e. do NOT call vb.content.list.setAdapter(null)... crashes assured when doing so.
             if (adapter != null) {
                 adapter.setBooklist(null);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -196,7 +196,7 @@ public final class CalibreContentServer
             Map.entry(AMAZON, Identifier.SID_ASIN),
             // mobi is obsolete so we always map it to pure 'asin'
             Map.entry("mobi-asin", Identifier.SID_ASIN),
-            // Calibre typically uses 'uri' but sometimes we see 'url
+            // Calibre typically uses 'uri' but sometimes we see 'url'
             Map.entry("url", Identifier.SID_URI)
     );
 
@@ -230,7 +230,7 @@ public final class CalibreContentServer
     /**
      * We're using a larger read buffer for {@link #getBookIds(String, int, int)};
      * The size is based on a rough minimum of
-     * 8K of data for a single book and we fetch 10 books at a time... hence 128k.
+     * 8K of data for a single book, and we fetch 10 books at a time... hence 128k.
      */
     private static final int BUFFER_BOOK_LIST = 131_072;
     /**
@@ -612,7 +612,7 @@ public final class CalibreContentServer
             throw new CertificateException(e);
 
         } catch (@NonNull final IOException | KeyStoreException | NoSuchAlgorithmException ignore) {
-            // All these exceptions, can be ignored and we are assuming
+            // All these exceptions, can be ignored, and we are assuming
             // that the server does not need a cert, or that the cert is
             // loaded in the Android system keystore.
             return null;
@@ -698,7 +698,7 @@ public final class CalibreContentServer
     }
 
     /**
-     * Return info about available libraries and their meta data from the server.
+     * Return info about available libraries and their metadata from the server.
      * <pre>
      * {@code
      *      endpoint('/ajax/library-info', postprocess=json)

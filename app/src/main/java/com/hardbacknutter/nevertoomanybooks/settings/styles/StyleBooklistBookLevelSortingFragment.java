@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -163,7 +163,7 @@ public class StyleBooklistBookLevelSortingFragment
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.columnList.setHasFixedSize(true);
 
-        // setup the adapters
+        // set up the adapters
 
         // The adapter for the fixed Group columns.
         final HeaderAdapter headerAdapter = new HeaderAdapter(context, vm.getGroupSortingFields());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -274,7 +274,7 @@ public class AuthorWorksFragment
     private void updateAuthorBySearch() {
         final Context context = getContext();
 
-        // The sids we have for the author
+        // The SIDs we have for the author
         final List<String> sidKeys = vm.getPrimaryAuthor()
                                        .getIdentifiers()
                                        .stream()

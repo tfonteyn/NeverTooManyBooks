@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -110,7 +110,7 @@ public class EditIdentifierViewModel
             return Optional.empty();
         }
 
-        // Check if there is an another one with the same new name.
+        // Check if there is another one with the same new name.
         final Optional<Identifier> existingEntity = dao.findByKey(original.getKey());
         if (existingEntity.isPresent()) {
             return existingEntity;

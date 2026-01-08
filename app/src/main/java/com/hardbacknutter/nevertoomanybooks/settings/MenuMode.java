@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,7 @@ public enum MenuMode {
     /** The default; either as PopupMenu or as BottomSheet depending on screen size. */
     private static final int UI_CONTEXT_MENUS_BY_MENU_SIZE = 2;
 
-    /** Different behavior depending on size < THRESHOLD versus size >= THRESHOLD. */
+    /** Different behaviour depending on size < THRESHOLD versus size >= THRESHOLD. */
     private static final int MENU_SIZE_THRESHOLD = 5;
 
     /**

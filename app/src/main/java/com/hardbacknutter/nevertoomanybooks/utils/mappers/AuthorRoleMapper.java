@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -142,7 +142,7 @@ public class AuthorRoleMapper {
         // There are obviously MANY missing.... both for the listed languages above and for
         // other languages not even considered here.
         // Will need to add them when/as they show up.
-        // Maybe better if this is done in an external file on a per language basis ?
+        // Maybe better if this is done in an external file on a per-language basis ?
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -117,7 +117,7 @@ public interface IdentifierDao {
 
 
     /**
-     * Re-insert, or update the Identifiers which were setup
+     * Re-insert, or update the Identifiers which were set up
      * when the app was installed.
      * <p>
      * This is a repair/restore method for when users need to undo
@@ -125,7 +125,7 @@ public interface IdentifierDao {
      * <p>
      * The {@code key} of the identifier must not have been changed
      * for this to work successfully. The app's UI prevents key changes,
-     * but users can edit json imports... in which case ... "oops, to bad".
+     * but users can edit JSON imports... in which case ... "oops, to bad".
      *
      * @param context Current context
      *

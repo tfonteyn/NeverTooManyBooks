@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -158,7 +158,7 @@ public class SearchBookByIsbnViewModel
     /**
      * Return the current scanner status.
      * <p>
-     * This is independent from the {@link #getScannerMode()}.
+     * This is independent of the {@link #getScannerMode()}.
      *
      * @return flag
      *
@@ -171,7 +171,7 @@ public class SearchBookByIsbnViewModel
     /**
      * Remember the current scanner status.
      * <p>
-     * This is independent from the {@link #getScannerMode()}.
+     * This is independent of the {@link #getScannerMode()}.
      *
      * @param started flag
      *
