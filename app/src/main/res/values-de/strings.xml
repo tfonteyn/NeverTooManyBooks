@@ -730,7 +730,7 @@
     <string name="cancel">Abbrechen</string>
     <string name="yes">Ja</string>
     <string name="info_story_in_single_book">„%1$s“ ist in einem einzigen Buch vorhanden:\n\n%2$s</string>
-    <string name="tip_import_isbn_list">Importiere eine Textdatei mit ISBN-Nummern. Die Datei sollte in jeder Zeile eine einzige ISBN haben. Die Ergebnisse werden in die Warteschlange gestellt.</string>
+    <string name="tip_import_isbn_list">Importieren Sie eine Textdatei mit ISBNs. Die Datei sollte pro Zeile eine ISBN enthalten. Die Ergebnisse werden in die Warteschlange gestellt.</string>
     <string name="lbl_date_added">Datum hinzugefügt</string>
     <string name="debug_select_items">Wähle aus, was aufgenommen werden soll:</string>
     <string name="lbl_group_1st_char_author_family_name">1. Zeichen des Familiennamens des Autors</string>
