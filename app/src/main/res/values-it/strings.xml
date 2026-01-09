@@ -737,7 +737,7 @@
     <string name="cancel">Annulla</string>
     <string name="yes">Sì</string>
     <string name="info_story_in_single_book">«%1$s» è presente in un solo libro:\n\n%2$s</string>
-    <string name="tip_import_isbn_list">Importa un file di testo con numeri ISBN. Il file dovrebbe avere un unico codice ISBN su ogni riga. I risultati verranno messi in coda.</string>
+    <string name="tip_import_isbn_list">Importa un file di testo con gli ISBN. Il file deve contenere un singolo ISBN su ogni riga. I risultati verranno inseriti nella coda.</string>
     <string name="lbl_date_added">Data di inserimento</string>
     <string name="debug_select_items">Seleziona ciò che desideri includere:</string>
     <string name="lbl_group_1st_char_author_family_name">1° carattere del cognome dell’Autore</string>
