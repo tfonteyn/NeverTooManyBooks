@@ -55,6 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 public interface FlexDialogDelegate
         extends FlexToolbar, DefaultLifecycleObserver {
 
+    /** Private. Used to handle differences in height on 360dp-height devices. */
+    int LIMITD_HEIGHT_PX = 800;
+
     /**
      * {@link DialogType#BottomSheet} and {@link DialogType#Floating}.
      * <p>
@@ -90,7 +93,9 @@ public interface FlexDialogDelegate
     /**
      * HACK.... a "Small Phone" with 360dp (720px) is smaller
      * than a larger phone with 360dp (1080px).
-     * For bottomsheets it can be REALLY difficult...
+     * For bottom-sheets it can be REALLY difficult...
+     *
+     * @param activity to check
      *
      * @return flag
      */
@@ -99,9 +104,15 @@ public interface FlexDialogDelegate
                 .getOrCreate().computeCurrentWindowMetrics(activity);
         final Rect bounds = metrics.getBounds();
         // not enough samples... we just have to guess for now; 720 < x < 1080
-        return bounds.height() < 800;
+        return bounds.height() < LIMITD_HEIGHT_PX;
     }
 
+    /**
+     * Only used when {@link #isVeryLimitedHeight(Activity)} returned {@code true}.
+     *
+     * @param dialogContent hosting layout
+     * @param dialogToolbar to adjust
+     */
     default void letToolbarOverlapDragHandle(@NonNull final ConstraintLayout dialogContent,
                                              @NonNull final MaterialToolbar dialogToolbar) {
         final ConstraintSet set = new ConstraintSet();
