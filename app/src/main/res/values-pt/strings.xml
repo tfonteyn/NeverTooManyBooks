@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -297,8 +294,7 @@
     <string name="book_format_paperback">Capa mole</string>
     <string name="book_format_comic">Banda Desenhada</string>
     <string name="book_format_other">Outro</string>
-    <string name="book_format_ebook"
-            tools:ignore="Typos">livro eletrónico</string>
+    <string name="book_format_ebook" tools:ignore="Typos">livro eletrónico</string>
     <string name="lbl_style">Estilo</string>
     <string name="lbl_group_1st_char_publisher_name">1º caracter do nome da Editora</string>
     <string name="lbl_edition_first_edition">Primeira Edição</string>
@@ -338,7 +334,7 @@
     <string name="confirm_delete_tag_from_x_books">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Pretende realmente excluir o título “%1$s” por %2$s?\n\nSerá eliminada de %3$s. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
-    <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
+    <string name="tip_import_isbn_list">Importe um ficheiro de texto com os ISBN. O ficheiro deve ter um único ISBN por linha. Os resultados serão colocados na fila.</string>
     <string name="option_storage_edit_settings">Editar configurações</string>
     <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
@@ -891,5 +887,4 @@
     <string name="lbl_condition_dust_cover_fine">Como novo</string>
     <string name="lbl_condition_dust_cover_very_good">Muito bom</string>
     <string name="lbl_condition_dust_cover_good">Bom</string>
-
 </resources>

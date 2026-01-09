@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -735,7 +732,7 @@
     <string name="cancel">Cancelar</string>
     <string name="yes">Sí</string>
     <string name="info_story_in_single_book">«%1$s» está presente en un solo libro:\n\n%2$s</string>
-    <string name="tip_import_isbn_list">Importa un archivo de texto con números ISBN. El archivo debe tener un solo ISBN en cada línea. Los resultados se colocarán en la cola.</string>
+    <string name="tip_import_isbn_list">Importa un archivo de texto con los ISBN. El archivo debe tener un solo ISBN por línea. Los resultados se colocarán en la cola.</string>
     <string name="lbl_date_added">Fecha de inclusión</string>
     <string name="debug_select_items">Seleccione lo que le gustaría incluir:</string>
     <string name="lbl_group_1st_char_author_family_name">1er carácter del apellido del autor</string>

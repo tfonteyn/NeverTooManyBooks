@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -556,7 +553,7 @@
     <string name="lbl_add_or_edit_substitution">Ajouter/modifier une règle de substitution</string>
     <string name="info_substitutions_one_per_line">Ajoute une substitution par ligne ou laisse vide pour supprimer le tag</string>
     <string name="info_download_successful">Téléchargement réussi</string>
-    <string name="info_export_report">Un fichier de %1$s appelé « %2$s » a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
+    <string name="info_export_report">Un fichier de %1$s appelé « %2$s » a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
     <string name="info_export_successful">Exportation réussie</string>
     <string name="option_info_delete_removed_books">Les livres supprimés sur l’autre appareil seront également supprimés sur cet appareil.</string>
     <string name="info_import_complete">Importation terminée</string>
@@ -670,7 +667,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Si des livres sont affichés dans toutes les séries auxquelles ils appartiennent, ils peuvent apparaître plusieurs fois dans la liste. La suppression d’un de ces livres a pour effet de supprimer tous les exemplaires de la liste.</string>
     <string name="X_tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu « Voir sur… » ne montrera également que ce qui est disponible.</string>
     <string name="tip_view_only_help">Vous pouvez glisser vers la gauche ou la droite pour passer d’un livre à l’autre.</string>
-    <string name="info_cleanup_files">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d’autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l’application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l’expérience de plantages ou d’autres erreurs, envisagez d’abord d’utiliser le bouton « %2$s ».</string>
+    <string name="info_cleanup_files">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d’autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l’application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l’expérience de plantages ou d’autres erreurs, envisagez d’abord d’utiliser le bouton « %2$s ».</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d livres, parmi %2$d entrées</string>
     <string name="info_export_books_option_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète.</string>
     <string name="option_info_import_books_option_all">Importez de nouveaux livres et écrasez les livres existants. Utilisez ceci pour restaurer une sauvegarde.</string>
@@ -741,7 +738,7 @@
     <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
     <string name="info_story_in_single_book">« %1$s » est présent dans un seul livre :\n\n%2$s</string>
-    <string name="tip_import_isbn_list">Importez un fichier texte avec des numéros ISBN. Le fichier doit avoir un seul ISBN sur chaque ligne. Les résultats seront placés dans la file d’attente.</string>
+    <string name="tip_import_isbn_list">Importez un fichier texte contenant des numéros ISBN. Le fichier doit comporter un seul ISBN par ligne. Les résultats seront ajoutés à la file d\'attente.</string>
     <string name="lbl_date_added">Date ajoutée</string>
     <string name="lbl_group_1st_char_author_family_name">1er caractère du nom de famille de l’auteur</string>
     <string name="lbl_group_1st_char_series_title">1er caractère du titre de la série</string>

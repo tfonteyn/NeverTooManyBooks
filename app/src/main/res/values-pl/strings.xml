@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -741,7 +738,7 @@
     <string name="cancel">Anulować</string>
     <string name="yes">Tak</string>
     <string name="info_story_in_single_book">„%1$s” występuje w jednej książce:\n\n%2$s</string>
-    <string name="tip_import_isbn_list">Zaimportuj plik tekstowy z numerami ISBN. Plik powinien mieć jeden numer ISBN w każdym wierszu. Wyniki zostaną umieszczone w kolejce.</string>
+    <string name="tip_import_isbn_list">Zaimportuj plik tekstowy z kodami ISBN. Plik powinien mieć jeden kod ISBN w każdym wierszu. Wyniki zostaną umieszczone w kolejce.</string>
     <string name="lbl_date_added">Data dodania</string>
     <string name="debug_select_items">Wybierz, co chcesz uwzględnić:</string>
     <string name="lbl_group_1st_char_author_family_name">Pierwsza litera nazwiska autora</string>
@@ -899,5 +896,4 @@
     <string name="lbl_condition_dust_cover_fine">Jak nowa</string>
     <string name="lbl_condition_dust_cover_very_good">Bardzo dobry</string>
     <string name="lbl_condition_dust_cover_good">Dobry</string>
-
 </resources>

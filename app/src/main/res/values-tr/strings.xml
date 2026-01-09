@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -48,7 +45,6 @@
         <item quantity="one">Daha önce girilmiş %1$d ISBN kodu var. Bunun için bir arama başlatmak ister misiniz, yoksa kaldırılmalı mı?</item>
         <item quantity="other">Daha önce girilmiş %1$d ISBN kodu var. Bunlar için arama başlatmak ister misiniz, yoksa kaldırılsınlar mı?</item>
     </plurals>
-
     <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_move">Taşı</string>
@@ -888,5 +884,4 @@
     <string name="lbl_condition_dust_cover_fine">Yeni gibi</string>
     <string name="lbl_condition_dust_cover_very_good">Çok iyi</string>
     <string name="lbl_condition_dust_cover_good">İyi</string>
-
 </resources>

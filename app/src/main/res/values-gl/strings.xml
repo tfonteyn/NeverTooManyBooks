@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -314,7 +311,7 @@
     <string name="tip_autorotate_camera_images">Se estás sempre a virar as imaxes da cámara na mesma dirección, tenta mudar as preferencias da aplicación para especificar unha rotación automática.</string>
     <string name="tip_view_only_help">Desliza cara esquerda ou dereita para ver outros libros.</string>
     <string name="tip_book_list">Tocar nun libro mostrará os seus detalles. Premer longo darache máis opcións.</string>
-    <string name="tip_import_isbn_list">Importa un ficheiro de texto con números ISBN. O ficheiro debe ter un único ISBN por liña. Os resultados colocaranse na cola.</string>
+    <string name="tip_import_isbn_list">Importa un ficheiro de texto con ISBN. O ficheiro debe ter un único ISBN por liña. Os resultados colocaranse na cola.</string>
     <string name="tip_booklist_styles_editor">Utiliza esta pantalla para personalizar a lista de estilos que se van amosar no teu menú de estilos por defecto. Coa caixa de selección escolle os que queres que saian na lista. Se non escolles ningún, mostraranse todos. Podes reordenar a xerarquía arrastrando a icona (=) do extremo dereito de cada fila cara arriba ou abaixo. Se premes longamente en calquera outro lugar dunha fila, poderás editar ou clonar os detalles dun estilo específico. Se clonas un estilo e cambias de opinión, só tes que borralo.</string>
     <string name="tip_booklist_style_groups">Usa esta pantalla para modificar a xerarquía de grupos dun estilo concreto. Coa caixa de selección escolle os grupos que queres amosar na lista e reordena arrastrando a icona do final de cada liña cara arriba ou abaixo.</string>
     <string name="tip_booklist_style_properties">Utiliza esta pantalla para definir as características dun estilo concreto. Podes mudar o nome, editar os agrupamentos para alterar a xerarquía e axustar outras preferencias para xerar un estilo que consideres útil.</string>
@@ -885,5 +882,4 @@
     <string name="lbl_condition_dust_cover_fine">Impecable</string>
     <string name="lbl_condition_dust_cover_very_good">Moi ben</string>
     <string name="lbl_condition_dust_cover_good">Ben</string>
-
 </resources>

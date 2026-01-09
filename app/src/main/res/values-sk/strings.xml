@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -654,7 +651,7 @@
     <string name="confirm_duplicate_book_message">Kniha, ktorú sa pokúšate pridať, už existuje v databáze, ste si istý, že chcete pridať ďalšiu kópiu?</string>
     <string name="book_format_dimensions">Rozmery</string>
     <string name="tip_authors_works_book">Kniha.</string>
-    <string name="tip_import_isbn_list">Importujte textový súbor s číslami ISBN. Súbor by mal mať na každom riadku jedno ISBN. Výsledky budú umiestnené do frontu.</string>
+    <string name="tip_import_isbn_list">Importujte textový súbor s kódmi ISBN. Súbor by mal mať na každom riadku jedno ISBN. Výsledky budú umiestnené do frontu.</string>
     <string name="bob_empty_author">(Chýba autor)</string>
     <string name="bob_empty_day">(Deň nie je nastavený)</string>
     <string name="lbl_group_1st_char_series_title">Prvé písmeno názvu série</string>
