@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 public final class SearchEngineUtils {
 
     /** All non-rendering characters to REMOVE. */
-    @SuppressWarnings("UnnecessaryUnicodeEscape")
     private static final Pattern P1_INVISIBLE_CONTROLS = Pattern.compile(
             // Category 'Format' (includes Bidi, Zero-Width joiners/non-joiners, etc.)
             // Category 'Private Use'

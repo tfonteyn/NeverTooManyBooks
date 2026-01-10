@@ -516,7 +516,6 @@ public final class ImageHandler {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger().d(TAG, "onAfterTransform", result);
         }
-        final Context context = fragment.getContext();
 
         final File file = result.getFile();
         if (file != null) {
@@ -526,12 +525,10 @@ public final class ImageHandler {
                     return;
                 }
                 case Edit: {
-                    //noinspection DataFlowIssue
                     vm.prepareEditor(file);
                     return;
                 }
                 case Done: {
-                    //noinspection DataFlowIssue
                     vm.setImage(imageSupplier.get(), cIdx, file);
                     return;
                 }
@@ -539,7 +536,6 @@ public final class ImageHandler {
         }
 
         // transformation failed
-        //noinspection DataFlowIssue
         vm.removeImage(imageSupplier.get(), cIdx);
     }
 
