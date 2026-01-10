@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public class BookTest
         tableInfo = serviceLocator.getDb().getTableInfo(DBDefinitions.TBL_BOOKS);
     }
 
-    /** US english book, price in $. */
+    /** US English book, price in $. */
     @Test
     public void preprocessPrices01() {
         final List<Locale> userLocales = List.of(Locale.US);
@@ -90,7 +90,7 @@ public class BookTest
         assertEquals("USD", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
-    /** US english book, price set, currency not set. */
+    /** US English book, price set, currency not set. */
     @Test
     public void preprocessPrices02() {
         final List<Locale> userLocales = List.of(Locale.US);

@@ -53,7 +53,7 @@ public interface Mergeable {
     List<String> getNameFields();
 
     /**
-     * Convenience method to <strong>diacritics-NOT-sensitive</strong> compare two Mergeables.
+     * Convenience method to <strong>diacritics-NOT-sensitive</strong> compare two Merge-ables.
      * Always <strong>case-sensitive</strong>.
      *
      * @param that the one to compare with
@@ -76,7 +76,7 @@ public interface Mergeable {
     }
 
     /**
-     * Convenience method to <strong>diacritics-sensitive</strong> compare two Mergeables.
+     * Convenience method to <strong>diacritics-sensitive</strong> compare two Merge-ables.
      * Always <strong>case-sensitive</strong>.
      *
      * @param that the one to compare with

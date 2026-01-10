@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
  *
  * This basic implementation wraps the {@link GroupKey} and keeps tracks of
  * the accumulated domain (i.e. the level it represents).
- * Child classes can customize the display/sort domains with user preferences.
+ * Child classes can customise the display/sort domains with user preferences.
  */
 class BooklistGroupImpl
         implements BooklistGroup {

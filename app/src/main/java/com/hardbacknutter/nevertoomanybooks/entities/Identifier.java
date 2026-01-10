@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
  * <ul>
  * <li>key: a unique keyword; never to be changed; used as bundle keys and import/export</li>
  * <li>type: {@code 'L'} or {@code 'S'}, see below.</li>
- * <li>name: a non-localized short name to show to the user.
+ * <li>name: a non-localised short name to show to the user.
  *           Can be empty for user created key.</li>
  * <li>sid: the actual value of the identifier field</li>
  * </ul>

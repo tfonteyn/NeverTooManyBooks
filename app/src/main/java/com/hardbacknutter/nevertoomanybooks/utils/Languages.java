@@ -122,7 +122,7 @@ public class Languages {
 
     /**
      * Try to convert a language string to an ISO3 code.
-     * At installation time we generated the users System Locale + Locale.ENGLISH
+     * At installation time we generated the users System Locale + {@link Locale#ENGLISH}.
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *

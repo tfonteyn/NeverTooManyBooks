@@ -1102,7 +1102,7 @@ public final class DBDefinitions {
          *  Book identifiers
          * ====================================================================================== */
 
-        // not localized!
+        // not localised!
         DOM_IDENTIFIER_KEY =
                 new Domain.Builder(DBKey.IDENTIFIERS.KEY, SqLiteDataType.Text)
                         .notNull()

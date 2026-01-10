@@ -32,7 +32,7 @@
     resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
     cannot put these into an external file: https://issuetracker.google.com/issues/68434088
 
-    Each language string.xml file uses localized quotes as per
+    Each language string.xml file uses localised quotes as per
     https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
     See top of each language resource file for the "quotes" comment.
 

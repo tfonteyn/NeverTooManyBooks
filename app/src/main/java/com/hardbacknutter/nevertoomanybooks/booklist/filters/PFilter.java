@@ -88,7 +88,7 @@ public interface PFilter<T>
     /**
      * UI usage: get a human-readable name for this filter.
      * <p>
-     * Returns the localized text "Filter" for generic/dynamic filters.
+     * Returns the localised text "Filter" for generic/dynamic filters.
      *
      * @param context Current context
      *

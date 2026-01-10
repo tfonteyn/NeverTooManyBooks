@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -157,7 +157,7 @@ public class XMLTokener
      *     &amp;  &apos;  &gt;  &lt;  &quot;.
      * }</pre>
      * @param ampersand An ampersand character.
-     * @return A Character or an entity String if the entity is not recognized.
+     * @return A Character or an entity String if the entity is not recognised.
      * @throws JSONException If missing ';' in XML entity.
      */
     public Object nextEntity(@SuppressWarnings("unused") char ampersand)

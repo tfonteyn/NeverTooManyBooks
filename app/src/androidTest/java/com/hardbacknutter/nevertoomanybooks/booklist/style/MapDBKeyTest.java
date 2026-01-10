@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public class MapDBKeyTest
 
     /**
      * The fields globally supporting visibility
-     * must all have a human readable label.
+     * must all have a human-readable label.
      */
     @Test
     public void visibilityKeysHaveLabels() {
@@ -88,7 +88,7 @@ public class MapDBKeyTest
 
     /**
      * The style BookLevelFields supporting sorting
-     * must all have a human readable label.
+     * must all have a human-readable label.
      */
     @Test
     public void sortableBookLevelKeysHaveLabels() {
@@ -107,7 +107,7 @@ public class MapDBKeyTest
 
 
     /**
-     * The style Style.Screen.List fields supporting visibility
+     * The Style.Screen.List fields supporting visibility
      * must all have a valid domain name.
      */
     @Test
@@ -128,7 +128,7 @@ public class MapDBKeyTest
     }
 
     /**
-     * The style Style.Screen.List fields supporting sorting
+     * The Style.Screen.List fields supporting sorting
      * must all have a valid domain name.
      */
     @Test

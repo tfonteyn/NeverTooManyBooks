@@ -344,7 +344,7 @@ public class DBHelper
     /**
      * <strong>REMINDER: foreign key constraints are DISABLED here.</strong>
      * <strong>WARNING: do NOT use SynchronizedDb here!
-     * This implies: do NOT get dao's from the ServiceLocator!</strong>
+     * This implies: do NOT get DAOs from the ServiceLocator!</strong>
      * <p>
      * {@inheritDoc}
      */
@@ -378,7 +378,7 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        // reminder: do NOT get dao's!
+        // reminder: do NOT get DAOs!
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final Context context = serviceLocator.getLocalizedAppContext();
 

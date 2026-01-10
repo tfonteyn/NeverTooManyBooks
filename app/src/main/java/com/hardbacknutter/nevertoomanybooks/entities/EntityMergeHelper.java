@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@ public class EntityMergeHelper<T extends Mergeable> {
      * Loop over the list and try to find and merge duplicates.
      * <p>
      * Comparing the name fields of items is done
-     * <strong>after normalization and lowercasing</strong>.
+     * <strong>after normalisation and lowercasing</strong>.
      * This makes sure we can merge names which are only different in for example an accent on
      * a character, or in upper/lower case characters.
      *

@@ -199,7 +199,7 @@ public class Series
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Checks if a number consists of digits only; i.e. it's a positive integer.
+     * Checks if a number string consists of digits only; i.e. it's a positive integer.
      */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^\\d+$");
 
@@ -404,7 +404,7 @@ public class Series
 
     /**
      * Should be called after all regex parsing is done.
-     * This does any final normalization as needed.
+     * This does any final normalisation as needed.
      *
      * @param source to clean
      *

@@ -301,9 +301,8 @@ public class DBCleaner {
 
 
     /**
-     * Replace 'T' occurrences with ' '.
-     * See package-info docs for
-     * {@link FullDateParser}
+     * Replace {@code 'T'} occurrences with {@code ' '}.
+     * See package-info docs for {@link FullDateParser}.
      */
     private void datetimeFormat() {
         final Collection<Pair<Long, String>> rows = new ArrayList<>();
@@ -419,7 +418,7 @@ public class DBCleaner {
     /**
      * Convert any {@code null} values to an empty string.
      * <p>
-     * Used to correct data in columns which have "string default ''"
+     * Used to correct data in columns which have {@code "string default ''"}.
      *
      * @param table  to check
      * @param column to check

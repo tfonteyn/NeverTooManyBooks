@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 /**
  * Format the source string according to the BooklistGroup id.
  * <p>
- * Formatting is centralized in this method; the alternative (and theoretically 'correct')
+ * Formatting is centralised in this method; the alternative (and theoretically 'correct')
  * way would be to have a {@link RowViewHolder} for each 'case' branch
  * (and even "more" correct, for each BooklistGroup) ... which is overkill.
  * <p>

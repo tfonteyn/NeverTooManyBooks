@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -165,7 +165,7 @@ public abstract class BaseDBTest {
                              .findFirst();
     }
 
-    /** Load and parse a JSoup document from a raw html resource. */
+    /** Load and parse a JSoup document from a raw HTML resource. */
     @NonNull
     protected Document loadDocument(final int resId,
                                     @Nullable final String charset,

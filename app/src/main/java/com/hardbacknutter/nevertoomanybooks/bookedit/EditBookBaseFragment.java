@@ -213,7 +213,7 @@ public abstract class EditBookBaseFragment
     private void addDateHelpers() {
         // With all Views populated, (re-)add the date helpers
         // which rely on fields having valid views
-        // Instead of each fragment doing their own, we've centralized
+        // Instead of each fragment doing their own, we've centralised
         // them all here for ease of maintenance
 
         if (vm.handlesField(getFragmentId(), R.id.date_published)) {

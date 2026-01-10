@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
  * GitHub #107 => https://issuetracker.google.com/issues/135594222
  * <p>
  * 2025-02-22 Reminder: the old provider-based search is still active,
- * but no longer hooked up to the menus. It could all be deleted but it's
+ * but no longer hooked up to the menus. It could all be deleted, but it's
  * kept for now as there might be an alternative use for it.
  */
 public class SearchViewHelper {

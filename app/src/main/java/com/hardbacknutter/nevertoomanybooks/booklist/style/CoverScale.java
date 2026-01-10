@@ -211,7 +211,7 @@ public enum CoverScale {
                 // The multiplier used here is NOT related to HW_RATIO!
                 //
                 // Multiply the cover-width by 0.6 as the values in the resource are
-                // optimized for list-mode where we aim to fill up 1/3 of the width
+                // optimised for list-mode where we aim to fill up 1/3 of the width
                 // with the image, and 2/3 with text.
                 // This could likely be tuned on a screen size basis... but the differences
                 // will be minimal hence not bothering for now.

@@ -144,7 +144,7 @@ public enum CsvFormat
             return new RatingParser(new RealNumberParser(locales), 5);
         }
     },
-    /** Anything not explicitly recognized. */
+    /** Anything not explicitly recognised. */
     Unknown(R.string.unknown) {
         @NonNull
         public String mapColumnName(@NonNull final String name) {

@@ -1849,7 +1849,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called after the user closed the filters dialog.
+     * Called after the user closed the filters' dialog.
      *
      * @param modified {@code true} when the filters were updated
      */
@@ -2126,7 +2126,7 @@ public class BooksOnBookshelf
             menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
             menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
-            // specifically check LOANEE_NAME independent from the style in use.
+            // specifically check LOANEE_NAME independent of the style in use.
             final boolean useLending = ServiceLocator.getInstance()
                                                      .isFieldEnabled(DBKey.LOANEE_NAME);
             final boolean isAvailable = vm.isAvailable(rowData);
@@ -2170,7 +2170,7 @@ public class BooksOnBookshelf
                 if (hasEmbeddedDetailsFrame()) {
                     // refresh the entire fragment.
                     // We could send a message so only the child-fragment
-                    // with the read-status is updated but it's complicated enough already
+                    // with the read-status is updated, but it's complicated enough already
                     openEmbeddedBookDetails(bookId);
                 }
                 return true;
@@ -2864,7 +2864,7 @@ public class BooksOnBookshelf
         /**
          * Expand/Collapse the entire list <strong>starting</strong> from the given level.
          * <p>
-         * This is called from the options menu:
+         * This is called from the options' menu:
          * <ul>
          *     <li>Preferred level</li>
          *     <li>expand all</li>

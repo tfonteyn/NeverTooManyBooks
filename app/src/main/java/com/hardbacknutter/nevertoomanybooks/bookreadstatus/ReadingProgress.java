@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -290,7 +290,7 @@ public final class ReadingProgress
      *
      * @param context Current context
      *
-     * @return localized string to display
+     * @return localised string to display
      */
     @NonNull
     public String format(@NonNull final Context context) {

@@ -377,7 +377,7 @@ public class EditBookAuthorListDialogFragment
             adapter.notifyDataSetChanged();
 
         } else {
-            // Object was modified and it's used in more than one place.
+            // Object was modified, and it's used in more than one place.
             // We need to ask the user if they want to make the changes globally.
             StandardDialogs.confirmScopeForChange(
                     context, context.getString(R.string.lbl_author),
@@ -407,7 +407,7 @@ public class EditBookAuthorListDialogFragment
                                    @NonNull final Author modified) {
         // treat the new data as a new Author; save it so we have a valid id.
         // Note that if the user abandons the entire book edit,
-        // we will orphan this new Author. That's ok, it will get
+        // we will orphan this new Author. That's OK, it will get
         // garbage collected from the database sooner or later.
         try {
             //noinspection DataFlowIssue
@@ -425,7 +425,7 @@ public class EditBookAuthorListDialogFragment
         // .
         // The problem is two-fold:
         // If we simply create a new TocEntry?
-        // - old one not used anywhere else ? ok, just delete it
+        // - old one not used anywhere else ? OK, just delete it
         // - old one present in other books ? replace ? leave as-is ?
         // but it's the SAME story (text), now existing with two different authors.
         // - update the TocEntry as-is... i.e. in the database?

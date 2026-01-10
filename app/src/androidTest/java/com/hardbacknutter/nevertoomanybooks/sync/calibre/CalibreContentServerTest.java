@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * To access the a Calibre server on the host network from the app running on the emulator, run:
+ * To access a Calibre server on the host network from the app running on the emulator, run:
  * <pre>
  *    adb reverse tcp:8443 tcp:8443
  * </pre>

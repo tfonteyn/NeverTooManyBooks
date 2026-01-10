@@ -64,7 +64,7 @@ final class Triggers {
      * Create all database triggers.
      *
      * <p>
-     * set Book dirty when:
+     * Set Book dirty when:
      * - Author: delete, update.
      * - Series: delete, update.
      * - Bookshelf: delete.

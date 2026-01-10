@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,7 @@ public class DomainExpressionsTest
     }
 
     /**
-     * The style Style.Screen.List fields supporting visibility
+     * The Style.Screen.List fields supporting visibility
      * must all have DomainExpressions.
      */
     @Test
@@ -94,7 +94,7 @@ public class DomainExpressionsTest
     }
 
     /**
-     * The style Style.Screen.List fields supporting sorting
+     * The Style.Screen.List fields supporting sorting
      * must all have DomainExpressions.
      */
     @Test

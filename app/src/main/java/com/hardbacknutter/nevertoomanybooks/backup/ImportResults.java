@@ -158,7 +158,7 @@ public class ImportResults
      * @param context          Current context
      * @param row              where the issue happened
      * @param e                the exception thrown
-     * @param localizedMessage optional; a <strong>localized</strong> message which
+     * @param localizedMessage optional; a <strong>localised</strong> message which
      *                         <strong>will</strong> be shown to the user
      */
     public void handleRowException(@NonNull final Context context,

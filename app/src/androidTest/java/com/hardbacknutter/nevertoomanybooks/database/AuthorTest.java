@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -172,7 +172,7 @@ public class AuthorTest
         assertEquals(0, authorArray[2].getId());
         // find the author[2] again...
         existingAuthor = authorDao.findByName(context, authorArray[2], bookLocale).orElseThrow();
-        // should be recognized as author[0]
+        // should be recognised as author[0]
         assertEquals(authorArray[0].getId(), existingAuthor.getId());
 
         // - all books of author[2] will now belong to author[0]
@@ -242,7 +242,7 @@ public class AuthorTest
         assertEquals(0, authorArray[2].getId());
         // find the author[2] again...
         existingAuthor = authorDao.findByName(context, authorArray[2], bookLocale).orElseThrow();
-        // should be recognized as author[1]
+        // should be recognised as author[1]
         assertEquals(authorArray[1].getId(), existingAuthor.getId());
 
         // - all books of author[2] will now belong to author[1]

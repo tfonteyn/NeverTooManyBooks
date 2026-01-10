@@ -79,7 +79,7 @@ public class CalibreHandler {
     /** The host view; used for context, resources. */
     private View hostView;
 
-    /** Optionally set during initializing. */
+    /** Optionally set during initialising. */
     @Nullable
     private View progressFrame;
     /** Created only when actually needed. */

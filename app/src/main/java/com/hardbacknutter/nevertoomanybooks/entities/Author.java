@@ -128,7 +128,7 @@ public class Author
     /**
      * Handles recognition of a (typical American?) name suffix.
      * <p>
-     * First character "j" and "s" can be lower- or upper-case.
+     * First character "j" and "s" can be lower-case or upper-case.
      * <p>
      * Foo Bar Jr.
      * Foo Bar Jr
@@ -353,7 +353,7 @@ public class Author
      *
      * @param context Current context
      *
-     * @return an Author with a localized "Unknown Author" family name
+     * @return an Author with a localised "Unknown Author" family name
      */
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {

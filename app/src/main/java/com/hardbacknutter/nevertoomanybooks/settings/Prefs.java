@@ -46,7 +46,7 @@ public final class Prefs {
     public static final String PK_UI_LOCALE = "ui.locale";
 
     /**
-     * Whether to normalize {@link DBKey#FORMAT} values after a search.
+     * Whether to normalise {@link DBKey#FORMAT} values after a search.
      * <p>
      * {@code boolean}
      *

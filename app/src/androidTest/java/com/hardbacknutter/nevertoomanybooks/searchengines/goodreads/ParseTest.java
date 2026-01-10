@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -477,7 +477,7 @@ public class ParseTest
     }
 
     /**
-     * There are several/literal {@code null} values in the json source.
+     * There are several/literal {@code null} values in the JSON source.
      * Make sure by testing for correctly missing fields.
      */
     @Test

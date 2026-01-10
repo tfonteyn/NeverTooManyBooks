@@ -1899,7 +1899,7 @@ public class Book
      * Set the last date-time that this book was modified.
      * If not set, a default of 'now' will be used when saved.
      * <p>
-     * <strong>WARNING</strong> this method only to be used by the DAO or by synchronization
+     * <strong>WARNING</strong> this method only to be used by the DAO or by synchronisation
      * services (e.g. Calibre...)
      *
      * @param dateTime to use

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -168,7 +168,7 @@ public class SeriesTest
         series2.setNumber("1");
         list.add(series2);
 
-        // Note we force normalization here - this is the test for it... duh...
+        // Note we force normalisation here - this is the test for it... duh...
         final boolean modified = seriesDao.pruneList(context, list, true,
                                                      item -> bookLocale);
 

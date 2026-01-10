@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -246,7 +246,7 @@ public class StyleCoder
             }
             case Builtin: {
                 style = stylesHelper.getStyle(uuid).orElseGet(
-                        // It's a recognized built-in Style, but it's deprecated.
+                        // It's a recognised built-in Style, but it's deprecated.
                         // We return the default built-in Style instead.
                         () -> stylesHelper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID).orElseThrow());
                 break;

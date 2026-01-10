@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -157,7 +157,7 @@ public final class ErrorDialog {
 
             // the exception MAY be absent
             if (e != null) {
-                // Try to map the exception to a localized/simple message.
+                // Try to map the exception to a localised/simple message.
                 final Optional<String> mappedMsg = ExMsg.map(context, e);
                 // If we have no mapped message, do NOT freak out (see second section below),
                 // but show the raw exception msg as a last resort.
@@ -185,7 +185,7 @@ public final class ErrorDialog {
         if (title != null) {
             builder.setTitle(title);
 
-            // Try to map the exception to a localized/simple message.
+            // Try to map the exception to a localised/simple message.
             final Optional<String> mappedMsg = ExMsg.map(context, e);
             // If we have no mapped message or the exception was null - freak-out!
             final String message2 = mappedMsg.orElseGet(
@@ -220,7 +220,7 @@ public final class ErrorDialog {
         // Worst case, we have no title and no message.
         // This would typically be an IOException
 
-        // Try to map the exception to a localized/simple message.
+        // Try to map the exception to a localised/simple message.
         final Optional<String> mappedMsg = ExMsg.map(context, e);
         // If we have no mapped message or the exception was null - freak-out!
         final String title2 = mappedMsg.orElseGet(() -> ExMsg.getUnexpectedErrorMessage(context));

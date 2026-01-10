@@ -170,7 +170,7 @@ public class ArchiveMetaData
      *
      * @param context Current context
      *
-     * @throws DataReaderException on failure to recognize a supported archive
+     * @throws DataReaderException on failure to recognise a supported archive
      */
     public void validate(@NonNull final Context context)
             throws DataReaderException {

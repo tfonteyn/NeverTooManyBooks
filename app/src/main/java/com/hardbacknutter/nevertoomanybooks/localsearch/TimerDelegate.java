@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,7 +100,7 @@ class TimerDelegate {
         @Override
         public void run() {
             boolean doSearch = false;
-            // Synchronize to access the delegate member variables,
+            // Synchronized to access the delegate member variables,
             // as we might have more than one timer running
             synchronized (TimerDelegate.this) {
                 final boolean idle = (System.nanoTime() - idleStartInNs) > TRIGGER_IN_NS;

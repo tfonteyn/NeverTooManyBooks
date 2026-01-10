@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * The {@link CoverFileSpecArray#BKEY_FILE_SPEC_ARRAY} keys are not used here,
  * as the accumulator checks for the real files (which won't be there).
- * It is assumed that if Authors/Series/etc... get processed ok, then so will the fileSpecs.
+ * It is assumed that if Authors/Series/etc... get processed OK, then so will the fileSpecs.
  */
 @SuppressWarnings({"MissingJavadoc","LongLine"})
 public class ResultsAccumulatorTest

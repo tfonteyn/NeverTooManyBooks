@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ public class DataReaderException
     /**
      * Constructor.
      *
-     * @param localizedMessage a <strong>localized</strong> message which
+     * @param localizedMessage a <strong>localised</strong> message which
      *                         <strong>will</strong> be shown to the user
      */
     public DataReaderException(@NonNull final String localizedMessage) {
@@ -60,7 +60,7 @@ public class DataReaderException
     /**
      * Constructor.
      *
-     * @param localizedMessage a <strong>localized</strong> message which
+     * @param localizedMessage a <strong>localised</strong> message which
      *                         <strong>will</strong> be shown to the user
      * @param cause            Exception to wrap
      */
@@ -70,7 +70,7 @@ public class DataReaderException
     }
 
     /**
-     * Get (and create if needed) the localized message to show to the user.
+     * Get (and create if needed) the localised message to show to the user.
      *
      * @param context Current context
      *

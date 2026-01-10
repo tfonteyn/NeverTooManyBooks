@@ -223,7 +223,7 @@ public enum ArchiveReaderEncoding
      *
      * @return a new reader
      *
-     * @throws DataReaderException      if the input is not recognized
+     * @throws DataReaderException      if the input is not recognised
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if there are no record types set
      * @throws CredentialsException     on authentication/login failures

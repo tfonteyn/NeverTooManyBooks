@@ -41,7 +41,7 @@ public final class ColorMapper
         extends MapperBase {
 
     /**
-     * Whether to normalize {@link DBKey#COLOR} values after a search.
+     * Whether to normalise {@link DBKey#COLOR} values after a search.
      * <p>
      * {@code boolean}
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ public interface BookChangedListener {
     void onBookDeleted(long bookId);
 
     /**
-     * Request to update/synchronize the given {@link Book}.
+     * Request to update/synchronise the given {@link Book}.
      *
      * @param bookId to handle
      */

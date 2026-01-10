@@ -25,6 +25,7 @@ import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -98,18 +99,18 @@ public final class MenuUtils {
     }
 
     /**
-     * Customize the given menu item title to give it the same look as preference categories.
+     * Customise the given menu item title to give it the same look as preference categories.
      * The colour is set to 'colorAccent' + the text is scaled 0.88 (16sp versus default 18sp).
      *
      * @param context    Current context
      * @param menu       hosting menu
-     * @param menuItemId The menu item to customize.
+     * @param menuItemId The menu item to customise.
      */
     public static void customizeMenuGroupTitle(@NonNull final Context context,
                                                @NonNull final Menu menu,
                                                @IdRes final int menuItemId) {
         final MenuItem item = menu.findItem(menuItemId);
-        final SpannableString title = new SpannableString(item.getTitle());
+        final Spannable title = new SpannableString(item.getTitle());
         final int color = AttrUtils
                 .getColorInt(context, com.google.android.material.R.attr.colorSecondary);
         title.setSpan(new ForegroundColorSpan(color), 0, title.length(), 0);

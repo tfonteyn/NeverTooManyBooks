@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@ public class TestProgressListener
     public void publishProgress(final int delta,
                                 @Nullable final String message) {
         progressCurrentPos += delta;
-        // eat all message when in debug; it's too much of a slow down otherwise.
+        // eat all message when in debug; it's too much of a slow-down otherwise.
         if (!BuildConfig.DEBUG  /* always */) {
             LoggerFactory.getLogger()
                          .d(tag, "publishProgressStep",
@@ -58,7 +58,7 @@ public class TestProgressListener
 
     @Override
     public void publishProgress(@NonNull final TaskProgress message) {
-        // eat all message when in debug; it's too much of a slow down otherwise.
+        // eat all message when in debug; it's too much of a slow-down otherwise.
         if (!BuildConfig.DEBUG  /* always */) {
             LoggerFactory.getLogger()
                          .d(tag, "publishProgress", "message=" + message);

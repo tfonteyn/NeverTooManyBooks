@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -142,7 +142,7 @@ public class PStringEqualityFilter
     @NonNull
     @Override
     public String getExpression() {
-        // We want to use the exact string, so do not normalize the value,
+        // We want to use the exact string, so do not normalise the value,
         // but we do need to handle single quotes as we are concatenating.
         //noinspection DataFlowIssue
         final String s = SqlEncode.singleQuotes(value);

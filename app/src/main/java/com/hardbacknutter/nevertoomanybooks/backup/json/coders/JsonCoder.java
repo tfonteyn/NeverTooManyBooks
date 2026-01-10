@@ -57,7 +57,7 @@ public interface JsonCoder<T> {
      *
      * @throws IllegalArgumentException if the data could partially be encoded,
      *                                  but we encountered an unknown type/element.
-     *                                  The message <strong>must be localized and
+     *                                  The message <strong>must be localised and
      *                                  will be shown to the user</strong>
      * @throws JSONException            upon any parsing error
      */
@@ -116,7 +116,7 @@ public interface JsonCoder<T> {
      *
      * @throws IllegalArgumentException if the data could partially be parsed,
      *                                  but we encountered an unknown type/element.
-     *                                  The message <strong>must be localized and
+     *                                  The message <strong>must be localised and
      *                                  will be shown to the user</strong>
      * @throws JSONException            upon any parsing error
      */

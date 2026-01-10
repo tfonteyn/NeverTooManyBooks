@@ -77,7 +77,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *         i.e. {@link ZipArchiveReader} version 2.
  *         See {@link ZipArchiveWriter} class docs for the version descriptions.
  *         <p>
- *         Most of the remaining code here is overkill and should be rationalized some day.
+ *         Most of the remaining code here is overkill and should be rationalised some day.
  */
 @SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated

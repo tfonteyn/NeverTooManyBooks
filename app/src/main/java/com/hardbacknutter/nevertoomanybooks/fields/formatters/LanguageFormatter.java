@@ -66,7 +66,7 @@ public class LanguageFormatter
     }
 
     /**
-     * Extract a localized language name to its ISO equivalent.
+     * Extract a localised language name to its ISO equivalent.
      *
      * @return the ISO3 code for the language
      */

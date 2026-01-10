@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 /**
- * <strong>Used by the synchronization logic, i.e. the {@link StripInfoWriter}.</strong>
+ * <strong>Used by the synchronisation logic, i.e. the {@link StripInfoWriter}.</strong>
  * <p>
  * Handles the userdata FORM from the individual book side ajax panel.
  */

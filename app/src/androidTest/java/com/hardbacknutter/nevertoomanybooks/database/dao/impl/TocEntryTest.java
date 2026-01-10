@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,7 +76,7 @@ public class TocEntryTest
         final List<TocEntry> list = new ArrayList<>();
         TocEntry tocEntry;
 
-        // All id's are set == 0
+        // All ids are set == 0
 
 
         // keep, position 0, merged with next entry with the same title
@@ -133,7 +133,7 @@ public class TocEntryTest
         final List<TocEntry> list = new ArrayList<>();
         TocEntry tocEntry;
 
-        // id's are set, results same as if id's were all 0
+        // ids are set, results same as if ids were all 0
 
         tocEntry = new TocEntry(1, author0, "title 1", PartialDate.NOT_SET, 0);
         list.add(tocEntry);

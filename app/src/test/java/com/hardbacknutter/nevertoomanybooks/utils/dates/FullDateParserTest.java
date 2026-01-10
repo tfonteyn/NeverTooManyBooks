@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -126,7 +126,7 @@ class FullDateParserTest
         assertEquals(s_1987_06_25, parser.parse("25 jun. 1987"));
 
         assertEquals(w_2017_01_12, parser.parse("12 january 2017"));
-        // french without the france locale enabled
+        // French without the france locale enabled
         assertTrue(parser.parse("12 janvier 2017").isEmpty());
 
         // day 01 is implied

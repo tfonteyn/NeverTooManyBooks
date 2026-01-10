@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * Specialized BooklistGroup representing a {@link Publisher} group.
  * Includes extra attributes based on preferences.
  * <p>
- * {@link #getDisplayDomainExpression()} returns a customized display domain
+ * {@link #getDisplayDomainExpression()} returns a customised display domain
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 class PublisherBooklistGroup

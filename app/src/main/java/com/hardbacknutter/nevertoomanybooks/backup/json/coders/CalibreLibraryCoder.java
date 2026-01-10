@@ -224,9 +224,8 @@ public class CalibreLibraryCoder
 
     // This is nasty... up-to and including Backup format v3 we wrote
     // only the bookshelf id to the data object.
-    // Importing that data ONLY works IF the bookshelf
-    // a) exists and b) has the same id. This led to data loss on full imports to a clean
-    // installation.
+    // Importing that data ONLY works IF the bookshelf exists and has the same id.
+    // This led to data loss on full imports to a clean installation.
     // There is no real (simple) recovery solution to that. So....
     @NonNull
     private CalibreLibrary v3decode(@NonNull final JSONObject data)

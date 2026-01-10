@@ -85,7 +85,7 @@ public final class FilterFactory {
      *
      * @param context Current context
      *
-     * @return sorted by localized label
+     * @return sorted by localised label
      */
     @NonNull
     public static Map<String, String> getLabels(@NonNull final Context context) {
@@ -103,7 +103,7 @@ public final class FilterFactory {
     /**
      * UI usage: get a human-readable name for the given {@code dbKey} filter.
      * <p>
-     * Returns the localized text "Filter" for generic/dynamic filters.
+     * Returns the localised text "Filter" for generic/dynamic filters.
      *
      * @param context Current context
      * @param dbKey   for the filter

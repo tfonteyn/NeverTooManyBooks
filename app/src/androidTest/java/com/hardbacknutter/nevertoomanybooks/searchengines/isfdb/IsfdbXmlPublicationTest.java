@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -108,7 +108,7 @@ public class IsfdbXmlPublicationTest
         // getContext(): we want the "androidTest" context which is where our test resources live
         try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {
-            // The ISFDB site returns xml with the encoding "iso-8859-1"
+            // The ISFDB site returns XML with the encoding "iso-8859-1"
             // i.e. with <?xml version="1.0" encoding="iso-8859-1" ?>
             // but for Android seems to ignore this and defaults to UTF-8
             // So wrap in InputSource and manually set the encoding.

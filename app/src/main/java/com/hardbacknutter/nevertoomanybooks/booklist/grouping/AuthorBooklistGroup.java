@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
  * Specialized BooklistGroup representing an {@link Author} group.
  * Includes extra attributes based on preferences.
  * <p>
- * {@link #getDisplayDomainExpression()} returns a customized display domain
+ * {@link #getDisplayDomainExpression()} returns a customised display domain
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 public class AuthorBooklistGroup

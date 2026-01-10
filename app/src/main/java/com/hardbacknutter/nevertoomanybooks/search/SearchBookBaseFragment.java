@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -186,7 +186,7 @@ public abstract class SearchBookBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * The results come back in {@link #onSearchResults(BookSearchResult)}.
      * <p>
-     * Override to customize which search function is called.
+     * Override to customise which search function is called.
      * The default implementation starts the generic
      * {@link SearchCoordinator#search(BookSearchCriteria)}.
      *
