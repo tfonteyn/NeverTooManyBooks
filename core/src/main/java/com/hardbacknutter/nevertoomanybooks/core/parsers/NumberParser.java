@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,14 @@ package com.hardbacknutter.nevertoomanybooks.core.parsers;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Set;
+
 public final class NumberParser {
+
+    private static final Set<String> ZERO_VALUES = Set.of(
+            "", "0", "0.0",
+            // Comma used as a decimal separator.
+            "0,0");
 
     private NumberParser() {
     }
@@ -40,11 +47,7 @@ public final class NumberParser {
             return true;
         }
         final String s = stringValue.strip();
-        return s.isEmpty()
-               || "0".equals(s)
-               || "0.0".equals(s)
-               // Comma as decimal separator.
-               || "0,0".equals(s)
+        return ZERO_VALUES.contains(s)
                // Used by Amazon for free kindle books etc...
                || "free".equalsIgnoreCase(s);
     }
