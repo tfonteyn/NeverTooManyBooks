@@ -167,7 +167,7 @@ public class Author
      * <p>
      * 1+2: The () part are pseudonyms.
      * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
-     * 4: presumably there are 3 Don's?
+     * 4: presumably there are 3 Dons?
      * 5: the [] part is the country/nationality of the Author
      * <p>
      * For backwards compatibility, we also handle "(*3), Don",
@@ -205,7 +205,7 @@ public class Author
     @Nullable
     private String deathDate;
     /**
-     * Not stored in the database. This is temporary used:
+     * Not stored in the database. This is temporarily used:
      * - set during a search/resolve
      * - read and displayed when editing the author
      * - read, file stored, and cleared.
@@ -231,7 +231,7 @@ public class Author
     @VisibleForTesting
     @Nullable
     public Author realAuthor;
-    /** can be {@code 0}. Should be a {@code Long} but we need parceling ... */
+    /** can be {@code 0}. Should be a {@code Long} but we need parcelling ... */
     @VisibleForTesting
     public long realAuthorId;
 
@@ -317,7 +317,7 @@ public class Author
     /**
      * A precaution to names like {@literal "<someName>"}.
      * The various {@link #getLabel} and {@link #getStyledName} use this method to
-     * prevent html failures. It's not foolproof, but should be enough for now.
+     * prevent HTML failures. It's not foolproof, but should be enough for now.
      * <p>
      * FIXME: prevent getting the above special name getting into the db in the first place...
      *
@@ -686,7 +686,7 @@ public class Author
             // conditions spelled out in long for readability...
 
             if (current == null) {
-                // none found, we should not have gotten here... flw
+                // none found, we should not have got here... flw
                 if (BuildConfig.DEBUG /* always */) {
                     LoggerFactory.getLogger().d(TAG, ERROR_RESOLVE_REAL_AUTHOR,
                                                 "none found");
@@ -1011,7 +1011,7 @@ public class Author
     }
 
     /**
-     * Get the birth-date of this Author.
+     * Get the birthdate of this Author.
      *
      * @return ISO formatted (partial) date
      */
@@ -1022,7 +1022,7 @@ public class Author
     }
 
     /**
-     * Set the birth-date of this Author.
+     * Set the birthdate of this Author.
      *
      * @param date ISO formatted (partial) date
      */
@@ -1401,9 +1401,9 @@ public class Author
      *
      * So basically, if you add
      *
-     *     Joe Bar, with a birth-date
-     *     Joe Bar, without a birth-date
-     *     Joe Bar, without a birth-date, but with a death-date
+     *     Joe Bar, with a birthdate
+     *     Joe Bar, without a birthdate
+     *     Joe Bar, without a birthdate, but with a death-date
      *
      * They are considered THREE authors while editing. Mainly due to performance...
      * this avoids repeated merge operations (with database access) during edits.
@@ -1414,11 +1414,11 @@ public class Author
      *
      * If there are conflicting fields, for example:
      *
-     *     Joe Bar, with a birth-date
-     *     Joe Bar, without a birth-date
-     *     Joe Bar, with a different birth-date
+     *     Joe Bar, with a birthdate
+     *     Joe Bar, without a birthdate
+     *     Joe Bar, with a different birthdate
      *
-     * After saving you would have:
+     * After saving, you would have:
      *
      *     1+2 merged
      *     3
