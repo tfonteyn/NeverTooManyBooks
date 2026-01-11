@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -132,10 +132,10 @@ public class TocEntry
     @RestrictTo(RestrictTo.Scope.TESTS)
     @VisibleForTesting
     public TocEntry(final long id,
-             @NonNull final Author author,
-             @NonNull final String title,
-             @NonNull final PartialDate firstPublicationDate,
-             final int bookCount) {
+                    @NonNull final Author author,
+                    @NonNull final String title,
+                    @NonNull final PartialDate firstPublicationDate,
+                    final int bookCount) {
         this.id = id;
         this.author = author;
         this.title = title.strip();
@@ -148,10 +148,12 @@ public class TocEntry
      *
      * @param id      ID of the TocEntry in the database.
      * @param rowData with data
+     * @param parser  to use
      */
     public TocEntry(final long id,
-                    @NonNull final DataHolder rowData) {
-        this(id, new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData), rowData);
+                    @NonNull final DataHolder rowData,
+                    @NonNull final DateParser<PartialDate> parser) {
+        this(id, new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData), rowData, parser);
     }
 
     /**
@@ -160,15 +162,16 @@ public class TocEntry
      * @param id      ID of the TocEntry in the database.
      * @param author  Author of title
      * @param rowData with data
+     * @param parser  to use
      */
     public TocEntry(final long id,
                     @NonNull final Author author,
-                    @NonNull final DataHolder rowData) {
+                    @NonNull final DataHolder rowData,
+                    @NonNull final DateParser<PartialDate> parser) {
         this.id = id;
         this.author = author;
         this.title = rowData.getString(DBKey.TITLE);
-        // FIXME: optimize this by moving the PartialDateParser to the caller
-        this.firstPublicationDate = new PartialDateParser()
+        this.firstPublicationDate = parser
                 .parse(rowData.getString(DBKey.FIRST_PUBLICATION_DATE))
                 .orElse(PartialDate.NOT_SET);
         this.bookCount = rowData.getInt(DBKey.BOOK_COUNT);
@@ -343,14 +346,14 @@ public class TocEntry
         return author;
     }
 
+    public void setPrimaryAuthor(@NonNull final Author author) {
+        this.author = author;
+    }
+
     @Override
     @NonNull
     public List<Author> getAuthors() {
         return Collections.singletonList(author);
-    }
-
-    public void setPrimaryAuthor(@NonNull final Author author) {
-        this.author = author;
     }
 
     @Override

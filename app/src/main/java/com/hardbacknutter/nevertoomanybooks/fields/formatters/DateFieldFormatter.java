@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ public class DateFieldFormatter
     private final boolean isUtc;
 
     @NonNull
-    private final PartialDateParser parser;
+    private final PartialDateParser parser = new PartialDateParser();
 
     /**
      * Constructor.
@@ -59,8 +59,6 @@ public class DateFieldFormatter
                               final boolean isUtc) {
         this.locale = locale;
         this.isUtc = isUtc;
-
-        parser = new PartialDateParser();
     }
 
     /**

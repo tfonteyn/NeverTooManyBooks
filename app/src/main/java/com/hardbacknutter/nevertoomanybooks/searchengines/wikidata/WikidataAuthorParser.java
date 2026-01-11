@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -96,7 +97,7 @@ class WikidataAuthorParser {
     private final Locale locale;
     @NonNull
     private final WikidataSearchEngine searchEngine;
-    private final PartialDateParser partialDateParser;
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
     private final IdentifierDao identifierDao;
 
     WikidataAuthorParser(@NonNull final Context context,
@@ -106,7 +107,6 @@ class WikidataAuthorParser {
         this.locale = searchEngine.getLocale(context);
 
         identifierDao = ServiceLocator.getInstance().getIdentifierDao();
-        partialDateParser = new PartialDateParser();
     }
 
     @Nullable

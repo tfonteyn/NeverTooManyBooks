@@ -50,7 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -88,6 +91,8 @@ public class AuthorDaoImpl
 
     private static final String[] Z_ARRAY_STRING = new String[0];
     private final IdentifierValueDao authorIdentifierDao;
+
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
     /**
      * Constructor.
@@ -314,11 +319,13 @@ public class AuthorDaoImpl
 
                 switch (type) {
                     case TocEntry:
-                        list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), author, rowData));
+                        list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), author, rowData,
+                                              partialDateParser));
                         break;
 
                     case BookLite:
-                        list.add(new BookLite(rowData.getLong(DBKey.PK_ID), author, rowData));
+                        list.add(new BookLite(rowData.getLong(DBKey.PK_ID), author, rowData,
+                                              partialDateParser));
                         break;
 
                     case Book:

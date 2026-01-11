@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -74,16 +74,17 @@ public class BookLite
      * @param id            book id
      * @param primaryAuthor Author of title
      * @param rowData       with data
+     * @param parser        to use
      */
     public BookLite(final long id,
                     @Nullable final Author primaryAuthor,
-                    @NonNull final DataHolder rowData) {
+                    @NonNull final DataHolder rowData,
+                    @NonNull final DateParser<PartialDate> parser) {
         this.id = id;
         this.title = rowData.getString(DBKey.TITLE);
         this.language = rowData.getString(DBKey.LANGUAGE);
         this.primaryAuthor = primaryAuthor;
-        // FIXME: optimize this by moving the PartialDateParser to the caller
-        this.firstPublicationDate = new PartialDateParser()
+        this.firstPublicationDate = parser
                 .parse(rowData.getString(DBKey.FIRST_PUBLICATION_DATE))
                 .orElse(PartialDate.NOT_SET);
     }

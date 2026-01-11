@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,12 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PartialDateParserTest {
 
-    private PartialDateParser parser;
-
-    @BeforeEach
-    void setup() {
-        parser = new PartialDateParser();
-    }
+    private final PartialDateParser parser = new PartialDateParser();
 
     @Test
     void parse01() {

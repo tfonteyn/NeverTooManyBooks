@@ -45,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -76,6 +78,8 @@ public class TocEntryDaoImpl
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     private static final String ERROR_USE_INSERT_OR_UPDATE_INSTEAD = "use insertOrUpdate instead";
 
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
+
     /**
      * Constructor.
      *
@@ -90,7 +94,7 @@ public class TocEntryDaoImpl
     public Optional<TocEntry> findById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
-                return Optional.of(new TocEntry(id, new CursorRow(cursor)));
+                return Optional.of(new TocEntry(id, new CursorRow(cursor), partialDateParser));
             } else {
                 return Optional.empty();
             }
@@ -200,7 +204,8 @@ public class TocEntryDaoImpl
                 // OR the existing row has a date and there was no search-date
                 if (fpd.equals(searchDateIso)
                     || !fpd.isEmpty() && searchDateIso.isEmpty()) {
-                    return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
+                    return Optional.of(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData,
+                                                    partialDateParser));
                 }
             }
         }
@@ -232,7 +237,8 @@ public class TocEntryDaoImpl
                                          new String[]{String.valueOf(tocEntry.getId())})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new BookLite(rowData.getLong(DBKey.PK_ID), author, rowData));
+                list.add(new BookLite(rowData.getLong(DBKey.PK_ID), author, rowData,
+                                      partialDateParser));
             }
         }
 
@@ -247,7 +253,7 @@ public class TocEntryDaoImpl
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
+                list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData, partialDateParser));
             }
         }
         return list;
