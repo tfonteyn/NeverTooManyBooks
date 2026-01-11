@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -92,10 +91,9 @@ public abstract class SearchEngineBase
      * It's a <strong>request</strong> to cancel while running.
      */
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
-    /** Helper to randomise some urls to avoid fingerprinting by the servers. */
-    @NonNull
-    private final Random random;
+
     private final IdentifierDao identifierDao;
+    protected final ISODateParser isoDateParser;
 
     @Nullable
     private SSLContext sslContext;
@@ -114,9 +112,11 @@ public abstract class SearchEngineBase
     protected SearchEngineBase(@NonNull final Context appContext,
                                @NonNull final SearchEngineConfig config) {
         this.config = config;
-        random = new Random();
 
         identifierDao = ServiceLocator.getInstance().getIdentifierDao();
+
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+        isoDateParser = new ISODateParser(systemLocale);
     }
 
     @NonNull
@@ -210,14 +210,12 @@ public abstract class SearchEngineBase
      *
      * @return new instance
      */
-    @EmptySuper
     @NonNull
     protected DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
                                                           @NonNull final Locale locale) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> allLocales = LocaleListUtils.asList(locale, userLocales);
-        return new FullDateParser(new ISODateParser(systemLocale), allLocales);
+        return new FullDateParser(isoDateParser, allLocales);
     }
 
     @Override

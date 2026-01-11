@@ -44,11 +44,9 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -711,21 +709,19 @@ public class AmazonSearchEngine
     @NonNull
     protected DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
                                                           @NonNull final Locale locale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-
-        final List<Locale> allLocales;
 
         // Hack to support the Portuguese site which does a redirect to the Spanish one
         if (SPANISH.equals(locale.getLanguage())) {
-            allLocales = new ArrayList<>(LocaleListUtils.asList(locale, userLocales));
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales =
+                    new ArrayList<>(LocaleListUtils.asList(locale, userLocales));
             // "pt" and "pt_BR" use the same spelling for month names
             allLocales.add(1, new Locale("pt"));
+            return new FullDateParser(isoDateParser, allLocales);
+
         } else {
-            allLocales = LocaleListUtils.asList(locale, userLocales);
+            return super.getFullDateParser(context, locale);
         }
-        final Locale systemLocale = ServiceLocator
-                .getInstance().getSystemLocaleList().get(0);
-        return new FullDateParser(new ISODateParser(systemLocale), allLocales);
     }
 
     /**
