@@ -133,10 +133,11 @@ class ResultsAccumulator {
                  @NonNull final List<Pair<Locale, Book>> results,
                  @NonNull final Book book) {
 
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+
         results.forEach(localeBookPair -> {
             final Locale locale = localeBookPair.first;
             final Book result = localeBookPair.second;
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(locale, userLocales);
             final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
             final DateParser<LocalDateTime> dateParser =
