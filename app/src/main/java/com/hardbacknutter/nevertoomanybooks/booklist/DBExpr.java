@@ -89,10 +89,17 @@ public final class DBExpr {
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
 
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAMES_AS_CSV}.
+     * The order of the returned names will be arbitrary.
+     * Sorting the CSV is done from code just before displaying.
+     */
     private static final DomainExpression BOOKSHELVES_CSV = new DomainExpression(
             DBDefinitions.DOM_BOOKSHELF_NAMES_AS_CSV,
             "(SELECT GROUP_CONCAT("
-            + DBDefinitions.TBL_BOOKSHELF.dot(DBKey.BOOKSHELF.NAME) + ",', ')"
+            // Must use only a single comma, no extra spaces.
+            // We will split this string in code, sort it, and then reformat/show it.
+            + DBDefinitions.TBL_BOOKSHELF.dot(DBKey.BOOKSHELF.NAME) + ",',')"
             + _FROM_ + DBDefinitions.TBL_BOOKSHELF.startJoin(DBDefinitions.TBL_BOOK_BOOKSHELF)
             + _WHERE_
             + DBDefinitions.TBL_BOOKS.dot(DBKey.PK_ID) + '='
@@ -102,9 +109,10 @@ public final class DBExpr {
 
     /**
      * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAMES_AS_CSV}.
-     * <p>
      * The order of the returned names will be arbitrary.
-     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     * Sorting the CSV is done from code just before displaying.
+     *
+     * NOT USED YET. Would need to add the OB as well
      */
     private static final DomainExpression PUBLISHER_NAMES_CSV = new DomainExpression(
             DBDefinitions.DOM_PUBLISHER_NAMES_AS_CSV,

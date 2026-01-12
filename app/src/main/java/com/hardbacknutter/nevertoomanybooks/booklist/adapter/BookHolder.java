@@ -31,9 +31,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -73,6 +75,10 @@ public class BookHolder
      * E.g. "1.12" is considered short and "1|omnibus" is long.
      */
     private static final int SHORT_SERIES_NUMBER = 4;
+    /** CSV: Split on single comma. */
+    private static final Pattern CSV_SPLIT = Pattern.compile(",");
+    /** CSV: Rejoin using comma + space. */
+    private static final String CSV_JOINER = ", ";
 
     /** Format string. */
     @NonNull
@@ -277,7 +283,8 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.FK_BOOKSHELF)) {
-            showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV));
+            showOrHide(vb.shelves, getSortedCsv(
+                    rowData.getString(DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV, null)));
         }
 
         if (use.contains(DBKey.TRANSLATION_ORIGINAL_TITLE)) {
@@ -349,6 +356,19 @@ public class BookHolder
                                     rowData.getLong(DBKey.BL_NODE.ROW_ID));
             }
         }
+    }
+
+    @Nullable
+    private String getSortedCsv(@Nullable final String rawCsv) {
+        final String sortedCsv;
+        if (rawCsv != null && rawCsv.contains(",")) {
+            final List<String> items = Arrays.asList(CSV_SPLIT.split(rawCsv));
+            items.sort(String.CASE_INSENSITIVE_ORDER);
+            sortedCsv = String.join(CSV_JOINER, items);
+        } else {
+            sortedCsv = rawCsv;
+        }
+        return sortedCsv;
     }
 
     /**
