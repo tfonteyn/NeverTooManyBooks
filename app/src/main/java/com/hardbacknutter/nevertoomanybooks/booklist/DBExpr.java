@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,11 +26,15 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 
 public final class DBExpr {
 
@@ -195,6 +199,7 @@ public final class DBExpr {
                 case DBKey.FK_AUTHOR: {
                     return List.of(
                             // primary author only
+                            // Formatted and sorted
                             new DomainExpression(
                                     DBDefinitions.DOM_AUTHOR_FORMATTED,
                                     AuthorDaoImpl.getDisplayDomainExpression(
@@ -210,8 +215,15 @@ public final class DBExpr {
                     //   return List.of(PUBLISHER_NAMES_CSV);
                     return List.of(
                             // primary publisher only
+
+                            // Displaying; do NOT sort on it
                             new DomainExpression(
                                     DBDefinitions.DOM_PUBLISHER_NAME,
+                                    DBDefinitions.TBL_PUBLISHERS,
+                                    Sort.Unsorted),
+                            // Sorting
+                            new DomainExpression(
+                                    DBDefinitions.DOM_PUBLISHER_NAME_OB,
                                     DBDefinitions.TBL_PUBLISHERS,
                                     sort)
                     );
@@ -219,10 +231,33 @@ public final class DBExpr {
                 case DBKey.FK_SERIES: {
                     return List.of(
                             // primary series only
+
+                            // Displaying; do NOT sort on it
                             new DomainExpression(
                                     DBDefinitions.DOM_SERIES_TITLE,
                                     DBDefinitions.TBL_SERIES,
+                                    Sort.Unsorted),
+                            // Sorting
+                            new DomainExpression(
+                                    DBDefinitions.DOM_SERIES_TITLE_OB,
+                                    DBDefinitions.TBL_SERIES,
                                     sort),
+                            // The series number in the base data in sorted order.
+                            // This field is NOT displayed.
+                            // Casting it as a float allows for the possibility of 3.1,
+                            // or even 3.1|Omnibus 3-10" as a series number.
+                            new DomainExpression(
+                                    new Domain.Builder(
+                                            BooklistGroup.BlgDBKey.SORT_SERIES_NUM_FLOAT,
+                                            SqLiteDataType.Real)
+                                            .build(),
+                                    "CAST("
+                                    + TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_NUMBER)
+                                    + " AS REAL)",
+                                    sort),
+                            // The series number in the base data in sorted order.
+                            // This field is displayed.
+                            // Covers non-numeric data (where the above float would fail)
                             new DomainExpression(
                                     DBDefinitions.DOM_BOOK_SERIES_NUMBER,
                                     DBDefinitions.TBL_BOOK_SERIES,
