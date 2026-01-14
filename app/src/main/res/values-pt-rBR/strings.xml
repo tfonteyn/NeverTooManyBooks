@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -85,7 +88,7 @@
     <string name="warning_backup_request">Gostaria de fazer backup do seu banco de dados no seu cartão SD?</string>
     <string name="warning_restart_required">É necessário reiniciar o app</string>
     <string name="warning_requires_android_x">Requer Android %1$d ou superior</string>
-    <string name="warning_camera_permission_required">Para escanear códigos de barras ou tirar fotos, você precisa permitir o acesso à câmera.</string>
+    <string name="warning_camera_permission_required">Para escanear códigos de barras ou tirar fotos, é necessário permitir o acesso à câmera.</string>
     <string name="vldt_failure">Falha de validação</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Esperava-se um valor inteiro para “%1$s”</string>
@@ -272,4 +275,5 @@
     <string name="lbl_family_name">Sobrenome</string>
     <string name="lbl_table_of_content_entry">Entrada do sumário</string>
     <string name="tip_import_isbn_list">Importe um arquivo de texto com os ISBNs. O arquivo deve ter um único ISBN em cada linha. Os resultados serão colocados na fila.</string>
+    <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
 </resources>

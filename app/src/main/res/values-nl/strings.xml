@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -606,7 +609,7 @@
     <string name="ps_bob_books_under_multiple_authors_main_only">Alleen onder primaire auteur</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">alleen onder hun primaire uitgever</string>
     <string name="ps_bob_books_under_multiple_series_main_only">Alleen onder primaire reeks</string>
-    <string name="ps_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
+    <string name="ps_manage_fields">Geselecteerde velden zijn zichtbaar in de „toevoegen/bewerken” boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="ps_show_titles_reordered_off">Weergeven zoals gegeven,\nbvb. „De schat van Beersel”</string>
     <string name="error_type_not_supported">Type niet ondersteund: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Verplaats een lidwoord aan de start van een titel naar het einde,\nbvb. „schat van Beersel, De”</string>
@@ -687,7 +690,7 @@
     <string name="tip_booklist_style_properties">Gebruik dit scherm om de kenmerken van een specifieke stijl in te stellen. Je kunt de naam wijzigen, de groepen bewerken om de hiërarchie te wijzigen en verschillende andere voorkeuren aanpassen om een stijl samen te stellen die je handig vindt.</string>
     <string name="tip_booklist_styles_editor">Gebruik dit scherm om de lijst met stijlen aan te passen die worden weergegeven in je standaard stijlenmenu. Gebruik het selectievakje om te selecteren welke stijlen worden getoond in de lijst.  Als er geen stijlen zijn geselecteerd, worden alle stijlen getoond. Je kunt de hiërarchie wijzigen door het pictogram uiterst rechts van elke rij omhoog of omlaag te slepen. Als je ergens anders in een rij lang drukt, kun je de details van een specifieke stijl bewerken of klonen. Als je een stijl hebt gekloond en van gedachten bent veranderd, moet je deze zelf verwijderen.</string>
     <string name="lbl_tip">Aanwijzing</string>
-    <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBNs. Het bestand moet op elke regel één enkel ISBN hebben. De resultaten worden in de wachtrij geplaatst.</string>
+    <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN's. Het bestand moet op elke regel één enkel ISBN hebben. De resultaten worden in de wachtrij geplaatst.</string>
     <string name="option_reset_all_tips">Herstel aanwijzingen</string>
     <string name="site_description_german">Duits</string>
     <string name="info_tip_reset_done">Aanwijzingen zijn hersteld</string>

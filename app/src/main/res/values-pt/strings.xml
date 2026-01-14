@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -93,7 +96,7 @@
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_field">(Nenhum)</string>
     <string name="cancelled">Cancelado</string>
-    <string name="acra_dialog_message">Parece que o &APP_NAME; foi bloqueado. Toque em “%1$s” para guardar um relatório numa localização à sua escolha. Pode utilizar este relatório para comunicar um novo problema no site do projeto.</string>
+    <string name="acra_dialog_message">Parece que o &APP_NAME; foi bloqueado. Toque em “%1$s” para guardar um relatório numa localização à sua escolha. Pode utilizar este relatório para comunicar um novo problema no sítio web do projeto.</string>
     <string name="debug_select_items">Seleccione o que gostaria de incluir:</string>
     <string name="error_certificate_invalid">O certificado é inválido ou inacessível.</string>
     <string name="error_network_failed_try_again">Verifique a conexão e tente novamente.</string>
@@ -181,9 +184,9 @@
     <string name="error_book_search_failed">A pesquisa do livro falhou.</string>
     <string name="error_import_failed">Falha na importação</string>
     <string name="error_backup_failed">Falha na cópia de segurança.</string>
-    <string name="warning_book_not_always_found">Nem todos os sites devolveram dados válidos.</string>
+    <string name="warning_book_not_always_found">Nem todos os sítios web devolveram dados válidos.</string>
     <string name="warning_book_not_found">Não é possível localizar o livro especificado.</string>
-    <string name="X_error_network_site_has_problems">O site não está a funcionar conforme o esperado.</string>
+    <string name="X_error_network_site_has_problems">O sítio web não está a funcionar conforme o esperado.</string>
     <string name="error_http_401_authorization_failed">Falha na autorização</string>
     <string name="X_error_authentication_failed">Falha na autenticação</string>
     <string name="error_http_403_site_forbidden">%1$s bloqueou o acesso.</string>
@@ -208,18 +211,18 @@
     <string name="error_unknown_host">Ocorreu um problema de ligação ao serviço em “%1$s”.</string>
     <string name="error_auto_toc_population_failed">Falha no preenchimento automático de títulos.</string>
     <string name="error_no_image_editor">Nenhum editor de imagens encontrado.</string>
-    <string name="error_import_file_not_supported">O ficheiro seleccionado não pode ser importado.</string>
-    <string name="error_file_not_recognized">O ficheiro seleccionado não é reconhecido.</string>
+    <string name="error_import_file_not_supported">O ficheiro selecionado não pode ser importado.</string>
+    <string name="error_file_not_recognized">O ficheiro selecionado não é reconhecido.</string>
     <string name="error_import_archive_invalid">O ficheiro arquivado está corrompido ou é inválido.</string>
     <string name="error_import_failed_for_record">Falha na importação (%1$s)</string>
     <string name="error_import_csv_line">Erro desconhecido na linha %1$d</string>
     <string name="error_import_csv_missing_columns_x">O ficheiro deve conter uma coluna com um dos seguintes nomes: %1$s</string>
     <string name="warning_immediate_global_changes">AVISO: As alterações guardadas são aplicadas instantaneamente a todos os livros.</string>
-    <string name="warning_no_search_data_for_active_sites">Não há dados de pesquisa válidos para os sites ativos.</string>
+    <string name="warning_no_search_data_for_active_sites">Não há dados de pesquisa válidos para os sítios web ativos.</string>
     <string name="warning_x_already_exists">%1$s já existe.</string>
-    <string name="warning_enable_at_least_1_website">Active pelo menos um site para cada categoria.</string>
+    <string name="warning_enable_at_least_1_website">Active pelo menos um sítio web para cada categoria.</string>
     <string name="warning_no_matching_book_found">Nenhum livro correspondente encontrado</string>
-    <string name="warning_requires_site_and_id">Selecione um site e insira um id.</string>
+    <string name="warning_requires_site_and_id">Selecione um sítio web e insira um id.</string>
     <string name="warning_cannot_delete_only_bookshelf">Tens apenas uma estante, por isso não a podes eliminar.</string>
     <string name="warning_already_in_list">Já está na lista!</string>
     <string name="site_description_german">Alemão</string>
@@ -250,7 +253,7 @@
     <string name="warning_if_month_set_year_must_be">Se um mês é especificado, então um ano também deve ser especificado.</string>
     <string name="warning_toc_confirm">Por favor, confirme que estes títulos estão (maioritariamente) corretos.</string>
     <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD?</string>
-    <string name="warning_camera_permission_required">Para escanear códigos de barras ou tirar fotos, é necessário permitir o acesso à câmera.</string>
+    <string name="warning_camera_permission_required">Para ler códigos de barras ou tirar fotos, é necessário permitir o acesso à câmara.</string>
     <string name="vldt_failure">Falha de validação</string>
     <string name="vldt_boolean_expected_for_x">Esperado um valor booleano (0,1,t,f,true,false) para “%1$s”</string>
     <string name="vldt_blank_required_for_x">Valor vazio necessário para “%1$s”</string>
@@ -273,7 +276,7 @@
     <string name="lbl_citation_type">Formato de citação/partilha</string>
     <string name="lbl_citation_type_default">Estou a ler…</string>
     <string name="citation_share_book_im_reading">Estou a ler “%1$s” %2$s por %3$s %4$s</string>
-    <string name="info_tap_on_thumbnail_to_zoom">Toque em uma miniatura para exibir uma imagem maior.</string>
+    <string name="info_tap_on_thumbnail_to_zoom">Toque numa miniatura para exibir uma imagem maior.</string>
     <string name="info_tap_to_move_tag">Toque numa etiqueta para a mover de/para o livro.</string>
     <string name="lbl_add_or_edit_substitution">Adicionar/Editar uma regra de substituição</string>
     <string name="info_substitutions_one_per_line">Adiciona uma substituição por linha ou deixa vazio para remover a tag</string>
@@ -547,7 +550,7 @@
     <string name="lbl_signed">Assinado</string>
     <string name="lbl_title">Título</string>
     <string name="lbl_export_books_option_all">Todos os livros</string>
-    <string name="info_export_report">Foi criado um ficheiro %1$s chamado “%2$s” na pasta seleccionada. Deve copiá-lo manualmente para outro local para proteger os dados no caso de o seu dispositivo ser danificado, perdido ou roubado.</string>
+    <string name="info_export_report">Foi criado um ficheiro %1$s chamado “%2$s” na pasta selecionada. Deve copiá-lo manualmente para outro local para proteger os dados no caso de o seu dispositivo ser danificado, perdido ou roubado.</string>
     <string name="lbl_import_options">Seleccione o que será importado.</string>
     <string name="pt_barcode_scanner">Leitor de códigos de barra</string>
     <string name="pt_scanning_beep_on_valid">Apitar se o ISBN lido é válido</string>
@@ -584,7 +587,7 @@
     <string name="lbl_book_type_collection">Colecção</string>
     <string name="lbl_cover_front">Capa</string>
     <string name="lbl_cover_back">Contracapa</string>
-    <string name="option_info_import_books_option_new_only">Importe apenas livros novos. Quaisquer actualizações de livros existentes serão ignoradas.</string>
+    <string name="option_info_import_books_option_new_only">Importe apenas livros novos. Quaisquer atualizações de livros existentes serão ignoradas.</string>
     <string name="option_import_books_option_new_and_updated">Livros novos e atualizações</string>
     <string name="option_info_import_books_option_new_and_updated">Importar livros novos e sincronizar livros existentes com base na sua última data de modificação.</string>
     <string name="option_import_books_option_all">Todos os livros</string>
@@ -620,7 +623,7 @@
     <string name="lbl_location_long">Localização do livro</string>
     <string name="pt_ui_system_locale">Idioma do sistema</string>
     <string name="pt_ui_theme">Tema</string>
-    <string name="camera_next_action">Acção depois de tirar uma foto</string>
+    <string name="camera_next_action">Acção após tirar uma foto</string>
     <string name="confirm_toc_list_update_with_books_main_author">Substituir o autor em todas as entradas pelo autor principal do livro “%1$s” ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Todos os livros abaixo desta linha têm capas. Procurar outra vez do topo?</string>
     <string name="lbl_scope_of_change">Âmbito de Mudança</string>
@@ -710,19 +713,19 @@
     <string name="lbl_rating">Classificação</string>
     <string name="lbl_description">Descrição</string>
     <string name="lbl_personal_notes">Notas pessoais</string>
-    <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites atualmente selecionados suporta pesquisar por %1$s. Por favor, use o menu do site para ativar sites alternativos ou use um método de pesquisa diferente.</string>
+    <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sítios web atualmente selecionados suporta pesquisar por %1$s. Por favor, use o menu do sítio web para ativar sítios web alternativos ou use um método de pesquisa diferente.</string>
     <string name="tip_booklist_style_groups">Utilize este ecrã para modificar a hierarquia dos grupos para um estilo específico. Utilize a caixa de verificação para selecionar os grupos que serão mostrados na lista e reordene a hierarquia arrastando o ícone no final de cada linha para cima ou para baixo.</string>
-    <string name="X_tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
+    <string name="X_tip_update_fields_from_internet">Os links externos do sítio web só são processados se o sítio web for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
     <string name="confirm_scope_for_change">Mudou:\n“%1$s”\npara\n“%2$s”\n\nComo deseja aplicar esta mudança?\nNota: A escolha “%3$s” será aplicada instantaneamente. Se escolher “%4$s”, então um novo %5$s será criado.</string>
-    <string name="tip_booklist_styles_editor">Utilize este ecrã para personalizar a lista de estilos que serão apresentados no seu menu de estilos predefinido. Use a caixa de seleção para selecionar quais estilos serão mostrados na lista.  Se nenhum estilo for selecionado, serão mostrados todos os estilos. É possível reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Se premir longamente qualquer outro ponto de uma linha, poderá editar ou clonar os detalhes de um estilo específico. Se clonou um estilo e mudou de ideias, terá de o apagar.</string>
-    <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam actualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão “%2$s” primeiro.</string>
+    <string name="tip_booklist_styles_editor">Utilize este ecrã para personalizar a lista de estilos que serão apresentados no seu menu de estilos predefinido. Use a caixa de seleção para selecionar quais estilos serão mostrados na lista. Se nenhum estilo for selecionado, serão mostrados todos os estilos. É possível reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Se premir longamente qualquer outro ponto de uma linha, poderá editar ou clonar os detalhes de um estilo específico. Se clonou um estilo e mudou de ideias, terá de o apagar.</string>
+    <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam atualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão “%2$s” primeiro.</string>
     <string name="tip_booklist_style_defaults">Utilize este ecrã para definir as características predefinidas de todos os estilos. Estas são utilizadas por todos os estilos incorporados e como ponto de partida para qualquer estilo definido pelo utilizador.</string>
     <string name="lbl_genre">Género</string>
     <string name="lbl_original_language">Língua original</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_edition">Edição</string>
     <string name="pt_sort_title_reordered">Ordenar títulos por</string>
-    <string name="lbl_website_address">Endereço do site (URL)</string>
+    <string name="lbl_website_address">Endereço do sítio web (URL)</string>
     <string name="option_fab_add_book_by_external_id">ID do livro do site</string>
     <string name="confirm_create_real_author">“%1$s” ainda não existe. Devem ser criados?</string>
     <string name="confirm_rebuild_orderby_columns">Isto recriará os dados de classificação quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
@@ -782,7 +785,7 @@
     <string name="site_description_shop">Compras</string>
     <string name="info_maintenance_sync_deleted_book_records">Isto irá verificar o histórico de livros eliminados de uma importação anterior de outro dispositivo e sincronizar essas eliminações. Por outras palavras, os livros eliminados no outro dispositivo também serão eliminados neste dispositivo.</string>
     <string name="option_clear_deleted_book_records">Limpar o histórico de livros eliminados</string>
-    <string name="info_maintenance_clear_deleted_book_records">Esta ação limpa o histórico de livros eliminados. Não serão eliminados quaisquer livros actuais.</string>
+    <string name="info_maintenance_clear_deleted_book_records">Esta ação limpa o histórico de livros eliminados. Não serão eliminados quaisquer livros atuais.</string>
     <string name="info_books_deleted">Livros eliminados: %1$d</string>
     <string name="progress_msg_x_deleted">%1$d eliminado</string>
     <string name="action_undo">Desfazer</string>
@@ -835,7 +838,7 @@
     <string name="pe_ui_context_menu_mode_classic">Sempre como um menu de contexto clássico</string>
     <string name="lbl_troubleshooting">Resolução de problemas</string>
     <string name="pt_enable_extra_logging">Ativar o registo adicional</string>
-    <string name="lbl_troubleshooting_warning">Não active as opções abaixo, a menos que o programador da aplicação lho solicite explicitamente.</string>
+    <string name="lbl_troubleshooting_warning">Não ative as opções abaixo, a menos que tal seja explicitamente solicitado pelo programador da aplicação.</string>
     <string name="info_tap_to_select">Toque para selecionar.</string>
     <string name="lbl_tab_alternative_editions_long">Edições alternativas</string>
     <string name="warning_restart_required">É necessário reiniciar a aplicação</string>
@@ -857,12 +860,12 @@
     <string name="lbl_assign_location">Atribuir localização</string>
     <string name="lbl_identifier">Identificador</string>
     <string name="lbl_identifiers">Identificadores</string>
-    <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão actualizados.</string>
+    <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão atualizados.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Fundir etiquetas que apenas diferem em maiúsculas e minúsculas</string>
     <string name="lbl_default">Padrão</string>
     <string name="lbl_default_x">Padrão: %1$s</string>
     <string name="info_partial_date_picker">Toque num mês ou dia previamente selecionado para o anular.</string>
-    <string name="action_restore_default_identifiers">Repor os identificadores predefinidos</string>
+    <string name="action_restore_default_identifiers">Repor los identificadores predefinidos</string>
     <string name="lbl_select_style">Selecione Estilo</string>
     <string name="vldt_blank_or_valid_url_required">É necessário um valor vazio ou um URL válido</string>
     <string name="lbl_book_uri">URL do livro</string>
@@ -872,7 +875,7 @@
     <string name="pt_fetch_author_info">Obter informações sobre o autor</string>
     <string name="lbl_author_role_foreword">Prefácio</string>
     <string name="lbl_image_2">Imagem 3</string>
-    <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
+    <string name="lbl_fastscroller_draghandle">Tamanho do controlo de rolagem</string>
     <string name="lbl_permission_request">Solicitação de permissão</string>
     <string name="pt_barcode_zoom_control">Controle de zoom</string>
     <string name="pt_barcode_sounds">Sons</string>

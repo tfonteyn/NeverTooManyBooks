@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
  * Dialog to create a new loan, edit an existing one or remove it (book is returned).
  * <p>
  * Note the special treatment of the Book's current/original loanee.
- * This is done to minimize trips to the database.
+ * This is done to minimise trips to the database.
  * <p>
  * TODO: we cannot use the PermissionRequester (yet) as it will keep displaying a dialog
  *  after the delegate owner (BottomSheet/FlexDialog) is already gone.
