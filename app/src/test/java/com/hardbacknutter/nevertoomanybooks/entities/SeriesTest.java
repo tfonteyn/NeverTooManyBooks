@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -185,6 +185,9 @@ class SeriesTest {
                 Arguments.of("This is the series title", "",
                              "This is the series title", ""),
                 Arguments.of("This is the series title", "34",
+                             "This is the series title", "34"),
+
+                Arguments.of("This is the series title", "t. 34",
                              "This is the series title", "34"),
 
                 Arguments.of("This is the series title", "iv",

@@ -119,7 +119,7 @@ public class Series
             + "number|num|num.|no|no.|nr|nr.|"
             + "book|bk|bk.|"
             + "volume|vol|vol.|"
-            + "tome|"
+            + "tome|t.|"
             + "part|pt.|"
             + "deel|dl.|"
             // or none
