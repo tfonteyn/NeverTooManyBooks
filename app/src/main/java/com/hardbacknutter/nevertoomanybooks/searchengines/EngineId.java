@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeS
 import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.biblionetgr.BiblionetGrSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bnf.BnfSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
@@ -131,6 +132,7 @@ public enum EngineId
     BertrandPt(BertrandPtSearchEngine.class, true),
     BiblionetGr(BiblionetGrSearchEngine.class, true),
     BibliotecePl(BibliotecePlSearchEngine.class, true),
+    Bnf(BnfSearchEngine.class, true),
     Bol(BolSearchEngine.class, true),
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
@@ -298,6 +300,9 @@ public enum EngineId
                 if (isDutch) {
                     type.addSite(KbNl, true);
                 }
+                if (isFrench) {
+                    type.addSite(Bnf, true);
+                }
 
                 // All sites unless added above
                 type.addSite(Amazon, true);
@@ -334,6 +339,9 @@ public enum EngineId
                 }
                 if (!isDutch) {
                     type.addSite(KbNl, false);
+                }
+                if (!isFrench) {
+                    type.addSite(Bnf, true);
                 }
                 break;
             }

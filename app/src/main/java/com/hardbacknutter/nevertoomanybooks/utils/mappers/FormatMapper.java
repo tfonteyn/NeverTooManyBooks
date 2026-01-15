@@ -63,6 +63,8 @@ public final class FormatMapper
         MAPPINGS.put("couverture rigide", R.string.book_format_hardcover);
         // french - Stripweb
         MAPPINGS.put("relié", R.string.book_format_hardcover);
+        // french - BnF
+        MAPPINGS.put("rel.", R.string.book_format_hardcover);
         // german - Amazon
         MAPPINGS.put("gebundenes buch", R.string.book_format_hardcover);
         // Portuguese
@@ -87,6 +89,8 @@ public final class FormatMapper
         MAPPINGS.put("pbk.", R.string.book_format_paperback);
         // french - BOL
         MAPPINGS.put("broché", R.string.book_format_paperback);
+        // french - BnF
+        MAPPINGS.put("br.", R.string.book_format_paperback);
         // Portuguese
         MAPPINGS.put("capa mole", R.string.book_format_paperback);
         // simplified chinese - Douban

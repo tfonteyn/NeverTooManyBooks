@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -43,6 +43,8 @@
             translatable="false">Βιβλιονετ</string>
     <string name="site_bibliotece_pl"
             translatable="false">Bibliotece.pl</string>
+    <string name="site_bnf_fr"
+            translatable="false">BnF.fr</string>
     <string name="site_bol_com"
             translatable="false">bol.com</string>
     <string name="site_bookfinder"

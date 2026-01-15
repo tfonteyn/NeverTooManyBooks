@@ -71,7 +71,8 @@ public final class AuthorResolverFactory {
                 break;
             }
             case BiblionetGr:
-            case BibliotecePl: {
+            case BibliotecePl:
+            case Bnf: {
                 if (isEnabled(context, engineId, EngineId.Wikidata, false)) {
                     return List.of(WikidataAuthorResolver.create(context, searchEngine));
                 }

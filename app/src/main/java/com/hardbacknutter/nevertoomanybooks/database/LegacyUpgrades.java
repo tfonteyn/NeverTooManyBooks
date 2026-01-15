@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bnf.BnfSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
@@ -68,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearc
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
@@ -456,7 +456,7 @@ public final class LegacyUpgrades {
                 stmt.bindString(1, BedethequeSearchEngine.AUTHOR_URL);
                 stmt.bindString(2, Identifier.SID_BEDETHEQUE);
                 stmt.executeUpdateDelete();
-                stmt.bindString(1, BNF.AUTHOR_URL);
+                stmt.bindString(1, BnfSearchEngine.AUTHOR_URL);
                 stmt.bindString(2, Identifier.SID_BNF);
                 stmt.executeUpdateDelete();
                 stmt.bindString(1, DnbSearchEngine.AUTHOR_URL);
@@ -512,7 +512,7 @@ public final class LegacyUpgrades {
                              @NonNull final SQLiteDatabase db) {
         // fix urls
         v40updateIdentifierBookUrl(db,
-                                   new Pair<>(Identifier.SID_BNF, BNF.BOOK_URL),
+                                   new Pair<>(Identifier.SID_BNF, BnfSearchEngine.BOOK_URL),
                                    new Pair<>(Identifier.SID_PORBASE, Porbase.BOOK_URL));
 
         // fix name

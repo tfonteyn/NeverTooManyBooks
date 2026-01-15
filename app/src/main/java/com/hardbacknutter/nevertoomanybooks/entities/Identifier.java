@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bnf.BnfSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
@@ -55,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearc
 import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Audible;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BL;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BarnesAndNoble;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.DOI;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
@@ -325,9 +325,9 @@ public class Identifier
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
                                "P268",
-                               BNF.SITE_URL,
-                               BNF.BOOK_URL,
-                               BNF.AUTHOR_URL),
+                               BnfSearchEngine.SITE_URL,
+                               BnfSearchEngine.BOOK_URL,
+                               BnfSearchEngine.AUTHOR_URL),
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_british_library),
                                // 2025-12-15: none found
