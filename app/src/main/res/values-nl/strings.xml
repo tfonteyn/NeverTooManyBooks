@@ -45,8 +45,8 @@
         <item quantity="other">%1$d tags</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">Er is %1$d eerder ingevoerde ISBN-code. Wil je ernaar gaan zoeken of moet deze worden verwijderd?</item>
-        <item quantity="other">Er zijn %1$d eerder ingevoerde ISBN-codes. Wil je daarnaar gaan zoeken of moeten ze worden verwijderd?</item>
+        <item quantity="one">Er is %1$d eerder ingevoerde ISBN. Wil je ernaar gaan zoeken of moet deze worden verwijderd?</item>
+        <item quantity="other">Er zijn %1$d eerder ingevoerde ISBN. Wil je daarnaar gaan zoeken of moeten ze worden verwijderd?</item>
     </plurals>
     <string name="quoted">„%1$s”</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
@@ -690,7 +690,7 @@
     <string name="tip_booklist_style_properties">Gebruik dit scherm om de kenmerken van een specifieke stijl in te stellen. Je kunt de naam wijzigen, de groepen bewerken om de hiërarchie te wijzigen en verschillende andere voorkeuren aanpassen om een stijl samen te stellen die je handig vindt.</string>
     <string name="tip_booklist_styles_editor">Gebruik dit scherm om de lijst met stijlen aan te passen die worden weergegeven in je standaard stijlenmenu. Gebruik het selectievakje om te selecteren welke stijlen worden getoond in de lijst.  Als er geen stijlen zijn geselecteerd, worden alle stijlen getoond. Je kunt de hiërarchie wijzigen door het pictogram uiterst rechts van elke rij omhoog of omlaag te slepen. Als je ergens anders in een rij lang drukt, kun je de details van een specifieke stijl bewerken of klonen. Als je een stijl hebt gekloond en van gedachten bent veranderd, moet je deze zelf verwijderen.</string>
     <string name="lbl_tip">Aanwijzing</string>
-    <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN's. Het bestand moet op elke regel één enkel ISBN hebben. De resultaten worden in de wachtrij geplaatst.</string>
+    <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN’s. Het bestand moet op elke regel één enkel ISBN hebben. De resultaten worden in de wachtrij geplaatst.</string>
     <string name="option_reset_all_tips">Herstel aanwijzingen</string>
     <string name="site_description_german">Duits</string>
     <string name="info_tip_reset_done">Aanwijzingen zijn hersteld</string>
@@ -740,7 +740,7 @@
     <string name="warning_nothing_selected">Niets geselecteerd</string>
     <string name="warning_requires_at_least_1_field">Er moet op z’n minst één veld ingevuld zijn.</string>
     <string name="warning_missing_title_or_author">De titel en/of de auteur moeten worden gespecificeerd.</string>
-    <string name="warning_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
+    <string name="warning_requires_isbn">Voor deze actie is een geldig ISBN vereist.</string>
     <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
