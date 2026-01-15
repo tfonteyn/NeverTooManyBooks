@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -54,6 +55,7 @@ public interface ResponseProcessor<T, R> {
      * @throws StorageException The covers directory is not available
      * @throws SAXException     on parser problems if a SAX parser was used
      */
+    @Nullable
     R apply(@NonNull HttpURLConnection con,
             @NonNull T t)
             throws IOException,

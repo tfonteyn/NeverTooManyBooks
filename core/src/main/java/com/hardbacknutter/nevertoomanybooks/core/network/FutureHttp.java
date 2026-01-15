@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -202,7 +202,7 @@ public interface FutureHttp<R> {
      * @throws IOException            on generic/other IO failures
      * @throws StorageException       The covers directory is not available
      */
-    @NonNull
+    @Nullable
     R get(@NonNull String url,
           @NonNull ResponseProcessor<InputStream, R> responseProcessor)
             throws StorageException,

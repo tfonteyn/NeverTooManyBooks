@@ -155,8 +155,11 @@ public class JsoupLoader {
                 }
 
                 document = httpGet.get(requestUrl, this::processResponse);
-                return document;
-
+                // Should never be null, as processResponse is never null
+                // but the 'get' contract is @Nullable.
+                if (document != null) {
+                    return document;
+                }
             } catch (@NonNull final SSLProtocolException | EOFException e) {
                 document = null;
 
@@ -211,7 +214,6 @@ public class JsoupLoader {
             }
         }
 
-        // Shouldn't get here ... flw
         throw new IOException("Failed to get: " + requestUrl);
     }
 
