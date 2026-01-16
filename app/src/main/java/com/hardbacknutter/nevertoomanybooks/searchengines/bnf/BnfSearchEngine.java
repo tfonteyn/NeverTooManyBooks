@@ -402,7 +402,9 @@ public class BnfSearchEngine
                     }
                     case "700":
                     case "701":
-                    case "702": {
+                    case "702":
+                    case "710":
+                    case "711": {
                         processAuthor(zone, text, book);
                         break;
                     }
