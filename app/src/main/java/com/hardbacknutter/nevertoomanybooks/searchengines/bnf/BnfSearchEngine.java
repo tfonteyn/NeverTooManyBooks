@@ -76,7 +76,7 @@ public class BnfSearchEngine
     private static final String PREFERENCE_KEY = "bnf";
     private static final Locale SITE_LOCALE = Locale.FRANCE;
 
-    private static final Pattern PAGES_PATTERN = Pattern.compile(".*\\((\\d*).*?\\).*");
+    private static final Pattern PAGES_PATTERN = Pattern.compile(".*[(\\[](\\d*).*?[)\\]].*");
     private static final Pattern YEAR_PATTERN = Pattern.compile(".*?(\\d\\d\\d\\d).*?");
 
     private static final String URL_SUFFIX_UNIMARC = ".unimarc";
