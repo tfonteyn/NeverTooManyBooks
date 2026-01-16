@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias libs.plugins.android.application
-    alias libs.plugins.android.kotlin
     alias libs.plugins.mannodermaus.junit5
 }
 
@@ -48,13 +47,15 @@ if (project.hasProperty("NeverTooManyBooks.properties")) {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(rootProject.ext.toolChain)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.toolchain.get())
     }
 }
 
 /* https://kotlinlang.org/docs/gradle.html */
 kotlin {
-    jvmToolchain(rootProject.ext.toolChain)
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.toolchain.get()))
+    }
     compilerOptions {
         jvmTarget = JvmTarget.JVM_11
     }
@@ -63,7 +64,7 @@ kotlin {
 /* https://developer.android.com/reference/tools/gradle-api/8.12/com/android/build/api/dsl/package-summary */
 android {
     namespace = "com.hardbacknutter.nevertoomanybooks"
-    compileSdk = rootProject.ext.compileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     signingConfigs {
         release {
@@ -79,8 +80,8 @@ android {
         versionCode = rootProject.ext.applicationVersionCode
         versionName = rootProject.ext.applicationVersionName
 
-        minSdk = rootProject.ext.minSdkVersion
-        targetSdk = rootProject.ext.targetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
 
         // NEWTHINGS: add app language: add the string res file. No other app changes needed.
         def supportedLocales = [
@@ -149,6 +150,12 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+        resValues = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -157,30 +164,11 @@ android {
         coreLibraryDesugaringEnabled = true
     }
 
-    buildFeatures {
-        viewBinding = true
-        buildConfig = true
-        resValues = true
-    }
-
-    // ENHANCE: https://developer.android.com/guide/topics/resources/app-languages#auto-localeconfig
-    //    android {
-    //        androidResources {
-    //            generateLocaleConfig = true
-    //        }
-    //    }
-
     testOptions {
         unitTests {
             includeAndroidResources = true
             // Can be enabled to make Log.x work. OR, use Logger.x
             returnDefaultValues = false
-            all {
-                reports {
-                    junitXml.getRequired().set(true)
-                    html.getRequired().set(false)
-                }
-            }
         }
     }
 
@@ -214,11 +202,17 @@ android {
         includeInBundle = false
     }
 
-    applicationVariants.configureEach {
-        final variant ->
-            variant.outputs.configureEach {
-                outputFileName = "${rootProject.name}-${defaultConfig.versionName}-${variant.name}.apk"
+    // ENHANCE: https://developer.android.com/guide/topics/resources/app-languages#auto-localeconfig
+    //    androidResources {
+    //        generateLocaleConfig = true
+    //    }
+
+    androidComponents {
+        onVariants(selector().all(), { variant ->
+            variant.outputs.each { output ->
+                output.outputFileName.set("${rootProject.name}-${output.versionName.get()}-${variant.name}.apk")
             }
+        })
     }
 
     // This configuration specifies how an app bundle should be split
@@ -234,6 +228,13 @@ android {
 //        abi {
 //            enableSplit = true
 //        }
+    }
+}
+
+tasks.withType(Test).configureEach {
+    reports {
+        junitXml.required.set(true)
+        html.required.set(false)
     }
 }
 

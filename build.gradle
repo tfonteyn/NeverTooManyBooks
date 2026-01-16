@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,6 @@
 plugins {
     alias libs.plugins.android.application apply false
     alias libs.plugins.android.library apply false
-    alias libs.plugins.android.kotlin apply false
     alias libs.plugins.mannodermaus.junit5 apply false
 }
 
@@ -41,14 +40,5 @@ tasks.register("clean", Delete) {
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
     applicationVersionCode = 118
-    applicationVersionName = "7.11.1"
-
-    // JDK used by gradle
-    toolChain = 21
-
-    // Android 8.0
-    minSdkVersion = 26
-    // Android 16
-    targetSdkVersion = 36
-    compileSdkVersion = 36
+    applicationVersionName = "7.12.0"
 }

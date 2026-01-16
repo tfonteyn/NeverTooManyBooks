@@ -1,7 +1,14 @@
 [versions]
-androidGradlePlugin = "8.13.2"
-# https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
-androidKotlinPlugin = "2.3.0"
+# Android 8.0
+minSdk = "26"
+# Android 16
+targetSdk = "36"
+compileSdk = "36"
+
+# JDK used by Gradle
+java-toolchain = "21"
+
+androidGradlePlugin = "9.0.0"
 # https://github.com/mannodermaus/android-junit-framework
 mannodermausPlugin = "2.0.1"
 mannodermausInstrumentation = "2.0.1"
@@ -144,5 +151,4 @@ mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter",
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "androidKotlinPlugin" }
 mannodermaus-junit5 = { id = "de.mannodermaus.android-junit", version.ref = "mannodermausPlugin" }

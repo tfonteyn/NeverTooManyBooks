@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,17 +24,16 @@ plugins {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(rootProject.ext.toolChain)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.toolchain.get())
     }
 }
 
 android {
     namespace = "com.hardbacknutter.fastscroller"
-    compileSdk = rootProject.ext.compileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdk = rootProject.ext.minSdkVersion
-        targetSdk = rootProject.ext.targetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,8 +60,13 @@ android {
         coreLibraryDesugaringEnabled = true
     }
 
+    testOptions {
+        targetSdk = libs.versions.targetSdk.get().toInteger()
+    }
+
     lint {
         abortOnError = false
+        targetSdk = libs.versions.targetSdk.get().toInteger()
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,18 +23,19 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias libs.plugins.android.library
-    alias libs.plugins.android.kotlin
     alias libs.plugins.mannodermaus.junit5
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(rootProject.ext.toolChain)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.toolchain.get())
     }
 }
 
 kotlin {
-    jvmToolchain(rootProject.ext.toolChain)
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.toolchain.get()))
+    }
     compilerOptions {
         jvmTarget = JvmTarget.JVM_11
     }
@@ -42,11 +43,10 @@ kotlin {
 
 android {
     namespace = "com.hardbacknutter.nevertoomanybooks.core"
-    compileSdk = rootProject.ext.compileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdk = rootProject.ext.minSdkVersion
-        targetSdk = rootProject.ext.targetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =
@@ -67,6 +67,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -75,27 +79,26 @@ android {
         coreLibraryDesugaringEnabled = true
     }
 
-    buildFeatures {
-        buildConfig = true
-    }
-
     testOptions {
         unitTests {
             includeAndroidResources = true
             // Can be enabled to make Log.x work. OR, use Logger.x
             returnDefaultValues = false
-            all {
-                reports {
-                    junitXml.required.set(true)
-                    html.required.set(false)
-                }
-            }
         }
+        targetSdk = libs.versions.targetSdk.get().toInteger()
     }
 
     lint {
         // allow command line builds to complete
         abortOnError = false
+        targetSdk = libs.versions.targetSdk.get().toInteger()
+    }
+}
+
+tasks.withType(Test).configureEach {
+    reports {
+        junitXml.required.set(true)
+        html.required.set(false)
     }
 }
 
