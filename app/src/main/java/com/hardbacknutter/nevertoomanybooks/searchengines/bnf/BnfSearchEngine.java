@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -64,7 +66,8 @@ import org.jsoup.select.Elements;
 public class BnfSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByExternalId {
+                   SearchEngine.ByExternalId,
+                   SearchEngine.ByText {
 
     public static final String SITE_URL = "https://www.bnf.fr";
     public static final String BOOK_URL = "https://catalogue.bnf.fr/ark:/12148/%s";
@@ -162,6 +165,28 @@ public class BnfSearchEngine
             throws SearchException, CredentialsException, CoverStorageException {
 
         final String url = getHostUrl() + String.format(SEARCH, validIsbn);
+        return search(context, url, fetchCovers);
+    }
+
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @NonNull final BookSearchCriteria criteria,
+                       @Nullable final String code,
+                       @NonNull final boolean[] fetchCovers)
+            throws SearchException, CredentialsException, CoverStorageException {
+        // Searches are just a string of 'words', we can simply concatenate all available options.
+        final StringJoiner words = criteria.concatTextCriteria(" ");
+        if (code != null && !code.isEmpty()) {
+            words.add(code);
+        }
+
+        // Sanity check
+        if (words.length() == 0) {
+            return new Book();
+        }
+
+        final String url = getHostUrl() + String.format(SEARCH, words);
         return search(context, url, fetchCovers);
     }
 
@@ -392,6 +417,7 @@ public class BnfSearchEngine
             final String lc = s.toLowerCase(SITE_LOCALE);
             if ("br.".equals(lc)
                 || "rel.".equals(lc)) {
+                // The FormatMapper will transform as needed/permitted
                 book.setFormat(s);
             }
         }
@@ -545,7 +571,7 @@ public class BnfSearchEngine
                                          @IntRange(from = 0, to = 0) final int cIdx)
             throws CoverStorageException {
 
-        final Element coversDiv = document.selectFirst("div.notice-detail");
+        final Element coversDiv = document.selectFirst("div.notice-detail > div.visuels");
         if (coversDiv == null) {
             return Optional.empty();
         }
@@ -555,8 +581,11 @@ public class BnfSearchEngine
             return Optional.empty();
         }
 
-        // it's a full url including host
-        final String url = img.attr("src");
+        String url = img.attr("src");
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
         return saveImage(context, url, null, bookId, cIdx, null);
     }
 }
