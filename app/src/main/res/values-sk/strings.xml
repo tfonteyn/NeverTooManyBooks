@@ -118,7 +118,7 @@
     <string name="warning_if_day_set_month_and_year_must_be">Ak je zadaný deň, musí byť zadaný aj mesiac a rok.</string>
     <string name="warning_if_month_set_year_must_be">Ak je zadaný mesiac, musí byť zadaný aj rok.</string>
     <string name="warning_toc_confirm">Potvrďte, že tieto názvy sú (väčšinou) správne.</string>
-    <string name="warning_backup_request">Chcete zálohovať databázu na kartu SD?</string>
+    <string name="warning_backup_request">Chcete zálohovať databázu na SD kartu?</string>
     <string name="warning_restart_required">Je potrebný reštart aplikácie</string>
     <string name="warning_requires_android_x">Vyžaduje Android %1$d alebo vyšší</string>
     <string name="warning_camera_permission_required">Na skenovanie čiarových kódov alebo fotografovanie je potrebný prístup k fotoaparátu.</string>
