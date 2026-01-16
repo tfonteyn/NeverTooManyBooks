@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_bedetheque,site_bibliotece,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_bedetheque,site_bibliotece,site_bnf,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
             tools:ignore="MissingConstraints"
             />
 
@@ -77,12 +77,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:constraint_referenced_ids="site_bedetheque,site_bibliotece,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_bedetheque,site_bibliotece,site_bnf,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0.5"
             app:flow_horizontalGap="@dimen/field_margin_inline"
             app:flow_horizontalStyle="packed"
-            app:flow_maxElementsWrap="5"
+            app:flow_maxElementsWrap="6"
             app:flow_verticalBias="0"
             app:flow_verticalGap="@dimen/field_margin_top"
             app:flow_verticalStyle="packed"
@@ -106,6 +106,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_bibliotece_pl"
+            />
+
+        <RadioButton
+            android:id="@+id/site_bnf"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_bnf_fr"
             />
 
         <RadioButton
