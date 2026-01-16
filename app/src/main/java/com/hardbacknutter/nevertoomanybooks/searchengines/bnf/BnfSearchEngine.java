@@ -37,7 +37,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -81,6 +80,8 @@ public class BnfSearchEngine
     private static final Pattern YEAR_PATTERN = Pattern.compile(".*?(\\d\\d\\d\\d).*?");
 
     private static final String URL_SUFFIX_UNIMARC = ".unimarc";
+
+    private static final String ARK_12148 = "/ark:/12148/";
 
     private static final String SEARCH = "/rechercher.do?motRecherche=%1$s"
                                          + "&critereRecherche=0"
@@ -153,7 +154,7 @@ public class BnfSearchEngine
                                    @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, CoverStorageException {
 
-        final String url = getHostUrl() + '/' + externalId;
+        final String url = getHostUrl() + ARK_12148 + externalId;
         return search(context, url, fetchCovers);
     }
 
@@ -231,8 +232,13 @@ public class BnfSearchEngine
         if (href.isEmpty()) {
             return;
         }
-        // /ark:/12148/cb31667415m
-        final Document p = loadDocument(context, getHostUrl() + href, null);
+
+        String url = href;
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document p = loadDocument(context, url, null);
         search(context, p, fetchCovers, book);
     }
 
@@ -241,15 +247,27 @@ public class BnfSearchEngine
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Book book)
             throws SearchException, CredentialsException, CoverStorageException {
-        // First get the unimarc page to easily parse the book data
-        // https://catalogue.bnf.fr/ark:/12148/cb476077541;jsessionid=9905435942FD1782C64BE0E55D4A173A
+        // First get the unimarc page to easily parse the book data.
+        // We have seen a suffix with the jsessionid; reconstruct as needed
+        // https://catalogue.bnf.fr/ark:/12148/cb476077541;jsessionid=99...
         final String[] location = pubDocument.location().split(";");
         final String url = location[0] + URL_SUFFIX_UNIMARC
                            + (location.length > 1 && location[1] != null
                               ? ";" + location[1]
                               : "");
         final Document unimarcDocument = loadDocument(context, url, null);
-        parse(context, unimarcDocument, book);
+        parse(context, pubDocument, unimarcDocument, fetchCovers, book);
+    }
+
+    @VisibleForTesting
+    public void parse(@NonNull final Context context,
+                      @NonNull final Document pubDocument,
+                      @NonNull final Document unimarcDocument,
+                      @NonNull final boolean[] fetchCovers,
+                      @NonNull final Book book)
+            throws SearchException, CredentialsException, CoverStorageException {
+
+        parseUnimarc(context, unimarcDocument, book);
 
         authorResolverHelper.resolve(context, this, book);
 
@@ -259,22 +277,14 @@ public class BnfSearchEngine
 
         // We should now have the isbn, go parse the cover
         if (fetchCovers[0]) {
-            parseCovers(context, pubDocument, book);
+            parseCovers(context, pubDocument, book.getIsbn(), 0).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
-    @VisibleForTesting
-    public void parseCovers(@NonNull final Context context,
-                            @NonNull final Document document,
-                            @NonNull final Book book)
-            throws CoverStorageException {
-        parseCovers(context, document, book.getIsbn(), 0).ifPresent(
-                fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-    }
-
-    private void parse(@NonNull final Context context,
-                       @NonNull final Document document,
-                       @NonNull final Book book)
+    private void parseUnimarc(@NonNull final Context context,
+                              @NonNull final Document document,
+                              @NonNull final Book book)
             throws SearchException {
 
         final Element element = document.selectFirst("div#ancreNotice");
@@ -282,31 +292,26 @@ public class BnfSearchEngine
             return;
         }
 
-        final Elements select = element.select("div.zone");
-        final List<String> rows = select
-                .stream()
-                .map(Element::text)
-                .collect(Collectors.toList());
+        final Elements zones = element.select("div.zone");
+        if (zones.isEmpty()) {
+            return;
+        }
 
-        parse(context, rows, book);
-    }
-
-    @VisibleForTesting
-    public void parse(@NonNull final Context context,
-                      @NonNull final List<String> rows,
-                      @NonNull final Book book)
-            throws SearchException {
         try {
-            for (final String row : rows) {
-                final String tag = row.substring(0, 3);
-                String s;
+            for (final Element zone : zones) {
+                // For pure text, this is faster;
+                // for special situations, we fall back to the zone element itself.
+                final String text = zone.text();
+
+                final String tag = text.substring(0, 3);
+
                 switch (tag) {
                     case "003": {
                         // Persistent Record Identifier
                         // 003 http://catalogue.bnf.fr/ark:/12148/cb424392165
-                        final int lastIndex = row.lastIndexOf('/');
+                        final int lastIndex = text.lastIndexOf('/');
                         if (lastIndex > 0) {
-                            s = row.substring(lastIndex + 1);
+                            final String s = text.substring(lastIndex + 1);
                             if (!s.isBlank()) {
                                 book.setIdentifierValue(Identifier.SID_BNF, s);
                             }
@@ -314,15 +319,15 @@ public class BnfSearchEngine
                         break;
                     }
                     case "010": {
-                        processIsbnFormatAndPrice(context, row, book);
+                        processIsbnFormatAndPrice(context, text, book);
                         break;
                     }
                     case "011": {
                         // ISSN
                         // Only grab the first should there be multiple
                         if (!book.hasIsbn()) {
-                            final Map<Character, String> fields = parseUnimarcField(row);
-                            s = ISBN.cleanText(fields.get('a'));
+                            final Map<Character, String> fields = parseUnimarcField(text);
+                            final String s = ISBN.cleanText(fields.get('a'));
                             if (!s.isEmpty()) {
                                 book.setIsbn(s);
                             }
@@ -330,16 +335,14 @@ public class BnfSearchEngine
                         break;
                     }
                     case "101": {
-                        // Language
-                        processLanguage(row, book);
+                        processLanguage(text, book);
                         break;
                     }
                     case "200": {
-                        // Title
                         // 200 1. $a Le Dieu du carnage $b Texte imprimé $f Yasmina Reza
                         // $g présentation, notes, questions et après-texte établis...
-                        final Map<Character, String> fields = parseUnimarcField(row);
-                        s = fields.get('a');
+                        final Map<Character, String> fields = parseUnimarcField(text);
+                        final String s = fields.get('a');
                         if (s != null && !s.isEmpty()) {
                             book.setTitle(s);
                         }
@@ -352,30 +355,28 @@ public class BnfSearchEngine
                     }
                     case "210":
                     case "214": {
-                        processPublication(context, row, book);
+                        processPublication(context, text, book);
                         break;
                     }
                     case "215": {
-                        processPhysicalDescription(context, row, book);
+                        processPhysicalDescription(context, text, book);
                         break;
                     }
                     case "225": {
-                        processSeries(row, book);
+                        processSeries(text, book);
                         break;
                     }
                     case "330": {
-                        // Summary
-                        final Map<Character, String> fields = parseUnimarcField(row);
-                        s = fields.get('a');
+                        final Map<Character, String> fields = parseUnimarcField(text);
+                        final String s = fields.get('a');
                         if (s != null && !s.isEmpty()) {
                             book.setDescription(s);
                         }
                         break;
                     }
                     case "454": {
-                        // "454 .1 $t The etymologies\n"
-                        final Map<Character, String> fields = parseUnimarcField(row);
-                        s = fields.get('t');
+                        final Map<Character, String> fields = parseUnimarcField(text);
+                        final String s = fields.get('t');
                         if (s != null && !s.isEmpty()) {
                             book.setTranslatedFromTitle(s);
                         }
@@ -384,7 +385,7 @@ public class BnfSearchEngine
                     case "700":
                     case "701":
                     case "702": {
-                        processAuthor(row, book);
+                        processAuthor(zone, text, book);
                         break;
                     }
                     default:
@@ -463,7 +464,7 @@ public class BnfSearchEngine
         if (s != null && !s.isEmpty()) {
             book.add(Publisher.from(s));
         }
-        // Date of Publication - free text ... sigh
+        // Date of Publication - it's free text ... best effort try to find a year
         // DL 2019
         s = fields.get('d');
         if (s != null && !s.isEmpty()) {
@@ -501,10 +502,11 @@ public class BnfSearchEngine
         }
     }
 
-    private void processAuthor(@NonNull final String row,
+    private void processAuthor(@NonNull final Element zone,
+                               @NonNull final String row,
                                @NonNull final Book book) {
         // 700 .| $3 12066277 $o ISNI0000000120373451 $a Reza $b Yasmina $f 1959-.... $4 070
-        // We're not parsing the dates as author resolving from wikidata will likely get more.
+        // We're not parsing the dates as author resolving from wikidata will likely get more info.
         final Map<Character, String> fields = parseUnimarcField(row);
         final String familyName = fields.get('a');
         if (familyName != null) {
@@ -522,6 +524,30 @@ public class BnfSearchEngine
                 final Integer role = AUTHOR_CODES.get(code);
                 if (role != null) {
                     author.setRole(role);
+                }
+            }
+
+            // The $3 field can have a url, we must parse the zone element.
+            // <div class="zone"><span class="etiquetteMarc">700 </span>
+            // <span class="fixe">.|</span><span class="etiquetteMarc"> $3 </span>
+            // <a href="/ark:/12148/cb12464370b"><span class="fixe">12464370</span></a>
+            // ...
+            final Element a = zone.selectFirst("a");
+            if (a != null) {
+                final String href = a.attr("href");
+                if (href.startsWith(ARK_12148)) {
+                    // we're NOT following the url, we merely want the identifier.
+                    // TODO: can we reconstruct the sid from the pure text data?
+                    // cb12464370b
+                    // cb12702732p
+                    // cb12758508r
+                    // cb13205924m
+                    // Al start with 'cb' but what do the prefixes mean?
+                    // It's not the author role, as the above example line 1+2 is both a "070"
+                    if (href.length() > 14) {
+                        final String sid = href.substring(12);
+                        author.setIdentifierValue(Identifier.SID_BNF, sid);
+                    }
                 }
             }
             book.add(author);
