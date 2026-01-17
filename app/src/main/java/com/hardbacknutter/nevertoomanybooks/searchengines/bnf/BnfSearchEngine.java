@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -63,10 +64,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- *
- * https://www.ifla.org/unimarc-updates/unimarc-bibliographic-format-manual-online-ed/
- * https://www.transition-bibliographique.fr/unimarc/manuel-unimarc-format-bibliographique/
- *
+ * Bibliothèque nationale de France.
+ * <p>
+ * The unimarc format:
+ * <a href="https://www.ifla.org/unimarc-updates/unimarc-bibliographic-format-manual-online-ed/">
+ * English PDF manuel</a>
+ * <a href="https://www.transition-bibliographique.fr/unimarc/manuel-unimarc-format-bibliographique/">
+ * French tags online</a>
  */
 public class BnfSearchEngine
         extends JsoupSearchEngineBase
@@ -82,7 +86,9 @@ public class BnfSearchEngine
     private static final String PREFERENCE_KEY = "bnf";
     private static final Locale SITE_LOCALE = Locale.FRANCE;
 
+    /** The "extend" typically contains the number of pages in {@code () / []} brackets. */
     private static final Pattern PAGES_PATTERN = Pattern.compile(".*[(\\[](\\d*).*?[)\\]].*");
+    /** A 4-digit year. */
     private static final Pattern YEAR_PATTERN = Pattern.compile(".*?(\\d\\d\\d\\d).*?");
 
     private static final String URL_SUFFIX_UNIMARC = ".unimarc";
@@ -96,7 +102,7 @@ public class BnfSearchEngine
 
     private static final Map<String, Integer> AUTHOR_CODES = Map.ofEntries(
             Map.entry("000", AuthorRole.UNKNOWN),
-            // Artist
+            // Artist; overlaps with "440"
             Map.entry("040", AuthorRole.ARTIST),
             // Author
             Map.entry("070", AuthorRole.WRITER),
@@ -110,7 +116,7 @@ public class BnfSearchEngine
             Map.entry("340", AuthorRole.EDITOR),
             // Graphic technician
             Map.entry("410", AuthorRole.COLORIST),
-            // Illustrator; overlap with "040"
+            // Illustrator; overlaps with "040"
             Map.entry("440", AuthorRole.ARTIST),
             // Narrator
             Map.entry("550", AuthorRole.NARRATOR),
@@ -327,31 +333,17 @@ public class BnfSearchEngine
 
                 switch (tag) {
                     case "003": {
-                        // Persistent Record Identifier
+                        // 003 PERSISTENT RECORD IDENTIFIER
                         // 003 http://catalogue.bnf.fr/ark:/12148/cb424392165
-                        final int lastIndex = text.lastIndexOf('/');
-                        if (lastIndex > 0) {
-                            final String s = text.substring(lastIndex + 1);
-                            if (!s.isBlank()) {
-                                book.setIdentifierValue(Identifier.SID_BNF, s);
-                            }
+                        final String sid = parseSid(text);
+                        if (sid != null) {
+                            book.setIdentifierValue(Identifier.SID_BNF, sid);
                         }
                         break;
                     }
-                    case "010": {
-                        processIsbnFormatAndPrice(context, text, book);
-                        break;
-                    }
+                    case "010":
                     case "011": {
-                        // ISSN
-                        // Only grab the first should there be multiple
-                        if (!book.hasIsbn()) {
-                            final Map<Character, String> fields = parseUnimarcField(text);
-                            final String s = ISBN.cleanText(fields.get('a'));
-                            if (!s.isEmpty()) {
-                                book.setIsbn(s);
-                            }
-                        }
+                        processIsbnFormatAndPrice(context, text, book);
                         break;
                     }
                     case "101": {
@@ -359,45 +351,30 @@ public class BnfSearchEngine
                         break;
                     }
                     case "200": {
-                        final Map<Character, String> fields = parseUnimarcField(text);
-                        final String s = fields.get('a');
-                        if (s != null && !s.isEmpty()) {
-                            book.setTitle(s);
-                        }
-                        break;
-                    }
-                    case "205": {
-                        // Edition
-                        // TODO: parse the text? it is wildly varied.
+                        processTitle(text, book);
                         break;
                     }
                     case "210":
                     case "214": {
-                        processPublication(context, text, book);
+                        processPublication(text, book);
                         break;
                     }
                     case "215": {
                         processPhysicalDescription(context, text, book);
                         break;
                     }
-                    case "225": {
+                    case "225":
+                    case "410":
+                    case "461": {
                         processSeries(text, book);
                         break;
                     }
                     case "330": {
-                        final Map<Character, String> fields = parseUnimarcField(text);
-                        final String s = fields.get('a');
-                        if (s != null && !s.isEmpty()) {
-                            book.setDescription(s);
-                        }
+                        processDescription(text, book);
                         break;
                     }
                     case "454": {
-                        final Map<Character, String> fields = parseUnimarcField(text);
-                        final String s = fields.get('t');
-                        if (s != null && !s.isEmpty()) {
-                            book.setTranslatedFromTitle(s);
-                        }
+                        processTranslation(text, book);
                         break;
                     }
                     case "700":
@@ -422,6 +399,9 @@ public class BnfSearchEngine
                         // 181 CODED DATA FIELD: CONTENT FORM
                         // 182 CODED DATA FIELD: MEDIA TYPE
                         //
+                        // 205 EDITION STATEMENT
+                        //     the field values are unstructured
+                        //
                         // 300 GENERAL NOTES
                         //     unstructured
                         // 304 NOTES PERTAINING TO TITLE AND STATEMENT OF RESPONSIBILITY
@@ -441,7 +421,6 @@ public class BnfSearchEngine
                         // 333 USERS/INTENDED AUDIENCE NOTE
                         // 333 .. $a À partir de 3 ans $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
                         //
-                        // 410 (links) SERIES
                         // 423 (links) ISSUED WITH
                         // 461 (links) SET
                         //
@@ -453,6 +432,7 @@ public class BnfSearchEngine
                         //
                         // 606 TOPICAL NAME USED AS SUBJECT
                         // 606 .. $3 11932417 $a Mariage $3 11940497 $x Rites et cérémonies $2 rameau
+                        // -> on a book ABOUT Mariage
                         //
                         // 608 FORM, GENRE OR PHYSICAL CHARACTERISTICS ACCESS POINT
                         // 608 .. $a Bandes dessinées $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
@@ -462,8 +442,7 @@ public class BnfSearchEngine
                         //
                         // 686 OTHER CLASS NUMBERS
                         // 686 .. $a 804 $2 Cadre de classement de la Bibliographie nationale française
-
-
+                        //
                         // 801 ORIGINATING SOURCE
                         // 801 .0 $a FR $b FR-751131015 $c 20100412 $g AFNOR $h FRBNF42177275000000X $2 intermrc
                         //
@@ -480,52 +459,62 @@ public class BnfSearchEngine
         }
     }
 
+    /**
+     * {@code "010"} INTERNATIONAL STANDARD BOOK NUMBER (ISBN).
+     * {@code "011"} ISSN.
+     * <ul>
+     * <li>{@code $a} Number (ISBN or ISSN)</li>
+     * <li>{@code $b} Qualification</li>
+     * <li>{@code $d} Terms of Availability and/or Price</li>
+     * </ul>
+     *
+     * @param context Current context
+     * @param text    to parse
+     * @param book    to update
+     */
     private void processIsbnFormatAndPrice(@NonNull final Context context,
-                                           @NonNull final String row,
+                                           @NonNull final String text,
                                            @NonNull final Book book) {
         String s;
-        // 010 .. $a 978-2-210-75564-2 $b br. $d 5 EUR
-        final Map<Character, String> fields = parseUnimarcField(row);
+        final Map<Character, String> fields = parseUnimarcField(text);
         // Only grab the first should there be multiple
         if (!book.hasIsbn()) {
             s = ISBN.cleanText(fields.get('a'));
             if (!s.isEmpty()) {
                 book.setIsbn(s);
             }
-        }
-        s = fields.get('b');
-        if (s != null && !s.isEmpty()) {
-            // The values are not well-defined?
-            // Limit what we accept:
-            final String lc = s.toLowerCase(SITE_LOCALE);
-            if ("br.".equals(lc)
-                || "rel.".equals(lc)) {
-                // The FormatMapper will transform as needed/permitted
-                book.setFormat(s);
+            s = fields.get('b');
+            if (s != null && !s.isEmpty()) {
+                // The values are not well-defined?
+                // Limit what we accept:
+                final String lc = s.toLowerCase(SITE_LOCALE);
+                if ("br.".equals(lc)
+                    || "rel.".equals(lc)) {
+                    // The FormatMapper will transform as needed/permitted
+                    book.setFormat(s);
+                }
+            }
+            s = fields.get('d');
+            if (s != null && !s.isEmpty()) {
+                addPriceListed(context, SITE_LOCALE, s, null, book);
             }
         }
-        s = fields.get('d');
-        if (s != null && !s.isEmpty()) {
-            addPriceListed(context, SITE_LOCALE, s, null, book);
-        }
     }
 
-    private void processSeries(@NonNull final String row,
-                               @NonNull final Book book) {
-        // 225 |. $a Classiques & contemporains $e collège $v 128
-        final Map<Character, String> fields = parseUnimarcField(row);
-        final String title = fields.get('a');
-        if (title != null && !title.isEmpty()) {
-            final String nr = fields.get('v');
-            book.add(Series.from(title, nr));
-        }
-    }
-
-    private void processLanguage(@NonNull final String row,
+    /**
+     * {@code "101"} LANGUAGE OF THE RESOURCE.
+     * <ul>
+     * <li>{@code $a} Language of Text</li>
+     * <li>{@code $c} Language of Original Work</li>
+     * </ul>
+     *
+     * @param text to parse
+     * @param book to update
+     */
+    private void processLanguage(@NonNull final String text,
                                  @NonNull final Book book) {
         String s;
-        // 101 0. $a fre
-        final Map<Character, String> fields = parseUnimarcField(row);
+        final Map<Character, String> fields = parseUnimarcField(text);
         s = fields.get('a');
         if (s != null && !s.isEmpty()) {
             book.setLanguage(s);
@@ -536,36 +525,92 @@ public class BnfSearchEngine
         }
     }
 
-    private void processPublication(@NonNull final Context context,
-                                    @NonNull final String row,
+    /**
+     * {@code "200"} TITLE AND STATEMENT OF RESPONSIBILITY.
+     * <p>
+     * Typically, we only need {@code $a} for the title.
+     * <ul>
+     * <li>{@code $a} Title Proper</li>
+     * <li>{@code $b} General Material Designation</li>
+     * <li>{@code $e} Other Title Information</li>
+     * <li>{@code $f} First Statement of Responsibility</li>
+     * <li>{@code $g} Subsequent Statement of Responsibility</li>
+     * <li>{@code $h} Number of a Part</li>
+     * <li>{@code $i} Name of a Part</li>
+     * </ul>
+     * Some more complicated/extended examples.
+     * <pre>
+     *   $a Nouvelles
+     *   $b Texte imprimé
+     *   $h Tome 1
+     *   $i 1947-1953
+     *   $f Philip K. Dick
+     *   $g trad. rev. et harmonisées par Hélène Collon
+     *   $g avant-propos d'Emmanuel Carrère
+     * </pre>
+     * <pre>
+     *   $a Afrique noire occidentale et centrale
+     *   $h Tome 3
+     *   $i De la colonisation aux indépendances
+     *   $e 1945-1960
+     *   $h 1
+     *   $i Crise du système colonial et capitalisme monopoliste d'État
+     * </pre>
+     *
+     * @param text to parse
+     * @param book to update
+     */
+    private void processTitle(@NonNull final String text,
+                              @NonNull final Book book) {
+        final Map<Character, String> fields = parseUnimarcField(text);
+        final String s = fields.get('a');
+        if (s != null && !s.isEmpty()) {
+            book.setTitle(s);
+        }
+    }
+
+    /**
+     * {@code "210"}  PUBLICATION, DISTRIBUTION, ETC.,<br/>
+     * {@code "214"} PRODUCTION, PUBLICATION, DISTRIBUTION, MANUFACTURE STATEMENTS.
+     * <ul>
+     * <li>{@code $c} Name of Publisher, Distributor, etc.</li>
+     * <li>{@code $d} Date of Publication, Distribution, etc.</li>
+     * </ul>
+     *
+     * @param text to parse
+     * @param book to update
+     */
+    private void processPublication(@NonNull final String text,
                                     @NonNull final Book book) {
         String s;
-        // 210 .. $a [Paris] $c Magnard $d impr. 2011 $e impr. en Italie
-        final Map<Character, String> fields = parseUnimarcField(row);
+        final Map<Character, String> fields = parseUnimarcField(text);
         s = fields.get('c');
         if (s != null && !s.isEmpty()) {
             book.add(Publisher.from(s));
         }
-        // Date of Publication - it's free text ... best effort try to find a year
-        // DL 2019
-        s = fields.get('d');
-        if (s != null && !s.isEmpty()) {
-            final Matcher matcher = YEAR_PATTERN.matcher(s);
-            if (matcher.find()) {
-                s = matcher.group(1);
-                if (s != null && !s.isEmpty()) {
-                    addPublicationDate(context, SITE_LOCALE, s, book);
-                }
-            }
+        // Date of Publication is free-form ... best effort try to find a year
+        s = parseYear(fields.get('d'));
+        if (s != null) {
+            book.setPublicationDate(s);
         }
     }
 
+    /**
+     * {@code "215"} PHYSICAL DESCRIPTION.
+     * <ul>
+     * <li>{@code $a} Specific Material Designation and Extent</li>
+     * <li>{@code $c} Other Physical Details</li>
+     * </ul>
+     *
+     * @param context Current context
+     * @param text    to parse
+     * @param book    to update
+     */
     private void processPhysicalDescription(@NonNull final Context context,
-                                            @NonNull final String row,
+                                            @NonNull final String text,
                                             @NonNull final Book book) {
         String s;
-        // 215 .. $a 1 vol. (107 p.) $c couv. ill. en coul. $d 18 cm
-        final Map<Character, String> fields = parseUnimarcField(row);
+        final Map<Character, String> fields = parseUnimarcField(text);
         s = fields.get('a');
         if (s != null && !s.isEmpty()) {
             final Matcher matcher = PAGES_PATTERN.matcher(s);
@@ -578,18 +623,117 @@ public class BnfSearchEngine
         }
         s = fields.get('c');
         if (s != null && !s.isEmpty()) {
-            if ("ill. en coul.".equals(s)) {
+            // This is  gamble.... there is no structure.
+            // We simply look for "illustration" and "couleur"
+            if (s.contains("ill") && s.contains("coul")) {
                 book.setColor(context.getString(R.string.book_color_full_color));
             }
         }
     }
 
-    private void processAuthor(@NonNull final Element zone,
-                               @NonNull final String row,
+    /**
+     * {@code "225"} SERIES.
+     * {@code "410"} SERIES.
+     * {@code "461"} SET
+     * <ul>
+     * <li>{@code $a} Title</li>
+     * <li>{@code $v} Volume Designation</li>
+     * </ul>
+     *
+     * @param text to parse
+     * @param book to update
+     */
+    private void processSeries(@NonNull final String text,
+                               @NonNull final Book book) {
+        final Map<Character, String> fields = parseUnimarcField(text);
+        final String title = fields.get('a');
+        if (title != null && !title.isEmpty()) {
+            final String nr = fields.get('v');
+            final Series series = Series.from(title, nr);
+            // As we parse multiple fields for the series,
+            // we need to check if it's not already present.
+            // We could still end up with duplicates though.
+            // Example: "Quarto" and "Quarto (Paris)".
+            if (book.getSeries().stream().noneMatch(series1 -> series1.equals(series))) {
+                book.add(series);
+            }
+        }
+    }
+
+    /**
+     * {@code "330"} SUMMARY OR ABSTRACT.
+     * <ul>
+     * <li>{@code $a} Text of Note</li>
+     * <li>{@code $u} Uniform Resource Identifier (URI) </li>
+     * </ul>
+     *
+     * @param text to parse
+     * @param book to update
+     */
+    private void processDescription(@NonNull final String text,
+                                    @NonNull final Book book) {
+        final Map<Character, String> fields = parseUnimarcField(text);
+        String s = fields.get('a');
+        if (s != null && !s.isEmpty()) {
+            book.setDescription(s);
+        } else {
+            // Only grab the url if there was no text
+            s = fields.get('u');
+            if (s != null && !s.isEmpty()) {
+                book.setDescription(s);
+            }
+        }
+    }
+
+    /**
+     * {@code "454"} TRANSLATION OF.
+     * <ul>
+     * <li>{@code $d} Date of Publication</li>
+     * <li>{@code $t} Title</li>
+     * </ul>
+     *
+     * @param text to parse
+     * @param book to update
+     */
+    private void processTranslation(@NonNull final String text,
+                                    @NonNull final Book book) {
+        final Map<Character, String> fields = parseUnimarcField(text);
+        String s = fields.get('t');
+        if (s != null && !s.isEmpty()) {
+            book.setTranslatedFromTitle(s);
+        }
+        // Date of Publication is free-form ... best effort try to find a year
+        s = parseYear(fields.get('d'));
+        if (s != null) {
+            book.setFirstPublicationDate(s);
+        }
+    }
+
+    /**
+     * {@code "700"} PERSONAL NAME – PRIMARY RESPONSIBILITY.
+     * {@code "701"} PERSONAL NAME – ALTERNATIVE RESPONSIBILITY.
+     * {@code "702"} PERSONAL NAME – SECONDARY RESPONSIBILITY.
+     * {@code "710"} CORPORATE BODY NAME – PRIMARY RESPONSIBILITY.
+     * {@code "711"} CORPORATE BODY NAME – ALTERNATIVE RESPONSIBILITY.
+     * <ul>
+     * <li>{@code $a} Entry Element</li>
+     * <li>{@code $b} Part of Name Other than Entry Element</li>
+     * <li>{@code $o} International Standard Identifier for the Name</li>
+     * <li>{@code $3} Authority Record Identifier or Standard Number </li>
+     * <li>{@code $4} Relator Code</li>
+     * </ul>
+     *
+     * @param html to parse
+     * @param text to parse
+     * @param book to update
+     */
+    private void processAuthor(@NonNull final Element html,
+                               @NonNull final String text,
                                @NonNull final Book book) {
         // 700 .| $3 12066277 $o ISNI0000000120373451 $a Reza $b Yasmina $f 1959-.... $4 070
-        // We're not parsing the dates as author resolving from wikidata will likely get more info.
-        final Map<Character, String> fields = parseUnimarcField(row);
+        // We're not parsing the dates (which are free-form) as resolving
+        // from wikidata will likely get better/more info.
+        final Map<Character, String> fields = parseUnimarcField(text);
         final String familyName = fields.get('a');
         if (familyName != null) {
             final String givenNames = fields.get('b');
@@ -609,51 +753,75 @@ public class BnfSearchEngine
                 }
             }
 
-            // The $3 field can have a url, we must parse the zone element.
+            // The $3 field has a url, we must parse the zone element.
             // <div class="zone"><span class="etiquetteMarc">700 </span>
             // <span class="fixe">.|</span><span class="etiquetteMarc"> $3 </span>
             // <a href="/ark:/12148/cb12464370b"><span class="fixe">12464370</span></a>
-            // ...
-            final Element a = zone.selectFirst("a");
+            //
+            // 12464370 is the "pure" number
+            // cb12464370b is the full number, where 'b' is a checksum
+            // Note we could also just parse the text, prefix "cb" and calculate the checksum.
+            //
+            // see https://arks.org/resources/noid/
+            final Element a = html.selectFirst("a");
             if (a != null) {
-                final String href = a.attr("href");
-                if (href.startsWith(ARK_12148)) {
-                    // we're NOT following the url, we merely want the identifier.
-                    // TODO: can we reconstruct the sid from the pure text data?
-                    // cb12464370b
-                    // cb12702732p
-                    // cb12758508r
-                    // cb13205924m
-                    // Al start with 'cb' but what do the prefixes mean?
-                    // It's not the author role, as the above example line 1+2 is both a "070"
-                    if (href.length() > 14) {
-                        final String sid = href.substring(12);
-                        author.setIdentifierValue(Identifier.SID_BNF, sid);
-                    }
+                final String sid = parseSid(a.attr("href"));
+                if (sid != null) {
+                    author.setIdentifierValue(Identifier.SID_BNF, sid);
                 }
             }
             book.add(author);
         }
     }
 
+    @Nullable
+    private String parseSid(@NonNull final String text) {
+        // Sanity check that this IS an 'ark' url.
+        if (text.contains(ARK_12148)) {
+            final int lastIndex = text.lastIndexOf('/');
+            if (lastIndex > 0) {
+                final String sid = text.substring(lastIndex + 1);
+                if (!sid.isBlank()) {
+                    return sid;
+                }
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("TypeMayBeWeakened")
+    @Nullable
+    private String parseYear(@Nullable final String text) {
+        if (text != null && !text.isEmpty()) {
+            final Matcher matcher = YEAR_PATTERN.matcher(text);
+            if (matcher.find()) {
+                final String s = matcher.group(1);
+                if (s != null && !s.isEmpty()) {
+                    return s;
+                }
+            }
+        }
+        return null;
+    }
+
     @NonNull
-    private Map<Character, String> parseUnimarcField(@NonNull final String row) {
+    private Map<Character, String> parseUnimarcField(@NonNull final String text) {
         // 0..2: 3 digit tag
         // 4: space
         // 5: indicator
         // 6: indicator
         // 7: space
         // 8: first $
-
-        final Map<Character, String> fields = new HashMap<>();
-        final String[] subfields = row.substring(7).split("\\$");
-        for (final String sub : subfields) {
-            // one code, space, data
-            if (sub.length() > 2) {
-                fields.put(sub.charAt(0), sub.substring(1).strip());
-            }
-        }
-        return fields;
+        final String[] fields = text.substring(7).split("\\$");
+        return Arrays.stream(fields)
+                     // Sanity check
+                     .filter(sub -> sub.length() > 2)
+                     .collect(Collectors.toMap(
+                             // Field name
+                             sub -> sub.charAt(0),
+                             // Field value
+                             sub -> sub.substring(1).strip(),
+                             (a, b) -> b));
     }
 
     /**
