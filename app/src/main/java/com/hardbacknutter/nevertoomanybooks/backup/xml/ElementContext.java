@@ -38,7 +38,7 @@ class ElementContext {
     /** Attributes on this tag. */
     @NonNull
     private final Attributes attributes;
-    /** the inner-tag text. */
+    /** The inner-tag text. */
     @NonNull
     private final String text;
     /** the body/text between start and end of the tag. */

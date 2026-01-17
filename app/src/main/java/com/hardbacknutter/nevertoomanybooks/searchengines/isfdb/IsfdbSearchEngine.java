@@ -206,8 +206,8 @@ public class IsfdbSearchEngine
     private static final String LANGUAGE_DEFAULT = "eng";
 
     /**
-     * Format string for searches. A maximum of 6 use's can be sent.
-     * They can be "OR or "AND" combined, but <strongly>not grouped</strongly>.
+     * Format string for searches. A maximum of 6 uses' can be sent.
+     * They can be "OR" or "AND" combined, but <strongly>not grouped</strongly>.
      * We hardcode "AND".
      * <p>
      * param 1: a sequential number, 1..6

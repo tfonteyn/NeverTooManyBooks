@@ -1,6 +1,6 @@
 FIXES:
 
-- #189 improve title/name normalization/transliteration for sorting and duplication detection
+- #189 improve title/name normalisation/transliteration for sorting and duplication detection
 - #187 fix continuous-scanning mode
 - #186 apply barcode setting changes without restart
 - #184 infrequent crash when storing images

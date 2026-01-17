@@ -581,7 +581,7 @@ public class StripWebSearchEngine
         final String family = author.getGivenNames();
         // but only swap when there ARE two names....
         if (!family.isEmpty()) {
-            // and apply a HACK.... for some common flemish names
+            // and apply a HACK.... for some common Flemish names
             // which is NOT exhaustive but better than nothing...
             if ("van".equalsIgnoreCase(family) || "de".equalsIgnoreCase(family)) {
                 author.setName(family + " " + author.getFamilyName(), "");

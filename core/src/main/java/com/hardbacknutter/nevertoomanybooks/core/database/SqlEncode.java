@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
  * <pre>
  *  1. Normally we should use the flag:
  *          {@code Pattern.UNICODE_CHARACTER_CLASS}
- *     but android does not need/support it as it always uses unicode (it says...)
+ *     but android does not need/support it as it always uses Unicode (it says...)
  *     When using {Alnum} Android will NOT use Unicode contradicting the above.
  *
  *  2. Combining explicit Unicode {IsAlphabetic} with 'd' for digits

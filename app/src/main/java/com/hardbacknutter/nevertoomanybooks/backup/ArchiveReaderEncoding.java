@@ -58,7 +58,7 @@ public enum ArchiveReaderEncoding
         implements Parcelable {
     /**
      * The default full backup/restore support.
-     * Will contain all data as json files + all cover images.
+     * Will contain all data as JSON files + all cover images.
      */
     Zip,
 

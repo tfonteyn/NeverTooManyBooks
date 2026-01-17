@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
-    <!-- A book has been lend out. -->
+    <!-- A book has been lent out. -->
     <style name="Flag.LendOut"
            parent="Base.Flag">
         <item name="android:contentDescription">@string/lbl_lend_out</item>

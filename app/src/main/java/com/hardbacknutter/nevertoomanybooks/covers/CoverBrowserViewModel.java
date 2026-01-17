@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -143,7 +143,7 @@ public class CoverBrowserViewModel
      */
     @Nullable
     private String selectedFileAbsolutePath;
-    /** Handles downloading, checking and cleanup of files. */
+    /** Handles downloading, checking and clean-up of files. */
     private FileManager fileManager;
     /** ISBN of book to fetch other editions of. */
     private String baseIsbn;

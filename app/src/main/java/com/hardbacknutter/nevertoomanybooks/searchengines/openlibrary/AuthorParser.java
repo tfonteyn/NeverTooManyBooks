@@ -273,7 +273,7 @@ public class AuthorParser {
         final JSONArray alternateNames = document.optJSONArray("alternate_names");
 
         // We've seen, BUT not used consistently (or at all)...
-        // - "Pseudonym"  for "Isaac Asimov" ?? but his russian name is not even listed
+        // - "Pseudonym"  for "Isaac Asimov" ?? but his Russian name is not even listed
         // - "org" : e.g. ""James S. A. Corey""
         //
         // #search : absent
@@ -289,7 +289,7 @@ public class AuthorParser {
                                         "entityType=" + entityType);
         }
 
-        // ok... best guess/attempt here
+        // OK... best guess/attempt here
         final Author author;
         if (!name.isEmpty()) {
             author = Author.from(name);
@@ -302,10 +302,10 @@ public class AuthorParser {
         // fullerName/alternateNames ...
         // from a couple of examples, it's likely that fullerName is used
         // when "name" is a Pseudonym.
-        // "alternateNames" is rather useless/unreliable in this context..
+        // "alternateNames" is rather useless/unreliable in this context.
         if (!fullerName.isEmpty()) {
             final Author ps = Author.from(fullerName);
-            // there is no OL number, so we can't easily lookup identifiers...
+            // there is no OL number, so we can't easily look up identifiers...
             author.setRealAuthor(ps);
         }
 
@@ -334,7 +334,7 @@ public class AuthorParser {
         final JSONObject remoteIds = document.optJSONObject("remote_ids");
         if (remoteIds != null) {
             for (final String key : remoteIds.keySet()) {
-                // The ISNI key is verified/normalized as needed
+                // The ISNI key is verified/normalised as needed
                 if (Identifier.SID_ISNI.equals(key)) {
                     final String s = remoteIds.optString(Identifier.SID_ISNI);
                     if (!s.isEmpty()) {

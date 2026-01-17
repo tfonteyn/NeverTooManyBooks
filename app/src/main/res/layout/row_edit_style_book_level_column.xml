@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@
     </LinearLayout>
 
     <!-- on purpose between the content and the drag-handle
-        because it's NOT a an action context button,
+        because it's NOT an action context button,
         but a row config button menu. -->
     <com.google.android.material.button.MaterialButton
         android:id="@id/ROW_MENU_BTN"

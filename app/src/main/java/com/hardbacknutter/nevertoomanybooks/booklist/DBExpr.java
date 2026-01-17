@@ -111,7 +111,7 @@ public final class DBExpr {
      * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAMES_AS_CSV}.
      * The order of the returned names will be arbitrary.
      * Sorting the CSV is done from code just before displaying.
-     *
+     * <p>
      * NOT USED YET. Would need to add the OB as well
      */
     private static final DomainExpression PUBLISHER_NAMES_CSV = new DomainExpression(

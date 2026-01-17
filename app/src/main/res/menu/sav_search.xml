@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,7 +22,7 @@
 <!-- Options menu displayed on primary Toolbar. -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!-- Reminder: we let the SearchView handle it's own icons.
+    <!-- Reminder: we let the SearchView handle its own icons.
          The hint text is defined in xml/searchable.xml
     -->
     <item

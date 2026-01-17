@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ public class AuthorWorksContract
 
         // We're cascading the result from a potential book-edit.
         // i.e. if the user, from the AuthorWorks screen opened/edited a book,
-        // then back to AuthorWorks screen, then back.. and we get here
+        // then back to AuthorWorks screen, then back... and we get here
         return Optional.of(EditBookOutput.parseResult(intent));
     }
 

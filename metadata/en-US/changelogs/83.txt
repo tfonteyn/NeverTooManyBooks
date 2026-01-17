@@ -1,5 +1,5 @@
 NEW:
-    #46 Dynamic Colors in Android 12 and above.
+    #46 Dynamic Colours in Android 12 and above.
 FIXES:
     #57 Scroll bar tweak
     #58 a crash specific to (some?) Huawei devices.

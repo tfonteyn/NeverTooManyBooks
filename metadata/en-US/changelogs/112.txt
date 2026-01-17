@@ -1,6 +1,6 @@
 NEW:
 
-- #196 Add "w.bibliotece.pl" as a source for polish language books.
+- #196 Add "w.bibliotece.pl" as a source for Polish language books.
   See the project documentation for extra details.
 - #198 Allow choosing a different bookshelf as a default.
   This finally allows users to delete the "My Books" (also known as "1st") bookshelf.

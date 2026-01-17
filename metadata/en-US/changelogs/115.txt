@@ -1,5 +1,5 @@
 FIXES:
 
-- #211 Crash due to OxygenOS seemingly 'optimizes' floating point numbers in preferences.
+- #211 Crash due to OxygenOS seemingly 'optimises' floating point numbers in preferences.
 
 Most users can skip this update; only relevant for some Android derived OS's.

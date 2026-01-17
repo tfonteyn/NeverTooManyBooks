@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -134,7 +134,7 @@
             4" device: this is 50% of the device width in Portrait.
                The text aside the image will be cramped but mostly readable providing
                not too many extra fields are displayed.
-               For Landscape all is ok.
+               For Landscape all is OK.
           Grid Mode:
             This value is ignored, and we fill the entire width of the display
             with a fixed amount of covers:

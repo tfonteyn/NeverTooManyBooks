@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@
     <!-- Book Description. -->
     <style name="Field.Description" parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
-        <!-- serves as it's own label. -->
+        <!-- serves as its own label. -->
         <item name="android:layout_marginTop">@dimen/field_margin_top</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
