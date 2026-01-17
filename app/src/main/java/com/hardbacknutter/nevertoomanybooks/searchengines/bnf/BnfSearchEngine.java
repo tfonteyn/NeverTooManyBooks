@@ -308,6 +308,82 @@ public class BnfSearchEngine
         }
     }
 
+    /**
+     * Parse the unimarc page document.
+     * <p>
+     * We're skipping these fields which we've encountered.
+     * <pre>
+     * 000
+     * 001 RECORD IDENTIFIER
+     * 020 NATIONAL BIBLIOGRAPHY NUMBER
+     * 039 (bnf) Numéro de notice récupérée d'un ancien système BnF
+     * 073 INTERNATIONAL ARTICLE NUMBER (EAN)
+     * 100 GENERAL PROCESSING DATA
+     * 102 COUNTRY OF PUBLICATION OR PRODUCTION
+     * 105 CODED DATA FIELD: TEXTUAL LANGUAGE MATERIAL, MONOGRAPHIC
+     * 106 CODED DATA FIELD: TEXTUAL RESOURCE – FORM
+     * 181 CODED DATA FIELD: CONTENT FORM
+     * 182 CODED DATA FIELD: MEDIA TYPE
+     *
+     * 205 EDITION STATEMENT
+     *     the field values are unstructured
+     *
+     * 300 GENERAL NOTES
+     *     unstructured
+     * 304 NOTES PERTAINING TO TITLE AND STATEMENT OF RESPONSIBILITY
+     *
+     * 312 NOTES PERTAINING TO RELATED TITLES
+     * 312 .. $a Autre forme de titre : De la colonisation aux indépendances
+     *
+     * 316 NOTE RELATING TO THE ITEM
+     *
+     * 321 EXTERNAL INDEXES/ABSTRACTS/REFERENCES NOTE
+     * 321 .. $a Escales en littérature de jeunesse $c 2013
+     *
+     * 329 (bnf) is used to store critical reviews or analytical commentaries
+     *     provided by La Joie par les livres
+     *     (the BnF’s National Center for Children's Literature).
+     *
+     * 333 USERS/INTENDED AUDIENCE NOTE
+     * 333 .. $a À partir de 3 ans $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
+     *
+     * 423 (links) ISSUED WITH
+     * 461 (links) SET
+     *
+     * 510 PARALLEL TITLE PROPER
+     *
+     * 600 PERSONAL NAME USED AS SUBJECT
+     * 600 .| $3 11908875 $a Jodorowsky $b Alexandro $f 1929-.... $2 rameau
+     * -> on a book ABOUT Jodorowsky
+     *
+     * 606 TOPICAL NAME USED AS SUBJECT
+     * 606 .. $3 11932417 $a Mariage $3 11940497 $x Rites et cérémonies $2 rameau
+     * -> on a book ABOUT Mariage
+     *
+     * 608 FORM, GENRE OR PHYSICAL CHARACTERISTICS ACCESS POINT
+     * 608 .. $a Bandes dessinées $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
+     * 608 .. $a Albums $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
+     *
+     * 676 DEWEY DECIMAL CLASSIFICATION
+     *
+     * 686 OTHER CLASS NUMBERS
+     * 686 .. $a 804 $2 Cadre de classement de la Bibliographie nationale française
+     *
+     * 801 ORIGINATING SOURCE
+     * 801 .0 $a FR $b FR-751131015 $c 20100412 $g AFNOR $h FRBNF42177275000000X $2 intermrc
+     *
+     * 856 ELECTRONIC LOCATION AND ACCESS
+     * 856 .2 $u 164608 $b Première de couverture
+     *
+     * 900+ not defined in the unimarc manual
+     * </pre>
+     *
+     * @param context  Current context
+     * @param document to parse
+     * @param book     to update
+     *
+     * @throws SearchException on generic exceptions (wrapped) during search
+     */
     private void parseUnimarc(@NonNull final Context context,
                               @NonNull final Document document,
                               @NonNull final Book book)
@@ -386,70 +462,6 @@ public class BnfSearchEngine
                         break;
                     }
                     default:
-                        // skipping these fields which we've encountered
-                        // 000
-                        // 001 RECORD IDENTIFIER
-                        // 020 NATIONAL BIBLIOGRAPHY NUMBER
-                        // 039 (bnf) Numéro de notice récupérée d'un ancien système BnF
-                        // 073 INTERNATIONAL ARTICLE NUMBER (EAN)
-                        // 100 GENERAL PROCESSING DATA
-                        // 102 COUNTRY OF PUBLICATION OR PRODUCTION
-                        // 105 CODED DATA FIELD: TEXTUAL LANGUAGE MATERIAL, MONOGRAPHIC
-                        // 106 CODED DATA FIELD: TEXTUAL RESOURCE – FORM
-                        // 181 CODED DATA FIELD: CONTENT FORM
-                        // 182 CODED DATA FIELD: MEDIA TYPE
-                        //
-                        // 205 EDITION STATEMENT
-                        //     the field values are unstructured
-                        //
-                        // 300 GENERAL NOTES
-                        //     unstructured
-                        // 304 NOTES PERTAINING TO TITLE AND STATEMENT OF RESPONSIBILITY
-                        //
-                        // 312 NOTES PERTAINING TO RELATED TITLES
-                        // 312 .. $a Autre forme de titre : De la colonisation aux indépendances
-                        //
-                        // 316 NOTE RELATING TO THE ITEM
-                        //
-                        // 321 EXTERNAL INDEXES/ABSTRACTS/REFERENCES NOTE
-                        // 321 .. $a Escales en littérature de jeunesse $c 2013
-                        //
-                        // 329 (bnf) is used to store critical reviews or analytical commentaries
-                        //     provided by La Joie par les livres
-                        //     (the BnF’s National Center for Children's Literature).
-                        //
-                        // 333 USERS/INTENDED AUDIENCE NOTE
-                        // 333 .. $a À partir de 3 ans $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
-                        //
-                        // 423 (links) ISSUED WITH
-                        // 461 (links) SET
-                        //
-                        // 510 PARALLEL TITLE PROPER
-                        //
-                        // 600 PERSONAL NAME USED AS SUBJECT
-                        // 600 .| $3 11908875 $a Jodorowsky $b Alexandro $f 1929-.... $2 rameau
-                        // -> on a book ABOUT Jodorowsky
-                        //
-                        // 606 TOPICAL NAME USED AS SUBJECT
-                        // 606 .. $3 11932417 $a Mariage $3 11940497 $x Rites et cérémonies $2 rameau
-                        // -> on a book ABOUT Mariage
-                        //
-                        // 608 FORM, GENRE OR PHYSICAL CHARACTERISTICS ACCESS POINT
-                        // 608 .. $a Bandes dessinées $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
-                        // 608 .. $a Albums $2 CNLJ $k Avis critique donné par le Centre national de la littérature pour la jeunesse
-                        //
-                        // 676 DEWEY DECIMAL CLASSIFICATION
-                        //
-                        // 686 OTHER CLASS NUMBERS
-                        // 686 .. $a 804 $2 Cadre de classement de la Bibliographie nationale française
-                        //
-                        // 801 ORIGINATING SOURCE
-                        // 801 .0 $a FR $b FR-751131015 $c 20100412 $g AFNOR $h FRBNF42177275000000X $2 intermrc
-                        //
-                        // 856 ELECTRONIC LOCATION AND ACCESS
-                        // 856 .2 $u 164608 $b Première de couverture
-                        //
-                        // 900+ not defined in the unimarc manual
                         break;
                 }
             }
@@ -623,7 +635,7 @@ public class BnfSearchEngine
         }
         s = fields.get('c');
         if (s != null && !s.isEmpty()) {
-            // This is  gamble.... there is no structure.
+            // This is gamble.... there is no structure.
             // We simply look for "illustration" and "couleur"
             if (s.contains("ill") && s.contains("coul")) {
                 book.setColor(context.getString(R.string.book_color_full_color));
