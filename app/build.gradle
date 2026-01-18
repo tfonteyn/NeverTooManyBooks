@@ -210,7 +210,8 @@ android {
     androidComponents {
         onVariants(selector().all(), { variant ->
             variant.outputs.each { output ->
-                output.outputFileName.set("${rootProject.name}-${output.versionName.get()}-${variant.name}.apk")
+                def name = "${rootProject.name}-${output.versionName.get()}.apk"
+                output.outputFileName.set(name)
             }
         })
     }
