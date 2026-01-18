@@ -232,13 +232,6 @@ android {
     }
 }
 
-tasks.withType(Test).configureEach {
-    reports {
-        junitXml.required.set(true)
-        html.required.set(false)
-    }
-}
-
 dependencies {
     implementation project(path: ":core")
     implementation project(path: ":fastscroller")
