@@ -676,7 +676,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Pokud jsou knihy zobrazeny ve všech sériích, do kterých kniha patří, mohou se v seznamu objevit vícekrát. Odstranění jedné z těchto knih má za následek odstranění všech výtisků ze seznamu.</string>
     <string name="X_tip_update_fields_from_internet">Externí odkazy na stránky jsou zpracovány pouze v případě, že je web skutečně kontaktován. Výsledkem je, že nabídka „Prohlédnout na…“ také ukáže pouze to, co je k dispozici.</string>
     <string name="tip_view_only_help">Můžete posouvat doleva nebo doprava a přejít k dalším knihám.</string>
-    <string name="info_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
+    <string name="info_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkali s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d knih, v %2$d záznamech</string>
     <string name="info_export_books_option_since_last_full_backup">Všechny knihy byly přidány nebo aktualizovány od poslední úplné zálohy.</string>
     <string name="option_info_import_books_option_all">Importujte nové knihy a přepište existující knihy. Použijte k obnovení zálohy.</string>
@@ -775,7 +775,7 @@
     <string name="error_site_access_blocked">Přístup byl zablokován na webových stránkách.</string>
     <string name="pt_scan_mode">Režim skenování</string>
     <string name="option_sync_deleted_book_records">Synchronizace odstraněných knih</string>
-    <string name="info_site_search_field_optional">Nepovinné. Není podporováno všemi webovými stránkami.</string>
+    <string name="info_site_search_field_optional">Volitelné. Není podporováno všemi webovými stránkami.</string>
     <string name="site_description_catalog">Katalog</string>
     <string name="site_description_dutch_and_more">Holandština a další</string>
     <string name="site_description_eu_comics">Evropské komiksy</string>
