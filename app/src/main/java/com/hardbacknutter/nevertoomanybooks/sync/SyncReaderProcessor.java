@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -537,14 +538,14 @@ public class SyncReaderProcessor {
          *
          * @param context          Current context
          * @param preferencePrefix for the site/fields
-         * @param realNumberParser to use for number parsing
+         * @param locales          to use
          */
         public Builder(@NonNull final Context context,
                        @NonNull final String preferencePrefix,
-                       @NonNull final RealNumberParser realNumberParser) {
+                       @NonNull final List<Locale> locales) {
             this.preferencePrefix = preferencePrefix;
             prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            this.realNumberParser = realNumberParser;
+            this.realNumberParser = new RealNumberParser(locales);
         }
 
         /**

@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
@@ -189,9 +188,8 @@ public class SearchBookUpdatesViewModel
     private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PREFERENCE_PREFIX, realNumberParser);
+                new SyncReaderProcessor.Builder(context, SYNC_PREFERENCE_PREFIX, allLocales);
 
         // Image fields will be at the top of the list.
         final String[] coverDesc = context.getResources()
@@ -205,7 +203,7 @@ public class SearchBookUpdatesViewModel
 
         // Note how we do NOT add DBKey.RATING
         // Rating is taken when a book is initially added to the app,
-        // it is then assumed to user may update it with their personal rating.
+        // it is then assumed the user may update it with their personal rating.
         // Hence, we NEVER fetch it from the sites again.
 
         map.put(context.getString(R.string.lbl_color),

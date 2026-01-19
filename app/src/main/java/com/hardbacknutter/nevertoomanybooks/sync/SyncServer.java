@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -135,11 +134,10 @@ public enum SyncServer
                 @NonNull final Context context) {
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-            final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
             final SyncReaderProcessor.Builder builder =
                     new SyncReaderProcessor.Builder(context,
                                                     getSyncPreferencePrefix(),
-                                                    realNumberParser);
+                                                    allLocales);
 
             // Cover fields will be at the top of the list.
             // There is only 1 image supported by Calibre
@@ -265,11 +263,10 @@ public enum SyncServer
             final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-            final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
             final SyncReaderProcessor.Builder builder =
                     new SyncReaderProcessor.Builder(context,
                                                     getSyncPreferencePrefix(),
-                                                    realNumberParser);
+                                                    allLocales);
 
             // Cover fields will be at the top of the list.
             // There are only 2 images supported by this site.
