@@ -185,12 +185,25 @@ public class SearchEngineConfig {
         }
     }
 
+    /**
+     * Whether all {@code HTTP GET} calls should be logged.
+     * This is a configuration setting the user can change.
+     *
+     * @return flag
+     *
+     * @see #setLogHttpGetRequests(boolean)
+     */
     public boolean isLogHttpGetRequests() {
         return ServiceLocator.getInstance().getSharedPreferences().getBoolean(
                 engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
                 false);
     }
 
+    /**
+     * For tests only. The configuration is set by the user from a preference screen.
+     *
+     * @param flag value
+     */
     @VisibleForTesting
     public void setLogHttpGetRequests(final boolean flag) {
         ServiceLocator.getInstance().getSharedPreferences().edit().putBoolean(
