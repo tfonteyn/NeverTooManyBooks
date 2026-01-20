@@ -1377,6 +1377,11 @@ public class EditBookViewModel
 
         fields.add(new CompoundButtonField(fragmentId, R.id.btn_auto_update_allowed,
                                            DBKey.AUTO_UPDATE));
+
+        // NEWTHINGS: adding a new search engine:
+        //   optional: external id KEY add a field; don't forget to add to the layout as well
+        //  Keep them alphabetic.
+
         // We're no longer using the LongNumberFormatter as we don't
         // need the extraction to a 'long'. Identifiers are now all 'String' values.
         // Instead, use a custom {@link Identifier#TYPE_LONG} formatter
