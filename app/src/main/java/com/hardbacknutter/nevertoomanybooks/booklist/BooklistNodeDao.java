@@ -890,7 +890,7 @@ public class BooklistNodeDao {
                 + ')';
 
         // GitHub #209: aliases in the target table of UPDATE (and DELETE)
-        // require SQLite 3.33.0 => Android 12 (API 31).
+        // require SQLite 3.33.0 => Android 14 (API 34).
 //        private static final String ADJUST_VISIBILITY_UPDATE2 =
 //                UPDATE_ + /* listTable.getName() */ "%s" + " AS target"
 //                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"

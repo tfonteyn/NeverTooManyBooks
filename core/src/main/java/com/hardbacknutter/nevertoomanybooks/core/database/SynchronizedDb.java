@@ -52,15 +52,14 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
  * package-summary</a>
  * <p>
- * Android 15,  API 35    3.44.3
- * Android 14,  API 34    3.39.2
- * Android 12,  API 31    3.32.2
- * Android 11,  API 30    3.28.0   Android 11 is required for:
- * UPSERT support
- * UPDATE OR REPLACE
- * Android 9,   API 28    3.22.0
- * Android 8.1, API 27    3.19.4
- * Android 8.0, API 26*   3.18.2
+ * Android 15,  API 35    3.44
+ * Android 14,  API 34    3.39
+ * Android 13,  API 33    3.32
+ * Android 12,  API 31    3.32
+ * Android 11,  API 30    3.28  required for: UPSERT support; UPDATE OR REPLACE
+ * Android 9,   API 28    3.22
+ * Android 8.1, API 27    3.19
+ * Android 8.0, API 26*   3.18
  * <p>
  * But some device manufacturers include different versions of SQLite on their devices.
  */
