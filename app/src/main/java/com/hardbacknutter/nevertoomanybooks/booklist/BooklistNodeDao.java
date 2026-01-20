@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
+import android.os.Build;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -683,8 +684,17 @@ public class BooklistNodeDao {
 
         final int rowsAffected;
         final String tableName = listTable.getName();
-        try (SynchronizedStatement stmt = db.compileStatement(
-                String.format(Sql.ADJUST_VISIBILITY_UPDATE, tableName, tableName, tableName))) {
+        final String sql;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // SQLite 3.33.0 can go faster but requires Android 14
+            sql = String.format(Sql.ADJUST_VISIBILITY_UPDATE_V34,
+                                tableName, tableName, tableName, tableName);
+        } else {
+            sql = String.format(Sql.ADJUST_VISIBILITY_UPDATE,
+                                tableName, tableName, tableName);
+        }
+
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             rowsAffected = stmt.executeUpdateDelete();
         }
 
@@ -721,17 +731,16 @@ public class BooklistNodeDao {
 
     private static final class Sql {
 
-        private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
-        private static final String SELECT_ = "SELECT ";
-        private static final String _FROM_ = " FROM ";
-        private static final String _WHERE_ = " WHERE ";
-        private static final String _AND_ = " AND ";
-        private static final String _ORDER_BY_ = " ORDER BY ";
-
-        private static final String UPDATE_ = "UPDATE ";
-        private static final String _SET_ = " SET ";
-
         private static final String DELETE_FROM_ = "DELETE FROM ";
+        private static final String SELECT_ = "SELECT ";
+        private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
+        private static final String UPDATE_ = "UPDATE ";
+        private static final String _AND_ = " AND ";
+        private static final String _FROM_ = " FROM ";
+        private static final String _LIKE_ = " LIKE ";
+        private static final String _ORDER_BY_ = " ORDER BY ";
+        private static final String _SET_ = " SET ";
+        private static final String _WHERE_ = " WHERE ";
 
         /**
          * {@link #saveAllNodes}.
@@ -835,31 +844,32 @@ public class BooklistNodeDao {
                 // Groups only - Don't do books
                 + _AND_ + DBKey.BL_NODE.LEVEL + " BETWEEN 2 AND ?";
 
-        private static final String ADJUST_VISIBILITY_UPDATE_LOOPING =
-                UPDATE_ + /* listTable.getName() */ "%s"
-                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
-                + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
-                + _AND_ + DBKey.BL_NODE.LEVEL + "=?"
-                + _AND_ + DBKey.BL_NODE.KEY + " LIKE ?";
-
         private static final String ADJUST_VISIBILITY_TMP_TABLE = "tmp_prefixes";
         private static final String ADJUST_VISIBILITY_DROP_TMP_PREFIXES =
-                "DROP TABLE IF EXISTS " + ADJUST_VISIBILITY_TMP_TABLE + ";";
+                "DROP TABLE IF EXISTS " + ADJUST_VISIBILITY_TMP_TABLE;
         private static final String ADJUST_VISIBILITY_CREATE_TMP_PREFIXES =
                 "CREATE TEMP TABLE " + ADJUST_VISIBILITY_TMP_TABLE
-                + " (level INTEGER, prefix TEXT);";
+                + " (level INTEGER, prefix TEXT)";
         private static final String ADJUST_VISIBILITY_INSERT_TMP_PREFIXES =
                 "INSERT INTO " + ADJUST_VISIBILITY_TMP_TABLE
-                + "(level, prefix) VALUES (?, ?);";
+                + "(level, prefix) VALUES (?, ?)";
 
+        /** %s: {@code listTable.getName()}. */
+        private static final String ADJUST_VISIBILITY_UPDATE_V34 =
+                UPDATE_ + "%s" + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
+                + _FROM_ + ADJUST_VISIBILITY_TMP_TABLE + " AS p "
+                + _WHERE_ + "%s." + DBKey.BL_NODE.VISIBLE + "=0 "
+                + _AND_ + "%s." + DBKey.BL_NODE.LEVEL + "=p.level"
+                + _AND_ + "%s." + DBKey.BL_NODE.KEY + _LIKE_ + "p.prefix";
+
+        /** %s: {@code listTable.getName()}. */
         private static final String ADJUST_VISIBILITY_UPDATE =
-                UPDATE_ + /* listTable.getName() */ "%s"
-                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
+                UPDATE_ + "%s" + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
                 + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
                 + " AND EXISTS ("
                 + SELECT_ + '1' + _FROM_ + ADJUST_VISIBILITY_TMP_TABLE + " AS p"
-                + _WHERE_ + "p.level=%s." + DBKey.BL_NODE.LEVEL
-                + _AND_ + "%s." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
+                + _WHERE_ + "%s." + DBKey.BL_NODE.LEVEL + "=p.level"
+                + _AND_ + "%s." + DBKey.BL_NODE.KEY + _LIKE_ + "p.prefix"
                 + ')';
     }
 }
