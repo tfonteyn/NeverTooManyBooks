@@ -136,6 +136,7 @@ class BooklistBuilder {
     private static final String _BEGIN_ = " BEGIN ";
     private static final String _FROM_ = " FROM ";
     private static final String _GROUP_BY_ = " GROUP BY ";
+    private static final String _IS_ = " IS ";
     private static final String _LIMIT_1 = " LIMIT 1";
     private static final String _ON_ = " ON ";
     private static final String _ORDER_BY_ = " ORDER BY ";
@@ -1332,8 +1333,9 @@ class BooklistBuilder {
     private String createKeyEquality(@NonNull final List<String> keyColumns,
                                      @SuppressWarnings("SameParameterValue")
                                      @NonNull final String table) {
+        // Using 'IS' allows comparing with null values
         return keyColumns.stream()
-                         .map(k -> listTable.getName() + '.' + k + "=" + table + "." + k)
+                         .map(k -> listTable.getName() + '.' + k + _IS_ + table + "." + k)
                          .collect(Collectors.joining(_AND_));
     }
 }
