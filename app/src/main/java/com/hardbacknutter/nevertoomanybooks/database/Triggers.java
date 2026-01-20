@@ -125,10 +125,12 @@ final class Triggers {
                + UPDATE_BOOKS_SET
                + " WHERE " + DBKey.PK_ID + " IN "
                // actual books by this Author
-               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
-               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ')'
+               + "(SELECT " + DBKey.FK_BOOK
+               + " FROM " + TBL_BOOK_AUTHOR.getName()
+               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");"
 
-               + " OR " + DBKey.PK_ID + " IN "
+               + UPDATE_BOOKS_SET
+               + " WHERE " + DBKey.PK_ID + " IN "
                // books with entries in anthologies by this Author
                + "(SELECT " + DBKey.FK_BOOK
                + " FROM " + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
