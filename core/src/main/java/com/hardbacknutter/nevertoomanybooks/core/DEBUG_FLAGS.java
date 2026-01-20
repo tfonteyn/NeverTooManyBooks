@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,9 +25,6 @@ public final class DEBUG_FLAGS {
     public static final boolean DEBUG_EXEC_SQL = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker}. */
     public static final boolean NETWORK_CHECKER = false;
-
-    /** Window insets. */
-    public static final boolean INSETS = false;
 
     private DEBUG_FLAGS() {
     }
