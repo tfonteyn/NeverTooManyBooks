@@ -1,0 +1,9 @@
+NEW:
+- #219: Added https://bnf.fr for French books.
+- #221: add the "read" flag to the fields the user can set to hide/show.
+- Performance improvements:
+  - building the book list
+
+FIXES:
+- #223: some dialogs during editing of a book were overlapping the device statusbar
+- #225: series number sorting on the book-level
