@@ -67,13 +67,13 @@ public class SearchBookByExternalIdFragment
      */
     private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.ofEntries(
             Map.entry(R.id.site_bedetheque, EngineId.Bedetheque),
-            Map.entry(R.id.site_bibliotece, EngineId.BibliotecePl),
-            Map.entry(R.id.site_bnf, EngineId.Bnf),
+            Map.entry(R.id.site_bibliotece_pl, EngineId.BibliotecePl),
+            Map.entry(R.id.site_bnf_fr, EngineId.Bnf),
             Map.entry(R.id.site_databaze_knih, EngineId.DatabazeKnih),
-            Map.entry(R.id.site_dnb, EngineId.Dnb),
+            Map.entry(R.id.site_dnb_de, EngineId.Dnb),
             Map.entry(R.id.site_goodreads, EngineId.Goodreads),
             Map.entry(R.id.site_isfdb, EngineId.Isfdb),
-            Map.entry(R.id.site_kbnl, EngineId.KbNl),
+            Map.entry(R.id.site_kb_nl, EngineId.KbNl),
             Map.entry(R.id.site_last_dodo_nl, EngineId.LastDodoNl),
             Map.entry(R.id.site_open_library, EngineId.OpenLibrary),
             Map.entry(R.id.site_strip_info_be, EngineId.StripInfoBe)
