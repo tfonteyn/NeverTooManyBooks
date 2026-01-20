@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -43,12 +43,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:constraint_referenced_ids="lbl_site_bedetheque,lbl_site_databaze_knih,lbl_site_dnb_de,lbl_site_goodreads,lbl_site_isfdb,lbl_site_kbnl,lbl_site_last_dodo_nl,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be"
+            app:constraint_referenced_ids="lbl_site_bedetheque,lbl_site_bibliotece_pl,lbl_site_bnf_fr,lbl_site_databaze_knih,lbl_site_dnb_de,lbl_site_goodreads,lbl_site_isfdb,lbl_site_kb_nl,lbl_site_last_dodo_nl,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0.5"
             app:flow_horizontalGap="2dp"
             app:flow_horizontalStyle="packed"
-            app:flow_maxElementsWrap="5"
+            app:flow_maxElementsWrap="6"
             app:flow_verticalBias="0"
             app:flow_verticalGap="@dimen/field_margin_top"
             app:flow_verticalStyle="packed"
@@ -83,6 +83,38 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_bibliotece_pl"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_bibliotece_pl"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_bibliotece_pl"
+                style="@style/TIE.ExternalId.Number"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="cb11926763j"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_bnf_fr"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_bnf_fr"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_bnf_fr"
+                style="@style/TIE.ExternalId.Text"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="cb11926763j"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_databaze_knih"
             style="@style/TIL.Text.ExternalId"
             android:hint="@string/site_databazeknih_cz"
@@ -105,7 +137,7 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/site_dnb"
+                android:id="@+id/site_dnb_de"
                 style="@style/TIE.ExternalId.Text"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
@@ -147,13 +179,13 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_site_kbnl"
+            android:id="@+id/lbl_site_kb_nl"
             style="@style/TIL.Text.ExternalId"
             android:hint="@string/site_kb_nl"
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/site_kbnl"
+                android:id="@+id/site_kb_nl"
                 style="@style/TIE.ExternalId.Number"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
