@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
@@ -1318,12 +1319,20 @@ class BooklistBuilder {
 
         // Run the actual update on the list table.
         final String whereKeys = createKeyEquality(keyColumns, taSums);
-        final String s =
-                UPDATE_ + listTable.getName() + _SET_ + DBKey.FK_BOOK + '='
+        final String s;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // SQLite 3.33.0 can go faster but requires Android 14
+            s = UPDATE_ + listTable.getName()
+                + _SET_ + DBKey.FK_BOOK + '=' + taSums + '.' + caSum
+                + _FROM_ + taSums
+                + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + (level - 1) + _AND_ + whereKeys;
+        } else {
+            s = UPDATE_ + listTable.getName() + _SET_ + DBKey.FK_BOOK + '='
                 + '(' + SELECT_ + caSum + _FROM_ + taSums + _WHERE_ + whereKeys + ')'
                 + _WHERE_ + DBKey.BL_NODE.LEVEL + '=' + (level - 1)
                 + _AND_
                 + "EXISTS (" + SELECT_ + '1' + _FROM_ + taSums + _WHERE_ + whereKeys + ')';
+        }
         db.execSQL(s);
         // No longer needed
         db.execSQL(DROP_TABLE_IF_EXISTS_ + taSums);
