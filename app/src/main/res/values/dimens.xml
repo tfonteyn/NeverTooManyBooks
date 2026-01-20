@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -195,6 +195,8 @@
     <integer name="span_count_edit_tag_names">1</integer>
     <integer name="span_count_edit_tag_mappings">1</integer>
     <integer name="span_count_syncfield_config">1</integer>
+
+    <integer name="edit_book_sid_flow_max_elements_wrap">6</integer>
 
     <!-- See the tab adapter used in EditBookFragment -->
     <bool name="combine_book_edit_tabs">false</bool>

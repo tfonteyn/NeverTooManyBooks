@@ -31,6 +31,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_body"
         style="@style/FragmentRoot.ConstraintLayout"
+        android:layout_height="wrap_content"
         >
 
         <!-- REMINDER: set the last one to
@@ -42,17 +43,18 @@
             android:id="@+id/flow_site_ids"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             app:constraint_referenced_ids="lbl_site_bedetheque,lbl_site_bibliotece_pl,lbl_site_bnf_fr,lbl_site_databaze_knih,lbl_site_dnb_de,lbl_site_goodreads,lbl_site_isfdb,lbl_site_kb_nl,lbl_site_last_dodo_nl,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0.5"
             app:flow_horizontalGap="2dp"
             app:flow_horizontalStyle="packed"
-            app:flow_maxElementsWrap="6"
+            app:flow_maxElementsWrap="@integer/edit_book_sid_flow_max_elements_wrap"
             app:flow_verticalBias="0"
             app:flow_verticalGap="@dimen/field_margin_top"
             app:flow_verticalStyle="packed"
             app:flow_wrapMode="aligned"
+            app:layout_constraintBottom_toTopOf="@id/barrier_ext_id"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -266,6 +268,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toTopOf="@id/btn_auto_update_allowed"
             app:layout_constraintEnd_toEndOf="@id/flow_site_ids"
             app:layout_constraintStart_toStartOf="@id/flow_site_ids"
             app:layout_constraintTop_toBottomOf="@id/flow_site_ids"
