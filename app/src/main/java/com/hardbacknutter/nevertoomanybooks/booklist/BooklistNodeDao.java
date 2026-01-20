@@ -667,12 +667,28 @@ public class BooklistNodeDao {
 
         final Collection<Pair<Integer, String>> keyPrefixes = fetchPrefixes();
 
-        // Plain dumb speed test in nanos:
-        //  temp table: 24484512
-        //  java      : 81680932
+        // Paranoia...
+        db.execSQL(Sql.ADJUST_VISIBILITY_DROP_TMP_PREFIXES);
+        db.execSQL(Sql.ADJUST_VISIBILITY_CREATE_TMP_PREFIXES);
 
-        // final int rowsAffected = updateBranchesJava(keyPrefixes);
-        final int rowsAffected = updateBranchesTempTable(keyPrefixes);
+        try (SynchronizedStatement insert = db.compileStatement(
+                Sql.ADJUST_VISIBILITY_INSERT_TMP_PREFIXES)) {
+
+            for (final Pair<Integer, String> p : keyPrefixes) {
+                insert.bindLong(1, p.first);
+                insert.bindString(2, p.second);
+                insert.executeInsert();
+            }
+        }
+
+        final int rowsAffected;
+        final String tableName = listTable.getName();
+        try (SynchronizedStatement stmt = db.compileStatement(
+                String.format(Sql.ADJUST_VISIBILITY_UPDATE, tableName, tableName, tableName))) {
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+
+        db.execSQL(Sql.ADJUST_VISIBILITY_DROP_TMP_PREFIXES);
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger().d(TAG, "adjustVisibility", "rows=" + rowsAffected);
@@ -701,49 +717,6 @@ public class BooklistNodeDao {
             }
         }
         return keyPrefixes;
-    }
-
-    private int updateBranchesTempTable(@NonNull final Collection<Pair<Integer, String>>
-                                                keyPrefixes) {
-        // Paranoia...
-        db.execSQL(Sql.ADJUST_VISIBILITY_DROP_TMP_PREFIXES);
-        db.execSQL(Sql.ADJUST_VISIBILITY_CREATE_TMP_PREFIXES);
-
-        try (SynchronizedStatement insert = db.compileStatement(
-                Sql.ADJUST_VISIBILITY_INSERT_TMP_PREFIXES)) {
-
-            for (final Pair<Integer, String> p : keyPrefixes) {
-                insert.bindLong(1, p.first);
-                insert.bindString(2, p.second);
-                insert.executeInsert();
-            }
-        }
-
-        final int rowsAffected;
-        final String tableName = listTable.getName();
-        try (SynchronizedStatement stmt = db.compileStatement(
-                String.format(Sql.ADJUST_VISIBILITY_UPDATE, tableName, tableName, tableName))) {
-            rowsAffected = stmt.executeUpdateDelete();
-        }
-
-        db.execSQL(Sql.ADJUST_VISIBILITY_DROP_TMP_PREFIXES);
-        return rowsAffected;
-    }
-
-    private int updateBranchesJava(@NonNull final Collection<Pair<Integer, String>>
-                                           keyPrefixes) {
-        // update the branches we found
-        int rows = 0;
-        try (SynchronizedStatement stmt = db.compileStatement(
-                String.format(Sql.ADJUST_VISIBILITY_UPDATE_LOOPING, listTable.getName()))) {
-
-            for (final Pair<Integer, String> entry : keyPrefixes) {
-                stmt.bindLong(1, entry.first);
-                stmt.bindString(2, entry.second);
-                rows += stmt.executeUpdateDelete();
-            }
-        }
-        return rows;
     }
 
     private static final class Sql {
@@ -888,17 +861,5 @@ public class BooklistNodeDao {
                 + _WHERE_ + "p.level=%s." + DBKey.BL_NODE.LEVEL
                 + _AND_ + "%s." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
                 + ')';
-
-        // GitHub #209: aliases in the target table of UPDATE (and DELETE)
-        // require SQLite 3.33.0 => Android 14 (API 34).
-//        private static final String ADJUST_VISIBILITY_UPDATE2 =
-//                UPDATE_ + /* listTable.getName() */ "%s" + " AS target"
-//                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
-//                + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
-//                + " AND EXISTS ("
-//                + SELECT_ + '1' + _FROM_ + ADJUST_VISIBILITY_TMP_TABLE + " AS p"
-//                + _WHERE_ + "p.level=target." + DBKey.BL_NODE.LEVEL
-//                + _AND_ + "target." + DBKey.BL_NODE.KEY + " LIKE p.prefix"
-//                + ')';
     }
 }
