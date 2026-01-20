@@ -124,6 +124,7 @@ class BooklistBuilder {
     private static final String CREATE_TEMPORARY_TRIGGER_ = "CREATE TEMPORARY TRIGGER ";
     private static final String CREATE_TEMP_TABLE_ = "CREATE TEMP TABLE ";
     private static final String DELETE_FROM_ = "DELETE FROM ";
+    private static final String DROP_INDEX_IF_EXISTS_ = "DROP INDEX IF EXISTS ";
     private static final String DROP_TABLE_IF_EXISTS_ = "DROP TABLE IF EXISTS ";
     private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
     private static final String END = "END";
@@ -240,6 +241,9 @@ class BooklistBuilder {
     private TableDefinition triggerHelperTable;
     /** Trigger name - inserts headers for each level during the initial insert. */
     private String[] triggerHelperLevelTriggerName;
+    /** Index on the list-table to help the triggers. Removed when the triggers are done. */
+    private String triggerHelperIndexName;
+
     /** Trigger name - maintain the 'current' value during the initial insert. */
     private String triggerHelperCurrentValueTriggerName;
 
@@ -572,7 +576,7 @@ class BooklistBuilder {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
             LoggerFactory.getLogger()
                          .d(TAG, "build",
-                            "insert(" + initialInsertCount + ")"
+                            "insert(" + initialInsertCount + ')'
                             + "|" + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
         }
 
@@ -580,10 +584,7 @@ class BooklistBuilder {
             // can't use IndexDefinition class as it does not support sorting clause for now.
             final String indexCols = orderByDomainExpressions
                     .stream()
-                    .map(domainExpression -> domainExpression.getDomain()
-                                                             .getOrderByString(
-                                                                     domainExpression.getSort(),
-                                                                     false))
+                    .map(exp -> exp.getDomain().getOrderByString(exp.getSort(), false))
                     .collect(Collectors.joining(",", "(", ")"));
 
             db.execSQL(CREATE_INDEX_ + listTable.getName() + "_SDI" + _ON_
@@ -1150,13 +1151,16 @@ class BooklistBuilder {
 
         triggerHelperLevelTriggerName = new String[groupCount];
 
+        // Create an index to make the trigger faster
+        createIndex(db, groupCount, sortedDomainNames);
+
         /*
          * For each grouping, starting with the lowest, build a trigger to update the next
          * level up as necessary. i.o.w. each level has a dedicated trigger.
          */
-        for (int index = groupCount - 1; index >= 0; index--) {
+        for (int groupIndex = groupCount - 1; groupIndex >= 0; groupIndex--) {
             // Get the level number for this group
-            final int level = index + 1;
+            final int level = groupIndex + 1;
 
             // Get the group
             final BooklistGroup group = style.getGroupByLevel(level);
@@ -1195,36 +1199,77 @@ class BooklistBuilder {
                      // Only add to the where-clause if the group is part of the SORT list
                      if (sortedDomainNames.contains(domainName)) {
                          whereClause.add(
-                                 "COALESCE(" + triggerHelperTable.dot(domainName) + ",'')"
-                                 + "=COALESCE(NEW." + domainName + ",'')"
+                                 // Using 'IS' allows comparing with null values
+                                 triggerHelperTable.dot(domainName) + _IS_ + "NEW." + domainName
                                  + domain.getCollationClause());
                      }
                  });
 
             // (re)Create the trigger
-            triggerHelperLevelTriggerName[index] = listTable.getName() + "_TG_LEVEL_" + level;
-            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperLevelTriggerName[index]);
-            final String levelTgSql =
-                    CREATE_TEMPORARY_TRIGGER_ + triggerHelperLevelTriggerName[index]
-                    + " BEFORE INSERT ON " + listTable.getName() + " FOR EACH ROW"
-                    + " WHEN NEW." + DBKey.BL_NODE.LEVEL + '=' + (level + 1)
-                    + " AND NOT EXISTS("
-                    + "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause + ')'
-                    + _BEGIN_
-                    + INSERT_INTO_ + listTable.getName()
-                    + ' ' + listColumns + _VALUES_ + listValues + ';'
-                    + END;
-
-            db.execSQL(levelTgSql);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "build", "level=" + level
-                                              + "|TgSql=" + levelTgSql);
-            }
+            createTrigger(db, groupIndex, level, whereClause, listColumns, listValues);
         }
 
         // Create a trigger to maintain the 'current' value
+        createCurrentValueTrigger(db, groupCount, currentValues);
+    }
+
+    private void createIndex(@NonNull final SynchronizedDb db,
+                             final int groupCount,
+                             @NonNull final Collection<String> sortedDomainNames) {
+        final StringJoiner columns = new StringJoiner(",", "(", ")");
+        style.getGroupByLevel(groupCount).getAccumulatedDomains()
+             .forEach(domain -> {
+                 final String domainName = domain.getName();
+                 if (sortedDomainNames.contains(domainName)) {
+                     columns.add(domainName + domain.getCollationClause());
+                 }
+             });
+        columns.add(DBKey.BL_NODE.LEVEL);
+
+        triggerHelperIndexName = "idx_" + listTable.getName() + "_TG";
+        db.execSQL(DROP_INDEX_IF_EXISTS_ + triggerHelperIndexName);
+        final String createIndex = CREATE_INDEX_ + triggerHelperIndexName
+                                   + _ON_ + listTable.getName() + columns;
+
+        db.execSQL(createIndex);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "build", "createIndex=" + createIndex);
+        }
+    }
+
+    private void createTrigger(@NonNull final SynchronizedDb db,
+                               final int groupIndex,
+                               final int level,
+                               @NonNull final StringJoiner whereClause,
+                               @NonNull final StringJoiner listColumns,
+                               @NonNull final StringJoiner listValues) {
+        triggerHelperLevelTriggerName[groupIndex] = listTable.getName() + "_TG_LEVEL_" + level;
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperLevelTriggerName[groupIndex]);
+        final String levelTgSql =
+                CREATE_TEMPORARY_TRIGGER_ + triggerHelperLevelTriggerName[groupIndex]
+                + " BEFORE INSERT ON " + listTable.getName() + " FOR EACH ROW"
+                + " WHEN NEW." + DBKey.BL_NODE.LEVEL + '=' + (level + 1)
+                + " AND NOT EXISTS("
+                + "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause + ')'
+                + _BEGIN_
+                + INSERT_INTO_ + listTable.getName()
+                + ' ' + listColumns + _VALUES_ + listValues + ';'
+                + END;
+
+        db.execSQL(levelTgSql);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "build", "level=" + level
+                                          + "|TgSql=" + levelTgSql);
+        }
+    }
+
+    private void createCurrentValueTrigger(@NonNull final SynchronizedDb db,
+                                           final int groupCount,
+                                           @NonNull final StringJoiner currentValues) {
         triggerHelperCurrentValueTriggerName = listTable.getName() + "_TG_CURRENT";
         db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperCurrentValueTriggerName);
         // This is a single row only, so delete the previous value, and insert the current one
@@ -1250,6 +1295,9 @@ class BooklistBuilder {
      * @param db Database Access
      */
     private void cleanupTriggers(@NonNull final SynchronizedDb db) {
+        if (triggerHelperIndexName != null) {
+            db.execSQL(DROP_INDEX_IF_EXISTS_ + triggerHelperIndexName);
+        }
         if (triggerHelperCurrentValueTriggerName != null) {
             db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperCurrentValueTriggerName);
         }
