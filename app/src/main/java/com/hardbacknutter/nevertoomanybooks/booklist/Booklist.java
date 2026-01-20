@@ -247,8 +247,7 @@ public class Booklist
         if (totalBooks == -1) {
             try (SynchronizedStatement stmt = db.compileStatement(
                     SELECT_COUNT_FROM_ + listTable.getName()
-                    + _WHERE_ + DBKey.BL_NODE.GROUP + "=?")) {
-                stmt.bindLong(1, BooklistGroup.BOOK);
+                    + _WHERE_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.BOOK)) {
                 totalBooks = (int) stmt.simpleQueryForLongOrZero();
             }
         }
@@ -265,9 +264,8 @@ public class Booklist
             try (SynchronizedStatement stmt = db.compileStatement(
                     "SELECT COUNT(DISTINCT " + DBKey.FK_BOOK + ")"
                     + _FROM_ + listTable.getName()
-                    + _WHERE_ + DBKey.BL_NODE.GROUP + "=?")) {
+                    + _WHERE_ + DBKey.BL_NODE.GROUP + '=' + BooklistGroup.BOOK)) {
 
-                stmt.bindLong(1, BooklistGroup.BOOK);
                 distinctBooks = (int) stmt.simpleQueryForLongOrZero();
             }
         }
