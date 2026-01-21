@@ -1060,8 +1060,8 @@ class BooklistBuilder {
      *    FOR EACH ROW WHEN NEW.node_level=3 AND
      *       -- is the current author+series different from the one inserted previously?
      *       NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE
-     *                          COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,'')
-     *                          AND COALESCE(tht.blg_sort_ser,'')=COALESCE(NEW.blg_sort_ser,''))
+     *                          tht.blg_sort_aut IS NEW.blg_sort_aut
+     *                          AND tht.blg_sort_ser IS NEW.blg_sort_ser)
      *         BEGIN
      *         -- insert the series
      *            INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,
@@ -1079,7 +1079,7 @@ class BooklistBuilder {
      *    FOR EACH ROW WHEN NEW.node_level=2 AND
      *        -- is the current author different from the one inserted previously?
      *        NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE
-     *                           COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,''))
+     *                           tht.blg_sort_aut IS NEW.blg_sort_aut)
      *          BEGIN
      *          -- insert an author
      *             INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,
