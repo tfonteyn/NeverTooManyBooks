@@ -43,9 +43,3 @@ tasks.withType(Test).configureEach {
 //        }
 //    }
 //}
-
-ext {
-    applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 118
-    applicationVersionName = "7.12.0"
-}
