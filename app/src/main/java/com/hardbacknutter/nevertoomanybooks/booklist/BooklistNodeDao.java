@@ -732,6 +732,7 @@ public class BooklistNodeDao {
     private static final class Sql {
 
         private static final String DELETE_FROM_ = "DELETE FROM ";
+        private static final String INSERT_INTO_ = "INSERT INTO ";
         private static final String SELECT_ = "SELECT ";
         private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
         private static final String UPDATE_ = "UPDATE ";
@@ -758,7 +759,7 @@ public class BooklistNodeDao {
          * but oh well... no big deal.
          */
         private static final String SAVE_ALL_NODES =
-                "INSERT INTO " + TBL_BOOK_LIST_NODE_STATE
+                INSERT_INTO_ + TBL_BOOK_LIST_NODE_STATE
                 + " (" + DBKey.FK_BOOKSHELF + ',' + DBKey.FK_STYLE
                 + ',' + DBKey.BL_NODE.KEY
                 + ',' + DBKey.BL_NODE.LEVEL
@@ -851,7 +852,7 @@ public class BooklistNodeDao {
                 "CREATE TEMP TABLE " + ADJUST_VISIBILITY_TMP_TABLE
                 + " (level INTEGER, prefix TEXT)";
         private static final String ADJUST_VISIBILITY_INSERT_TMP_PREFIXES =
-                "INSERT INTO " + ADJUST_VISIBILITY_TMP_TABLE
+                INSERT_INTO_ + ADJUST_VISIBILITY_TMP_TABLE
                 + "(level, prefix) VALUES (?, ?)";
 
         /** %s: {@code listTable.getName()}. */

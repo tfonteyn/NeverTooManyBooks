@@ -368,10 +368,10 @@ public final class GroupKeyFactory {
                                                 .build(),
                                         "COALESCE("
                                         + DBDefinitions.ALIAS_LANG_MAPPINGS_LANGUAGE
-                                        + "." + DBKey.LANG_MAPPING.DISPLAY_NAME
-                                        + ","
+                                        + '.' + DBKey.LANG_MAPPING.DISPLAY_NAME
+                                        + ','
                                         + TBL_BOOKS.dot(DOM_BOOK_LANGUAGE)
-                                        + ")",
+                                        + ')',
                                         Sort.Asc));
             }
             case BooklistGroup.ORIGINAL_LANGUAGE: {
@@ -394,10 +394,10 @@ public final class GroupKeyFactory {
                                                 .build(),
                                         "COALESCE("
                                         + DBDefinitions.ALIAS_LANG_MAPPINGS_ORIGINAL_LANGUAGE
-                                        + "." + DBKey.LANG_MAPPING.DISPLAY_NAME
-                                        + ","
+                                        + '.' + DBKey.LANG_MAPPING.DISPLAY_NAME
+                                        + ','
                                         + TBL_BOOKS.dot(DOM_TRANSLATION_ORIGINAL_LANGUAGE)
-                                        + ")",
+                                        + ')',
                                         Sort.Asc));
             }
             case BooklistGroup.LOCATION: {
@@ -417,7 +417,7 @@ public final class GroupKeyFactory {
                                             Sort.Desc));
             }
             case BooklistGroup.LENDING: {
-                // This will be a LEFT OUTER JOIN, so coerce missing rows to ''
+                // This will be a LEFT OUTER JOIN, so COALESCE nulls to ''
                 return new GroupKey(id, R.string.lbl_lend_out, "l",
                                     new DomainExpression(
                                             DOM_LOANEE,
