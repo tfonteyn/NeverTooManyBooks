@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,9 +43,8 @@ public interface BooklistGroup {
 
     /**
      * The ID's for the groups.
-     * <strong>Never change these values</strong>, they get stored in the db.
-     * <p>
-     * Also: the code relies on BOOK being == 0
+     * <strong>Never change these values</strong>, they get stored in the database.
+     * For that same reason, this is NOT an enum as we need the int value too often.
      */
     int BOOK = 0;
     /** {@link AuthorBooklistGroup}. */

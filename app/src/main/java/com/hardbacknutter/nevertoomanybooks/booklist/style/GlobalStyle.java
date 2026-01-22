@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,6 @@ public final class GlobalStyle
      * As an alternative we could just run:
      * {@link BooklistGroup#getAllGroups}
      * but that is severe overkill and a waste of memory.
-     * FIXME: to be reimplemented when BooklistGroup identifiers are finally moved to an enum.
      * <p>
      * NEWTHINGS: BooklistGroup: adding a new group with configurable settings
      */
