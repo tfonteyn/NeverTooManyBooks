@@ -856,7 +856,7 @@
     <string name="pt_fetch_author_info">获取作者信息</string>
     <string name="pt_fetch_author_info_using_site_x">从 %1$s 获取作者信息</string>
     <string name="menu_search_updates">搜索更新</string>
-    <string name="lbl_wikidata_claim_author_id">作者 ID 的 Wikidata “claim/P” 代码</string>
+    <string name="lbl_wikidata_claim_author_id">author id 的 Wikidata “claim/P” 代码</string>
     <string name="action_stop_searching">停止搜索</string>
     <string name="confirm_leave_isbn_search">有进行中的搜索和/或为未保存的结果。</string>
     <string name="action_save_for_later">保存以便稍后处理</string>
