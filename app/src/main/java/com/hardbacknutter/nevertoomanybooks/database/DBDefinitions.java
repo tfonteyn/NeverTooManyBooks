@@ -1972,7 +1972,8 @@ public final class DBDefinitions {
                           DOM_CALIBRE_LIBRARY_NAME)
                 .addIndex(DBKey.FK_BOOKSHELF, false,
                           DOM_FK_BOOKSHELF)
-                .addIndex(DBKey.CALIBRE.LIBRARY_UUID, true,
+                // for historic reasons NOT unique
+                .addIndex(DBKey.CALIBRE.LIBRARY_UUID, false,
                           DOM_CALIBRE_LIBRARY_UUID);
         ALL_TABLES.put(TBL_CALIBRE_LIBRARIES.getName(), TBL_CALIBRE_LIBRARIES);
 
