@@ -1,3 +1,19 @@
+### 7.12.0
+
+NEW:
+
+- #219: Added https://bnf.fr for French book searches.
+- #221: add the "read" flag to the fields the user can set to hide/show.
+- Performance improvements:
+  - startup / switching bookshelf
+
+FIXES:
+
+- #223: some dialogs during editing of a book were overlapping the device statusbar
+- #225: series number sorting on the book-level
+
+---
+
 ### 7.11.0
 
 NEW:
