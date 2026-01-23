@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 public interface IsoLanguageDao {
 
     @NonNull
-    String findByDisplayName(@NonNull String dname);
+    String findByDisplayName(@NonNull String displayName);
 
     /**
      * Count all entries. This is a check on the table being empty.

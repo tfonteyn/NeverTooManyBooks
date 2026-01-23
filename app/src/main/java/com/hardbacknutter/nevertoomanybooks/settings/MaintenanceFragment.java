@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -181,7 +181,7 @@ public class MaintenanceFragment
         }
     }
 
-    private void onResetTips(final View v) {
+    private void onResetTips(@NonNull final View v) {
         TipManager.getInstance().reset();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.info_tip_reset_done, Snackbar.LENGTH_LONG).show();

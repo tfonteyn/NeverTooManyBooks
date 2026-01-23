@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -97,11 +97,11 @@ public class IdentifiersEditorViewModel
         setModified();
     }
 
-    public int countBooks(final Identifier identifier) {
+    public int countBooks(@NonNull final Identifier identifier) {
         return bookIdentifierDao.countLinks(identifier);
     }
 
-    public int countAuthors(final Identifier identifier) {
+    public int countAuthors(@NonNull final Identifier identifier) {
         return authorIdentifierDao.countLinks(identifier);
     }
 }

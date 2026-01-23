@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+
+import androidx.annotation.NonNull;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -42,18 +44,19 @@ public class TrustAllTrustManager
     }
 
     @Override
-    public void checkClientTrusted(final X509Certificate[] x509Certificate,
-                                   final String str) {
+    public void checkClientTrusted(@NonNull final X509Certificate[] x509Certificate,
+                                   @NonNull final String str) {
         // no checking
     }
 
     @Override
-    public void checkServerTrusted(final X509Certificate[] x509Certificate,
-                                   final String str) {
+    public void checkServerTrusted(@NonNull final X509Certificate[] x509Certificate,
+                                   @NonNull final String str) {
         // no checking
     }
 
     @Override
+    @NonNull
     public X509Certificate[] getAcceptedIssuers() {
         return trustManager.getAcceptedIssuers();
     }

@@ -55,12 +55,12 @@ public class IsoLanguageDaoImpl
 
     @NonNull
     @Override
-    public String findByDisplayName(@NonNull final String dname) {
+    public String findByDisplayName(@NonNull final String displayName) {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_BY_DNAME)) {
-            stmt.bindString(1, dname);
+            stmt.bindString(1, displayName);
             final String iso3 = stmt.simpleQueryForStringOrNull();
-            return iso3 != null ? iso3 : dname;
+            return iso3 != null ? iso3 : displayName;
         }
     }
 
@@ -79,8 +79,8 @@ public class IsoLanguageDaoImpl
 
         // We get many duplicates
         // iso | name              | display-name
-        // eng : English (Jamaica) : english
-        // eng : English (Niue)    : english
+        // eng : English (Jamaica) : English
+        // eng : English (Niue)    : English
         // Collect the iso/dname and run a 'distinct'
         final List<Pair<String, String>> iso3Name = Arrays
                 .stream(Locale.getAvailableLocales())

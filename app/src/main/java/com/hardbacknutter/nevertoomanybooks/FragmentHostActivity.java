@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -188,7 +188,7 @@ public class FragmentHostActivity
                 fragment = fragmentClass.getConstructor().newInstance();
             } catch (@NonNull final IllegalAccessException | InstantiationException e) {
                 throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
-            } catch (final NoSuchMethodException | InvocationTargetException e) {
+            } catch (@NonNull final NoSuchMethodException | InvocationTargetException e) {
                 throw new IllegalStateException("Other failure: " + fragmentClass.getName());
             }
             fragment.setArguments(getIntent().getExtras());

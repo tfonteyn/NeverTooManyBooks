@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,9 +61,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SearchCoordinator
         extends ViewModel
         implements Cancellable {
-
-    private static final String ERROR_UNKNOWN_TASK = "Unknown task=";
-    private static final String ERROR_UNKNOWN_SEARCH = "Unknown search=";
 
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
@@ -216,7 +213,7 @@ public class SearchCoordinator
         }
     }
 
-    protected void pushResultFinished(final BookSearchResult data) {
+    protected void pushResultFinished(@NonNull final BookSearchResult data) {
         searchCoordinatorFinishedQueue.add(data);
         searchCoordinatorFinished.setValue(LiveDataEvent.of(true));
 
@@ -228,7 +225,7 @@ public class SearchCoordinator
         }
     }
 
-    protected void pushResultCanceled(final BookSearchResult data) {
+    protected void pushResultCanceled(@NonNull final BookSearchResult data) {
         searchCoordinatorCancelledQueue.add(data);
         searchCoordinatorCancelled.setValue(LiveDataEvent.of(true));
 

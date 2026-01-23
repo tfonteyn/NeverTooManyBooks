@@ -206,7 +206,7 @@ public class Identifier
      *
      * @param identifier to copy
      */
-    public Identifier(final Identifier identifier) {
+    public Identifier(@NonNull final Identifier identifier) {
         copyFrom(identifier);
     }
 

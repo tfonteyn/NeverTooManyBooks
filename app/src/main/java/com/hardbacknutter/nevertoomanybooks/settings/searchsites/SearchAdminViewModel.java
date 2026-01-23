@@ -99,7 +99,7 @@ public class SearchAdminViewModel
      *
      * @param type to clear
      */
-    public void clear(final Site.Type type) {
+    public void clear(@NonNull final Site.Type type) {
         getList(type).forEach(site -> site.setActive(false));
         siteListUpdated.setValue(type);
     }

@@ -899,7 +899,7 @@ public class EditBookViewModel
         requireField(R.id.publisher).setValue(list);
     }
 
-    void updateTags(final List<Tag> list) {
+    void updateTags(@NonNull final List<Tag> list) {
         // Update BOTH the book and the field
         book.setTags(list);
         requireField(R.id.tags).setValue(list);

@@ -69,7 +69,7 @@ public class Tag
      *
      * @param tag to copy
      */
-    public Tag(final Tag tag) {
+    public Tag(@NonNull final Tag tag) {
         copyFrom(tag);
     }
 

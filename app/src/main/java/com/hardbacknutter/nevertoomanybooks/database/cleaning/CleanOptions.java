@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -93,7 +93,7 @@ public enum CleanOptions {
             for (final String option : all) {
                 try {
                     options.add(valueOf(option));
-                } catch (final Exception ignored) {
+                } catch (@NonNull final Exception ignored) {
                     // skip invalid/missing enum values
                 }
             }

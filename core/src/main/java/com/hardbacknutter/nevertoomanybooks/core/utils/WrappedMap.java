@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,8 +64,8 @@ public class WrappedMap<K, V>
 
     @Nullable
     @Override
-    public V put(final K key,
-                 final V value) {
+    public V put(@NonNull final K key,
+                 @NonNull final V value) {
         return map.put(key, value);
     }
 

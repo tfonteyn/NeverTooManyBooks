@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -802,7 +802,7 @@ public class ExtFileProvider
                 if (volumeStr != null) {
                     try {
                         volume = Integer.parseInt(volumeStr);
-                    } catch (final NumberFormatException ignore) {
+                    } catch (@NonNull final NumberFormatException ignore) {
                         // ignore, use "0"
                     }
                 }

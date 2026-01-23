@@ -649,7 +649,7 @@ public final class CalibreContentServer
     }
 
     @NonNull
-    private Request createGetRequest(final String url) {
+    private Request createGetRequest(@NonNull final String url) {
 
         // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server

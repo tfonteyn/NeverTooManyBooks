@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,8 @@
  */
 
 package com.hardbacknutter.nevertoomanybooks.utils;
+
+import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -48,7 +50,7 @@ public class RatingParserTest {
         parse10withDots(parser);
     }
 
-    private void parse5withDots(final RatingParser parser) {
+    private void parse5withDots(@NonNull final RatingParser parser) {
         Optional<Float> convert;
 
         // Anything less than 0.251 becomes 0, which we reject
@@ -88,7 +90,7 @@ public class RatingParserTest {
         assertEquals(5, convert.get(), 0.1);
     }
 
-    private void parse5withCommas(final RatingParser parser) {
+    private void parse5withCommas(@NonNull final RatingParser parser) {
         Optional<Float> convert;
 
         // Anything less than 0.251 becomes 0, which we reject
@@ -128,7 +130,7 @@ public class RatingParserTest {
         assertEquals(5, convert.get(), 0.1);
     }
 
-    private void parse10withDots(final RatingParser parser) {
+    private void parse10withDots(@NonNull final RatingParser parser) {
         Optional<Float> convert;
 
         // Anything less than 0.5 becomes 0, which we reject

@@ -123,7 +123,7 @@ public class TagMappingDaoImpl
 
     @NonNull
     @Override
-    public Optional<TagMapping> findByName(final TagMapping mapping) {
+    public Optional<TagMapping> findByName(@NonNull final TagMapping mapping) {
         final String name = mapping.getTagName();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name})) {

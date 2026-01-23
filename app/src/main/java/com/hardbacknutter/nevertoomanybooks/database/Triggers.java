@@ -79,11 +79,11 @@ final class Triggers {
      * - When a books ISBN is updated, reset external data.
      *
      * <p>
-     * not needed + why now:
+     * not needed + why not:
      * - insert a new Series,Author,TocEntry is only done when a Book is inserted/updated.
      * - insert a new Bookshelf has no effect until a Book is added to the shelf (update bookshelf)
      * <p>
-     * - insert/delete/update TocEntry only done when a book is inserted/updated.
+     * - insert/delete/update TocEntry is only done when a book is inserted/updated.
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
      *

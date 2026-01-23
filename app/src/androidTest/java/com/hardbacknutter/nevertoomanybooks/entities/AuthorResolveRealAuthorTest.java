@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -152,7 +152,7 @@ public class AuthorResolveRealAuthorTest
 
     }
 
-    private void check(final Author[] authors) {
+    private void check(@NonNull final Author[] authors) {
         // root
         assertEquals(0, authors[0].realAuthorId);
         // simple reference

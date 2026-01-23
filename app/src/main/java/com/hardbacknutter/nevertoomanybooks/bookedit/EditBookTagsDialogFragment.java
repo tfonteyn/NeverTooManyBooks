@@ -168,7 +168,7 @@ public class EditBookTagsDialogFragment
         vb.tagsInBook.setAdapter(bookTagsAdapter);
     }
 
-    private void addNewTag(final String value) {
+    private void addNewTag(@NonNull final String value) {
         final Tag tag = new Tag(value);
 
         if (bookTagsAdapter.has(tag).isPresent()) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
 public interface TagMappingDao {
 
+    /**
+     * Find a {@link TagMapping} by using the <strong>name</strong> field.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     *
+     * @param mapping to update
+     */
     void fixId(@NonNull TagMapping mapping);
 
     /**
@@ -54,6 +60,13 @@ public interface TagMappingDao {
     long insert(@NonNull TagMapping mapping)
             throws DaoWriteException;
 
+    /**
+     * Update the given {@link TagMapping}.
+     *
+     * @param mapping to update
+     *
+     * @throws DaoWriteException on failure
+     */
     void update(@NonNull TagMapping mapping)
             throws DaoWriteException;
 
@@ -66,6 +79,15 @@ public interface TagMappingDao {
      */
     boolean delete(@NonNull TagMapping mapping);
 
+    /**
+     * Find a {@link TagMapping} by using the <strong>name</strong> fields
+     * of the given {@link TagMapping}.
+     * The given {@link TagMapping} is <strong>not</strong> modified.
+     *
+     * @param mapping to find the id of
+     *
+     * @return the {@link TagMapping}
+     */
     @NonNull
-    Optional<TagMapping> findByName(TagMapping mapping);
+    Optional<TagMapping> findByName(@NonNull TagMapping mapping);
 }

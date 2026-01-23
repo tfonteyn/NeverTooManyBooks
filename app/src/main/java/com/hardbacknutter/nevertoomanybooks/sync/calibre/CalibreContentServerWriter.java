@@ -362,7 +362,7 @@ public class CalibreContentServerWriter
     }
 
     @NonNull
-    private JSONArray collectTags(final Book localBook) {
+    private JSONArray collectTags(@NonNull final Book localBook) {
         return new JSONArray(localBook.getTags().stream().map(Tag::getName)
                                       .collect(Collectors.toList()));
     }

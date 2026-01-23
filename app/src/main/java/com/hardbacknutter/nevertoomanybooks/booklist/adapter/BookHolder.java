@@ -668,7 +668,7 @@ public class BookHolder
      * @return formatted date
      */
     @NonNull
-    private String formatDate(final String isoDateStr) {
+    private String formatDate(@NonNull final String isoDateStr) {
         return partialDateParser
                 .parse(isoDateStr)
                 .map(d -> d.toDisplay(locale, isoDateStr))
