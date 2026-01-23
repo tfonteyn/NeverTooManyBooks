@@ -32,7 +32,7 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
-### Download the latest release: 7.11.0
+### Download the latest release: 7.12.0
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
 <img src="metadata/en-US/images/get-it-on-github.png" 
@@ -83,6 +83,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites...
 - **Bertrand.pt** (Portuguese and more; Shop)
 - **Biblionet.gr** (Greek; Catalogue)
 - **Bibliotece.pl** (Polish; Catalogue)
+- **BnF.fr** (French; Catalogue)
 - **BOL.com** (Dutch and more; Shop)
 - **databazeknih.cz** (Czech and more; Catalogue)
 - **dnb.de** (German; Catalogue)
