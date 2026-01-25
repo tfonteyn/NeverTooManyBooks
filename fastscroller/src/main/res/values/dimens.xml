@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,19 +20,14 @@
   -->
 
 <resources>
-    <!-- fast scroller - Minimal Thumb and Track width (vertical) / height (horizontal).
-         Original Android: R.dimen.fastscroll_default_thickness=8dp -->
+    <!-- fast scroller - Minimal Thumb and Track width (vertical) / height (horizontal). -->
     <dimen name="fs_thumb_thickness">8dp</dimen>
     <!-- Minimal Thumb height (vertical) / width (horizontal).
          i.e. big enough to grab with a finger. -->
     <dimen name="fs_thumb_min_size">48dp</dimen>
 
-    <!-- fast scroller - When to show a scrollbar.
-         Original Android: R.dimen.fastscroll_minimum_range=50dp-->
+    <!-- fast scroller - Minimum range before we show a scrollbar. -->
     <dimen name="fs_minimum_range">50dp</dimen>
-    <!-- fast scroller - Margin (begin+margin; end-margin) for the scrollbar range.
-         Original Android: R.dimen.fastscroll_margin=0dp -->
-    <dimen name="fs_margin">0dp</dimen>
 
     <!-- fast scroller - OverlayProviderFactory.CLASSIC styling -->
     <dimen name="fs_classic_popup_min_width">120dp</dimen>

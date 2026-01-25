@@ -91,8 +91,6 @@ public class FastScrollerBuilder {
     @Px
     private int minimumRange;
     @Px
-    private int margin;
-    @Px
     private int thumbMinSize;
     @Px
     private int expandedTouchArea;
@@ -119,10 +117,8 @@ public class FastScrollerBuilder {
         displayMetrics = resources.getDisplayMetrics();
 
         thumbMinSize = resources.getDimensionPixelSize(R.dimen.fs_thumb_min_size);
-
         thumbThickness = resources.getDimensionPixelSize(R.dimen.fs_thumb_thickness);
         minimumRange = resources.getDimensionPixelSize(R.dimen.fs_minimum_range);
-        margin = resources.getDimensionPixelOffset(R.dimen.fs_margin);
     }
 
     /**
@@ -224,12 +220,6 @@ public class FastScrollerBuilder {
         return this;
     }
 
-    @NonNull
-    public FastScrollerBuilder setMargin(@Dimension(unit = Dimension.DP) final int margin) {
-        this.margin = dp2px(margin);
-        return this;
-    }
-
     /**
      * Attach this FastScrollerBuilder to the given {@link RecyclerView}.
      *
@@ -253,7 +243,7 @@ public class FastScrollerBuilder {
 
         final FastScroller fastScroller = new FastScrollerImpl(
                 recyclerView, thumb, track, thumb, track,
-                thumbThickness, minimumRange, margin,
+                thumbThickness, minimumRange,
                 thumbMinSize,
                 expandedTouchArea);
 

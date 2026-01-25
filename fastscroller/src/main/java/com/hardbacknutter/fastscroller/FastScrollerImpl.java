@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,28 +29,22 @@ import android.graphics.drawable.StateListDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
- * Last checked for diff: 2025-02-05
+ * Last checked for diff: 2025-02-05.
  * 96438a56ed99d5f5d5917672dc433c864432ab08
  * <a href="https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/recyclerview/recyclerview/src/main/java/androidx/recyclerview/widget/FastScroller.java">
  * HEAD</a>
- * Class responsible to animate and provide a fast scroller.
  * <p>
- * Search for 'HARDBACKNUTTER' to see modifications done.
+ * 2026-01-25: forking...  google will never fix theirs.
  * <ul>
  *     <li>Allow setting a minimum size for the thumb.</li>
  *     <li>Allow setting an expanded touch area for the thumb.
@@ -64,436 +58,370 @@ import java.lang.annotation.RetentionPolicy;
  *     <li>Added {@link OnFastScrollStateChangeListener}</li>
  * </ul>
  */
-@SuppressWarnings("ALL")
-public class FastScrollerImpl
+class FastScrollerImpl
         extends RecyclerView.ItemDecoration
         implements RecyclerView.OnItemTouchListener,
-        // HARDBACKNUTTER - BEGIN
-                   FastScroller
-        // HARDBACKNUTTER - END
-{
+                   FastScroller {
 
-    // Scroll thumb not showing
-    private static final int STATE_HIDDEN = 0;
-    // Scroll thumb visible and moving along with the scrollbar
-    private static final int STATE_VISIBLE = 1;
-    // Scroll thumb being dragged by user
-    private static final int STATE_DRAGGING = 2;
-    private static final int DRAG_NONE = 0;
-    private static final int DRAG_X = 1;
-    private static final int DRAG_Y = 2;
-    private static final int ANIMATION_STATE_OUT = 0;
-    private static final int ANIMATION_STATE_FADING_IN = 1;
-    private static final int ANIMATION_STATE_IN = 2;
-    private static final int ANIMATION_STATE_FADING_OUT = 3;
     private static final int SHOW_DURATION_MS = 500;
     private static final int HIDE_DELAY_AFTER_VISIBLE_MS = 1500;
     private static final int HIDE_DELAY_AFTER_DRAGGING_MS = 1200;
     private static final int HIDE_DURATION_MS = 500;
+
     private static final int SCROLLBAR_FULL_OPAQUE = 255;
-    private static final int[] PRESSED_STATE_SET = new int[]{android.R.attr.state_pressed};
-    private static final int[] EMPTY_STATE_SET = new int[]{};
+    private static final int[] PRESSED_STATE_SET = {android.R.attr.state_pressed};
+    private static final int[] EMPTY_STATE_SET = {};
+
+    private final ValueAnimator showHideAnimator = ValueAnimator.ofFloat(0, 1);
+
     // Final values for the vertical scroll bar
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final StateListDrawable mVerticalThumbDrawable;
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final Drawable mVerticalTrackDrawable;
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final ValueAnimator mShowHideAnimator = ValueAnimator.ofFloat(0, 1);
-    private final int mScrollbarMinimumRange;
-    // HARDBACKNUTTER - BEGIN
-    private int mMargin;
-    // HARDBACKNUTTER - END
-    private final int mVerticalThumbWidth;
-    private final int mVerticalTrackWidth;
+    private final StateListDrawable verticalThumbDrawable;
+    private final Drawable verticalTrackDrawable;
+    private final int verticalThumbWidth;
+    private final int verticalTrackWidth;
+
     // Final values for the horizontal scroll bar
-    private final StateListDrawable mHorizontalThumbDrawable;
-    private final Drawable mHorizontalTrackDrawable;
+    private final StateListDrawable horizontalThumbDrawable;
+    private final Drawable horizontalTrackDrawable;
+    private final int horizontalThumbHeight;
+    private final int horizontalTrackHeight;
 
-    private final int mHorizontalThumbHeight;
-    private final int mHorizontalTrackHeight;
-    private final int[] mVerticalRange = new int[2];
-    private final int[] mHorizontalRange = new int[2];
+    private final int scrollbarMinimumRange;
+    @Px
+    private final int minimalThumbSize;
+    @Px
+    private final int expandedTouchArea;
+
     // Dynamic values for the vertical scroll bar
-    @VisibleForTesting
-    int mVerticalThumbHeight;
-    @VisibleForTesting
-    int mVerticalThumbCenterY;
-    @VisibleForTesting
-    float mVerticalDragY;
+    private int verticalThumbHeight;
+    private int verticalThumbCenterY;
+    private float verticalDragY;
+
     // Dynamic values for the horizontal scroll bar
-    @VisibleForTesting
-    int mHorizontalThumbWidth;
-    @VisibleForTesting
-    int mHorizontalThumbCenterX;
-    @VisibleForTesting
-    float mHorizontalDragX;
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-    @AnimationState
-    int mAnimationState = ANIMATION_STATE_OUT;
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide(HIDE_DURATION_MS);
-        }
-    };
+    private int horizontalThumbWidth;
+    private int horizontalThumbCenterX;
+    private float horizontalDragX;
 
-    // HARDBACKNUTTER - BEGIN
-    @Px
-    private final int mMinimalThumbSize;
-    @Px
-    private final int mExpandedTouchArea;
-    @Nullable
-    private OverlayProvider mOverlayProvider;
-    @Nullable
-    private OnFastScrollStateChangeListener mStateListener;
-    // HARDBACKNUTTER - END
+    @NonNull
+    private AnimationState animationState = AnimationState.Out;
+    private final Runnable hideRunnable = () -> hide(HIDE_DURATION_MS);
 
-    private int mRecyclerViewWidth = 0;
-    private int mRecyclerViewHeight = 0;
-    private RecyclerView mRecyclerView;
+    private int marginTop;
+    private int marginBottom;
+    private int marginLeft;
+    private int marginRight;
+
+    @Nullable
+    private OverlayProvider overlayProvider;
+    @Nullable
+    private OnFastScrollStateChangeListener stateListener;
+
+    private RecyclerView recyclerView;
+    private int recyclerViewWidth;
+    private int recyclerViewHeight;
+
     /**
-     * Whether the document is long/wide enough to require scrolling. If not, we don't show the
-     * relevant scroller.
+     * Whether the document is long/wide enough to require scrolling.
+     * If not, we don't show the relevant scroller.
      */
-    private boolean mNeedVerticalScrollbar = false;
-    private boolean mNeedHorizontalScrollbar = false;
-    @State
-    private int mState = STATE_HIDDEN;
-    private final RecyclerView.OnScrollListener
-            mOnScrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrolled(RecyclerView recyclerView,
-                               int dx,
-                               int dy) {
-            updateScrollPosition(recyclerView.computeHorizontalScrollOffset(),
-                                 recyclerView.computeVerticalScrollOffset());
-        }
-    };
-    @DragState
-    private int mDragState = DRAG_NONE;
+    private boolean needVerticalScrollbar;
+    private boolean needHorizontalScrollbar;
+
+    @NonNull
+    private State state = State.Hidden;
+    @NonNull
+    private DragState dragState = DragState.None;
+
+    private final RecyclerView.OnScrollListener scrollListener =
+            new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull final RecyclerView recyclerView,
+                                       final int dx,
+                                       final int dy) {
+                    updateScrollPosition(recyclerView.computeHorizontalScrollOffset(),
+                                         recyclerView.computeVerticalScrollOffset());
+                }
+            };
 
     /**
-     * HARDBACKNUTTER - ADDED javadocs for this constructor.
+     * Constructor.
      *
-     * @param recyclerView
-     * @param verticalThumbDrawable
-     * @param verticalTrackDrawable
-     * @param horizontalThumbDrawable
-     * @param horizontalTrackDrawable
+     * @param recyclerView            to attach to
+     * @param verticalThumbDrawable   to use
+     * @param verticalTrackDrawable   to use
+     * @param horizontalThumbDrawable to use
+     * @param horizontalTrackDrawable to use
      * @param defaultWidth            The width of the thumb
-     * @param scrollbarMinimumRange
-     * @param margin
+     *                                In pixels.
+     * @param scrollbarMinimumRange   In pixels.
      * @param minimalThumbSize        the minimal height the thumb can decrease to.
      *                                In pixels.
      * @param expandedTouchArea       the padding to add to the thumb to use as touch area.
      *                                In pixels.
+     *
+     * @throws IllegalStateException if the recyclerView does not have a LinearLayoutManager
      */
-    public FastScrollerImpl(RecyclerView recyclerView,
-                            StateListDrawable verticalThumbDrawable,
-                            Drawable verticalTrackDrawable,
-                            StateListDrawable horizontalThumbDrawable,
-                            Drawable horizontalTrackDrawable,
-                            int defaultWidth,
-                            int scrollbarMinimumRange,
-                            int margin,
-                            // HARDBACKNUTTER - BEGIN
-                            @Px
-                            final int minimalThumbSize,
-                            @Px final int expandedTouchArea
-                            // HARDBACKNUTTER - END
-    ) {
+    FastScrollerImpl(@NonNull final RecyclerView recyclerView,
+                     @NonNull final StateListDrawable verticalThumbDrawable,
+                     @NonNull final Drawable verticalTrackDrawable,
+                     @NonNull final StateListDrawable horizontalThumbDrawable,
+                     @NonNull final Drawable horizontalTrackDrawable,
+                     @Px final int defaultWidth,
+                     @Px final int scrollbarMinimumRange,
+                     @Px final int minimalThumbSize,
+                     @Px final int expandedTouchArea) {
 
-        mVerticalThumbDrawable = verticalThumbDrawable;
-        mVerticalTrackDrawable = verticalTrackDrawable;
-        mHorizontalThumbDrawable = horizontalThumbDrawable;
-        mHorizontalTrackDrawable = horizontalTrackDrawable;
-        // HARDBACKNUTTER - BEGIN
-        mMinimalThumbSize = minimalThumbSize;
-        mExpandedTouchArea = expandedTouchArea;
-        // HARDBACKNUTTER - END
+        if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
+            throw new IllegalStateException("RecyclerView must have a LinearLayoutManager");
+        }
 
-        mVerticalThumbWidth = Math.max(defaultWidth, verticalThumbDrawable.getIntrinsicWidth());
-        mVerticalTrackWidth = Math.max(defaultWidth, verticalTrackDrawable.getIntrinsicWidth());
-        mHorizontalThumbHeight = Math
+        this.verticalThumbDrawable = verticalThumbDrawable;
+        this.verticalTrackDrawable = verticalTrackDrawable;
+
+        this.horizontalThumbDrawable = horizontalThumbDrawable;
+        this.horizontalTrackDrawable = horizontalTrackDrawable;
+
+        verticalThumbWidth = Math.max(defaultWidth, verticalThumbDrawable.getIntrinsicWidth());
+        verticalTrackWidth = Math.max(defaultWidth, verticalTrackDrawable.getIntrinsicWidth());
+
+        horizontalThumbHeight = Math
                 .max(defaultWidth, horizontalThumbDrawable.getIntrinsicWidth());
-        mHorizontalTrackHeight = Math
+        horizontalTrackHeight = Math
                 .max(defaultWidth, horizontalTrackDrawable.getIntrinsicWidth());
-        mScrollbarMinimumRange = scrollbarMinimumRange;
-        mMargin = margin;
-        mVerticalThumbDrawable.setAlpha(SCROLLBAR_FULL_OPAQUE);
-        mVerticalTrackDrawable.setAlpha(SCROLLBAR_FULL_OPAQUE);
-        mShowHideAnimator.addListener(new AnimatorListener());
-        mShowHideAnimator.addUpdateListener(new AnimatorUpdater());
-        attachToRecyclerView(recyclerView);
+
+        this.verticalThumbDrawable.setAlpha(SCROLLBAR_FULL_OPAQUE);
+        this.verticalTrackDrawable.setAlpha(SCROLLBAR_FULL_OPAQUE);
+
+        this.scrollbarMinimumRange = scrollbarMinimumRange;
+        this.minimalThumbSize = minimalThumbSize;
+        this.expandedTouchArea = expandedTouchArea;
+
+        showHideAnimator.addListener(new AnimatorListener());
+        showHideAnimator.addUpdateListener(new AnimatorUpdater());
+
+        attach(recyclerView);
     }
 
-    // HARDBACKNUTTER - BEGIN
     @Override
     public void setOverlayProvider(@Nullable final OverlayProvider overlayProvider) {
-        mOverlayProvider = overlayProvider;
+        this.overlayProvider = overlayProvider;
     }
 
     @Override
-    public void setOnFastScrollStateChangeListener(@Nullable final OnFastScrollStateChangeListener listener) {
-        mStateListener = listener;
+    public void setOnFastScrollStateChangeListener(@Nullable final
+                                                   OnFastScrollStateChangeListener listener) {
+        stateListener = listener;
     }
 
-    // HARDBACKNUTTER - END
-
-    public void attachToRecyclerView(@Nullable RecyclerView recyclerView) {
-        if (mRecyclerView == recyclerView) {
-            return; // nothing to do
+    public void attach(@Nullable final RecyclerView recyclerView) {
+        if (this.recyclerView == recyclerView) {
+            return;
         }
-        if (mRecyclerView != null) {
-            destroyCallbacks();
-        }
-        mRecyclerView = recyclerView;
-        if (mRecyclerView != null) {
-            setupCallbacks();
-        }
-    }
-
-    private void setupCallbacks() {
-        mRecyclerView.addItemDecoration(this);
-        mRecyclerView.addOnItemTouchListener(this);
-        mRecyclerView.addOnScrollListener(mOnScrollListener);
-    }
-
-    private void destroyCallbacks() {
-        mRecyclerView.removeItemDecoration(this);
-        mRecyclerView.removeOnItemTouchListener(this);
-        mRecyclerView.removeOnScrollListener(mOnScrollListener);
-        cancelHide();
-    }
-
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-    void requestRedraw() {
-        mRecyclerView.invalidate();
-    }
-
-    void setState(@State int state) {
-        // HARDBACKNUTTER - BEGIN
-        if (mStateListener != null) {
-            // 1. If we are physically dragging, ignore any request to stop dragging
-            // unless that request is coming from our own ACTION_UP (which sets DRAG_NONE).
-            if (mDragState != DRAG_NONE && state != STATE_DRAGGING) {
-                return;
-            }
-
-            // 2. Only trigger the listener if the state is ACTUALLY changing
-            if (state != mState) {
-                if (state == STATE_DRAGGING) {
-                    mStateListener.onFastScrollStarted();
-                } else if (mState == STATE_DRAGGING) {
-                    // We were dragging, now we aren't
-                    mStateListener.onFastScrollEnded();
-                }
-
-                // Update the internal state immediately
-                mState = state;
-            }
-        }
-        // HARDBACKNUTTER - END
-
-        if (state == STATE_DRAGGING && mState != STATE_DRAGGING) {
-            mVerticalThumbDrawable.setState(PRESSED_STATE_SET);
+        if (this.recyclerView != null) {
+            this.recyclerView.removeItemDecoration(this);
+            this.recyclerView.removeOnItemTouchListener(this);
+            this.recyclerView.removeOnScrollListener(scrollListener);
             cancelHide();
         }
-        if (state == STATE_HIDDEN) {
-            requestRedraw();
-        } else {
-            show();
+        this.recyclerView = recyclerView;
+        if (this.recyclerView != null) {
+            this.recyclerView.addItemDecoration(this);
+            this.recyclerView.addOnItemTouchListener(this);
+            this.recyclerView.addOnScrollListener(scrollListener);
         }
-        if (mState == STATE_DRAGGING && state != STATE_DRAGGING) {
-            mVerticalThumbDrawable.setState(EMPTY_STATE_SET);
-            resetHideDelay(HIDE_DELAY_AFTER_DRAGGING_MS);
-        } else if (state == STATE_VISIBLE) {
-            resetHideDelay(HIDE_DELAY_AFTER_VISIBLE_MS);
-        }
-        mState = state;
+    }
+
+    private void requestRedraw() {
+        recyclerView.invalidate();
     }
 
     private boolean isLayoutRTL() {
-        return mRecyclerView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        return recyclerView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
-    public boolean isDragging() {
-        return mState == STATE_DRAGGING;
-    }
-
-    @VisibleForTesting
-    boolean isVisible() {
-        return mState == STATE_VISIBLE;
-    }
-
-    public void show() {
-        switch (mAnimationState) {
-            case ANIMATION_STATE_FADING_OUT:
-                mShowHideAnimator.cancel();
+    private void show() {
+        switch (animationState) {
+            case FadingOut:
+                showHideAnimator.cancel();
                 // fall through
-            case ANIMATION_STATE_OUT:
-                mAnimationState = ANIMATION_STATE_FADING_IN;
-                mShowHideAnimator.setFloatValues((float) mShowHideAnimator.getAnimatedValue(), 1);
-                mShowHideAnimator.setDuration(SHOW_DURATION_MS);
-                mShowHideAnimator.setStartDelay(0);
-                mShowHideAnimator.start();
+            case Out:
+                animationState = AnimationState.FadingIn;
+                showHideAnimator.setFloatValues((float) showHideAnimator.getAnimatedValue(), 1);
+                showHideAnimator.setDuration(SHOW_DURATION_MS);
+                showHideAnimator.setStartDelay(0);
+                showHideAnimator.start();
                 break;
         }
     }
 
-    @VisibleForTesting
-    void hide(int duration) {
-        switch (mAnimationState) {
-            case ANIMATION_STATE_FADING_IN:
-                mShowHideAnimator.cancel();
+    private void hide(final int duration) {
+        switch (animationState) {
+            case FadingIn:
+                showHideAnimator.cancel();
                 // fall through
-            case ANIMATION_STATE_IN:
-                mAnimationState = ANIMATION_STATE_FADING_OUT;
-                mShowHideAnimator.setFloatValues((float) mShowHideAnimator.getAnimatedValue(), 0);
-                mShowHideAnimator.setDuration(duration);
-                mShowHideAnimator.start();
+            case In:
+                animationState = AnimationState.FadingOut;
+                showHideAnimator.setFloatValues((float) showHideAnimator.getAnimatedValue(), 0);
+                showHideAnimator.setDuration(duration);
+                showHideAnimator.start();
                 break;
         }
     }
 
     private void cancelHide() {
-        mRecyclerView.removeCallbacks(mHideRunnable);
+        recyclerView.removeCallbacks(hideRunnable);
     }
 
-    private void resetHideDelay(int delay) {
+    private void resetHideDelay(final int delay) {
         cancelHide();
-        mRecyclerView.postDelayed(mHideRunnable, delay);
+        recyclerView.postDelayed(hideRunnable, delay);
+    }
+
+    private void setState(@NonNull final State state) {
+        if (stateListener != null) {
+            // 1. If we are physically dragging, ignore any request to stop dragging
+            // unless that request is coming from our own ACTION_UP (which sets DragState.None).
+            if (dragState != DragState.None && state != State.Dragging) {
+                return;
+            }
+
+            // 2. Only trigger the listener if the state is ACTUALLY changing
+            if (state != this.state) {
+                if (state == State.Dragging) {
+                    // The NEW state is Dragging
+                    stateListener.onFastScrollStarted();
+                } else if (this.state == State.Dragging) {
+                    // We WERE dragging, now we aren't
+                    stateListener.onFastScrollEnded();
+                }
+
+                // Update the internal state immediately
+                this.state = state;
+            }
+        }
+
+        if (state == State.Dragging && this.state != State.Dragging) {
+            verticalThumbDrawable.setState(PRESSED_STATE_SET);
+            cancelHide();
+        }
+
+        if (state == State.Hidden) {
+            requestRedraw();
+        } else {
+            show();
+        }
+
+        if (this.state == State.Dragging && state != State.Dragging) {
+            verticalThumbDrawable.setState(EMPTY_STATE_SET);
+            resetHideDelay(HIDE_DELAY_AFTER_DRAGGING_MS);
+
+        } else if (state == State.Visible) {
+            resetHideDelay(HIDE_DELAY_AFTER_VISIBLE_MS);
+        }
+
+        this.state = state;
     }
 
     @Override
-    public void onDrawOver(Canvas canvas,
-                           RecyclerView parent,
-                           RecyclerView.State state) {
-        if (mRecyclerViewWidth != mRecyclerView.getWidth()
-            || mRecyclerViewHeight != mRecyclerView.getHeight()) {
-            mRecyclerViewWidth = mRecyclerView.getWidth();
-            mRecyclerViewHeight = mRecyclerView.getHeight();
+    public void onDrawOver(@NonNull final Canvas canvas,
+                           @NonNull final RecyclerView parent,
+                           @NonNull final RecyclerView.State state) {
+        if (recyclerViewWidth != recyclerView.getWidth()
+            || recyclerViewHeight != recyclerView.getHeight()) {
+            recyclerViewWidth = recyclerView.getWidth();
+            recyclerViewHeight = recyclerView.getHeight();
             // This is due to the different events ordering when keyboard is opened or
             // retracted vs rotate. Hence to avoid corner cases we just disable the
             // scroller when size changed, and wait until the scroll position is recomputed
             // before showing it back.
-            setState(STATE_HIDDEN);
+            setState(State.Hidden);
             return;
         }
-        if (mAnimationState != ANIMATION_STATE_OUT) {
-            if (mNeedVerticalScrollbar) {
+        if (animationState != AnimationState.Out) {
+            if (needVerticalScrollbar) {
                 drawVerticalScrollbar(canvas);
             }
-            if (mNeedHorizontalScrollbar) {
+            if (needHorizontalScrollbar) {
                 drawHorizontalScrollbar(canvas);
             }
         }
 
-        // HARDBACKNUTTER - BEGIN
-        if (mOverlayProvider != null) {
-            mOverlayProvider.showOverlay(isDragging(), mVerticalThumbCenterY);
+        if (overlayProvider != null) {
+            overlayProvider.showOverlay(this.state == State.Dragging, verticalThumbCenterY);
         }
-        // HARDBACKNUTTER - END
     }
 
-    private void drawVerticalScrollbar(Canvas canvas) {
-        int viewWidth = mRecyclerViewWidth;
-        int left = viewWidth - mVerticalThumbWidth;
+    private void drawVerticalScrollbar(@NonNull final Canvas canvas) {
+        final int viewWidth = recyclerViewWidth;
+        final int leftDx = viewWidth - verticalThumbWidth;
 
-        // HARDBACKNUTTER - BEGIN
-        final int safeAreaTop = mMargin;
-        final int safeAreaBottom = mRecyclerViewHeight - mMargin;
+        final int safeAreaTop = marginTop;
+        final int safeAreaBottom = recyclerViewHeight - marginBottom;
 
         // Calculate the raw top position
-        int top = mVerticalThumbCenterY - mVerticalThumbHeight / 2;
+        int topDx = verticalThumbCenterY - verticalThumbHeight / 2;
         // Clamp the drawing bounds to the Safe Area
         // This ensures the drawable never physically enters any rounded corner area
-        if (top < safeAreaTop) {
-            top = safeAreaTop;
-        } else if (top + mVerticalThumbHeight > safeAreaBottom) {
-            top = safeAreaBottom - mVerticalThumbHeight;
+        if (topDx < safeAreaTop) {
+            topDx = safeAreaTop;
+        } else if (topDx + verticalThumbHeight > safeAreaBottom) {
+            topDx = safeAreaBottom - verticalThumbHeight;
         }
 
         // Set bounds for the thumb
-        mVerticalThumbDrawable.setBounds(0, 0, mVerticalThumbWidth, mVerticalThumbHeight);
+        verticalThumbDrawable.setBounds(0, 0, verticalThumbWidth, verticalThumbHeight);
 
         // The track itself should also respect the margin so it doesn't look cut off
-        mVerticalTrackDrawable.setBounds(0, safeAreaTop, mVerticalTrackWidth, safeAreaBottom);
-        // HARDBACKNUTTER - END
+        verticalTrackDrawable.setBounds(0, safeAreaTop, verticalTrackWidth, safeAreaBottom);
 
         if (isLayoutRTL()) {
-            mVerticalTrackDrawable.draw(canvas);
-            canvas.translate(mVerticalThumbWidth, top);
+            verticalTrackDrawable.draw(canvas);
+            canvas.translate(verticalThumbWidth, topDx);
             canvas.scale(-1, 1);
-            mVerticalThumbDrawable.draw(canvas);
+            verticalThumbDrawable.draw(canvas);
             canvas.scale(-1, 1);
-            canvas.translate(-mVerticalThumbWidth, -top);
+            canvas.translate(-verticalThumbWidth, -topDx);
         } else {
-            canvas.translate(left, 0);
-            mVerticalTrackDrawable.draw(canvas);
-            canvas.translate(0, top);
-            mVerticalThumbDrawable.draw(canvas);
-            canvas.translate(-left, -top);
+            canvas.translate(leftDx, 0);
+            verticalTrackDrawable.draw(canvas);
+            canvas.translate(0, topDx);
+            verticalThumbDrawable.draw(canvas);
+            canvas.translate(-leftDx, -topDx);
         }
     }
 
-    private void drawHorizontalScrollbar(Canvas canvas) {
-        int viewHeight = mRecyclerViewHeight;
-        int top = viewHeight - mHorizontalThumbHeight;
+    private void drawHorizontalScrollbar(@NonNull final Canvas canvas) {
+        final int viewHeight = recyclerViewHeight;
+        final int topDx = viewHeight - horizontalThumbHeight;
 
-        // HARDBACKNUTTER - BEGIN
-        final int safeAreaLeft = mMargin;
-        final int safeAreaRight = mRecyclerViewWidth - mMargin;
+        final int safeAreaLeft = marginLeft;
+        final int safeAreaRight = recyclerViewWidth - marginRight;
 
         // Calculate the raw left position
-        int left = mHorizontalThumbCenterX - mHorizontalThumbWidth / 2;
+        int leftDx = horizontalThumbCenterX - horizontalThumbWidth / 2;
         // Clamp the drawing bounds to the Safe Area
         // This ensures the drawable never physically enters any rounded corner area
-        if (left < safeAreaLeft) {
-            left = safeAreaLeft;
-        } else if (left + mHorizontalThumbWidth > safeAreaRight) {
-            left = safeAreaRight - mHorizontalThumbWidth;
+        if (leftDx < safeAreaLeft) {
+            leftDx = safeAreaLeft;
+        } else if (leftDx + horizontalThumbWidth > safeAreaRight) {
+            leftDx = safeAreaRight - horizontalThumbWidth;
         }
 
         // Set bounds for the thumb
-        mHorizontalThumbDrawable.setBounds(0, 0, mHorizontalThumbWidth, mHorizontalThumbHeight);
+        horizontalThumbDrawable.setBounds(0, 0, horizontalThumbWidth, horizontalThumbHeight);
 
         // The track itself should also respect the margin so it doesn't look cut off
-        mHorizontalTrackDrawable.setBounds(safeAreaLeft, 0, safeAreaRight, mHorizontalTrackHeight);
+        horizontalTrackDrawable.setBounds(safeAreaLeft, 0, safeAreaRight, horizontalTrackHeight);
 
-        canvas.translate(0, top);
-        mHorizontalTrackDrawable.draw(canvas);
-        canvas.translate(left, 0);
-        mHorizontalThumbDrawable.draw(canvas);
+        canvas.translate(0, topDx);
+        horizontalTrackDrawable.draw(canvas);
+        canvas.translate(leftDx, 0);
+        horizontalThumbDrawable.draw(canvas);
         // Reset X and Y
-        canvas.translate(-left, 0);
-        canvas.translate(0, -top);
-        // HARDBACKNUTTER - END
+        canvas.translate(-leftDx, 0);
+        canvas.translate(0, -topDx);
     }
 
-    // HARDBACKNUTTER - BEGIN
-    private void updateMarginFromInsets() {
-        if (mRecyclerView == null) {
-            return;
-        }
-
-        // Fetch the insets directly from the root of the view hierarchy
-        final WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(mRecyclerView);
-        if (insets != null) {
-            final Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-            // Take the larger of the two to clear corners & nav bar
-            final int newMargin = Math.max(systemBars.top, systemBars.bottom);
-
-            // Only update if it actually changed to avoid infinite loops
-            if (this.mMargin != newMargin) {
-                this.mMargin = newMargin;
-                // don't call requestRedraw here; updateScrollPosition does that
-            }
-        }
-    }
-    // HARDBACKNUTTER - END
 
     /**
      * Notify the scroller of external change of the scroll, e.g. through dragging or flinging on
@@ -502,210 +430,238 @@ public class FastScrollerImpl
      * @param offsetX The new scroll X offset.
      * @param offsetY The new scroll Y offset.
      */
-    void updateScrollPosition(int offsetX,
-                              int offsetY) {
-        // HARDBACKNUTTER - BEGIN
+    private void updateScrollPosition(final int offsetX,
+                                      final int offsetY) {
         // Pull the hardware margins first
         updateMarginFromInsets();
-        // HARDBACKNUTTER - END
 
-        int verticalContentLength = mRecyclerView.computeVerticalScrollRange();
-        int verticalVisibleLength = mRecyclerViewHeight;
-        mNeedVerticalScrollbar = verticalContentLength - verticalVisibleLength > 0
-                                 && mRecyclerViewHeight >= mScrollbarMinimumRange;
-        int horizontalContentLength = mRecyclerView.computeHorizontalScrollRange();
-        int horizontalVisibleLength = mRecyclerViewWidth;
-        mNeedHorizontalScrollbar = horizontalContentLength - horizontalVisibleLength > 0
-                                   && mRecyclerViewWidth >= mScrollbarMinimumRange;
-        if (!mNeedVerticalScrollbar && !mNeedHorizontalScrollbar) {
-            if (mState != STATE_HIDDEN) {
-                setState(STATE_HIDDEN);
+        final int verticalContentLength = recyclerView.computeVerticalScrollRange();
+        final int verticalVisibleLength = recyclerViewHeight;
+        needVerticalScrollbar = verticalContentLength - verticalVisibleLength > 0
+                                && recyclerViewHeight >= scrollbarMinimumRange;
+
+        final int horizontalContentLength = recyclerView.computeHorizontalScrollRange();
+        final int horizontalVisibleLength = recyclerViewWidth;
+        needHorizontalScrollbar = horizontalContentLength - horizontalVisibleLength > 0
+                                  && recyclerViewWidth >= scrollbarMinimumRange;
+
+        if (!needVerticalScrollbar && !needHorizontalScrollbar) {
+            if (state != State.Hidden) {
+                setState(State.Hidden);
             }
             return;
         }
-        if (mNeedVerticalScrollbar) {
-            // HARDBACKNUTTER - BEGIN
-            if (!(mRecyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
-                return;
-            }
-            final LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
 
+        if (needVerticalScrollbar) {
+            final LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            @SuppressWarnings("DataFlowIssue")
             final int totalItemCount = lm.getItemCount();
             if (totalItemCount == 0) {
                 return;
             }
 
             calculateVerticalThumbCenterY(lm, totalItemCount);
-            // HARDBACKNUTTER - END
         }
-        if (mNeedHorizontalScrollbar) {
-            // HARDBACKNUTTER - BEGIN
+
+        if (needHorizontalScrollbar) {
             calculateHorizontalThumbCenterX(offsetX,
                                             horizontalContentLength,
                                             horizontalVisibleLength);
-            // HARDBACKNUTTER - END
         }
-        if (mState == STATE_HIDDEN || mState == STATE_VISIBLE) {
-            setState(STATE_VISIBLE);
+
+        if (state == State.Hidden || state == State.Visible) {
+            setState(State.Visible);
         }
     }
 
-    // HARDBACKNUTTER - BEGIN
-    private void calculateVerticalThumbCenterY(@NonNull final LinearLayoutManager layoutManager,
-                                               final int totalItemCount) {
-        // Calculate Progress based on Item Index, not Pixels
-        final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
-        final int lastVisiblePos = layoutManager.findLastVisibleItemPosition();
-        final int visibleItemCount = lastVisiblePos - firstVisiblePos + 1;
-
-        // Calculate Thumb Height based on visible item ratio
-        final float itemsVisibleRatio = (float) visibleItemCount / totalItemCount;
-        mVerticalThumbHeight = (int) (itemsVisibleRatio * (mRecyclerViewHeight - 2 * mMargin));
-        mVerticalThumbHeight = Math.max(mVerticalThumbHeight, mMinimalThumbSize);
-
-        // see #verticalScrollTo(float y)
-        final int safeAreaTop = mMargin;
-        final int safeAreaBottom = mRecyclerViewHeight - mMargin;
-        final float minCenter = safeAreaTop + (mVerticalThumbHeight / 2.0f);
-        final float maxCenter = safeAreaBottom - (mVerticalThumbHeight / 2.0f);
-        final float travelRange = maxCenter - minCenter;
-
-        // Calculate Percentage based on item Index
-        float percentage;
-        if (visibleItemCount >= totalItemCount) {
-            percentage = 0;
-        } else {
-            // This ensures that when the last item is visible, fraction is exactly 1.0
-            percentage = (float) firstVisiblePos / (totalItemCount - visibleItemCount);
-            percentage = Math.max(0f, Math.min(1.0f, percentage));
+    private void updateMarginFromInsets() {
+        if (recyclerView == null) {
+            return;
         }
 
-        // Set the final Center Y
-        mVerticalThumbCenterY = (int) (minCenter + (percentage * travelRange));
+        // Fetch the insets directly from the root of the view hierarchy
+        final WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(recyclerView);
+        if (insets != null) {
+            final Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            this.marginTop = systemBars.top;
+            this.marginBottom = systemBars.bottom;
+            this.marginLeft = systemBars.left;
+            this.marginRight = systemBars.right;
+            // Note we don't call requestRedraw here; updateScrollPosition does that
+        }
+    }
+
+    private void calculateVerticalThumbCenterY(@NonNull final LinearLayoutManager lm,
+                                               final int totalItemCount) {
+        final int firstVisiblePos = lm.findFirstVisibleItemPosition();
+        final View firstView = lm.findViewByPosition(firstVisiblePos);
+
+        // Sanity check
+        if (firstView == null) {
+            return;
+        }
+
+        // Calculate the Position.
+        // We take the index and add the fraction of the current item scrolled off-screen.
+        // This handles variable row heights by looking only at the current (top) row's height.
+        final float partialFactor = firstView.getY() / (float) firstView.getHeight();
+        final float position = firstVisiblePos - partialFactor;
+
+        // Define the Track (Safe Area)
+        final int safeAreaTop = marginTop;
+        final int safeAreaBottom = recyclerViewHeight - marginBottom;
+        final int trackHeight = safeAreaBottom - safeAreaTop;
+
+        // Take the average height of the first and last visible items
+        // to get a more or less stable "items per screen" value.
+        final int lastVisiblePos = lm.findLastVisibleItemPosition();
+        final int itemsVisibleNow = Math.max(1, lastVisiblePos - firstVisiblePos);
+        final float avgHeightVisible = (float) trackHeight / itemsVisibleNow;
+
+        // Use this average to set the thumb height and the scroll ratio
+        final float estimatedItemsOnScreen = (float) trackHeight / avgHeightVisible;
+
+        final int dynamicHeight = (int) (trackHeight * (estimatedItemsOnScreen / totalItemCount));
+        verticalThumbHeight = Math.max(dynamicHeight, minimalThumbSize);
+
+        final float minCenter = safeAreaTop + (verticalThumbHeight / 2.0f);
+        final float maxCenter = safeAreaBottom - (verticalThumbHeight / 2.0f);
+        final float travelRange = maxCenter - minCenter;
+
+        // Calculate Percentage
+        if (totalItemCount <= itemsVisibleNow) {
+            verticalThumbCenterY = (int) minCenter;
+        } else {
+            // Use 'totalItemCount - itemsVisibleNow' as a fixed denominator,
+            // to keep the thumb stable whn rows of different height scroll by.
+            float percentage = position / (totalItemCount - itemsVisibleNow);
+            percentage = Math.max(0f, Math.min(1.0f, percentage));
+            verticalThumbCenterY = (int) (minCenter + (percentage * travelRange));
+        }
     }
 
     private void calculateHorizontalThumbCenterX(final int offsetX,
-                                                 final int horizontalContentLength,
-                                                 final int horizontalVisibleLength) {
+                                                 final int totalLength,
+                                                 final int visibleLength) {
         // Horizontal uses standard pixel math as items usually have fixed widths
-        final float maxScrollOffset = (float) (horizontalContentLength - horizontalVisibleLength);
-        final float scrollFraction = maxScrollOffset > 0 ? (offsetX / maxScrollOffset) : 0;
 
-        mHorizontalThumbWidth = Math.min(horizontalVisibleLength,
-                                         (horizontalVisibleLength * horizontalVisibleLength)
-                                         / horizontalContentLength);
-        mHorizontalThumbWidth = Math.max(mHorizontalThumbWidth, mMinimalThumbSize);
+        horizontalThumbWidth = Math.min(visibleLength,
+                                        (visibleLength * visibleLength) / totalLength);
+        // Clamp to minimal size allowed
+        horizontalThumbWidth = Math.max(horizontalThumbWidth, minimalThumbSize);
 
         // Define the Safe Drawing Range for the center of the thumb
-        final int safeAreaLeft = mMargin;
-        final int safeAreaRight = mRecyclerViewWidth - mMargin;
+        final int safeAreaLeft = marginLeft;
+        final int safeAreaRight = recyclerViewWidth - marginRight;
+        final float minCenter = safeAreaLeft + (horizontalThumbWidth / 2.0f);
+        final float maxCenter = safeAreaRight - (horizontalThumbWidth / 2.0f);
 
-        final float minCenter = safeAreaLeft + (mHorizontalThumbWidth / 2.0f);
-        final float maxCenter = safeAreaRight - (mHorizontalThumbWidth / 2.0f);
-        final float travelRange = maxCenter - minCenter;
-
-        mHorizontalThumbCenterX = (int) (minCenter + (scrollFraction * travelRange));
+        // Set the final Center X
+        if (visibleLength >= totalLength) {
+            horizontalThumbCenterX = (int) minCenter;
+        } else {
+            float percentage = offsetX / (float) (totalLength - visibleLength);
+            percentage = Math.max(0f, Math.min(1.0f, percentage));
+            horizontalThumbCenterX = (int) (minCenter + (percentage * (maxCenter - minCenter)));
+        }
     }
-    // HARDBACKNUTTER - END
 
     @Override
-    public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView,
-                                         @NonNull MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull final RecyclerView recyclerView,
+                                         @NonNull final MotionEvent ev) {
 
-        // HARDBACKNUTTER - BEGIN
         // If we are already dragging, we MUST return true to keep
         // receiving the events (like ACTION_UP) in our onTouchEvent.
-        if (mState == STATE_DRAGGING) {
+        if (state == State.Dragging) {
             return true;
         }
-        // HARDBACKNUTTER - END
 
         final boolean handled;
-        if (mState == STATE_VISIBLE) {
-            boolean insideVerticalThumb = isPointInsideVerticalThumb(ev.getX(), ev.getY());
-            boolean insideHorizontalThumb = isPointInsideHorizontalThumb(ev.getX(), ev.getY());
+        if (state == State.Visible) {
+            final boolean insideVerticalThumb =
+                    isPointInsideVerticalThumb(ev.getX(), ev.getY());
+            final boolean insideHorizontalThumb =
+                    isPointInsideHorizontalThumb(ev.getX(), ev.getY());
+
             if (ev.getAction() == MotionEvent.ACTION_DOWN
                 && (insideVerticalThumb || insideHorizontalThumb)) {
-
-                // HARDBACKNUTTER - BEGIN
                 // Tell parents not to steal the focus now that we've grabbed the thumb
                 recyclerView.getParent().requestDisallowInterceptTouchEvent(true);
-                // HARDBACKNUTTER - END
 
                 if (insideHorizontalThumb) {
-                    mDragState = DRAG_X;
-                    mHorizontalDragX = (int) ev.getX();
+                    dragState = DragState.X;
+                    horizontalDragX = (int) ev.getX();
                 } else if (insideVerticalThumb) {
-                    mDragState = DRAG_Y;
-                    mVerticalDragY = (int) ev.getY();
+                    dragState = DragState.Y;
+                    verticalDragY = (int) ev.getY();
                 }
-                setState(STATE_DRAGGING);
+                setState(State.Dragging);
                 handled = true;
-                // HARDBACKNUTTER - BEGIN
             } else if (isPointInsideTrack(ev.getX(), ev.getY())) {
                 jumpToPositionFromTrack(ev.getY());
                 handled = true;
-                // HARDBACKNUTTER - END
             } else {
                 handled = false;
             }
         } else {
-            handled = mState == STATE_DRAGGING;
+            handled = false;
         }
         return handled;
     }
 
     @Override
-    public void onTouchEvent(@NonNull RecyclerView recyclerView,
-                             @NonNull MotionEvent me) {
-        if (mState == STATE_HIDDEN) {
+    public void onTouchEvent(@NonNull final RecyclerView recyclerView,
+                             @NonNull final MotionEvent me) {
+        if (state == State.Hidden) {
+            // nothing to do
             return;
         }
 
-        // HARDBACKNUTTER - BEGIN
         // Tell parents not to steal touch while we are dragging
-        if (mState == STATE_DRAGGING) {
+        if (state == State.Dragging) {
             recyclerView.getParent().requestDisallowInterceptTouchEvent(true);
         }
-        // HARDBACKNUTTER - END
 
         if (me.getAction() == MotionEvent.ACTION_DOWN) {
-            boolean insideVerticalThumb = isPointInsideVerticalThumb(me.getX(), me.getY());
-            boolean insideHorizontalThumb = isPointInsideHorizontalThumb(me.getX(), me.getY());
+            final boolean insideVerticalThumb =
+                    isPointInsideVerticalThumb(me.getX(), me.getY());
+            final boolean insideHorizontalThumb =
+                    isPointInsideHorizontalThumb(me.getX(), me.getY());
+
             if (insideVerticalThumb || insideHorizontalThumb) {
                 if (insideHorizontalThumb) {
-                    mDragState = DRAG_X;
-                    mHorizontalDragX = (int) me.getX();
+                    dragState = DragState.X;
+                    horizontalDragX = (int) me.getX();
                 } else if (insideVerticalThumb) {
-                    mDragState = DRAG_Y;
-                    mVerticalDragY = (int) me.getY();
+                    dragState = DragState.Y;
+                    verticalDragY = (int) me.getY();
                 }
-                setState(STATE_DRAGGING);
+                setState(State.Dragging);
             }
-        } else if (me.getAction() == MotionEvent.ACTION_UP && mState == STATE_DRAGGING) {
-            mVerticalDragY = 0;
-            mHorizontalDragX = 0;
-            // HARDBACKNUTTER - BEGIN
+
+        } else if (me.getAction() == MotionEvent.ACTION_UP && state == State.Dragging) {
+            verticalDragY = 0;
+            horizontalDragX = 0;
             // Clear DragState BEFORE calling setState
-            mDragState = DRAG_NONE;
-            setState(STATE_VISIBLE);
-            // HARDBACKNUTTER - END
-        } else if (me.getAction() == MotionEvent.ACTION_MOVE && mState == STATE_DRAGGING) {
+            dragState = DragState.None;
+            setState(State.Visible);
+
+        } else if (me.getAction() == MotionEvent.ACTION_MOVE && state == State.Dragging) {
             show();
-            if (mDragState == DRAG_X) {
+            if (dragState == DragState.X) {
                 horizontalScrollTo(me.getX());
             }
-            if (mDragState == DRAG_Y) {
+            if (dragState == DragState.Y) {
                 verticalScrollTo(me.getY());
             }
         }
     }
 
     @Override
-    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+    public void onRequestDisallowInterceptTouchEvent(final boolean disallowIntercept) {
     }
-
-    // HARDBACKNUTTER - BEGIN
 
     /**
      * User tapped the scrollbar; we need to jump to the given position.
@@ -716,34 +672,88 @@ public class FastScrollerImpl
      * @param y of the touch event
      */
     private void jumpToPositionFromTrack(final float y) {
-        if (!(mRecyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
-            return;
-        }
-        final LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+        final LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-        final int safeAreaTop = mMargin;
-        final int safeAreaBottom = mRecyclerViewHeight - mMargin;
+        // Define the Safe Drawing Range (Matches verticalScrollTo)
+        final int safeAreaTop = marginTop;
+        final int safeAreaBottom = recyclerViewHeight - marginBottom;
 
-        final float minCenter = safeAreaTop + (mVerticalThumbHeight / 2.0f);
-        final float maxCenter = safeAreaBottom - (mVerticalThumbHeight / 2.0f);
+        // Define the travel range for the thumb center
+        final float minCenter = safeAreaTop + (verticalThumbHeight / 2.0f);
+        final float maxCenter = safeAreaBottom - (verticalThumbHeight / 2.0f);
         final float travelRange = maxCenter - minCenter;
 
+        // Clamp the touch 'y' to the allowed center range
         final float clampedY = Math.max(minCenter, Math.min(maxCenter, y));
 
+        // Calculate Percentage based on travel range
         float percentage = (clampedY - minCenter) / travelRange;
         percentage = Math.max(0.0f, Math.min(1.0f, percentage));
 
+        // Map to Item Count
+        @SuppressWarnings("DataFlowIssue")
         final int totalItems = lm.getItemCount();
-        final int targetPosition = calculateJumpTargetPosition(totalItems, percentage);
 
+        // We reuse the 'visible items' proxy to ensure the tap lands the user
+        // at a consistent scroll state relative to the bottom.
+        final View firstChild = recyclerView.getChildAt(0);
+        final float itemHeight = (firstChild != null) ? firstChild.getHeight() : 100f;
+        final float estimatedItemsVisible = (float) (safeAreaBottom - safeAreaTop) / itemHeight;
+
+        final int targetPosition = calculateTargetPosition(percentage, totalItems,
+                                                           estimatedItemsVisible);
+
+        // Execute the scroll
         lm.scrollToPositionWithOffset(targetPosition, 0);
 
-        mVerticalThumbCenterY = (int) clampedY;
+        // Sync the thumb position and redraw
+        verticalThumbCenterY = (int) clampedY;
         requestRedraw();
     }
 
-    private int calculateJumpTargetPosition(final int totalItems,
-                                            final float percentage) {
+    private void verticalScrollTo(final float y) {
+        final LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+        // Define the Safe Drawing Range
+        final int safeAreaTop = marginTop;
+        final int safeAreaBottom = recyclerViewHeight - marginBottom;
+
+        // Define the range the thumb center can actually move in
+        final float minCenter = safeAreaTop + (verticalThumbHeight / 2.0f);
+        final float maxCenter = safeAreaBottom - (verticalThumbHeight / 2.0f);
+        final float travelRange = maxCenter - minCenter;
+
+        // Clamp the touch 'y' to the allowed center range
+        final float clampedY = Math.max(minCenter, Math.min(maxCenter, y));
+
+        // Calculate Percentage based on travel range
+        float percentage = (clampedY - minCenter) / travelRange;
+        percentage = Math.max(0.0f, Math.min(1.0f, percentage));
+
+        // Map to Item Count
+        @SuppressWarnings("DataFlowIssue")
+        final int totalItems = lm.getItemCount();
+
+        // We calculate visible items as a whole number to stabilize the denominator.
+        // This stops the jitter when moving between rows of different heights.
+        final int firstVisible = lm.findFirstVisibleItemPosition();
+        final int lastVisible = lm.findLastVisibleItemPosition();
+        final int itemsVisibleNow = Math.max(1, lastVisible - firstVisible);
+
+        final int targetPosition = calculateTargetPosition(percentage, totalItems,
+                                                           itemsVisibleNow);
+
+        // Execute the scroll
+        lm.scrollToPositionWithOffset(targetPosition, 0);
+
+        // Sync the thumb position and redraw
+        verticalThumbCenterY = (int) clampedY;
+        requestRedraw();
+    }
+
+    private int calculateTargetPosition(final float percentage,
+                                        final int totalItems,
+                                        final float itemsOnScreen) {
         final int targetPosition;
         if (percentage <= 0.02f) {
             // If we are within 2% of the top, force the first item
@@ -752,101 +762,58 @@ public class FastScrollerImpl
             // If we are within 2% of the bottom, force the last item
             targetPosition = totalItems - 1;
         } else {
-            targetPosition = (int) (percentage * totalItems);
+            targetPosition = (int) (percentage * (totalItems - itemsOnScreen));
         }
-        // Ensure it's never out of bounds
-        return Math.max(0, Math.min(totalItems - 1, targetPosition));
-    }
-
-    private void verticalScrollTo(final float y) {
-        if (!(mRecyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
-            return;
-        }
-        final LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-
-        // Define the Safe Drawing Range for the center of the thumb
-        final int safeAreaTop = mMargin;
-        final int safeAreaBottom = mRecyclerViewHeight - mMargin;
-
-        // Define the range the thumb CENTER can actually move in
-        final float minCenter = safeAreaTop + (mVerticalThumbHeight / 2.0f);
-        final float maxCenter = safeAreaBottom - (mVerticalThumbHeight / 2.0f);
-        final float travelRange = maxCenter - minCenter;
-
-        // Clamp the touch 'y' to the allowed center range
-        // This forces a tap at the absolute screen edge to be treated
-        // as a tap at the "max possible" thumb position.
-        final float clampedY = Math.max(minCenter, Math.min(maxCenter, y));
-
-        // Calculate Percentage based on travel range
-        float percentage = (clampedY - minCenter) / travelRange;
-        percentage = Math.max(0.0f, Math.min(1.0f, percentage));
-
-        // Map to Item Count
-        final int totalItems = lm.getItemCount();
-        final int targetPosition = calculateVerticalScrollToTargetPosition(totalItems, percentage);
-
-        // Scroll to the exact item using the LayoutManager
-        // This is much more reliable for variable heights than scrollBy(pixels)
-        lm.scrollToPositionWithOffset(targetPosition, 0);
-
-        // Sync the thumb position immediately
-        mVerticalThumbCenterY = (int) clampedY;
-        requestRedraw();
-    }
-
-    private int calculateVerticalScrollToTargetPosition(final int totalItems,
-                                                        final float percentage) {
-        final int targetPosition = (int) (percentage * totalItems);
-        // Ensure it's never out of bounds
         return Math.max(0, Math.min(totalItems - 1, targetPosition));
     }
 
     private void horizontalScrollTo(final float x) {
-        // Define the range the thumb center is allowed to move in
-        final int safeAreaLeft = mMargin;
-        final int safeAreaRight = mRecyclerViewWidth - mMargin;
+        // Define the range the thumb is allowed to move in
+        final int safeAreaLeft = marginLeft;
+        final int safeAreaRight = recyclerViewWidth - marginRight;
 
-        final float minCenter = safeAreaLeft + (mHorizontalThumbWidth / 2.0f);
-        final float maxCenter = safeAreaRight - (mHorizontalThumbWidth / 2.0f);
+        // Define the range the thumb center can actually move in
+        final float minCenter = safeAreaLeft + (horizontalThumbWidth / 2.0f);
+        final float maxCenter = safeAreaRight - (horizontalThumbWidth / 2.0f);
 
-        // Clamp the touch 'x' to the allowed center range
+        // Clamp the touch 'x' to the allowed center range.
         final float clampedX = Math.max(minCenter, Math.min(maxCenter, x));
 
-        if (Math.abs(mHorizontalThumbCenterX - clampedX) < 2) {
+        if (Math.abs(horizontalThumbCenterX - clampedX) < 2) {
             return;
         }
 
         // Perform the scroll
         // Use the clamped range (maxCenter - minCenter) as the scrollbarLength
         final int scrollbarLength = (int) (maxCenter - minCenter);
-        final int scrollingBy = scrollTo(mHorizontalDragX, clampedX,
-                                         // relative range
-                                         new int[]{0, scrollbarLength},
-                                         mRecyclerView.computeHorizontalScrollRange(),
-                                         mRecyclerView.computeHorizontalScrollOffset(),
-                                         mRecyclerViewWidth);
-        // HARDBACKNUTTER - END
+        final int scrollingBy = scrollTo(
+                horizontalDragX, clampedX,
+                // relative range
+                new int[]{0, scrollbarLength},
+                recyclerView.computeHorizontalScrollRange(),
+                recyclerView.computeHorizontalScrollOffset(),
+                recyclerViewWidth);
+
         if (scrollingBy != 0) {
-            mRecyclerView.scrollBy(scrollingBy, 0);
+            recyclerView.scrollBy(scrollingBy, 0);
         }
-        mHorizontalDragX = (int) clampedX;
+        horizontalDragX = (int) clampedX;
     }
 
-    private int scrollTo(float oldDragPos,
-                         float newDragPos,
-                         int[] scrollbarRange,
-                         int scrollRange,
-                         int scrollOffset,
-                         int viewLength) {
-        int scrollbarLength = scrollbarRange[1] - scrollbarRange[0];
+    private int scrollTo(final float oldDragPos,
+                         final float newDragPos,
+                         @NonNull final int[] scrollbarRange,
+                         final int scrollRange,
+                         final int scrollOffset,
+                         final int viewLength) {
+        final int scrollbarLength = scrollbarRange[1] - scrollbarRange[0];
         if (scrollbarLength == 0) {
             return 0;
         }
-        float percentage = ((newDragPos - oldDragPos) / (float) scrollbarLength);
-        int totalPossibleOffset = scrollRange - viewLength;
-        int scrollingBy = (int) (percentage * totalPossibleOffset);
-        int absoluteOffset = scrollOffset + scrollingBy;
+        final float percentage = (newDragPos - oldDragPos) / (float) scrollbarLength;
+        final int totalPossibleOffset = scrollRange - viewLength;
+        final int scrollingBy = (int) (percentage * totalPossibleOffset);
+        final int absoluteOffset = scrollOffset + scrollingBy;
         if (absoluteOffset < totalPossibleOffset && absoluteOffset >= 0) {
             return scrollingBy;
         } else {
@@ -854,7 +821,6 @@ public class FastScrollerImpl
         }
     }
 
-    // HARDBACKNUTTER - BEGIN
     private boolean isPointInsideVerticalThumb(final float x,
                                                final float y) {
 
@@ -862,10 +828,10 @@ public class FastScrollerImpl
         final boolean isInsideX;
         if (isLayoutRTL()) {
             // In RTL, the thumb is on the left. Expand to the right.
-            isInsideX = x <= mVerticalThumbWidth + mExpandedTouchArea;
+            isInsideX = x <= verticalThumbWidth + expandedTouchArea;
         } else {
             // In LTR, the thumb is on the right. Expand to the left.
-            isInsideX = x >= mRecyclerViewWidth - mVerticalThumbWidth - mExpandedTouchArea;
+            isInsideX = x >= recyclerViewWidth - verticalThumbWidth - expandedTouchArea;
         }
 
         if (!isInsideX) {
@@ -874,139 +840,96 @@ public class FastScrollerImpl
 
         // Vertical Check
         // We calculate the top and bottom based on the center.
-        // Because mVerticalThumbCenterY is now clamped to mMargin,
+        // Because mVerticalThumbCenterY is clamped to marginStartBottom/marginStartTop,
         // these bounds will correctly follow the thumb even near rounded corners.
-        final float halfHeight = mVerticalThumbHeight / 2.0f;
-        final float topBound = mVerticalThumbCenterY - halfHeight - mExpandedTouchArea;
-        final float bottomBound = mVerticalThumbCenterY + halfHeight + mExpandedTouchArea;
+        final float halfHeight = verticalThumbHeight / 2.0f;
+        final float topBound = verticalThumbCenterY - halfHeight - expandedTouchArea;
+        final float bottomBound = verticalThumbCenterY + halfHeight + expandedTouchArea;
 
         return y >= topBound && y <= bottomBound;
     }
-    // HARDBACKNUTTER - END
 
-    @VisibleForTesting
-    boolean isPointInsideHorizontalThumb(float x,
-                                         float y) {
-        return (y >= mRecyclerViewHeight - mHorizontalThumbHeight)
-               && x >= mHorizontalThumbCenterX - mHorizontalThumbWidth / 2
-               && x <= mHorizontalThumbCenterX + mHorizontalThumbWidth / 2;
+    private boolean isPointInsideHorizontalThumb(final float x,
+                                                 final float y) {
+        return y >= recyclerViewHeight - horizontalThumbHeight
+               && x >= horizontalThumbCenterX - (float) horizontalThumbWidth / 2
+               && x <= horizontalThumbCenterX + (float) horizontalThumbWidth / 2;
     }
 
-    // HARDBACKNUTTER - BEGIN
     private boolean isPointInsideTrack(final float x,
                                        final float y) {
-        // Only register track taps within the Safe Area (mMargin)
-        final boolean isInsideY = y >= mMargin && y <= (mRecyclerViewHeight - mMargin);
+        // Only register track taps within the Safe Area
+        final boolean isInsideY = y >= marginTop
+                                  && y <= (recyclerViewHeight - marginBottom);
 
         final boolean isInsideX;
         if (isLayoutRTL()) {
-            isInsideX = x <= mVerticalTrackWidth;
+            isInsideX = x <= verticalTrackWidth;
         } else {
-            isInsideX = x >= mRecyclerViewWidth - mVerticalTrackWidth;
+            isInsideX = x >= recyclerViewWidth - verticalTrackWidth;
         }
 
         return isInsideY && isInsideX;
     }
-    // HARDBACKNUTTER - END
 
-    @VisibleForTesting
-    Drawable getHorizontalTrackDrawable() {
-        return mHorizontalTrackDrawable;
+    private enum State {
+        // Scroll thumb not showing
+        Hidden,
+        // Scroll thumb visible and moving along with the scrollbar
+        Visible,
+        // Scroll thumb being dragged by user
+        Dragging
     }
 
-    @VisibleForTesting
-    Drawable getHorizontalThumbDrawable() {
-        return mHorizontalThumbDrawable;
+    private enum DragState {
+        None,
+        X,
+        Y
     }
 
-    @VisibleForTesting
-    Drawable getVerticalTrackDrawable() {
-        return mVerticalTrackDrawable;
+    private enum AnimationState {
+        Out,
+        FadingIn,
+        In,
+        FadingOut
     }
 
-    @VisibleForTesting
-    Drawable getVerticalThumbDrawable() {
-        return mVerticalThumbDrawable;
-    }
-
-    /**
-     * Gets the (min, max) vertical positions of the vertical scroll bar.
-     */
-    private int[] getVerticalRange() {
-        mVerticalRange[0] = mMargin;
-        mVerticalRange[1] = mRecyclerViewHeight - mMargin;
-        return mVerticalRange;
-    }
-
-    /**
-     * Gets the (min, max) horizontal positions of the horizontal scroll bar.
-     */
-    private int[] getHorizontalRange() {
-        mHorizontalRange[0] = mMargin;
-        mHorizontalRange[1] = mRecyclerViewWidth - mMargin;
-        return mHorizontalRange;
-    }
-
-    @IntDef({STATE_HIDDEN, STATE_VISIBLE, STATE_DRAGGING})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface State {
-
-    }
-
-    @IntDef({DRAG_X, DRAG_Y, DRAG_NONE})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface DragState {
-
-    }
-
-    @IntDef({ANIMATION_STATE_OUT, ANIMATION_STATE_FADING_IN, ANIMATION_STATE_IN,
-             ANIMATION_STATE_FADING_OUT})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface AnimationState {
-
-    }
-
-    private class AnimatorListener
+    private final class AnimatorListener
             extends AnimatorListenerAdapter {
 
-        private boolean mCanceled = false;
-
-        AnimatorListener() {
-        }
+        private boolean canceled;
 
         @Override
-        public void onAnimationEnd(Animator animation) {
+        public void onAnimationEnd(final Animator animation) {
             // Cancel is always followed by a new directive, so don't update state.
-            if (mCanceled) {
-                mCanceled = false;
+            if (canceled) {
+                canceled = false;
                 return;
             }
-            if ((float) mShowHideAnimator.getAnimatedValue() == 0) {
-                mAnimationState = ANIMATION_STATE_OUT;
-                setState(STATE_HIDDEN);
+            if ((float) showHideAnimator.getAnimatedValue() == 0) {
+                animationState = AnimationState.Out;
+                setState(State.Hidden);
             } else {
-                mAnimationState = ANIMATION_STATE_IN;
+                animationState = AnimationState.In;
                 requestRedraw();
             }
         }
 
         @Override
-        public void onAnimationCancel(Animator animation) {
-            mCanceled = true;
+        public void onAnimationCancel(final Animator animation) {
+            canceled = true;
         }
     }
 
-    private class AnimatorUpdater
+    private final class AnimatorUpdater
             implements ValueAnimator.AnimatorUpdateListener {
 
-        AnimatorUpdater() {
-        }
-
         @Override
-        public void onAnimationUpdate(ValueAnimator valueAnimator) {
-            int alpha = (int) (SCROLLBAR_FULL_OPAQUE * ((float) valueAnimator.getAnimatedValue()));
-            mVerticalThumbDrawable.setAlpha(alpha);
-            mVerticalTrackDrawable.setAlpha(alpha);
+        public void onAnimationUpdate(final ValueAnimator valueAnimator) {
+            final int alpha = (int) (SCROLLBAR_FULL_OPAQUE
+                                     * ((float) valueAnimator.getAnimatedValue()));
+            verticalThumbDrawable.setAlpha(alpha);
+            verticalTrackDrawable.setAlpha(alpha);
             requestRedraw();
         }
     }
