@@ -884,7 +884,7 @@
     <string name="lbl_condition_dust_cover_fine">Als nieuw</string>
     <string name="lbl_condition_dust_cover_very_good">Zeer goed</string>
     <string name="lbl_condition_dust_cover_good">Goed</string>
-    <string name="pt_ui_screen_systembars_behavior">Bovenmenu</string>
+    <string name="pt_ui_screen_systembars_behavior">Hoofdmenu</string>
     <string name="pt_screen_header_scroll">Menu verbergen tijdens scrollen</string>
     <string name="pt_screen_header_fixed">Menu vastzetten bovenaan</string>
 </resources>
