@@ -234,18 +234,16 @@ public class FastScrollerBuilder {
     public FastScroller attach(@NonNull final RecyclerView recyclerView)
             throws IllegalArgumentException {
 
-        if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
-            throw new IllegalArgumentException("Not a LinearLayoutManager");
-        }
-
         // Note: do not test the adapter here for being a PopupTextProvider,
         // it can still be null at this time.
 
         final FastScroller fastScroller = new FastScrollerImpl(
-                recyclerView, thumb, track, thumb, track,
+                thumb, track, thumb, track,
                 thumbThickness, minimumRange,
                 thumbMinSize,
                 expandedTouchArea);
+
+        fastScroller.attach(recyclerView);
 
         @Nullable
         final OverlayProvider overlayProvider = OverlayProviderFactory

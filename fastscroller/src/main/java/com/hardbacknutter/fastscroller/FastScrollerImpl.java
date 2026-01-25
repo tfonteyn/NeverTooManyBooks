@@ -146,7 +146,6 @@ class FastScrollerImpl
     /**
      * Constructor.
      *
-     * @param recyclerView            to attach to
      * @param verticalThumbDrawable   to use
      * @param verticalTrackDrawable   to use
      * @param horizontalThumbDrawable to use
@@ -158,11 +157,8 @@ class FastScrollerImpl
      *                                In pixels.
      * @param expandedTouchArea       the padding to add to the thumb to use as touch area.
      *                                In pixels.
-     *
-     * @throws IllegalStateException if the recyclerView does not have a LinearLayoutManager
      */
-    FastScrollerImpl(@NonNull final RecyclerView recyclerView,
-                     @NonNull final StateListDrawable verticalThumbDrawable,
+    FastScrollerImpl(@NonNull final StateListDrawable verticalThumbDrawable,
                      @NonNull final Drawable verticalTrackDrawable,
                      @NonNull final StateListDrawable horizontalThumbDrawable,
                      @NonNull final Drawable horizontalTrackDrawable,
@@ -170,10 +166,6 @@ class FastScrollerImpl
                      @Px final int scrollbarMinimumRange,
                      @Px final int minimalThumbSize,
                      @Px final int expandedTouchArea) {
-
-        if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
-            throw new IllegalStateException("RecyclerView must have a LinearLayoutManager");
-        }
 
         this.verticalThumbDrawable = verticalThumbDrawable;
         this.verticalTrackDrawable = verticalTrackDrawable;
@@ -198,8 +190,6 @@ class FastScrollerImpl
 
         showHideAnimator.addListener(new AnimatorListener());
         showHideAnimator.addUpdateListener(new AnimatorUpdater());
-
-        attach(recyclerView);
     }
 
     @Override
@@ -213,7 +203,9 @@ class FastScrollerImpl
         stateListener = listener;
     }
 
-    public void attach(@Nullable final RecyclerView recyclerView) {
+    @Override
+    public void attach(@Nullable final RecyclerView recyclerView)
+            throws IllegalArgumentException {
         if (this.recyclerView == recyclerView) {
             return;
         }
@@ -223,8 +215,14 @@ class FastScrollerImpl
             this.recyclerView.removeOnScrollListener(scrollListener);
             cancelHide();
         }
+
         this.recyclerView = recyclerView;
+
         if (this.recyclerView != null) {
+            if (!(this.recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
+                throw new IllegalArgumentException("RecyclerView must have a LinearLayoutManager");
+            }
+
             this.recyclerView.addItemDecoration(this);
             this.recyclerView.addOnItemTouchListener(this);
             this.recyclerView.addOnScrollListener(scrollListener);

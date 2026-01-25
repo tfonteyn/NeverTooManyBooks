@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,8 @@
 package com.hardbacknutter.fastscroller;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public interface FastScroller {
 
@@ -37,4 +39,15 @@ public interface FastScroller {
      * @param listener to use
      */
     void setOnFastScrollStateChangeListener(@Nullable OnFastScrollStateChangeListener listener);
+
+    /**
+     * Attach to the given view.
+     *
+     * @param recyclerView o attach to; {@code null} to detach.
+     *
+     * @throws IllegalArgumentException if the {@link RecyclerView.LayoutManager} is
+     *                                  not a {@link LinearLayoutManager}
+     */
+    void attach(@Nullable RecyclerView recyclerView)
+            throws IllegalArgumentException;
 }
