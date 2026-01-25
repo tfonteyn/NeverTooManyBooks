@@ -1438,7 +1438,7 @@ public class SearchBookByIsbnFragment
                         .beginTransaction()
                         .setReorderingAllowed(true)
                         .addToBackStack(BarcodePreferenceFragment.TAG)
-                        .replace(R.id.main_fragment, fragment, BarcodePreferenceFragment.TAG)
+                        .replace(R.id.content_frame, fragment, BarcodePreferenceFragment.TAG)
                         .commit();
             }
 

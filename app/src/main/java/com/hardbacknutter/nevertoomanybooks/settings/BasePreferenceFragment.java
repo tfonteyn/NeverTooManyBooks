@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -177,7 +177,7 @@ public abstract class BasePreferenceFragment
         fm.beginTransaction()
           .setReorderingAllowed(true)
           .addToBackStack(fragment.getTag())
-          .replace(R.id.main_fragment, fragment)
+          .replace(R.id.content_frame, fragment)
           .commit();
         return true;
     }

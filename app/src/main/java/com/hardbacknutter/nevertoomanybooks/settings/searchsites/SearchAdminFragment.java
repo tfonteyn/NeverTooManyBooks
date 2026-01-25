@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -255,7 +255,7 @@ public class SearchAdminFragment
                         .beginTransaction()
                         .setReorderingAllowed(true)
                         .addToBackStack(SiteConfigPreferenceFragment.TAG)
-                        .replace(R.id.main_fragment, fragment, SiteConfigPreferenceFragment.TAG)
+                        .replace(R.id.content_frame, fragment, SiteConfigPreferenceFragment.TAG)
                         .commit();
                 return true;
 

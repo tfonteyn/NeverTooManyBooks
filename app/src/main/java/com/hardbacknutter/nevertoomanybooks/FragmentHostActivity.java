@@ -100,7 +100,7 @@ public class FragmentHostActivity
             throw new IllegalArgumentException(classname);
         }
 
-        addFirstFragment(R.id.main_fragment, fragmentClass, classname);
+        addFirstFragment(R.id.content_frame, fragmentClass, classname);
     }
 
     private void initNavDrawer(@Nullable final DrawerLayout drawerLayout) {

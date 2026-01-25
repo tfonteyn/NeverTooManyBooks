@@ -619,7 +619,7 @@ public class ShowBookDetailsFragment
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
                   .addToBackStack(TocFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, TocFragment.TAG)
+                  .replace(R.id.content_frame, fragment, TocFragment.TAG)
                   .commit();
             });
         }
@@ -777,7 +777,7 @@ public class ShowBookDetailsFragment
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
                   .addToBackStack(CalibrePreferencesFragment.TAG)
-                  .replace(R.id.main_fragment,
+                  .replace(R.id.content_frame,
                            new CalibrePreferencesFragment(),
                            CalibrePreferencesFragment.TAG)
                   .commit();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -485,7 +485,7 @@ public class PreferredStylesFragment
                         .beginTransaction()
                         .setReorderingAllowed(true)
                         .addToBackStack(StyleDefaultsFragment.TAG)
-                        .replace(R.id.main_fragment,
+                        .replace(R.id.content_frame,
                                  StyleDefaultsFragment.create(),
                                  StyleDefaultsFragment.TAG)
                         .commit();

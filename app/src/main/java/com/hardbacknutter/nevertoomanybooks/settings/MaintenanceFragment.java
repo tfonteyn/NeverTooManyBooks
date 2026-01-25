@@ -439,7 +439,7 @@ public class MaintenanceFragment
                 .beginTransaction()
                 .setReorderingAllowed(true)
                 .addToBackStack(TuningFragment.TAG)
-                .replace(R.id.main_fragment,
+                .replace(R.id.content_frame,
                          new TuningFragment(),
                          TuningFragment.TAG)
                 .commit();
@@ -453,7 +453,7 @@ public class MaintenanceFragment
                 .beginTransaction()
                 .setReorderingAllowed(true)
                 .addToBackStack(SqliteShellFragment.TAG)
-                .replace(R.id.main_fragment,
+                .replace(R.id.content_frame,
                          SqliteShellFragment.create(vm.isDebugSqLiteAllowsUpdates()),
                          SqliteShellFragment.TAG)
                 .commit();
