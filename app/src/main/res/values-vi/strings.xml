@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -876,4 +879,7 @@
     <string name="lbl_condition_dust_cover_fine">Như mới</string>
     <string name="lbl_condition_dust_cover_very_good">Rất tốt</string>
     <string name="lbl_condition_dust_cover_good">Tốt</string>
+    <string name="pt_ui_screen_systembars_behavior">Menu trên cùng</string>
+    <string name="pt_screen_header_scroll">Ẩn menu khi cuộn</string>
+    <string name="pt_screen_header_fixed">Giữ menu cố định</string>
 </resources>

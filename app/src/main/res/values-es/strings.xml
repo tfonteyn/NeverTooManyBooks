@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -887,4 +890,7 @@
     <string name="lbl_condition_dust_cover_fine">Como nuevo</string>
     <string name="lbl_condition_dust_cover_very_good">Muy bueno</string>
     <string name="lbl_condition_dust_cover_good">Bueno</string>
+    <string name="pt_ui_screen_systembars_behavior">Menú superior</string>
+    <string name="pt_screen_header_scroll">Ocultar el menú al desplazar</string>
+    <string name="pt_screen_header_fixed">Mantener el menú fijo</string>
 </resources>

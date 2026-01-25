@@ -276,4 +276,5 @@
     <string name="lbl_table_of_content_entry">Entrada do sumário</string>
     <string name="tip_import_isbn_list">Importe um arquivo de texto com os ISBNs. O arquivo deve ter um único ISBN em cada linha. Os resultados serão colocados na fila.</string>
     <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
+    <string name="pt_screen_header_scroll">Esconder o menu ao rolar</string>
 </resources>

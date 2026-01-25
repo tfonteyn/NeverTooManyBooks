@@ -235,5 +235,7 @@
     <string name="book_format_unknown">Nezināma</string>
     <string name="lbl_condition_book_unknown">Nezināma</string>
     <string name="lbl_condition_dust_cover_unknown">Nezināma</string>
-
+    <string name="pt_ui_screen_systembars_behavior">Augšējā izvēlne</string>
+    <string name="pt_screen_header_scroll">Paslēpt izvēlni ritinot</string>
+    <string name="pt_screen_header_fixed">Pievienot izvēlni augšā</string>
 </resources>

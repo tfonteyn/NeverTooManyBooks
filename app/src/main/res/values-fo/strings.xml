@@ -157,5 +157,7 @@
     <string name="warning_delete_default_bookshelf">Hetta er tín sjálvvalda bókahilla. Um tú strikar hana, verður nýggja sjálvvalda: “%1$s”.\n\nBrúk “%2$s” í høvuðsvalmyndini fyri at velja aðra sjálvvalda bókahillu.</string>
     <string name="warning_image_invalid">Ógild ella manglandi mynd.</string>
     <string name="x_of_y">%1$d av %2$d</string>
-
+    <string name="pt_ui_screen_systembars_behavior">Ovastu valmegin</string>
+    <string name="pt_screen_header_scroll">Goym valmegina tá skrollað verður</string>
+    <string name="pt_screen_header_fixed">Hav valmegina fasta</string>
 </resources>

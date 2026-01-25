@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -881,4 +884,7 @@
     <string name="lbl_condition_dust_cover_fine">புதியது</string>
     <string name="lbl_condition_dust_cover_very_good">மிகவும் நல்லது</string>
     <string name="lbl_condition_dust_cover_good">நல்லது</string>
+    <string name="pt_ui_screen_systembars_behavior">மேல் மெனு</string>
+    <string name="pt_screen_header_scroll">ஸ்க்ரோல் செய்யும்போது மெனுவை மறைக்கவும்</string>
+    <string name="pt_screen_header_fixed">மெனுவை நிலையாக வைக்கவும்</string>
 </resources>
