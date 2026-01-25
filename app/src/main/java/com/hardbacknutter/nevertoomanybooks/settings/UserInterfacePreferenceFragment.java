@@ -65,25 +65,18 @@ public class UserInterfacePreferenceFragment
         initLanguage();
         initThemeMode();
         initThemeColors();
-
-        final Preference p = findPreference(FastScrollerMode.PK_DRAG_HANDLE);
-        //noinspection DataFlowIssue
-        p.setOnPreferenceChangeListener((preference, newValue) -> {
-            // Set the activity result so our caller will recreate itself
-            vm.setOnBackRequiresActivityRecreation();
-            return true;
-        });
-
+        initTopMenuBehaviour();
+        initDragHandle();
     }
 
     private void initLanguage() {
-        final ListPreference pUiLocale = findPreference(Prefs.PK_UI_LOCALE);
+        final ListPreference p = findPreference(Prefs.PK_UI_LOCALE);
         //noinspection DataFlowIssue
-        pUiLocale.setDefaultValue(AppLocale.SYSTEM_LANGUAGE);
-        pUiLocale.setEntries(vm.getUiLanguageEntries());
-        pUiLocale.setEntryValues(vm.getUiLanguageEntryValues());
-        pUiLocale.setSummaryProvider(new LanguageSummaryProvider());
-        pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
+        p.setDefaultValue(AppLocale.SYSTEM_LANGUAGE);
+        p.setEntries(vm.getUiLanguageEntries());
+        p.setEntryValues(vm.getUiLanguageEntryValues());
+        p.setSummaryProvider(new LanguageSummaryProvider());
+        p.setOnPreferenceChangeListener((preference, newValue) -> {
             // Set the activity result so our caller will recreate itself
             vm.setOnBackRequiresActivityRecreation();
             // and recreate the current activity so we get the new language immediately
@@ -94,9 +87,9 @@ public class UserInterfacePreferenceFragment
     }
 
     private void initThemeMode() {
-        final Preference pUiThemeMode = findPreference(NightMode.PK_UI_THEME_MODE);
+        final Preference p = findPreference(NightMode.PK_UI_THEME_MODE);
         //noinspection DataFlowIssue
-        pUiThemeMode.setOnPreferenceChangeListener((preference, newValue) -> {
+        p.setOnPreferenceChangeListener((preference, newValue) -> {
             // we should never have an invalid setting in the prefs... flw
             try {
                 final int mode = Integer.parseInt(String.valueOf(newValue));
@@ -113,19 +106,43 @@ public class UserInterfacePreferenceFragment
         // We offer the standard Blue/Grey colour scheme, or the Android 12 Dynamic Colours.
         // For simplicity, we just disable the setting when it's not 12+
         // If we (ever) add additional themes, then we'll need to ONLY enable/disable the DC option.
-        final Preference pUiThemeColor = findPreference(ThemeColorController.PK_UI_THEME_COLOR);
+        final Preference p = findPreference(ThemeColorController.PK_UI_THEME_COLOR);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             //noinspection DataFlowIssue
-            pUiThemeColor.setEnabled(false);
-            pUiThemeColor.setSummary(getString(R.string.warning_requires_android_x, ANDROID_12));
+            p.setEnabled(false);
+            p.setSummary(getString(R.string.warning_requires_android_x, ANDROID_12));
         } else {
             //noinspection DataFlowIssue
-            pUiThemeColor.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-            pUiThemeColor.setOnPreferenceChangeListener((preference, newValue) -> {
+            p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+            p.setOnPreferenceChangeListener((preference, newValue) -> {
                 ThemeColorController.recreate();
                 return true;
             });
         }
+    }
+
+    private void initTopMenuBehaviour() {
+        final Preference p = findPreference(Prefs.PK_UI_TOP_MENU);
+        //noinspection DataFlowIssue
+        p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+        p.setOnPreferenceChangeListener((preference, newValue) -> {
+            // Set the activity result so our caller will recreate itself
+            vm.setOnBackRequiresActivityRecreation();
+            // and recreate the current activity
+            //noinspection DataFlowIssue
+            getActivity().recreate();
+            return true;
+        });
+    }
+
+    private void initDragHandle() {
+        final Preference p = findPreference(FastScrollerMode.PK_DRAG_HANDLE);
+        //noinspection DataFlowIssue
+        p.setOnPreferenceChangeListener((preference, newValue) -> {
+            // Set the activity result so our caller will recreate itself
+            vm.setOnBackRequiresActivityRecreation();
+            return true;
+        });
     }
 
     @Override

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -96,6 +96,18 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
+    </string-array>
+
+    <!-- ListPreference
+         Allow the top system-bar/toolbar and bottom system-bar to scroll or not
+    -->
+    <string-array name="pe_ui_screen_systembars">
+        <item>@string/pt_screen_header_scroll</item>
+        <item>@string/pt_screen_header_fixed</item>
+    </string-array>
+    <string-array name="pv_ui_screen_systembars">
+        <item>0</item>
+        <item>1</item>
     </string-array>
 
     <!-- ListPreference - How to display dialogs. -->

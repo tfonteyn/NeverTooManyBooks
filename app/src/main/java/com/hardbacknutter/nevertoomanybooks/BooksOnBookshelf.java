@@ -145,6 +145,7 @@ import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -155,6 +156,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.Side;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -330,6 +332,13 @@ public class BooksOnBookshelf
         // as the toolbar.
         InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
         // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
+
+        if (Prefs.isFixedHeaderAndFooter(this)) {
+            InsetsListenerBuilder.create(vb.contentFrame)
+                                 .systemBars()
+                                 .margins(Side.Bottom)
+                                 .apply();
+        }
 
         createActivityLaunchers();
         createFragmentLaunchers();
@@ -667,6 +676,7 @@ public class BooksOnBookshelf
     }
 
     private void initToolbar() {
+        Prefs.applyScrollFlags(vb.toolbar);
         setNavIcon();
         vb.toolbar.setNavigationOnClickListener(v -> {
             if (isRootActivity()) {

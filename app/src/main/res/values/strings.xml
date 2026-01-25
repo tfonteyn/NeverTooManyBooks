@@ -1841,8 +1841,20 @@
 
     <!-- ListPreference title: UI Theme Mode: Colors. -->
     <string name="pt_ui_theme_colors">Theme Colors</string>
+    <!-- ListPreference title: UI Theme Mode: Colors: the default scheme. -->
     <string name="pe_ui_theme_colors_blue_grey">Blue-gray</string>
+    <!-- ListPreference title: UI Theme Mode: Colors: the Android OS controlled colors. -->
     <string name="pe_ui_theme_colors_dynamic">Dynamic Colors</string>
+
+    <!-- ListPreference title: UI menu bar at the top of the screen. -->
+    <string name="pt_ui_screen_systembars_behavior">Top menu</string>
+    <!-- ListPreference title: UI menu bar at the top of the screen.
+         Default behaviour is to scroll along with the rest of the screen.
+     -->
+    <string name="pt_screen_header_scroll">"Let the menu slide away when scrolling</string>
+    <!-- ListPreference title: UI menu bar at the top of the screen.
+         Stays fixed/visible while scrolling the screen. -->
+    <string name="pt_screen_header_fixed">Keep the menu pinned</string>
 
     <!-- ListPreference value: UI Dialog tuning.
          Always display a dialog or context menu using a BottomSheet. -->

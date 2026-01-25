@@ -45,8 +45,10 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.Side;
 
 /**
  * Hosting activity for generic fragments.
@@ -84,6 +86,15 @@ public class FragmentHostActivity
         final FloatingActionButton fab = findViewById(R.id.fab);
 
         InsetsListenerBuilder.apply(drawerLayout, coordinatorLayout, toolbar, fab);
+
+        @Nullable
+        final View contentFrame = findViewById(R.id.content_frame);
+        if (contentFrame != null && Prefs.isFixedHeaderAndFooter(this)) {
+            InsetsListenerBuilder.create(contentFrame)
+                                 .systemBars()
+                                 .margins(Side.Bottom)
+                                 .apply();
+        }
 
         initNavDrawer(drawerLayout);
         initToolbar(toolbar);
@@ -146,6 +157,8 @@ public class FragmentHostActivity
 
     private void initToolbar(@Nullable final Toolbar toolbar) {
         if (toolbar != null) {
+            Prefs.applyScrollFlags(toolbar);
+
             if (isTaskRoot()) {
                 toolbar.setNavigationIcon(R.drawable.menu_24px);
             } else {
