@@ -36,6 +36,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
+ * TODO: cleanup the FastScroller builder/interface/impl api
+ * 
  * This is the glue class which hooks up the {@link RecyclerView} with the actual
  * {@link FastScrollerImpl} and an optional {@link OverlayProvider}.
  * <p>
@@ -67,13 +69,11 @@ import androidx.recyclerview.widget.RecyclerView;
  *         which are used by the broken original RecyclerView/FastScrollerBuilder
  *         <pre>{@code
  *              <dimen name="fastscroll_default_thickness">8dp</dimen>
- *              <dimen name="fastscroll_margin">0dp</dimen>
  *              <dimen name="fastscroll_minimum_range">50dp</dimen>
  *         }</pre>
  *         Our equivalents are:
  *         <pre>{@code
  *              <dimen name="fs_thumb_thickness">8dp</dimen>
- *              <dimen name="fs_margin">0dp</dimen>
  *              <dimen name="fs_minimum_range">50dp</dimen>
  *         }</pre>
  *         and to support the minimum thumb size:
