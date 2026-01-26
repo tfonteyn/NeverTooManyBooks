@@ -884,4 +884,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_condition_dust_cover_fine">Σαν καινούργιο</string>
     <string name="lbl_condition_dust_cover_very_good">Πολύ καλό</string>
     <string name="lbl_condition_dust_cover_good">Καλό</string>
+    <string name="pt_ui_screen_systembars_behavior">Άνω μενού</string>
+    <string name="pt_screen_header_scroll">Να κρύβεται το μενού κατά την κύλιση</string>
+    <string name="pt_screen_header_fixed">Διατήρηση του μενού στη θέση του</string>
 </resources>
