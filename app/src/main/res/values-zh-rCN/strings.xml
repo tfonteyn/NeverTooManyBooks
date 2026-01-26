@@ -878,4 +878,7 @@
     <string name="lbl_condition_dust_cover_fine">全新</string>
     <string name="lbl_condition_dust_cover_very_good">非常好</string>
     <string name="lbl_condition_dust_cover_good">好</string>
+    <string name="pt_ui_screen_systembars_behavior">顶部菜单</string>
+    <string name="pt_screen_header_scroll">滚动时让菜单随屏幕其他部分一起滚动</string>
+    <string name="pt_screen_header_fixed">保持菜单固定显示</string>
 </resources>
