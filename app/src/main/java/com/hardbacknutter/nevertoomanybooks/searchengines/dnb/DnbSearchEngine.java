@@ -97,6 +97,17 @@ public class DnbSearchEngine
 
     static final String KATALOG_DNB_DE = "https://katalog.dnb.de";
 
+    private static final String PREFERENCE_KEY = "dnb";
+
+    /**
+     * Preference key: Whether to try loading cover images from the portal ('old' site)
+     * where they seem to have a higher resolution.
+     * <p>
+     * {@code boolean}
+     */
+    private static final String PK_COVERS_FROM_PORTAL =
+            PREFERENCE_KEY + ".covers.from.portal";
+
     // we could probably just use the bare "https://katalog.dnb.de"...
     private static final Map<String, String> ROOT_REFERER = Map.of(
             HttpConstants.REFERER,
@@ -121,6 +132,9 @@ public class DnbSearchEngine
                                              + "&v=plist";
     private static final String SEARCH_TYPE_ISBN = "num";
     private static final String SEARCH_TYPE_TEXT = "all";
+
+    /** Concat with the isbn. */
+    private static final String HIRES_IMAGE_SEARCH = "https://portal.dnb.de/opac/mvb/cover?isbn=";
 
     /**
      * Suffixes we try to detect and remove from the title field.
@@ -192,7 +206,7 @@ public class DnbSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder("dnb",
+        return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_dnb_de,
                                     List.of(R.string.site_description_german,
                                             R.string.site_description_catalog),
@@ -470,6 +484,25 @@ public class DnbSearchEngine
             }
 
             if (fetchCovers[0]) {
+                // Disabled, see DnbSslContextFactory.
+                // As we need a custom keystore/certs, we can't use the same
+                // Http client to talk to the portal sit which uses
+                // different certs.
+                // URGENT: Review on 1-April-2026 (haha..) to see if their new
+                //  certs are still broken.
+//                if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+//                        PK_COVERS_FROM_PORTAL, false)) {
+//                    // TRY the hires/portal link first
+//                    final Optional<String> fileSpec =
+//                            saveImage(context, HIRES_IMAGE_SEARCH + book.getIsbn(), null,
+//                                      book.getIsbn(), 0, null);
+//                    if (fileSpec.isPresent()) {
+//                        CoverFileSpecArray.setFileSpec(book, 0, fileSpec.get());
+//                        // success, we're done here
+//                        return;
+//                    }
+//                }
+                // Standard parsing, also used as fallback if the hires/portal call fails.
                 parseCover(context, document, book.getIsbn(), 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }

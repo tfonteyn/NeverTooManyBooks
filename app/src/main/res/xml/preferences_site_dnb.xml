@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -41,6 +41,14 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_fetch_author_info" />
 
+        <!-- Disabled, see DnbSslContextFactory. -->
+        <!--        <SwitchPreference-->
+        <!--            android:defaultValue="false"-->
+        <!--            android:icon="@drawable/image_24px"-->
+        <!--            android:key="dnb.covers.from.portal"-->
+        <!--            android:summaryOff="@string/no"-->
+        <!--            android:summaryOn="@string/yes"-->
+        <!--            android:title="Use portal/hires" />-->
 
     </PreferenceCategory>
 
