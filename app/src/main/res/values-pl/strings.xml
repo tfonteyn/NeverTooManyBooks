@@ -888,7 +888,7 @@
     <string name="warning_delete_default_bookshelf">To jest twoja domyślna półka. Jeśli ją usuniesz, nową domyślną będzie: „%1$s”.\n\nUżyj opcji „%2$s” w menu głównym, żeby wybrać inną domyślną półkę.</string>
     <string name="action_set_as_default">Ustaw jako domyślną</string>
     <string name="tip_bookshelf_management">Podświetlony wiersz pokazuje twoją obecną półkę.\n\nDomyślna półka (oznaczona *) zostanie użyta automatycznie, jeśli obecna z jakiegokolwiek powodu nie będzie dostępna.</string>
-    <string name="pt_search_tag_use_subject_number">Zachowaj numeryczny przedrostek w tagach tematycznych</string>
+    <string name="pt_search_tag_use_subject_number">Zachować numeryczny przedrostek w tagach tematycznych</string>
     <string name="site_description_greek">Grecki</string>
     <string name="book_format_unknown">Nieznany</string>
     <string name="lbl_condition_book_unknown">Nieznany</string>
@@ -896,4 +896,7 @@
     <string name="lbl_condition_dust_cover_fine">Jak nowa</string>
     <string name="lbl_condition_dust_cover_very_good">Bardzo dobry</string>
     <string name="lbl_condition_dust_cover_good">Dobry</string>
+    <string name="pt_ui_screen_systembars_behavior">Górne menu</string>
+    <string name="pt_screen_header_fixed">Zachować menu przypięte</string>
+    <string name="pt_screen_header_scroll">Przy przewijaniu przesuwać menu</string>
 </resources>
