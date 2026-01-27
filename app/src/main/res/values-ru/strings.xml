@@ -903,4 +903,7 @@
     <string name="lbl_condition_dust_cover_fine">Как новая</string>
     <string name="lbl_condition_dust_cover_very_good">Очень хорошее</string>
     <string name="lbl_condition_dust_cover_good">Хорошее</string>
+    <string name="pt_ui_screen_systembars_behavior">Верхнее меню</string>
+    <string name="pt_screen_header_fixed">Оставить меню закрепленным</string>
+    <string name="pt_screen_header_scroll">Подвинуть меню при прокрутке</string>
 </resources>

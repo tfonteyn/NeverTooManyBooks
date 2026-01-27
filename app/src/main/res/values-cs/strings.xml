@@ -905,4 +905,7 @@
     <string name="lbl_condition_dust_cover_fine">Jako nový</string>
     <string name="lbl_condition_dust_cover_very_good">Velmi dobrý</string>
     <string name="lbl_condition_dust_cover_good">Dobrý</string>
+    <string name="pt_ui_screen_systembars_behavior">Horní menu</string>
+    <string name="pt_screen_header_scroll">Při posouvání nechat menu odsunout</string>
+    <string name="pt_screen_header_fixed">Nechat menu připnuté</string>
 </resources>
