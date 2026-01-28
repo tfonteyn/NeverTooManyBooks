@@ -47,14 +47,14 @@ if (project.hasProperty("NeverTooManyBooks.properties")) {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(libs.versions.java.toolchain.get())
+        languageVersion = JavaLanguageVersion.of(libs.versions.javaToolchain.get())
     }
 }
 
 /* https://kotlinlang.org/docs/gradle.html */
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.toolchain.get()))
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.javaToolchain.get()))
     }
     compilerOptions {
         jvmTarget = JvmTarget.JVM_11

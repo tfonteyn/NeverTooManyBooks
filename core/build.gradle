@@ -28,13 +28,13 @@ plugins {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(libs.versions.java.toolchain.get())
+        languageVersion = JavaLanguageVersion.of(libs.versions.javaToolchain.get())
     }
 }
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.toolchain.get()))
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.javaToolchain.get()))
     }
     compilerOptions {
         jvmTarget = JvmTarget.JVM_11

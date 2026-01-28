@@ -6,7 +6,7 @@ targetSdk = "36"
 compileSdk = "36"
 
 # JDK used by Gradle
-java-toolchain = "21"
+javaToolchain = "21"
 
 androidGradlePlugin = "9.0.0"
 # https://github.com/mannodermaus/android-junit-framework
