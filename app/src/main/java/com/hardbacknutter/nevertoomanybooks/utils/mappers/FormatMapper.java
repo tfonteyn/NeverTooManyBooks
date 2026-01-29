@@ -33,7 +33,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * System-wide book format representation.
@@ -45,6 +44,14 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  */
 public final class FormatMapper
         extends MapperBase {
+
+    /**
+     * Whether to normalise {@link DBKey#FORMAT} values after a search.
+     * <p>
+     * {@code boolean}
+     */
+    @VisibleForTesting
+    public static final String PK_SEARCH_REFORMAT_FORMAT = "search.reformat.format";
 
     /** Maps site format terminology to our own. */
     private static final Map<String, Integer> MAPPINGS = new HashMap<>();
@@ -178,7 +185,7 @@ public final class FormatMapper
     static Optional<Mapper> create(@NonNull final Context context,
                                    @NonNull final Locale locale) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.PK_SEARCH_REFORMAT_FORMAT, true)) {
+                             .getBoolean(PK_SEARCH_REFORMAT_FORMAT, true)) {
             return Optional.of(new FormatMapper(locale));
         } else {
             return Optional.empty();

@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -94,7 +95,7 @@ public abstract class BaseDBTest {
                          .putBoolean(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
                          .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
                          .putBoolean(ColorMapper.PK_SEARCH_REFORMAT_COLOR, true)
-                         .putBoolean(Prefs.PK_SEARCH_REFORMAT_FORMAT, true)
+                         .putBoolean(FormatMapper.PK_SEARCH_REFORMAT_FORMAT, true)
                          .putBoolean("search.site.amazon.data.enabled", false)
                          .putBoolean("search.site.bedetheque.data.enabled", false)
                          .putBoolean("search.site.bol.data.enabled", false)

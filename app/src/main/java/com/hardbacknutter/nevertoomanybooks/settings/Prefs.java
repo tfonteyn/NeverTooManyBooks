@@ -32,7 +32,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -50,15 +49,6 @@ public final class Prefs {
     public static final String PK_UI_LOCALE = "ui.locale";
 
     public static final String PK_UI_TOP_MENU = "ui.screen.systembars.fixed";
-
-    /**
-     * Whether to normalise {@link DBKey#FORMAT} values after a search.
-     * <p>
-     * {@code boolean}
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper
-     */
-    public static final String PK_SEARCH_REFORMAT_FORMAT = "search.reformat.format";
 
     public static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
     public static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
