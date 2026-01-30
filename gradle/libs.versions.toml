@@ -15,10 +15,10 @@ mannodermausInstrumentation = "2.0.1"
 
 # https://developer.android.com/jetpack/androidx/versions
 
-androidxActivity = "1.12.2"
+androidxActivity = "1.12.3"
 androidxAnnotation = '1.9.1'
 androidxAppcompat = "1.7.1"
-androidxCamerax = "1.5.2"
+androidxCamerax = "1.5.3"
 androidxCardview = "1.0.0"
 androidxCollection = '1.5.0'
 androidxConstraintlayoutCore = "1.1.1"
