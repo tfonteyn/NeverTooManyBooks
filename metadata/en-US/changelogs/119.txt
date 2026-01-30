@@ -1,0 +1,5 @@
+NEW:
+- #227: UI options to pin/hide the menu header when scrolling (Setting/User-interface)
+
+FIXES:
+- #226: original language field was overlapping the title field

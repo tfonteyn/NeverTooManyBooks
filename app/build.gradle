@@ -78,7 +78,7 @@ android {
     defaultConfig {
         applicationId = "com.hardbacknutter.nevertoomanybooks"
         versionCode = 119
-        versionName = "7.12.1"
+        versionName = "7.13.0"
 
         minSdk = libs.versions.minSdk.get().toInteger()
         targetSdk = libs.versions.targetSdk.get().toInteger()
