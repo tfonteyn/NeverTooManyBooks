@@ -36,8 +36,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * TODO: cleanup the FastScroller builder/interface/impl api
- * 
  * This is the glue class which hooks up the {@link RecyclerView} with the actual
  * {@link FastScrollerImpl} and an optional {@link OverlayProvider}.
  * <p>
@@ -83,6 +81,7 @@ import androidx.recyclerview.widget.RecyclerView;
  *     </li>
  * </ul>
  */
+@SuppressWarnings("unused")
 public class FastScrollerBuilder {
 
     private final DisplayMetrics displayMetrics;
@@ -221,7 +220,7 @@ public class FastScrollerBuilder {
     }
 
     /**
-     * Attach this FastScrollerBuilder to the given {@link RecyclerView}.
+     * Build and attach to the given {@link RecyclerView}.
      *
      * @param recyclerView the view
      *
@@ -237,7 +236,7 @@ public class FastScrollerBuilder {
         // Note: do not test the adapter here for being a PopupTextProvider,
         // it can still be null at this time.
 
-        final FastScroller fastScroller = new FastScrollerImpl(
+        final FastScrollerImpl fastScroller = new FastScrollerImpl(
                 thumb, track, thumb, track,
                 thumbThickness, minimumRange,
                 thumbMinSize,

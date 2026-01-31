@@ -192,8 +192,12 @@ class FastScrollerImpl
         showHideAnimator.addUpdateListener(new AnimatorUpdater());
     }
 
-    @Override
-    public void setOverlayProvider(@Nullable final OverlayProvider overlayProvider) {
+    /**
+     * Set the provider to use.
+     *
+     * @param overlayProvider to use, {@code null} for none.
+     */
+    void setOverlayProvider(@Nullable final OverlayProvider overlayProvider) {
         this.overlayProvider = overlayProvider;
     }
 
@@ -203,7 +207,14 @@ class FastScrollerImpl
         stateListener = listener;
     }
 
-    @Override
+    /**
+     * Attach to the given view.
+     *
+     * @param recyclerView to attach to; {@code null} to detach.
+     *
+     * @throws IllegalArgumentException if the {@link RecyclerView.LayoutManager} is
+     *                                  not a {@link LinearLayoutManager}
+     */
     public void attach(@Nullable final RecyclerView recyclerView)
             throws IllegalArgumentException {
         if (this.recyclerView == recyclerView) {
@@ -216,6 +227,7 @@ class FastScrollerImpl
             cancelHide();
         }
 
+        //noinspection DataFlowIssue
         this.recyclerView = recyclerView;
 
         if (this.recyclerView != null) {
@@ -252,7 +264,7 @@ class FastScrollerImpl
         }
     }
 
-    private void hide(final int duration) {
+    private void hide(@SuppressWarnings("SameParameterValue") final int duration) {
         switch (animationState) {
             case FadingIn:
                 showHideAnimator.cancel();
@@ -428,6 +440,7 @@ class FastScrollerImpl
      * @param offsetX The new scroll X offset.
      * @param offsetY The new scroll Y offset.
      */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void updateScrollPosition(final int offsetX,
                                       final int offsetY) {
         // Pull the hardware margins first

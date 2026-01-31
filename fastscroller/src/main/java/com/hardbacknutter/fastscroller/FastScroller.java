@@ -21,17 +21,8 @@
 package com.hardbacknutter.fastscroller;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public interface FastScroller {
-
-    /**
-     * Set the provider to use.
-     *
-     * @param overlayProvider to use, {@code null} for none.
-     */
-    void setOverlayProvider(@Nullable OverlayProvider overlayProvider);
 
     /**
      * Set a listener to receive feedback.
@@ -39,15 +30,4 @@ public interface FastScroller {
      * @param listener to use
      */
     void setOnFastScrollStateChangeListener(@Nullable OnFastScrollStateChangeListener listener);
-
-    /**
-     * Attach to the given view.
-     *
-     * @param recyclerView o attach to; {@code null} to detach.
-     *
-     * @throws IllegalArgumentException if the {@link RecyclerView.LayoutManager} is
-     *                                  not a {@link LinearLayoutManager}
-     */
-    void attach(@Nullable RecyclerView recyclerView)
-            throws IllegalArgumentException;
 }
