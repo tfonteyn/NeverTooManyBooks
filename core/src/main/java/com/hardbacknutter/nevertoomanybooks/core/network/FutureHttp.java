@@ -107,13 +107,13 @@ public interface FutureHttp<R> {
     /**
      * Override the default retry count.
      *
-     * @param retryCount to use, should be {@code 0} for no retries.
+     * @param retryCount to use, must be at least {@code 1}.
      *
      * @return {@code this} (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setRetryCount(@IntRange(from = 0) int retryCount);
+    FutureHttp<R> setRetryCount(@IntRange(from = 1) int retryCount);
 
     /**
      * For secure connections.

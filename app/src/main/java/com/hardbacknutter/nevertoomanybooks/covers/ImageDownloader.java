@@ -24,6 +24,7 @@ import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpTooManyRequestsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -85,7 +87,8 @@ public class ImageDownloader {
     private final Throttler throttler;
 
     private final boolean logEnabled;
-    private final int labelResId;
+    @StringRes
+    private final int siteResId;
 
     /** Current cancelable call. */
     @Nullable
@@ -96,17 +99,17 @@ public class ImageDownloader {
      *
      * @param client     to use
      * @param throttler  to use
-     * @param labelResId for logging
+     * @param siteResId  for logging
      * @param logEnabled flag
      */
     public ImageDownloader(@NonNull final OkHttpClient client,
                            @Nullable final Throttler throttler,
-                           final int labelResId,
+                           @StringRes final int siteResId,
                            final boolean logEnabled) {
 
         this.client = client;
         this.throttler = throttler;
-        this.labelResId = labelResId;
+        this.siteResId = siteResId;
         this.logEnabled = logEnabled;
     }
 
@@ -116,7 +119,7 @@ public class ImageDownloader {
                 .toMultimap()
                 .entrySet()
                 .stream()
-                .map(es -> "Request Header: " + es.getKey() + "="
+                .map(es -> "Request Header: " + es.getKey() + '='
                            + String.join("|", es.getValue()))
                 .collect(Collectors.joining("\n"));
 
@@ -245,11 +248,12 @@ public class ImageDownloader {
      *
      * @param response to check
      *
-     * @throws HttpUnauthorizedException 401: Unauthorized.
-     * @throws HttpForbiddenException    403: Forbidden
-     * @throws HttpNotFoundException     404: Not Found.
-     * @throws SocketTimeoutException    408: Request Time-Out.
-     * @throws HttpStatusException       on any other HTTP failures
+     * @throws HttpUnauthorizedException    401: Unauthorized.
+     * @throws HttpForbiddenException       403: Forbidden
+     * @throws HttpNotFoundException        404: Not Found.
+     * @throws SocketTimeoutException       408: Request Time-Out.
+     * @throws HttpTooManyRequestsException 429: Too Many Requests.
+     * @throws HttpStatusException          on any other HTTP failures
      */
     @WorkerThread
     private void checkResponseCode(@NonNull final Response response)
@@ -258,6 +262,7 @@ public class ImageDownloader {
             HttpForbiddenException,
             HttpNotFoundException,
             SocketTimeoutException,
+            HttpTooManyRequestsException,
             HttpStatusException {
 
         final int responseCode = response.code();
@@ -274,34 +279,43 @@ public class ImageDownloader {
         final String location = response.header(HttpConstants.RESPONSE_HEADER_LOCATION);
 
         switch (responseCode) {
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
-                throw new HttpUnauthorizedException(labelResId,
+            case HttpURLConnection.HTTP_UNAUTHORIZED: {
+                throw new HttpUnauthorizedException(siteResId,
                                                     response.message(),
                                                     response.request().url().url(),
                                                     location);
-
-            case HttpURLConnection.HTTP_FORBIDDEN:
-                throw new HttpForbiddenException(labelResId,
+            }
+            case HttpURLConnection.HTTP_FORBIDDEN: {
+                throw new HttpForbiddenException(siteResId,
                                                  response.message(),
                                                  response.request().url().url(),
                                                  location);
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                throw new HttpNotFoundException(labelResId,
+            }
+            case HttpURLConnection.HTTP_NOT_FOUND: {
+                throw new HttpNotFoundException(siteResId,
                                                 response.message(),
                                                 response.request().url().url(),
                                                 location);
-
-            case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
+            }
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
                 // for easier reporting issues to the user, map a 408 to an STE
                 throw new SocketTimeoutException("408 " + response.message());
-
-            default:
-                throw new HttpStatusException(labelResId,
+            }
+            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
+                throw new HttpTooManyRequestsException(
+                        siteResId,
+                        response.header(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
+                        response.message(),
+                        response.request().url().url(),
+                        location);
+            }
+            default: {
+                throw new HttpStatusException(siteResId,
                                               responseCode,
                                               response.message(),
                                               response.request().url().url(),
                                               location);
+            }
         }
     }
 

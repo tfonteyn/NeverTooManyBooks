@@ -87,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -392,7 +393,8 @@ public final class CalibreContentServer
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
-                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS);
+                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS)
+                .addInterceptor(new RateLimitInterceptor(isLogHttpGetRequests()));
 
         if (sslContext != null && x509TrustManager != null) {
             builder.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager);

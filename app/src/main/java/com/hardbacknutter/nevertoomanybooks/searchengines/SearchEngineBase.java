@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
+import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -364,18 +365,21 @@ public abstract class SearchEngineBase
     @NonNull
     @EmptySuper
     protected OkHttpClient createHttpClient() {
+        final boolean enableLog = config.isLogHttpGetRequests();
+
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS);
+                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
+                .addInterceptor(new RateLimitInterceptor(enableLog));
 
         if (sslContext != null) {
             builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
         }
 
-        if (config.isLogHttpGetRequests()) {
+        if (enableLog) {
             // use the app context, it's the non-translatable name used as a log tag
             final String tag = getName(ServiceLocator.getInstance().getAppContext());
             builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(tag));

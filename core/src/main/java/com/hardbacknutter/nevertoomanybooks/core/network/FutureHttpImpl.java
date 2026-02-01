@@ -77,13 +77,16 @@ public class FutureHttpImpl<R>
     private static final String GET = "GET";
     private static final String POST = "POST";
 
-    /** The default number of times we try to connect; i.e. one RETRY. */
-    private static final int NR_OF_TRIES = 2;
+    /** The default number of times we try to connect. */
+    private static final int RETRY_COUNT = 3;
 
     private static final String TAG = "FutureHttpImpl";
-    private static final String LOG_ATTEMPTS_LEFT = "attemptsLeft=";
+    private static final String LOG_ATTEMPT = "attempt=";
     private static final String LOG_REQUEST_URL = "requestUrlStr=";
     private static final String LOG_REDIRECT_COUNT = "redirectCount=";
+    private static final String LOG_CHECK_RESPONSE_CODE = "checkResponseCode";
+    private static final String LOG_REQUEST_URL_STR = "requestUrlStr=`";
+    private static final String LOG_RECOVERABLE_ERROR = "doGetConnect|recoverable error";
 
     /** timeout for opening a connection to a website. */
     private static final int CONNECT_TIMEOUT_MS = 10_000;
@@ -94,11 +97,6 @@ public class FutureHttpImpl<R>
 
     /** InputStream buffer size. Used by {@code GET} and {@code POST}. */
     private static final int DEFAULT_BUFFER_SIZE = 8192;
-    /**
-     * Milliseconds to wait between retries. This is in ADDITION to the Throttler.
-     * Reminder: not all sites have/need a throttler.
-     */
-    private static final int RETRY_AFTER_MS = 1_000;
 
     @StringRes
     private final int siteResId;
@@ -115,7 +113,7 @@ public class FutureHttpImpl<R>
     @Nullable
     private Future<R> futureHttp;
     /** {@code GET}. */
-    private int nrOfTries = NR_OF_TRIES;
+    private int retryCount = RETRY_COUNT;
     @Nullable
     private Throttler throttler;
     @Nullable
@@ -131,6 +129,11 @@ public class FutureHttpImpl<R>
     /** Log {@code GET} and {@code HEAD} related url,responseCode and redirects. */
     private boolean logHttpGetRequests;
 
+    /**
+     * Constructor.
+     *
+     * @param siteResId for logging
+     */
     public FutureHttpImpl(@StringRes final int siteResId) {
         this.siteResId = siteResId;
     }
@@ -153,12 +156,13 @@ public class FutureHttpImpl<R>
      *
      * @param request to check
      *
-     * @throws IOException               on connect
-     * @throws HttpUnauthorizedException 401: Unauthorized.
-     * @throws HttpForbiddenException    403: Forbidden
-     * @throws HttpNotFoundException     404: Not Found.
-     * @throws SocketTimeoutException    408: Request Time-Out.
-     * @throws HttpStatusException       on any other HTTP failures
+     * @throws IOException                  on connect
+     * @throws HttpUnauthorizedException    401: Unauthorized.
+     * @throws HttpForbiddenException       403: Forbidden
+     * @throws HttpNotFoundException        404: Not Found.
+     * @throws SocketTimeoutException       408: Request Time-Out.
+     * @throws HttpTooManyRequestsException 429: Too Many Requests.
+     * @throws HttpStatusException          on any other HTTP failures
      */
     @WorkerThread
     private void checkResponseCode(@NonNull final HttpURLConnection request)
@@ -166,12 +170,13 @@ public class FutureHttpImpl<R>
                    HttpUnauthorizedException,
                    HttpNotFoundException,
                    SocketTimeoutException,
+                   HttpTooManyRequestsException,
                    HttpStatusException {
 
         final int responseCode = request.getResponseCode();
 
         if (isLoggingEnabled()) {
-            LoggerFactory.getLogger().d(TAG, "checkResponseCode",
+            LoggerFactory.getLogger().d(TAG, LOG_CHECK_RESPONSE_CODE,
                                         responseCode + " " + request.getURL().toString());
         }
 
@@ -184,45 +189,54 @@ public class FutureHttpImpl<R>
                     .getHeaderFields()
                     .entrySet()
                     .stream()
-                    .map(es -> "Response Header: " + es.getKey() + "="
+                    .map(es -> "Response Header: " + es.getKey() + '='
                                + String.join("|", es.getValue()))
                     .collect(Collectors.joining("\n"));
 
-            LoggerFactory.getLogger().d(TAG, "checkResponseCode", "\n" + msg);
+            LoggerFactory.getLogger().d(TAG, LOG_CHECK_RESPONSE_CODE, "\n" + msg);
         }
 
         @Nullable
         final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
 
         switch (responseCode) {
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
+            case HttpURLConnection.HTTP_UNAUTHORIZED: {
                 throw new HttpUnauthorizedException(siteResId,
                                                     request.getResponseMessage(),
                                                     request.getURL(),
                                                     location);
-
-            case HttpURLConnection.HTTP_FORBIDDEN:
+            }
+            case HttpURLConnection.HTTP_FORBIDDEN: {
                 throw new HttpForbiddenException(siteResId,
                                                  request.getResponseMessage(),
                                                  request.getURL(),
                                                  location);
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
+            }
+            case HttpURLConnection.HTTP_NOT_FOUND: {
                 throw new HttpNotFoundException(siteResId,
                                                 request.getResponseMessage(),
                                                 request.getURL(),
                                                 location);
-
-            case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
+            }
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
                 // for easier reporting issues to the user, map a 408 to an STE
                 throw new SocketTimeoutException("408 " + request.getResponseMessage());
-
-            default:
+            }
+            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
+                throw new HttpTooManyRequestsException(
+                        siteResId,
+                        request.getHeaderField(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
+                        request.getResponseMessage(),
+                        request.getURL(),
+                        location);
+            }
+            default: {
                 throw new HttpStatusException(siteResId,
                                               responseCode,
                                               request.getResponseMessage(),
                                               request.getURL(),
                                               location);
+            }
         }
     }
 
@@ -269,8 +283,9 @@ public class FutureHttpImpl<R>
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     @Override
-    public FutureHttp<R> setRetryCount(@IntRange(from = 0) final int retryCount) {
-        nrOfTries = retryCount + 1;
+    public FutureHttp<R> setRetryCount(@IntRange(from = 1) final int retryCount) {
+        // Sanity check
+        this.retryCount = retryCount >= 1 ? retryCount : RETRY_COUNT;
         return this;
     }
 
@@ -593,7 +608,7 @@ public class FutureHttpImpl<R>
     /**
      * Perform the actual opening of the connection.
      * <p>
-     * If the site fails to connect, we will attempt up to {@link #NR_OF_TRIES}.
+     * If the site fails to connect, we will attempt up to {@link #RETRY_COUNT}.
      * This is always enabled.
      * <p>
      * If the site sends a redirect which Android (in its mysterious ways...) interprets
@@ -614,41 +629,42 @@ public class FutureHttpImpl<R>
                                            @NonNull final String method)
             throws IOException {
 
-        // sanity check
-        int attemptsLeft = nrOfTries > 0 ? nrOfTries : NR_OF_TRIES;
+        // start at 1 to make the logs clear.
+        int attempt = 1;
+        int retryAfterMs;
 
         final HttpURLConnection initialRequest = createRequest(url, method);
         // Preserve for a potential manual redirect
         String requestUrlStr = initialRequest.getURL().toString();
 
-        HttpURLConnection req = initialRequest;
+        HttpURLConnection request = initialRequest;
 
-        while (attemptsLeft > 0) {
+        while (attempt <= retryCount) {
             if (isLoggingEnabled()) {
                 LoggerFactory.getLogger().d(TAG, "doGetConnect|connect",
-                                            LOG_ATTEMPTS_LEFT + attemptsLeft,
+                                            LOG_ATTEMPT + attempt,
                                             LOG_REQUEST_URL + requestUrlStr);
             }
 
             //noinspection OverlyBroadCatchBlock
             try {
                 waitUntilRequestAllowed();
-                req.connect();
+                request.connect();
 
                 redirectCount = 0;
                 while (enable404Redirect && redirectCount < MAX_REDIRECTS
-                       && req.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+                       && request.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
 
-                    final URL responseUrl = req.getURL();
+                    final URL responseUrl = request.getURL();
                     final String responseUrlStr = responseUrl.toString();
 
                     if (isLoggingEnabled()) {
                         LoggerFactory.getLogger()
                                      .d(TAG, "doGetConnect|response",
-                                        LOG_ATTEMPTS_LEFT + attemptsLeft,
+                                        LOG_ATTEMPT + attempt,
                                         LOG_REQUEST_URL + requestUrlStr,
                                         LOG_REDIRECT_COUNT + redirectCount,
-                                        "responseCode=" + req.getResponseCode(),
+                                        "responseCode=" + request.getResponseCode(),
                                         "responseUrlStr=" + responseUrlStr);
                     }
 
@@ -659,29 +675,31 @@ public class FutureHttpImpl<R>
                     } else {
                         // follow the redirect
                         redirectCount++;
-                        req.disconnect();
-                        req = createRequest(responseUrl, req.getRequestMethod());
+                        request.disconnect();
+                        request = createRequest(responseUrl, request.getRequestMethod());
                         // Preserve for potential retry
                         requestUrlStr = responseUrlStr;
 
                         if (isLoggingEnabled()) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "doGetConnect|redirect",
-                                            LOG_ATTEMPTS_LEFT + attemptsLeft,
+                                            LOG_ATTEMPT + attempt,
                                             LOG_REDIRECT_COUNT + redirectCount,
                                             "new requestUrlStr=" + requestUrlStr);
                         }
                         // Note we are NOT using the throttler here,
                         // Android was SUPPOSED to redirect immediately.
-                        req.connect();
+                        request.connect();
                     }
                 }
 
-                checkResponseCode(req);
+                checkResponseCode(request);
                 // all fine, we're connected
-                return req;
+                return request;
 
             } catch (@NonNull final HttpForbiddenException e) {
+                // 2025: the below was solved by using OkHttp for all images;
+                //       but leaving this comment as a cautionary tale.
                 // 2024-11-07: There are ongoing issues with OpenLibrary fetching cover images.
                 // The issues seem to be limited to running in AndroidTest
                 // (i.e. the ParseTest class) and do not seem to happen when doing a manual
@@ -710,9 +728,22 @@ public class FutureHttpImpl<R>
                                                 "e.location=" + e.getLocation());
                 }
 
-                req.disconnect();
+                request.disconnect();
                 // Cannot recover from this, just quit
                 throw e;
+
+            } catch (@NonNull final HttpTooManyRequestsException e) {
+                if (isLoggingEnabled()) {
+                    LoggerFactory.getLogger()
+                                 .e(TAG, e, LOG_RECOVERABLE_ERROR,
+                                    LOG_ATTEMPT + attempt,
+                                    "retryAfter=" + e.getRetryAfter(),
+                                    LOG_REQUEST_URL_STR + requestUrlStr + '`');
+                }
+
+                attempt++;
+                checkAttempt(attempt, request, e);
+                retryAfterMs = RateLimitInterceptor.getRetryAfterInMs(e.getRetryAfter(), attempt);
 
             } catch (@NonNull final InterruptedIOException
                                     | FileNotFoundException
@@ -723,24 +754,18 @@ public class FutureHttpImpl<R>
                 // FileNotFoundException: seen on some sites. A retry and the site was OK.
                 if (isLoggingEnabled()) {
                     LoggerFactory.getLogger()
-                                 .e(TAG, e, "doGetConnect|recoverable error",
-                                    LOG_ATTEMPTS_LEFT + attemptsLeft,
-                                    "requestUrlStr=`" + requestUrlStr + '`');
+                                 .e(TAG, e, LOG_RECOVERABLE_ERROR,
+                                    LOG_ATTEMPT + attempt,
+                                    LOG_REQUEST_URL_STR + requestUrlStr + '`');
                 }
 
-                attemptsLeft--;
-                if (attemptsLeft == 0) {
-                    if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger()
-                                     .d(TAG, "doGetConnect|all attempts failed|disconnecting");
-                    }
-                    req.disconnect();
-                    throw e;
-                }
+                attempt++;
+                checkAttempt(attempt, request, e);
+                retryAfterMs = RateLimitInterceptor.getRetryAfterInMs(null, attempt);
             }
 
             try {
-                Thread.sleep(RETRY_AFTER_MS);
+                Thread.sleep(retryAfterMs);
             } catch (@NonNull final InterruptedException ignore) {
                 // ignore
             }
@@ -754,6 +779,20 @@ public class FutureHttpImpl<R>
         throw new NetworkException(message);
     }
 
+    private void checkAttempt(@IntRange(from = 1) final int attempt,
+                              @NonNull final HttpURLConnection request,
+                              @NonNull final IOException e)
+            throws IOException {
+        if (attempt > retryCount) {
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "doGetConnect|all attempts failed|disconnecting");
+            }
+            request.disconnect();
+            throw e;
+        }
+    }
+
 
     @Nullable
     @Override
@@ -765,6 +804,7 @@ public class FutureHttpImpl<R>
                    SocketTimeoutException,
                    IOException {
 
+        // a POST is never retried!
         try {
             futureHttp = ASyncExecutor.NETWORK.submit(() -> {
                 HttpURLConnection request = null;

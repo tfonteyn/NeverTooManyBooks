@@ -83,7 +83,8 @@ public class HttpCall {
     @Nullable
     private final Throttler throttler;
     private final boolean logEnabled;
-    private final int labelResId;
+    @StringRes
+    private final int siteResId;
 
     @NonNull
     private final CookieStore cookieStore;
@@ -99,19 +100,19 @@ public class HttpCall {
      *
      * @param httpClient  the one
      * @param cookieStore for logging <strong>all</strong> cookies as desired
-     * @param labelResId  string resource representing the caller
+     * @param siteResId   string resource representing the caller
      * @param throttler   to use
      * @param logEnabled  flag
      */
     public HttpCall(@NonNull final OkHttpClient httpClient,
                     @NonNull final CookieStore cookieStore,
-                    @StringRes final int labelResId,
+                    @StringRes final int siteResId,
                     @Nullable final Throttler throttler,
                     final boolean logEnabled) {
 
         this.httpClient = httpClient;
         this.cookieStore = cookieStore;
-        this.labelResId = labelResId;
+        this.siteResId = siteResId;
 
         this.throttler = throttler;
         this.logEnabled = logEnabled;
@@ -737,7 +738,7 @@ public class HttpCall {
         }
         //noinspection DataFlowIssue
         final Response response = call.execute();
-        checkResponse(response);
+        checkResponseCode(response);
         return response;
     }
 
@@ -746,18 +747,20 @@ public class HttpCall {
      *
      * @param response to check
      *
-     * @throws HttpUnauthorizedException 401: Unauthorized.
-     * @throws HttpForbiddenException    403: Forbidden
-     * @throws HttpNotFoundException     404: Not Found.
-     * @throws SocketTimeoutException    408: Request Time-Out.
-     * @throws HttpStatusException       on any other HTTP failures
+     * @throws HttpUnauthorizedException    401: Unauthorized.
+     * @throws HttpForbiddenException       403: Forbidden
+     * @throws HttpNotFoundException        404: Not Found.
+     * @throws SocketTimeoutException       408: Request Time-Out.
+     * @throws HttpTooManyRequestsException 429: Too Many Requests.
+     * @throws HttpStatusException          on any other HTTP failures
      */
     @WorkerThread
-    private void checkResponse(@NonNull final Response response)
+    private void checkResponseCode(@NonNull final Response response)
             throws HttpUnauthorizedException,
                    HttpForbiddenException,
                    HttpNotFoundException,
                    SocketTimeoutException,
+                   HttpTooManyRequestsException,
                    HttpStatusException {
 
         final int responseCode = response.code();
@@ -774,34 +777,43 @@ public class HttpCall {
         final String location = response.header(HttpConstants.RESPONSE_HEADER_LOCATION);
 
         switch (responseCode) {
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
-                throw new HttpUnauthorizedException(labelResId,
+            case HttpURLConnection.HTTP_UNAUTHORIZED: {
+                throw new HttpUnauthorizedException(siteResId,
                                                     response.message(),
                                                     response.request().url().url(),
                                                     location);
-
-            case HttpURLConnection.HTTP_FORBIDDEN:
-                throw new HttpForbiddenException(labelResId,
+            }
+            case HttpURLConnection.HTTP_FORBIDDEN: {
+                throw new HttpForbiddenException(siteResId,
                                                  response.message(),
                                                  response.request().url().url(),
                                                  location);
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                throw new HttpNotFoundException(labelResId,
+            }
+            case HttpURLConnection.HTTP_NOT_FOUND: {
+                throw new HttpNotFoundException(siteResId,
                                                 response.message(),
                                                 response.request().url().url(),
                                                 location);
-
-            case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
+            }
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
                 // for easier reporting issues to the user, map a 408 to an STE
                 throw new SocketTimeoutException("408 " + response.message());
-
-            default:
-                throw new HttpStatusException(labelResId,
+            }
+            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
+                throw new HttpTooManyRequestsException(
+                        siteResId,
+                        response.header(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
+                        response.message(),
+                        response.request().url().url(),
+                        location);
+            }
+            default: {
+                throw new HttpStatusException(siteResId,
                                               responseCode,
                                               response.message(),
                                               response.request().url().url(),
                                               location);
+            }
         }
     }
 
@@ -819,7 +831,7 @@ public class HttpCall {
                 .toMultimap()
                 .entrySet()
                 .stream()
-                .map(es -> "Request Header: " + es.getKey() + "="
+                .map(es -> "Request Header: " + es.getKey() + '='
                            + String.join("|", es.getValue()))
                 .collect(Collectors.joining("\n"));
 

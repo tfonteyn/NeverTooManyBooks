@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -223,12 +224,16 @@ public class DnbSearchEngine
     protected OkHttpClient createHttpClient() {
         final SearchEngineConfig config = getEngineId().getConfig();
         //noinspection DataFlowIssue
+        final boolean enableLog = config.isLogHttpGetRequests();
+
+        //noinspection DataFlowIssue
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS);
+                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
+                .addInterceptor(new RateLimitInterceptor(enableLog));
 
         // this is a kludge... see DnbSslContextFactory why
         final SSLContext sslContext = getSslContext();

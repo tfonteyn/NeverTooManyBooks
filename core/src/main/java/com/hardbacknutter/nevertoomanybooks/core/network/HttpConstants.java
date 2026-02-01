@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -243,4 +243,11 @@ public final class HttpConstants {
      * Content-Length</a>
      */
     public static final String RESPONSE_HEADER_CONTENT_LENGTH = "Content-Length";
+
+    /**
+     * HTTP Response Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After">
+     * Retry-After</a>
+     */
+    public static final String RESPONSE_HEADER_RETRY_AFTER = "Retry-After";
 }
