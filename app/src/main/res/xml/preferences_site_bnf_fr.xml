@@ -65,4 +65,18 @@
             app:showSeekBarValue="true"
             />
     </PreferenceCategory>
+
+    <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory
+        android:summary="@string/lbl_troubleshooting_warning"
+        android:title="@string/lbl_troubleshooting">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/troubleshoot_24px"
+            android:key="bnf.logging.http.get"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_enable_extra_logging" />
+
+    </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
+
 </PreferenceScreen>
