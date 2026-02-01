@@ -71,6 +71,8 @@ public class LibraryThingSearchEngine
     public static final String BOOK_URL = "https://www.librarything.com/work/%s";
     public static final String AUTHOR_URL = null;
 
+    private static final String TAG = "LibraryThingSearchEngin";
+
     private static final String PREFERENCE_KEY = "librarything";
 
     @VisibleForTesting

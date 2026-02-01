@@ -95,6 +95,8 @@ public class DnbSearchEngine
     public static final String BOOK_URL = "https://d-nb.info/%s";
     public static final String AUTHOR_URL = "https://d-nb.info/gnd/%s";
 
+    private static final String TAG = "DnbSearchEngine";
+
     static final String KATALOG_DNB_DE = "https://katalog.dnb.de";
 
     private static final String PREFERENCE_KEY = "dnb";

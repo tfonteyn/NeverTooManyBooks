@@ -122,6 +122,8 @@ public class BolSearchEngine
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
 
+    private static final String TAG = "BolSearchEngine";
+
     /**
      * Search using a text-string.
      * <p>

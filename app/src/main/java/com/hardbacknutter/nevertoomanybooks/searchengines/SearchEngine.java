@@ -74,9 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 public interface SearchEngine
         extends Cancellable {
 
-    /** Log tag. */
-    String TAG = "SearchEngine";
-
     /**
      * Get the engine id.
      *

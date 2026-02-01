@@ -194,7 +194,8 @@ public abstract class SearchEngineBase
                                                               .getLocale(root, userLocale);
                 if (BuildConfig.DEBUG /* always */) {
                     LoggerFactory.getLogger()
-                                 .d(TAG, "getLocale", "locale=" + locale);
+                                 .d(getName(context), "baseUrl=" + baseUrl,
+                                    "getLocale", "locale=" + locale);
                 }
                 return locale.orElse(Locale.US);
         }
@@ -375,7 +376,9 @@ public abstract class SearchEngineBase
         }
 
         if (config.isLogHttpGetRequests()) {
-            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(TAG));
+            // use the app context, it's the non-translatable name used as a log tag
+            final String tag = getName(ServiceLocator.getInstance().getAppContext());
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(tag));
         }
 
         return builder.build();
@@ -635,8 +638,8 @@ public abstract class SearchEngineBase
             book.putString(DBKey.PRICE_LISTED_CURRENCY, currencyStr);
         }
 
-        // log this as we need to understand WHY it failed
-        LoggerFactory.getLogger().w(TAG, "processPriceListed Failed to parse",
+        // Log this as we need to understand WHY it failed.
+        LoggerFactory.getLogger().w(getName(context), "processPriceListed Failed to parse",
                                     "currencyStr=" + currencyStr,
                                     "priceStr=" + priceStr);
     }
