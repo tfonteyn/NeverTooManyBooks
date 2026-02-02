@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -197,6 +197,8 @@ public class BookFinderSearchEngine
             ratingParser.parse(s[0]).ifPresent(book::setRating);
         }
 
+        final Locale siteLocale = getLocale(context);
+
         final Elements details = bookInfo.select("div > strong");
         for (final Element label : details) {
             final Node valueElement = label.nextSibling();
@@ -213,7 +215,7 @@ public class BookFinderSearchEngine
                             break;
                         }
                         case "Publisher:": {
-                            processPublisher(context, value, book);
+                            processPublisher(context, siteLocale, value, book);
                             break;
                         }
                         case "Edition:": {
@@ -249,6 +251,7 @@ public class BookFinderSearchEngine
     }
 
     private void processPublisher(@NonNull final Context context,
+                                  @NonNull final Locale siteLocale,
                                   @NonNull final String value,
                                   @NonNull final Book book) {
         final String[] parts = value.split(",");
@@ -257,7 +260,7 @@ public class BookFinderSearchEngine
             if (!s.isBlank()) {
                 book.add(Publisher.from(s.strip()));
                 if (parts.length > 1 && !parts[1].isBlank()) {
-                    addPublicationDate(context, getLocale(context), parts[1].strip(), book);
+                    addPublicationDate(context, siteLocale, parts[1].strip(), book);
                 }
             }
         }
