@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -45,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -92,6 +94,8 @@ public class DoubanSearchEngine
     public static final String BOOK_URL = "https://book.douban.com/subject/%s";
     public static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
 
+    private static final Locale SITE_LOCALE = Locale.CHINA;
+
     private static final String PREFERENCE_KEY = "douban";
 
     /**
@@ -108,7 +112,7 @@ public class DoubanSearchEngine
      * param 1: the ISBN.
      */
     private static final String SEARCH_URL = "/book/subject_search?search_text=%1$s";
-    private static final Pattern PATTERN_BR = Pattern.compile("<br>");
+
     /**
      * Support for foreign author names.
      * Format: [法] 保罗·霍尔特   ==>  [France] Paul Holt
@@ -153,7 +157,7 @@ public class DoubanSearchEngine
                                     List.of(R.string.site_description_chinese,
                                             R.string.site_description_catalog),
                                     "https://search.douban.com",
-                                    Locale.CHINA)
+                                    SITE_LOCALE)
                 .setIdentifierKey(Identifier.SID_DOUBAN)
                 .setPreferenceFragmentClazz(DoubanPreferencesFragment.class);
     }
@@ -480,8 +484,6 @@ public class DoubanSearchEngine
             return;
         }
 
-        final Locale siteLocale = getLocale(context);
-
         final Elements labels = infoTable.select("span.pl");
         for (final Element label : labels) {
             // labels include the ':' except the author, where the ':' is a sibling text element
@@ -508,7 +510,8 @@ public class DoubanSearchEngine
                             //  when followed, this redirects to
                             //  https://www.douban.com/personage/30081700/
                             //  so the SID from the author link is WRONG...
-                            //  We'll need to follow the link to the "personage" to get the correct SID.
+                            //  We'll need to follow the link to the "personage" to
+                            //  get the correct SID.
                             //  This would also allow us to get Birthdate etc
 
                             addAuthor(author, AuthorRole.UNKNOWN, book);
@@ -577,8 +580,8 @@ public class DoubanSearchEngine
                     // List price
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        addPriceListed(context, siteLocale, n.toString().strip(),
-                                       MoneyParser.CNY, book);
+                        final String priceStr = n.toString().strip();
+                        parsePrice(context, priceStr, book);
                     }
                     break;
                 }
@@ -631,6 +634,16 @@ public class DoubanSearchEngine
             parseCover(context, document, book.getIsbn(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
+    }
+
+    private void parsePrice(@NonNull final Context context,
+                            @NonNull final String priceStr,
+                            @NonNull final Book book) {
+
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
+        final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
+        addPriceListed(context, parser, priceStr, MoneyParser.CNY, book);
     }
 
     /**

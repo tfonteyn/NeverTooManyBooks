@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -56,9 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -107,6 +110,8 @@ public class IsfdbSearchEngine
     public static final String SITE_URL = "https://www.isfdb.org";
     public static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
     public static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
+
+    private static final Locale SITE_LOCALE = Locale.US;
 
     private static final String PREFERENCE_KEY = "isfdb";
 
@@ -322,7 +327,7 @@ public class IsfdbSearchEngine
                                             R.string.site_description_catalog,
                                             R.string.site_description_fsf),
                                     "https://www.isfdb.org",
-                                    Locale.US)
+                                    SITE_LOCALE)
                 .setIdentifierKey(Identifier.SID_ISFDB)
                 .setPreferenceFragmentClazz(IsfdbPreferencesFragment.class)
                 .setConfig(cb -> cb
@@ -919,8 +924,6 @@ public class IsfdbSearchEngine
             return;
         }
 
-        final Locale siteLocale = getLocale(context);
-
         final Element contentBox = allContentBoxes.first();
         // sanity check
         if (contentBox == null) {
@@ -988,7 +991,7 @@ public class IsfdbSearchEngine
                             break;
                         }
                         case "Price:": {
-                            parsePrice(context, labelElement, siteLocale, book);
+                            parsePrice(context, labelElement, book);
                             break;
                         }
                         case "Pages:": {
@@ -1120,13 +1123,16 @@ public class IsfdbSearchEngine
 
     private void parsePrice(@NonNull final Context context,
                             @NonNull final Element labelElement,
-                            @NonNull final Locale siteLocale,
                             @NonNull final Book book) {
         final Element data = labelElement.nextElementSibling();
         if (data != null) {
             final String tmp = data.ownText();
             if (!tmp.isEmpty()) {
-                addPriceListed(context, siteLocale, tmp, null, book);
+                final LocaleList userLocales = context.getResources().getConfiguration()
+                                                      .getLocales();
+                final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
+                final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
+                addPriceListed(context, parser, tmp, null, book);
             }
         }
     }

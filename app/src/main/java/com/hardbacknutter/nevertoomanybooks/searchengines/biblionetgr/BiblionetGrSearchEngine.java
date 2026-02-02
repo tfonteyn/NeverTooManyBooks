@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.biblionetgr;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -531,11 +533,7 @@ public class BiblionetGrSearchEngine
                 }
                 case "Τιμη":
                 case "Price": {
-                    // ouch... the Greek Locale uses the "," as the decimal separator,
-                    // but the site uses "." instead.
-                    // While we would normally parse here with the site Locale,
-                    // we parse with the UK one instead to force a "."
-                    addPriceListed(context, Locale.UK, text, MoneyParser.EUR, book);
+                    parsePrice(context, text, book);
                     break;
                 }
                 case "Γλωσσα":
@@ -684,6 +682,19 @@ public class BiblionetGrSearchEngine
         if (book.getLanguage().isBlank()) {
             book.setLanguage(MODERN_GREEK_ISO3);
         }
+    }
+
+    private void parsePrice(@NonNull final Context context,
+                            @NonNull final String text,
+                            @NonNull final Book book) {
+        // ouch... the Greek Locale uses the "," as the decimal separator,
+        // but the site uses "." instead.
+        // While we would normally parse here with the site Locale,
+        // we parse the mony value with the UK one instead to force a "."
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(Locale.UK, userLocales);
+        final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
+        addPriceListed(context, parser, text, MoneyParser.EUR, book);
     }
 
     private void processSubjectTags(@NonNull final Context context,

@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -545,6 +546,8 @@ public class AmazonSearchEngine
                             @NonNull final Book book) {
         final Element tmmSwatches = document.selectFirst("div#tmmSwatches");
         if (tmmSwatches == null) {
+            // This happens when the book was on the site, but is actually not for sale.
+            // i.e. sold-out, even on marketplace.
             LoggerFactory.getLogger().w(TAG, getHostUrl(),
                                         "parsePrice", "no tmmSwatches?");
             return;
@@ -586,7 +589,18 @@ public class AmazonSearchEngine
             }
         }
 
-        addPriceListed(context, siteLocale, priceText, null, book);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> tmpAllLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        // Amazon does not give a hoot about other countries outside of the US.
+        // So, for example, on the german site we find prices like "€12.34", i.e. using a dot
+        // as the decimal separator instead of the proper comma as used in Germany.
+        // We're keeping the site-locale first to guard against Amazon doing the right thing...
+        // but add the US Locale in the meantime.
+        final List<Locale> allLocales = new ArrayList<>(tmpAllLocales);
+        allLocales.add(Locale.US);
+
+        final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
+        addPriceListed(context, parser, priceText, null, book);
 
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");

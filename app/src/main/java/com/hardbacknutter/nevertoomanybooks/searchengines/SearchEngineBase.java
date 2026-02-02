@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -595,26 +594,21 @@ public abstract class SearchEngineBase
      * Process the price-listed field according to the given site locale.
      *
      * @param context     Current context
-     * @param siteLocale  for parsing
+     * @param moneyParser for parsing
      * @param priceStr    the field as retrieved with or without currency embedded
      * @param currencyStr optional default currency string to use
      *                    when the priceStr does not have one
      * @param book        Bundle to update
      */
     public void addPriceListed(@NonNull final Context context,
-                               @NonNull final Locale siteLocale,
+                               @NonNull final MoneyParser moneyParser,
                                @NonNull final String priceStr,
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final RealNumberParser realNumberParser = new RealNumberParser(
-                LocaleListUtils.asList(siteLocale, userLocales));
-        final MoneyParser parser = new MoneyParser(siteLocale, realNumberParser);
-
         // TODO: maybe move this logic to the MoneyParser class ?
         // First ignore the given currency string (if any) and try parsing
-        final Optional<Money> oMoney = parser.parse(priceStr);
+        final Optional<Money> oMoney = moneyParser.parse(priceStr);
         if (oMoney.isPresent()) {
             Money money = oMoney.get();
             if (money.getCurrency() != null) {

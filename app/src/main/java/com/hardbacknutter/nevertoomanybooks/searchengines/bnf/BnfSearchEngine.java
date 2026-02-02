@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bnf;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -41,8 +42,10 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -508,7 +511,11 @@ public class BnfSearchEngine
             }
             s = fields.get('d');
             if (s != null && !s.isEmpty()) {
-                addPriceListed(context, SITE_LOCALE, s, null, book);
+                final LocaleList userLocales = context.getResources().getConfiguration()
+                                                      .getLocales();
+                final List<Locale> allLocales = LocaleListUtils.asList(SITE_LOCALE, userLocales);
+                final MoneyParser parser = new MoneyParser(SITE_LOCALE, allLocales);
+                addPriceListed(context, parser, s, null, book);
             }
         }
     }

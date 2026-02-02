@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -529,7 +531,11 @@ public class StripWebSearchEngine
                 final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
                 final String priceStr = price.text().strip();
-                addPriceListed(context, siteLocale, priceStr, MoneyParser.EUR, book);
+                final LocaleList userLocales = context.getResources().getConfiguration()
+                                                      .getLocales();
+                final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+                final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
+                addPriceListed(context, parser, priceStr, MoneyParser.EUR, book);
             }
 
             final Element sidElement = cartForm.selectFirst("input[id='hdnArticleNo']");

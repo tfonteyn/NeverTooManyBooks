@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -379,8 +381,10 @@ public class BertrandPtSearchEngine
         final Element priceElement = document.selectFirst(
                 "div#productPageRightSectionTop-saleAction-price-current");
         if (priceElement != null) {
-            final String tmpString = priceElement.text();
-            addPriceListed(context, siteLocale, tmpString, MoneyParser.EUR, book);
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+            final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
+            addPriceListed(context, parser, priceElement.text(), MoneyParser.EUR, book);
         }
 
         // First try for the readers rating

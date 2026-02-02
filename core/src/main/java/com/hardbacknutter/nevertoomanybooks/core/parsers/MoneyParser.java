@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -64,13 +65,25 @@ public class MoneyParser {
     /**
      * Constructor.
      *
-     * @param locale           to use for parsing the currency
+     * @param currencyLocale   to use for parsing the currency
      * @param realNumberParser to use for parsing the number part
      */
-    public MoneyParser(@NonNull final Locale locale,
+    public MoneyParser(@NonNull final Locale currencyLocale,
                        @NonNull final RealNumberParser realNumberParser) {
-        this.locale = locale;
+        this.locale = currencyLocale;
         this.realNumberParser = realNumberParser;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param currencyLocale to use for parsing the currency
+     * @param numberLocales  to use for parsing the number part
+     */
+    public MoneyParser(@NonNull final Locale currencyLocale,
+                       @NonNull final List<Locale> numberLocales) {
+        this.locale = currencyLocale;
+        this.realNumberParser = new RealNumberParser(numberLocales);
     }
 
     /**

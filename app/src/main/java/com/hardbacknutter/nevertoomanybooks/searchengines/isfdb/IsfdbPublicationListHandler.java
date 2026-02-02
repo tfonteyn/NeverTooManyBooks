@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -28,12 +29,15 @@ import androidx.annotation.Nullable;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -187,6 +191,8 @@ class IsfdbPublicationListHandler
     @Nullable
     private String externalId;
 
+    private final MoneyParser moneyParser;
+
     /**
      * Constructor.
      *
@@ -204,6 +210,11 @@ class IsfdbPublicationListHandler
         this.searchEngine = searchEngine;
         System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
         this.maxRecords = maxRecords;
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     @NonNull
@@ -361,10 +372,8 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_PRICE: {
-                    searchEngine.addPriceListed(context,
-                                                searchEngine.getLocale(context),
-                                                builder.toString().strip(), null,
-                                                book);
+                    final String priceStr = builder.toString().strip();
+                    searchEngine.addPriceListed(context, moneyParser, priceStr, null, book);
                     break;
                 }
                 case XML_PAGES: {
