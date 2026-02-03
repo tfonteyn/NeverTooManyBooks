@@ -161,6 +161,13 @@ public class Series
             + "|"
 
             // 3rd possibility:
+            + ROMAN_NUMBER
+            // with an optional alphanumeric suffix if separated by a '|'
+            + "\\|\\S*?"
+
+            + "|"
+
+            // 4th possibility:
             // prefix: a mandatory single whitespace and an optional '('
             + "\\s[(]?"
             + ROMAN_NUMBER

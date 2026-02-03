@@ -90,6 +90,8 @@ class SeriesTest {
 
                 Arguments.of("Jerry Cornelius MCVIII", "Jerry Cornelius", "MCVIII"),
 
+                Arguments.of("Jerry Cornelius xii|blah", "Jerry Cornelius", "xii|blah"),
+
                 Arguments.of("Series-Title", "Series-Title", ""),
                 Arguments.of("Series-Title 777", "Series-Title", "777"),
 
@@ -268,18 +270,6 @@ class SeriesTest {
         assertNotNull(series);
         assertEquals(title, series.getTitle());
         assertEquals(nr, series.getNumber());
-    }
-
-    /**
-     * FIXME: Some day we're going to make these titles work...
-     */
-    @Test
-    void expectedToFail() {
-        // 2019-09-23: FAILS: can't deal with alphanumeric suffix.
-        final Series series = Series.from("Jerry Cornelius xii|bla");
-        assertNotNull(series);
-        assertEquals("Jerry Cornelius", series.getTitle());
-        assertEquals("xii|bla", series.getNumber());
     }
 
     /**
