@@ -116,12 +116,12 @@ public class Series
             + ",|"
             + "#|"
             + ",\\s*#|"
-            + "number|num|num.|no|no.|nr|nr.|"
-            + "book|bk|bk.|"
-            + "volume|vol|vol.|"
-            + "tome|t.|"
-            + "part|pt.|"
-            + "deel|dl.|"
+            + "number|num|num\\.|no|no\\.|nr|nr\\.|"
+            + "book|bk|bk\\.|"
+            + "volume|vol|vol\\.|"
+            + "tome|t\\.|"
+            + "part|pt\\.|"
+            + "deel|dl\\.|"
             // or none
             + ")"
             // followed by (optional) whitespace

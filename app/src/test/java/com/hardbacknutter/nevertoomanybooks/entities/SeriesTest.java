@@ -76,6 +76,9 @@ class SeriesTest {
                 Arguments.of("Euro-5 6", "Euro-5", "6"),
                 Arguments.of("Euro-5-7 6", "Euro-5-7", "6"),
                 Arguments.of("Euro-5-7-test 6", "Euro-5-7-test", "6"),
+                Arguments.of("Euro-5-7-tespt 6", "Euro-5-7-tespt", "6"),
+                Arguments.of("Euro-5-7-test num 6", "Euro-5-7-test", "6"),
+                Arguments.of("Euro-5-7-test num. 6", "Euro-5-7-test", "6"),
 
                 Arguments.of("Blake's 7 13", "Blake's 7", "13"),
 
@@ -90,8 +93,8 @@ class SeriesTest {
                 Arguments.of("Series-Title", "Series-Title", ""),
                 Arguments.of("Series-Title 777", "Series-Title", "777"),
 
-                Arguments.of("Donjon morning -100", "Donjon morning", "-100")
-                , Arguments.of("Donjon evening +100", "Donjon evening", "+100")
+                Arguments.of("Donjon morning -100", "Donjon morning", "-100"),
+                Arguments.of("Donjon evening +100", "Donjon evening", "+100")
         );
     }
 
