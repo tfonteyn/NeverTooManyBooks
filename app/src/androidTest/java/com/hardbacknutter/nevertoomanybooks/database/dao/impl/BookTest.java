@@ -46,7 +46,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -79,7 +78,6 @@ public class BookTest
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
-        assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
@@ -99,7 +97,6 @@ public class BookTest
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(0d), "");
-        assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
