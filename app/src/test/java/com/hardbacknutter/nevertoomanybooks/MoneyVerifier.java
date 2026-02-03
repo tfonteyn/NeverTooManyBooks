@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,8 +25,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.math.BigDecimal;
-
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -38,16 +36,17 @@ public final class MoneyVerifier {
     private MoneyVerifier() {
     }
 
-    public static void checkRawData(@NonNull final DataManager dataManager,
-                                    @NonNull final BigDecimal value,
-                                    @Nullable final String currency) {
+    public static void checkPriceData(@NonNull final DataManager dataManager,
+                                      @NonNull final String key,
+                                      final double value,
+                                      @Nullable final String currency) {
         final Bundle rawData = dataManager.getRawData();
 
-        final Object v = rawData.get(DBKey.PRICE_LISTED);
+        final Object v = rawData.get(key);
         assertInstanceOf(Double.class, v);
-        assertEquals(value.doubleValue(), (double) v);
+        assertEquals(value, (double) v);
 
-        final Object c = rawData.get(DBKey.PRICE_LISTED_CURRENCY);
+        final Object c = rawData.get(key + DBKey.CURRENCY_SUFFIX);
         if (currency == null) {
             assertNull(c);
         } else {

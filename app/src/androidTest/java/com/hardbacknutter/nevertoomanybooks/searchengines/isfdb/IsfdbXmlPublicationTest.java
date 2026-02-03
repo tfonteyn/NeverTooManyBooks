@@ -29,7 +29,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Currency;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -161,13 +159,8 @@ public class IsfdbXmlPublicationTest
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
         assertEquals("TRPLNTRLBK1971", book.getString(IsfdbSearchEngine.SiteField.BOOK_TAG, null));
 
-        final Money priceListed = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
-        assertNotNull(priceListed);
-
-        assertEquals(1.75d, priceListed.doubleValue(), 0.001);
-        final Currency currency = priceListed.getCurrency();
-        assertNotNull(currency);
-        assertEquals(MoneyParser.GBP, currency.getCurrencyCode());
+        assertEquals(1.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());

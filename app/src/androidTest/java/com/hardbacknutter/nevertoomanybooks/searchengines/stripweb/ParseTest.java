@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 import android.util.Log;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +30,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -114,10 +113,8 @@ public class ParseTest
                      " dit alles in het jubileum jaar van Lucky Luke 75 verschijnt midden 2021",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        final Money listPrice = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
-        assertNotNull(listPrice);
-        assertEquals(BigDecimal.valueOf(9.99d), listPrice.getValue());
-        assertEquals(Money.EURO, listPrice.getCurrency());
+        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(3, bookTags.size());
@@ -208,10 +205,8 @@ public class ParseTest
                      " en Corentin Rouge.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        final Money listPrice = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
-        assertNotNull(listPrice);
-        assertEquals(BigDecimal.valueOf(9.99d), listPrice.getValue());
-        assertEquals(Money.EURO, listPrice.getCurrency());
+        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(3, bookTags.size());
@@ -267,7 +262,6 @@ public class ParseTest
         assertEquals("Mikaël", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(AuthorRole.ARTIST, author.getRole());
-        assertEquals("1974-04-01", author.getBirthDate().orElse(null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -312,10 +306,8 @@ public class ParseTest
                      " fantasie van Jean Van Hamme? Drie duo's namen intussen de uitdaging aan.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        final Money listPrice = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
-        assertNotNull(listPrice);
-        assertEquals(BigDecimal.valueOf(44.99d), listPrice.getValue());
-        assertEquals(Money.EURO, listPrice.getCurrency());
+        assertEquals(44.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,17 +23,15 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 import android.util.Log;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -165,9 +163,8 @@ public class Parse2Test
                      + " the vast distances of interstellar space.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(new Money(BigDecimal.valueOf(5.49d),
-                               Currency.getInstance("GBP")),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(5.49d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(1, bookTags.size());

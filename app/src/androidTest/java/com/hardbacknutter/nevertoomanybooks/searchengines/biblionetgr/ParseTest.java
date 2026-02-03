@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,9 +33,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -112,10 +111,8 @@ public class ParseTest
         assertTrue(description.startsWith("Η γαλέρα του αυτοκράτορα καταλαμβάνεται"));
         assertTrue(description.endsWith("ξαναβρεί την όρεξή του ;"));
 
-        final Money listPrice = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
-        assertNotNull(listPrice);
-        assertEquals(BigDecimal.valueOf(3.30d), listPrice.getValue());
-        assertEquals(Money.EURO, listPrice.getCurrency());
+        assertEquals(3.30d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(1, bookTags.size());
@@ -197,10 +194,8 @@ public class ParseTest
                 "Εισηγητές: Καρβέλης, Τάκης - Ιλίνσκαγια, Σόνια - Καράογλου, Χ. Λ. - Παπακωστούλα- Γιανναρά, Γ. Α. - Μηλιώτης Κωνσταντίνος Ε. κ.ά.",
                 description);
 
-        final Money listPrice = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
-        assertNotNull(listPrice);
-        assertEquals(BigDecimal.valueOf(31.8d), listPrice.getValue());
-        assertEquals(Money.EURO, listPrice.getCurrency());
+        assertEquals(31.8d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());

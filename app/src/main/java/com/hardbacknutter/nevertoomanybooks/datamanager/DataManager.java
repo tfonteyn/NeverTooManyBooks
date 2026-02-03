@@ -330,11 +330,10 @@ public class DataManager
     public Object get(@NonNull final String key,
                       @NonNull final RealNumberParser parser) {
         if (DBKey.getMoneyKeys().contains(key)) {
-            // try to combine the keys
             try {
-                final Money money = getMoney(key, parser);
-                if (money != null) {
-                    return money;
+                if (rawData.containsKey(key)) {
+                    return MoneyParser.parse(BigDecimal.valueOf(getDouble(key, parser)),
+                                             getString(key + DBKey.CURRENCY_SUFFIX));
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
@@ -454,37 +453,6 @@ public class DataManager
     public void putString(@NonNull final String key,
                           @NonNull final String value) {
         rawData.putString(key, value);
-    }
-
-    /**
-     * Get a {@link Money} value.
-     * <p>
-     * <strong>NOT for normal use; it's too easy to get this wrong.
-     * Should only be used by {@link #get(String, RealNumberParser)} or in tests.</strong>
-     * <p>
-     * This method should really return an "Either". i.e.
-     * Either return the Money object, or return a String with the raw value.
-     * This is exactly what is done in {@link #get(String, RealNumberParser)}
-     * where we return an Object.
-     *
-     * @param key    Key of data object
-     * @param parser to use for number parsing
-     *
-     * @return value or {@code null} if parsing did not produce a {@link Money} object
-     *
-     * @throws NumberFormatException if parsing the value itself failed.
-     */
-    @VisibleForTesting
-    @Nullable
-    public Money getMoney(@NonNull final String key,
-                          @NonNull final RealNumberParser parser)
-            throws NumberFormatException {
-        if (rawData.containsKey(key)) {
-            return MoneyParser.parse(BigDecimal.valueOf(getDouble(key, parser)),
-                                     getString(key + DBKey.CURRENCY_SUFFIX));
-        } else {
-            return null;
-        }
     }
 
     /**

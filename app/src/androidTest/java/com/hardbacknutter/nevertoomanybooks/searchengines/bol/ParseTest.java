@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,9 +32,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -48,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -108,12 +106,12 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(new Money(BigDecimal.valueOf(16.5d), Money.EURO),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         // TEST: missing tags?
 //        final List<Tag> bookTags = book.getTags();
-//        Assert.assertEquals(2, bookTags.size());
+//        assertEquals(2, bookTags.size());
 //        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
 //        assertTrue(tags.contains("Kinderboeken"));
 //        assertTrue(tags.contains("Prentenboeken"));
@@ -162,12 +160,12 @@ public class ParseTest
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(new Money(BigDecimal.valueOf(8.95d), Money.EURO),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(8.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
 //  TEST: MISSING TAGS?
 //        final List<Tag> bookTags = book.getTags();
-//        Assert.assertEquals(2, bookTags.size());
+//        assertEquals(2, bookTags.size());
 //        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
 //        assertTrue(tags.contains("Fantasy & Sciencefiction"));
 //        assertTrue(tags.contains("Sciencefiction"));
@@ -228,11 +226,11 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(new Money(BigDecimal.valueOf(51.6d), Money.EURO),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(51.6d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(7, bookTags.size());
+        assertEquals(7, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Thrillers & Spanning"));
@@ -293,11 +291,11 @@ public class ParseTest
         assertEquals("408", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(new Money(BigDecimal.valueOf(26.99d), Money.EURO),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(26.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(3, bookTags.size());
+        assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Geschiedenis"));
         assertTrue(tags.contains("Europa"));
@@ -363,11 +361,11 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(new Money(BigDecimal.valueOf(16.5d), Money.EURO),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(2, bookTags.size());
+        assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Kinderboeken"));
         assertTrue(tags.contains("Prentenboeken"));
@@ -413,11 +411,11 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(new Money(BigDecimal.valueOf(18.28d), Money.EURO),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(18.28d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(2, bookTags.size());
+        assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Literaire romans"));
@@ -480,15 +478,15 @@ public class ParseTest
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(new Money(BigDecimal.valueOf(24.99d), Money.EURO),
-                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(24.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         assertEquals(
                 "'Wederom een rijke, roerende en actuele roman. [...] Een ingenieuze roman, waarmee Shafak niet alleen haar meesterschap onderstreept, maar vooral ook de grote kracht en waarde van literatuur in volle glorie toont.' het Parool ‘Haar nieuwe en wellicht ook meest ambitieuze roman tot nu toe’ De Morgen ‘Maak ruimte voor Shafak in je boekenkast. Maak ook ruimte voor haar in je hart. Je zult er geen spijt van krijgen.’ Arundhati Roy Londen, 1840. Arthur raakt gefascineerd door het oude Mesopotamië en in het bijzonder door het epische Gilgamesj-epos, over een hooghartige held die pas tot inkeer komt wanneer hij alles kwijt is. Turkije, 2014. De 10-jarige Narin moet vluchten voor isis, samen met haar oma, die uit een lange lijn van vrouwelijke zieners komt. Londen, 2018. Zaleekhah vindt troost in haar onderzoek naar rivieren, en komt via een vriendin in aanraking met een bijzondere oude taal. Wat de drie buitenstaanders door de eeuwen heen met elkaar verbindt, is het water, want: ‘Water bewaart alle herinneringen. Het zijn de mensen die vergeten.’ ‘Een van de belangrijkste schrijvers van dit moment.’ Independent ‘Iedereen zou Shafak moeten lezen.’ The Guardian ‘Een buitengewone roman, fris en zuiverend als de regen die op het metalen dak van ons leven slaat.’ Column McCann ‘Een meesterwerk.’ Ruth Ozeki ‘Shafaks verbeeldingskracht is een wonder: gedurfd, weergaloos en wijs.’ Katie Kitamura ‘Een moderne klassieker. Shafak is een van de grote schrijvers van onze tijd. Deze roman is verbazingwekkend, ingenieus en prachtig.’ Peter Frankopan",
                 book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(2, bookTags.size());
+        assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Historische romans"));
