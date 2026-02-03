@@ -26,7 +26,6 @@ import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.MoneyVerifier;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
@@ -37,12 +36,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class MoneyTest
+class MoneyTest
         extends Base {
 
     private static final double VALUE = 12.34d;
-    private static final BigDecimal twelveDotThreeFour = BigDecimal.valueOf(VALUE);
-    private final Money money = MoneyParser.parse(twelveDotThreeFour, MoneyParser.GBP);
+    private final Money money = MoneyParser.parse(BigDecimal.valueOf(VALUE), MoneyParser.GBP);
 
     private DataManager dataManager;
 
@@ -60,22 +58,22 @@ public class MoneyTest
     @Test
     void putMoney() {
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, "GBP");
+        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
     }
 
     @Test
     void putObject() {
         // Test for put(.., Object); do NOT replace with putMoney
         dataManager.put(DBKey.PRICE_LISTED, money);
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, "GBP");
+        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
     }
 
     @Test
     void putComponents() {
         dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
-        dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
+        dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.GBP);
 
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, "GBP");
+        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
     }
 
     @Test
@@ -93,11 +91,9 @@ public class MoneyTest
 
     @Test
     void putSentiment() {
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-
         dataManager.putString(DBKey.PRICE_LISTED, "Far to much dosh");
 
-        final Object out = dataManager.get(DBKey.PRICE_LISTED, realNumberParser);
+        final Object out = dataManager.getRawData().get(DBKey.PRICE_LISTED);
         assertNotNull(out);
         assertInstanceOf(String.class, out);
         assertEquals("Far to much dosh", out);
