@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2026 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -33,6 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class DefaultFieldValidator
         implements DataValidator {
 
+    @NonNull
+    private final RealNumberParser realNumberParser;
     /** Default to apply if the field is empty. */
     @NonNull
     private final String defaultValue;
@@ -40,9 +43,12 @@ public class DefaultFieldValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply if the field is empty
+     * @param realNumberParser to use for number parsing
+     * @param defaultValue     Default to apply if the field is empty
      */
-    DefaultFieldValidator(@NonNull final String defaultValue) {
+    DefaultFieldValidator(@NonNull final RealNumberParser realNumberParser,
+                          @NonNull final String defaultValue) {
+        this.realNumberParser = realNumberParser;
         this.defaultValue = defaultValue;
     }
 
@@ -62,8 +68,8 @@ public class DefaultFieldValidator
                          @NonNull final String key,
                          @StringRes final int errorLabelResId) {
 
-        final Object obj = dataManager.get(key);
-        if (obj != null && obj.toString().isBlank()) {
+        final Object value = dataManager.get(key, realNumberParser);
+        if (value != null && value.toString().isBlank()) {
             dataManager.putString(key, defaultValue);
         }
     }

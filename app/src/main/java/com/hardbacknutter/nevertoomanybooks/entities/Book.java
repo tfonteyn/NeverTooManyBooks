@@ -1928,8 +1928,8 @@ public class Book
         final DataValidator priceValidator = new OrValidator(
                 new BlankValidator(),
                 new DoubleValidator(realNumberParser));
-        final DataValidator longValidator = new LongValidator();
-        final DataValidator nonBlankValidator = new NonBlankValidator();
+        final DataValidator longValidator = new LongValidator(realNumberParser);
+        final DataValidator nonBlankValidator = new NonBlankValidator(realNumberParser);
 
         validatorConfig.addValidator(DBKey.TITLE,
                                      nonBlankValidator, R.string.lbl_title);

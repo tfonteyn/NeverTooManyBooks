@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2026 HardBackNutter
+ * @Copyright 2018-2023 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.StringRes;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -35,6 +36,18 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class NonBlankValidator
         implements DataValidator {
 
+    @NonNull
+    private final RealNumberParser realNumberParser;
+
+    /**
+     * Constructor.
+     *
+     * @param realNumberParser to use for number parsing
+     */
+    public NonBlankValidator(@NonNull final RealNumberParser realNumberParser) {
+        this.realNumberParser = realNumberParser;
+    }
+
     @Override
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
@@ -42,15 +55,15 @@ public class NonBlankValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final Object obj = dataManager.get(key);
-        if (obj == null) {
+        final Object o = dataManager.get(key, realNumberParser);
+        if (o == null) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelResId)));
 
-        } else if (obj instanceof String && dataManager.getString(key).isEmpty()) {
+        } else if (o instanceof String && dataManager.getString(key).isEmpty()) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelResId)));
-        } else if (obj instanceof ArrayList && dataManager.getParcelableArrayList(key).isEmpty()) {
+        } else if (o instanceof ArrayList && dataManager.getParcelableArrayList(key).isEmpty()) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelResId)));
         }

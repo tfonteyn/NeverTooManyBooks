@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2026 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -35,15 +36,20 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class BooleanValidator
         implements DataValidator {
 
+    @NonNull
+    private final RealNumberParser realNumberParser;
     /** Default to apply if the field is empty. */
     private final boolean defaultValue;
 
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply
+     * @param realNumberParser to use for number parsing
+     * @param defaultValue     Default to apply
      */
-    public BooleanValidator(final boolean defaultValue) {
+    public BooleanValidator(@NonNull final RealNumberParser realNumberParser,
+                            final boolean defaultValue) {
+        this.realNumberParser = realNumberParser;
         this.defaultValue = defaultValue;
     }
 
@@ -55,13 +61,13 @@ public class BooleanValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final Object obj = dataManager.get(key);
-        if (obj == null || obj.toString().isBlank()) {
+        final Object o = dataManager.get(key, realNumberParser);
+        if (o == null || o.toString().isBlank()) {
             dataManager.putBoolean(key, defaultValue);
             return;
         }
         try {
-            BooleanParser.toBoolean(obj);
+            BooleanParser.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
             throw new ValidatorException(context.getString(R.string.vldt_boolean_expected_for_x,
                                                            context.getString(errorLabelResId)));

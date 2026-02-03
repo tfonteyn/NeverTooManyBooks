@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2026 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -34,22 +35,29 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class LongValidator
         implements DataValidator {
 
+    @NonNull
+    private final RealNumberParser realNumberParser;
     /** Default to apply if the field is {@code null} or empty. */
     private final long defaultValue;
 
     /**
      * Constructor; default value is 0.
+     *
+     * @param realNumberParser to use for number parsing
      */
-    public LongValidator() {
-        this(0);
+    public LongValidator(@NonNull final RealNumberParser realNumberParser) {
+        this(realNumberParser, 0);
     }
 
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply if the field is empty
+     * @param realNumberParser to use for number parsing
+     * @param defaultValue     Default to apply if the field is empty
      */
-    public LongValidator(final long defaultValue) {
+    public LongValidator(@NonNull final RealNumberParser realNumberParser,
+                         final long defaultValue) {
+        this.realNumberParser = realNumberParser;
         this.defaultValue = defaultValue;
     }
 
@@ -62,7 +70,7 @@ public class LongValidator
             throws ValidatorException {
 
         final long value;
-        final Object obj = dataManager.get(key);
+        final Object obj = dataManager.get(key, realNumberParser);
         if (obj == null) {
             value = defaultValue;
         } else if (obj instanceof Long) {
