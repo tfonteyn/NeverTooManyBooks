@@ -308,6 +308,9 @@ public class DataManager
 
     /**
      * Get the raw data object specified by the passed key.
+     * <p>
+     * <strong>IMPORTANT:</strong> use only when you are certain the key
+     * does <strong>NOT</strong> represent a Money value.
      *
      * @param key Key of data object
      *
@@ -456,7 +459,8 @@ public class DataManager
     }
 
     /**
-     * Store a {@link Money} value.
+     * Store a {@link Money} value as a {@code double} for the value,
+     * and a {@code String} for the currency.
      *
      * @param key   Key of data object
      * @param money to store
