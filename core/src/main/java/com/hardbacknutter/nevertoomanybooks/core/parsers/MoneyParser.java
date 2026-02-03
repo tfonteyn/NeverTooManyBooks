@@ -71,7 +71,7 @@ public class MoneyParser {
     public MoneyParser(@NonNull final Locale currencyLocale,
                        @NonNull final List<Locale> numberLocales) {
         this.locale = currencyLocale;
-        this.realNumberParser = new RealNumberParser(numberLocales);
+        this.realNumberParser = RealNumberParser.money(numberLocales);
     }
 
     /**
@@ -291,6 +291,20 @@ public class MoneyParser {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Get the value parser for special use.
+     * <p>
+     * Dev. note: this is mainly used for tests,
+     * but also for some SearchEngines where the website
+     * uses a single/hardcoded currency.
+     *
+     * @return parser
+     */
+    @NonNull
+    public RealNumberParser getRealNumberParser() {
+        return realNumberParser;
     }
 
     /**
