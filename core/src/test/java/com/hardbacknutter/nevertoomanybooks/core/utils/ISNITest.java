@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,9 +43,10 @@ class ISNITest {
     }
 
     @Test
-    void simple3() {
+    void invalidChecksum() {
         final ISNI i1 = new ISNI("2 2146 438X");
         assertFalse(i1.isValid());
-        assertEquals("000000022146438X", i1.getIsni());
+        // The original string (stripped)
+        assertEquals("22146438X", i1.getIsni());
     }
 }
