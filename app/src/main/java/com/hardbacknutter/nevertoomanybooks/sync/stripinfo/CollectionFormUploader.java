@@ -113,7 +113,7 @@ class CollectionFormUploader {
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
         realNumberParser = new RealNumberParser(allLocales);
-        moneyParser = new MoneyParser(siteLocale, realNumberParser);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     /**

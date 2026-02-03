@@ -65,18 +65,6 @@ public class MoneyParser {
     /**
      * Constructor.
      *
-     * @param currencyLocale   to use for parsing the currency
-     * @param realNumberParser to use for parsing the number part
-     */
-    public MoneyParser(@NonNull final Locale currencyLocale,
-                       @NonNull final RealNumberParser realNumberParser) {
-        this.locale = currencyLocale;
-        this.realNumberParser = realNumberParser;
-    }
-
-    /**
-     * Constructor.
-     *
      * @param currencyLocale to use for parsing the currency
      * @param numberLocales  to use for parsing the number part
      */
@@ -89,7 +77,7 @@ public class MoneyParser {
     /**
      * Constructor parsing the (optional) currency from a string.
      * <p>
-     * If the currency is in any form invalid, a Money object is STILL returned,
+     * If the currency is in any form invalid, a Money object is <strong>STILL</strong> returned,
      * but with its currency set to {@code null}.
      *
      * @param value       to set

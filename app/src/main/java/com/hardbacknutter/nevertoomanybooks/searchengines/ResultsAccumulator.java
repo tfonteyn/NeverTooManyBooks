@@ -140,6 +140,7 @@ class ResultsAccumulator {
             final Book result = localeBookPair.second;
             final List<Locale> allLocales = LocaleListUtils.asList(locale, userLocales);
             final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
+            final MoneyParser moneyParser = new MoneyParser(locale, allLocales);
             final DateParser<LocalDateTime> dateParser =
                     new FullDateParser(isoDateParser, allLocales);
 
@@ -148,7 +149,7 @@ class ResultsAccumulator {
                     processDate(key, result, book, dateParser);
 
                 } else if (DBKey.getMoneyKeys().contains(key)) {
-                    processMoney(key, result, book, locale, realNumberParser);
+                    processMoney(key, result, book, moneyParser, realNumberParser);
 
                 } else if (DBKey.getLanguageKeys().contains(key)) {
                     processLanguage(key, result, book, locale);
@@ -359,13 +360,13 @@ class ResultsAccumulator {
      * @param key              Key of data
      * @param siteData         Source Bundle
      * @param book             Destination bundle
-     * @param locale           for parsing
+     * @param moneyParser      shared for the current site
      * @param realNumberParser shared for the current site
      */
     private void processMoney(@NonNull final String key,
                               @NonNull final Book siteData,
                               @NonNull final Book book,
-                              @NonNull final Locale locale,
+                              @NonNull final MoneyParser moneyParser,
                               @NonNull final RealNumberParser realNumberParser) {
         // Fetch as Object, as engines MAY store typed data
         final Object dataToAdd = siteData.get(key, realNumberParser);
@@ -401,9 +402,8 @@ class ResultsAccumulator {
         }
 
         // this is a fallback in case the SearchEngine has not already parsed the data!
-        new MoneyParser(locale, realNumberParser)
-                .parse(dataToAdd.toString())
-                .ifPresent(money -> book.putMoney(key, money));
+        moneyParser.parse(dataToAdd.toString())
+                   .ifPresent(money -> book.putMoney(key, money));
     }
 
     /**

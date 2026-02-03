@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,8 +105,7 @@ class MoneyParserTest {
                 @NonNull final CharSequence source,
                 @NonNull final BigDecimal value,
                 @NonNull final String code) {
-        final RealNumberParser realNumberParser = new RealNumberParser(testLocales);
-        final MoneyParser moneyParser = new MoneyParser(testLocales.get(0), realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(testLocales.get(0), testLocales);
         final Optional<Money> oMoney = moneyParser.parse(source);
         assertTrue(oMoney.isPresent());
         final Money money = oMoney.get();

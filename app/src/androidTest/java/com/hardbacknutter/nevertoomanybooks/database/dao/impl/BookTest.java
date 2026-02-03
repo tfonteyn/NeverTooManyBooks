@@ -75,7 +75,7 @@ public class BookTest
     public void preprocessPrices01() {
         final List<Locale> userLocales = List.of(Locale.US);
         final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
-        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
@@ -95,7 +95,7 @@ public class BookTest
     public void preprocessPrices02() {
         final List<Locale> userLocales = List.of(Locale.US);
         final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
-        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(0d), "");
@@ -121,7 +121,7 @@ public class BookTest
     public void preprocessPrices03() {
         final List<Locale> userLocales = List.of(Locale.FRANCE);
         final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
-        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("fra");
         // as a valid string
@@ -148,7 +148,7 @@ public class BookTest
     public void preprocessPrices04() {
         final List<Locale> userLocales = List.of(Locale.FRANCE);
         final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
-        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
         final Optional<Money> money = moneyParser.parse("EUR 45");

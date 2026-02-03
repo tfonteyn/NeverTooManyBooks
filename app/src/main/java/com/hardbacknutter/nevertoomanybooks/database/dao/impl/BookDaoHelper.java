@@ -146,7 +146,7 @@ public class BookDaoHelper {
         }
 
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(userLocale, realNumberParser);
+        final MoneyParser moneyParser = new MoneyParser(userLocale, locales);
 
         // Handle TITLE
         if (book.contains(DBKey.TITLE)) {
