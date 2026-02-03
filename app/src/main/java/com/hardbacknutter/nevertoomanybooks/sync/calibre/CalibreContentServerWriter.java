@@ -304,7 +304,7 @@ public class CalibreContentServerWriter
         changes.put(CalibreBookJsonKey.LAST_MODIFIED,
                     localBook.getString(DBKey.DATE_LAST_UPDATED__UTC));
         changes.put(CalibreBookJsonKey.RATING,
-                    (int) localBook.getFloat(DBKey.RATING, realNumberParser));
+                    (int) localBook.getRating(realNumberParser));
 
         changes.put(CalibreBookJsonKey.AUTHOR_ARRAY,
                     collectAuthors(localBook));

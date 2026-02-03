@@ -1528,6 +1528,10 @@ public class Book
         }
     }
 
+    public float getRating(@NonNull final RealNumberParser parser) {
+        return getFloat(DBKey.RATING, parser);
+    }
+
     /**
      * Get the name of the loanee (if any).
      *
