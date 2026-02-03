@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -248,7 +248,7 @@ public class CsvArchiveReaderTest
         assertFalse(book.getBoolean(DBKey.SIGNED__BOOL));
         assertEquals("", book.getString(DBKey.LOANEE_NAME, null));
         assertEquals("Fearsome giants, magic spells, ...", book.getString(DBKey.DESCRIPTION, null));
-        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_ADDED__UTC, null));
         assertEquals("1294006", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
