@@ -82,7 +82,7 @@ public final class FormatMapper
         MAPPINGS.put("pevná / vázaná", R.string.book_format_hardcover);
         MAPPINGS.put("pevná / vázaná s přebalem", R.string.book_format_hardcover);
         // Greek
-        MAPPINGS.put("Σκληρό εξώφυλλο", R.string.book_format_hardcover);
+        MAPPINGS.put("σκληρό εξώφυλλο", R.string.book_format_hardcover);
 
         // ################## Plain paperback ##################
 
@@ -105,7 +105,7 @@ public final class FormatMapper
         // Czech
         MAPPINGS.put("měkká / brožovaná", R.string.book_format_paperback);
         // Greek
-        MAPPINGS.put("Μαλακό εξώφυλλο", R.string.book_format_paperback);
+        MAPPINGS.put("μαλακό εξώφυλλο", R.string.book_format_paperback);
 
 
         // ################## Mid-size (a.k.a 'trade') format paperback ##################
