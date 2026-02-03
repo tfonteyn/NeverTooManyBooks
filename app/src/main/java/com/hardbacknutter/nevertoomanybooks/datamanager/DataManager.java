@@ -307,6 +307,18 @@ public class DataManager
     }
 
     /**
+     * Get the raw data object specified by the passed key.
+     *
+     * @param key Key of data object
+     *
+     * @return Object
+     */
+    @Nullable
+    public Object get(@NonNull final String key) {
+        return rawData.get(key);
+    }
+
+    /**
      * Get the data object specified by the passed key.
      *
      * @param key    Key of data object
