@@ -570,6 +570,7 @@ public class BolSearchEngine
                 final String priceStr = priceElement.text().replace(" ", ",");
                 // The currency is not part of the string, so just parse it as a number
                 // and then add the EURO.
+                // This also means there is no need to use  MoneyParser.parse(BigDecimal ,String)
                 final double price = realNumberParser.parseDouble(priceStr);
                 book.putMoney(DBKey.PRICE_LISTED,
                               new Money(BigDecimal.valueOf(price), Money.EURO));
