@@ -24,13 +24,13 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -59,6 +59,7 @@ public class Parse2Test
     private static final String TAG = "Parse2Test";
 
     private GoogleBooksSearchEngine searchEngine;
+    private MoneyParser moneyParser;
 
     @Before
     public void setup()
@@ -69,6 +70,10 @@ public class Parse2Test
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     @Test
@@ -135,9 +140,6 @@ public class Parse2Test
     public void parse2()
             throws IOException, StorageException {
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         // https://www.googleapis.com/books/v1/volumes?q=isbn:9780007499793
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -163,7 +165,8 @@ public class Parse2Test
                      + " the vast distances of interstellar space.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(5.49d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(5.49d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();

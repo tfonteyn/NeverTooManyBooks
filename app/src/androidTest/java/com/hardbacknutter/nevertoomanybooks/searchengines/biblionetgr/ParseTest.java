@@ -26,6 +26,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -66,7 +66,7 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private BiblionetGrSearchEngine searchEngine;
-    private RealNumberParser realNumberParser;
+    private MoneyParser moneyParser;
 
     @Before
     public void setup()
@@ -83,7 +83,9 @@ public class ParseTest
                                      + ".resolve.authors.wikidata", true)
                          .apply();
 
-        realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     @Test
@@ -111,7 +113,8 @@ public class ParseTest
         assertTrue(description.startsWith("Η γαλέρα του αυτοκράτορα καταλαμβάνεται"));
         assertTrue(description.endsWith("ξαναβρεί την όρεξή του ;"));
 
-        assertEquals(3.30d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(3.30d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -194,7 +197,8 @@ public class ParseTest
                 "Εισηγητές: Καρβέλης, Τάκης - Ιλίνσκαγια, Σόνια - Καράογλου, Χ. Λ. - Παπακωστούλα- Γιανναρά, Γ. Α. - Μηλιώτης Κωνσταντίνος Ε. κ.ά.",
                 description);
 
-        assertEquals(31.8d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(31.8d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();

@@ -42,9 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -115,13 +115,13 @@ public class BookCoder {
     private final FullDateParser dateParser;
     private final RatingParser ratingParser;
     private final TagMapper tagMapper;
-    private final RealNumberParser realNumberParser;
     private final List<Locale> userLocales;
+    private final MoneyParser moneyParser;
+    private final IdentifierDao identifierDao;
     @Nullable
     private CsvGoodreads goodreads;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
-    private final IdentifierDao identifierDao;
 
     /**
      * Constructor.
@@ -169,7 +169,7 @@ public class BookCoder {
         if (!this.userLocales.contains(Locale.FRANCE)) {
             tmpLocales.add(Locale.FRANCE);
         }
-        realNumberParser = new RealNumberParser(tmpLocales);
+        moneyParser = new MoneyParser(userLocales.get(0), tmpLocales);
         ratingParser = csvFormat.createRatingParser(tmpLocales);
     }
 
@@ -618,7 +618,7 @@ public class BookCoder {
                 book.remove(DBKey.PRICE_LISTED);
             } else {
                 try {
-                    final double v = realNumberParser.parseDouble(s);
+                    final double v = moneyParser.getRealNumberParser().parseDouble(s);
                     book.putDouble(DBKey.PRICE_LISTED, v);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore, drop the field
@@ -692,7 +692,7 @@ public class BookCoder {
      * @param keys        to verify
      * @param partialDate flag: {@code true} to cut dates down to partial dates.
      *                    i.e. remove time and any tailing "-01".
-     * @param keepTime   flag: whether to keep a time component or strip it
+     * @param keepTime    flag: whether to keep a time component or strip it
      */
     private void verifyDates(@NonNull final Book book,
                              @NonNull final Set<String> keys,

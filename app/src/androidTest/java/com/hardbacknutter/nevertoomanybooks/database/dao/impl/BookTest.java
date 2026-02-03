@@ -73,7 +73,6 @@ public class BookTest
     @Test
     public void preprocessPrices01() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
@@ -82,17 +81,17 @@ public class BookTest
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
-        // dump(book);
+        dump(book);
 
-        assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
-        assertEquals("USD", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
+        assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
     /** US English book, price set, currency not set. */
     @Test
     public void preprocessPrices02() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
@@ -107,17 +106,18 @@ public class BookTest
         bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
-        assertNull(book.get(DBKey.PRICE_LISTED_CURRENCY, realNumberParser));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED,
+                                        moneyParser.getRealNumberParser()), 0);
+        assertNull(book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
-        assertNull(book.get(DBKey.PRICE_PAID_CURRENCY, realNumberParser));
+        assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID,
+                                              moneyParser.getRealNumberParser()), 0);
+        assertNull(book.getString(DBKey.PRICE_PAID_CURRENCY, null));
     }
 
     @Test
     public void preprocessPrices03() {
         final List<Locale> userLocales = List.of(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("fra");
@@ -133,18 +133,18 @@ public class BookTest
         bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
-        assertEquals(MoneyParser.EUR, book.get(DBKey.PRICE_LISTED_CURRENCY, realNumberParser));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED,
+                                        moneyParser.getRealNumberParser()), 0);
+        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         // "test" is correct as preprocessPrices should NOT change illegal values.
-        assertEquals("test", book.get(DBKey.PRICE_PAID, realNumberParser));
-        assertNull(book.get(DBKey.PRICE_PAID_CURRENCY, realNumberParser));
+        assertEquals("test", book.getRawData().get(DBKey.PRICE_PAID));
+        assertNull(book.getString(DBKey.PRICE_PAID_CURRENCY, null));
     }
 
     @Test
     public void preprocessPrices04() {
         final List<Locale> userLocales = List.of(Locale.FRANCE);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.setLanguage("eng");
@@ -154,9 +154,10 @@ public class BookTest
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
-        //dump(book);
+        dump(book);
 
-        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED,
+                                         moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
@@ -187,7 +188,7 @@ public class BookTest
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processExternalIds(book);
-        dump(book, realNumberParser);
+        dump(book);
 
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
@@ -198,7 +199,7 @@ public class BookTest
         assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
 
         bdh.processNullsAndBlanks(book, true, realNumberParser);
-        dump(book, realNumberParser);
+        dump(book);
         // should not have any effect, so same tests:
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
     }
@@ -229,7 +230,7 @@ public class BookTest
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processExternalIds(book);
-        dump(book, realNumberParser);
+        dump(book);
 
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
@@ -241,7 +242,7 @@ public class BookTest
 
 
         bdh.processNullsAndBlanks(book, false, realNumberParser);
-        dump(book, realNumberParser);
+        dump(book);
         // should not have any effect, so same tests:
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
@@ -270,6 +271,7 @@ public class BookTest
     public void preprocessNullsAndBlanksForInsert() {
         final List<Locale> userLocales = List.of(Locale.US);
         final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
@@ -289,14 +291,17 @@ public class BookTest
         // text, default "". A null is removed.
         assertFalse(book.contains(DBKey.READ_END__DATE));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
+        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0);
+        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID,
+                                        moneyParser.getRealNumberParser()), 0);
     }
 
     @Test
     public void preprocessNullsAndBlanksForUpdate() {
         final List<Locale> userLocales = List.of(Locale.US);
         final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
@@ -316,15 +321,16 @@ public class BookTest
         // text, default "". A null is replaced by the default
         assertEquals("", book.getString(DBKey.READ_END__DATE, null));
 
-        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
-        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
+        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0);
+        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID,
+                                        moneyParser.getRealNumberParser()), 0);
     }
 
-    private void dump(@NonNull final DataManager data,
-                      @NonNull final RealNumberParser realNumberParser) {
+    private void dump(@NonNull final DataManager data) {
 
         for (final String key : data.keySet()) {
-            final Object value = data.get(key, realNumberParser);
+            final Object value = data.getRawData().get(key);
             Log.d(TAG, key + "=" + value);
         }
     }

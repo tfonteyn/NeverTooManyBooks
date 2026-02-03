@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -392,6 +393,7 @@ public class BolSearchEngine
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
         final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
+        final MoneyParser moneyParser = new MoneyParser(siteLocale, allLocales);
 
         for (final Element specRow : specs.select("div.specs__row")) {
             final Element label = specRow.selectFirst("dt.specs__title");
@@ -512,7 +514,7 @@ public class BolSearchEngine
 
         parseDescription(document, book);
         parseRating(document, book, realNumberParser);
-        parsePrice(document, book, realNumberParser);
+        parsePrice(document, book, moneyParser);
 
         if (fetchCovers[0]) {
             parseCovers(context, document, fetchCovers, book);
@@ -555,7 +557,7 @@ public class BolSearchEngine
 
     private void parsePrice(@NonNull final Document document,
                             @NonNull final Book book,
-                            @NonNull final RealNumberParser realNumberParser) {
+                            @NonNull final MoneyParser moneyParser) {
         //TODO: if they are out of stock, this element will NOT contain a price.
         // We should get the price from the buttons on the page just above this field
         // but those button elements are not easy to parse for.
@@ -568,10 +570,9 @@ public class BolSearchEngine
                 // </span>
                 // text() will get "22 99", so add a "," as decimal separator and parse as normal
                 final String priceStr = priceElement.text().replace(" ", ",");
-                // The currency is not part of the string, so just parse it as a number
-                // and then add the EURO.
-                // This also means there is no need to use  MoneyParser.parse(BigDecimal ,String)
-                final double price = realNumberParser.parseDouble(priceStr);
+                // The currency is not part of the string,
+                // so we just parse it as a simple double and then add the EURO.
+                final double price = moneyParser.getRealNumberParser().parseDouble(priceStr);
                 book.putMoney(DBKey.PRICE_LISTED,
                               new Money(BigDecimal.valueOf(price), Money.EURO));
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,12 +21,13 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -69,6 +70,7 @@ public class UserCollectionTest
     @Mock
     BookshelfMapper bookshelfMapper;
     private StripInfoSearchEngine searchEngine;
+    private MoneyParser moneyParser;
 
     @Before
     public void setup()
@@ -77,6 +79,10 @@ public class UserCollectionTest
 
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
 
         bookshelfMapper = new BookshelfMapper();
     }
@@ -90,9 +96,6 @@ public class UserCollectionTest
                 .R.raw.stripinfo_collection;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      bookshelfMapper);
@@ -123,8 +126,9 @@ public class UserCollectionTest
         assertTrue(collectionData.isOwned());
         assertTrue(collectionData.isWanted());
 
-        assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
-        assertEquals("EUR", b0.getString(DBKey.PRICE_PAID_CURRENCY, null));
+        assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID,
+                                       moneyParser.getRealNumberParser()), 0);
+        assertEquals(MoneyParser.EUR, b0.getString(DBKey.PRICE_PAID_CURRENCY, null));
         assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED, null));
     }
 

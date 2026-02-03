@@ -24,6 +24,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -63,6 +64,8 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private StripWebSearchEngine searchEngine;
+    private MoneyParser moneyParser;
+    private RealNumberParser realNumberParser;
 
     @Before
     public void setup()
@@ -73,6 +76,11 @@ public class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        realNumberParser = new RealNumberParser(allLocales);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     /**
@@ -85,9 +93,6 @@ public class ParseTest
         final String locationHeader = "https://www.stripweb.be/nl-nl/wanted-lucky-luke-2";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripweb_9782884719506;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
@@ -113,7 +118,8 @@ public class ParseTest
                      " dit alles in het jubileum jaar van Lucky Luke 75 verschijnt midden 2021",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -163,9 +169,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripweb_9789085587187;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
@@ -205,7 +208,8 @@ public class ParseTest
                      " en Corentin Rouge.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -281,9 +285,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.stripweb_3600121191341;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
@@ -306,7 +307,8 @@ public class ParseTest
                      " fantasie van Jean Van Hamme? Drie duo's namen intussen de uitdaging aan.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals(44.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(44.99d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();

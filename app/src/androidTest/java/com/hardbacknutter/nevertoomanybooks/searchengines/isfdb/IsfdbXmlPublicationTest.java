@@ -30,6 +30,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -38,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -62,13 +62,14 @@ import static org.junit.Assert.assertTrue;
 /**
  * ENHANCE: this is experimental code. Parsing works, but reporting EOF is dodgy
  */
-@SuppressWarnings({"MissingJavadoc","LongLine"})
+@SuppressWarnings({"MissingJavadoc", "LongLine"})
 public class IsfdbXmlPublicationTest
         extends BaseDBTest {
 
     private static final String TAG = "IsfdbXmlPublicationTest";
 
     private IsfdbSearchEngine searchEngine;
+    private MoneyParser moneyParser;
 
     @Before
     public void setup()
@@ -86,6 +87,10 @@ public class IsfdbXmlPublicationTest
         preferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();
         final boolean b = preferences.getBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, false);
         assertTrue(b);
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     @Test
@@ -93,9 +98,6 @@ public class IsfdbXmlPublicationTest
             throws ParserConfigurationException, IOException, SAXException {
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_425189;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, searchEngine,
@@ -159,7 +161,8 @@ public class IsfdbXmlPublicationTest
         assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
         assertEquals("TRPLNTRLBK1971", book.getString(IsfdbSearchEngine.SiteField.BOOK_TAG, null));
 
-        assertEquals(1.75d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(1.75d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Publisher> publishers = book.getPublishers();

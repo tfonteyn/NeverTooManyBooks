@@ -26,6 +26,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -62,6 +63,8 @@ public class ParseTest
     private static final String TAG = "ParseTest";
     private static final String UTF_8 = "UTF-8";
     private BolSearchEngine searchEngine;
+    private RealNumberParser realNumberParser;
+    private MoneyParser moneyParser;
 
     @Before
     public void setup()
@@ -78,6 +81,11 @@ public class ParseTest
                          .edit()
                          .putString(BolSearchEngine.PK_BOL_COUNTRY, "be")
                          .apply();
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        realNumberParser = new RealNumberParser(allLocales);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     /** Network access! */
@@ -88,9 +96,6 @@ public class ParseTest
         final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=+9789056478193+";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_multi_1_result_9789056478193;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
@@ -106,7 +111,8 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         // TEST: missing tags?
@@ -141,9 +147,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_asimov_foundation;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parseMultiResult(context, document, new boolean[]{true, true, false, false},
@@ -160,7 +163,8 @@ public class ParseTest
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(8.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(8.95d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
 //  TEST: MISSING TAGS?
@@ -210,9 +214,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789044652901_be_nl_dutch;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
@@ -226,7 +227,8 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(51.6d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(51.6d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -276,9 +278,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789044544725;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
@@ -291,7 +290,8 @@ public class ParseTest
         assertEquals("408", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(26.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(26.99d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -345,9 +345,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789056478193;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
@@ -361,7 +358,8 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -395,9 +393,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9781841593326;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
@@ -411,7 +406,8 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(18.28d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(18.28d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -462,9 +458,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bol_9789046832073;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
@@ -478,7 +471,8 @@ public class ParseTest
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals(24.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(24.99d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         assertEquals(

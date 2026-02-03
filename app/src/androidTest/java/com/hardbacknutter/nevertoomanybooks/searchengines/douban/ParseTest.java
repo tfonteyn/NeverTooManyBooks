@@ -26,6 +26,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -66,6 +67,7 @@ public class ParseTest
     private DoubanSearchEngine searchEngine;
 
     private RealNumberParser realNumberParser;
+    private MoneyParser moneyParser;
 
     @Before
     public void setup()
@@ -77,7 +79,10 @@ public class ParseTest
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        realNumberParser = new RealNumberParser(allLocales);
+        moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
     private void setFetchMostRecent(final boolean value) {
@@ -264,7 +269,8 @@ public class ParseTest
         assertEquals("302", book.getString(DBKey.PAGES, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
 
-        assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED,
+                                         moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
@@ -347,7 +353,8 @@ public class ParseTest
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
-        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED,
+                                         moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
@@ -504,7 +511,8 @@ public class ParseTest
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
         assertFalse(book.contains(DBKey.RATING));
 
-        assertEquals(58d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals(58d, book.getDouble(DBKey.PRICE_LISTED,
+                                         moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
