@@ -222,8 +222,6 @@ public class BookDaoHelper {
             final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
             if (book.contains(key) && !book.contains(currencyKey)) {
                 // Verify a price without a currency.
-                // This check should not be needed as it SHOULD have been done before.
-                // ... but paranoia...
                 final Optional<Money> money = moneyParser.parse(book.getString(key));
                 // If the currency could be decoded, store the Money back into the book
                 if (money.isPresent()) {
