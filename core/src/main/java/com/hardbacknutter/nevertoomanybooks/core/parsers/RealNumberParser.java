@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -56,6 +58,8 @@ public class RealNumberParser {
     private static final String ERROR_NOT_A_DOUBLE = "Not a double or no suitable Locale: ";
     @NonNull
     private final List<Locale> locales;
+    /** When set, the parser will use the monetary separaters. */
+    private final boolean isMoney;
 
     /**
      * Constructor.
@@ -64,6 +68,43 @@ public class RealNumberParser {
      */
     public RealNumberParser(@NonNull final List<Locale> locales) {
         this.locales = locales;
+        this.isMoney = false;
+    }
+
+    /**
+     * Private constructor.
+     *
+     * @param locales to use for parsing.
+     * @param isMoney flag
+     */
+    private RealNumberParser(@NonNull final List<Locale> locales,
+                             final boolean isMoney) {
+        this.locales = locales;
+        this.isMoney = isMoney;
+    }
+
+    /**
+     * Constructor: create a parser for numbers; NOT for Money strings.
+     *
+     * @param locales to use for parsing.
+     *
+     * @return instance
+     */
+    @NonNull
+    public static RealNumberParser numbers(@NonNull final List<Locale> locales) {
+        return new RealNumberParser(locales, false);
+    }
+
+    /**
+     * Constructor: create a parser for Money; NOT for number strings.
+     *
+     * @param locales to use for parsing.
+     *
+     * @return instance
+     */
+    @NonNull
+    public static RealNumberParser money(@NonNull final List<Locale> locales) {
+        return new RealNumberParser(locales, true);
     }
 
     /**
@@ -208,8 +249,20 @@ public class RealNumberParser {
                 // if the dec sep for this format is present in the source,
                 // decode with this Locale; otherwise skip to the next one
                 final DecimalFormatSymbols decimalFormatSymbols = nf.getDecimalFormatSymbols();
-                final char decSep = decimalFormatSymbols.getDecimalSeparator();
-                final char grpSep = decimalFormatSymbols.getGroupingSeparator();
+                final char decSep;
+                final char grpSep;
+
+                if (isMoney) {
+                    decSep = decimalFormatSymbols.getMonetaryDecimalSeparator();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        grpSep = decimalFormatSymbols.getMonetaryGroupingSeparator();
+                    } else {
+                        grpSep = decimalFormatSymbols.getGroupingSeparator();
+                    }
+                } else {
+                    decSep = decimalFormatSymbols.getDecimalSeparator();
+                    grpSep = decimalFormatSymbols.getGroupingSeparator();
+                }
 
                 final String tmp;
                 if (grpSep != '.' && grpSep != ',') {
