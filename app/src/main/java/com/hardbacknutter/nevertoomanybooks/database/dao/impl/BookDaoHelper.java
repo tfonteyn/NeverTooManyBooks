@@ -398,7 +398,7 @@ public class BookDaoHelper {
                 .stream()
                 .filter(domain -> book.contains(domain.getName()) && domain.hasDefault())
                 .forEach(domain -> {
-                    // We don't care about Money here.
+                    // We don't care about Money here. Value/Currency are treated as Number/String
                     final Object o = book.get(domain.getName());
                     if (
                         // Fields which are null but not allowed to be null
@@ -453,7 +453,7 @@ public class BookDaoHelper {
                 // Check if we actually have a matching column, and never update a PK.
                 if (columnInfo != null && !columnInfo.isPrimaryKey()) {
 
-                    // We don't care about Money here.
+                    // We don't care about Money here. Value/Currency are treated as Number/String
                     final Object entry = book.get(key);
                     if (entry == null) {
                         if (columnInfo.isNullable()) {

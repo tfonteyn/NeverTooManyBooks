@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,8 @@ public class DoubleValidator
 
         final double value;
 
-        final Object obj = dataManager.get(key, realNumberParser);
+        // We don't care about Money here. Value/Currency are treated as Number/String
+        final Object obj = dataManager.get(key);
         if (obj == null) {
             value = defaultValue;
         } else if (obj instanceof Number) {
