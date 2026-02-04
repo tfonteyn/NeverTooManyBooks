@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -89,7 +90,7 @@ class CollectionFormUploader {
     private final String postUrl;
 
     @NonNull
-    private final RealNumberParser realNumberParser;
+    private final RealNumberParser ratingNumberParser;
     @NonNull
     private final MoneyParser moneyParser;
 
@@ -112,7 +113,7 @@ class CollectionFormUploader {
         final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-        realNumberParser = new RealNumberParser(allLocales);
+        ratingNumberParser = new RealNumberParser(allLocales);
         moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
@@ -235,7 +236,7 @@ class CollectionFormUploader {
     private String ratingToSite(@NonNull final Book book) {
         // The Book rating runs from 0.0 to 5.0; multiply by 2 for the site 1..10.
         // We clamp due to paranoia
-        return String.valueOf(MathUtils.clamp(book.getRating(realNumberParser) * 2,
+        return String.valueOf(MathUtils.clamp(book.getRating(ratingNumberParser) * 2,
                                               0, 10));
     }
 
@@ -286,21 +287,18 @@ class CollectionFormUploader {
 
 
         if (book.contains(DBKey.PRICE_PAID)) {
-            final Object v = book.get(DBKey.PRICE_PAID, realNumberParser);
+            final Object v = book.get(DBKey.PRICE_PAID, moneyParser.getRealNumberParser());
             if (v != null) {
-                final String valueStr = String.valueOf(v);
-                if (book.contains(DBKey.PRICE_PAID_CURRENCY)) {
+                if (v instanceof Money) {
                     // The site does not store a currency; it's hardcoded/supposed to be EURO.
-                    final String value = moneyParser
-                            .parse(valueStr, book.getString(DBKey.PRICE_PAID_CURRENCY))
-                            // So always convert it to EURO
-                            .map(money -> String.valueOf(money.toEuro()))
-                            // or else just use the value string as-is
-                            .orElse(valueStr);
-                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, value);
+                    // But the user could have entered historical data with pre-euro currencies,
+                    // so we must convert to EURO before sending.
+                    final Money value = ((Money) v).toEuro();
+                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(value));
                 } else {
-                    // just send the value string as-is
-                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, valueStr);
+                    // We got a double without currency,
+                    // just send the value string as-is.
+                    builder.appendQueryParameter(FF_AANKOOP_PRIJS, String.valueOf(v));
                 }
             }
         }
