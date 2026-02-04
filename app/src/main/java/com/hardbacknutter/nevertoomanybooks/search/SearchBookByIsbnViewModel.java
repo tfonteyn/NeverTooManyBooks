@@ -269,7 +269,7 @@ public class SearchBookByIsbnViewModel
         }
         synchronized (scanQueue) {
             // duplicates are rejected
-            if (scanQueue.containsIsbn(item)) {
+            if (scanQueue.contains(item.getIsbn())) {
                 return SEARCH_DUPLICATE_ISBN;
             }
             // FIRST ADD at the end of the queue.

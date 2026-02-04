@@ -164,20 +164,20 @@ class IsbnQueue {
     }
 
     /**
-     * Check if the <strong>ISBN</strong> of the given item is already present.
+     * Check if the given ISBN is already in the queue.
      *
-     * @param item to check
+     * @param isbn to find
      *
      * @return {@code true} if already present
      */
-    boolean containsIsbn(@NonNull final Item item) {
-        return q.stream().anyMatch(qi -> qi.isbn.equals(item.isbn));
+    boolean contains(@NonNull final ISBN isbn) {
+        return q.stream().anyMatch(qi -> qi.isbn.equals(isbn));
     }
 
     /**
      * Unconditionally add the given item.
      * <p>
-     * Use {@link #containsIsbn(Item)} <strong>before</strong> calling this method as needed.
+     * Use {@link #contains(ISBN)} <strong>before</strong> calling this method as needed.
      *
      * @param context Current context
      * @param item    to add
