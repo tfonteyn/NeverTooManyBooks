@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +53,6 @@ import androidx.lifecycle.ViewModelProvider;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -72,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadStatusFragmentFactory;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -138,7 +135,6 @@ public class ShowBookDetailsFragment
     private CalibreHandler calibreHandler;
     private ShowBookDetailsActivityViewModel aVm;
     private ShowBookDetailsViewModel vm;
-    private RealNumberParser realNumberParser;
     /**
      * Callback - used when we're running inside another component;
      * e.g. when running on a tablet (or other bigger screen) the BoB is showing
@@ -276,11 +272,6 @@ public class ShowBookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         InsetsListenerBuilder.fragmentRootView(view);
-
-        final LocaleList userLocales = view
-                .getContext().getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        realNumberParser = new RealNumberParser(allLocales);
 
         // update all Fields with their current View instances
         vm.getFields().forEach(field -> field.setParentView(view));
@@ -483,6 +474,8 @@ public class ShowBookDetailsFragment
         final List<Field<?, ? extends View>> fields = vm.getFields();
 
         final Context context = getContext();
+        final RealNumberParser realNumberParser = vm.getRealNumberParser();
+
         // do NOT call notifyIfChanged, as this is the initial load
         //noinspection DataFlowIssue
         fields.stream()

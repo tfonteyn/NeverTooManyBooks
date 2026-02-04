@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -42,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -102,6 +105,7 @@ public class ShowBookDetailsViewModel
 
     private BookDao bookDao;
     private LoaneeDao loaneeDao;
+    private RealNumberParser realNumberParser;
 
     /**
      * Pseudo constructor.
@@ -130,8 +134,17 @@ public class ShowBookDetailsViewModel
             menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
                                    new SiteSearchMenuHandler());
 
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+            realNumberParser = new RealNumberParser(allLocales);
+
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }
+    }
+
+    @NonNull
+    public RealNumberParser getRealNumberParser() {
+        return realNumberParser;
     }
 
     /**
