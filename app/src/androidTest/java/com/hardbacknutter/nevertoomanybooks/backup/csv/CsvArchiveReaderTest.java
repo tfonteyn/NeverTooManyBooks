@@ -225,7 +225,7 @@ public class CsvArchiveReaderTest
     }
 
     private void checkBook1() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
+        final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
         final Book book = Book.from(666000001);
         assertEquals(666000001, book.getId());
@@ -233,7 +233,7 @@ public class CsvArchiveReaderTest
         assertEquals("0486224309", book.getString(DBKey.ISBN, null));
         // "1975-06-01" => day will be dropped
         assertEquals("1975-06", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(0.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(0.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertFalse(book.isRead());
         assertEquals("272", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
@@ -281,14 +281,14 @@ public class CsvArchiveReaderTest
     }
 
     private void checkBook2() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
+        final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
         final Book book = Book.from(666000002);
         assertEquals(666000002, book.getId());
         assertEquals("Dracula", book.getString(DBKey.TITLE, null));
         assertEquals("9780141439846", book.getString(DBKey.ISBN, null));
         assertEquals("2003-04-29", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(0.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(0.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertFalse(book.isRead());
         assertEquals("454", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
@@ -343,10 +343,10 @@ public class CsvArchiveReaderTest
     }
 
     private void checkBook3Rating() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
+        final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
         final Book book = Book.from(666000003);
         // "3,55"
-        assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(3.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
     }
 }

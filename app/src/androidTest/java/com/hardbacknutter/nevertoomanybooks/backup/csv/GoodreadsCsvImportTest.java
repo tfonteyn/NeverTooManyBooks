@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -104,7 +104,7 @@ public class GoodreadsCsvImportTest
 
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
+        final RealNumberParser ratingNumberParser = new RealNumberParser(allLocales);
 
         File file;
         ImportHelper importHelper;
@@ -157,7 +157,7 @@ public class GoodreadsCsvImportTest
             assertEquals("Jack van de Schaduwen", book.getString(DBKey.TITLE, null));
             assertEquals("9789027406927", book.getString(DBKey.ISBN, null));
             // "my_rating" was set to 5; "average_rating" of 3.99 is ignored
-            assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+            assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
             assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
             assertEquals("172", book.getString(DBKey.PAGES, null));
             assertEquals("1973", book.getString(DBKey.PUBLICATION_DATE, null));
@@ -207,7 +207,7 @@ public class GoodreadsCsvImportTest
             assertEquals("The Three-Body Problem", book.getString(DBKey.TITLE, null));
             assertEquals("", book.getString(DBKey.ISBN, null));
             // "my_rating" 0f 0 is ignored; "average_rating" of 4.09
-            assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+            assertEquals(4.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
             assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
             assertEquals("472", book.getString(DBKey.PAGES, null));
             assertEquals("2014", book.getString(DBKey.PUBLICATION_DATE, null));
