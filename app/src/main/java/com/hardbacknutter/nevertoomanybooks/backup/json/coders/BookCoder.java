@@ -20,19 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -78,8 +73,6 @@ public class BookCoder
     private final JsonCoder<Tag> tagCoder = new TagCoder();
     private final JsonCoder<Identifier.Value> identifierValueCoder = new IdentifierValueCoder();
     @NonNull
-    private final RealNumberParser realNumberParser;
-    @NonNull
     private final Context context;
 
     private final TagMapper tagMapper;
@@ -97,11 +90,8 @@ public class BookCoder
 
         bookshelfCoder = new BookshelfCoder(defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        realNumberParser = new RealNumberParser(allLocales);
 
-        tagMapper = new TagMapper(userLocales.get(0));
+        tagMapper = new TagMapper(context.getResources().getConfiguration().getLocales().get(0));
     }
 
     @Override
@@ -188,18 +178,12 @@ public class BookCoder
             }
         }
 
-        final Object element = book.get(key, realNumberParser);
+        // We don't care about Money here. Value/Currency are treated as Number/String
+        final Object element = book.get(key);
 
         if (element instanceof CharSequence) {
             if (((CharSequence) element).length() > 0) {
                 out.put(key, element);
-            }
-        } else if (element instanceof Money) {
-            // Only write the value.
-            // The currency will be handled as a plain String type key.
-            final Money money = (Money) element;
-            if (!money.isZero()) {
-                out.put(key, money.getValue());
             }
         } else if (element instanceof Number) {
             if (((Number) element).doubleValue() != 0) {
