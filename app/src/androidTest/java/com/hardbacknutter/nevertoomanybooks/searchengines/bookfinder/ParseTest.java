@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -58,6 +59,7 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private BookFinderSearchEngine searchEngine;
+    private RealNumberParser ratingNumberParser;
 
     @Before
     public void setup()
@@ -68,6 +70,10 @@ public class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        ratingNumberParser = new RealNumberParser(allLocales);
     }
 
     @Test
@@ -77,9 +83,6 @@ public class ParseTest
         final String locationHeader = "https://www.bookfinder.com/search_s/?st=sr&ac=qr&mode=basic&author=&title=&isbn=9780441020348&lang=en&destination=us&currency=USD&binding=*&keywords=&publisher=&min_year=&max_year=&minprice=&maxprice=";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bookfinder_9780441020348;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
@@ -92,7 +95,7 @@ public class ParseTest
         assertEquals("2011", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         assertTrue(book.getString(DBKey.DESCRIPTION)
                        .startsWith(

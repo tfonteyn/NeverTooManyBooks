@@ -392,7 +392,7 @@ public class BolSearchEngine
         final Locale siteLocale = getLocale(context);
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
+        final RealNumberParser ratingNumberParser = new RealNumberParser(allLocales);
         final MoneyParser moneyParser = new MoneyParser(siteLocale, allLocales);
 
         for (final Element specRow : specs.select("div.specs__row")) {
@@ -513,7 +513,7 @@ public class BolSearchEngine
         }
 
         parseDescription(document, book);
-        parseRating(document, book, realNumberParser);
+        parseRating(document, book, ratingNumberParser);
         parsePrice(document, book, moneyParser);
 
         if (fetchCovers[0]) {

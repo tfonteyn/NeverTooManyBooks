@@ -99,7 +99,7 @@ public class CalibreContentServerWriter
 
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
-    private final RealNumberParser realNumberParser;
+    private final RealNumberParser ratingNumberParser;
     private final BookDao bookDao;
     private final CalibreDao calibreDao;
     private final CalibreLibraryDao calibreLibraryDao;
@@ -135,7 +135,7 @@ public class CalibreContentServerWriter
         dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        realNumberParser = new RealNumberParser(allLocales);
+        ratingNumberParser = new RealNumberParser(allLocales);
     }
 
     @Override
@@ -304,7 +304,7 @@ public class CalibreContentServerWriter
         changes.put(CalibreBookJsonKey.LAST_MODIFIED,
                     localBook.getString(DBKey.DATE_LAST_UPDATED__UTC));
         changes.put(CalibreBookJsonKey.RATING,
-                    (int) localBook.getRating(realNumberParser));
+                    (int) localBook.getRating(ratingNumberParser));
 
         changes.put(CalibreBookJsonKey.AUTHOR_ARRAY,
                     collectAuthors(localBook));

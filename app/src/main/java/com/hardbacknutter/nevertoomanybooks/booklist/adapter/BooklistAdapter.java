@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,9 +90,9 @@ public class BooklistAdapter
     @NonNull
     private final Formatter formatter;
 
-    /** Shared across all {@link BookHolder}s. */
+    /** Shared across all {@link RowViewHolder}s where ratings need parsing. */
     @NonNull
-    private final RealNumberParser realNumberParser;
+    private final RealNumberParser ratingNumberParser;
     /** Shared across all {@link BookHolder}s. */
     @NonNull
     private final PartialDateParser partialDateParser;
@@ -137,7 +137,7 @@ public class BooklistAdapter
 
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        realNumberParser = new RealNumberParser(allLocales);
+        ratingNumberParser = new RealNumberParser(allLocales);
         partialDateParser = new PartialDateParser();
         formatter = new Formatter(context, style, allLocales);
 
@@ -386,7 +386,7 @@ public class BooklistAdapter
                 switch (layout) {
                     case List:
                         holder = new BookHolder(itemView, style, imageViewSize, coverHelper,
-                                                realNumberParser, partialDateParser);
+                                                ratingNumberParser, partialDateParser);
                         break;
                     case Grid:
                         holder = new BookGridHolder(itemView, style, imageViewSize, coverHelper);
@@ -405,7 +405,7 @@ public class BooklistAdapter
                 break;
 
             case BooklistGroup.RATING:
-                holder = new RatingHolder(itemView, style, realNumberParser);
+                holder = new RatingHolder(itemView, style, ratingNumberParser);
                 break;
 
             default:

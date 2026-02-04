@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -59,6 +60,7 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private BertrandPtSearchEngine searchEngine;
+    private RealNumberParser ratingNumberParser;
 
     @Before
     public void setup()
@@ -69,6 +71,10 @@ public class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        ratingNumberParser = new RealNumberParser(allLocales);
     }
 
     @Test
@@ -79,9 +85,6 @@ public class ParseTest
                 "https://www.bertrand.pt/pesquisa/9789895812899";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_multi_9789895812899;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
@@ -96,11 +99,6 @@ public class ParseTest
         assertEquals("320", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
-
-        // test is a dynamic download, can fail / needs updating
-//        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser));
-//        assertEquals(new Money(BigDecimal.valueOf(15.60d), Money.EURO),
-//                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
@@ -138,9 +136,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_multi_9789897734939;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parseMultiResult(context, document, new boolean[]{true, false, false, false},
@@ -156,9 +151,7 @@ public class ParseTest
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
 
         // test is a dynamic download, can fail / needs updating
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-//        assertEquals(new Money(BigDecimal.valueOf(17.91d), Money.EURO),
-//                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());

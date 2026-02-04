@@ -172,10 +172,10 @@ public class RatingParserTest {
 
     @Test
     public void v5withLocales() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.GERMANY,
-                                                                               Locale.FRANCE,
-                                                                               Locale.US));
-        final RatingParser parser = new RatingParser(realNumberParser, 5);
+        final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.GERMANY,
+                                                                                 Locale.FRANCE,
+                                                                                 Locale.US));
+        final RatingParser parser = new RatingParser(ratingNumberParser, 5);
         parse5withDots(parser);
         parse5withCommas(parser);
     }

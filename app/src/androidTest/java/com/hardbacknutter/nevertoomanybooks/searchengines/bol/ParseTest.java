@@ -63,7 +63,7 @@ public class ParseTest
     private static final String TAG = "ParseTest";
     private static final String UTF_8 = "UTF-8";
     private BolSearchEngine searchEngine;
-    private RealNumberParser realNumberParser;
+    private RealNumberParser ratingNumberParser;
     private MoneyParser moneyParser;
 
     @Before
@@ -84,7 +84,7 @@ public class ParseTest
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
-        realNumberParser = new RealNumberParser(allLocales);
+        ratingNumberParser = new RealNumberParser(allLocales);
         moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
@@ -110,7 +110,7 @@ public class ParseTest
         assertEquals("144", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -162,7 +162,7 @@ public class ParseTest
         assertEquals("240", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(3.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(8.95d, book.getDouble(DBKey.PRICE_LISTED,
                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -226,7 +226,7 @@ public class ParseTest
         assertEquals("416", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(51.6d, book.getDouble(DBKey.PRICE_LISTED,
                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -357,7 +357,7 @@ public class ParseTest
         assertEquals("144", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
                                            moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -405,7 +405,7 @@ public class ParseTest
         assertEquals("664", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(18.28d, book.getDouble(DBKey.PRICE_LISTED,
                                             moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
@@ -470,7 +470,7 @@ public class ParseTest
         assertEquals("480", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(24.99d, book.getDouble(DBKey.PRICE_LISTED,
                                             moneyParser.getRealNumberParser()), 0);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));

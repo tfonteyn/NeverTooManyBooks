@@ -66,7 +66,7 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
     private DoubanSearchEngine searchEngine;
 
-    private RealNumberParser realNumberParser;
+    private RealNumberParser ratingNumberParser;
     private MoneyParser moneyParser;
 
     @Before
@@ -81,7 +81,7 @@ public class ParseTest
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
-        realNumberParser = new RealNumberParser(allLocales);
+        ratingNumberParser = new RealNumberParser(allLocales);
         moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
@@ -351,7 +351,7 @@ public class ParseTest
         assertEquals("2024-04-30", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("288", book.getString(DBKey.PAGES, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED,
                                          moneyParser.getRealNumberParser()), 0);

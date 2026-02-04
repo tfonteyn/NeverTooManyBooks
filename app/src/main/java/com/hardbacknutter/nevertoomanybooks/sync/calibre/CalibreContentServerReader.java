@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -520,9 +521,9 @@ public class CalibreContentServerReader
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.RATING)) {
-            // The rating is a simple int 0..5
+            @IntRange(from = 0, to = 5)
             final int rating = calibreBook.getInt(CalibreBookJsonKey.RATING);
-            // ignore a remote 'not-set' value
+            // ignore a remote 0 == 'not-set' value
             if (rating > 0) {
                 book.setRating(rating);
             }

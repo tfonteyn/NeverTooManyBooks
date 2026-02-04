@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,6 +71,7 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private DatabazeKnihSearchEngine searchEngine;
+    private RealNumberParser ratingNumberParser;
 
     @Before
     public void setup()
@@ -80,6 +82,10 @@ public class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+
+        final Locale siteLocale = searchEngine.getLocale(context);
+        final List<Locale> allLocales = List.of(siteLocale);
+        ratingNumberParser = new RealNumberParser(allLocales);
     }
 
     @Test
@@ -90,9 +96,6 @@ public class ParseTest
 
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.databazeknih_9788025368626;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
@@ -105,7 +108,7 @@ public class ParseTest
         assertEquals("2024", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("192", book.getString(DBKey.PAGES, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals("pevná / vázaná", book.getString(DBKey.FORMAT, null));
 
         assertEquals("The Case of the Left-Handed Lady",
@@ -205,9 +208,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.databazeknih_9788024929613;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
@@ -219,7 +219,7 @@ public class ParseTest
         assertEquals("2015", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("216", book.getString(DBKey.PAGES, null));
-        assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(3.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals("pevná / vázaná", book.getString(DBKey.FORMAT, null));
         assertEquals("2015", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
@@ -301,9 +301,6 @@ public class ParseTest
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.databazeknih_8072210041;
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
@@ -317,7 +314,7 @@ public class ParseTest
         // language=jiný -> "other", not stored
         assertNull(book.getString(DBKey.LANGUAGE, null));
         assertEquals("352", book.getString(DBKey.PAGES, null));
-        assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals("pevná / vázaná s přebalem", book.getString(DBKey.FORMAT, null));
 
         assertEquals("Sonnets / A lover's complaint",
@@ -389,9 +386,6 @@ public class ParseTest
         final String locationHeader = "https://www.databazeknih.cz/search?in=books&q=foundation+asi&hledat=";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.databazeknih_multi_foundation_asi;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();

@@ -65,7 +65,7 @@ public class ParseTest
 
     private StripWebSearchEngine searchEngine;
     private MoneyParser moneyParser;
-    private RealNumberParser realNumberParser;
+    private RealNumberParser ratingNumberParser;
 
     @Before
     public void setup()
@@ -79,7 +79,7 @@ public class ParseTest
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
-        realNumberParser = new RealNumberParser(allLocales);
+        ratingNumberParser = new RealNumberParser(allLocales);
         moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
@@ -182,7 +182,7 @@ public class ParseTest
         assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(3.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(3.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         assertEquals("met tekeningen van Philippe Xavier, Iouri Jigounov, Joël Callède," +
                      " Gontran Toussaint, Mikaël, Alain Henriet. *een extra katern leveren" +
@@ -298,7 +298,7 @@ public class ParseTest
         assertEquals("48 x 3", book.getString(DBKey.PAGES, null));
         assertEquals("hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(0.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(0.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         assertEquals("De albums van deze reeks verschenen enkel in softcover." +
                      " Nu verschijnt een luxe stripbox met de delen 1-3 in hardcover." +

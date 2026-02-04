@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private BibliotecePlSearchEngine searchEngine;
-    private RealNumberParser realNumberParser;
+    private RealNumberParser ratingNumberParser;
 
     @Before
     public void setup()
@@ -87,7 +87,7 @@ public class ParseTest
                                      + ".resolve.authors.wikidata", true)
                          .apply();
 
-        realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
+        ratingNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 
     /** Short test to verify ISBN 10/13 handling only. */
@@ -195,7 +195,7 @@ public class ParseTest
         assertEquals("2024", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("2017", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals(1.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(1.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
@@ -273,7 +273,7 @@ public class ParseTest
         assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("2008", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
@@ -543,7 +543,7 @@ public class ParseTest
         assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("2007", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
 
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
