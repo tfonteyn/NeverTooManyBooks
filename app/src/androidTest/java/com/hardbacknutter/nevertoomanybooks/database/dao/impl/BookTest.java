@@ -31,7 +31,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -164,7 +163,6 @@ public class BookTest
     @Test
     public void preprocessExternalIdsForInsert() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
 
         //noinspection DataFlowIssue
         book.setIdentifiers(List.of(
@@ -198,7 +196,7 @@ public class BookTest
         assertTrue(book.getIdentifierValue(Identifier.SID_STRIP_INFO).isEmpty());
         assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
 
-        bdh.processNullsAndBlanks(book, true, realNumberParser);
+        bdh.processNullsAndBlanks(book, true);
         dump(book);
         // should not have any effect, so same tests:
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
@@ -207,7 +205,6 @@ public class BookTest
     @Test
     public void preprocessExternalIdsForUpdate() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
 
         //noinspection DataFlowIssue
         book.setIdentifiers(List.of(
@@ -241,7 +238,7 @@ public class BookTest
         assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
 
 
-        bdh.processNullsAndBlanks(book, false, realNumberParser);
+        bdh.processNullsAndBlanks(book, false);
         dump(book);
         // should not have any effect, so same tests:
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
@@ -270,7 +267,6 @@ public class BookTest
     @Test
     public void preprocessNullsAndBlanksForInsert() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
@@ -281,7 +277,7 @@ public class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
-        bdh.processNullsAndBlanks(book, true, realNumberParser);
+        bdh.processNullsAndBlanks(book, true);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 
@@ -300,7 +296,6 @@ public class BookTest
     @Test
     public void preprocessNullsAndBlanksForUpdate() {
         final List<Locale> userLocales = List.of(Locale.US);
-        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
@@ -311,7 +306,7 @@ public class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
-        bdh.processNullsAndBlanks(book, false, realNumberParser);
+        bdh.processNullsAndBlanks(book, false);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 

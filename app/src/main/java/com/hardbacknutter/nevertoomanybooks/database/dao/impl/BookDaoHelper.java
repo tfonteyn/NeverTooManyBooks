@@ -183,7 +183,7 @@ public class BookDaoHelper {
         }
 
         // lastly, clean-up null and blank fields as needed.
-        processNullsAndBlanks(book, isNew, realNumberParser);
+        processNullsAndBlanks(book, isNew);
 
         return filterValues(book, realNumberParser);
     }
@@ -325,7 +325,7 @@ public class BookDaoHelper {
      * <p>
      * Removes any keys with zero values, empty strings, null values
      * or any invalid values for the type. Further processing is done in
-     * {@link #processNullsAndBlanks(Book, boolean, RealNumberParser)}.
+     * {@link #processNullsAndBlanks(Book, boolean)}.
      *
      * @param book to process
      */
@@ -389,18 +389,17 @@ public class BookDaoHelper {
      * Existing books, REPLACE those keys with the default value for the column.
      *  @param book  to process
      *
-     * @param isNew            flag; whether the book is entirely 'new' or it's an update
-     * @param realNumberParser to use
+     * @param isNew flag; whether the book is entirely 'new' or it's an update
      */
     @VisibleForTesting
     public void processNullsAndBlanks(@NonNull final Book book,
-                                      final boolean isNew,
-                                      @NonNull final RealNumberParser realNumberParser) {
+                                      final boolean isNew) {
         tableDomains
                 .stream()
                 .filter(domain -> book.contains(domain.getName()) && domain.hasDefault())
                 .forEach(domain -> {
-                    final Object o = book.get(domain.getName(), realNumberParser);
+                    // We don't care about Money here.
+                    final Object o = book.get(domain.getName());
                     if (
                         // Fields which are null but not allowed to be null
                             o == null && domain.isNotNull()
@@ -454,7 +453,8 @@ public class BookDaoHelper {
                 // Check if we actually have a matching column, and never update a PK.
                 if (columnInfo != null && !columnInfo.isPrimaryKey()) {
 
-                    final Object entry = book.get(key, realNumberParser);
+                    // We don't care about Money here.
+                    final Object entry = book.get(key);
                     if (entry == null) {
                         if (columnInfo.isNullable()) {
                             cv.putNull(key);
