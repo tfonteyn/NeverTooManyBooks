@@ -58,7 +58,28 @@ public class RealNumberParser {
     private static final String ERROR_NOT_A_DOUBLE = "Not a double or no suitable Locale: ";
     @NonNull
     private final List<Locale> locales;
-    /** When set, the parser will use the monetary separaters. */
+    /**
+     * When set, the parser will use the monetary separaters instead of the standard number's.
+     * As far as we found out this MAY make a difference for:
+     * <p>
+     * Decimal separator:
+     * <ul>
+     *     <li>Switzerland (fr_CH, de_CH): numbers {@code ,} but money {@code .}</li>
+     *     <li>Estonia (et_EE): numbers {@code ,} but money {@code .}</li>
+     *     <li>Sweden (sv_SE): numbers {@code ,} but money MAY use {@code ,} or {@code :}</li>
+     * </ul>
+     * Grouping separator:
+     * <ul>
+     *     <li>Switzerland (it_CH): numbers {@code space} but money {@code '}</li>
+     *     <li>Norway (nb_NO): numbers {@code space} but money {@code .}</li>
+     *     <li>Portugal (pt_PT): numbers {@code space} but money {@code .}</li>
+     * </ul>
+     * <p>
+     * This is mostly theoretical, as we currently (2026-02) do not process
+     * any websites from those country/currencies.
+     * (The Portuguese amazon site is actually hosted on the Spanish one;
+     * and Amazon being American does not give a hoot anyhow.)
+     */
     private final boolean isMoney;
 
     /**
