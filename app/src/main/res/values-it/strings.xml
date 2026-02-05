@@ -236,6 +236,7 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Si è verificato un errore di rete.</string>
     <string name="httpErrorAuth">Autenticazione non riuscita.</string>
+    <string name="httpErrorTooManyRequests">Troppe richieste in fase di elaborazione. Riprova più tardi.</string>
     <string name="httpErrorFailedSslHandshake">Impossibile stabilire una connessione sicura.</string>
     <string name="httpErrorFile">Accesso al file non riuscito.</string>
     <string name="httpErrorFileNotFound">Impossibile trovare il file richiesto.</string>

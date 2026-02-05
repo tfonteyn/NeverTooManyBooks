@@ -233,6 +233,7 @@
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="httpError">Đã xảy ra lỗi mạng.</string>
     <string name="httpErrorAuth">Không thể xác thực.</string>
+    <string name="httpErrorTooManyRequests">Quá nhiều yêu cầu đang được xử lý. Hãy thử lại sau.</string>
     <string name="httpErrorFailedSslHandshake">Không thể thiết lập kết nối an toàn.</string>
     <string name="httpErrorFile">Không thể truy cập tệp.</string>
     <string name="httpErrorFileNotFound">Không thể tìm thấy tệp được yêu cầu.</string>

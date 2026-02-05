@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -68,6 +71,7 @@
     <string name="debug_select_items">Vyberte, čo chcete zahrnúť:</string>
     <string name="acra_report_saved">Teraz môžete navštíviť stránku projektu na GitHub a nahlásiť nový problém. Pripojte k problému predtým uloženú správu. Ak ešte nemáte účet Github, budete si ho musieť vytvoriť.</string>
     <string name="httpErrorTimeout">Vypršal časový limit pripojenia k serveru.</string>
+    <string name="httpErrorTooManyRequests">Je spracovávaných príliš veľa žiadostí. Opakujte akciu neskôr.</string>
     <string name="httpErrorFailedSslHandshake">Nepodarilo sa nadviazať zabezpečené pripojenie.</string>
     <string name="httpErrorAuth">Nepodarilo sa overiť.</string>
     <string name="httpError">Vyskytla sa chyba siete.</string>

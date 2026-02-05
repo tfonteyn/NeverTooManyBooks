@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpTooManyRequestsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
@@ -193,6 +194,7 @@ public final class ExMsg {
                 return context.getString(R.string.error_network_site_access_failed,
                                          context.getString(he.getSiteResId()));
             } else {
+                // We should never get here... flw
                 return context.getString(R.string.httpErrorFileNotFound);
             }
         } else if (e instanceof HttpUnauthorizedException) {
@@ -201,6 +203,7 @@ public final class ExMsg {
                 return context.getString(R.string.error_http_401_site_authorization_failed,
                                          context.getString(he.getSiteResId()));
             } else {
+                // We should never get here... flw
                 return context.getString(R.string.error_http_401_authorization_failed);
             }
         } else if (e instanceof HttpForbiddenException) {
@@ -209,8 +212,20 @@ public final class ExMsg {
                 return context.getString(R.string.error_http_403_site_forbidden,
                                          context.getString(he.getSiteResId()));
             } else {
+                // We should never get here... flw
                 return context.getString(R.string.error_http_403_forbidden);
             }
+        } else if (e instanceof HttpTooManyRequestsException) {
+            final HttpTooManyRequestsException he = (HttpTooManyRequestsException) e;
+            if (he.getSiteResId() != 0) {
+                return context.getString(R.string.name_colon_value,
+                                         context.getString(he.getSiteResId()),
+                                         context.getString(R.string.httpErrorTooManyRequests));
+            } else {
+                // We should never get here... flw
+                return context.getString(R.string.httpErrorTooManyRequests);
+            }
+
         } else if (e instanceof HttpStatusException) {
             final HttpStatusException he = (HttpStatusException) e;
             if (he.getSiteResId() != 0) {
@@ -220,6 +235,7 @@ public final class ExMsg {
                                                  context.getString(he.getSiteResId())),
                                          String.valueOf(he.getStatusCode()));
             } else {
+                // We should never get here... flw
                 return context.getString(R.string.httpError) + " (" + he.getStatusCode() + ")";
             }
         } else if (e instanceof java.io.FileNotFoundException) {

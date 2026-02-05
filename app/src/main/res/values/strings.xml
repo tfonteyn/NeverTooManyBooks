@@ -187,6 +187,8 @@
         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
     <string name="httpErrorTimeout">The connection to the server timed out.</string>
+    <!-- [VERIFIED] Displayed when a web request failed because the server is overloaded. (HTTP response code 429). -->
+    <string name="httpErrorTooManyRequests">Too many requests are being processed. Try again later.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because a secure connection couldn't be made to the server.-->
     <string name="httpErrorFailedSslHandshake">Couldn’t establish a secure connection.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the authentication failed. -->

@@ -107,6 +107,7 @@
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Erro</string>
     <string name="error_import_file_not_supported">Non se pode importar o ficheiro seleccionado.</string>
+    <string name="httpErrorTooManyRequests">Estanse a procesar demasiadas solicitudes. Téntao de novo máis tarde.</string>
     <string name="httpErrorFailedSslHandshake">Non se puido establecer unha conexión segura.</string>
     <string name="error_email_failed">Fallou o envío do correo electrónico.</string>
     <string name="acra_report_saved">Xa podes visitar a páxina do proxecto en GitHub e engadir unha nova incidencia. Adxunta o informe que gardaches antes. Se non tes conta en Github, terás que crear unha.</string>

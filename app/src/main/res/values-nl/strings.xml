@@ -221,6 +221,7 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Er is een netwerkfout opgetreden.</string>
     <string name="httpErrorAuth">Kan niet verifiëren.</string>
+    <string name="httpErrorTooManyRequests">Er worden te veel aanvragen verwerkt. Probeer het later opnieuw.</string>
     <string name="httpErrorFailedSslHandshake">Er kan geen beveiligde verbinding tot stand worden gebracht.</string>
     <string name="httpErrorFile">Kan het bestand niet openen.</string>
     <string name="httpErrorFileNotFound">Kan het opgevraagde bestand niet vinden.</string>

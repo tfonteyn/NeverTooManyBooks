@@ -230,6 +230,7 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Bir ağ hatası oluştu.</string>
     <string name="httpErrorAuth">Kimlik doğrulanamadı.</string>
+    <string name="httpErrorTooManyRequests">Çok fazla sayıda istek işleniyor. Daha sonra yeniden deneyin.</string>
     <string name="httpErrorFailedSslHandshake">Güvenli bağlantı oluşturulamadı.</string>
     <string name="httpErrorFile">Dosyaya erişilemedi.</string>
     <string name="httpErrorFileNotFound">İstenen dosya bulunamadı.</string>

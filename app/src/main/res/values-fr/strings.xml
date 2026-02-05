@@ -237,6 +237,7 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Une erreur réseau s’est produite.</string>
     <string name="httpErrorAuth">Impossible de procéder à l’authentification.</string>
+    <string name="httpErrorTooManyRequests">Trop de requêtes sont en cours de traitement. Veuillez réessayer ultérieurement.</string>
     <string name="httpErrorFailedSslHandshake">Impossible d’établir une connexion sécurisée.</string>
     <string name="httpErrorFile">Impossible d’accéder au fichier.</string>
     <string name="httpErrorFileNotFound">Le fichier demandé est introuvable.</string>

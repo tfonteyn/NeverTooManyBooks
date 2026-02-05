@@ -229,6 +229,7 @@
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="httpError">發生網路錯誤。</string>
     <string name="httpErrorAuth">無法驗證。</string>
+    <string name="httpErrorTooManyRequests">太多執行要求。請稍後再試一次。</string>
     <string name="httpErrorFailedSslHandshake">無法建立安全連接。</string>
     <string name="httpErrorFile">無法存取檔案。</string>
     <string name="httpErrorFileNotFound">找不到所請求的檔案。</string>

@@ -111,6 +111,7 @@
     <string name="info_progress_page_x_of_y">பக்கம்: %1$d %2$d</string>
     <string name="X_info_tap_on_image_to_select">அதைத் தேர்ந்தெடுக்க பெரிய படத்தைத் தட்டவும்.</string>
     <string name="X_tip_update_fields_from_internet">தளம் உண்மையில் தொடர்பு கொண்டால் மட்டுமே வெளிப்புற தள இணைப்புகள் செயலாக்கப்படும். இதன் விளைவாக பட்டியல் “காண்க…” இதேபோல் கிடைப்பதை மட்டுமே காண்பிக்கும்.</string>
+    <string name="httpErrorTooManyRequests">மிக அதிகமான கோரிக்கைகள் செயல்படுத்தப்படுகின்றன. பிறகு முயற்சிக்கவும்.</string>
     <string name="httpErrorFailedSslHandshake">பாதுகாப்பான இணைப்பை நிறுவ முடியவில்லை.</string>
     <string name="httpErrorAuth">அங்கீகரிக்க முடியவில்லை.</string>
     <string name="httpError">பிணைய பிழை இருந்தது.</string>

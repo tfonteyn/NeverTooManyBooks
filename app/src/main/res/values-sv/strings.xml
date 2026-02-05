@@ -240,6 +240,7 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Ett nätverksfel uppstod.</string>
     <string name="httpErrorAuth">"Det gick inte att autentisera."</string>
+    <string name="httpErrorTooManyRequests">För många begäranden bearbetas. Försök igen senare.</string>
     <string name="httpErrorFailedSslHandshake">"Det gick inte att upprätta en säker anslutning."</string>
     <string name="httpErrorFile">"Det gick inte att öppna filen."</string>
     <string name="httpErrorFileNotFound">"Det gick inte att hitta den begärda filen."</string>

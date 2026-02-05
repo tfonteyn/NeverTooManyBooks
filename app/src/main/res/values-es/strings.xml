@@ -236,6 +236,7 @@
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Se ha producido un error de red.</string>
     <string name="httpErrorAuth">No se ha podido autenticar.</string>
+    <string name="httpErrorTooManyRequests">Se están procesando demasiadas solicitudes. Vuelve a intentarlo más tarde.</string>
     <string name="httpErrorFailedSslHandshake">No se ha podido establecer una conexión segura.</string>
     <string name="httpErrorFile">No se ha podido acceder al archivo.</string>
     <string name="httpErrorFileNotFound">No se ha podido encontrar el archivo solicitado.</string>

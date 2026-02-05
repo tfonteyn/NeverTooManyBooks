@@ -238,4 +238,5 @@
     <string name="pt_ui_screen_systembars_behavior">Augšējā izvēlne</string>
     <string name="pt_screen_header_scroll">Paslēpt izvēlni ritinot</string>
     <string name="pt_screen_header_fixed">Pievienot izvēlni augšā</string>
+    <string name="httpErrorTooManyRequests">Tiek apstrādāts pārāk liels pieprasījumu skaits. Vēlāk mēģiniet vēlreiz.</string>
 </resources>
