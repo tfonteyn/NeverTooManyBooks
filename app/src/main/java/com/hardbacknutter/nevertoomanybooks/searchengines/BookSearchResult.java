@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -36,25 +37,24 @@ public final class BookSearchResult {
 
     @NonNull
     private final Book book;
-    @Nullable
-    private final String searchErrors;
+    @NonNull
+    private final List<String> errors;
     /** Routing purposes. */
     @Nullable
     private final ScanMode scanMode;
 
     private BookSearchResult(@NonNull final Book book) {
-        this(0, book, null, null);
+        this(0, book, null, List.of());
     }
 
     private BookSearchResult(final int searchId,
                              @NonNull final Book book,
                              @Nullable final ScanMode scanMode,
-                             @Nullable final String searchErrors) {
+                             @NonNull final List<String> errors) {
         this.searchId = searchId;
         this.book = book;
         this.scanMode = scanMode;
-        // paranoia... eliminate empty string
-        this.searchErrors = searchErrors == null || searchErrors.isEmpty() ? null : searchErrors;
+        this.errors = errors;
     }
 
     /**
@@ -72,24 +72,29 @@ public final class BookSearchResult {
     /**
      * Constructor.
      *
-     * @param searchId     id
-     * @param book         with data found
-     * @param scanMode     (optional) the mode which was active when the search started
-     * @param searchErrors (optional) either {@code null} or a valid message to display
+     * @param searchId id
+     * @param book     with data found
+     * @param scanMode (optional) the mode which was active when the search started
+     * @param errors   list; can be empty
      *
      * @return instance
      */
     static BookSearchResult newResult(final int searchId,
                                       @NonNull final Book book,
                                       @Nullable final ScanMode scanMode,
-                                      @Nullable final String searchErrors) {
-        return new BookSearchResult(searchId, book, scanMode, searchErrors);
+                                      @NonNull final List<String> errors) {
+        return new BookSearchResult(searchId, book, scanMode, errors);
     }
 
     public int getSearchId() {
         return searchId;
     }
 
+    /**
+     * Resulting book found.
+     *
+     * @return book
+     */
     @NonNull
     public Book getBook() {
         return book;
@@ -103,11 +108,11 @@ public final class BookSearchResult {
     /**
      * Get the error message if any.
      *
-     * @return either {@code null} or a valid message to display
+     * @return list with valid message to display;  can be empty
      */
-    @Nullable
-    public String getErrorMessage() {
-        return searchErrors;
+    @NonNull
+    public List<String> getErrors() {
+        return errors;
     }
 
     @Override
@@ -119,12 +124,12 @@ public final class BookSearchResult {
         return searchId == that.searchId
                && scanMode == that.scanMode
                && Objects.equals(book, that.book)
-               && Objects.equals(searchErrors, that.searchErrors);
+               && Objects.equals(errors, that.errors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(searchId, book, searchErrors);
+        return Objects.hash(searchId, book, errors);
     }
 
     @Override
@@ -133,7 +138,7 @@ public final class BookSearchResult {
         return "BookSearchResult{"
                + "searchId=" + searchId
                + ", scanMode=" + scanMode
-               + ", searchErrors=`" + searchErrors + '`'
+               + ", errors=`" + errors + '`'
                + ", book=" + book
                + '}';
     }

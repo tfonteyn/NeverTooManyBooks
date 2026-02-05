@@ -253,14 +253,14 @@ public abstract class SearchBookBaseFragment
 
         final boolean hasData = !result.getBook().isEmpty();
 
-        final String searchErrors = result.getErrorMessage();
-        if (searchErrors != null) {
+        final List<String> errorMessages = result.getErrors();
+        if (!errorMessages.isEmpty()) {
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.warning_24px)
                     .setTitle(hasData ? R.string.warning_book_not_always_found
                                       : R.string.warning_book_not_found)
-                    .setMessage(searchErrors)
+                    .setMessage(String.join("\n", errorMessages))
                     .setPositiveButton(R.string.ok, (d, w) -> {
                         d.dismiss();
                         if (hasData) {

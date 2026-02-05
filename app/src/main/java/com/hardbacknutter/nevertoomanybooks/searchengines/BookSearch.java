@@ -176,10 +176,9 @@ class BookSearch {
         final long processTime = System.nanoTime();
 
         final Book book = accumulateResults(context, engineLocaleMap);
-        final String searchErrors = accumulateErrors(context);
-        final BookSearchResult result = BookSearchResult.newResult(id, book,
-                                                                   criteria.getScanMode(),
-                                                                   searchErrors);
+        final List<String> errors = accumulateErrors(context);
+        final BookSearchResult result =
+                BookSearchResult.newResult(id, book, criteria.getScanMode(), errors);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             debugDumpTimers(processTime);
@@ -335,18 +334,17 @@ class BookSearch {
     }
 
     /**
-     * Called when all is said and done. Collects all individual website errors (if any)
-     * into a single user-formatted message.
+     * Called when all is said and done. Collects all individual website errors (if any).
      *
      * @param context Current context
      *
-     * @return the error message
+     * @return list; can be empty
      */
-    @Nullable
-    private String accumulateErrors(@NonNull final Context context) {
+    @NonNull
+    private List<String> accumulateErrors(@NonNull final Context context) {
         // no synchronisation needed, at this point all other threads have finished.
         if (!errorsByEngineId.isEmpty()) {
-            final String msg = errorsByEngineId
+            final List<String> errors = errorsByEngineId
                     .values()
                     .stream()
                     .map(exception -> ExMsg
@@ -360,12 +358,12 @@ class BookSearch {
                                 // generic unknown message
                                 return context.getString(R.string.error_unexpected);
                             }))
-                    .collect(Collectors.joining("\n"));
+                    .collect(Collectors.toList());
 
             errorsByEngineId.clear();
-            return msg;
+            return errors;
         }
-        return null;
+        return List.of();
     }
 
     @NonNull

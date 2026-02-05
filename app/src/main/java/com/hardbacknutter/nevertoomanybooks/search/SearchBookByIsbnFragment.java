@@ -1176,7 +1176,7 @@ public class SearchBookByIsbnFragment
             final BookSearchResult result = item.getResult();
             if (result != null) {
                 final Book book = result.getBook();
-                if (result.getErrorMessage() != null) {
+                if (!result.getErrors().isEmpty()) {
                     if (hasData(book)) {
                         // There was an error, but the book has at least some valid data
                         chip.setChipBackgroundColorResource(
@@ -1237,9 +1237,9 @@ public class SearchBookByIsbnFragment
         // Error message in dialog body.
         boolean hasMessage = false;
         if (result != null) {
-            final String errorMessage = result.getErrorMessage();
-            if (errorMessage != null) {
-                dvb.errorMessage.setText(errorMessage);
+            final List<String> errorMessages = result.getErrors();
+            if (!errorMessages.isEmpty()) {
+                dvb.errorMessage.setText(String.join("\n", errorMessages));
                 hasMessage = true;
             }
         }
