@@ -361,7 +361,7 @@ public class SearchEngineConfig {
         }
 
         @NonNull
-        Builder setThrottlerTimeoutMs(final int timeoutInMillis) {
+        public Builder setThrottlerIntervalInMs(final int timeoutInMillis) {
             throttlerTimeoutMs = timeoutInMillis;
             return this;
         }

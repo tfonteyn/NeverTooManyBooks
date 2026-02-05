@@ -216,7 +216,11 @@ public class DnbSearchEngine
                                     "https://katalog.dnb.de",
                                     new Locale("de", "DE"))
                 .setIdentifierKey(Identifier.SID_DNB)
-                .setPreferenceFragmentClazz(DnbPreferencesFragment.class);
+                .setPreferenceFragmentClazz(DnbPreferencesFragment.class)
+                .setConfig(cb -> cb
+                        // GitHub #229: http response 429 Too Many Request
+                        .setThrottlerIntervalInMs(2_000)
+                        .build(SearchEngineConfig::new));
     }
 
     @NonNull
