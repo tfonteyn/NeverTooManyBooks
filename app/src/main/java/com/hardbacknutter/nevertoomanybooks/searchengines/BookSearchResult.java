@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 /**
  * The final result from a book search.
  */
-public class BookSearchResult {
+public final class BookSearchResult {
     private final int searchId;
 
     @NonNull
@@ -42,19 +42,48 @@ public class BookSearchResult {
     @Nullable
     private final ScanMode scanMode;
 
-    public BookSearchResult(@NonNull final Book book) {
+    private BookSearchResult(@NonNull final Book book) {
         this(0, book, null, null);
     }
 
-    public BookSearchResult(final int searchId,
-                            @NonNull final Book book,
-                            @Nullable final ScanMode scanMode,
-                            @Nullable final String searchErrors) {
+    private BookSearchResult(final int searchId,
+                             @NonNull final Book book,
+                             @Nullable final ScanMode scanMode,
+                             @Nullable final String searchErrors) {
         this.searchId = searchId;
         this.book = book;
         this.scanMode = scanMode;
         // paranoia... eliminate empty string
         this.searchErrors = searchErrors == null || searchErrors.isEmpty() ? null : searchErrors;
+    }
+
+    /**
+     * Constructor.
+     * The data does not contain an actual book, but contains meta data about the search.
+     *
+     * @param data meta data
+     *
+     * @return instance
+     */
+    public static BookSearchResult metaResult(@NonNull final Book data) {
+        return new BookSearchResult(data);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param searchId     id
+     * @param book         with data found
+     * @param scanMode     (optional) the mode which was active when the search started
+     * @param searchErrors (optional) either {@code null} or a valid message to display
+     *
+     * @return instance
+     */
+    static BookSearchResult newResult(final int searchId,
+                                      @NonNull final Book book,
+                                      @Nullable final ScanMode scanMode,
+                                      @Nullable final String searchErrors) {
+        return new BookSearchResult(searchId, book, scanMode, searchErrors);
     }
 
     public int getSearchId() {

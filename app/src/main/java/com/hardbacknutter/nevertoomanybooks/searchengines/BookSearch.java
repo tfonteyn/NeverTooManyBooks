@@ -177,8 +177,9 @@ class BookSearch {
 
         final Book book = accumulateResults(context, engineLocaleMap);
         final String searchErrors = accumulateErrors(context);
-        final BookSearchResult result = new BookSearchResult(id, book, criteria.getScanMode(),
-                                                             searchErrors);
+        final BookSearchResult result = BookSearchResult.newResult(id, book,
+                                                                   criteria.getScanMode(),
+                                                                   searchErrors);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             debugDumpTimers(processTime);

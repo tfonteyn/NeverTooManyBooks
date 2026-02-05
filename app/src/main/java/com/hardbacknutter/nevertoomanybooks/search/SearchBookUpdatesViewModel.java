@@ -586,26 +586,26 @@ public class SearchBookUpdatesViewModel
         lastBookIdProcessed = currentBookId;
 
         // See class docs above as to why this is not an EditBookOutput object!
-        final Book book = new Book();
+        final Book data = new Book();
 
-        book.putLong(EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
+        data.putLong(EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
 
         // all books || a list of books (i.e. 1 or more books)
         if (bookIdList == null || !bookIdList.isEmpty()) {
             //FIXME: we should only return this if we actually modified a book
-            book.putBoolean(EditBookOutput.BKEY_MODIFIED, true);
+            data.putBoolean(EditBookOutput.BKEY_MODIFIED, true);
         }
 
         // if applicable, pass the first book for repositioning the list on screen
         if (bookIdList != null && !bookIdList.isEmpty()) {
-            book.putLong(DBKey.FK_BOOK, bookIdList.get(0));
+            data.putLong(DBKey.FK_BOOK, bookIdList.get(0));
         }
 
-        final BookSearchResult data = new BookSearchResult(book);
+        final BookSearchResult result = BookSearchResult.metaResult(data);
         if (success) {
-            listFinished.setValue(LiveDataEvent.of(data));
+            listFinished.setValue(LiveDataEvent.of(result));
         } else {
-            pushResultCanceled(data);
+            pushResultCanceled(result);
         }
     }
 
