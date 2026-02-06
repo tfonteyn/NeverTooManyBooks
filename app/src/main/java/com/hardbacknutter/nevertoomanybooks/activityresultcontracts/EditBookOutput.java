@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,45 +65,11 @@ public final class EditBookOutput {
      *                            Pass in {@code 0} when not applicable.
      */
     public EditBookOutput(final boolean modified,
-                           final long repositionToBookId,
-                           final long lastBookIdProcessed) {
+                          final long repositionToBookId,
+                          final long lastBookIdProcessed) {
         this.modified = modified;
         this.repositionToBookId = repositionToBookId;
         this.lastBookIdProcessed = lastBookIdProcessed;
-    }
-
-    /**
-     * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
-     *
-     * @param modified           flag; whether ANY modifications were made
-     * @param repositionToBookId the book to which the list should reposition.
-     *                           Pass in {@code 0} to skip repositioning.
-     *
-     * @return Intent
-     */
-    @NonNull
-    public static Intent createResultIntent(final boolean modified,
-                                            final long repositionToBookId) {
-        return new EditBookOutput(modified, repositionToBookId, 0)
-                .createResultIntent();
-    }
-
-    /**
-     * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
-     *
-     * @param modified            flag; whether ANY modifications were made
-     * @param repositionToBookId  the book to which the list should reposition.
-     *                            Pass in {@code 0} to skip repositioning.
-     * @param lastProcessedBookId the book which was last processed
-     *
-     * @return intent
-     */
-    @NonNull
-    public static Intent createResultIntent(final boolean modified,
-                                            final long repositionToBookId,
-                                            final long lastProcessedBookId) {
-        return new EditBookOutput(modified, repositionToBookId, lastProcessedBookId)
-                .createResultIntent();
     }
 
     /**
@@ -184,5 +150,15 @@ public final class EditBookOutput {
     @SuppressWarnings("WeakerAccess")
     public long getLastBookIdProcessed() {
         return lastBookIdProcessed;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EditBookOutput{"
+               + "modified=" + modified
+               + ", repositionToBookId=" + repositionToBookId
+               + ", lastBookIdProcessed=" + lastBookIdProcessed
+               + '}';
     }
 }

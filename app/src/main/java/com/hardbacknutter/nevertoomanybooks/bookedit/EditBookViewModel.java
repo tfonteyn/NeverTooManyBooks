@@ -534,7 +534,8 @@ public class EditBookViewModel
 
     @NonNull
     Intent createResultIntent() {
-        return EditBookOutput.createResultIntent(modified, book.getId());
+        return new EditBookOutput(modified, book.getId(), 0)
+                .createResultIntent();
     }
 
     /**

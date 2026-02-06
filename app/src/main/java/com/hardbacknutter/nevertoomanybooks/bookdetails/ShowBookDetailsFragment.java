@@ -830,8 +830,8 @@ public class ShowBookDetailsFragment
                 } else {
                     // Not embedded, set 0 as the repositionToBookId and return to the BoB
                     // (could hardcode modified=true, but consistency prevails)
-                    final Intent resultIntent = EditBookOutput
-                            .createResultIntent(aVm.isModified(), 0);
+                    final Intent resultIntent = new EditBookOutput(aVm.isModified(), 0, 0)
+                            .createResultIntent();
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

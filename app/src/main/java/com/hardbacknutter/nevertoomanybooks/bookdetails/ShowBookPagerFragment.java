@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,8 +59,8 @@ public class ShowBookPagerFragment
                     // always set the *current* book, so BoB can reposition more accurately.
                     final int currentItem = viewPager != null ? viewPager.getCurrentItem() : 0;
                     final long bookId = vm.getBookIdAtPosition(currentItem);
-                    final Intent resultIntent = EditBookOutput
-                            .createResultIntent(aVm.isModified(), bookId);
+                    final Intent resultIntent = new EditBookOutput(aVm.isModified(), bookId, 0)
+                            .createResultIntent();
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
