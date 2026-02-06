@@ -219,9 +219,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger()
-                         .d(TAG, "pushResultFinished",
-                            "searchId=" + data.getSearchId(),
-                            "errors=" + data.getErrors());
+                         .d(TAG, "pushResultFinished", data);
         }
     }
 
@@ -231,9 +229,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger()
-                         .d(TAG, "pushResultCanceled",
-                            "searchId=" + data.getSearchId(),
-                            "errors=" + data.getErrors());
+                         .d(TAG, "pushResultCanceled", data);
         }
     }
 
