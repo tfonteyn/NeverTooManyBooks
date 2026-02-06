@@ -32,6 +32,9 @@
  *          The enum represents a static registry of all configured engines.
  *      </li>
  * </ul>
+ *
+ * <hr>
+ *
  * <p>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site} :
  * Encapsulates a {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine}
  * instance, the Site Type and the current enabled/disabled state.
@@ -61,6 +64,21 @@
  *      <li>Site B1 with id=BBB, and type Data, will have a SearchEngine_B1</li>
  *      <li>...</li>
  *      <li>Site C1 with id=AAA, and type Covers, will have a SearchEngine_C1</li>
+ * </ul>
+ *
+ * <hr>
+ *
+ * <ul>
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria}
+ *         defines HOW a book search will done</li>
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.BookSearch}
+ *         takes the BookSearchCriteria data and is used for doing the search and collecting
+ *         all data and any errors.
+ *     </li>
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult}
+ *         The BookSearch transformed into a BookSearchResult with the date/errors
+ *         accumulated and sorted redy for use by the UI.
+ *     </li>
  * </ul>
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines;
