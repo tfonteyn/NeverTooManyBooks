@@ -78,8 +78,8 @@ public class SearchCoordinatorTest
             if (result == null) {
                 return;
             }
-            final Book book = result.getBook();
-            Log.d("search01-" + result.getSearchId(), book.toString());
+            final Book book = result.getRawBook();
+            Log.d("search01-" + result.getSearchId(), String.valueOf(book));
 
             receivedValues.add(result);
             latch.countDown();

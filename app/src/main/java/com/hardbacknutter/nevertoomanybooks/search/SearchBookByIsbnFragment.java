@@ -79,7 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookFoundBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
@@ -111,28 +110,28 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * - start batch scan
  * - disable progress
- * - q items populated by scanner
- * - q can be cleared using button
+ * - queue items populated by scanner
+ * - queue can be cleared using button
  * - scanner delivers item to be added:
  * - search started, added to the queue (wil have searchId)
  * - starting search fails, ask user to:
  * - stop scanning
  * - restart scanner
  * <p>
- * - usr clicks on q item:
+ * - user clicks on queue item:
  * - item has searchId (always)
  * - dialog title/msg depending on what we can show
  * - result present:
  * - user can delete item
  * - user can edit book
- * - must be deleted from the q before edit starts
+ * - must be deleted from the queue before edit starts
  * - no result
  * - user can delete item
  * <p>
  * - user stops scanning
  * - progress STILL disabled
  * <p>
- * - q keeps running
+ * - queue keeps running
  * - user does a manual entry/scan
  * - prepareCriteria: we could check book existence before starting a search?
  * - to start the search, it MUST be added to the queue!
@@ -148,7 +147,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Offer to:
  * - delete list
  * - start search
- * - populate q in one go + start all searches
+ * - populate queue in one go + start all searches
  * - state: neutral, same as user did a batch scan, then stopped scanning
  * <p>
  * ============================================================
@@ -1022,15 +1021,14 @@ public class SearchBookByIsbnFragment
                                         "queue=" + vb.queue.getChildCount(),
                                         result);
         }
-        final Book book = result.getBook();
 
-        if (!hasData(book)) {
+        if (!result.hasBook()) {
             // We should never get here... flw
             vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
             return;
         }
 
-        editBook(book, vm.getStyle());
+        editBook(result.getBook(), vm.getStyle());
     }
 
     private void onSearchResultsSaveBook(@NonNull final BookSearchResult result) {
@@ -1040,13 +1038,14 @@ public class SearchBookByIsbnFragment
                                         "queue=" + vb.queue.getChildCount(),
                                         result);
         }
-        final Book book = result.getBook();
 
-        if (!hasData(book)) {
+        if (!result.hasBook()) {
             // We should never get here... flw
             vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
             return;
         }
+
+        final Book book = result.getBook();
 
         // Add it to the current shelf.
         book.ensureBookshelf();
@@ -1092,23 +1091,6 @@ public class SearchBookByIsbnFragment
             // If we do... the book result is discarded.
             ErrorDialog.show(context, TAG, e);
         }
-    }
-
-    /**
-     * Called <strong>after</strong> a search to check if there is a minimal amount
-     * of useful data in the given book.
-     *
-     * @param book to check
-     *
-     * @return {@code true} if there is
-     */
-    private boolean hasData(@NonNull final Book book) {
-        // A non-empty result will have a title, or at least 3 fields:
-        // The isbn field will be present as we searched on one.
-        // The title field, *might* be there but *might* be empty.
-        // So a valid result means we either need a title, or a third field.
-        final String title = book.getString(DBKey.TITLE, null);
-        return title != null && !title.isEmpty() || book.size() > 2;
     }
 
     @Override
@@ -1175,18 +1157,17 @@ public class SearchBookByIsbnFragment
 
             final BookSearchResult result = item.getResult();
             if (result != null) {
-                final Book book = result.getBook();
-                if (!result.getErrors().isEmpty()) {
-                    if (hasData(book)) {
-                        // There was an error, but the book has at least some valid data
+                if (result.hasErrors()) {
+                    if (result.hasBook()) {
+                        // There was an error, but the book has (some) usable data
                         chip.setChipBackgroundColorResource(
                                 R.color.isbn_queue_success_with_partial_errors);
                     } else {
                         // There was an error, and the book has no useful data
                         chip.setChipBackgroundColorResource(R.color.isbn_queue_failure);
                     }
-                } else if (hasData(book)) {
-                    // no error, book has at least some valid data
+                } else if (result.hasBook()) {
+                    // no error, and the book has usable data
                     chip.setChipBackgroundColorResource(R.color.isbn_queue_success);
                 }
             }
@@ -1203,45 +1184,45 @@ public class SearchBookByIsbnFragment
      */
     private void onQueueItemClicked(@NonNull final View chip) {
         final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
+        final Context context = getContext();
         @Nullable
         final BookSearchResult result = item.getResult();
         final String info;
         if (result != null) {
             // Show some book information
-            final Context context = getContext();
             final StringJoiner sj = new StringJoiner("\n");
-            final Book book = result.getBook();
-
-            final Author primaryAuthor = book.getPrimaryAuthor();
-            if (primaryAuthor != null) {
-                //noinspection DataFlowIssue
-                sj.add(primaryAuthor.getLabel(context, Details.Normal, vm.getStyle()));
-            }
-
-            sj.add(book.getTitle());
             sj.add(item.getIsbn().asText());
+
+            if (result.hasBook()) {
+                final Book book = result.getBook();
+                final Author primaryAuthor = book.getPrimaryAuthor();
+                if (primaryAuthor != null) {
+                    //noinspection DataFlowIssue
+                    sj.add(primaryAuthor.getLabel(context, Details.Normal, vm.getStyle()));
+                }
+
+                sj.add(book.getTitle());
+            }
 
             info = sj.toString();
         } else {
-            // no result; not sure if we ever get here... flw
+            // no result (yet); the search is ongoing
             info = item.getIsbn().asText();
         }
 
         final DialogBookFoundBinding dvb = DialogBookFoundBinding.inflate(getLayoutInflater());
 
         //noinspection DataFlowIssue
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setView(dvb.getRoot());
         dvb.info.setText(info);
 
         // Error message in dialog body.
         boolean hasMessage = false;
-        if (result != null) {
-            final List<String> errorMessages = result.getErrors();
-            if (!errorMessages.isEmpty()) {
-                dvb.errorMessage.setText(String.join("\n", errorMessages));
-                hasMessage = true;
-            }
+        if (result != null && result.hasErrors()) {
+            final List<String> errorMessages = result.getErrors(context);
+            dvb.errorMessage.setText(String.join("\n", errorMessages));
+            hasMessage = true;
         }
         dvb.errorMessage.setVisibility(hasMessage ? View.VISIBLE : View.GONE);
 

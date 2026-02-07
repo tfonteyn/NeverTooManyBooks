@@ -43,9 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
@@ -278,20 +276,12 @@ public class SearchBookByExternalIdFragment
 
     @Override
     void onSearchResults(@NonNull final BookSearchResult result) {
-        final Book book = result.getBook();
-
-        // A non-empty result will have a title, or at least 3 fields:
-        // The external id field for the site should be present as we searched on one.
-        // The title field, *might* be there but *might* be empty.
-        // So a valid result means we either need a title, or a third field.
-        final String title = book.getString(DBKey.TITLE, null);
-        if ((title == null || title.isEmpty()) && book.size() <= 2) {
+        if (result.hasBook()) {
+            editBook(result.getBook(), vm.getStyle());
+        } else {
             Snackbar.make(vb.externalId, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
-            return;
         }
-
-        editBook(book, vm.getStyle());
     }
 
     @Override

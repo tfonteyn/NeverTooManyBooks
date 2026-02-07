@@ -46,14 +46,11 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncfieldConfigBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -264,13 +261,9 @@ public class SearchBookUpdatesFragment
         closeProgressDialog();
 
         message.process(result -> {
-            final Book book = result.getBook();
-            final boolean modified = book.getBoolean(EditBookOutput.BKEY_MODIFIED);
-            final long firstBook = book.getLong(DBKey.FK_BOOK);
-            final long lastProcessed = book.getLong(EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED);
             //noinspection DataFlowIssue
-            getActivity().setResult(Activity.RESULT_OK, EditBookOutput.createResultIntent(
-                    modified, firstBook, lastProcessed));
+            getActivity().setResult(Activity.RESULT_OK,
+                                    result.getEditBookOutput().createResultIntent());
             getActivity().finish();
         });
     }

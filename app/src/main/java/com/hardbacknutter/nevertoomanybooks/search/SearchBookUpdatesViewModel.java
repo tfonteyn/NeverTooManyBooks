@@ -71,12 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldDef;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-/**
- * IMPORTANT: {@link #onAllDone()} returns a {@link Book} while it SHOULD
- * really just return an {@link EditBookOutput} object to be compatible
- * with this class extending {@link SearchCoordinator} where
- * related MutableLiveData methods return a Book.
- */
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
 
@@ -558,16 +552,9 @@ public class SearchBookUpdatesViewModel
      * <p>
      * Callers:
      * <ul>
-     * <li>when we're all done; success==true</li>
-     * <li>when we've not started a search (for whatever reason)</li>
-     * <li>when we're cancelled</li>
-     * </ul>
-     * <p>
-     * Result message contains:
-     * <ul>
-     * <li>{@link EditBookOutput#BKEY_LAST_BOOK_ID_PROCESSED} for later resuming</li>
-     * <li>{@link DBKey#FK_BOOK}: the first book in the list / the only book;
-     *      not set if we did 'all' books</li>
+     *  <li>when we're all done; success==true</li>
+     *  <li>when we've not started a search (for whatever reason)</li>
+     *  <li>when we're cancelled</li>
      * </ul>
      *
      * @param success {@code true} if the search was successful
@@ -585,23 +572,19 @@ public class SearchBookUpdatesViewModel
         // the last book id which was handled; can be used to restart the update.
         lastBookIdProcessed = currentBookId;
 
-        // See class docs above as to why this is not an EditBookOutput object!
-        final Book data = new Book();
+        // bookIdList==null: all books
+        // || a list of books (i.e. 1 or more books)
+        //FIXME: we should only return true if we actually modified a book
+        final boolean modified = bookIdList == null || !bookIdList.isEmpty();
 
-        data.putLong(EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
+        // if applicable, pass the id of the first book for repositioning the list on screen
+        final long repositionToBookId = bookIdList != null && !bookIdList.isEmpty()
+                                        ? bookIdList.get(0) : 0;
 
-        // all books || a list of books (i.e. 1 or more books)
-        if (bookIdList == null || !bookIdList.isEmpty()) {
-            //FIXME: we should only return this if we actually modified a book
-            data.putBoolean(EditBookOutput.BKEY_MODIFIED, true);
-        }
-
-        // if applicable, pass the first book for repositioning the list on screen
-        if (bookIdList != null && !bookIdList.isEmpty()) {
-            data.putLong(DBKey.FK_BOOK, bookIdList.get(0));
-        }
-
-        final BookSearchResult result = BookSearchResult.metaResult(data);
+        final EditBookOutput editBookOutput = new EditBookOutput(modified,
+                                                                 repositionToBookId,
+                                                                 lastBookIdProcessed);
+        final BookSearchResult result = new BookSearchResult(editBookOutput);
         if (success) {
             listFinished.setValue(LiveDataEvent.of(result));
         } else {

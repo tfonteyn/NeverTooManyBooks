@@ -31,9 +31,8 @@ public final class EditBookOutput {
 
     private static final String TAG = "EditBookOutput";
 
-    public static final String BKEY_MODIFIED = TAG + ":m";
-
-    public static final String BKEY_LAST_BOOK_ID_PROCESSED = TAG + ":lastId";
+    private static final String BKEY_MODIFIED = TAG + ":m";
+    private static final String BKEY_LAST_BOOK_ID_PROCESSED = TAG + ":lastId";
 
     /** The BoB should reposition on this book. Can be {@code 0}. */
     private long repositionToBookId;

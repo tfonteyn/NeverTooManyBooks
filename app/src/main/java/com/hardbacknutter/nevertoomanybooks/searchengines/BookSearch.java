@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -43,11 +42,9 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -162,7 +159,7 @@ class BookSearch {
     }
 
     /**
-     * Collect all data.
+     * Collect all data. This is called when all individual site searches have finished.
      *
      * @param context         Current context
      * @param engineLocaleMap engine Locale's
@@ -176,9 +173,8 @@ class BookSearch {
         final long processTime = System.nanoTime();
 
         final Book book = accumulateResults(context, engineLocaleMap);
-        final List<String> errors = accumulateErrors(context);
-        final BookSearchResult result =
-                BookSearchResult.newResult(id, book, criteria.getScanMode(), errors);
+        final BookSearchResult result = new BookSearchResult(id, book, criteria.getScanMode(),
+                                                             errorsByEngineId);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             debugDumpTimers(processTime);
@@ -331,39 +327,6 @@ class BookSearch {
         // finally add the less reliable ones at the end of the list.
         sitesInOrder.addAll(sitesWithoutIsbn);
         return sitesInOrder;
-    }
-
-    /**
-     * Called when all is said and done. Collects all individual website errors (if any).
-     *
-     * @param context Current context
-     *
-     * @return list; can be empty
-     */
-    @NonNull
-    private List<String> accumulateErrors(@NonNull final Context context) {
-        // no synchronisation needed, at this point all other threads have finished.
-        if (!errorsByEngineId.isEmpty()) {
-            final List<String> errors = errorsByEngineId
-                    .values()
-                    .stream()
-                    .map(exception -> ExMsg
-                            .map(context, exception)
-                            .orElseGet(() -> {
-                                // generic network related IOException message
-                                if (exception instanceof IOException) {
-                                    return context.getString(
-                                            R.string.error_search_failed_network);
-                                }
-                                // generic unknown message
-                                return context.getString(R.string.error_unexpected);
-                            }))
-                    .collect(Collectors.toList());
-
-            errorsByEngineId.clear();
-            return errors;
-        }
-        return List.of();
     }
 
     @NonNull

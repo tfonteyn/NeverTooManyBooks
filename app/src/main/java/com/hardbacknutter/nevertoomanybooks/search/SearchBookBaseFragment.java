@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -250,13 +251,13 @@ public abstract class SearchBookBaseFragment
 
     private boolean checkSearchResultWithUserInteraction(@NonNull final BookSearchResult result,
                                                          @NonNull final Runnable proceed) {
-
-        final boolean hasData = !result.getBook().isEmpty();
-
-        final List<String> errorMessages = result.getErrors();
-        if (!errorMessages.isEmpty()) {
+        // FIRST check for errors
+        if (result.hasErrors()) {
+            final Context context = getContext();
+            final boolean hasData = result.hasBook();
             //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
+            final List<String> errorMessages = result.getErrors(context);
+            new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.warning_24px)
                     .setTitle(hasData ? R.string.warning_book_not_always_found
                                       : R.string.warning_book_not_found)
@@ -272,12 +273,15 @@ public abstract class SearchBookBaseFragment
             return false;
         }
 
-        if (!hasData) {
+        // No errors, but the book might not contain data
+        if (!result.hasBook()) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
             return false;
         }
+
+        // no errors, and the book is valid
         return true;
     }
 
