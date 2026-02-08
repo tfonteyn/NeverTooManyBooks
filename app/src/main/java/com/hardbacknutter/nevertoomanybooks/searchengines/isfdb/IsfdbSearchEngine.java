@@ -1496,7 +1496,7 @@ public class IsfdbSearchEngine
 
         final Element restricted = document.selectFirst(RESTRICTED_TO_REGISTERED_USERS);
         if (restricted != null) {
-            throw new SearchException(EngineId.Isfdb, null,
+            throw new SearchException(EngineId.Isfdb, "user must be registered; auth failed",
                                       context.getString(R.string.error_site_authentication_failed,
                                                         context.getString(R.string.site_isfdb)));
         }

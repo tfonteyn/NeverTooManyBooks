@@ -57,12 +57,12 @@ public class SearchException
      * Constructor.
      *
      * @param engineId         the SearchEngine which threw the exception
-     * @param logMessage       (optional) a message intended to be logged and NOT shown to the user
+     * @param logMessage       a message intended to be logged and NOT shown to the user
      * @param localizedMessage (optional) a <strong>localised</strong> message which
      *                         <strong>will</strong> be shown to the user
      */
     public SearchException(@NonNull final EngineId engineId,
-                           @Nullable final String logMessage,
+                           @NonNull final String logMessage,
                            @Nullable final String localizedMessage) {
         super(logMessage);
         this.engineId = engineId;

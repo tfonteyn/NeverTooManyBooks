@@ -238,7 +238,7 @@ public class BedethequeSearchEngine
             }
         }
         if (sessionCookie == null || sessionCookie.getValue().isEmpty()) {
-            throw new SearchException(getEngineId(), null,
+            throw new SearchException(getEngineId(), "no sessionCookie",
                                       context.getString(R.string.httpError));
         }
 
