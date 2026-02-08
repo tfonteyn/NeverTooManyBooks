@@ -1226,32 +1226,35 @@ public class SearchBookByIsbnFragment
         }
         dvb.errorMessage.setVisibility(hasMessage ? View.VISIBLE : View.GONE);
 
-        // Discard and Cancel buttons.
-        builder.setNeutralButton(R.string.action_discard, (d, w) -> {
-                   d.dismiss();
-                   removeFromQueue(chip);
-               })
-               .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss());
-
-        // Clicked while searching, offer "discard" and "cancel"
+        // Clicked while searching, offer "discard" and "continue(==cancel)"
         if (item.isSearching()) {
             dvb.edit.setVisibility(View.GONE);
 
-            builder.create()
+            builder.setTitle(R.string.progress_msg_searching)
+                   .setNeutralButton(R.string.action_discard, (d, w) -> {
+                       d.dismiss();
+                       removeFromQueue(chip);
+                   })
+                   .setNegativeButton(R.string.confirm_continue, (d, w) -> d.dismiss())
+                   .create()
                    .show();
             return;
         }
 
         // All choices: "edit", "save", "discard", "cancel".
         if (result != null) {
-            builder.setPositiveButton(R.string.action_save,
-                                      (dialog, w) -> {
-                                          dialog.dismiss();
-                                          removeFromQueue(chip);
-                                          onSearchResultsSaveBook(result);
-                                      });
-
-            final AlertDialog dialog = builder.create();
+            final AlertDialog dialog = builder
+                    .setNeutralButton(R.string.action_discard, (d, w) -> {
+                        d.dismiss();
+                        removeFromQueue(chip);
+                    })
+                    .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.action_save, (d, w) -> {
+                        d.dismiss();
+                        removeFromQueue(chip);
+                        onSearchResultsSaveBook(result);
+                    })
+                    .create();
 
             dvb.edit.setVisibility(View.VISIBLE);
             dvb.edit.setOnClickListener(v -> {
