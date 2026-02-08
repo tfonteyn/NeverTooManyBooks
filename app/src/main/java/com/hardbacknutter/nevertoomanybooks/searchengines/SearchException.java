@@ -19,15 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class SearchException
         extends Exception {
@@ -69,24 +62,15 @@ public class SearchException
         this.localizedMessage = localizedMessage;
     }
 
-    /**
-     * Get (and create if needed) the localised message to show to the user.
-     *
-     * @param context Current context
-     *
-     * @return message
-     */
     @NonNull
-    public String getUserMessage(@NonNull final Context context) {
-        // if a custom message was added, use that.
-        final String message = Objects.requireNonNullElseGet(
-                localizedMessage,
-                () -> ExMsg.map(context, getCause())
-                           .orElseGet(() -> context.getString(R.string.error_unexpected)));
+    public EngineId getEngineId() {
+        return engineId;
+    }
 
-        return context.getString(R.string.error_search_x_failed_y,
-                                 engineId.getName(context), message);
-
+    @Nullable
+    @Override
+    public String getLocalizedMessage() {
+        return localizedMessage;
     }
 
     @Override

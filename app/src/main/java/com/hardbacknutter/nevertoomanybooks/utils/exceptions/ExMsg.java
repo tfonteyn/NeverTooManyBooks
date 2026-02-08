@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+@SuppressWarnings("ChainOfInstanceofChecks")
 public final class ExMsg {
 
     private ExMsg() {
@@ -94,14 +95,28 @@ public final class ExMsg {
             return getMsg(context, (IOException) e);
 
         } else if (e instanceof SearchException) {
-            return ((SearchException) e).getUserMessage(context);
+            final String engineName = ((SearchException) e).getEngineId().getName(context);
+
+            // if a custom message was added, use that.
+            final String localizedMessage = e.getLocalizedMessage();
+            if (localizedMessage != null) {
+                return context.getString(R.string.error_search_x_failed_y,
+                                         engineName, localizedMessage);
+            }
+
+            // otherwise, map the underlying cause
+            final String message = map(context, e.getCause())
+                    .orElseGet(() -> getUnexpectedErrorMessage(context));
+
+            return context.getString(R.string.error_search_x_failed_y,
+                                     engineName, message);
 
         } else if (e instanceof ValidatorException) {
-            // The ValidatorException expects a localised message, so just use it
+            // The ValidatorException always provides a localised message.
             return e.getLocalizedMessage();
 
         } else if (e instanceof UpgradeFailedException) {
-            // The UpgradeFailedException expects a localised message, so just use it
+            // The ValidatorException always provides a localised message.
             return e.getLocalizedMessage();
 
         } else if (e instanceof CoverStorageException) {
@@ -182,13 +197,15 @@ public final class ExMsg {
                                  @NonNull final IOException e) {
         if (e instanceof NetworkUnavailableException) {
             return context.getString(R.string.error_network_please_connect);
+
         } else if (e instanceof NetworkException) {
             return context.getString(R.string.error_network_failed_try_again);
+
         } else if (e instanceof HttpNotFoundException) {
             final HttpNotFoundException he = (HttpNotFoundException) e;
-            final String msg = he.getLocalizedMessage();
-            if (msg != null) {
-                return msg;
+            final String localizedMessage = he.getLocalizedMessage();
+            if (localizedMessage != null) {
+                return localizedMessage;
             }
             if (he.getSiteResId() != 0) {
                 return context.getString(R.string.error_network_site_access_failed,
