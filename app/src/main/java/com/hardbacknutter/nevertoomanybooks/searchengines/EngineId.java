@@ -341,7 +341,7 @@ public enum EngineId
                     type.addSite(KbNl, false);
                 }
                 if (!isFrench) {
-                    type.addSite(Bnf, true);
+                    type.addSite(Bnf, false);
                 }
                 break;
             }
