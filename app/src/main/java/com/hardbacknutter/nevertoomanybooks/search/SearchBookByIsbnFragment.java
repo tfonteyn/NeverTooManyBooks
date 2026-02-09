@@ -88,7 +88,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -1074,18 +1073,10 @@ public class SearchBookByIsbnFragment
     }
 
     private void onSearchResultsSaveBook(@NonNull final Book book) {
-        // DATE_ACQUIRED is always used
-        book.ensureDateAcquired();
-        // if BOOK_CONDITION is wanted, assume the user got a new book.
-        book.ensureCondition();
-
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         final Context context = getContext();
         try {
             //noinspection DataFlowIssue
-            final long id = bookDao.insert(context, book);
-            book.setStage(EntityStage.Stage.Clean);
-            vm.onBookEditingDone(new EditBookOutput(true, id, 0));
+            vm.onSaveBook(context, book);
         } catch (@NonNull final StorageException | DaoWriteException e) {
             // Should never get here unless disk-full.
             // If we do... the book result is discarded.

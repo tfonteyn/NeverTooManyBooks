@@ -41,9 +41,13 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
@@ -129,6 +133,19 @@ public class SearchBookByIsbnViewModel
 
             cameraConfig = new CameraConfig(context);
         }
+    }
+
+    void onSaveBook(@NonNull final Context context,
+                    @NonNull final Book book)
+            throws DaoWriteException, StorageException {
+        // DATE_ACQUIRED is always used
+        book.ensureDateAcquired();
+        // if BOOK_CONDITION is wanted, assume the user got a new book.
+        book.ensureCondition();
+
+        final long id = bookDao.insert(context, book);
+        book.setStage(EntityStage.Stage.Clean);
+        onBookEditingDone(new EditBookOutput(true, id, 0));
     }
 
     /**
