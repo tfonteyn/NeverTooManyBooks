@@ -1033,7 +1033,7 @@ public class SearchBookByIsbnFragment
 
     private void onSearchResultsSaveBook(@NonNull final BookSearchResult result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "onSearchResults",
+            LoggerFactory.getLogger().d(TAG, "onSearchResultsSaveBook",
                                         vm.getScannerMode(),
                                         "queue=" + vb.queue.getChildCount(),
                                         result);
