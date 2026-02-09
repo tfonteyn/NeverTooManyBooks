@@ -1125,20 +1125,16 @@ public class SearchBookByIsbnFragment
 
         while (list.hasNext()) {
             final IsbnQueue.Item item = list.next();
-            final ISBN code = item.getIsbn();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "onQueueUpdated",
-                                            "code=" + code,
-                                            "searchId=" + item.getSearchId(),
-                                            "result=" + (item.getResult() != null));
+                LoggerFactory.getLogger().d(TAG, "onQueueUpdated", "item=" + item);
             }
 
             final Chip chip = new Chip(getContext(), null, R.attr.appChipInputStyle);
             // RTL-friendly Chip Layout
             chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
             chip.setTag(item);
-            chip.setText(code.asText());
+            chip.setText(item.getIsbn().asText());
             chip.setCheckable(false);
             chip.setOnCloseIconClickListener(this::removeFromQueue);
             chip.setOnClickListener(this::onQueueItemClicked);
