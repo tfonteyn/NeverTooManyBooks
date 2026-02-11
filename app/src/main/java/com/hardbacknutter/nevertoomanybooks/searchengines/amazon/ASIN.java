@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
@@ -41,7 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
  * @see <a href="https://inventlikeanowner.com/blog/the-story-behind-asins-amazon-standard-identification-numbers/">
  *         the-story-behind-asins</a>
  */
-public final class ASIN {
+public final class ASIN
+        implements Code {
 
     /** ASIN codes are always 10 characters. */
     private static final int ASIN_LEN = 10;
@@ -55,10 +57,12 @@ public final class ASIN {
         valid = isValid(this.code);
     }
 
+    @Override
     public boolean isValid() {
         return valid;
     }
 
+    @Override
     public String asText() {
         return code;
     }

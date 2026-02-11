@@ -88,7 +88,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <br>The prefix 977 indicates International Standard Serial Number (ISSN).
  */
 @SuppressWarnings("MagicNumber")
-public class ISBN {
+public class ISBN
+        implements Code {
 
     /** Log tag. */
     private static final String TAG = "ISBN";
@@ -319,6 +320,7 @@ public class ISBN {
      *
      * @return validity
      */
+    @Override
     public boolean isValid() {
         return isValid(strictIsbn);
     }
@@ -377,6 +379,7 @@ public class ISBN {
      * @return string
      */
     @NonNull
+    @Override
     public String asText() {
         return codeText;
     }

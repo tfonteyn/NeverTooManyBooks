@@ -37,7 +37,8 @@ import java.util.regex.Pattern;
  * @see <a href="https://en.wikipedia.org/wiki/International_Standard_Name_Identifier">
  *         Wikipedia</a>
  */
-public class ISNI {
+public class ISNI
+        implements Code {
 
     public static final String SITE_URL = "https://isni.org/";
     /** Leading {@code 0}'s <strong>MUST</strong> be present. */
@@ -104,6 +105,7 @@ public class ISNI {
      *
      * @return string
      */
+    @Override
     @NonNull
     public String asText() {
         return isni;
@@ -114,6 +116,7 @@ public class ISNI {
      *
      * @return validity
      */
+    @Override
     public boolean isValid() {
         return valid;
     }
