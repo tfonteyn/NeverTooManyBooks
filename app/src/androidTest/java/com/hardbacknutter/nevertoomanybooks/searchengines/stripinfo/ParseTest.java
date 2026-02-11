@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -622,10 +622,11 @@ public class ParseTest
     @Test
     public void asEnGoud() {
         final ISBN barcode = new ISBN("9789069692739", true);
-        assertTrue(barcode.isValid(true));
+        assertTrue(barcode.isValid());
 
         final ISBN isbn = new ISBN("9069692736", true);
-        assertFalse(isbn.isValid(true));
+        assertFalse(isbn.isValid());
+        // Double check
         assertFalse(isbn.isValid(false));
         assertTrue(isbn.isType(ISBN.Type.Invalid));
 

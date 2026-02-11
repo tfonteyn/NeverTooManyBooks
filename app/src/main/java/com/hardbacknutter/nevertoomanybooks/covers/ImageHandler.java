@@ -417,7 +417,7 @@ public final class ImageHandler {
         final String isbnStr = coverBrowserIsbnSupplier.get();
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = new ISBN(isbnStr, true);
-            if (isbn.isValid(true)) {
+            if (isbn.isValid()) {
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),
                                             coverBrowserTitleSupplier.get(),

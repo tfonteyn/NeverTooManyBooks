@@ -174,6 +174,7 @@ public class ISBN {
     /** Kept for faster conversion between formats. {@code null} for invalid codes. */
     @Nullable
     private final List<Integer> codeDigits;
+    private final boolean strictIsbn;
 
     /**
      * Constructor.
@@ -218,6 +219,7 @@ public class ISBN {
      */
     public ISBN(@Nullable final String text,
                 final boolean strictIsbn) {
+        this.strictIsbn = strictIsbn;
 
         List<Integer> digits = null;
         Type type = Type.Invalid;
@@ -304,7 +306,7 @@ public class ISBN {
      */
     public static void requireValidIsbn(@Nullable final String text) {
         if (text == null || text.isEmpty()
-            || !new ISBN(text, true).isValid(true)) {
+            || !new ISBN(text, true).isValid()) {
 
             throw new IllegalArgumentException("isbn must be valid");
         }
@@ -312,6 +314,19 @@ public class ISBN {
 
     /**
      * Check if we have a valid code. Does not check for a specific type.
+     * <p>
+     * Uses the {@code strictIsbn} flag as set in the constructor.
+     *
+     * @return validity
+     */
+    public boolean isValid() {
+        return isValid(strictIsbn);
+    }
+
+    /**
+     * Check if we have a valid code. Does not check for a specific type.
+     * <p>
+     * Allows overriding the {@code strictIsbn} flag as set in the constructor.
      *
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      *                   {@code false} to allow other codes which
@@ -1105,7 +1120,7 @@ public class ISBN {
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
                         return;
-                    } else if (isbn.isValid(strictIsbn)) {
+                    } else if (isbn.isValid()) {
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(null);
                         return;
@@ -1114,7 +1129,7 @@ public class ISBN {
                 } else if (length == 10 || length == 9) {
                     // ISBN-10 or Legacy SBN
                     final ISBN isbn = new ISBN(str, strictIsbn);
-                    if (isbn.isValid(strictIsbn)) {
+                    if (isbn.isValid()) {
                         altIsbn = isbn.asText(Type.Isbn13);
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));

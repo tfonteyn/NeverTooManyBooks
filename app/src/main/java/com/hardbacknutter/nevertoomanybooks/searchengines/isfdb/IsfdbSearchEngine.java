@@ -1452,7 +1452,7 @@ public class IsfdbSearchEngine
                             final String catNr = tr.child(4).text();
                             if (catNr.length() > 9) {
                                 final ISBN isbn = new ISBN(catNr, true);
-                                if (isbn.isValid(true)) {
+                                if (isbn.isValid()) {
                                     isbnStr = isbn.asText();
                                 }
                             }

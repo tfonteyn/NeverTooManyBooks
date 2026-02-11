@@ -492,7 +492,7 @@ public class EditBookTocFragment
         final String isbnStr = book.getIsbn();
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = new ISBN(isbnStr, true);
-            if (isbn.isValid(true)) {
+            if (isbn.isValid()) {
                 Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
                 isfdbTocSearchVm.searchByIsbn(isbn);

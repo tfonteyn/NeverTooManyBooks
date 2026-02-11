@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,12 +79,12 @@ class ISBNPairsTest {
 
         // If either one is invalid, we consider them different
         final ISBN o1 = new ISBN(isbnStr1, true);
-        if (!o1.isValid(true)) {
+        if (!o1.isValid()) {
             return false;
         }
 
         final ISBN o2 = new ISBN(isbnStr2, true);
-        if (!o2.isValid(true)) {
+        if (!o2.isValid()) {
             return false;
         }
 
@@ -97,8 +97,8 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertTrue(isbn0.isValid(true));
-            assertTrue(isbn1.isValid(true));
+            assertTrue(isbn0.isValid());
+            assertTrue(isbn1.isValid());
         }
     }
 
@@ -108,8 +108,8 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertFalse(isbn0.isValid(true));
-            assertFalse(isbn1.isValid(true));
+            assertFalse(isbn0.isValid());
+            assertFalse(isbn1.isValid());
         }
     }
 

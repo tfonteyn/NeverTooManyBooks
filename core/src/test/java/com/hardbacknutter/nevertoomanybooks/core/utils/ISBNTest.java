@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -142,7 +142,7 @@ class ISBNTest {
     @MethodSource("validIsbn13")
     void validIsbn13(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, true);
-        assertTrue(isbn.isValid(true));
+        assertTrue(isbn.isValid());
         assertTrue(isbn.isType(ISBN.Type.Isbn13));
     }
 
@@ -150,14 +150,14 @@ class ISBNTest {
     @MethodSource("invalidIsbn13")
     void invalidIsbn13(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, true);
-        assertFalse(isbn.isValid(true));
+        assertFalse(isbn.isValid());
     }
 
     @ParameterizedTest
     @MethodSource("validSbn")
     void validSbn(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, true);
-        assertTrue(isbn.isValid(true));
+        assertTrue(isbn.isValid());
         assertTrue(isbn.isType(ISBN.Type.Isbn10));
     }
 
@@ -167,7 +167,7 @@ class ISBNTest {
                       @NonNull final String expected) {
         final ISBN isbn = new ISBN(upcStr, false);
         assertTrue(isbn.isType(ISBN.Type.Isbn10));
-        assertTrue(isbn.isValid(false));
+        assertTrue(isbn.isValid());
         assertEquals(expected, isbn.asText());
     }
 
@@ -178,7 +178,7 @@ class ISBNTest {
                    @NonNull final String expected) {
         final ISBN upc = new ISBN(upcStr, false);
         assertTrue(upc.isType(ISBN.Type.UpcA));
-        assertTrue(upc.isValid(false));
+        assertTrue(upc.isValid());
         assertEquals(expected, upc.asText());
     }
 
@@ -188,7 +188,7 @@ class ISBNTest {
                      @NonNull final String expected) {
         final ISBN ean = new ISBN(eanStr, false);
         assertTrue(ean.isType(ISBN.Type.Ean13));
-        assertTrue(ean.isValid(false));
+        assertTrue(ean.isValid());
         assertEquals(expected, ean.asText());
     }
 
@@ -198,7 +198,7 @@ class ISBNTest {
     void valid_issn8(@NonNull final String issnStr,
                      @NonNull final String expected) {
         final ISBN issn = new ISBN(issnStr, false);
-        assertTrue(issn.isValid(false));
+        assertTrue(issn.isValid());
         assertTrue(issn.isType(ISBN.Type.Issn8));
         assertEquals(expected, issn.asText(ISBN.Type.Issn8));
     }
@@ -208,7 +208,7 @@ class ISBNTest {
     void valid_issn13(@NonNull final String issnStr,
                       @NonNull final String expected) {
         final ISBN issn = new ISBN(issnStr, false);
-        assertTrue(issn.isValid(false));
+        assertTrue(issn.isValid());
         assertTrue(issn.isType(ISBN.Type.Issn13));
         assertEquals(expected, issn.asText(ISBN.Type.Issn13));
     }
@@ -218,7 +218,7 @@ class ISBNTest {
     void valid_issn138(@NonNull final String issnStr,
                        @NonNull final String expected) {
         final ISBN issn = new ISBN(issnStr, false);
-        assertTrue(issn.isValid(false));
+        assertTrue(issn.isValid());
         assertTrue(issn.isType(ISBN.Type.Issn13));
         assertEquals(expected, issn.asText(ISBN.Type.Issn8));
     }

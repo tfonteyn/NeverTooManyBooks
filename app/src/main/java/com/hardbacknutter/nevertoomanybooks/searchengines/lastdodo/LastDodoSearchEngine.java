@@ -307,11 +307,13 @@ public class LastDodoSearchEngine
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
         if (code != null && !code.isEmpty()) {
-            final ISBN isbn = new ISBN(code, false);
-            if (isbn.isValid(true)) {
-                // Searching on the ISBN REQUIRES the dashes between the digits.
+            // Check the code to be a valid ISBN, but...
+            if (new ISBN(code, true).isValid()) {
+                // searching on the ISBN REQUIRES the dashes between the digits.
+                // Hence, use the code specially formatted, and not the isbn.asText().
                 words.add(formatIsbn(code));
             } else {
+                // Generic code
                 words.add(code);
             }
         }

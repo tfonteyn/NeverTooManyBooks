@@ -667,7 +667,7 @@ public class StripInfoSearchEngine
         if (barcode != null && !barcode.isEmpty()) {
             final ISBN isbnFromBarcode = new ISBN(barcode, true);
             // We found a valid barcode
-            if (isbnFromBarcode.isValid(true)
+            if (isbnFromBarcode.isValid()
                 // or, it was invalid, but it *IS* the one we were searching for
                 || isbnFromBarcode.asText().equals(searchIsbnText)) {
 

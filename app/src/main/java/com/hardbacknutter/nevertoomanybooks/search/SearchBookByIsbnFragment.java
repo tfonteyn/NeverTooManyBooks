@@ -544,7 +544,7 @@ public class SearchBookByIsbnFragment
 
             final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
             final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
-            if (!code.isValid(strictIsbn)) {
+            if (!code.isValid()) {
                 vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
                                               code.asText()));
                 return;
@@ -939,15 +939,15 @@ public class SearchBookByIsbnFragment
      */
     private void onBarcodeScanned(@NonNull final String barCode) {
         final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
+
         final ISBN code = new ISBN(barCode, strictIsbn);
-
-        final Context context = requireContext();
-
-        if (code.isValid(strictIsbn)) {
+        if (code.isValid()) {
             if (strictIsbn) {
-                SoundManager.beepOnValidIsbn(context);
+                //noinspection DataFlowIssue
+                SoundManager.beepOnValidIsbn(getContext());
             } else {
-                SoundManager.beepOnBarcodeFound(context);
+                //noinspection DataFlowIssue
+                SoundManager.beepOnBarcodeFound(getContext());
             }
 
             switch (vm.getScannerMode()) {
@@ -971,7 +971,8 @@ public class SearchBookByIsbnFragment
                 }
             }
         } else {
-            SoundManager.beepOnInvalidIsbn(context);
+            //noinspection DataFlowIssue
+            SoundManager.beepOnInvalidIsbn(getContext());
 
             if (vm.getScannerMode() == ScanMode.Batch) {
                 // invalid code but we're in batch mode.

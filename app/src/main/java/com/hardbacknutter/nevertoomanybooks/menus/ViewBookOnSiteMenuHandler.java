@@ -76,7 +76,7 @@ public class ViewBookOnSiteMenuHandler
 
         // If the ISBN is an ISBN-10, then it *is* an ASIN
         final ISBN isbn = new ISBN(isbnStr, true);
-        if (isbn.isValid(true) && isbn.isIsbn10Compat()) {
+        if (isbn.isValid() && isbn.isIsbn10Compat()) {
             ivs.add(new Identifier.Value(Identifier.SID_ASIN,
                                          isbn.asText(ISBN.Type.Isbn10)));
         }

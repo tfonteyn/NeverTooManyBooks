@@ -77,7 +77,7 @@ public final class ASIN {
         }
 
         // Historically, a Book ASIN is just an ISBN-10.
-        if (new ISBN(asin, true).isValid(true)) {
+        if (new ISBN(asin, true).isValid()) {
             return true;
         }
 

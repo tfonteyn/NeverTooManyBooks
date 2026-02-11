@@ -139,7 +139,7 @@ class IsbnQueue {
                 .filter(s -> !s.isBlank())
                 // valid codes only
                 .map(s -> new ISBN(s, strictIsbn))
-                .filter(isbn -> isbn.isValid(strictIsbn))
+                .filter(ISBN::isValid)
                 .map(Item::new)
                 .collect(Collectors.toList());
     }
