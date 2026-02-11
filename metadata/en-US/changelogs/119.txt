@@ -1,4 +1,5 @@
 NEW:
+- added support for amazon books which have an ASIN, but no ISBN
 - #227: UI options to pin/hide the menu header when scrolling (Setting/User-interface)
 - #229: Improved handling/retrying of sites which time-out during a search.
 
