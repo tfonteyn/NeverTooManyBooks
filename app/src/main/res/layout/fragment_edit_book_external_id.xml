@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:constraint_referenced_ids="lbl_site_bedetheque,lbl_site_bibliotece_pl,lbl_site_bnf_fr,lbl_site_databaze_knih,lbl_site_dnb_de,lbl_site_goodreads,lbl_site_isfdb,lbl_site_kb_nl,lbl_site_last_dodo_nl,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be"
+            app:constraint_referenced_ids="lbl_site_amazon,lbl_site_bedetheque,lbl_site_bibliotece_pl,lbl_site_bnf_fr,lbl_site_databaze_knih,lbl_site_dnb_de,lbl_site_goodreads,lbl_site_isfdb,lbl_site_kb_nl,lbl_site_last_dodo_nl,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0.5"
             app:flow_horizontalGap="2dp"
@@ -67,6 +67,23 @@
 
             Keep them alphabetic.
         -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_amazon"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_amazon"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_amazon"
+                style="@style/TIE.ExternalId.Text"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="B0CB95LXNN"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_bedetheque"

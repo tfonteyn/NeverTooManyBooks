@@ -1390,6 +1390,11 @@ public class EditBookViewModel
         final FieldFormatter<String> sidLongFormatter =
                 (context, value) -> value != null && !"0".equals(value) ? value : "";
 
+        fields.add(new IdentifierField<>(fragmentId, R.id.site_amazon,
+                                         Identifier.SID_ASIN)
+                           .setTextInputLayoutId(R.id.lbl_site_amazon)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
         fields.add(new IdentifierField<>(fragmentId, R.id.site_bedetheque,
                                          Identifier.SID_BEDETHEQUE,
                                          sidLongFormatter, true)

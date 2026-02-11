@@ -64,6 +64,7 @@ public class SearchBookByExternalIdFragment
      *  points to the (for now) beta website we use to find and parse
      */
     private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.ofEntries(
+            Map.entry(R.id.site_amazon, EngineId.Amazon),
             Map.entry(R.id.site_bedetheque, EngineId.Bedetheque),
             Map.entry(R.id.site_bibliotece_pl, EngineId.BibliotecePl),
             Map.entry(R.id.site_bnf_fr, EngineId.Bnf),

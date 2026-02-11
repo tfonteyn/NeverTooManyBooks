@@ -110,6 +110,7 @@ import org.jsoup.nodes.Element;
 public class AmazonSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByBarcode,
+                   SearchEngine.ByExternalId,
                    SearchEngine.CoverByEdition,
                    SearchEngine.SearchOnSite {
 
@@ -250,11 +251,14 @@ public class AmazonSearchEngine
             "collection"
     );
 
+    private static final List<String> LABEL_ASIN = List.of(
+            "asin"
+    );
+
     // These labels are ignored, but listed as an indication we know them.
     private static final String LABEL_IGNORED =
-            "asin"
             // English
-            + ",product dimensions"
+            "product dimensions"
             + ",shipping weight"
             + ",customer reviews"
             + ",average customer review"
@@ -399,6 +403,15 @@ public class AmazonSearchEngine
 
         final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin);
         return genericSearch(context, url, fetchCovers);
+    }
+
+    @NonNull
+    @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        return searchByBarcode(context, externalId, fetchCovers);
     }
 
     /**
@@ -647,7 +660,17 @@ public class AmazonSearchEngine
                     final String label = cleanText(text[0]);
                     final String lcLabel = label.toLowerCase(siteLocale);
 
-                    if (LABEL_ISBN_13.equals(lcLabel)) {
+                    if (LABEL_ASIN.contains(lcLabel)) {
+                        // contains BiDi chars!
+                        final String asinStr = cleanText(text[1]);
+                        book.setIdentifierValue(Identifier.SID_ASIN, asinStr);
+
+                        if (!book.hasIsbn()) {
+                            // Set as ISBN if we don't have on yet.
+                            // If the book has a real ISBN-13 it will overwrite this.
+                            book.setIsbn(asinStr);
+                        }
+                    } else if (LABEL_ISBN_13.equals(lcLabel)) {
                         book.setIsbn(ISBN.cleanText(text[1]));
 
                     } else if (LABEL_ISBN_10.equals(lcLabel) && !book.hasIsbn()) {
