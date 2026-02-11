@@ -436,7 +436,7 @@ class KbNlBookHandler
                         if (s.startsWith("ISNI")) {
                             final ISNI isni = new ISNI(s.substring(4));
                             if (isni.isValid()) {
-                                author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
+                                author.setIdentifierValue(Identifier.SID_ISNI, isni.asText());
                             }
                         } else {
                             final Matcher bddMatcher = BIRTH_DEATH_DATES.matcher(s);

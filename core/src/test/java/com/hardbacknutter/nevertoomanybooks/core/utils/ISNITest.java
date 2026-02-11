@@ -32,14 +32,14 @@ class ISNITest {
     void simple() {
         final ISNI i1 = new ISNI("0000 0001 2146 438X");
         assertTrue(i1.isValid());
-        assertEquals("000000012146438X", i1.getIsni());
+        assertEquals("000000012146438X", i1.asText());
     }
 
     @Test
     void simple2() {
         final ISNI i1 = new ISNI("1 2146 438X");
         assertTrue(i1.isValid());
-        assertEquals("000000012146438X", i1.getIsni());
+        assertEquals("000000012146438X", i1.asText());
     }
 
     @Test
@@ -47,6 +47,6 @@ class ISNITest {
         final ISNI i1 = new ISNI("2 2146 438X");
         assertFalse(i1.isValid());
         // The original string (stripped)
-        assertEquals("22146438X", i1.getIsni());
+        assertEquals("22146438X", i1.asText());
     }
 }

@@ -340,7 +340,7 @@ public class AuthorParser {
                     if (!s.isEmpty()) {
                         final ISNI isni = new ISNI(s);
                         if (isni.isValid()) {
-                            author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
+                            author.setIdentifierValue(Identifier.SID_ISNI, isni.asText());
                         }
                     }
                 } else if (AUTHOR_SIDS.contains(key)) {

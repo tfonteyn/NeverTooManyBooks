@@ -761,7 +761,7 @@ public class BnfSearchEngine
             if (isniStr != null && isniStr.startsWith("ISNI")) {
                 final ISNI isni = new ISNI(isniStr.substring(4));
                 if (isni.isValid()) {
-                    author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
+                    author.setIdentifierValue(Identifier.SID_ISNI, isni.asText());
                 }
             }
             final String code = fields.get('4');

@@ -105,7 +105,7 @@ public class ISNI {
      * @return string
      */
     @NonNull
-    public String getIsni() {
+    public String asText() {
         return isni;
     }
 
