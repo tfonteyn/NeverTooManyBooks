@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 /**
  * ASIN stands for Amazon Standard Identification Number.
@@ -44,8 +45,22 @@ public final class ASIN {
 
     /** ASIN codes are always 10 characters. */
     private static final int ASIN_LEN = 10;
+    /** The first 10 characters are numeric; this fact is used during validity checks. */
+    private static final String VALID_CHARS = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private final String code;
+    private final boolean valid;
 
-    private ASIN() {
+    public ASIN(@NonNull final String code) {
+        this.code = SearchEngineUtils.cleanText(code).toUpperCase(Locale.ENGLISH);
+        valid = isValid(this.code);
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public String asText() {
+        return code;
     }
 
     /**
@@ -55,21 +70,24 @@ public final class ASIN {
      *
      * @return validity
      */
-    static boolean isValidAsin(@NonNull final String asin) {
+    static boolean isValid(@NonNull final String asin) {
 
         if (asin.length() != ASIN_LEN) {
             return false;
         }
 
-        // A Book ASIN is basically an ISBN-10.
+        // Historically, a Book ASIN is just an ISBN-10.
         if (new ISBN(asin, true).isValid(true)) {
             return true;
         }
 
+        // But these days, it can also be a Kindle book, self-published without ISBN,...
+        // In this case, it will/must have at least one letter (A-Z).
+        // Typically it will start with a 'B' but no need to be that strict.
         boolean foundAlpha = false;
-        final String ucAsin = asin.strip().toLowerCase(Locale.ENGLISH);
+        final String ucAsin = asin.strip().toUpperCase(Locale.ENGLISH);
         for (int i = 0; i < ucAsin.length(); i++) {
-            final int pos = "1234567890abcdefghijklmnopqrstuvwxyz".indexOf(ucAsin.charAt(i));
+            final int pos = VALID_CHARS.indexOf(ucAsin.charAt(i));
             // Make sure it's a valid char
             if (pos == -1) {
                 return false;

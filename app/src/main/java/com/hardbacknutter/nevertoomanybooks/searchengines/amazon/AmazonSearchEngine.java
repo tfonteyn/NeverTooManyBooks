@@ -347,9 +347,9 @@ public class AmazonSearchEngine
                                     R.string.site_amazon,
                                     List.of(R.string.site_description_various_languages,
                                             R.string.site_description_shop),
-                                    // amazon.com, amazon.ca : blocked by captcha
+                // amazon.com, amazon.ca : blocked by captcha
                                     "https://www.amazon.co.uk",
-                                    // The Locale will be dynamically set depending on the country
+                // The Locale will be dynamically set depending on the country
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_ASIN)
                 .setPreferenceFragmentClazz(AmazonPreferencesFragment.class);
@@ -405,15 +405,6 @@ public class AmazonSearchEngine
         return genericSearch(context, url, fetchCovers);
     }
 
-    @NonNull
-    @Override
-    public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-        return searchByBarcode(context, externalId, fetchCovers);
-    }
-
     /**
      * Search by ASIN.
      * <p>
@@ -421,20 +412,26 @@ public class AmazonSearchEngine
      */
     @NonNull
     @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        final ASIN asin = new ASIN(externalId);
+        if (asin.isValid()) {
+            final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin.asText());
+            return genericSearch(context, url, fetchCovers);
+        } else {
+            return new Book();
+        }
+    }
+
+    @NonNull
+    @Override
     public Book searchByBarcode(@NonNull final Context context,
                                 @NonNull final String barcode,
                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-
-        if (ASIN.isValidAsin(barcode)) {
-            final String url = getHostUrl() + String.format(BY_PRODUCT_ID, barcode);
-            return genericSearch(context, url, fetchCovers);
-        } else {
-            // Amazon only supports ISBN13 and ASIN codes
-            // Searching for valid ISBN numbers happens 'before' searching on barcodes,
-            // so we can/must just fail here due to an invalid code
-            return new Book();
-        }
+        return searchByExternalId(context, barcode, fetchCovers);
     }
 
     @NonNull
@@ -528,7 +525,10 @@ public class AmazonSearchEngine
         }
 
         parseDetails(context, siteLocale, document, book);
-        parseASIN(document, book);
+        // Normally we should have found the ASIN, but if not, try parsing the add-to-cart code
+        if (book.getIdentifierValue(Identifier.SID_ASIN).isEmpty()) {
+            parseASIN(document, book);
+        }
 
         Series.checkForSeriesNameInTitle(book);
 
@@ -661,14 +661,14 @@ public class AmazonSearchEngine
                     final String lcLabel = label.toLowerCase(siteLocale);
 
                     if (LABEL_ASIN.contains(lcLabel)) {
-                        // contains BiDi chars!
-                        final String asinStr = cleanText(text[1]);
-                        book.setIdentifierValue(Identifier.SID_ASIN, asinStr);
+                        // Not checking validity, this is straight from Amazon after all.
+                        final ASIN asin = new ASIN(text[1]);
+                        book.setIdentifierValue(Identifier.SID_ASIN, asin.asText());
 
                         if (!book.hasIsbn()) {
                             // Set as ISBN if we don't have on yet.
                             // If the book has a real ISBN-13 it will overwrite this.
-                            book.setIsbn(asinStr);
+                            book.setIsbn(asin.asText());
                         }
                     } else if (LABEL_ISBN_13.equals(lcLabel)) {
                         book.setIsbn(ISBN.cleanText(text[1]));

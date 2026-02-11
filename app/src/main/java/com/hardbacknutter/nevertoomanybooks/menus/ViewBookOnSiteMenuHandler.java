@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.ASIN;
 
 /**
  * Collects all {@link Identifier}s present
@@ -54,17 +55,30 @@ public class ViewBookOnSiteMenuHandler
     List<Identifier.Value> getSids(@NonNull final DataHolder data) {
         final List<Identifier.Value> ivs = DataHolderUtils.getSids(DBKey.FK_BOOK, data);
 
-        if (ivs.stream().map(Identifier.Value::getKey).noneMatch(Identifier.SID_ASIN::equals)) {
-            //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
-            // When looking for the Amazon ASIN, fallback on an Isbn code if possible
-            if (data.contains(DBKey.ISBN)) {
-                final String isbnStr = data.getString(DBKey.ISBN);
-                final ISBN isbn = new ISBN(isbnStr, true);
-                if (isbn.isValid(true) && isbn.isIsbn10Compat()) {
-                    ivs.add(new Identifier.Value(Identifier.SID_ASIN,
-                                                 isbn.asText(ISBN.Type.Isbn10)));
-                }
-            }
+        // If we have an ASIN, return all the Identifiers now.
+        if (ivs.stream().map(Identifier.Value::getKey).anyMatch(Identifier.SID_ASIN::equals)) {
+            return ivs;
+        }
+        // If we don't have an ISBN, nothing we can try more, return all the Identifiers now.
+        if (!data.contains(DBKey.ISBN)) {
+            return ivs;
+        }
+
+        // No ASIN present, see if we can deduce one from the ISBN
+        final String isbnStr = data.getString(DBKey.ISBN);
+
+        // check if the ISBN *is* an ASIN
+        final ASIN asin = new ASIN(isbnStr);
+        if (asin.isValid()) {
+            ivs.add(new Identifier.Value(Identifier.SID_ASIN, asin.asText()));
+            return ivs;
+        }
+
+        // If the ISBN is an ISBN-10, then it *is* an ASIN
+        final ISBN isbn = new ISBN(isbnStr, true);
+        if (isbn.isValid(true) && isbn.isIsbn10Compat()) {
+            ivs.add(new Identifier.Value(Identifier.SID_ASIN,
+                                         isbn.asText(ISBN.Type.Isbn10)));
         }
         return ivs;
     }
