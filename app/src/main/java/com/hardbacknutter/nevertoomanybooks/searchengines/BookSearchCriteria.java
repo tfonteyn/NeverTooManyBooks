@@ -258,7 +258,7 @@ public class BookSearchCriteria {
     }
 
     /**
-     * Set the strictIsbn flag for this criteria object.
+     * Override the strictIsbn flag for this criteria object.
      *
      * @param strictIsbn {@code true} for strict ISBN checking,
      *                   {@code false} for allowing other valid generic codes.
