@@ -22,7 +22,7 @@
 <resources>
 
     <!-- SearchBookByIsbnFragment 'back' handler. -->
-    <string-array name="lbl_leave_isbn_search_options">
+    <string-array name="lbl_leave_search_options">
         <item>@string/action_save_for_later</item>
         <item>@string/action_clear_queue</item>
     </string-array>
