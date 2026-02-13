@@ -432,6 +432,9 @@ public class BookDaoImpl
         // when we're NOT in batch mode (i.e. NOT doing an import)
         final boolean lookupLocale = !flags.contains(BookFlag.RunInBatch);
 
+        // FIXME: apply useIdIfPresent to the tags collection, perhaps to others as well
+        //final boolean useIdIfPresent = !flags.contains(BookFlag.UseIdIfPresent);
+
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(userLocale).orElse(userLocale);
 
@@ -453,9 +456,9 @@ public class BookDaoImpl
 
 
         if (book.contains(Book.BKEY_SERIES_LIST)) {
-            final Function<Series, Locale> localeSupplier = item -> {
+            final Function<Series, Locale> localeSupplier = series -> {
                 if (lookupLocale) {
-                    return item.getLocale(userLocale).orElse(bookLocale);
+                    return series.getLocale(userLocale).orElse(bookLocale);
                 } else {
                     return bookLocale;
                 }
