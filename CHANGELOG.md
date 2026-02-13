@@ -1,3 +1,17 @@
+### 7.13.0
+
+NEW:
+
+- added support for Amazon books which have an ASIN, but no ISBN
+- #227: User-interface option to pin/hide the menu header when scrolling (Setting/User-interface)
+- #229: Improved handling/retrying of sites which time-out during a search.
+
+FIXES:
+
+- #226: original language field was overlapping the title field
+
+---
+
 ### 7.12.0
 
 NEW:
