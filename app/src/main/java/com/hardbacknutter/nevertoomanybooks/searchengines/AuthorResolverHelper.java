@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -92,7 +93,16 @@ public final class AuthorResolverHelper {
         } catch (@NonNull final DaoWriteException na) {
             // not applicable as we pass in "doStore=false"
         } catch (@NonNull final SearchException e) {
-            LoggerFactory.getLogger().e(TAG, e);
+            // Avoid cluttering the logfile.
+            if (e.getCause() instanceof HttpNotFoundException) {
+                // Simple warn msg for a 404
+                final String isbn = book.getIsbn();
+                final String info = isbn.isEmpty() ? book.getTitle() : isbn;
+                LoggerFactory.getLogger().w(TAG, "404|Failed to resolve authors for book=" + info);
+            } else {
+                // unknown/other error
+                LoggerFactory.getLogger().e(TAG, e);
+            }
         }
     }
 
