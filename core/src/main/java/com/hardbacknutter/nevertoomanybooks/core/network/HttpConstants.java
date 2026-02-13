@@ -23,10 +23,10 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 public final class HttpConstants {
 
     /**
-     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-05-31.
+     * RELEASE: BROWSER_USER_AGENT: Last updated: 2026-02-13.
      */
     public static final String BROWSER_USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0";
 
     /**
      * HTTP Request Header.
