@@ -96,11 +96,12 @@ public class DBHelper
      * v7.10.0: 46
      * (47 was dev only)
      * v7.11.0: 48
-     * v7.12.0  49
+     * v7.12.0: 49
+     * v7.13.0: 50
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 49;
+    public static final int DATABASE_VERSION = 50;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -486,6 +487,13 @@ public class DBHelper
         }
         if (oldVersion < 49) {
             LegacyUpgrades.v49onUpgrade(db);
+        }
+        if (oldVersion < 50) {
+            // GitHub #231: bug in backup/json/coders/IdentifierCoder
+            // Backup files could contain the toString representation
+            // of the wikidata author claim id, instead of the id itself.
+            // Repair all builtin Identifiers:
+            LegacyUpgrades.updateIdentifierWikidataAuthorIdClaims(context, db);
         }
 
         // We have to do this here as we're always inserting all columns,
