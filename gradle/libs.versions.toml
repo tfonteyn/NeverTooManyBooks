@@ -15,7 +15,7 @@ mannodermausInstrumentation = "2.0.1"
 
 # https://developer.android.com/jetpack/androidx/versions
 
-androidxActivity = "1.12.3"
+androidxActivity = "1.12.4"
 androidxAnnotation = '1.9.1'
 androidxAppcompat = "1.7.1"
 androidxCamerax = "1.5.3"
