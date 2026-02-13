@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,12 +40,11 @@ public class IdentifierCoder
         out.put(DBKey.IDENTIFIERS.KEY, identifier.getKey());
         out.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(identifier.getType()));
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
-        // nulls will be discarded
-        out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, identifier.getWikidataClaimAuthorId());
-        // nulls will be discarded
+        identifier.getWikidataClaimAuthorId().ifPresent(
+                s -> out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, s));
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl());
-        out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri().orElse(null));
-        out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri().orElse(null));
+        identifier.getBookUri().ifPresent(s -> out.put(DBKey.IDENTIFIERS.BOOK_URI, s));
+        identifier.getAuthorUri().ifPresent(s -> out.put(DBKey.IDENTIFIERS.AUTHOR_URI, s));
         return out;
     }
 

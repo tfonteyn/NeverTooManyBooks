@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
 
@@ -66,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteExcep
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -317,6 +319,14 @@ public class JsonRecordReader
                         || recordType == RecordType.AutoDetect) {
                         readBooks(context, root, defaultStyle, progressListener);
                     }
+
+                    // GitHub #231: bug in backup/json/coders/IdentifierCoder
+                    // Backup files could contain the toString representation
+                    // of the wikidata author claim id, instead of the id itself.
+                    // Repair all builtin Identifiers:
+                    final SQLiteDatabase db = ServiceLocator
+                            .getInstance().getDb().getSQLiteDatabase();
+                    LegacyUpgrades.updateIdentifierWikidataAuthorIdClaims(context, db);
                 }
             } catch (@NonNull final JSONException | UncheckedDaoWriteException e) {
                 // Unpack if possible

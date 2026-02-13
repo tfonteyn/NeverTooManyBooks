@@ -620,8 +620,15 @@ public final class LegacyUpgrades {
                    + '|' + FieldVisibility.getBitValue(Set.of(DBKey.READ__BOOL)));
     }
 
-    private static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
-                                                               @NonNull final SQLiteDatabase db) {
+    /**
+     * Copy the wikidata author claim ids "Pxxxx" from the hardcoded builtin Identifiers
+     * to the database.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
+    public static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
+                                                              @NonNull final SQLiteDatabase db) {
         try (SQLiteStatement stmt = db.compileStatement(
                 UPDATE_ + TBL_IDENTIFIERS.getName()
                 + _SET_ + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
