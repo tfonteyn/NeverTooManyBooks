@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.Arrays;
@@ -120,7 +119,7 @@ public class SearchEngineConfig {
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
 
-    @Nullable
+    @NonNull
     private final Throttler throttler;
 
     private final boolean prefersIsbn10;
@@ -142,7 +141,7 @@ public class SearchEngineConfig {
         if (builder.throttlerTimeoutMs > 0) {
             throttler = new Throttler(builder.throttlerTimeoutMs);
         } else {
-            throttler = null;
+            throttler = new Throttler(Throttler.THROTTLER_DEFAULT_MS);
         }
     }
 
@@ -287,11 +286,15 @@ public class SearchEngineConfig {
     /**
      * Get the throttler for regulating network access.
      *
-     * @return throttler to use, or {@code null} for none.
+     * @return throttler to use
      */
-    @Nullable
+    @NonNull
     public Throttler getThrottler() {
         return throttler;
+    }
+
+    public int getThrottlerDelayInMs() {
+        return throttler.getDelayInMillis();
     }
 
     @NonNull
@@ -310,12 +313,6 @@ public class SearchEngineConfig {
     @SuppressWarnings({"SameParameterValue", "unused"})
     public static class Builder {
 
-        /**
-         * Even if there are no specific terms of usage,
-         * we're only going to send one request a second by default
-         * as a courtesy/precaution.
-         */
-        static final int THROTTLER_DEFAULT_MS = 1_000;
         static final int FIVE_SECONDS = 5_000;
         static final int TEN_SECONDS = 10_000;
 
@@ -327,7 +324,7 @@ public class SearchEngineConfig {
         /** The DEFAULT for the engine. */
         private int readTimeoutMs = TEN_SECONDS;
         /** The DEFAULT for the engine. */
-        private int throttlerTimeoutMs = THROTTLER_DEFAULT_MS;
+        private int throttlerTimeoutMs = Throttler.THROTTLER_DEFAULT_MS;
 
         /** {@link SearchEngine.CoverByEdition} only. */
         private boolean supportsMultipleCoverSizes;
@@ -361,7 +358,7 @@ public class SearchEngineConfig {
         }
 
         @NonNull
-        public Builder setThrottlerIntervalInMs(final int timeoutInMillis) {
+        public Builder setThrottlerDelayInMs(final int timeoutInMillis) {
             throttlerTimeoutMs = timeoutInMillis;
             return this;
         }
