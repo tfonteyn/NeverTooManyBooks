@@ -102,7 +102,7 @@ import okhttp3.OkHttpClient;
  * Crawl-delay: 10   <===== THROTLING in seconds
  * Sitemap: https://www.dnb.de/Sitemap_NavNode.xml
  * </pre>
- *
+ * <p>
  * Note the {@code Crawl-delay: 10} is not read dynamically, we just hardcode it.
  */
 public class DnbSearchEngine
@@ -256,14 +256,14 @@ public class DnbSearchEngine
         //noinspection DataFlowIssue
         final boolean enableLog = config.isLogHttpGetRequests();
 
-        //noinspection DataFlowIssue
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .addInterceptor(new RateLimitInterceptor(enableLog));
+                .addInterceptor(new RateLimitInterceptor(
+                        2 * config.getThrottlerDelayInMs(), enableLog));
 
         // this is a kludge... see DnbSslContextFactory why
         final SSLContext sslContext = getSslContext();
