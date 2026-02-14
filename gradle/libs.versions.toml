@@ -8,7 +8,7 @@ compileSdk = "36"
 # JDK used by Gradle
 javaToolchain = "21"
 
-androidGradlePlugin = "9.0.0"
+androidGradlePlugin = "9.0.1"
 # https://github.com/mannodermaus/android-junit-framework
 mannodermausPlugin = "2.0.1"
 mannodermausInstrumentation = "2.0.1"
@@ -75,7 +75,7 @@ mockito = "5.21.0"
 # https://junit.org/junit5/docs/current/user-guide/#overview
 # Android/mannodermaus does not support junit 6
 #noinspection NewerVersionAvailable
-jupiter = "5.14.1"
+jupiter = "5.14.2"
 
 # https://developer.android.com/jetpack/androidx/releases/test
 androidxTestCore = '1.7.0'
