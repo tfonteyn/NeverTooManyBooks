@@ -81,10 +81,29 @@ import org.jsoup.select.Elements;
 import okhttp3.OkHttpClient;
 
 /**
+ * German language books & comics.
+ * <p>
  * <a href="https://www.dnb.de">Deutsche Nationalbibliothek (DNB)</a>
  * <a href="https://www.dnb.de">Germany's National Library (DNB)</a>
  * <p>
- * German language books & comics.
+ * There is no {@code robots.txt} on https://katalog.dnb.de
+ * We'll respect the one from the main site instead: https://www.dnb.de/robots.txt
+ * <pre>
+ * User-agent: *
+ * Disallow: /SiteGlobals/
+ * Disallow: /DE/Service/
+ * Disallow: /EN/Service/
+ * Allow: /SiteGlobals/Modules/
+ * Allow: /SiteGlobals/StyleBundles/
+ * Allow: /SiteGlobals/Frontend/
+ * Allow: /SiteGlobals/Forms/DNBWeb/Veranstaltungsuebersicht/
+ * Allow: /DE/Service/Glossar/
+ * Allow: /EN/Service/Glossar/
+ * Crawl-delay: 10   <===== THROTLING in seconds
+ * Sitemap: https://www.dnb.de/Sitemap_NavNode.xml
+ * </pre>
+ *
+ * Note the {@code Crawl-delay: 10} is not read dynamically, we just hardcode it.
  */
 public class DnbSearchEngine
         extends JsoupSearchEngineBase
@@ -101,6 +120,14 @@ public class DnbSearchEngine
     static final String KATALOG_DNB_DE = "https://katalog.dnb.de";
 
     private static final String PREFERENCE_KEY = "dnb";
+
+    /**
+     * Overrides the default from {@link SearchEngineConfig}.
+     * <p>
+     * GitHub #229: http response 429 Too Many Request
+     * robots.txt: Crawl-delay: 10  (seconds)
+     */
+    private static final int THROTTLER_DELAY_IN_MS = 10_000;
 
     /**
      * Preference key: Whether to try loading cover images from the portal ('old' site)
@@ -218,8 +245,7 @@ public class DnbSearchEngine
                 .setIdentifierKey(Identifier.SID_DNB)
                 .setPreferenceFragmentClazz(DnbPreferencesFragment.class)
                 .setConfig(cb -> cb
-                        // GitHub #229: http response 429 Too Many Request
-                        .setThrottlerIntervalInMs(2_000)
+                        .setThrottlerDelayInMs(THROTTLER_DELAY_IN_MS)
                         .build(SearchEngineConfig::new));
     }
 
