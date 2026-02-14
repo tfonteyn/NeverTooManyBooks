@@ -372,7 +372,8 @@ public abstract class SearchEngineBase
                 .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .addInterceptor(new RateLimitInterceptor(enableLog));
+                .addInterceptor(new RateLimitInterceptor(
+                        2 * config.getThrottlerDelayInMs(), enableLog));
 
         if (sslContext != null) {
             builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
