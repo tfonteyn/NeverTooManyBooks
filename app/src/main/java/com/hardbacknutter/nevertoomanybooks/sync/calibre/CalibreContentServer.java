@@ -88,6 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
+import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -388,13 +389,17 @@ public final class CalibreContentServer
                 PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
+
+        // While a Calibre server is typically a private in-house setup, we still
+        // apply a RateLimitInterceptor to accomodate using weak hardware (e.g. raspberry-pi).
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
                 .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS)
-                .addInterceptor(new RateLimitInterceptor(isLogHttpGetRequests()));
+                .addInterceptor(new RateLimitInterceptor(Throttler.THROTTLER_DEFAULT_MS,
+                                                         isLogHttpGetRequests()));
 
         if (sslContext != null && x509TrustManager != null) {
             builder.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager);
