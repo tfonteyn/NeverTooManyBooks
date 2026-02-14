@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,16 @@ import androidx.annotation.NonNull;
  */
 public class Throttler {
 
+    /**
+     * Even if there are no specific terms of usage,
+     * we're only going to send maximum one request a second by default
+     * as a courtesy/precaution.
+     * <p>
+     * This is the default used throughout the app.
+     * Different classes may/will override as needed.
+     */
+    public static final int THROTTLER_DEFAULT_MS = 1_000;
+
     /** Thread delay time. */
     private final int delayInMillis;
 
@@ -40,7 +50,7 @@ public class Throttler {
      * @param delayInMillis the delay time between requests.
      */
     public Throttler(final int delayInMillis) {
-        this.delayInMillis = delayInMillis;
+        this.delayInMillis = Math.max(THROTTLER_DEFAULT_MS, delayInMillis);
     }
 
     /**
@@ -51,6 +61,10 @@ public class Throttler {
     @SuppressWarnings("WeakerAccess")
     public void waitUntilRequestAllowed() {
         waitUntilRequestAllowed(delayInMillis);
+    }
+
+    public int getDelayInMillis() {
+        return delayInMillis;
     }
 
     /**
