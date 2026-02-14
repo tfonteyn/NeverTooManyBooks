@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpImpl;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
+import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -50,25 +51,50 @@ public final class HttpCallFactory {
      *
      * @return new instance
      */
+    @NonNull
     public static <R> FutureHttp<R> create(@StringRes final int siteResId) {
         return new FutureHttpImpl<>(siteResId);
     }
 
     /**
      * Create a {@link FutureHttp} based on the given engine configuration.
+     * <p>
+     * A new, default, {@link RateLimitInterceptor} will be created.
      *
-     * @param engineId to use
-     * @param <R>      the type of the return value for the request
+     * @param engineId    to use
+     * @param <R>         the type of the return value for the request
      *
      * @return new instance
      */
+    @NonNull
     public static <R> FutureHttp<R> create(@NonNull final EngineId engineId) {
+        final SearchEngineConfig config = engineId.getConfig();
+        @SuppressWarnings("DataFlowIssue")
+        final RateLimitInterceptor limiter = new RateLimitInterceptor(
+                2 * config.getThrottlerDelayInMs(),
+                config.isLogHttpGetRequests());
+        return create(engineId, limiter);
+    }
+
+    /**
+     * Create a {@link FutureHttp} based on the given engine configuration.
+     *
+     * @param engineId    to use
+     * @param rateLimiter to use
+     * @param <R>         the type of the return value for the request
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static <R> FutureHttp<R> create(@NonNull final EngineId engineId,
+                                           @NonNull final RateLimitInterceptor rateLimiter) {
         final FutureHttp<R> request = create(engineId.getLabelResId());
 
         final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
         request.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs())
                .setThrottler(config.getThrottler())
+               .setRateLimitInterceptor(rateLimiter)
                .enableLogging(config.isLogHttpGetRequests());
 
         return request;
@@ -107,6 +133,7 @@ public final class HttpCallFactory {
      *
      * @return new instance
      */
+    @NonNull
     public static HttpCall create(@NonNull final OkHttpClient httpClient,
                                   @Nullable final Throttler throttler,
                                   @StringRes final int labelResId,
