@@ -117,6 +117,8 @@ public class FutureHttpImpl<R>
     @Nullable
     private Throttler throttler;
     @Nullable
+    private RateLimitInterceptor rateLimiter;
+    @Nullable
     private SSLContext sslContext;
     @Nullable
     private HostnameVerifier hostnameVerifier;
@@ -258,6 +260,13 @@ public class FutureHttpImpl<R>
     @Override
     public FutureHttp<R> setThrottler(@Nullable final Throttler throttler) {
         this.throttler = throttler;
+        return this;
+    }
+
+    @NonNull
+    @Override
+    public FutureHttp<R> setRateLimitInterceptor(@Nullable final RateLimitInterceptor rateLimiter) {
+        this.rateLimiter = rateLimiter;
         return this;
     }
 
@@ -743,7 +752,7 @@ public class FutureHttpImpl<R>
 
                 attempt++;
                 checkAttempt(attempt, request, e);
-                retryAfterMs = RateLimitInterceptor.getRetryAfterInMs(e.getRetryAfter(), attempt);
+                retryAfterMs = calculateRetryAfterInMs(attempt, e.getRetryAfter());
 
             } catch (@NonNull final InterruptedIOException
                                     | FileNotFoundException
@@ -761,10 +770,11 @@ public class FutureHttpImpl<R>
 
                 attempt++;
                 checkAttempt(attempt, request, e);
-                retryAfterMs = RateLimitInterceptor.getRetryAfterInMs(null, attempt);
+                retryAfterMs = calculateRetryAfterInMs(attempt, null);
             }
 
             try {
+                //noinspection BusyWait
                 Thread.sleep(retryAfterMs);
             } catch (@NonNull final InterruptedException ignore) {
                 // ignore
@@ -777,6 +787,19 @@ public class FutureHttpImpl<R>
             LoggerFactory.getLogger().d(TAG, message);
         }
         throw new NetworkException(message);
+    }
+
+    private int calculateRetryAfterInMs(final int attempt,
+                                        @Nullable final String retryHeader) {
+        if (rateLimiter != null) {
+            return rateLimiter.getRetryAfterInMs(attempt, retryHeader);
+
+        } else if (throttler != null) {
+            return 2 * throttler.getDelayInMillis();
+
+        } else {
+            return 2 * Throttler.THROTTLER_DEFAULT_MS;
+        }
     }
 
     private void checkAttempt(@IntRange(from = 1) final int attempt,

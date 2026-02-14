@@ -58,7 +58,7 @@ public interface FutureHttp<R> {
     FutureHttp<R> setReadTimeout(@IntRange(from = 0) int timeoutInMs);
 
     /**
-     * Set a throttler to obey site usage rules.
+     * Set a {@link Throttler} to obey site usage rules.
      *
      * @param throttler (optional) to use
      *
@@ -66,6 +66,16 @@ public interface FutureHttp<R> {
      */
     @NonNull
     FutureHttp<R> setThrottler(@Nullable Throttler throttler);
+
+    /**
+     * Set a {@link RateLimitInterceptor} to obey site usage rules.
+     *
+     * @param rateLimiter (optional) to use
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    FutureHttp<R> setRateLimitInterceptor(@Nullable RateLimitInterceptor rateLimiter);
 
     /**
      * Set whether redirects should be followed.
