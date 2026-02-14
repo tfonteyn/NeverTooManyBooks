@@ -40,25 +40,35 @@ import okhttp3.Response;
 public class RateLimitInterceptor
         implements Interceptor {
     private static final String TAG = "RateLimitInterceptor";
+
     /** The default number of times we try to connect. */
     private static final int RETRY_COUNT = 3;
 
     /**
      * Milliseconds to wait between retries. This is independent of the Throttler.
-     * <p>
-     * 2026-01-02: now doubled to 2 seconds.
+     * This is the minimal value, defined/applied because paranoia...
+     * The actual value is set in the constructor.
      */
-    private static final int RETRY_AFTER_MS = 2_000;
+    private static final int RETRY_AFTER_MS = 2 * Throttler.THROTTLER_DEFAULT_MS;
+    /** Arbitrary maximum before we throw an exception. */
     private static final int RETRY_MAX_DELAY = 32_000;
+
+    /**
+     * Actual minimum delay in milliseconds.
+     */
+    private final int retryDelayInMs;
 
     private final boolean logEnabled;
 
     /**
      * Constructor.
      *
-     * @param logEnabled flag
+     * @param retryDelayInMs initial delay
+     * @param logEnabled     flag
      */
-    public RateLimitInterceptor(final boolean logEnabled) {
+    public RateLimitInterceptor(final int retryDelayInMs,
+                                final boolean logEnabled) {
+        this.retryDelayInMs = Math.max(retryDelayInMs, RETRY_AFTER_MS);
         this.logEnabled = logEnabled;
     }
 
@@ -105,14 +115,15 @@ public class RateLimitInterceptor
     }
 
 
-    static int getRetryAfterInMs(@Nullable final String retryHeader,
-                                 final int attempt) {
+    int getRetryAfterInMs(final int attempt,
+                          @Nullable final String retryHeader) {
         final int delaySeconds = parseRetryAfterHeader(retryHeader);
         if (delaySeconds > 0) {
+            // use whatever the website told us to use.
             return delaySeconds * 1_000;
         } else {
             // Increase the time exponentially
-            final int exponentialDelay = RETRY_AFTER_MS * (int) (1L << attempt);
+            final int exponentialDelay = retryDelayInMs * (int) (1L << attempt);
             final int cappedDelay = Math.min(exponentialDelay, RETRY_MAX_DELAY);
             // Randomize to spread any near-concurrent requests
             return (int) (Math.random() * cappedDelay);
@@ -133,7 +144,7 @@ public class RateLimitInterceptor
             attempt++;
 
             final String retryHeader = response.header(HttpConstants.RESPONSE_HEADER_RETRY_AFTER);
-            final int retryAfterMs = getRetryAfterInMs(retryHeader, attempt);
+            final int retryAfterMs = getRetryAfterInMs(attempt, retryHeader);
 
             if (logEnabled) {
                 LoggerFactory.getLogger()
@@ -143,6 +154,7 @@ public class RateLimitInterceptor
             }
 
             try {
+                //noinspection BusyWait
                 Thread.sleep(retryAfterMs);
             } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
