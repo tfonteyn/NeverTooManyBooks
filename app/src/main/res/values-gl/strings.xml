@@ -139,6 +139,7 @@
     <string name="X_action_next">Seguinte</string>
     <string name="X_action_previous">Ant.</string>
     <string name="X_action_reset">Restablecer</string>
+    <string name="action_continue">Continuar</string>
     <string name="X_action_send">Enviar</string>
     <string name="X_action_try_again">Tentar de novo</string>
     <string name="X_action_update">Actualizar</string>

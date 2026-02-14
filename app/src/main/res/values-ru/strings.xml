@@ -66,6 +66,7 @@
     <string name="X_action_next">Далее</string>
     <string name="X_action_previous">Пред.</string>
     <string name="X_action_reset">Сбросить</string>
+    <string name="action_continue">Продолжить</string>
     <string name="X_action_send">Отправить</string>
     <string name="X_action_try_again">Повторить попытку</string>
     <string name="X_action_update">Обновить</string>

@@ -54,6 +54,7 @@
     <string name="X_action_next">Weiter</string>
     <string name="X_action_previous">Zurück</string>
     <string name="X_action_reset">Zurücksetzen</string>
+    <string name="action_continue">Weiter</string>
     <string name="X_action_send">Senden</string>
     <string name="X_action_try_again">Noch einmal versuchen</string>
     <string name="X_action_update">Aktualisieren</string>

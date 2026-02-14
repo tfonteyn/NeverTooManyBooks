@@ -57,6 +57,7 @@ A question mark is written as the character semicolon: ';'
     <string name="X_action_next">Επόμενο</string>
     <string name="X_action_previous">Προηγ.</string>
     <string name="X_action_reset">Επαναφορά</string>
+    <string name="action_continue">Συνέχεια</string>
     <string name="X_action_send">Αποστολή</string>
     <string name="X_action_try_again">Δοκιμάστε ξανά</string>
     <string name="X_action_update">Ενημέρωση</string>

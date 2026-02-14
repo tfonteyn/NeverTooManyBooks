@@ -66,6 +66,7 @@
     <string name="X_action_next">Další</string>
     <string name="X_action_previous">Předch.</string>
     <string name="X_action_reset">Resetovat</string>
+    <string name="action_continue">Pokračovat</string>
     <string name="X_action_send">Odeslat</string>
     <string name="X_action_try_again">Zkusit znovu</string>
     <string name="X_action_update">Aktualizovat</string>

@@ -54,6 +54,7 @@
     <string name="X_action_next">Volgende</string>
     <string name="X_action_previous">Vorige</string>
     <string name="X_action_reset">Resetten</string>
+    <string name="action_continue">Doorgaan</string>
     <string name="X_action_send">Verzenden</string>
     <string name="X_action_try_again">Opnieuw</string>
     <string name="X_action_update">Updaten</string>

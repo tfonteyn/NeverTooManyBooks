@@ -60,6 +60,7 @@
     <string name="X_action_next">Avanti</string>
     <string name="X_action_previous">Prec.</string>
     <string name="X_action_reset">Reimposta</string>
+    <string name="action_continue">Continua</string>
     <string name="X_action_send">Invia</string>
     <string name="X_action_try_again">Riprova</string>
     <string name="X_action_update">Aggiorna</string>

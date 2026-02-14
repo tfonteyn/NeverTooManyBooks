@@ -60,6 +60,7 @@
     <string name="X_action_next">Avançar</string>
     <string name="X_action_previous">Anter.</string>
     <string name="X_action_reset">Redefinir</string>
+    <string name="action_continue">Continuar</string>
     <string name="X_action_send">Enviar</string>
     <string name="X_action_try_again">Tentar novamente</string>
     <string name="lbl_image">Imagem</string>

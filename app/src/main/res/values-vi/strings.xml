@@ -49,6 +49,7 @@
     <string name="X_action_next">Tiếp theo</string>
     <string name="X_action_previous">Trước</string>
     <string name="X_action_reset">Đặt lại</string>
+    <string name="action_continue">Tiếp tục</string>
     <string name="X_action_send">Gửi</string>
     <string name="X_action_try_again">Thử lại</string>
     <string name="X_action_update">Cập nhật</string>

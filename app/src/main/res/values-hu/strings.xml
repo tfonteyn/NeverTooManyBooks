@@ -101,6 +101,7 @@
     <string name="X_action_next">Tovább</string>
     <string name="X_action_previous">Előző</string>
     <string name="X_action_reset">Alaphelyzet</string>
+    <string name="action_continue">Tovább</string>
     <string name="X_action_send">Küldés</string>
     <string name="X_action_try_again">Újrapróbálkozás</string>
     <string name="X_action_update">Frissítés</string>

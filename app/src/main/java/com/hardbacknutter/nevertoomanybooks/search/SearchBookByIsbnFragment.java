@@ -989,6 +989,7 @@ public class SearchBookByIsbnFragment
         }
     }
 
+    @Override
     void onSearchFinished(@NonNull final BookSearchResult result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchFinished",
@@ -1022,15 +1023,16 @@ public class SearchBookByIsbnFragment
                                         result);
         }
 
-        if (!result.hasBook()) {
-            // We should never get here... flw
-            vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
-            return;
-        }
-
+        // Do not check for result.hasBook() here,
+        // we want to allow the user to edit an incomplete book search manually
         editBook(result.getBook(), vm.getStyle());
     }
 
+    /**
+     * Called when the user tapped a queued item, and choose "Save" (without editing).
+     *
+     * @param result results of the search
+     */
     private void onSearchResultsSaveBook(@NonNull final BookSearchResult result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchResultsSaveBook",
@@ -1039,6 +1041,7 @@ public class SearchBookByIsbnFragment
                                         result);
         }
 
+        // Paranoia check
         if (!result.hasBook()) {
             // We should never get here... flw
             vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
@@ -1068,11 +1071,18 @@ public class SearchBookByIsbnFragment
                                            (d, w) -> onSearchResultsSaveBook(book))
                         .create()
                         .show();
+                return;
             }
         }
         onSearchResultsSaveBook(book);
     }
 
+    /**
+     * Called from {@link #onSearchResultsSaveBook(BookSearchResult)}
+     * either directly, or after a dialog was used.
+     *
+     * @param book to save
+     */
     private void onSearchResultsSaveBook(@NonNull final Book book) {
         final Context context = getContext();
         try {
@@ -1167,83 +1177,105 @@ public class SearchBookByIsbnFragment
 
     /**
      * The user tapped a queue chip.
+     * The chip status can be:
+     * <ol>
+     *     <li>Newly added, a search has not been started.
+     *         <br>The ISBN will be available.
+     *         <br>No other data/errors.
+     *     </li>
+     *     <li>A search is running.
+     *         <br>There may be errors available.
+     *         <br>There may or may not be enough data for a Book.
+     *     </li>
+     *     <li>The search was finished.
+     *         <br>There may be errors available.
+     *          <br>A Book was not found.
+     *     </li>
+     *     <li>The search was finished.
+     *         <br>There may be errors available.
+     *         <br>A Book was found.
+     *     </li>
+     * </ol>
      *
      * @param chip clicked
      */
     private void onQueueItemClicked(@NonNull final View chip) {
         final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
-        final Context context = getContext();
         @Nullable
         final BookSearchResult result = item.getResult();
-        final String info;
-        if (result != null) {
-            // Show some book information
-            final StringJoiner sj = new StringJoiner("\n");
-            sj.add(item.getIsbn().asText());
+        final boolean hasErrors = result != null && result.hasErrors();
+        final boolean hasBook = result != null && result.hasBook();
 
-            if (result.hasBook()) {
-                final Book book = result.getBook();
-                final Author primaryAuthor = book.getPrimaryAuthor();
-                if (primaryAuthor != null) {
-                    //noinspection DataFlowIssue
-                    sj.add(primaryAuthor.getLabel(context, Details.Normal, vm.getStyle()));
-                }
-
-                sj.add(book.getTitle());
-            }
-
-            info = sj.toString();
-        } else {
-            // no result (yet); the search is ongoing
-            info = item.getIsbn().asText();
-        }
-
+        final Context context = getContext();
         final DialogBookFoundBinding dvb = DialogBookFoundBinding.inflate(getLayoutInflater());
-
         //noinspection DataFlowIssue
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setView(dvb.getRoot());
+
+        // Show any available book information.
+        // This is done in all possible status variations of the item.
+        final String info;
+        if (hasBook) {
+            final StringJoiner sj = new StringJoiner("\n");
+            sj.add(item.getIsbn().asText());
+
+            final Book book = result.getBook();
+            final Author primaryAuthor = book.getPrimaryAuthor();
+            if (primaryAuthor != null) {
+                sj.add(primaryAuthor.getLabel(context, Details.Normal, vm.getStyle()));
+            }
+
+            sj.add(book.getTitle());
+            info = sj.toString();
+        } else {
+            // No result (yet); the search is ongoing
+            // or there was a result, but not enough data to constitute a Book
+            info = item.getIsbn().asText();
+        }
         dvb.info.setText(info);
 
-        // Error message in dialog body.
-        boolean hasMessage = false;
-        if (result != null && result.hasErrors()) {
-            final List<String> errorMessages = result.getErrors(context);
-            dvb.errorMessage.setText(String.join("\n", errorMessages));
-            hasMessage = true;
+        // Potentially show an error message in the dialog body.
+        // This is done in all possible status variations of the item.
+        if (hasErrors) {
+            dvb.errorMessage.setText(String.join("\n", result.getErrors(context)));
         }
-        dvb.errorMessage.setVisibility(hasMessage ? View.VISIBLE : View.GONE);
+        dvb.errorMessage.setVisibility(hasErrors ? View.VISIBLE : View.GONE);
 
-        // Clicked while searching, offer "discard" and "continue(==cancel)"
-        if (item.isSearching()) {
+
+        // 1. Newly added, a search has not been started.
+        // OR
+        // 2. A search is running. A Book may or may not be available (we disregard this here).
+        if (result == null || item.isSearching()) {
             dvb.edit.setVisibility(View.GONE);
 
             builder.setTitle(R.string.progress_msg_searching)
+                   // Discard this item entirely
                    .setNeutralButton(R.string.action_discard, (d, w) -> {
                        d.dismiss();
                        removeFromQueue(chip);
                    })
-                   .setNegativeButton(R.string.confirm_continue, (d, w) -> d.dismiss())
+                   // Close the dialog and continue
+                   .setNegativeButton(R.string.action_continue, (d, w) -> d.dismiss())
                    .create()
                    .show();
+
             return;
         }
 
-        // All choices: "edit", "save", "discard", "cancel".
-        if (result != null) {
+        // 3. Search was finished and we do NOT have (enough) data for a Book.
+        if (!hasBook) {
             final AlertDialog dialog = builder
+                    // Discard this item entirely
                     .setNeutralButton(R.string.action_discard, (d, w) -> {
                         d.dismiss();
                         removeFromQueue(chip);
                     })
+                    // ENHANCE: replace with RETRY **if** the errors are retriable.
+                    // Close the dialog, but leave the item as-is
                     .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.action_save, (d, w) -> {
-                        d.dismiss();
-                        removeFromQueue(chip);
-                        onSearchResultsSaveBook(result);
-                    })
                     .create();
 
+            // We offer "edit" to allow manual entry
             dvb.edit.setVisibility(View.VISIBLE);
             dvb.edit.setOnClickListener(v -> {
                 dialog.dismiss();
@@ -1252,7 +1284,36 @@ public class SearchBookByIsbnFragment
             });
 
             dialog.show();
+            return;
         }
+
+        // Search was finished and we have a Book.
+        // All choices: "edit", "save", "discard", "cancel".
+        final AlertDialog dialog = builder
+                // Discard this item entirely
+                .setNeutralButton(R.string.action_discard, (d, w) -> {
+                    d.dismiss();
+                    removeFromQueue(chip);
+                })
+                // Close the dialog, but leave the item as-is
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                // Save without editing
+                .setPositiveButton(R.string.action_save, (d, w) -> {
+                    d.dismiss();
+                    removeFromQueue(chip);
+                    onSearchResultsSaveBook(result);
+                })
+                .create();
+
+        // Edit before save or discard from the edit screen
+        dvb.edit.setVisibility(View.VISIBLE);
+        dvb.edit.setOnClickListener(v -> {
+            dialog.dismiss();
+            removeFromQueue(chip);
+            onSearchResults(result);
+        });
+
+        dialog.show();
     }
 
     /**

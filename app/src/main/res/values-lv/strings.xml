@@ -119,6 +119,7 @@
     <string name="X_action_next">Tālāk</string>
     <string name="X_action_previous">Iepr.</string>
     <string name="X_action_reset">Atiestatīt</string>
+    <string name="action_continue">Turpināt</string>
     <string name="X_action_send">Sūtīt</string>
     <string name="X_action_try_again">Mēģināt vēlreiz</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>

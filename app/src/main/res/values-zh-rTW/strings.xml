@@ -55,6 +55,7 @@
     <string name="X_action_next">繼續</string>
     <string name="X_action_previous">上一步</string>
     <string name="X_action_reset">重設</string>
+    <string name="action_continue">繼續</string>
     <string name="X_action_send">傳送</string>
     <string name="X_action_try_again">重試</string>
     <string name="X_action_update">更新</string>

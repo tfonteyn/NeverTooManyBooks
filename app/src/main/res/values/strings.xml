@@ -1166,6 +1166,8 @@
     <!-- [VERIFIED] -->
     <string name="action_search">Search</string>
     <!-- [VERIFIED] -->
+    <string name="action_continue">Continue</string>
+    <!-- [VERIFIED] -->
     <string name="X_action_send">Send</string>
     <!-- [VERIFIED] 6 chars max -->
     <string name="X_action_next">Next</string>
