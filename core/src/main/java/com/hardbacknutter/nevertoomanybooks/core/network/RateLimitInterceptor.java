@@ -156,7 +156,7 @@ public class RateLimitInterceptor
             try {
                 //noinspection BusyWait
                 Thread.sleep(retryAfterMs);
-            } catch (final InterruptedException e) {
+            } catch (@NonNull final InterruptedException ignore) {
                 Thread.currentThread().interrupt();
                 return response;
             }
