@@ -56,6 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
+import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -364,6 +366,7 @@ public abstract class SearchEngineBase
     @NonNull
     @EmptySuper
     protected OkHttpClient createHttpClient() {
+        final Throttler throttler = config.getThrottler();
         final boolean enableLog = config.isLogHttpGetRequests();
 
         final OkHttpClient.Builder builder = ServiceLocator
@@ -372,8 +375,8 @@ public abstract class SearchEngineBase
                 .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .addInterceptor(new RateLimitInterceptor(
-                        2 * config.getThrottlerDelayInMs(), enableLog));
+                .addInterceptor(new ThrottlingInterceptor(throttler))
+                .addInterceptor(new RateLimitInterceptor(throttler, enableLog));
 
         if (sslContext != null) {
             builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
