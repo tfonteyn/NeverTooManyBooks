@@ -21,17 +21,14 @@
 package com.hardbacknutter.nevertoomanybooks.network;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.net.CookieStore;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpImpl;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
-import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -45,11 +42,9 @@ public final class HttpCallFactory {
 
     /**
      * Create a {@link FutureHttp} based on the given engine configuration.
-     * <p>
-     * A new, default, {@link RateLimitInterceptor} will be created.
      *
-     * @param engineId    to use
-     * @param <R>         the type of the return value for the request
+     * @param engineId to use
+     * @param <R>      the type of the return value for the request
      *
      * @return new instance
      */
@@ -57,32 +52,13 @@ public final class HttpCallFactory {
     public static <R> FutureHttp<R> create(@NonNull final EngineId engineId) {
         final SearchEngineConfig config = engineId.getConfig();
         @SuppressWarnings("DataFlowIssue")
-        final RateLimitInterceptor limiter = new RateLimitInterceptor(
-                2 * config.getThrottlerDelayInMs(),
-                config.isLogHttpGetRequests());
-        return create(engineId, limiter);
-    }
-
-    /**
-     * Create a {@link FutureHttp} based on the given engine configuration.
-     *
-     * @param engineId    to use
-     * @param rateLimiter to use
-     * @param <R>         the type of the return value for the request
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static <R> FutureHttp<R> create(@NonNull final EngineId engineId,
-                                           @NonNull final RateLimitInterceptor rateLimiter) {
-        final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
+        final Throttler throttler = config.getThrottler();
+        final boolean enableLog = config.isLogHttpGetRequests();
 
         final FutureHttp<R> request = new FutureHttpImpl<>(engineId.getLabelResId(),
-                                                           config.getThrottler());
+                                                           throttler, enableLog);
         request.setConnectTimeout(config.getConnectTimeoutInMs())
-               .setReadTimeout(config.getReadTimeoutInMs())
-               .setRateLimitInterceptor(rateLimiter)
-               .enableLogging(config.isLogHttpGetRequests());
+               .setReadTimeout(config.getReadTimeoutInMs());
 
         return request;
     }
@@ -106,7 +82,6 @@ public final class HttpCallFactory {
         //noinspection DataFlowIssue
         return new HttpCall(httpClient, cookieStore,
                             engineId.getLabelResId(),
-                            config.getThrottler(),
                             config.isLogHttpGetRequests());
     }
 
@@ -115,19 +90,17 @@ public final class HttpCallFactory {
      *
      * @param httpClient the client
      * @param labelResId string resource representing the caller
-     * @param throttler  to use
      * @param logEnabled flag
      *
      * @return new instance
      */
     @NonNull
     public static HttpCall create(@NonNull final OkHttpClient httpClient,
-                                  @Nullable final Throttler throttler,
                                   @StringRes final int labelResId,
                                   final boolean logEnabled) {
         final CookieStore cookieStore = ServiceLocator.getInstance()
                                                       .getCookieManager()
                                                       .getCookieStore();
-        return new HttpCall(httpClient, cookieStore, labelResId, throttler, logEnabled);
+        return new HttpCall(httpClient, cookieStore, labelResId, logEnabled);
     }
 }
