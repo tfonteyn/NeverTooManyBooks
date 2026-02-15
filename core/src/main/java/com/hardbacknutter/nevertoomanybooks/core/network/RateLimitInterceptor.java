@@ -44,31 +44,27 @@ public class RateLimitInterceptor
     /** The default number of times we try to connect. */
     private static final int RETRY_COUNT = 3;
 
-    /**
-     * Milliseconds to wait between retries. This is independent of the Throttler.
-     * This is the minimal value, defined/applied because paranoia...
-     * The actual value is set in the constructor.
-     */
-    private static final int RETRY_AFTER_MS = 2 * Throttler.THROTTLER_DEFAULT_MS;
     /** Arbitrary maximum before we throw an exception. */
     private static final int RETRY_MAX_DELAY = 32_000;
+    private static final double RETRY_RANDOMIZER = 0.5;
 
-    /**
-     * Actual minimum delay in milliseconds.
-     */
-    private final int retryDelayInMs;
+    @NonNull
+    private final Throttler throttler;
+    private final int throttlerDelay;
 
     private final boolean logEnabled;
 
     /**
      * Constructor.
      *
-     * @param retryDelayInMs initial delay
+     * @param throttler to use
      * @param logEnabled     flag
      */
-    public RateLimitInterceptor(final int retryDelayInMs,
+    public RateLimitInterceptor(@NonNull final Throttler throttler,
                                 final boolean logEnabled) {
-        this.retryDelayInMs = Math.max(retryDelayInMs, RETRY_AFTER_MS);
+        this.throttler = throttler;
+        throttlerDelay = 2 * throttler.getDelayInMillis();
+
         this.logEnabled = logEnabled;
     }
 
@@ -123,10 +119,10 @@ public class RateLimitInterceptor
             return delaySeconds * 1_000;
         } else {
             // Increase the time exponentially
-            final int exponentialDelay = retryDelayInMs * (int) (1L << attempt);
+            final int exponentialDelay = throttlerDelay * (int) (1L << attempt);
             final int cappedDelay = Math.min(exponentialDelay, RETRY_MAX_DELAY);
             // Randomize to spread any near-concurrent requests
-            return (int) (Math.random() * cappedDelay);
+            return (int) (cappedDelay * (RETRY_RANDOMIZER + Math.random() * RETRY_RANDOMIZER));
         }
     }
 
@@ -153,13 +149,7 @@ public class RateLimitInterceptor
                                 "attempt=" + attempt);
             }
 
-            try {
-                //noinspection BusyWait
-                Thread.sleep(retryAfterMs);
-            } catch (@NonNull final InterruptedException ignore) {
-                Thread.currentThread().interrupt();
-                return response;
-            }
+            throttler.onTooManyRequests(retryAfterMs);
 
             // Close the previous response and try again
             response.close();
