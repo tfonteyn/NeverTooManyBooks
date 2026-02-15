@@ -80,8 +80,6 @@ public class HttpCall {
 
     @NonNull
     private final OkHttpClient httpClient;
-    @Nullable
-    private final Throttler throttler;
     private final boolean logEnabled;
     @StringRes
     private final int siteResId;
@@ -101,20 +99,16 @@ public class HttpCall {
      * @param httpClient  the one
      * @param cookieStore for logging <strong>all</strong> cookies as desired
      * @param siteResId   string resource representing the caller
-     * @param throttler   to use
      * @param logEnabled  flag
      */
     public HttpCall(@NonNull final OkHttpClient httpClient,
                     @NonNull final CookieStore cookieStore,
                     @StringRes final int siteResId,
-                    @Nullable final Throttler throttler,
                     final boolean logEnabled) {
 
         this.httpClient = httpClient;
         this.cookieStore = cookieStore;
         this.siteResId = siteResId;
-
-        this.throttler = throttler;
         this.logEnabled = logEnabled;
     }
 
@@ -172,8 +166,7 @@ public class HttpCall {
                                       @NonNull final Locale siteLocale,
                                       @NonNull final Locale userLocale)
             throws MalformedURLException {
-        return createDocumentRequest(HEAD, new URL(url), siteLocale, userLocale, null, null
-        );
+        return createDocumentRequest(HEAD, new URL(url), siteLocale, userLocale, null, null);
     }
 
     /**
@@ -729,10 +722,6 @@ public class HttpCall {
     @NonNull
     private Response getResponse(@NonNull final Request request)
             throws IOException {
-        if (throttler != null) {
-            throttler.waitUntilRequestAllowed();
-        }
-
         if (logEnabled) {
             logRequest(request);
         }
