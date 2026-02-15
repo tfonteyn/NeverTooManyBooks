@@ -21,6 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.NonNull;
 
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * A Throttler is created once in each {@code EngineId/SearchEngineConfig}.
  * The actual {@code SearchEngine} which can be multi-instance/multi-thread
@@ -38,11 +41,20 @@ public class Throttler {
      */
     public static final int THROTTLER_DEFAULT_MS = 1_000;
 
-    /** Thread delay time. */
-    private final int delayInMillis;
+    /** divider to convert nanoseconds to milliseconds. */
+    private static final long NANO_TO_MILLIS = 1_000_000L;
 
-    /** Stores the last time a request was made to avoid breaking site usage rules. */
-    private long lastRequestTime;
+    /** For quick use in {@link #getDelayInMillis()}. */
+    private final int delayInMillis;
+    /** For internal use with {@code System.nanoTime()}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final long intervalNanos;
+
+    @NonNull
+    private final AtomicLong nextTimeInNanos;
+    // lint: java.util.random.RandomGenerator is JDK 17 and not available on Android.
+    @SuppressWarnings({"FieldNotUsedInToString", "TypeMayBeWeakened"})
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -51,56 +63,75 @@ public class Throttler {
      */
     public Throttler(final int delayInMillis) {
         this.delayInMillis = Math.max(THROTTLER_DEFAULT_MS, delayInMillis);
+        intervalNanos = (long) this.delayInMillis * NANO_TO_MILLIS;
+        nextTimeInNanos = new AtomicLong(System.nanoTime());
     }
 
     /**
-     * The default wait as used by the network code.
+     * Get the currently defined delay in milliseconds.
      *
-     * @see #waitUntilRequestAllowed(int)
+     * @return ms
      */
-    @SuppressWarnings("WeakerAccess")
-    public void waitUntilRequestAllowed() {
-        waitUntilRequestAllowed(delayInMillis);
-    }
-
     public int getDelayInMillis() {
         return delayInMillis;
     }
 
+
     /**
-     * Uses {@link #lastRequestTime} to determine how long until the next request is allowed;
-     * and update {@link #lastRequestTime}; this needs to be synchronized across threads.
-     * <p>
-     * Note that as a result of this approach {@link #lastRequestTime} may in fact be
-     * in the future; callers to this routine effectively allocate time slots.
-     * <p>
-     * This method will sleep() until it can make a request; if 10 threads call this
-     * simultaneously, one will return immediately, one will return 1 second later,
-     * another two seconds etc.
-     * <p>
-     * This method may be called in special circumstances if the site needs
-     * extra throttling for certain APIs.
+     * Forces the throttler to wait for a specific duration.
+     * Call this when receiving a {@code 429 Too Many Requests} error.
+     *
+     * @param delayInMillis value as calculated from the {@code Retry-After} header
+     */
+    @SuppressWarnings("WeakerAccess")
+    public void onTooManyRequests(final int delayInMillis) {
+        final long targetTime = System.nanoTime() + delayInMillis * NANO_TO_MILLIS;
+
+        // Move the time forward.
+        // If another thread already set a longer delay, we don't shorten it.
+        nextTimeInNanos.updateAndGet(last -> Math.max(last, targetTime));
+    }
+
+    /**
+     * Wait for the default interval.
+     */
+    public void waitUntilRequestAllowed() {
+        waitUntilRequestAllowed(intervalNanos);
+    }
+
+    /**
+     * Wait for the given interval.
      *
      * @param delayInMillis Thread delay time
      */
     public void waitUntilRequestAllowed(final int delayInMillis) {
-        long wait;
-        synchronized (this) {
-            final long now = System.currentTimeMillis();
-            wait = delayInMillis - (now - lastRequestTime);
-            // lastRequestTime must be updated while synchronized. As soon as this
-            // block is left, another block may perform another update.
-            if (wait < 0) {
-                wait = 0;
-            }
-            lastRequestTime = now + wait;
-        }
+        waitUntilRequestAllowed(delayInMillis * NANO_TO_MILLIS);
+    }
 
-        if (wait > 0) {
+    /**
+     * Uses {@link #nextTimeInNanos} to determine when the next request is allowed.
+     * Callers to this routine effectively allocate time slots.
+     *
+     * @param delayInNano Thread delay time
+     */
+    private void waitUntilRequestAllowed(final long delayInNano) {
+        final long now = System.nanoTime();
+
+        // Add 0 to 500ms of extra random delay
+        final long jitterNanos = random.nextInt(500) * NANO_TO_MILLIS;
+
+        final long next = nextTimeInNanos.getAndUpdate(
+                last -> Math.max(now, last) + delayInNano + jitterNanos);
+
+        final long waitNanos = next - now;
+
+        if (waitNanos > 0) {
+            // Rounded up
+            final long waitMillis = (waitNanos + 999_999L) / NANO_TO_MILLIS;
             try {
-                Thread.sleep(wait);
+                Thread.sleep(waitMillis);
             } catch (@NonNull final InterruptedException ignore) {
-                // ignore
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -108,9 +139,11 @@ public class Throttler {
     @NonNull
     @Override
     public String toString() {
+        final long currentWaitMs = Math.max(0, (nextTimeInNanos.get() - System.nanoTime())
+                                               / NANO_TO_MILLIS);
         return "Throttler{"
                + "delayInMillis=" + delayInMillis
-               + ", lastRequestTime=" + lastRequestTime
+               + ", currentWaitMs=" + currentWaitMs
                + '}';
     }
 }
