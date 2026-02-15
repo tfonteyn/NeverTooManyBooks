@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
+import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -254,6 +256,7 @@ public class DnbSearchEngine
     protected OkHttpClient createHttpClient() {
         final SearchEngineConfig config = getEngineId().getConfig();
         //noinspection DataFlowIssue
+        final Throttler throttler = config.getThrottler();
         final boolean enableLog = config.isLogHttpGetRequests();
 
         final OkHttpClient.Builder builder = ServiceLocator
@@ -262,8 +265,8 @@ public class DnbSearchEngine
                 .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .addInterceptor(new RateLimitInterceptor(
-                        2 * config.getThrottlerDelayInMs(), enableLog));
+                .addInterceptor(new ThrottlingInterceptor(throttler))
+                .addInterceptor(new RateLimitInterceptor(throttler, enableLog));
 
         // this is a kludge... see DnbSslContextFactory why
         final SSLContext sslContext = getSslContext();
