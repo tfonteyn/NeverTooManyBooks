@@ -89,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -338,6 +339,13 @@ public final class CalibreContentServer
      */
     private static final String RESPONSE_TAG_LIBRARY_DETAILS = "library_details";
 
+    /**
+     * While a Calibre server is typically a private in-house setup, we still
+     * apply a Throttler to accomodate using weak hardware (e.g. raspberry-pi)
+     * The 200 millis was arbitrarily chosen
+     */
+    private static final int THROTTLER_DELAY_IN_MILLIS = 200;
+
     @NonNull
     private final Uri serverUri;
     /** As read from the Content Server. */
@@ -389,17 +397,15 @@ public final class CalibreContentServer
                 PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
-
-        // While a Calibre server is typically a private in-house setup, we still
-        // apply a RateLimitInterceptor to accomodate using weak hardware (e.g. raspberry-pi).
+        final Throttler throttler = new Throttler(THROTTLER_DELAY_IN_MILLIS);
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
                 .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS)
-                .addInterceptor(new RateLimitInterceptor(Throttler.THROTTLER_DEFAULT_MS,
-                                                         isLogHttpGetRequests()));
+                .addInterceptor(new ThrottlingInterceptor(throttler))
+                .addInterceptor(new RateLimitInterceptor(throttler, isLogHttpGetRequests()));
 
         if (sslContext != null && x509TrustManager != null) {
             builder.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager);
@@ -1472,7 +1478,7 @@ public final class CalibreContentServer
                          final int buffer)
             throws IOException {
 
-        jsonFetchCall = HttpCallFactory.create(httpClient, null, R.string.site_calibre, false);
+        jsonFetchCall = HttpCallFactory.create(httpClient, R.string.site_calibre, false);
         jsonFetchCall.setBufferSize(buffer);
         return jsonFetchCall.getAsString(createGetRequest(url));
     }
@@ -1517,7 +1523,7 @@ public final class CalibreContentServer
 
         final Uri destUri = destFile.getUri();
 
-        fileFetchCall = HttpCallFactory.create(httpClient, null, R.string.site_calibre, false);
+        fileFetchCall = HttpCallFactory.create(httpClient, R.string.site_calibre, false);
         fileFetchCall.setBufferSize(BUFFER_FILE);
         final Uri uri = fileFetchCall.get(createGetRequest(url), (response, is) -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
@@ -1685,7 +1691,7 @@ public final class CalibreContentServer
                 jsonBody,
                 MediaType.parse("application/json; charset=utf-8"));
 
-        postCall = HttpCallFactory.create(httpClient, null, R.string.site_calibre, false);
+        postCall = HttpCallFactory.create(httpClient, R.string.site_calibre, false);
         postCall.post(createPostRequest(url, body), null);
     }
 
