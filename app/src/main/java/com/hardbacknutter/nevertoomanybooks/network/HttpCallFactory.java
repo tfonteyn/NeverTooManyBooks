@@ -44,19 +44,6 @@ public final class HttpCallFactory {
     }
 
     /**
-     * Create a basic {@link FutureHttp} instance.
-     *
-     * @param siteResId string resource for the site name; used for logging/messages.
-     * @param <R>       the type of the return value for the request
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static <R> FutureHttp<R> create(@StringRes final int siteResId) {
-        return new FutureHttpImpl<>(siteResId);
-    }
-
-    /**
      * Create a {@link FutureHttp} based on the given engine configuration.
      * <p>
      * A new, default, {@link RateLimitInterceptor} will be created.
@@ -88,12 +75,12 @@ public final class HttpCallFactory {
     @NonNull
     public static <R> FutureHttp<R> create(@NonNull final EngineId engineId,
                                            @NonNull final RateLimitInterceptor rateLimiter) {
-        final FutureHttp<R> request = create(engineId.getLabelResId());
-
         final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
+
+        final FutureHttp<R> request = new FutureHttpImpl<>(engineId.getLabelResId(),
+                                                           config.getThrottler());
         request.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs())
-               .setThrottler(config.getThrottler())
                .setRateLimitInterceptor(rateLimiter)
                .enableLogging(config.isLogHttpGetRequests());
 

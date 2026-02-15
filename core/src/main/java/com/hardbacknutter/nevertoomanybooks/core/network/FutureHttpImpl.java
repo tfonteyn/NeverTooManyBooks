@@ -114,8 +114,8 @@ public class FutureHttpImpl<R>
     private Future<R> futureHttp;
     /** {@code GET}. */
     private int retryCount = RETRY_COUNT;
-    @Nullable
-    private Throttler throttler;
+    @NonNull
+    private final Throttler throttler;
     @Nullable
     private RateLimitInterceptor rateLimiter;
     @Nullable
@@ -135,9 +135,12 @@ public class FutureHttpImpl<R>
      * Constructor.
      *
      * @param siteResId for logging
+     * @param throttler to use
      */
-    public FutureHttpImpl(@StringRes final int siteResId) {
+    public FutureHttpImpl(@StringRes final int siteResId,
+                          @NonNull final Throttler throttler) {
         this.siteResId = siteResId;
+        this.throttler = throttler;
     }
 
     /**
@@ -258,13 +261,6 @@ public class FutureHttpImpl<R>
 
     @NonNull
     @Override
-    public FutureHttp<R> setThrottler(@Nullable final Throttler throttler) {
-        this.throttler = throttler;
-        return this;
-    }
-
-    @NonNull
-    @Override
     public FutureHttp<R> setRateLimitInterceptor(@Nullable final RateLimitInterceptor rateLimiter) {
         this.rateLimiter = rateLimiter;
         return this;
@@ -341,12 +337,6 @@ public class FutureHttpImpl<R>
 
     private int getFutureTimeout() {
         return connectTimeoutInMs + readTimeoutInMs + 10;
-    }
-
-    private void waitUntilRequestAllowed() {
-        if (throttler != null) {
-            throttler.waitUntilRequestAllowed();
-        }
     }
 
     /**
@@ -640,7 +630,6 @@ public class FutureHttpImpl<R>
 
         // start at 1 to make the logs clear.
         int attempt = 1;
-        int retryAfterMs;
 
         final HttpURLConnection initialRequest = createRequest(url, method);
         // Preserve for a potential manual redirect
@@ -657,7 +646,7 @@ public class FutureHttpImpl<R>
 
             //noinspection OverlyBroadCatchBlock
             try {
-                waitUntilRequestAllowed();
+                throttler.waitUntilRequestAllowed();
                 request.connect();
 
                 redirectCount = 0;
@@ -752,7 +741,7 @@ public class FutureHttpImpl<R>
 
                 attempt++;
                 checkAttempt(attempt, request, e);
-                retryAfterMs = calculateRetryAfterInMs(attempt, e.getRetryAfter());
+                throttler.onTooManyRequests(calculateRetryAfterInMs(attempt, e.getRetryAfter()));
 
             } catch (@NonNull final InterruptedIOException
                                     | FileNotFoundException
@@ -770,14 +759,7 @@ public class FutureHttpImpl<R>
 
                 attempt++;
                 checkAttempt(attempt, request, e);
-                retryAfterMs = calculateRetryAfterInMs(attempt, null);
-            }
-
-            try {
-                //noinspection BusyWait
-                Thread.sleep(retryAfterMs);
-            } catch (@NonNull final InterruptedException ignore) {
-                Thread.currentThread().interrupt();
+                throttler.onTooManyRequests(calculateRetryAfterInMs(attempt, null));
             }
         }
 
@@ -787,19 +769,6 @@ public class FutureHttpImpl<R>
             LoggerFactory.getLogger().d(TAG, message);
         }
         throw new NetworkException(message);
-    }
-
-    private int calculateRetryAfterInMs(final int attempt,
-                                        @Nullable final String retryHeader) {
-        if (rateLimiter != null) {
-            return rateLimiter.getRetryAfterInMs(attempt, retryHeader);
-
-        } else if (throttler != null) {
-            return 2 * throttler.getDelayInMillis();
-
-        } else {
-            return 2 * Throttler.THROTTLER_DEFAULT_MS;
-        }
     }
 
     private void checkAttempt(@IntRange(from = 1) final int attempt,
@@ -816,6 +785,14 @@ public class FutureHttpImpl<R>
         }
     }
 
+    private int calculateRetryAfterInMs(final int attempt,
+                                        @Nullable final String retryHeader) {
+        if (rateLimiter != null) {
+            return rateLimiter.getRetryAfterInMs(attempt, retryHeader);
+        } else {
+            return 2 * throttler.getDelayInMillis();
+        }
+    }
 
     @Nullable
     @Override
@@ -838,7 +815,7 @@ public class FutureHttpImpl<R>
                     }
                     request = createRequest(url, POST);
 
-                    waitUntilRequestAllowed();
+                    throttler.waitUntilRequestAllowed();
                     try (OutputStream os = request.getOutputStream();
                          Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                          Writer writer = new BufferedWriter(osw)) {
