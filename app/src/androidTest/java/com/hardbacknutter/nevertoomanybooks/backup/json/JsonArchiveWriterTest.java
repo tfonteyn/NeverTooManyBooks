@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -159,9 +159,8 @@ public class JsonArchiveWriterTest
         // Now modify/delete some books. We have at least 10 books to play with
         final List<Long> ids = exportResults.getBooksExported();
 
-        // Don't listen to lint. It proposes java.util.random.RandomGenerator
-        // but that is JDK 17 and not available on Android.
-        //noinspection TypeMayBeWeakened
+        // lint: java.util.random.RandomGenerator is JDK 17 and not available on Android.
+        @SuppressWarnings("TypeMayBeWeakened")
         final Random random = new Random();
         final long deletedBookId = ids.get(random.nextInt(10) + 1);
         final long modifiedBookId = ids.get(random.nextInt(10) + 1);
