@@ -777,7 +777,7 @@ public class FutureHttpImpl<R>
                 //noinspection BusyWait
                 Thread.sleep(retryAfterMs);
             } catch (@NonNull final InterruptedException ignore) {
-                // ignore
+                Thread.currentThread().interrupt();
             }
         }
 
