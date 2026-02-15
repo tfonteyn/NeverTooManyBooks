@@ -117,7 +117,7 @@ public class FutureHttpImpl<R>
     @NonNull
     private final Throttler throttler;
     @Nullable
-    private RateLimitInterceptor rateLimiter;
+    private final RateLimitInterceptor rateLimiter;
     @Nullable
     private SSLContext sslContext;
     @Nullable
@@ -129,18 +129,23 @@ public class FutureHttpImpl<R>
     /** -1: use the static default. */
     private int readTimeoutInMs = -1;
     /** Log {@code GET} and {@code HEAD} related url,responseCode and redirects. */
-    private boolean logHttpGetRequests;
+    private final boolean enableLog;
 
     /**
      * Constructor.
      *
      * @param siteResId for logging
      * @param throttler to use
+     * @param enableLog flag
      */
     public FutureHttpImpl(@StringRes final int siteResId,
-                          @NonNull final Throttler throttler) {
+                          @NonNull final Throttler throttler,
+                          final boolean enableLog) {
         this.siteResId = siteResId;
         this.throttler = throttler;
+        this.enableLog = enableLog;
+
+        rateLimiter = new RateLimitInterceptor(throttler, enableLog);
     }
 
     /**
@@ -259,13 +264,6 @@ public class FutureHttpImpl<R>
         return this;
     }
 
-    @NonNull
-    @Override
-    public FutureHttp<R> setRateLimitInterceptor(@Nullable final RateLimitInterceptor rateLimiter) {
-        this.rateLimiter = rateLimiter;
-        return this;
-    }
-
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     @Override
@@ -310,17 +308,9 @@ public class FutureHttpImpl<R>
         return this;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    @Override
-    public FutureHttp<R> enableLogging(final boolean enable) {
-        this.logHttpGetRequests = enable;
-        return this;
-    }
-
     @Override
     public boolean isLoggingEnabled() {
-        return logHttpGetRequests;
+        return enableLog;
     }
 
     @NonNull

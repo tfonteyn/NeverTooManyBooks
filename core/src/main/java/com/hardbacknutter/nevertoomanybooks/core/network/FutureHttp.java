@@ -44,6 +44,7 @@ public interface FutureHttp<R> {
      *
      * @return {@code this} (for chaining)
      */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     FutureHttp<R> setConnectTimeout(@IntRange(from = 0) int timeoutInMs);
 
@@ -54,18 +55,9 @@ public interface FutureHttp<R> {
      *
      * @return {@code this} (for chaining)
      */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     FutureHttp<R> setReadTimeout(@IntRange(from = 0) int timeoutInMs);
-
-    /**
-     * Set a {@link RateLimitInterceptor} to obey site usage rules.
-     *
-     * @param rateLimiter (optional) to use
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    FutureHttp<R> setRateLimitInterceptor(@Nullable RateLimitInterceptor rateLimiter);
 
     /**
      * Set whether redirects should be followed.
@@ -140,16 +132,10 @@ public interface FutureHttp<R> {
     FutureHttp<R> setHostnameVerifier(@Nullable HostnameVerifier verifier);
 
     /**
-     * Enable optional logging.
+     * Is logging enabled.
      *
-     * @param enable flag
-     *
-     * @return {@code this} (for chaining)
+     * @return flag
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    FutureHttp<R> enableLogging(boolean enable);
-
     boolean isLoggingEnabled();
 
     /**
@@ -160,6 +146,7 @@ public interface FutureHttp<R> {
      *
      * @return {@code this} (for chaining)
      */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     FutureHttp<R> setRequestProperty(@NonNull String key,
                                      @Nullable String value);
