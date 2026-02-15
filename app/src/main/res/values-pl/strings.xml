@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -66,7 +63,7 @@
     <string name="X_action_next">Dalej</string>
     <string name="X_action_previous">Wstecz</string>
     <string name="X_action_reset">Resetuj</string>
-    <string name="action_continue">Dalej</string>
+    <string name="action_continue">Kontynuować</string>
     <string name="X_action_send">Wyślij</string>
     <string name="X_action_try_again">Spróbuj ponownie</string>
     <string name="X_action_update">Aktualizować</string>
