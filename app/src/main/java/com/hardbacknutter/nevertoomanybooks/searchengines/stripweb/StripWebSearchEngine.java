@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -168,7 +169,7 @@ public class StripWebSearchEngine
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_shop,
                                             R.string.site_description_eu_comics),
-                                    "https://www.stripweb.be",
+                                    SITE_URL,
                                     new Locale("nl", "BE"))
                 .setPreferenceFragmentClazz(StripWebPreferencesFragment.class);
     }
@@ -245,19 +246,21 @@ public class StripWebSearchEngine
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.overview-item");
         // it will be null if there were no results.
-        if (section != null) {
-            final Element urlElement = section.selectFirst("a");
-            if (urlElement != null) {
-                String url = urlElement.attr("href");
-                // sanity check
-                if (url.startsWith("/")) {
-                    url = getHostUrl() + url;
-                }
-                final Document redirected = loadDocument(context, url, null);
-                if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
-                }
-            }
+        if (section == null) {
+            return;
+        }
+        final Element urlElement = section.selectFirst("a");
+        if (urlElement == null) {
+            return;
+        }
+        String url = urlElement.attr("href");
+        // sanity check
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            parse(context, redirected, fetchCovers, book);
         }
     }
 
@@ -447,76 +450,80 @@ public class StripWebSearchEngine
                             @NonNull final Element titleElement,
                             @NonNull final Book book) {
         final String text = cleanText(titleElement);
-        if (!text.isBlank()) {
-            // TITLE_SUFFIXES are as entered by site-employees, hence use site-locale
-            final String lcText = text.toLowerCase(getLocale(context));
-            final String title = TITLE_SUFFIXES
-                    .stream()
-                    .filter(lcText::endsWith)
-                    .map(suffix -> text.substring(0, text.length() - suffix.length()))
-                    .findAny()
-                    .orElse(text);
-            book.setTitle(title);
+        if (text.isBlank()) {
+            return;
         }
+        // TITLE_SUFFIXES are as entered by site-employees, hence use site-locale
+        final String lcText = text.toLowerCase(getLocale(context));
+        final String title = TITLE_SUFFIXES
+                .stream()
+                .filter(lcText::endsWith)
+                .map(suffix -> text.substring(0, text.length() - suffix.length()))
+                .findAny()
+                .orElse(text);
+        book.setTitle(title);
     }
 
     private void parseRating(@NonNull final Element details,
                              @NonNull final Book book) {
         final Element stars = details.selectFirst("div.stars");
-        if (stars != null) {
-            final Elements nr = stars.select("i.text-yellow");
-            // Rating is simply the amount of stars, i.e. 0..5
-            // Only add if at least 1 star (and max 5 as sanity check)
-            final int rating = nr.size();
-            if (rating > 0 && rating < 6) {
-                book.setRating(rating);
-            }
+        if (stars == null) {
+            return;
+        }
+        final Elements nr = stars.select("i.text-yellow");
+        // Rating is simply the amount of stars, i.e. 0..5
+        // Only add if at least 1 star (and max 5 as sanity check)
+        final int rating = nr.size();
+        if (rating > 0 && rating < 6) {
+            book.setRating(rating);
         }
     }
 
     private void parseLanguage(@NonNull final Book book,
                                @NonNull final Element td) {
         final String langCode = cleanText(td);
-        if (!langCode.isBlank()) {
-            // Another mess... the site uses an abbreviation for the language,
-            // but NOT a standard one.
-            // Seen in use: NL,FR,Fr,EN
-            switch (langCode.toLowerCase(Locale.ROOT)) {
-                case "nl":
-                    book.setLanguage(LANG_NLD);
-                    break;
-                case "fr":
-                    book.setLanguage(LANG_FRA);
-                    break;
-                case "en":
-                    book.setLanguage(LANG_ENG);
-                    break;
-                default:
-                    book.setLanguage(langCode);
-                    break;
-            }
+        if (langCode.isBlank()) {
+            return;
+        }
+        // Another mess... the site uses an abbreviation for the language,
+        // but NOT a standard one.
+        // Seen in use: NL,FR,Fr,EN
+        switch (langCode.toLowerCase(Locale.ROOT)) {
+            case "nl":
+                book.setLanguage(LANG_NLD);
+                break;
+            case "fr":
+                book.setLanguage(LANG_FRA);
+                break;
+            case "en":
+                book.setLanguage(LANG_ENG);
+                break;
+            default:
+                book.setLanguage(langCode);
+                break;
         }
     }
 
     private void parseDescription(@NonNull final Document document,
                                   @NonNull final Book book) {
         final Element desc = document.selectFirst("div.detail-description");
-        if (desc != null) {
-            String html = desc.html();
-            // Potentially contains an iframe (e.g. to YouTube content); remove it.
-            final int iStart = html.indexOf("<iframe");
-            if (iStart > 0) {
-                final int iEnd = html.indexOf("</iframe>");
-                // Sanity check
-                if (iEnd > iStart) {
-                    html = html.substring(0, iStart) + " " + html.substring(iEnd + 9);
-                }
+        if (desc == null) {
+            return;
+        }
+        String html = desc.html();
+        // Potentially contains an iframe (e.g. to YouTube content); remove it.
+        final int iStart = html.indexOf("<iframe");
+        if (iStart > 0) {
+            final int iEnd = html.indexOf("</iframe>");
+            // Sanity check
+            if (iEnd > iStart) {
+                html = html.substring(0, iStart) + " " + html.substring(iEnd + 9);
             }
+        }
 
-            final String s = cleanText(html);
-            if (!s.isBlank()) {
-                book.setDescription(s);
-            }
+        final String s = cleanText(html);
+        if (!s.isBlank()) {
+            book.setDescription(s);
         }
     }
 
@@ -524,25 +531,26 @@ public class StripWebSearchEngine
                             @NonNull final Document document,
                             @NonNull final Book book) {
         final Element cartForm = document.selectFirst("form[id='frmAddToCart']");
-        if (cartForm != null) {
-            // In EURO; contains a comma as decimal separate.
-            final Element price = cartForm.selectFirst("span[itemprop='price']");
-            if (price != null) {
-                final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
+        if (cartForm == null) {
+            return;
+        }
+        // In EURO; contains a comma as decimal separate.
+        final Element price = cartForm.selectFirst("span[itemprop='price']");
+        if (price != null) {
+            final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
-                final String priceStr = price.text().strip();
-                final LocaleList userLocales = context.getResources().getConfiguration()
-                                                      .getLocales();
-                final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
-                final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
-                addPriceListed(context, parser, priceStr, MoneyParser.EUR, book);
-            }
+            final String priceStr = price.text().strip();
+            final LocaleList userLocales = context.getResources().getConfiguration()
+                                                  .getLocales();
+            final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+            final MoneyParser parser = new MoneyParser(siteLocale, allLocales);
+            addPriceListed(context, parser, priceStr, MoneyParser.EUR, book);
+        }
 
-            final Element sidElement = cartForm.selectFirst("input[id='hdnArticleNo']");
-            if (sidElement != null) {
-                final String sid = sidElement.attr("value");
-                book.setIdentifierValue(Identifier.SID_STRIPWEB, sid);
-            }
+        final Element sidElement = cartForm.selectFirst("input[id='hdnArticleNo']");
+        if (sidElement != null) {
+            final String sid = sidElement.attr("value");
+            book.setIdentifierValue(Identifier.SID_STRIPWEB, sid);
         }
     }
 
@@ -674,7 +682,7 @@ public class StripWebSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -683,7 +691,7 @@ public class StripWebSearchEngine
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                             @IntRange(from = 0, to = 0) final int cIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         final Element cover = main.selectFirst("a.d-block");
         if (cover == null) {
