@@ -146,7 +146,7 @@ public class LastDodoSearchEngine
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_catalog,
                                             R.string.site_description_eu_comics),
-                                    "https://www.lastdodo.nl",
+                                    SITE_URL,
                                     new Locale("nl", "NL"))
                 .setIdentifierKey(Identifier.SID_LAST_DODO_NL)
                 .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class)
@@ -358,19 +358,21 @@ public class LastDodoSearchEngine
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.card-body");
         // it will be null if there were no results.
-        if (section != null) {
-            final Element urlElement = section.selectFirst("a");
-            if (urlElement != null) {
-                String url = urlElement.attr("href");
-                // sanity check - it normally does NOT have the protocol/site part
-                if (url.startsWith("/")) {
-                    url = getHostUrl() + url;
-                }
-                final Document redirected = loadDocument(context, url, null);
-                if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
-                }
-            }
+        if (section == null) {
+            return;
+        }
+        final Element urlElement = section.selectFirst("a");
+        if (urlElement == null) {
+            return;
+        }
+        String url = urlElement.attr("href");
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            parse(context, redirected, fetchCovers, book);
         }
     }
 
@@ -700,27 +702,28 @@ public class LastDodoSearchEngine
                                       @NonNull final Book book) {
 
         final List<Series> seriesList = book.getSeries();
-        if (!seriesList.isEmpty()) {
-            // Determine the book locale as best as we can
-            final String language = book.getLanguage();
-            @NonNull
-            final Locale locale;
-            if (language.isBlank()) {
-                // No book language -> use site Locale
-                locale = getLocale(context);
-            } else {
-                // Get the Locale from the language,
-                // but if that fails use the site Locale
-                final Locale userLocale = context.getResources().getConfiguration().getLocales()
-                                                 .get(0);
-                locale = ServiceLocator.getInstance().getAppLocale()
-                                       .getLocale(language, userLocale)
-                                       .orElseGet(() -> getLocale(context));
-            }
-
-            // Force normalization!
-            seriesDao.pruneList(context, seriesList, true, series -> locale);
+        if (seriesList.isEmpty()) {
+            return;
         }
+        // Determine the book locale as best as we can
+        final String language = book.getLanguage();
+        @NonNull
+        final Locale locale;
+        if (language.isBlank()) {
+            // No book language -> use site Locale
+            locale = getLocale(context);
+        } else {
+            // Get the Locale from the language,
+            // but if that fails use the site Locale
+            final Locale userLocale = context.getResources().getConfiguration().getLocales()
+                                             .get(0);
+            locale = ServiceLocator.getInstance().getAppLocale()
+                                   .getLocale(language, userLocale)
+                                   .orElseGet(() -> getLocale(context));
+        }
+
+        // Force normalization!
+        seriesDao.pruneList(context, seriesList, true, series -> locale);
     }
 
     /**
