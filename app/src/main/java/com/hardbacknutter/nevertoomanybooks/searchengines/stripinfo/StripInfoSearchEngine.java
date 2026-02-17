@@ -936,25 +936,25 @@ public class StripInfoSearchEngine
                             @AuthorRole.Role final int type,
                             @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
-        if (dataElement != null) {
-            dataElement.select("a").forEach(a -> {
-                final String name = cleanName(a);
-                final Author author = Author.from(name);
-
-                final String url = a.attr("href");
-                final Matcher matcher = AUTHOR_ID.matcher(url);
-                if (matcher.find()) {
-                    final String siId = matcher.group(1);
-                    if (siId != null) {
-                        author.setIdentifierValue(Identifier.SID_STRIP_INFO, siId);
-                    }
-                }
-
-                addAuthor(author, type, book);
-            });
-            return 1;
+        if (dataElement == null) {
+            return 0;
         }
-        return 0;
+        dataElement.select("a").forEach(a -> {
+            final String name = cleanName(a);
+            final Author author = Author.from(name);
+
+            final String url = a.attr("href");
+            final Matcher matcher = AUTHOR_ID.matcher(url);
+            if (matcher.find()) {
+                final String siId = matcher.group(1);
+                if (siId != null) {
+                    author.setIdentifierValue(Identifier.SID_STRIP_INFO, siId);
+                }
+            }
+
+            addAuthor(author, type, book);
+        });
+        return 1;
     }
 
     /**
@@ -980,16 +980,16 @@ public class StripInfoSearchEngine
         //    Coutoo
         // </a>
         // </h1>
-        if (seriesElement != null) {
-            final Element img = seriesElement.selectFirst("img");
-            if (img != null) {
-                return img.attr("alt");
-            } else {
-                final Element a = seriesElement.selectFirst("a");
-                if (a != null) {
-                    return a.text();
-                }
-            }
+        if (seriesElement == null) {
+            return null;
+        }
+        final Element img = seriesElement.selectFirst("img");
+        if (img != null) {
+            return img.attr("alt");
+        }
+        final Element a = seriesElement.selectFirst("a");
+        if (a != null) {
+            return a.text();
         }
 
         return null;
@@ -1006,22 +1006,22 @@ public class StripInfoSearchEngine
     private int parseSeriesOrCollection(@NonNull final Element td,
                                         @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
-        if (dataElement != null) {
-            final Elements as = dataElement.select("a");
-            for (int i = 0; i < as.size(); i++) {
-                final String text = cleanText(as.get(i));
-                final Series currentSeries = Series.from3(text);
-                // check if already present
-                if (book.getSeries().stream()
-                        .anyMatch(series -> series.equals(currentSeries))) {
-                    return 1;
-                }
-                // just add
-                book.add(currentSeries);
-            }
-            return 1;
+        if (dataElement == null) {
+            return 0;
         }
-        return 0;
+        final Elements as = dataElement.select("a");
+        for (int i = 0; i < as.size(); i++) {
+            final String text = cleanText(as.get(i));
+            final Series currentSeries = Series.from3(text);
+            // check if already present
+            if (book.getSeries().stream()
+                    .anyMatch(series -> series.equals(currentSeries))) {
+                return 1;
+            }
+            // just add
+            book.add(currentSeries);
+        }
+        return 1;
     }
 
     /**
@@ -1035,16 +1035,16 @@ public class StripInfoSearchEngine
     private int parsePublisher(@NonNull final Element td,
                                @NonNull final Book book) {
         final Element data = td.nextElementSibling();
-        if (data != null) {
-            data.select("a")
-                .stream()
-                .map(this::cleanText)
-                .filter(text -> !text.isBlank())
-                .map(Publisher::from)
-                .forEach(book::add);
-            return 1;
+        if (data == null) {
+            return 0;
         }
-        return 0;
+        data.select("a")
+            .stream()
+            .map(this::cleanText)
+            .filter(text -> !text.isBlank())
+            .map(Publisher::from)
+            .forEach(book::add);
+        return 1;
     }
 
     /**
@@ -1065,27 +1065,28 @@ public class StripInfoSearchEngine
     private void parseDescription(@NonNull final Element item,
                                   @NonNull final Book book) {
         final Elements sections = item.select("section.c4");
-        if (!sections.isEmpty()) {
-            final StringBuilder content = new StringBuilder();
-            for (int i = 0; i < sections.size(); i++) {
-                final Element sectionElement = sections.get(i);
-                // a section usually has 'h4' tags, replace with 'b' and add a line feed 'br'
-                String text = H4_OPEN_PATTERN
-                        .matcher(sectionElement.html())
-                        .replaceAll(Matcher.quoteReplacement("<b>"));
-                text = H4_CLOSE_PATTERN
-                        .matcher(text)
-                        .replaceAll(Matcher.quoteReplacement("</b>\n<br>"));
+        if (sections.isEmpty()) {
+            return;
+        }
+        final StringBuilder content = new StringBuilder();
+        for (int i = 0; i < sections.size(); i++) {
+            final Element sectionElement = sections.get(i);
+            // a section usually has 'h4' tags, replace with 'b' and add a line feed 'br'
+            String text = H4_OPEN_PATTERN
+                    .matcher(sectionElement.html())
+                    .replaceAll(Matcher.quoteReplacement("<b>"));
+            text = H4_CLOSE_PATTERN
+                    .matcher(text)
+                    .replaceAll(Matcher.quoteReplacement("</b>\n<br>"));
 
-                content.append(cleanText(text));
-                if (i < sections.size() - 1) {
-                    // separate multiple sections
-                    content.append("\n<br>\n<br>");
-                }
+            content.append(cleanText(text));
+            if (i < sections.size() - 1) {
+                // separate multiple sections
+                content.append("\n<br>\n<br>");
             }
-            if (content.length() > 0) {
-                book.setDescription(content.toString());
-            }
+        }
+        if (content.length() > 0) {
+            book.setDescription(content.toString());
         }
     }
 
