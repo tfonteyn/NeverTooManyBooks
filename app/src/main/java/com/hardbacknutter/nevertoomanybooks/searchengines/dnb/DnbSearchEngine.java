@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -274,6 +275,12 @@ public class DnbSearchEngine
             final SniSslSocketFactory sniSslSocketFactory = new SniSslSocketFactory(
                     sslContext.getSocketFactory());
             builder.sslSocketFactory(sniSslSocketFactory, x509TrustManager);
+        }
+
+        if (enableLog) {
+            // use the app context, it's the non-translatable name used as a log tag
+            final String tag = getName(ServiceLocator.getInstance().getAppContext());
+            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(tag));
         }
 
         return builder.build();
