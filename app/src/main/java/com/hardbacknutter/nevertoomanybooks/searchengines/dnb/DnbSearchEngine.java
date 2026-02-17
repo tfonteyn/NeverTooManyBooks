@@ -120,6 +120,7 @@ public class DnbSearchEngine
 
     private static final String TAG = "DnbSearchEngine";
 
+    /** The search site. */
     static final String KATALOG_DNB_DE = "https://katalog.dnb.de";
 
     private static final String PREFERENCE_KEY = "dnb";
@@ -129,8 +130,10 @@ public class DnbSearchEngine
      * <p>
      * GitHub #229: http response 429 Too Many Request
      * robots.txt: Crawl-delay: 10  (seconds)
+     * <p>
+     * 2026-02-17: we'll gamble... use 5 seconds...
      */
-    private static final int THROTTLER_DELAY_IN_MS = 10_000;
+    private static final int THROTTLER_DELAY_IN_MS = 5_000;
 
     /**
      * Preference key: Whether to try loading cover images from the portal ('old' site)
@@ -243,7 +246,7 @@ public class DnbSearchEngine
                                     R.string.site_dnb_de,
                                     List.of(R.string.site_description_german,
                                             R.string.site_description_catalog),
-                                    "https://katalog.dnb.de",
+                                    KATALOG_DNB_DE,
                                     new Locale("de", "DE"))
                 .setIdentifierKey(Identifier.SID_DNB)
                 .setPreferenceFragmentClazz(DnbPreferencesFragment.class)
@@ -429,114 +432,116 @@ public class DnbSearchEngine
             parseTitle(titleElement, book);
         }
 
-        final Element tableElement = document.selectFirst("table.c-catalog-table__table");
-        // We could collapse the above select with the select for the tr's
+        // We could collapse the this with the select for the tr's (see below)
         // But there is a tbody in between, let's take the safe route for now
-        if (tableElement != null) {
-            final Elements trs = tableElement.select("tr.c-catalog-table__row");
-            for (final Element tr : trs) {
-                final Element label = tr.selectFirst("th.c-catalog-table__head > p");
-                if (label != null) {
-                    final Element td = tr.selectFirst("td.c-catalog-table__content > p");
-                    if (td != null) {
-                        final String s = label.text();
-                        // We should get the german labels, but it seems we might get the
-                        // english ones despite the "DE" in the url. So... check on both!
-                        switch (s) {
-                            case "Titel":
-                            case "Title": {
-                                if (!book.contains(DBKey.TITLE)) {
-                                    parseTitle(td, book);
-                                }
-                                break;
+        final Element tableElement = document.selectFirst("table.c-catalog-table__table");
+        if (tableElement == null) {
+            return;
+        }
+        final Elements trs = tableElement.select("tr.c-catalog-table__row");
+        for (final Element tr : trs) {
+            final Element label = tr.selectFirst("th.c-catalog-table__head > p");
+            if (label != null) {
+                final Element td = tr.selectFirst("td.c-catalog-table__content > p");
+                if (td != null) {
+                    final String s = label.text();
+                    // We should get the german labels, but it seems we might get the
+                    // English ones despite the "DE" in the url. So... check on both!
+                    switch (s) {
+                        case "Titel":
+                        case "Title": {
+                            if (!book.contains(DBKey.TITLE)) {
+                                parseTitle(td, book);
                             }
-                            case "Beteiligt":
-                            case "Involved": {
-                                parseAuthor(context, td, book);
-                                break;
-                            }
-                            case "Erschienen":
-                            case "Published": {
-                                parsePublisher(context, td, book);
-                                break;
-                            }
-                            case "Umfang":
-                            case "Extent": {
-                                // can also contain colour and format
-                                parsePageNumber(context, td, book);
-                                break;
-                            }
-                            case "ISBN": {
-                                parseIsbn(td, book);
-                                break;
-                            }
-                            case "Sprache":
-                            case "Language": {
-                                book.setLanguage(
-                                        languages.getISO3FromDisplayLanguage(td.text(), locale));
-                                break;
-                            }
-                            case "Genre": {
-                                parseGenreTags(td, book);
-                                break;
-                            }
-                            case "Werk":
-                            case "Work": {
-                                // The original title for a translated book
-                                // Can have Series/nr prefixed; let the user clean that up.
-                                book.setTranslatedFromTitle(cleanName(td));
-                                break;
-                            }
-                            case "Teil von":
-                            case "Part of":
-                                parsePartOf(td, book);
-                                break;
-
-                            case "Reihe":
-                            case "Series": {
-                                parseSeries(td, book);
-                                break;
-                            }
-                            case "Persistent Identifier": {
-                                parseIdentifiers(td, book);
-                                break;
-                            }
-                            case "Datensatz-ID":
-                            case "Record ID": {
-                                book.setIdentifierValue(Identifier.SID_DNB, td.text());
-                                break;
-                            }
-                            case "Originalsprache":
-                            case "Original language": {
-                                book.setTranslatedFromLanguage(
-                                        languages.getISO3FromDisplayLanguage(td.text(), locale));
-                                break;
-                            }
-                            case "Land":
-                            case "Country":
-                            case "DDC-Notation":
-                            case "DDC notation":
-                                // ignored for now as we don't have a field for it.
-                                // ddc: Dewey-Decimal
-                                break;
+                            break;
                         }
+                        case "Beteiligt":
+                        case "Involved": {
+                            parseAuthor(context, td, book);
+                            break;
+                        }
+                        case "Erschienen":
+                        case "Published": {
+                            parsePublisher(context, td, book);
+                            break;
+                        }
+                        case "Umfang":
+                        case "Extent": {
+                            // can also contain colour and format
+                            parsePageNumber(context, td, book);
+                            break;
+                        }
+                        case "ISBN": {
+                            parseIsbn(td, book);
+                            break;
+                        }
+                        case "Sprache":
+                        case "Language": {
+                            book.setLanguage(
+                                    languages.getISO3FromDisplayLanguage(td.text(), locale));
+                            break;
+                        }
+                        case "Genre": {
+                            parseGenreTags(td, book);
+                            break;
+                        }
+                        case "Werk":
+                        case "Work": {
+                            // The original title for a translated book
+                            // Can have Series/nr prefixed; let the user clean that up.
+                            book.setTranslatedFromTitle(cleanName(td));
+                            break;
+                        }
+                        case "Teil von":
+                        case "Part of":
+                            parsePartOf(td, book);
+                            break;
+
+                        case "Reihe":
+                        case "Series": {
+                            parseSeries(td, book);
+                            break;
+                        }
+                        case "Persistent Identifier": {
+                            parseIdentifiers(td, book);
+                            break;
+                        }
+                        case "Datensatz-ID":
+                        case "Record ID": {
+                            book.setIdentifierValue(Identifier.SID_DNB, td.text());
+                            break;
+                        }
+                        case "Originalsprache":
+                        case "Original language": {
+                            book.setTranslatedFromLanguage(
+                                    languages.getISO3FromDisplayLanguage(td.text(), locale));
+                            break;
+                        }
+                        case "Land":
+                        case "Country":
+                        case "DDC-Notation":
+                        case "DDC notation":
+                            // ignored for now as we don't have a field for it.
+                            // ddc: Dewey-Decimal
+                            break;
                     }
                 }
             }
+        }
 
-            authorResolverHelper.resolve(context, this, book);
+        authorResolverHelper.resolve(context, this, book);
 
-            if (isCancelled()) {
-                return;
-            }
+        if (isCancelled()) {
+            return;
+        }
 
-            if (fetchCovers[0]) {
-                // Disabled, see DnbSslContextFactory.
-                // As we need a custom keystore/certs, we can't use the same
-                // Http client to talk to the portal sit which uses
-                // different certs.
-                // URGENT: Review on 1-April-2026 (haha..) to see if their new
-                //  certs are still broken.
+        if (fetchCovers[0]) {
+            // Disabled, see DnbSslContextFactory.
+            // As we need a custom keystore/certs, we can't use the same
+            // Http client to talk to the portal sit which uses
+            // different certs.
+            // URGENT: Review on 1-April-2026 (haha..) to see if their new
+            //  certs are still broken.
 //                if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
 //                        PK_COVERS_FROM_PORTAL, false)) {
 //                    // TRY the hires/portal link first
@@ -549,10 +554,9 @@ public class DnbSearchEngine
 //                        return;
 //                    }
 //                }
-                // Standard parsing, also used as fallback if the hires/portal call fails.
-                parseCover(context, document, book.getIsbn(), 0).ifPresent(
-                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-            }
+            // Standard parsing, also used as fallback if the hires/portal call fails.
+            parseCover(context, document, book.getIsbn(), 0).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
 
@@ -703,20 +707,22 @@ public class DnbSearchEngine
     private void parsePartOf(@NonNull final Element td,
                              @NonNull final Book book) {
         final Element a = td.selectFirst("a");
-        if (a != null) {
-            final String title = cleanName(a);
-            if (!title.isBlank()) {
-                final Series series = Series.from(title);
-                final Node node = a.nextSibling();
-                if (node != null) {
-                    final String nrText = node.outerHtml();
-                    if (nrText.startsWith(" ; ") && nrText.length() > 3) {
-                        series.setNumber(nrText.substring(3));
-                    }
-                }
-                book.add(series);
+        if (a == null) {
+            return;
+        }
+        final String title = cleanName(a);
+        if (title.isBlank()) {
+            return;
+        }
+        final Series series = Series.from(title);
+        final Node node = a.nextSibling();
+        if (node != null) {
+            final String nrText = node.outerHtml();
+            if (nrText.startsWith(" ; ") && nrText.length() > 3) {
+                series.setNumber(nrText.substring(3));
             }
         }
+        book.add(series);
     }
 
     /**
@@ -777,38 +783,42 @@ public class DnbSearchEngine
                                 @NonNull final Element td,
                                 @NonNull final Book book) {
         final Element p = td.selectFirst("p");
-        if (p != null) {
-            // The part before '<br>' is a city/region name followed by ':' and the pub. name
-            // The part after '<br>' is the publishing date
-            final String[] brSplit = PATTERN_BR.split(p.html());
+        if (p == null) {
+            return;
+        }
 
-            if (brSplit.length > 0 && !brSplit[0].isBlank()) {
-                final String name;
-                if (brSplit[0].contains(":")) {
-                    final String[] parts = brSplit[0].split(":", 2);
-                    name = cleanName(parts[parts.length - 1]);
-                } else {
-                    name = cleanName(brSplit[0]);
-                }
+        // The part before '<br>' is a city/region name followed by ':' and the pub. name
+        // The part after '<br>' is the publishing date
+        final String[] brSplit = PATTERN_BR.split(p.html());
 
-                if (!name.isBlank()) {
-                    book.add(Publisher.from(name));
-                }
+        if (brSplit.length == 0 || brSplit[0].isBlank()) {
+            return;
+        }
 
-                if (brSplit.length > 1) {
-                    // strip to remove line-feeds and other blanks
-                    String dateStr = brSplit[1].strip();
-                    if (!dateStr.isBlank()) {
-                        // Handle "[text]" with text a minimum of 4 characters, i.e. a year
-                        if (dateStr.length() > 5
-                            && dateStr.startsWith("[")
-                            && dateStr.endsWith("]")) {
-                            dateStr = dateStr.substring(1, dateStr.length() - 1);
-                        }
-                        partialDateParser.parse(dateStr, getLocale(context))
-                                         .ifPresent(book::setPublicationDate);
-                    }
+        final String name;
+        if (brSplit[0].contains(":")) {
+            final String[] parts = brSplit[0].split(":", 2);
+            name = cleanName(parts[parts.length - 1]);
+        } else {
+            name = cleanName(brSplit[0]);
+        }
+
+        if (!name.isBlank()) {
+            book.add(Publisher.from(name));
+        }
+
+        if (brSplit.length > 1) {
+            // strip to remove line-feeds and other blanks
+            String dateStr = brSplit[1].strip();
+            if (!dateStr.isBlank()) {
+                // Handle "[text]" with text a minimum of 4 characters, i.e. a year
+                if (dateStr.length() > 5
+                    && dateStr.startsWith("[")
+                    && dateStr.endsWith("]")) {
+                    dateStr = dateStr.substring(1, dateStr.length() - 1);
                 }
+                partialDateParser.parse(dateStr, getLocale(context))
+                                 .ifPresent(book::setPublicationDate);
             }
         }
     }
