@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -258,7 +255,7 @@
     <string name="pc_advanced_options">Avanzate</string>
     <string name="lbl_all_bookshelves">Tutte le librerie</string>
     <string name="lbl_book_type_anthology">Antologia</string>
-    <string name="lbl_archive_format">Formatta</string>
+    <string name="lbl_archive_format">Formato</string>
     <string name="option_info_archive_format_db">Il database SQLite.</string>
     <string name="option_info_archive_format_json">Tutti i dati in formato JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Questo è solo per l’esportazione dei dati; l’importazione non è supportata.</string>
@@ -358,7 +355,7 @@
     <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Primo anno di pubblicazione</string>
     <string name="lbl_date_first_publication">Prima pubblicazione</string>
-    <string name="lbl_format">Formatta</string>
+    <string name="lbl_format">Formato</string>
     <string name="pc_formatting">Formattazione</string>
     <string name="lbl_genre">Genere</string>
     <string name="lbl_given_names">Nome</string>
