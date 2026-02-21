@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,9 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,21 +31,32 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi29;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Run twice; against the API specific versions:
+ * {@link TextNormalizerApi29} and {@link TextNormalizerApi26}
+ */
 @MediumTest
 @SuppressWarnings("MissingJavadoc")
+@RunWith(Parameterized.class)
 public class AuthorTest
         extends BaseDBTest {
 
@@ -66,12 +79,25 @@ public class AuthorTest
 
     private AuthorDao authorDao;
 
+    private final TextNormalizer textNormalizer;
+
+    public AuthorTest(@NonNull final TextNormalizer textNormalizer) {
+        this.textNormalizer = textNormalizer;
+    }
+
+    @Parameterized.Parameters
+    public static Collection<TextNormalizer> data() {
+        return List.of(new TextNormalizerApi26(),
+                       new TextNormalizerApi29());
+    }
+
     @Before
     public void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         authorDao = serviceLocator.getAuthorDao();
+        ((BaseDaoImpl) authorDao).setTextNormalizer(textNormalizer);
     }
 
     @Test
