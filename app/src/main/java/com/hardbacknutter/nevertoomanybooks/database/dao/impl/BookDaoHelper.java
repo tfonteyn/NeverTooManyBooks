@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -82,6 +82,8 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
+    private final TextNormalizer textNormalizer;
+    @NonNull
     private final List<Locale> userLocales;
     @NonNull
     private final TableInfo tableInfo;
@@ -94,12 +96,15 @@ public class BookDaoHelper {
     /**
      * Constructor.
      *
-     * @param tableInfo   of the {@link DBDefinitions#TBL_BOOKS} table
-     * @param userLocales Current Locales
+     * @param tableInfo      of the {@link DBDefinitions#TBL_BOOKS} table
+     * @param textNormalizer to use
+     * @param userLocales    Current Locales
      */
     public BookDaoHelper(@NonNull final TableInfo tableInfo,
+                         @NonNull final TextNormalizer textNormalizer,
                          @NonNull final List<Locale> userLocales) {
         this.tableInfo = tableInfo;
+        this.textNormalizer = textNormalizer;
         this.userLocales = userLocales;
 
         tableDomains = DBDefinitions.TBL_BOOKS.getDomains();
@@ -155,7 +160,7 @@ public class BookDaoHelper {
             final String obTitle = new ReorderHelper(locales)
                     .reorderForSorting(context, title, bookLocale);
 
-            book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obTitle, bookLocale));
+            book.putString(DBKey.TITLE_OB, textNormalizer.orderByColumn(obTitle, bookLocale));
         }
 
         // normalise/store only valid bits

@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -100,8 +99,8 @@ public class SeriesDaoImpl
                 .reorderForSorting(context, title, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                SqlEncode.orderByColumn(title, locale),
-                SqlEncode.orderByColumn(obTitle, locale)})) {
+                textNormalizer.orderByColumn(title, locale),
+                textNormalizer.orderByColumn(obTitle, locale)})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Series(rowData.getLong(DBKey.PK_ID), rowData));
@@ -352,7 +351,7 @@ public class SeriesDaoImpl
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, title);
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
+            stmt.bindString(2, textNormalizer.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             iId = stmt.executeInsert();
         }
@@ -383,7 +382,7 @@ public class SeriesDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
+            stmt.bindString(2, textNormalizer.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
 
             stmt.bindLong(4, series.getId());
@@ -515,7 +514,7 @@ public class SeriesDaoImpl
 
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, locale);
-                final String rObTitle = SqlEncode.orderByColumn(rTitle, locale);
+                final String rObTitle = textNormalizer.orderByColumn(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

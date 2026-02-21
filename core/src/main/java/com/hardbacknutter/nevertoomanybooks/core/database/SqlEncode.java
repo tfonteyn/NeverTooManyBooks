@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
@@ -112,22 +111,6 @@ public final class SqlEncode {
     @NonNull
     public static String dateTime(@NonNull final CharSequence dateTime) {
         return T.matcher(dateTime).replaceFirst(" ");
-    }
-
-    /**
-     * Prepare a string to be inserted in the 'Order By' column.
-     * e.g. Author names, the Title of a book
-     * Keep normalised basic characters and digits, strip spaces, make all lowercase.
-     *
-     * @param text   to normalise
-     * @param locale Current Locale
-     *
-     * @return normalised text; always lowercase
-     */
-    @NonNull
-    public static String orderByColumn(@NonNull final CharSequence text,
-                                       @NonNull final Locale locale) {
-        return TextNormalizerFactory.create().orderByColumn(text, locale);
     }
 
     /**

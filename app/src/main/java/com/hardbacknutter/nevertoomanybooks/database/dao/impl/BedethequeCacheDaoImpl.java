@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -63,7 +62,7 @@ public class BedethequeCacheDaoImpl
     @NonNull
     public Optional<BdtAuthor> findByName(@NonNull final String name,
                                           @NonNull final Locale locale) {
-        final String nameOb = SqlEncode.orderByColumn(name, locale);
+        final String nameOb = textNormalizer.orderByColumn(name, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{nameOb, nameOb})) {
             if (cursor.moveToFirst()) {
@@ -111,7 +110,7 @@ public class BedethequeCacheDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     stmt.bindString(1, bdtAuthor.getName());
-                    stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
+                    stmt.bindString(2, textNormalizer.orderByColumn(bdtAuthor.getName(), locale));
                     stmt.bindString(3, bdtAuthor.getUrl());
                     iId = stmt.executeInsert();
                     if (iId != -1) {
@@ -164,7 +163,7 @@ public class BedethequeCacheDaoImpl
                     if (bdtAuthor.getId() == 0) {
                         // insert the name from the last AS-IS
                         stmtInsert.bindString(1, bdtAuthor.getName());
-                        stmtInsert.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(),
+                        stmtInsert.bindString(2, textNormalizer.orderByColumn(bdtAuthor.getName(),
                                                                          locale));
                         stmtInsert.bindString(3, bdtAuthor.getUrl());
                         iId = stmtInsert.executeInsert();
@@ -211,7 +210,7 @@ public class BedethequeCacheDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 // the name from the last AS-IS
                 stmt.bindString(1, bdtAuthor.getName());
-                stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
+                stmt.bindString(2, textNormalizer.orderByColumn(bdtAuthor.getName(), locale));
                 stmt.bindString(3, bdtAuthor.getUrl());
 
                 // if there is no real-name, or it's identical to the list name
@@ -221,7 +220,7 @@ public class BedethequeCacheDaoImpl
                     stmt.bindNull(5);
                 } else {
                     stmt.bindString(4, realName);
-                    stmt.bindString(5, SqlEncode.orderByColumn(realName, locale));
+                    stmt.bindString(5, textNormalizer.orderByColumn(realName, locale));
                 }
 
                 stmt.bindLong(6, bdtAuthor.getId());

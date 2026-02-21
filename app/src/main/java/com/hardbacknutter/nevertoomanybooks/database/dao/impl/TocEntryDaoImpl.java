@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -194,8 +193,8 @@ public class TocEntryDaoImpl
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_AUTHOR_AND_TITLE, new String[]{
                 String.valueOf(tocEntry.getPrimaryAuthor().getId()),
-                SqlEncode.orderByColumn(title, locale),
-                SqlEncode.orderByColumn(obTitle, locale)})) {
+                textNormalizer.orderByColumn(title, locale),
+                textNormalizer.orderByColumn(obTitle, locale)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final String fpd = rowData.getString(DBKey.FIRST_PUBLICATION_DATE);
@@ -335,7 +334,7 @@ public class TocEntryDaoImpl
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, author.getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
-                    stmtInsToc.bindString(3, SqlEncode.orderByColumn(obTitle, locale));
+                    stmtInsToc.bindString(3, textNormalizer.orderByColumn(obTitle, locale));
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
 
@@ -352,7 +351,7 @@ public class TocEntryDaoImpl
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
                     stmtUpdToc.bindString(1, tocEntry.getTitle());
-                    stmtUpdToc.bindString(2, SqlEncode.orderByColumn(obTitle, locale));
+                    stmtUpdToc.bindString(2, textNormalizer.orderByColumn(obTitle, locale));
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());
@@ -504,7 +503,7 @@ public class TocEntryDaoImpl
 
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, locale);
-                final String rObTitle = SqlEncode.orderByColumn(rTitle, locale);
+                final String rObTitle = textNormalizer.orderByColumn(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

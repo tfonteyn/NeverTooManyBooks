@@ -172,7 +172,8 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, textNormalizer,
+                                                                  userLocales);
             final ContentValues cv = bookDaoHelper.process(context, book, true);
 
             // Make sure we have at least one author
@@ -277,7 +278,8 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, textNormalizer,
+                                                                  userLocales);
             final ContentValues cv = bookDaoHelper.process(context, book, false);
 
             // Disallow UUID updates
@@ -1001,7 +1003,7 @@ public class BookDaoImpl
                         .orElse(locale);
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, bookLocale);
-                final String rObTitle = SqlEncode.orderByColumn(rTitle, bookLocale);
+                final String rObTitle = textNormalizer.orderByColumn(rTitle, bookLocale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

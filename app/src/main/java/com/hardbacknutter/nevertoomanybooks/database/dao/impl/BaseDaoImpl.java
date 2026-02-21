@@ -30,6 +30,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 class BaseDaoImpl {
@@ -85,6 +87,7 @@ class BaseDaoImpl {
     /** Reference to the <strong>singleton</strong> which makes it safe to store/share here. */
     @NonNull
     final SynchronizedDb db;
+    final TextNormalizer textNormalizer;
 
     /**
      * Constructor.
@@ -99,6 +102,7 @@ class BaseDaoImpl {
         }
 
         this.db = db;
+        textNormalizer = TextNormalizerFactory.create();
     }
 
     /**

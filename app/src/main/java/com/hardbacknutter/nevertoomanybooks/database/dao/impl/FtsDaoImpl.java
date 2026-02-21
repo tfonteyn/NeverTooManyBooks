@@ -34,7 +34,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -115,7 +114,8 @@ public class FtsDaoImpl
         if (text == null || text.isBlank()) {
             stmt.bindNull(position);
         } else {
-            stmt.bindString(position, SqlEncode.normalize(text));
+            // Simple normalize, we want to remove any '-'
+            stmt.bindString(position, textNormalizer.normalize(text));
         }
     }
 
@@ -125,9 +125,10 @@ public class FtsDaoImpl
         if (list.isEmpty()) {
             stmt.bindNull(position);
         } else {
+            // Simple normalize, we want to remove any '-'
             final String normalized = list
                     .stream()
-                    .map(SqlEncode::normalize)
+                    .map(textNormalizer::normalize)
                     .collect(Collectors.joining(LIST_DELIMITER));
             if (normalized.isBlank()) {
                 stmt.bindNull(position);

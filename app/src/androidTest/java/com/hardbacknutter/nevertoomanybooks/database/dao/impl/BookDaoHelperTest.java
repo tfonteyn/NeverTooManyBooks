@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,8 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -48,6 +50,7 @@ public class BookDaoHelperTest
         extends BaseDBTest {
 
     private TableInfo tableInfo;
+    private TextNormalizer textNormalizer;
 
     @Before
     public void setup()
@@ -55,6 +58,7 @@ public class BookDaoHelperTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         tableInfo = serviceLocator.getDb().getTableInfo(DBDefinitions.TBL_BOOKS);
+        textNormalizer = TextNormalizerFactory.create();
     }
 
     @Test
@@ -83,7 +87,8 @@ public class BookDaoHelperTest
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS,
                                                          "18306114")));
 
-        final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
+        final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, textNormalizer,
+                                                              userLocales);
         final ContentValues cv = bookDaoHelper.process(context, book, false);
 
         assertEquals(5, cv.size());
