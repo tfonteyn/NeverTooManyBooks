@@ -25,41 +25,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi29;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
-
 /**
- * Used to create {@code ORDER BY} suitable strings, quotes, dates etc.
- * <p>
- * This class (and the implementation classes) MUST be tested with "androidTest"
- * as unit-testing will cause false positives/failures due to the lack/presence
- * of the flag {@code Pattern.UNICODE_CHARACTER_CLASS}.
- * <p>
- * See <a href="https://issuetracker.google.com/issues/181655428">Google bug 181655428</a>
- * and <a href="https://issuetracker.google.com/issues/127290684">Google bug 127290684</a>
- * <pre>
- *  1. Normally we should use the flag:
- *          {@code Pattern.UNICODE_CHARACTER_CLASS}
- *     but android does not need/support it as it always uses Unicode (it says...)
- *     When using {Alnum} Android will NOT use Unicode contradicting the above.
- *
- *  2. Combining explicit Unicode {IsAlphabetic} with 'd' for digits
- *     Pattern.compile("[^\\p{IsAlphabetic}\\d ]");
- *     and unit testing on JDK 17 (Windows) works fine, but fails
- *     with on-device test.
- *     google bug: https://issuetracker.google.com/issues/181655428
- *
- *  3. Using as per Google bug:
- *     Pattern.compile("[^\\p{Alpha}\\d ]");
- *     unit testing fails on the hosting JDK 17 for non-latin
- *     (works for latin), but works with on-device test.
- * </pre>
- * <p>
- * Passes "androidTest" on API 26,27,31,33
- *
- * @see TextNormalizerApi26
- * @see TextNormalizerApi29
+ * Used to encode quotes and dates etc.
  */
 public final class SqlEncode {
 
@@ -111,18 +78,5 @@ public final class SqlEncode {
     @NonNull
     public static String dateTime(@NonNull final CharSequence dateTime) {
         return T.matcher(dateTime).replaceFirst(" ");
-    }
-
-    /**
-     * Normalise the given string and remove any non-alpha/digit/space characters.
-     * The case is preserved.
-     *
-     * @param text to normalise
-     *
-     * @return normalized text
-     */
-    @NonNull
-    public static String normalize(@NonNull final CharSequence text) {
-        return TextNormalizerFactory.create().normalize(text);
     }
 }
