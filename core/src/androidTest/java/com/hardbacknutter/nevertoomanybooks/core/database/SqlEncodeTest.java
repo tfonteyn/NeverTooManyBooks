@@ -20,16 +20,15 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi26;
-import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi29;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,35 +47,16 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class SqlEncodeTest {
 
-    private final int api;
+    private final TextNormalizer textNormalizer;
 
-    public SqlEncodeTest(final int api) {
-        this.api = api;
+    public SqlEncodeTest(@NonNull final TextNormalizer textNormalizer) {
+        this.textNormalizer = textNormalizer;
     }
 
     @Parameterized.Parameters
-    public static Collection<Integer> data() {
-        return List.of(Build.VERSION_CODES.O,
-                       Build.VERSION_CODES.Q);
-    }
-
-    @NonNull
-    private String normalize(@NonNull final CharSequence source) {
-        if (api == Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.normalize(source);
-        } else {
-            return TextNormalizerApi26.normalize(source);
-        }
-    }
-
-    @NonNull
-    private String orderByColumn(@NonNull final CharSequence source,
-                                 @NonNull final Locale locale) {
-        if (api == Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.orderByColumn(source, locale);
-        } else {
-            return TextNormalizerApi26.orderByColumn(source, locale);
-        }
+    public static Collection<TextNormalizer> data() {
+        return List.of(new TextNormalizerApi26(),
+                       new TextNormalizerApi29());
     }
 
     @Test
@@ -88,20 +68,20 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", normalize(source));
-        assertEquals("abcdef", orderByColumn(source, locale));
+        assertEquals("aBc Def", textNormalizer.normalize(source));
+        assertEquals("abcdef", textNormalizer.orderByColumn(source, locale));
 
         source = "États";
-        assertEquals("Etats", normalize(source));
-        assertEquals("etats", orderByColumn(source, locale));
+        assertEquals("Etats", textNormalizer.normalize(source));
+        assertEquals("etats", textNormalizer.orderByColumn(source, locale));
 
         source = "Première République française";
-        assertEquals("Premiere Republique francaise", normalize(source));
-        assertEquals("premiererepubliquefrancaise", orderByColumn(source, locale));
+        assertEquals("Premiere Republique francaise", textNormalizer.normalize(source));
+        assertEquals("premiererepubliquefrancaise", textNormalizer.orderByColumn(source, locale));
 
         source = "États, (française) \"République\"";
-        assertEquals("Etats francaise Republique", normalize(source));
-        assertEquals("etatsfrancaiserepublique", orderByColumn(source, locale));
+        assertEquals("Etats francaise Republique", textNormalizer.normalize(source));
+        assertEquals("etatsfrancaiserepublique", textNormalizer.orderByColumn(source, locale));
     }
 
     @Test
@@ -113,17 +93,17 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", normalize(source));
-        assertEquals("abcdef", orderByColumn(source, locale));
+        assertEquals("aBc Def", textNormalizer.normalize(source));
+        assertEquals("abcdef", textNormalizer.orderByColumn(source, locale));
 
         source = "Jäger";
-        assertEquals("Jager", normalize(source));
-        assertEquals("jager", orderByColumn(source, locale));
+        assertEquals("Jager", textNormalizer.normalize(source));
+        assertEquals("jager", textNormalizer.orderByColumn(source, locale));
 
         // 2025-09-21: behaviour change: "ß" is transliterated to "ss"
         source = "Jäger, (größte)";
-        assertEquals("Jager grosste", normalize(source));
-        assertEquals("jagergrosste", orderByColumn(source, locale));
+        assertEquals("Jager grosste", textNormalizer.normalize(source));
+        assertEquals("jagergrosste", textNormalizer.orderByColumn(source, locale));
     }
 
     @Test
@@ -135,12 +115,12 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", normalize(source));
-        assertEquals("abcdef", orderByColumn(source, locale));
+        assertEquals("aBc Def", textNormalizer.normalize(source));
+        assertEquals("abcdef", textNormalizer.orderByColumn(source, locale));
 
         source = "Luís de Camões";
-        assertEquals("Luis de Camoes", normalize(source));
-        assertEquals("luisdecamoes", orderByColumn(source, locale));
+        assertEquals("Luis de Camoes", textNormalizer.normalize(source));
+        assertEquals("luisdecamoes", textNormalizer.orderByColumn(source, locale));
     }
 
     // https://en.wikipedia.org/wiki/Georgian_scripts
@@ -153,12 +133,12 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", normalize(source));
-        assertEquals("abcdef", orderByColumn(source, locale));
+        assertEquals("aBc Def", textNormalizer.normalize(source));
+        assertEquals("abcdef", textNormalizer.orderByColumn(source, locale));
 
         source = "ალექსანდრე ამილახვარი";
-        assertEquals("ალექსანდრე ამილახვარი", normalize(source));
-        assertEquals("ალექსანდრეამილახვარი", orderByColumn(source, locale));
+        assertEquals("ალექსანდრე ამილახვარი", textNormalizer.normalize(source));
+        assertEquals("ალექსანდრეამილახვარი", textNormalizer.orderByColumn(source, locale));
     }
 
     @Test
@@ -170,12 +150,12 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", normalize(source));
-        assertEquals("abcdef", orderByColumn(source, locale));
+        assertEquals("aBc Def", textNormalizer.normalize(source));
+        assertEquals("abcdef", textNormalizer.orderByColumn(source, locale));
 
         source = "Ἀνδρέας Κάλβος";
-        assertEquals("Ανδρεας Καλβος", normalize(source));
-        assertEquals("ανδρεαςκαλβος", orderByColumn(source, locale));
+        assertEquals("Ανδρεας Καλβος", textNormalizer.normalize(source));
+        assertEquals("ανδρεαςκαλβος", textNormalizer.orderByColumn(source, locale));
     }
 
     @Test
@@ -187,12 +167,12 @@ public class SqlEncodeTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", normalize(source));
-        assertEquals("abcdef", orderByColumn(source, locale));
+        assertEquals("aBc Def", textNormalizer.normalize(source));
+        assertEquals("abcdef", textNormalizer.orderByColumn(source, locale));
 
         source = "Фёдор Алекса́ндрович Абра́мов";
-        assertEquals("Федор Александрович Абрамов", normalize(source));
-        assertEquals("федоралександровичабрамов", orderByColumn(source, locale));
+        assertEquals("Федор Александрович Абрамов", textNormalizer.normalize(source));
+        assertEquals("федоралександровичабрамов", textNormalizer.orderByColumn(source, locale));
     }
 
     @Test
@@ -205,7 +185,7 @@ public class SqlEncodeTest {
                 (char) 0x00A0 +
                 (char) 0x3000 +
                 "ghi";
-        assertEquals("aBc Def ghi", normalize(source));
-        assertEquals("abcdefghi", orderByColumn(source, locale));
+        assertEquals("aBc Def ghi", textNormalizer.normalize(source));
+        assertEquals("abcdefghi", textNormalizer.orderByColumn(source, locale));
     }
 }

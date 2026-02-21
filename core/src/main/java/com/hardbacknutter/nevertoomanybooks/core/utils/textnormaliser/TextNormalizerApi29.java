@@ -18,13 +18,14 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
 import android.icu.text.Transliterator;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -35,7 +36,8 @@ import java.util.regex.Pattern;
  * the plan is to drop support for Android 8/9/10 eventually... no point.
  */
 @RequiresApi(api = Build.VERSION_CODES.Q)
-public final class TextNormalizerApi29 {
+public class TextNormalizerApi29
+        implements TextNormalizer {
 
     /** Remove Unicode combining marks (accents, diacritics). */
     private static final Transliterator TRANSLITERATOR = Transliterator.getInstance(
@@ -53,49 +55,26 @@ public final class TextNormalizerApi29 {
     /** KEEP alpha/digit, space and '-'. */
     private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d -]");
 
-    private TextNormalizerApi29() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public TextNormalizerApi29() {
     }
 
-
-    /**
-     * Prepare a string to be inserted in the 'Order By' column.
-     * e.g. Author names, the Title of a book
-     * Keep normalised basic characters and digits, strip spaces, make all lowercase.
-     *
-     * @param text   to normalise
-     * @param locale Current Locale
-     *
-     * @return normalised text; always lowercase
-     */
+    @Override
     @NonNull
-    public static String orderByColumn(@NonNull final CharSequence text,
+    public String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
         return normalize(text, ORDERBY_PATTERN).toLowerCase(locale);
     }
 
-    /**
-     * Normalise the given string and apply the given pattern.
-     * The case is preserved.
-     *
-     * @param text to normalise
-     *
-     * @return normalised text
-     */
+    @Override
     @NonNull
-    public static String ftsNormalise(@NonNull final CharSequence text) {
+    public String ftsNormalise(@NonNull final CharSequence text) {
         return normalize(text, FTS_PATTERN);
     }
 
-    /**
-     * Normalise the given string and remove any non-alpha/digit/space characters.
-     * The case is preserved.
-     *
-     * @param text to normalise
-     *
-     * @return normalized text
-     */
+    @Override
     @NonNull
-    public static String normalize(@NonNull final CharSequence text) {
+    public String normalize(@NonNull final CharSequence text) {
         return normalize(text, NORMALIZE_PATTERN);
     }
 

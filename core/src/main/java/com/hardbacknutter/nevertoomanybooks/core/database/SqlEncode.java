@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
@@ -28,8 +26,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi26;
-import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi29;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 
 /**
  * Used to create {@code ORDER BY} suitable strings, quotes, dates etc.
@@ -128,11 +127,7 @@ public final class SqlEncode {
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.orderByColumn(text, locale);
-        } else {
-            return TextNormalizerApi26.orderByColumn(text, locale);
-        }
+        return TextNormalizerFactory.create().orderByColumn(text, locale);
     }
 
     /**
@@ -145,27 +140,6 @@ public final class SqlEncode {
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.normalize(text);
-        } else {
-            return TextNormalizerApi26.normalize(text);
-        }
-    }
-
-    /**
-     * Normalise the given string and apply the given pattern.
-     * The case is preserved.
-     *
-     * @param text to normalise
-     *
-     * @return normalised text
-     */
-    @NonNull
-    public static String ftsNormalise(@NonNull final CharSequence text) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.ftsNormalise(text);
-        } else {
-            return TextNormalizerApi26.ftsNormalise(text);
-        }
+        return TextNormalizerFactory.create().normalize(text);
     }
 }
