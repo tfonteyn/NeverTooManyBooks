@@ -24,6 +24,7 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +88,14 @@ class BaseDaoImpl {
     /** Reference to the <strong>singleton</strong> which makes it safe to store/share here. */
     @NonNull
     final SynchronizedDb db;
-    final TextNormalizer textNormalizer;
+
+    /**
+     * FINAL. But not 'final' for test purposes only.
+     *
+     * @see #setTextNormalizer(TextNormalizer)
+     */
+    @NonNull
+    TextNormalizer textNormalizer;
 
     /**
      * Constructor.
@@ -103,6 +111,16 @@ class BaseDaoImpl {
 
         this.db = db;
         textNormalizer = TextNormalizerFactory.create();
+    }
+
+    /**
+     * Allows setting an API specific normalizer for testing.
+     *
+     * @param textNormalizer to use
+     */
+    @VisibleForTesting
+    public void setTextNormalizer(@NonNull final TextNormalizer textNormalizer) {
+        this.textNormalizer = textNormalizer;
     }
 
     /**
