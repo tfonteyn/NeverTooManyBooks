@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -89,7 +89,7 @@
         android:id="@+id/lbl_series"
         style="@style/About.Label"
         android:maxLines="1"
-        android:text="@string/lbl_series"
+        android:text="@string/lbl_series_multiple"
         app:layout_constraintBaseline_toBaselineOf="@id/series_count"
         app:layout_constraintStart_toStartOf="parent"
         />
