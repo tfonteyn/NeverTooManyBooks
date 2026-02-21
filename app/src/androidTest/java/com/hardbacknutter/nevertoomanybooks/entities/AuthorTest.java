@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,8 +25,9 @@ import android.os.Parcel;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
@@ -38,10 +39,14 @@ import static org.junit.Assert.assertEquals;
 public class AuthorTest
         extends BaseDBTest {
 
+    private TextNormalizer textNormalizer;
+
     @Before
     public void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        textNormalizer = TextNormalizerFactory.create();
     }
 
     /**
@@ -71,8 +76,8 @@ public class AuthorTest
     @Test
     public void norm() {
         final Locale bookLocale = Locale.GERMANY;
-        final String n1 = SqlEncode.normalize("Jan Groß").toLowerCase(bookLocale);
-        final String n2 = SqlEncode.normalize("Jan Gross").toLowerCase(bookLocale);
+        final String n1 = textNormalizer.normalize("Jan Groß").toLowerCase(bookLocale);
+        final String n2 = textNormalizer.normalize("Jan Gross").toLowerCase(bookLocale);
 
         assertEquals(n1, n2);
     }
