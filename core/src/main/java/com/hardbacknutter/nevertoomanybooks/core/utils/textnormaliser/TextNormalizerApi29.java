@@ -78,25 +78,23 @@ public class TextNormalizerApi29
     @NonNull
     public String ftsNormalise(@NonNull final CharSequence text) {
         String result = TRANSLITERATOR.transliterate(text.toString());
-        // The order is important!
-        // FIRST remove unwanted characters; spaces are KEPT
+        // REMOVE unwanted characters; whitespace and '-'  are KEPT
         result = FTS_PATTERN.matcher(result).replaceAll("");
-        // THEN condense all special or duplicate whitespace into single spaces
+        // Condense all special or duplicate whitespace into single spaces
         result = WHITESPACE.matcher(result).replaceAll(" ");
 
-        return result;
+        return result.strip();
     }
 
     @Override
     @NonNull
     public String normalize(@NonNull final CharSequence text) {
         String result = TRANSLITERATOR.transliterate(text.toString());
-        // The order is important!
-        // FIRST remove unwanted characters; spaces are KEPT
-        result = NORMALIZE_PATTERN.matcher(result).replaceAll("");
-        // THEN condense all special or duplicate whitespace into single spaces
+        // REPLACE unwanted characters with a space; spaces are KEPT
+        result = NORMALIZE_PATTERN.matcher(result).replaceAll(" ");
+        // Condense all special or duplicate whitespace into single spaces
         result = WHITESPACE.matcher(result).replaceAll(" ");
 
-        return result;
+        return result.strip();
     }
 }
