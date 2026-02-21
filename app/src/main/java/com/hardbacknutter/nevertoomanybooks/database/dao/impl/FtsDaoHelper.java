@@ -77,10 +77,10 @@ public class FtsDaoHelper {
      * @return Clean string
      */
     @NonNull
-    String prepareSearchText(@Nullable final String searchText,
+    String prepareSearchText(@Nullable final CharSequence searchText,
                              @Nullable final String domain) {
 
-        if (searchText == null || searchText.isEmpty()) {
+        if (searchText == null || searchText.length() == 0) {
             return "";
         }
 
@@ -156,11 +156,11 @@ public class FtsDaoHelper {
      * @return an Optional with query string suited to search FTS for the specified parameters.
      */
     @NonNull
-    Optional<String> createMatchClause(@Nullable final String bookTitle,
-                                       @Nullable final String seriesTitle,
-                                       @Nullable final String author,
-                                       @Nullable final String publisherName,
-                                       @Nullable final String keywords) {
+    Optional<String> createMatchClause(@Nullable final CharSequence bookTitle,
+                                       @Nullable final CharSequence seriesTitle,
+                                       @Nullable final CharSequence author,
+                                       @Nullable final CharSequence publisherName,
+                                       @Nullable final CharSequence keywords) {
 
         final String query = (prepareSearchText(keywords, null)
                               + prepareSearchText(author, DBKey.FTS.AUTHOR_NAME)
