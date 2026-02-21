@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormal
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
@@ -362,5 +361,26 @@ public class AuthorTest
         assertEquals(1, authorList.size());
         assertEquals(GERMAN_GROSS, authorList.get(0).getFamilyName());
 
+    }
+
+    @Test
+    public void pruneWithDash() {
+        final Locale bookLocale = Locale.GERMANY;
+
+        final String familyName = "Larsson";
+        final String dashAbsent = "Lars Olof";
+        final String dashPresent = "Lars-Olof";
+
+        final List<Author> authorList = new ArrayList<>();
+        authorList.add(new Author(familyName, dashAbsent));
+        authorList.add(new Author(familyName, dashPresent));
+
+        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
+        assertTrue(modified);
+
+        assertEquals(1, authorList.size());
+        final Author author = authorList.get(0);
+        assertEquals(familyName, author.getFamilyName());
+        assertEquals(dashAbsent, author.getGivenNames());
     }
 }
