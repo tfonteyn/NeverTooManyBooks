@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,22 +63,20 @@ public class SqlEncodeTest {
     @NonNull
     private String normalize(@NonNull final CharSequence source) {
         if (api == Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.normalize(source, SqlEncode.NORMALIZE_PATTERN);
+            return TextNormalizerApi29.normalize(source);
         } else {
-            return TextNormalizerApi26.normalize(source, SqlEncode.NORMALIZE_PATTERN);
+            return TextNormalizerApi26.normalize(source);
         }
     }
 
     @NonNull
     private String orderByColumn(@NonNull final CharSequence source,
                                  @NonNull final Locale locale) {
-        final String result;
         if (api == Build.VERSION_CODES.Q) {
-            result = TextNormalizerApi29.normalize(source, SqlEncode.ORDERBY_PATTERN);
+            return TextNormalizerApi29.orderByColumn(source, locale);
         } else {
-            result = TextNormalizerApi26.normalize(source, SqlEncode.ORDERBY_PATTERN);
+            return TextNormalizerApi26.orderByColumn(source, locale);
         }
-        return result.toLowerCase(locale);
     }
 
     @Test

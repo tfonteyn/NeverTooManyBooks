@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
 /**
  * Used to create {@code ORDER BY} suitable strings, quotes, dates etc.
  * <p>
- * This class (and similar UNICODE handling classes) MUST be tested with "androidTest"
+ * This class (and the implementation classes) MUST be tested with "androidTest"
  * as unit-testing will cause false positives/failures due to the lack/presence
  * of the flag {@code Pattern.UNICODE_CHARACTER_CLASS}.
  * <p>
@@ -64,11 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
  * @see TextNormalizerApi29
  */
 public final class SqlEncode {
-
-    /** Keep only alpha/digit. KEEPS spaces. */
-    public static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
-    /** Keep only alpha/digit. NO SPACES */
-    public static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
 
     /** See {@link #singleQuotes}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
@@ -133,7 +128,11 @@ public final class SqlEncode {
     @NonNull
     public static String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
-        return normalize(text, ORDERBY_PATTERN).toLowerCase(locale);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return TextNormalizerApi29.orderByColumn(text, locale);
+        } else {
+            return TextNormalizerApi26.orderByColumn(text, locale);
+        }
     }
 
     /**
@@ -146,7 +145,11 @@ public final class SqlEncode {
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text) {
-        return normalize(text, NORMALIZE_PATTERN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return TextNormalizerApi29.normalize(text);
+        } else {
+            return TextNormalizerApi26.normalize(text);
+        }
     }
 
     /**
@@ -154,17 +157,15 @@ public final class SqlEncode {
      * The case is preserved.
      *
      * @param text to normalise
-     * @param keep negated pattern of characters to keep after transliteration
      *
      * @return normalised text
      */
     @NonNull
-    public static String normalize(@NonNull final CharSequence text,
-                                   @NonNull final Pattern keep) {
+    public static String ftsNormalise(@NonNull final CharSequence text) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.normalize(text, keep);
+            return TextNormalizerApi29.ftsNormalise(text);
         } else {
-            return TextNormalizerApi26.normalize(text, keep);
+            return TextNormalizerApi26.ftsNormalise(text);
         }
     }
 }

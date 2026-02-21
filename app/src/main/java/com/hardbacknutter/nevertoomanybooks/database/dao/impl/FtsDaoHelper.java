@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -50,14 +49,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public final class FtsDaoHelper {
 
     private static final String TAG = "FtsDaoHelper";
-
-    /**
-     * Keep only alpha/digit, space and the '-' characters.
-     *
-     * @see #prepareSearchText(String, String)
-     */
-    private static final Pattern PREPARE_SEARCH_TEXT_PATTERN =
-            Pattern.compile("[^\\p{Alpha}\\d -]");
 
     private FtsDaoHelper() {
     }
@@ -87,8 +78,7 @@ public final class FtsDaoHelper {
 
         // Keep only alpha/digit, space and '-' characters.
         // We'll use an array to loop over it.
-        final char[] chars = SqlEncode.normalize(searchText, PREPARE_SEARCH_TEXT_PATTERN)
-                                      .toCharArray();
+        final char[] chars = SqlEncode.ftsNormalise(searchText).toCharArray();
         // Initial position
         int pos = 0;
         // 'previous' character

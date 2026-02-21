@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 
 import java.text.Normalizer;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -53,8 +54,18 @@ public final class TextNormalizerApi26 {
 
     /** Manual replacements for characters that don’t decompose into ASCII. */
     private static final Map<Character, String> EXTRA_REPLACEMENTS = new HashMap<>();
+
     /** Replace repeated/special whitespace characters with a single space. */
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+
+    /** KEEP alpha/digit. KEEP spaces. */
+    private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
+
+    /** KEEP alpha/digit. REMOVE SPACES */
+    private static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
+
+    /** KEEP alpha/digit, space and '-'. */
+    private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d -]");
 
     static {
         // German (de)
@@ -107,6 +118,48 @@ public final class TextNormalizerApi26 {
     }
 
     /**
+     * Prepare a string to be inserted in the 'Order By' column.
+     * e.g. Author names, the Title of a book
+     * Keep normalised basic characters and digits, strip spaces, make all lowercase.
+     *
+     * @param text   to normalise
+     * @param locale Current Locale
+     *
+     * @return normalised text; always lowercase
+     */
+    @NonNull
+    public static String orderByColumn(@NonNull final CharSequence text,
+                                       @NonNull final Locale locale) {
+        return normalize(text, ORDERBY_PATTERN).toLowerCase(locale);
+    }
+
+    /**
+     * Normalise the given string and remove any non-alpha/digit/space characters.
+     * The case is preserved.
+     *
+     * @param text to normalise
+     *
+     * @return normalized text
+     */
+    @NonNull
+    public static String normalize(@NonNull final CharSequence text) {
+        return normalize(text, NORMALIZE_PATTERN);
+    }
+
+    /**
+     * Normalise the given string and apply the given pattern.
+     * The case is preserved.
+     *
+     * @param text to normalise
+     *
+     * @return normalised text
+     */
+    @NonNull
+    public static String ftsNormalise(@NonNull final CharSequence text) {
+        return normalize(text, FTS_PATTERN);
+    }
+
+    /**
      * Normalise the given string.
      * The case is preserved.
      *
@@ -115,7 +168,8 @@ public final class TextNormalizerApi26 {
      *
      * @return normalized/filtered text
      */
-    public static String normalize(@NonNull final CharSequence text,
+    @NonNull
+    private static String normalize(@NonNull final CharSequence text,
                                    @NonNull final Pattern keep) {
 
         // Step 1: Decompose accents (NFD)
