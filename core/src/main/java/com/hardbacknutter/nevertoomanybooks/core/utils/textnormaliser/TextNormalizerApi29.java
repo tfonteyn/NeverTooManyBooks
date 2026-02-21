@@ -44,14 +44,14 @@ public class TextNormalizerApi29
     /** Replace repeated/special whitespace characters with a single space. */
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
-    /** KEEP alpha/digit. KEEP single/actual spaces. */
-    private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
-
     /** KEEP alpha/digit. REMOVE SPACES */
     private static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
 
     /** KEEP alpha/digit. KEEP white-space and '-' */
     private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d\\s-]");
+
+    /** KEEP alpha/digit. KEEP single/actual spaces. */
+    private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
     /**
      * Constructor.
@@ -68,10 +68,7 @@ public class TextNormalizerApi29
     public String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
         String result = TRANSLITERATOR.transliterate(text.toString());
-        // The order is important!
-        // FIRST condense all special or duplicate whitespace into single spaces
-        result = WHITESPACE.matcher(result).replaceAll(" ");
-        // THEN remove unwanted characters; spaces are REMOVED
+        // remove unwanted characters; spaces are REMOVED
         result = ORDERBY_PATTERN.matcher(result).replaceAll("");
 
         return result.toLowerCase(locale);
