@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +35,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 
 public class EntityMergeHelper<T extends Mergeable> {
 
@@ -42,6 +44,11 @@ public class EntityMergeHelper<T extends Mergeable> {
     private final Map<Long, T> idCodes = new HashMap<>();
     /** Keep track of base data hashCode. */
     private final Map<Integer, T> hashCodes = new HashMap<>();
+    private final TextNormalizer textNormalizer;
+
+    public EntityMergeHelper() {
+        textNormalizer = TextNormalizerFactory.create();
+    }
 
     /**
      * Called from {@link #merge(Context, Collection, Function, BiConsumer)}
@@ -102,11 +109,12 @@ public class EntityMergeHelper<T extends Mergeable> {
 
             final long id = current.getId();
             // Single-spaces in the string are preserved.
-            final int hash = Objects.hash(current.getNameFields()
-                                                 .stream()
-                                                 .map(SqlEncode::normalize)
-                                                 .map(name -> name.toLowerCase(currentLocale))
-                                                 .collect(Collectors.toList()));
+            final List<String> fields = current.getNameFields()
+                                               .stream()
+                                               .map(textNormalizer::normalize)
+                                               .map(name -> name.toLowerCase(currentLocale))
+                                               .collect(Collectors.toList());
+            final int hash = Objects.hash(fields);
 
             // Check if there is a previous occurrence, either by id, or by value (hash)
             T previous = null;
