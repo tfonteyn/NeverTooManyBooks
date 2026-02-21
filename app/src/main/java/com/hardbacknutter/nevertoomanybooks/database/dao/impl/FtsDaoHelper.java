@@ -35,7 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -46,11 +47,18 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 /**
  * Helper methods for preparing a search.
  */
-public final class FtsDaoHelper {
+public class FtsDaoHelper {
 
     private static final String TAG = "FtsDaoHelper";
 
-    private FtsDaoHelper() {
+    @NonNull
+    private final TextNormalizer textNormalizer;
+
+    /**
+     * Constructor.
+     */
+    public FtsDaoHelper() {
+        textNormalizer = TextNormalizerFactory.create();
     }
 
     /**
@@ -69,8 +77,8 @@ public final class FtsDaoHelper {
      * @return Clean string
      */
     @NonNull
-    static String prepareSearchText(@Nullable final String searchText,
-                                    @Nullable final String domain) {
+    String prepareSearchText(@Nullable final String searchText,
+                             @Nullable final String domain) {
 
         if (searchText == null || searchText.isEmpty()) {
             return "";
@@ -78,7 +86,7 @@ public final class FtsDaoHelper {
 
         // Keep only alpha/digit, space and '-' characters.
         // We'll use an array to loop over it.
-        final char[] chars = SqlEncode.ftsNormalise(searchText).toCharArray();
+        final char[] chars = textNormalizer.ftsNormalise(searchText).toCharArray();
         // Initial position
         int pos = 0;
         // 'previous' character
@@ -148,11 +156,11 @@ public final class FtsDaoHelper {
      * @return an Optional with query string suited to search FTS for the specified parameters.
      */
     @NonNull
-    static Optional<String> createMatchClause(@Nullable final String bookTitle,
-                                              @Nullable final String seriesTitle,
-                                              @Nullable final String author,
-                                              @Nullable final String publisherName,
-                                              @Nullable final String keywords) {
+    Optional<String> createMatchClause(@Nullable final String bookTitle,
+                                       @Nullable final String seriesTitle,
+                                       @Nullable final String author,
+                                       @Nullable final String publisherName,
+                                       @Nullable final String keywords) {
 
         final String query = (prepareSearchText(keywords, null)
                               + prepareSearchText(author, DBKey.FTS.AUTHOR_NAME)
@@ -173,7 +181,7 @@ public final class FtsDaoHelper {
      * @return filters
      */
     @NonNull
-    public static Collection<Filter> toFilters(@NonNull final LocalSearchCriteria searchCriteria) {
+    public Collection<Filter> toFilters(@NonNull final LocalSearchCriteria searchCriteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "toFilters", searchCriteria);
         }

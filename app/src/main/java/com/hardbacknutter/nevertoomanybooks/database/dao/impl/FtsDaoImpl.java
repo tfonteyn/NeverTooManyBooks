@@ -80,17 +80,22 @@ public class FtsDaoImpl
     private static final String LIST_DELIMITER = "; ";
 
     @NonNull
+    private final Supplier<FtsDaoHelper> ftsDaoHelperSupplier;
+    @NonNull
     private final Supplier<StylesHelper> stylesHelperSupplier;
 
     /**
      * Constructor.
      *
      * @param db                   Underlying database
+     * @param ftsDaoHelperSupplier deferred supplier for the {@link FtsDaoHelper}
      * @param stylesHelperSupplier deferred supplier for the {@link StylesHelper}
      */
     public FtsDaoImpl(@NonNull final SynchronizedDb db,
+                      @NonNull final Supplier<FtsDaoHelper> ftsDaoHelperSupplier,
                       @NonNull final Supplier<StylesHelper> stylesHelperSupplier) {
         super(db, TAG);
+        this.ftsDaoHelperSupplier = ftsDaoHelperSupplier;
         this.stylesHelperSupplier = stylesHelperSupplier;
     }
 
@@ -142,18 +147,19 @@ public class FtsDaoImpl
 
         final List<FtsSearchResult> result = new ArrayList<>();
 
-        FtsDaoHelper.createMatchClause(title, seriesTitle, author, publisherName, keywords)
-                    .ifPresent(match -> {
-                        try (Cursor cursor = db.rawQuery(Sql.SEARCH_SUGGESTIONS,
-                                                         new String[]{match})) {
-                            while (cursor.moveToNext()) {
-                                result.add(new FtsSearchResult(
-                                        cursor.getLong(0),
-                                        cursor.getString(1),
-                                        cursor.getString(2)));
-                            }
-                        }
-                    });
+        ftsDaoHelperSupplier.get().createMatchClause(title, seriesTitle, author,
+                                                     publisherName, keywords)
+                            .ifPresent(match -> {
+                                try (Cursor cursor = db.rawQuery(Sql.SEARCH_SUGGESTIONS,
+                                                                 new String[]{match})) {
+                                    while (cursor.moveToNext()) {
+                                        result.add(new FtsSearchResult(
+                                                cursor.getLong(0),
+                                                cursor.getString(1),
+                                                cursor.getString(2)));
+                                    }
+                                }
+                            });
 
         return result;
     }
@@ -167,7 +173,7 @@ public class FtsDaoImpl
     @Nullable
     @Override
     public Cursor querySearchSuggestions(@NonNull final String searchText) {
-        final String query = FtsDaoHelper.prepareSearchText(searchText, null);
+        final String query = ftsDaoHelperSupplier.get().prepareSearchText(searchText, null);
         if (!query.isEmpty()) {
             return db.rawQuery(Sql.SEARCH_SUGGESTIONS, new String[]{query});
         }

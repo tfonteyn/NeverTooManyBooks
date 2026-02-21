@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.ColorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CoverCacheDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.DeletedBooksDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FormatDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierValueDaoImpl;
@@ -186,6 +187,8 @@ public class ServiceLocator {
     private FormatDao formatDao;
     @Nullable
     private FtsDao ftsDao;
+    @Nullable
+    private FtsDaoHelper ftsDaoHelper;
     @Nullable
     private IdentifierDao identifierDao;
     @Nullable
@@ -641,10 +644,20 @@ public class ServiceLocator {
     public FtsDao getFtsDao() {
         synchronized (this) {
             if (ftsDao == null) {
-                ftsDao = new FtsDaoImpl(getDb(), this::getStyles);
+                ftsDao = new FtsDaoImpl(getDb(), this::getFtsDaoHelper, this::getStyles);
             }
         }
         return ftsDao;
+    }
+
+    @NonNull
+    public FtsDaoHelper getFtsDaoHelper() {
+        synchronized (this) {
+            if (ftsDaoHelper == null) {
+                ftsDaoHelper = new FtsDaoHelper();
+            }
+        }
+        return ftsDaoHelper;
     }
 
     /**

@@ -77,7 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -1583,7 +1582,9 @@ public class BooksOnBookshelfViewModel
         if (searchCriteria.isEmpty()) {
             criteriaFilters = List.of();
         } else {
-            criteriaFilters = FtsDaoHelper.toFilters(searchCriteria);
+            criteriaFilters = ServiceLocator.getInstance()
+                                            .getFtsDaoHelper()
+                                            .toFilters(searchCriteria);
             // when criteria are used, the build should always expand the book list.
             rebuildMode = RebuildBooklist.Expanded;
         }
