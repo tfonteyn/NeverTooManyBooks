@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 
 /**
  * A copy of the {@link android.widget.ArrayAdapter} code from Android-30, rev. 1 (2021-01-25)
@@ -823,7 +823,9 @@ public class ExtArrayAdapter<T>
          */
         @NonNull
         private String normalizeAndLowercase(@NonNull final CharSequence text) {
-            return SqlEncode.normalize(text).toLowerCase(Locale.getDefault());
+            return TextNormalizerFactory.create()
+                                        .normalize(text)
+                                        .toLowerCase(Locale.getDefault());
         }
     }
 
