@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
 import android.icu.text.Transliterator;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -30,11 +31,8 @@ import androidx.annotation.VisibleForTesting;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-/**
- * Adding the full com.ibm icu would make a Transliterator usable with api 26+,
- * but would add 10Mb to the app size. Granted we could tweak this but given
- * the plan is to drop support for Android 8/9/10 eventually... no point.
- */
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
+
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class TextNormalizerApi29
         implements TextNormalizer {
@@ -46,54 +44,62 @@ public class TextNormalizerApi29
     /** Replace repeated/special whitespace characters with a single space. */
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
-    /** KEEP alpha/digit. KEEP spaces. */
+    /** KEEP alpha/digit. KEEP single/actual spaces. */
     private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
     /** KEEP alpha/digit. REMOVE SPACES */
     private static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
 
-    /** KEEP alpha/digit, space and '-'. */
-    private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d -]");
+    /** KEEP alpha/digit. KEEP white-space and '-' */
+    private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d\\s-]");
 
+    /**
+     * Constructor.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public TextNormalizerApi29() {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d("TextNormalizer", "TextNormalizerApi29");
+        }
     }
 
     @Override
     @NonNull
     public String orderByColumn(@NonNull final CharSequence text,
                                        @NonNull final Locale locale) {
-        return normalize(text, ORDERBY_PATTERN).toLowerCase(locale);
+        String result = TRANSLITERATOR.transliterate(text.toString());
+        // The order is important!
+        // FIRST condense all special or duplicate whitespace into single spaces
+        result = WHITESPACE.matcher(result).replaceAll(" ");
+        // THEN remove unwanted characters; spaces are REMOVED
+        result = ORDERBY_PATTERN.matcher(result).replaceAll("");
+
+        return result.toLowerCase(locale);
     }
 
     @Override
     @NonNull
     public String ftsNormalise(@NonNull final CharSequence text) {
-        return normalize(text, FTS_PATTERN);
+        String result = TRANSLITERATOR.transliterate(text.toString());
+        // The order is important!
+        // FIRST remove unwanted characters; spaces are KEPT
+        result = FTS_PATTERN.matcher(result).replaceAll("");
+        // THEN condense all special or duplicate whitespace into single spaces
+        result = WHITESPACE.matcher(result).replaceAll(" ");
+
+        return result;
     }
 
     @Override
     @NonNull
     public String normalize(@NonNull final CharSequence text) {
-        return normalize(text, NORMALIZE_PATTERN);
-    }
-
-    /**
-     * Normalise the given string.
-     * The case is preserved.
-     *
-     * @param text to process
-     * @param keep negated pattern of characters to keep after transliteration
-     *
-     * @return normalized/filtered text
-     */
-    @NonNull
-    private static String normalize(@NonNull final CharSequence text,
-                                   @NonNull final Pattern keep) {
         String result = TRANSLITERATOR.transliterate(text.toString());
-        // Condense all special or duplicate whitespace into single spaces
+        // The order is important!
+        // FIRST remove unwanted characters; spaces are KEPT
+        result = NORMALIZE_PATTERN.matcher(result).replaceAll("");
+        // THEN condense all special or duplicate whitespace into single spaces
         result = WHITESPACE.matcher(result).replaceAll(" ");
-        // Remove unwanted characters
-        return keep.matcher(result).replaceAll("");
+
+        return result;
     }
 }

@@ -58,8 +58,10 @@ public interface TextNormalizer {
 
     /**
      * Prepare a string to be inserted in the 'Order By' column.
-     * e.g. Author names, the Title of a book
-     * Keep normalised basic characters and digits, strip spaces, make all lowercase.
+     * e.g. Author names, the Title of a book...
+     * <p>
+     * The result is all lowercase.
+     * Spaces are <strong>REMOVED</strong>
      *
      * @param text   to normalise
      * @param locale Current Locale
@@ -71,19 +73,13 @@ public interface TextNormalizer {
                          @NonNull Locale locale);
 
     /**
-     * Normalise the given string and remove any non-alpha/digit/space characters.
-     * The case is preserved.
-     *
-     * @param text to normalise
-     *
-     * @return normalized text
-     */
-    @NonNull
-    String normalize(@NonNull CharSequence text);
-
-    /**
      * Normalise the given string and apply the given pattern.
+     * <p>
+     * Dev. note: The difference with {@link #normalize(CharSequence)} is that the {@code -}
+     * character is <strong>KEPT</strong> as a negation operator.
+     * <p>
      * The case is preserved.
+     * Spaces are <strong>KEPT</strong>
      *
      * @param text to normalise
      *
@@ -91,4 +87,17 @@ public interface TextNormalizer {
      */
     @NonNull
     String ftsNormalise(@NonNull CharSequence text);
+
+    /**
+     * Normalise the given string and remove any non-alpha/digit/space characters.
+     * <p>
+     * The case is preserved.
+     * Spaces are <strong>KEPT</strong>
+     *
+     * @param text to normalise
+     *
+     * @return normalized text
+     */
+    @NonNull
+    String normalize(@NonNull CharSequence text);
 }
