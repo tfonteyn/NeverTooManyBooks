@@ -18,17 +18,13 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.database;
+package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi29;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,11 +41,11 @@ import static org.junit.Assert.assertEquals;
  */
 @SuppressWarnings("MissingJavadoc")
 @RunWith(Parameterized.class)
-public class SqlEncodeTest {
+public class TextNormalizerTest {
 
     private final TextNormalizer textNormalizer;
 
-    public SqlEncodeTest(@NonNull final TextNormalizer textNormalizer) {
+    public TextNormalizerTest(@NonNull final TextNormalizer textNormalizer) {
         this.textNormalizer = textNormalizer;
     }
 
