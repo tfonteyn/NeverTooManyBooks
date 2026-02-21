@@ -26,6 +26,9 @@ import androidx.annotation.NonNull;
 
 public final class TextNormalizerFactory {
 
+    private TextNormalizerFactory() {
+    }
+
     @NonNull
     public static TextNormalizer create() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
