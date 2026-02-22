@@ -82,7 +82,7 @@ public class BookTest
         final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
         dump(book);
 
@@ -104,7 +104,7 @@ public class BookTest
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
         bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
         //dump(book);
@@ -131,7 +131,7 @@ public class BookTest
         book.putString(DBKey.PRICE_PAID, "test");
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
         bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
         //dump(book);
@@ -155,7 +155,7 @@ public class BookTest
         assertTrue(money.isPresent());
         book.putMoney(DBKey.PRICE_LISTED, money.get());
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
         dump(book);
 
@@ -188,7 +188,7 @@ public class BookTest
 
         // Not tested: null string for a string field..
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processExternalIds(book);
         dump(book);
 
@@ -229,7 +229,7 @@ public class BookTest
 
         // Not tested: null string for a string field..
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processExternalIds(book);
         dump(book);
 
@@ -280,7 +280,7 @@ public class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processNullsAndBlanks(book, true);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
@@ -309,7 +309,7 @@ public class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, textNormalizer, userLocales);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processNullsAndBlanks(book, false);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));

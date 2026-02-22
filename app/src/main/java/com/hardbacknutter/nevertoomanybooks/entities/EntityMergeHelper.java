@@ -46,6 +46,9 @@ public class EntityMergeHelper<T extends Mergeable> {
     private final Map<Integer, T> hashCodes = new HashMap<>();
     private final TextNormalizer textNormalizer;
 
+    /**
+     * Constructor.
+     */
     public EntityMergeHelper() {
         textNormalizer = TextNormalizerFactory.create();
     }

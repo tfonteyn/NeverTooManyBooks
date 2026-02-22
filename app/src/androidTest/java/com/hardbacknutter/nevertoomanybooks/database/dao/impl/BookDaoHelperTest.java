@@ -87,8 +87,7 @@ public class BookDaoHelperTest
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS,
                                                          "18306114")));
 
-        final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, textNormalizer,
-                                                              userLocales);
+        final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
         final ContentValues cv = bookDaoHelper.process(context, book, false);
 
         assertEquals(5, cv.size());

@@ -172,8 +172,7 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, textNormalizer,
-                                                                  userLocales);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
             final ContentValues cv = bookDaoHelper.process(context, book, true);
 
             // Make sure we have at least one author
@@ -278,8 +277,7 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, textNormalizer,
-                                                                  userLocales);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
             final ContentValues cv = bookDaoHelper.process(context, book, false);
 
             // Disallow UUID updates

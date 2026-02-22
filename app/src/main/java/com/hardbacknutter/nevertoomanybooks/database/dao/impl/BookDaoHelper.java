@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -97,15 +98,14 @@ public class BookDaoHelper {
      * Constructor.
      *
      * @param tableInfo      of the {@link DBDefinitions#TBL_BOOKS} table
-     * @param textNormalizer to use
      * @param userLocales    Current Locales
      */
     public BookDaoHelper(@NonNull final TableInfo tableInfo,
-                         @NonNull final TextNormalizer textNormalizer,
                          @NonNull final List<Locale> userLocales) {
         this.tableInfo = tableInfo;
-        this.textNormalizer = textNormalizer;
         this.userLocales = userLocales;
+
+        this.textNormalizer = TextNormalizerFactory.create();
 
         tableDomains = DBDefinitions.TBL_BOOKS.getDomains();
         dateDomainNames = tableDomains
