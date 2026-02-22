@@ -34,10 +34,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInteger()
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArguments["runnerBuilder"] =
-                "de.mannodermaus.junit5.AndroidJUnit5Builder"
     }
 
     buildTypes {
@@ -71,7 +67,6 @@ android {
     }
 
     lint {
-        // allow command line builds to complete
         abortOnError = false
         targetSdk = libs.versions.targetSdk.get().toInteger()
     }
