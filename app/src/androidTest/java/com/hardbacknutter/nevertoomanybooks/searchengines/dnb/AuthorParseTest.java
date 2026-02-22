@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,40 +29,39 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc","LongLine","FieldCanBeLocal"})
-public class AuthorParseTest
+@SuppressWarnings("LongLine")
+class AuthorParseTest
         extends BaseDBTest {
 
     private static final String TAG = "AuthorParseTest";
     private static final String UTF_8 = "UTF-8";
 
-    private DnbSearchEngine searchEngine;
     private DnbAuthorResolver resolver;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
+        final SearchEngine searchEngine = EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
@@ -71,7 +70,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void liveParse128409142()
+    void liveParse128409142()
             throws SearchException, CredentialsException {
 
         final Author author = new Author("Flix", "");
@@ -84,7 +83,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parse128409142()
+    void parse128409142()
             throws SearchException, CredentialsException, IOException {
 
         final String locationHeader = "https://katalog.dnb.de/DE/resource.html?id=128409142&pr=0&sortA=bez&sortD=-dat&v=plist";
@@ -125,7 +124,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parse1300021055()
+    void parse1300021055()
             throws IOException, SearchException, CredentialsException {
         final String locationHeader = "https://katalog.dnb.de/DE/resource.html?id=1300021055&pr=0&sortA=bez&sortD=-dat&v=plist";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -148,7 +147,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parse118678175()
+    void parse118678175()
             throws IOException, SearchException, CredentialsException {
         final String locationHeader = "https://katalog.dnb.de/DE/resource.html?hit=1&t=philip+dick&key=all&sp=auth&th=14&tk=8E76F448EDCF3C6474A171E4B7B6824CE00C0401&pr=0&sortA=bez&sortD=-dat&v=plist";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

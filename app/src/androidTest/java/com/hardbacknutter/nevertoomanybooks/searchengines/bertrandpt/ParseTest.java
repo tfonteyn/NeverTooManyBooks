@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -45,15 +44,14 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -62,9 +60,9 @@ public class ParseTest
     private BertrandPtSearchEngine searchEngine;
     private RealNumberParser ratingNumberParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (BertrandPtSearchEngine) EngineId.BertrandPt.createSearchEngine(context);
@@ -78,7 +76,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseMultiResult01()
+    void parseMultiResult01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
@@ -128,7 +126,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseMultiResult02()
+    void parseMultiResult02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =

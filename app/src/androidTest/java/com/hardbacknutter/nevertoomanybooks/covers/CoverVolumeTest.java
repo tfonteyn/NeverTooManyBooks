@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,35 +20,28 @@
 
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import androidx.annotation.CallSuper;
-
-import java.io.IOException;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class CoverVolumeTest
+class CoverVolumeTest
         extends BaseDBTest {
 
-    @Before
-    @CallSuper
-    public void setup()
-            throws IOException, StorageException, DaoWriteException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void simple() {
+    void simple() {
         final int configuredVolume = CoverVolume.getVolume(context);
         assertEquals(0, configuredVolume);
 

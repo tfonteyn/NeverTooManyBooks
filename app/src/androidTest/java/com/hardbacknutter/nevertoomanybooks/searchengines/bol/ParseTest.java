@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -48,16 +47,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
-@SuppressWarnings({"MissingJavadoc", "LongLine"})
-public class ParseTest
+@SuppressWarnings("LongLine")
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -66,9 +64,9 @@ public class ParseTest
     private RealNumberParser ratingNumberParser;
     private MoneyParser moneyParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (BolSearchEngine) EngineId.Bol.createSearchEngine(context);
@@ -90,7 +88,7 @@ public class ParseTest
 
     /** Network access! */
     @Test
-    public void parseMultiResult01()
+    void parseMultiResult01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=+9789056478193+";
@@ -140,7 +138,7 @@ public class ParseTest
 
     /** Network access! */
     @Test
-    public void parseMultiResult02()
+    void parseMultiResult02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=asimov%20foundation&suggestFragment=asimov";
@@ -183,7 +181,7 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(1, authors.size());
 
-        Author author;
+        final Author author;
         author = authors.get(0);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
@@ -206,7 +204,7 @@ public class ParseTest
      * be/nl + dutch book
      */
     @Test
-    public void parse01()
+    void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
@@ -271,7 +269,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse02()
+    void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.bol.com/be/nl/p/europa/9300000130411439/?promo=main_861_new_for_you___product_0_9300000130411439&bltgh=vwTKjOiKpqSmgLkGxPZJow.90_91.92.ProductImage";
@@ -337,7 +335,7 @@ public class ParseTest
 
     /** The redirect from {@link #parseMultiResult01()} */
     @Test
-    public void parse03()
+    void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
@@ -385,7 +383,7 @@ public class ParseTest
 
     /** The redirect from {@link #parseMultiResult02()} */
     @Test
-    public void parse04()
+    void parse04()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
@@ -450,7 +448,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse05()
+    void parse05()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
@@ -39,17 +38,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class AuthorParseTest
+class AuthorParseTest
         extends BaseDBTest {
 
     private static final String TAG = "AuthorParseTest";
@@ -61,9 +58,9 @@ public class AuthorParseTest
     private BedethequeSearchEngine searchEngine;
     private BedethequeCacheDao bedethequeCacheDao;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
@@ -78,7 +75,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parseOnly_no_pseudonym01()
+    void parseOnly_no_pseudonym01()
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/auteur-96-BD-Leloup-Roger.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -92,7 +89,7 @@ public class AuthorParseTest
         assertEquals("Roger", author.getGivenNames());
         assertEquals("1933-11-17", author.getBirthDate().orElse(null));
 
-        Optional<String> oIv;
+        final Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
         assertTrue(oIv.isPresent());
         assertEquals("96", oIv.get());
@@ -103,7 +100,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parseOnly_with_pseudonym01()
+    void parseOnly_with_pseudonym01()
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/auteur-97-BD-Leo.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -134,7 +131,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parse_downloaded_L_page()
+    void parse_downloaded_L_page()
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/liste_auteurs_BD_L.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -158,7 +155,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void liveLookup01()
+    void liveLookup01()
             throws SearchException, CredentialsException {
 
         final boolean modified;
@@ -167,15 +164,15 @@ public class AuthorParseTest
 
         author = new Author("Leloup", "Roger");
         modified = resolver.resolve(context, author);
-        Assert.assertTrue(modified);
-        Assert.assertEquals("Leloup", author.getFamilyName());
-        Assert.assertEquals("Roger", author.getGivenNames());
+        assertTrue(modified);
+        assertEquals("Leloup", author.getFamilyName());
+        assertEquals("Roger", author.getGivenNames());
         realAuthor = author.getRealAuthor();
-        Assert.assertNull(realAuthor);
+        assertNull(realAuthor);
     }
 
     @Test
-    public void liveLookup02()
+    void liveLookup02()
             throws SearchException, CredentialsException {
 
         final boolean modified;
@@ -186,14 +183,14 @@ public class AuthorParseTest
         modified = resolver.resolve(context, author);
         // TODO: if not found in the local cache, modified will be 'false'
         //  otherwise it will be 'true'.
-        Assert.assertTrue(modified);
-        Assert.assertEquals("<Indéterminé>", author.getFamilyName());
+        assertTrue(modified);
+        assertEquals("<Indéterminé>", author.getFamilyName());
         realAuthor = author.getRealAuthor();
-        Assert.assertNull(realAuthor);
+        assertNull(realAuthor);
     }
 
     @Test
-    public void liveLookup03()
+    void liveLookup03()
             throws SearchException, CredentialsException {
 
         final boolean modified;
@@ -202,17 +199,17 @@ public class AuthorParseTest
 
         author = new Author("61Chi", "");
         modified = resolver.resolve(context, author);
-        Assert.assertTrue(modified);
-        Assert.assertEquals("61Chi", author.getFamilyName());
+        assertTrue(modified);
+        assertEquals("61Chi", author.getFamilyName());
         realAuthor = author.getRealAuthor();
-        Assert.assertNotNull(realAuthor);
-        Assert.assertEquals("Liu", realAuthor.getFamilyName());
-        Assert.assertEquals("Yi-chi", realAuthor.getGivenNames());
-        Assert.assertNull(realAuthor.getRealAuthor());
+        assertNotNull(realAuthor);
+        assertEquals("Liu", realAuthor.getFamilyName());
+        assertEquals("Yi-chi", realAuthor.getGivenNames());
+        assertNull(realAuthor.getRealAuthor());
     }
 
     @Test
-    public void liveLookup_no_pseudonym01()
+    void liveLookup_no_pseudonym01()
             throws SearchException, CredentialsException {
 
         final Author author = new Author("Giraud", "Jean");
@@ -228,14 +225,14 @@ public class AuthorParseTest
         assertEquals("2012-03-10", author.getDeathDate().orElse(null));
         assertNull(author.getRealAuthor());
 
-        Optional<String> oIv;
+        final Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
         assertTrue(oIv.isPresent());
         assertEquals("6231", oIv.get());
     }
 
     @Test
-    public void liveLookup_with_pseudonym01()
+    void liveLookup_with_pseudonym01()
             throws SearchException, CredentialsException {
 
         final Author author = new Author("Moebius", "");
@@ -272,7 +269,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void liveLookup_with_pseudonym02()
+    void liveLookup_with_pseudonym02()
             throws SearchException, CredentialsException {
 
         // WRONG diacritic on purpose. Actual is "Jijé"

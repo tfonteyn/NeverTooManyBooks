@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -41,26 +40,26 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class SearchBookUpdatesViewModelTest
+class SearchBookUpdatesViewModelTest
         extends BaseDBTest {
 
     private static final String TAG = "SearchBookUpdatesVM";
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void copyIfBlankOnListField()
+    void copyIfBlankOnListField()
             throws IOException {
 
         final Book localBook = new Book();
@@ -108,7 +107,7 @@ public class SearchBookUpdatesViewModelTest
     }
 
     @Test
-    public void quick()
+    void quick()
             throws IOException {
 
         final Book localBook = new Book();
@@ -153,7 +152,8 @@ public class SearchBookUpdatesViewModelTest
         assertNotNull(delta);
 
         // _id=123,
-        // author_list=[Author{id=0, familyName=`Author`, givenNames=`Real`, complete=false, role=0b0: Role{}, realAuthor=null}],
+        // author_list=[Author{id=0, familyName=`Author`, givenNames=`Real`, complete=false,
+        //                     role=0b0: Role{}, realAuthor=null}],
         // publisher_list=[Publisher{id=0, name=`Real Pub`}, Publisher{id=0, name=`MySelf`}]}]}
         assertEquals(123, delta.getId());
 

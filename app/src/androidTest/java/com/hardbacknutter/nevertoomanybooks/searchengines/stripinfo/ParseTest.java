@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -45,22 +44,22 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Network access for covers in all tests.
  * <p>
  * Full network access for {@link #parseMultiResult}.
  */
-@SuppressWarnings({"MissingJavadoc", "LongLine"})
-public class ParseTest
+@SuppressWarnings("LongLine")
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -68,9 +67,9 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
     private StripInfoSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
@@ -80,7 +79,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse01()
+    void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/336348_Hauteville_House_14_De_37ste_parallel";
@@ -159,7 +158,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse02()
+    void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes";
@@ -303,7 +302,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse03()
+    void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/181604_Okiya_het_huis_van_verboden_geneugten_1_Het_huis_van_verboden_geneugten";
@@ -368,7 +367,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseIntegrale()
+    void parseIntegrale()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
@@ -431,7 +430,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseIntegrale2()
+    void parseIntegrale2()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/17030_Comanche_1_Red_Dust";
@@ -492,7 +491,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseFavReeks2()
+    void parseFavReeks2()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
@@ -551,7 +550,7 @@ public class ParseTest
 
     /** Network access! */
     @Test
-    public void parseMultiResult()
+    void parseMultiResult()
             throws SearchException, CredentialsException, StorageException, IOException {
 
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=chant+du+pluvier";
@@ -620,7 +619,7 @@ public class ParseTest
     // ISBN	9069692736 <-- incorrect
     // Barcode	9789069692739 <-- correct
     @Test
-    public void asEnGoud() {
+    void asEnGoud() {
         final ISBN barcode = new ISBN("9789069692739", true);
         assertTrue(barcode.isValid());
 

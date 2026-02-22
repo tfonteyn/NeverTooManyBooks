@@ -32,23 +32,22 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class DomainExpressionsTest
+class DomainExpressionsTest
         extends BaseDBTest {
 
     private BookshelfDao bookshelfDao;
     private Bookshelf bookshelf;
     private UserStyle style;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -62,8 +61,8 @@ public class DomainExpressionsTest
         bookshelfDao.update(context, bookshelf, Locale.UK);
     }
 
-    @After
-    public void breakdown()
+    @AfterEach
+    void breakdown()
             throws DaoWriteException {
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
@@ -75,7 +74,7 @@ public class DomainExpressionsTest
      * must all have DomainExpressions.
      */
     @Test
-    public void visibilityKeysHaveDomainExpressions() {
+    void visibilityKeysHaveDomainExpressions() {
         // force all fields
         style.setFieldVisibility(FieldVisibility.Screen.List, Long.MAX_VALUE);
 
@@ -98,7 +97,7 @@ public class DomainExpressionsTest
      * must all have DomainExpressions.
      */
     @Test
-    public void sortableBookLevelKeysHaveDomainExpressions() {
+    void sortableBookLevelKeysHaveDomainExpressions() {
         // all supported fields will be there.
         final Set<String> keys = style.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());

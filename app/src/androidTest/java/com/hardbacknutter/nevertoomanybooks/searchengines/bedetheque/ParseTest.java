@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -43,16 +42,16 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "LongLine"})
-public class ParseTest
+@SuppressWarnings("LongLine")
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -61,9 +60,9 @@ public class ParseTest
 
     private BedethequeSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
@@ -73,7 +72,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse01()
+    void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.bedetheque.com/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
@@ -154,7 +153,7 @@ public class ParseTest
     }
 
     @Test
-    public void isbnExactEdition01()
+    void isbnExactEdition01()
             throws SearchException, CredentialsException, StorageException, IOException {
 
         // Blondin et Cirage:  Les soucoupes volantes
@@ -234,7 +233,7 @@ public class ParseTest
     }
 
     @Test
-    public void isbnLaterEdition01()
+    void isbnLaterEdition01()
             throws SearchException, CredentialsException, StorageException, IOException {
 
         // Blondin et Cirage:  Les soucoupes volantes

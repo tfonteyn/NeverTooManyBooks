@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.net.Uri;
 
-import androidx.test.filters.MediumTest;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -55,17 +53,15 @@ import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class JsonArchiveWriterTest
+class JsonArchiveWriterTest
         extends BaseDBTest {
 
     private static final String TAG = "JsonArchiveWriterTest";
@@ -76,9 +72,9 @@ public class JsonArchiveWriterTest
     private ISODateParser dateParser;
     private BookDao bookDao;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException, IOException, DataReaderException {
+    @BeforeEach
+    void setup()
+            throws StorageException, IOException, DataReaderException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         bookDao = ServiceLocator.getInstance().getBookDao();
@@ -91,7 +87,7 @@ public class JsonArchiveWriterTest
     }
 
     @Test
-    public void styles()
+    void styles()
             throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
 
@@ -130,7 +126,7 @@ public class JsonArchiveWriterTest
     }
 
     @Test
-    public void books()
+    void books()
             throws DataReaderException, DataWriterException, DaoWriteException, IOException,
                    StorageException, CredentialsException, CertificateException {
 

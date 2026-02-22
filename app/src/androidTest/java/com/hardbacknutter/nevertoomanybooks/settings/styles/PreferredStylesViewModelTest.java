@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,49 +23,45 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.InstantTaskExecutorExtension;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@SuppressWarnings({"MissingJavadoc", "StringConcatenationMissingWhitespace"})
-public class PreferredStylesViewModelTest
+/** LiveData requirement: {@code @ExtendWith(InstantTaskExecutorExtension.class)} */
+@ExtendWith(InstantTaskExecutorExtension.class)
+@SuppressWarnings("StringConcatenationMissingWhitespace")
+class PreferredStylesViewModelTest
         extends BaseDBTest {
 
     private static final String NAME_CLONE_BUILTIN = "CLONE_BUILTIN";
     private static final String NAME_CLONE_USER = "CLONE_USER";
-    /**
-     * LiveData requirement.
-     */
-    @Rule
-    public TestRule rule = new InstantTaskExecutorRule();
+
     private PreferredStylesViewModel listVm;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
@@ -87,25 +83,25 @@ public class PreferredStylesViewModelTest
     }
 
     @Test
-    public void cloneUserDefinedAsPreferred() {
+    void cloneUserDefinedAsPreferred() {
         cloneBuiltin(true);
         cloneUserDefined(true);
     }
 
     @Test
-    public void cloneUserDefinedAsNotPreferred() {
+    void cloneUserDefinedAsNotPreferred() {
         cloneBuiltin(false);
         cloneUserDefined(false);
     }
 
     @Test
-    public void editExistingAsPreferred() {
+    void editExistingAsPreferred() {
         cloneBuiltin(true);
         editExisting(true);
     }
 
     @Test
-    public void editExistingAsNotPreferred() {
+    void editExistingAsNotPreferred() {
         cloneBuiltin(false);
         editExisting(false);
     }

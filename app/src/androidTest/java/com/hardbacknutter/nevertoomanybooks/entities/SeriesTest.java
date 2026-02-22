@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,24 +29,23 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class SeriesTest
+class SeriesTest
         extends BaseDBTest {
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void parcelling() {
+    void parcelling() {
         final Series series = Series.from("test");
         series.setNumber("5");
 
@@ -64,7 +63,7 @@ public class SeriesTest
     }
 
     @Test
-    public void checkForSeriesNameInTitle01() {
+    void checkForSeriesNameInTitle01() {
         final Book book = new Book();
         book.setTitle("Isle of the Dead");
         Series.checkForSeriesNameInTitle(book);
@@ -74,7 +73,7 @@ public class SeriesTest
     }
 
     @Test
-    public void checkForSeriesNameInTitle02() {
+    void checkForSeriesNameInTitle02() {
         final Book book = new Book();
         book.setTitle("The Last Colony (Old Man's War, #3)");
         Series.checkForSeriesNameInTitle(book);
@@ -87,7 +86,7 @@ public class SeriesTest
     }
 
     @Test
-    public void checkForSeriesNameInTitle03() {
+    void checkForSeriesNameInTitle03() {
         final Book book = new Book();
         book.setTitle("Kip,Koek en Ei (Agent 212, #12)");
         Series.checkForSeriesNameInTitle(book);
@@ -100,7 +99,7 @@ public class SeriesTest
     }
 
     @Test
-    public void checkForSeriesNameInTitle04() {
+    void checkForSeriesNameInTitle04() {
         final Book book = new Book();
         book.setTitle("Behind the Walls of Terra (World of Tiers 4)");
         Series.checkForSeriesNameInTitle(book);

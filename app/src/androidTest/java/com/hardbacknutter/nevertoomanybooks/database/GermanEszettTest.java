@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,9 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import androidx.annotation.CallSuper;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,14 +31,14 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GermanEszettTest
+class GermanEszettTest
         extends BaseDBTest {
 
     private static final String GERMAN_GROSS_1F = "Groß";
@@ -52,10 +49,9 @@ public class GermanEszettTest
     private long id1;
     private AuthorDao authorDao;
 
-    @Before
-    @CallSuper
-    public void setup()
-            throws IOException, StorageException, DaoWriteException {
+    @BeforeEach
+    void setup()
+            throws StorageException, DaoWriteException {
         super.setup("de_DE");
 
         final SynchronizedDb db = serviceLocator.getDb();
@@ -72,7 +68,7 @@ public class GermanEszettTest
     }
 
     @Test
-    public void germanEszett() {
+    void germanEszett() {
         final Locale bookLocale = Locale.GERMANY;
 
         final List<Author> authorList = new ArrayList<>();

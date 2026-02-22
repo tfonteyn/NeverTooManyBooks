@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import androidx.test.filters.MediumTest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,23 +34,21 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class TocEntryTest
+class TocEntryTest
         extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
     private AuthorDao authorDao;
     private TocEntryDao tocEntryDao;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -61,7 +57,7 @@ public class TocEntryTest
     }
 
     @Test
-    public void pruneTocEntries01()
+    void pruneTocEntries01()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
@@ -97,8 +93,8 @@ public class TocEntryTest
 
         final boolean modified = tocEntryDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 2, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(2, list.size(), list.toString());
 
         Optional<Integer> fpd;
 
@@ -118,7 +114,7 @@ public class TocEntryTest
     }
 
     @Test
-    public void pruneTocEntries02()
+    void pruneTocEntries02()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
@@ -149,8 +145,8 @@ public class TocEntryTest
         // pruning will reset the id's to 0 as the entries don't exist in the db
         final boolean modified = tocEntryDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 2, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(2, list.size(), list.toString());
 
         Optional<Integer> fpd;
 
@@ -173,7 +169,7 @@ public class TocEntryTest
 
 
     @Test
-    public void pruneTocEntries03()
+    void pruneTocEntries03()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
@@ -223,8 +219,8 @@ public class TocEntryTest
 
         final boolean modified = tocEntryDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 6, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(6, list.size(), list.toString());
 
         Optional<Integer> fpd;
 

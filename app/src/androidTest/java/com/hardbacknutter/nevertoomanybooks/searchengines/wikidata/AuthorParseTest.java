@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -37,40 +36,39 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AuthorParseTest
+class AuthorParseTest
         extends BaseDBTest {
 
     private static final String TAG = "AuthorParseTest";
 
-    private WikidataSearchEngine searchEngine;
     private WikidataAuthorResolver resolver;
     private WikidataAuthorParser authorParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
+        final WikidataSearchEngine searchEngine =
+                (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        resolver = (WikidataAuthorResolver) WikidataAuthorResolver
-                .create(context, searchEngine);
+        resolver = (WikidataAuthorResolver) WikidataAuthorResolver.create(context, searchEngine);
         authorParser = new WikidataAuthorParser(context, searchEngine);
     }
 
     @Test
-    public void parse_q42()
+    void parse_q42()
             throws IOException {
 
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -117,7 +115,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void asimov()
+    void asimov()
             throws SearchException, CredentialsException {
         final Author author = new Author("Asimov", "Isaac");
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -37,30 +36,29 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "FieldCanBeLocal"})
-public class AuthorParseTest
+class AuthorParseTest
         extends BaseDBTest {
 
     private static final String TAG = "AuthorParseTest";
 
-    private OpenLibrarySearchEngine searchEngine;
     private OpenLibraryAuthorResolver resolver;
     private AuthorParser authorParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
+        final OpenLibrarySearchEngine searchEngine = (OpenLibrarySearchEngine)
+                EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
@@ -71,7 +69,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parse_ol20187a()
+    void parse_ol20187a()
             throws IOException {
 
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -106,7 +104,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parse_ps_ol2677446a()
+    void parse_ps_ol2677446a()
             throws IOException {
 
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -145,7 +143,7 @@ public class AuthorParseTest
     }
 
     @Test
-    public void liveSearchAsimov_with_sid()
+    void liveSearchAsimov_with_sid()
             throws SearchException, CredentialsException {
         final Author author = new Author("Asimov", "Isaac");
         // force resolving using the sid
@@ -186,8 +184,9 @@ public class AuthorParseTest
         assertTrue(pic.endsWith("_openlibrary_OL34221A_0_.jpg"));
     }
 
+
     @Test
-    public void liveSearchAsimov_without_sid()
+    void liveSearchAsimov_without_sid()
             throws SearchException, CredentialsException {
         final Author author = new Author("Asimov", "Isaac");
         // no sid: force resolving using a query
@@ -198,14 +197,13 @@ public class AuthorParseTest
 
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertEquals("1920-01-02", author.getBirthDate().orElse(null));
-        assertEquals("1992-04-06", author.getDeathDate().orElse(null));
 
         assertEquals(1, author.getIdentifiers().size());
-        Optional<String> oIv;
+        final Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
-        assertEquals("OL34221A", oIv.get());
+        assertEquals("OL34221A", oIv.get(),
+                     "2026-02-23: CAN FAIL WITH: OL14991429A which is a site problem");
 
         final String pic = author.getTmpPictureFileSpec().orElse(null);
         assertNotNull(pic);

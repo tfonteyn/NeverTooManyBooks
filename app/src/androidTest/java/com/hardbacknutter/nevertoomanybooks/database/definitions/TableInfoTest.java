@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,36 +21,31 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.util.Log;
 
-import androidx.test.filters.MediumTest;
-
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.BaseSetup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class TableInfoTest
-        extends BaseSetup {
+class TableInfoTest
+        extends BaseDBTest {
 
     private static final String TAG = "TableInfoTest";
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void bookTableInfo() {
+    void bookTableInfo() {
         final SynchronizedDb db = serviceLocator.getDb();
         final TableInfo tableInfo = db.getTableInfo(DBDefinitions.TBL_BOOKS);
         assertNotNull(tableInfo);

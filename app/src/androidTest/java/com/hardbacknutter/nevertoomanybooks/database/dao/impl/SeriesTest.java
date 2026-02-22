@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import androidx.test.filters.MediumTest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -32,21 +30,19 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class SeriesTest
+class SeriesTest
         extends BaseDBTest {
 
     private SeriesDao seriesDao;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -59,7 +55,7 @@ public class SeriesTest
      * @throws DaoWriteException on conflicts
      */
     @Test
-    public void pruneSeries01List()
+    void pruneSeries01List()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
@@ -121,8 +117,8 @@ public class SeriesTest
 
         final boolean modified = seriesDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 3, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(3, list.size(), list.toString());
 
         assertTrue(id0 > 0);
         assertTrue(id1 > 0);
@@ -152,7 +148,7 @@ public class SeriesTest
      * Original issue coming from isbn 9789463941914 on lastdodo.nl
      */
     @Test
-    public void pruneReorderedDuplications() {
+    void pruneReorderedDuplications() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Series> list = new ArrayList<>();
@@ -172,7 +168,7 @@ public class SeriesTest
         final boolean modified = seriesDao.pruneList(context, list, true,
                                                      item -> bookLocale);
 
-        assertTrue("Failed to prune", modified);
+        assertTrue(modified, list.toString());
         assertEquals(1, list.size());
     }
 }

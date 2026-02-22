@@ -33,8 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -42,16 +40,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class BookTest
+class BookTest
         extends BaseDBTest {
 
     private static final String TAG = "BookTest";
@@ -60,21 +57,19 @@ public class BookTest
 
     private Book book;
     private TableInfo tableInfo;
-    private TextNormalizer textNormalizer;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         book = new Book();
 
         tableInfo = serviceLocator.getDb().getTableInfo(DBDefinitions.TBL_BOOKS);
-        textNormalizer = TextNormalizerFactory.create();
     }
 
     /** US English book, price in $. */
     @Test
-    public void preprocessPrices01() {
+    void preprocessPrices01() {
         final List<Locale> userLocales = List.of(Locale.US);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
@@ -93,7 +88,7 @@ public class BookTest
 
     /** US English book, price set, currency not set. */
     @Test
-    public void preprocessPrices02() {
+    void preprocessPrices02() {
         final List<Locale> userLocales = List.of(Locale.US);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
@@ -119,7 +114,7 @@ public class BookTest
     }
 
     @Test
-    public void preprocessPrices03() {
+    void preprocessPrices03() {
         final List<Locale> userLocales = List.of(Locale.FRANCE);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
@@ -146,7 +141,7 @@ public class BookTest
     }
 
     @Test
-    public void preprocessPrices04() {
+    void preprocessPrices04() {
         final List<Locale> userLocales = List.of(Locale.FRANCE);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
@@ -165,7 +160,7 @@ public class BookTest
     }
 
     @Test
-    public void preprocessExternalIdsForInsert() {
+    void preprocessExternalIdsForInsert() {
         final List<Locale> userLocales = List.of(Locale.US);
 
         //noinspection DataFlowIssue
@@ -207,7 +202,7 @@ public class BookTest
     }
 
     @Test
-    public void preprocessExternalIdsForUpdate() {
+    void preprocessExternalIdsForUpdate() {
         final List<Locale> userLocales = List.of(Locale.US);
 
         //noinspection DataFlowIssue
@@ -258,18 +253,18 @@ public class BookTest
      * If a default was changed then one or more tests in this class will be invalid.
      */
     @Test
-    public void domainDefaults() {
-        assertEquals(INVALID_DEFAULT, "", DBDefinitions.DOM_BOOK_DATE_ACQUIRED.getDefault());
-        assertEquals(INVALID_DEFAULT, "", DBDefinitions.DOM_BOOK_DATE_READ_START.getDefault());
-        assertEquals(INVALID_DEFAULT, "", DBDefinitions.DOM_BOOK_DATE_READ_END.getDefault());
+    void domainDefaults() {
+        assertEquals("", DBDefinitions.DOM_BOOK_DATE_ACQUIRED.getDefault(), INVALID_DEFAULT);
+        assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_START.getDefault(), INVALID_DEFAULT);
+        assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_END.getDefault(), INVALID_DEFAULT);
 
-        assertEquals(INVALID_DEFAULT, "0.0",
-                     DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault());
+        assertEquals("0.0",
+                     DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault(), INVALID_DEFAULT);
     }
 
     /** Domain: text, default "". */
     @Test
-    public void preprocessNullsAndBlanksForInsert() {
+    void preprocessNullsAndBlanksForInsert() {
         final List<Locale> userLocales = List.of(Locale.US);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
@@ -298,7 +293,7 @@ public class BookTest
     }
 
     @Test
-    public void preprocessNullsAndBlanksForUpdate() {
+    void preprocessNullsAndBlanksForUpdate() {
         final List<Locale> userLocales = List.of(Locale.US);
         final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
 
@@ -327,7 +322,6 @@ public class BookTest
     }
 
     private void dump(@NonNull final DataManager data) {
-
         for (final String key : data.keySet()) {
             final Object value = data.getRawData().get(key);
             Log.d(TAG, key + "=" + value);

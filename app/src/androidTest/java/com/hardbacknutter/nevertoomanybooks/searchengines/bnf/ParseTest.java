@@ -28,7 +28,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
@@ -45,14 +44,14 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -61,9 +60,9 @@ public class ParseTest
 
     private BnfSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (BnfSearchEngine) EngineId.Bnf.createSearchEngine(context);
@@ -73,7 +72,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9782266341417()
+    void parse9782266341417()
             throws SearchException, IOException, CredentialsException, CoverStorageException {
 
         final String locationHeader = "https://catalogue.bnf.fr/ark:/12148/cb475921587";
@@ -176,7 +175,7 @@ public class ParseTest
         assertEquals("7375", series.getNumber());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-        List<String> covers;
+        final List<String> covers;
         covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
@@ -184,7 +183,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9782756078311()
+    void parse9782756078311()
             throws SearchException, IOException, CredentialsException, CoverStorageException {
 
         final String locationHeader = "https://catalogue.bnf.fr/ark:/12148/cb458421422";
@@ -272,7 +271,7 @@ public class ParseTest
         assertEquals("", series.getNumber());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-        List<String> covers;
+        final List<String> covers;
         covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());

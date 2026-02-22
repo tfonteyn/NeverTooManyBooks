@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,21 +38,21 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ExcludePatternTest
+class ExcludePatternTest
         extends BaseDBTest {
 
     private static final String TAG = "ExcludePatternTest";
 
     private SharedPreferences preferences;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws DaoWriteException, StorageException, IOException, DataReaderException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -67,7 +67,7 @@ public class ExcludePatternTest
     }
 
     @Test
-    public void encoding() {
+    void encoding() {
         final JsonCoder<SharedPreferences> encoder = SharedPreferencesCoder.createEncoder(
                 Prefs.EXCLUDE_WHEN_EXPORTING);
 
@@ -81,8 +81,6 @@ public class ExcludePatternTest
         assertFalse(jsonObject.has(CoverVolume.PK_VOLUME_INDEX));
         assertTrue(jsonObject.has("Some.Other.Key"));
 
-
         Log.d(TAG, jsonObject.toString(2));
-
     }
 }

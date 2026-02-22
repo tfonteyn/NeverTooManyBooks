@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.zip;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -48,16 +46,14 @@ import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class ZipArchiveWriterTest
+class ZipArchiveWriterTest
         extends BaseDBTest {
 
     private static final String TAG = "ZipArchiveWriterTest";
@@ -67,9 +63,9 @@ public class ZipArchiveWriterTest
 
     private ISODateParser dateParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException, IOException, DataReaderException {
+    @BeforeEach
+    void setup()
+            throws StorageException, IOException, DataReaderException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
@@ -80,7 +76,7 @@ public class ZipArchiveWriterTest
     }
 
     @Test
-    public void write()
+    void write()
             throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
         final File file = new File(context.getFilesDir(), TAG + ".zip");

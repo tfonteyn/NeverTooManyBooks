@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,20 +24,18 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SuppressWarnings("MissingJavadoc")
-public class NormalizeSeriesTitlesTest
+class NormalizeSeriesTitlesTest
         extends BaseDBTest {
 
     private static final String TAG = "normalizeSeriesTitlesTe";
@@ -45,9 +43,9 @@ public class NormalizeSeriesTitlesTest
     private LastDodoSearchEngine searchEngine;
     private Book book;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         book = new Book();
@@ -59,7 +57,7 @@ public class NormalizeSeriesTitlesTest
 
     /** Dutch test data using site locale Dutch. */
     @Test
-    public void normalize() {
+    void normalize() {
         book.add(Series.from("titel, De"));
 
         searchEngine.normalizeSeriesTitles(context, book);
@@ -71,7 +69,7 @@ public class NormalizeSeriesTitlesTest
 
     /** Dutch test data using site locale Dutch. */
     @Test
-    public void normalize1() {
+    void normalize1() {
         book.add(Series.from("Dames van de Pillar To Post, De"));
 
         searchEngine.normalizeSeriesTitles(context, book);
@@ -83,7 +81,7 @@ public class NormalizeSeriesTitlesTest
 
     /** Dutch test data using site locale Dutch. */
     @Test
-    public void normalize2() {
+    void normalize2() {
         book.add(Series.from("titel, De"));
         book.add(Series.from("De titel"));
 

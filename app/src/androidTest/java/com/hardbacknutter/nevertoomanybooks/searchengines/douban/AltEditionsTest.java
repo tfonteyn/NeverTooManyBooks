@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,30 +27,28 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class AltEditionsTest
+class AltEditionsTest
         extends BaseDBTest {
 
     private static final String TAG = "AltEditionsTest";
 
     private DoubanSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (DoubanSearchEngine) EngineId.Douban.createSearchEngine(context);
@@ -60,7 +58,7 @@ public class AltEditionsTest
     }
 
     @Test
-    public void searchAlternativeEditionsTest()
+    void searchAlternativeEditionsTest()
             throws SearchException, CredentialsException {
         final List<AltEditionDouban> editions = searchEngine
                 .searchAlternativeEditions(context, "9787536692930");
@@ -69,7 +67,7 @@ public class AltEditionsTest
 
         // 2024-07-1: returned 3 results
         // but as we're fetching live data, this might change of course.
-        assertTrue("size=" + editions.size(), editions.size() > 1);
+        assertTrue(editions.size() > 1, "size=" + editions.size());
 
         // The order however, can be DIFFERENT EACH TIME !
         // This is just a crude test, so we just look for the test result

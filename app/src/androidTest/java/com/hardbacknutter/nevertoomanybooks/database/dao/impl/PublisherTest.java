@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import androidx.test.filters.MediumTest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -32,16 +30,14 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class PublisherTest
+class PublisherTest
         extends BaseDBTest {
 
     private static final String SOME_PUBLISHER = "Some publisher";
@@ -51,8 +47,8 @@ public class PublisherTest
     private static final String JOSE_PUBLISHER_VARIANT = "Jose publisher";
     private PublisherDao publisherDao;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -60,14 +56,14 @@ public class PublisherTest
     }
 
     @Test
-    public void bidi()
+    void bidi()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
         final Publisher p1;
-        Publisher p2;
-        Publisher p3;
+        final Publisher p2;
+        final Publisher p3;
 
         p1 = new Publisher("Zsolnay, Paul");
         p1.setId(1467);
@@ -88,12 +84,12 @@ public class PublisherTest
 
         final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 2, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(2, list.size(), list.toString());
     }
 
     @Test
-    public void prunePublisherNames01()
+    void prunePublisherNames01()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
@@ -127,8 +123,8 @@ public class PublisherTest
 
         final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 2, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(2, list.size(), list.toString());
 
         assertTrue(id0 > 0);
         assertTrue(id1 > 0);
@@ -143,7 +139,7 @@ public class PublisherTest
     }
 
     @Test
-    public void prunePublisherNames02()
+    void prunePublisherNames02()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
@@ -182,8 +178,8 @@ public class PublisherTest
 
         final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 2, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(2, list.size(), list.toString());
 
         assertTrue(id0 > 0);
         assertTrue(id1 > 0);
@@ -199,7 +195,7 @@ public class PublisherTest
     }
 
     @Test
-    public void prunePublisherNames03()
+    void prunePublisherNames03()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
 
@@ -258,8 +254,8 @@ public class PublisherTest
 
         final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 3, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(3, list.size(), list.toString());
 
         assertTrue(id0 > 0);
         assertTrue(id1 > 0);

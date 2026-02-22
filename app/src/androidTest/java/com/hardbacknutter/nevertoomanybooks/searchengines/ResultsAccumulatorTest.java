@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -44,26 +43,26 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The {@link CoverFileSpecArray#BKEY_FILE_SPEC_ARRAY} keys are not used here,
  * as the accumulator checks for the real files (which won't be there).
  * It is assumed that if Authors/Series/etc... get processed OK, then so will the fileSpecs.
  */
-@SuppressWarnings({"MissingJavadoc","LongLine"})
-public class ResultsAccumulatorTest
+@SuppressWarnings("LongLine")
+class ResultsAccumulatorTest
         extends BaseDBTest {
 
     private static final String SEARCH_ISBN = "9780552574471";
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
@@ -238,11 +237,11 @@ public class ResultsAccumulatorTest
         final Book book = new Book();
         book.setSeries(List.of(new Series("Discworld Novels")));
         book.setDescription(
-                       "An old enemy is gathering strength. This is a time of endings"
-                       + " and beginnings, old friends and new, a blurring of edges and a"
-                       + " shifting of power. Now Tiffany stands between the light and the dark,"
-                       + " the good and the bad. As the fairy horde prepares for invasion,"
-                       + " Tiffany must summon all the witches to stand with her.");
+                "An old enemy is gathering strength. This is a time of endings"
+                + " and beginnings, old friends and new, a blurring of edges and a"
+                + " shifting of power. Now Tiffany stands between the light and the dark,"
+                + " the good and the bad. As the fairy horde prepares for invasion,"
+                + " Tiffany must summon all the witches to stand with her.");
         book.setLanguage("en");
         book.setFormat("Paperback");
         book.setRating(4.8f);
@@ -410,7 +409,7 @@ public class ResultsAccumulatorTest
     }
 
     @Test
-    public void process() {
+    void process() {
         final ResultsAccumulator resultsAccumulator =
                 new ResultsAccumulator(context, serviceLocator::getLanguages);
 

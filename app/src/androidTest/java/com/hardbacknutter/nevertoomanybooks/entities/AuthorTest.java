@@ -30,19 +30,18 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormal
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SuppressWarnings("MissingJavadoc")
-public class AuthorTest
+class AuthorTest
         extends BaseDBTest {
 
     private TextNormalizer textNormalizer;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -54,7 +53,7 @@ public class AuthorTest
      * is testing {@link Author#equals(Object)} only.
      */
     @Test
-    public void parcelling() {
+    void parcelling() {
         final Author author = Author.from("Paul French");
         author.setRealAuthor(Author.from("Isaac Asimov"));
 
@@ -74,7 +73,7 @@ public class AuthorTest
     }
 
     @Test
-    public void norm() {
+    void norm() {
         final Locale bookLocale = Locale.GERMANY;
         final String n1 = textNormalizer.normalize("Jan Groß").toLowerCase(bookLocale);
         final String n2 = textNormalizer.normalize("Jan Gross").toLowerCase(bookLocale);

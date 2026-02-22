@@ -29,8 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi29;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -44,12 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Run twice; against the API specific versions:
- * {@link TextNormalizerApi29} and {@link TextNormalizerApi26}
- */
 @MediumTest
-@SuppressWarnings("MissingJavadoc")
 class AuthorTest
         extends BaseDBTest {
 

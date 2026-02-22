@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,27 +26,25 @@ import android.widget.EditText;
 import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EditTextFieldTest
+class EditTextFieldTest
         extends BaseDBTest {
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void mask() {
-
+    void mask() {
         final EditText editText = new EditText(context);
 
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -57,13 +55,11 @@ public class EditTextFieldTest
 
         editText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         EditTextField.Capitalization.Title.apply(editText);
-        assertEquals(InputType.TYPE_TEXT_FLAG_CAP_WORDS,
-                     editText.getInputType());
+        assertEquals(InputType.TYPE_TEXT_FLAG_CAP_WORDS, editText.getInputType());
     }
 
     @Test
-    public void setting() {
-
+    void setting() {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          // "1" words
@@ -73,10 +69,9 @@ public class EditTextFieldTest
         final EditText editText = new EditText(context);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
 
-        int before = editText.getInputType();
+        final int before = editText.getInputType();
         EditTextField.Capitalization.Title.apply(editText);
 
         assertEquals(before | InputType.TYPE_TEXT_FLAG_CAP_WORDS, editText.getInputType());
-
     }
 }

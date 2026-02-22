@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,12 +23,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -36,71 +34,53 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@SuppressWarnings("MissingJavadoc")
-@RunWith(Parameterized.class)
-public class SeriesParseTest
+class SeriesParseTest
         extends BaseDBTest {
 
     private static final String TAG = "SeriesParseTest";
-    @NonNull
-    private final String name;
-    @NonNull
-    private final String expected;
-    @Nullable
-    private final String lang;
 
     private BedethequeSearchEngine searchEngine;
     private Book book;
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-
-                {"Lucky Luke", "Lucky Luke", null},
-                {"Lucky Luke Classics (en espagnol - Ediciones Kraken)",
+    @NonNull
+    static Stream<Arguments> readArgs() {
+        return Stream.of(
+                Arguments.of("Lucky Luke", "Lucky Luke", null),
+                Arguments.of("Lucky Luke Classics (en espagnol - Ediciones Kraken)",
                              "Lucky Luke Classics (en espagnol - Ediciones Kraken)",
-                        "espagnol"},
-                {"Lucky Luke (Les aventures de)",
+                             "espagnol"),
+                Arguments.of("Lucky Luke (Les aventures de)",
                              "Lucky Luke (Les aventures de)",
-                        null},
-                {" Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
-                        "Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken)",
-                        null},
-                {"Lucky Luke (As aventuras de) (en portugais)",
+                             null),
+                Arguments.of(" Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken) ",
+                             "Lucky Luke según Morris (Las Aventuras de) (Ediciones Kraken)",
+                             null),
+                Arguments.of("Lucky Luke (As aventuras de) (en portugais)",
                              "Lucky Luke (As aventuras de)",
-                        "portugais"},
+                             "portugais"),
 
-                {"Afrique, petit Chaka... (L')",
+                Arguments.of("Afrique, petit Chaka... (L')",
                              "L'Afrique, petit Chaka...",
-                        null},
-                {"Légende (du disque) de Bob Marley (La)",
+                             null),
+                Arguments.of("Légende (du disque) de Bob Marley (La)",
                              "La Légende (du disque) de Bob Marley",
-                        null},
-                {"Legende (en néerlandais)",
+                             null),
+                Arguments.of("Legende (en néerlandais)",
                              "Legende",
-                        "néerlandais"}});
+                             "néerlandais"));
     }
 
-    public SeriesParseTest(@NonNull final String name,
-                           @NonNull final String expected,
-                           @Nullable final String lang) {
-        this.name = name;
-        this.expected = expected;
-        this.lang = lang;
-
-    }
-
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         book = new Book();
@@ -111,8 +91,11 @@ public class SeriesParseTest
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
     }
 
-    @Test
-    public void checkSeries() {
+    @ParameterizedTest
+    @MethodSource("readArgs")
+    void checkSeries(@NonNull final String name,
+                     @NonNull final String expected,
+                     @Nullable final String lang) {
         book.clearData();
         final Series series = searchEngine.processSeries(name, book);
         assertEquals(expected, series.getTitle(), "for name=`" + name + '`');

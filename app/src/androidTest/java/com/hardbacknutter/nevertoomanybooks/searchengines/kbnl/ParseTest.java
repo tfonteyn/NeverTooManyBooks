@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -48,20 +47,18 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -102,7 +99,7 @@ public class ParseTest
         assertNull(author.getRealAuthor());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("068852002", oIv.get());
+        assertEquals("068852002", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000021733650", oIv.get());
@@ -116,7 +113,7 @@ public class ParseTest
         assertNull(author.getRealAuthor());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("068862334", oIv.get());
+        assertEquals("068862334", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000368889806", oIv.get());
@@ -129,9 +126,9 @@ public class ParseTest
         assertEquals(expectedSeries, series.get(0));
     }
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (KbNlSearchEngine) EngineId.KbNl.createSearchEngine(context);
@@ -160,7 +157,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseList01()
+    void parseList01()
             throws IOException, SAXException {
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_list_1);
@@ -169,7 +166,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseBook01()
+    void parseBook01()
             throws IOException, SAXException {
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_book_1);
@@ -198,27 +195,27 @@ public class ParseTest
         Author author;
 
         author = authors.get(0);
-        Assert.assertEquals("Ozimov", author.getFamilyName());
-        Assert.assertEquals("Isaak Judovič", author.getGivenNames());
+        assertEquals("Ozimov", author.getFamilyName());
+        assertEquals("Isaak Judovič", author.getGivenNames());
         assertEquals("1920", author.getBirthDate().orElse(null));
         assertEquals("1992", author.getDeathDate().orElse(null));
-        Assert.assertEquals(AuthorRole.WRITER, author.getRole());
+        assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("068561504", oIv.get());
+        assertEquals("068561504", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000122590564", oIv.get());
 
         author = authors.get(1);
-        Assert.assertEquals("Kröner", author.getFamilyName());
-        Assert.assertEquals("Jack", author.getGivenNames());
+        assertEquals("Kröner", author.getFamilyName());
+        assertEquals("Jack", author.getGivenNames());
         assertEquals("1920", author.getBirthDate().orElse(null));
         assertEquals("1997", author.getDeathDate().orElse(null));
-        Assert.assertEquals(AuthorRole.CONTRIBUTOR, author.getRole());
+        assertEquals(AuthorRole.CONTRIBUTOR, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("072822333", oIv.get());
+        assertEquals("072822333", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000047024908", oIv.get());
@@ -232,7 +229,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseComic()
+    void parseComic()
             throws IOException, SAXException {
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_comic_1);
@@ -269,7 +266,7 @@ public class ParseTest
         assertNull(author.getRealAuthor());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("299374009", oIv.get());
+        assertEquals("299374009", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000000958826", oIv.get());
@@ -283,7 +280,7 @@ public class ParseTest
         assertNull(author.getRealAuthor());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("296443417", oIv.get());
+        assertEquals("296443417", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000117583538", oIv.get());
@@ -297,7 +294,7 @@ public class ParseTest
         assertNull(author.getRealAuthor());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("418237638", oIv.get());
+        assertEquals("418237638", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000465172890", oIv.get());
@@ -311,7 +308,7 @@ public class ParseTest
         assertNull(author.getRealAuthor());
         oIv = author.getIdentifierValue(Identifier.SID_KBNL);
         assertTrue(oIv.isPresent());
-        Assert.assertEquals("377277630", oIv.get());
+        assertEquals("377277630", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000443816392", oIv.get());
@@ -328,7 +325,7 @@ public class ParseTest
     }
 
     @Test
-    public void MultiResult()
+    void MultiResult()
             throws SearchException, CredentialsException, StorageException {
 
         // this will first hit a multi-result page, take the first book, and fetch that.
@@ -339,7 +336,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseOldBook()
+    void parseOldBook()
             throws IOException, SAXException {
         // Test an "old" book where the data is rather unstructured.
         // The parser will do a best-effort.
@@ -349,7 +346,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseAuthor01() {
+    void parseAuthor01() {
         final String s = "Isaak Judovič Ozimov (1920-1992) (ISNI 0000 0001 2259 0564)";
         final Book book = new Book();
         final KbNlBookHandler kbNlBookHandler = new KbNlBookHandler(searchEngine, book);
@@ -360,7 +357,7 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertEquals(1, authors.size());
 
-        Optional<String> oIv;
+        final Optional<String> oIv;
         final Author author = authors.get(0);
 
         assertEquals("Ozimov", author.getFamilyName());

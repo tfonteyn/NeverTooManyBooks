@@ -31,7 +31,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -48,19 +47,18 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test parsing the Jsoup Document for ISFDB single-book data.
  */
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -68,9 +66,9 @@ public class ParseTest
     private IsfdbSearchEngine searchEngine;
     private MoneyParser moneyParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
@@ -92,7 +90,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse01()
+    void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
@@ -182,7 +180,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse02()
+    void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
@@ -258,7 +256,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse03()
+    void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
@@ -341,7 +339,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse04()
+    void parse04()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?373190";
@@ -412,9 +410,9 @@ public class ParseTest
         assertNotNull(toc);
         assertEquals(1, toc.size());
 
-        Optional<Integer> fpd;
+        final Optional<Integer> fpd;
 
-        TocEntry tocEntry = toc.get(0);
+        final TocEntry tocEntry = toc.get(0);
         assertEquals("Lucky Starr på Merkurius", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isEmpty());
@@ -425,7 +423,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse10()
+    void parse10()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?808391";

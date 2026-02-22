@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -44,16 +43,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class Parse2Test
+class Parse2Test
         extends BaseDBTest {
 
     private static final String TAG = "Parse2Test";
@@ -61,9 +59,9 @@ public class Parse2Test
     private GoogleBooksSearchEngine searchEngine;
     private MoneyParser moneyParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (GoogleBooksSearchEngine) EngineId.GoogleBooks.createSearchEngine(context);
@@ -77,7 +75,7 @@ public class Parse2Test
     }
 
     @Test
-    public void parse1()
+    void parse1()
             throws IOException, StorageException {
         // https://www.googleapis.com/books/v1/volumes?q=isbn:9781857989380
         final Book book = new Book();
@@ -122,7 +120,7 @@ public class Parse2Test
         final List<Author> authors = book.getAuthors();
         final Author author;
         assertNotNull(authors);
-        assertEquals(String.valueOf(authors), 1, authors.size());
+        assertEquals(1, authors.size(), String.valueOf(authors));
 
         author = authors.get(0);
         assertEquals("Keyes", author.getFamilyName());
@@ -137,7 +135,7 @@ public class Parse2Test
     }
 
     @Test
-    public void parse2()
+    void parse2()
             throws IOException, StorageException {
 
         // https://www.googleapis.com/books/v1/volumes?q=isbn:9780007499793
@@ -183,7 +181,7 @@ public class Parse2Test
         final List<Author> authors = book.getAuthors();
         final Author author;
         assertNotNull(authors);
-        assertEquals(String.valueOf(authors), 1, authors.size());
+        assertEquals(1, authors.size(), String.valueOf(authors));
 
         author = authors.get(0);
         assertEquals("Baxter", author.getFamilyName());

@@ -31,7 +31,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -49,17 +48,16 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "LongLine",
-        "UnnecessaryUnicodeEscape", "JavadocLinkAsPlainText"})
-public class ParseTest
+@SuppressWarnings({"LongLine", "UnnecessaryUnicodeEscape", "JavadocLinkAsPlainText"})
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -69,9 +67,9 @@ public class ParseTest
     private RealNumberParser ratingNumberParser;
     private MoneyParser moneyParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (DoubanSearchEngine) EngineId.Douban.createSearchEngine(context);
@@ -171,7 +169,7 @@ public class ParseTest
      * </pre>
      */
     @Test
-    public void parseMulti9787536692930()
+    void parseMulti9787536692930()
             throws IOException {
 
         final String locationHeader = "https://search.douban.com/book/subject_search?search_text=9787536692930";
@@ -193,7 +191,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9787536692930_36892731()
+    void parse9787536692930_36892731()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader = "https://book.douban.com/subject/36892731/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -249,7 +247,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9787536692930_36874304()
+    void parse9787536692930_36874304()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader = "https://book.douban.com/subject/36874304/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -288,7 +286,6 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(1, authors.size());
 
-        Optional<String> oIv;
         final Author author;
 
         author = authors.get(0);
@@ -313,7 +310,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseMulti9787549641864()
+    void parseMulti9787549641864()
             throws IOException {
 
         final String locationHeader = "https://search.douban.com/book/subject_search"
@@ -330,7 +327,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9787549641864()
+    void parse9787549641864()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader = "https://book.douban.com/subject/36665775/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -372,7 +369,6 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
-        Optional<String> oIv;
         Author author;
 
         author = authors.get(0);
@@ -462,7 +458,7 @@ public class ParseTest
      * </pre>
      */
     @Test
-    public void parseMulti9787532190294()
+    void parseMulti9787532190294()
             throws IOException {
 
         final String locationHeader = "https://search.douban.com/book/subject_search" +
@@ -488,7 +484,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9787532190294_36897178()
+    void parse9787532190294_36897178()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader = "https://book.douban.com/subject/36897178/";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -529,7 +525,6 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
-        Optional<String> oIv;
         Author author;
 
         author = authors.get(0);

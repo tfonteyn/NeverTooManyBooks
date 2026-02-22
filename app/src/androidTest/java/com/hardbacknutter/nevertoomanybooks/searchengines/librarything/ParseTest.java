@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
@@ -36,13 +35,12 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -51,9 +49,9 @@ public class ParseTest
 
     private LibraryThingSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         if (TOKEN.isEmpty()) {
@@ -62,7 +60,6 @@ public class ParseTest
 
         searchEngine = (LibraryThingSearchEngine) EngineId.LibraryThing.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -72,7 +69,7 @@ public class ParseTest
     }
 
     @Test
-    public void p1()
+    void p1()
             throws SearchException, CredentialsException {
 
         final List<AltEditionIsbn> isbns = searchEngine
@@ -80,6 +77,6 @@ public class ParseTest
 
         Log.d(TAG, isbns.toString());
 
-        assertTrue("did you add the api token?", isbns.size() > 200);
+        assertTrue(isbns.size() > 200, "Did you add the api token?");
     }
 }

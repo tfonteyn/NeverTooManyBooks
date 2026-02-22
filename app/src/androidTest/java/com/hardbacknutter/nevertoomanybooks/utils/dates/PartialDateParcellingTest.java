@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,23 +21,20 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import android.os.Parcel;
 
-import androidx.test.filters.SmallTest;
-
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SmallTest
-public class PartialDateParcellingTest {
+class PartialDateParcellingTest {
 
     /**
      * Reminder: The base test {@code assertEquals(pDate, date)}
      * is testing {@link PartialDate#equals(Object)} only.
      */
     @Test
-    public void parcelling() {
+    void parcelling() {
         final PartialDate date = new PartialDate(2020, 9, 15);
 
         final Parcel parcel = Parcel.obtain();

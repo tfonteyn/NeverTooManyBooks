@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,28 +22,27 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SuppressWarnings({"MissingJavadoc","LongLine"})
-public class SidTest
+@SuppressWarnings("LongLine")
+class SidTest
         extends BaseDBTest {
 
     private static final String TAG = "SidTest";
 
     private IsfdbSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
@@ -53,7 +52,7 @@ public class SidTest
     }
 
     @Test
-    public void amazon() {
+    void amazon() {
         Identifier.Value iv;
 
         iv = searchEngine.parseSid("https://www.amazon.com/dp/1529082919" +
@@ -87,7 +86,7 @@ public class SidTest
     }
 
     @Test
-    public void librisSe() {
+    void librisSe() {
         Identifier.Value iv;
         iv = searchEngine.parseSid("https://libris.kb.se/bib/868526").orElseThrow();
         assertEquals(Identifier.SID_LIBRIS, iv.getKey());
@@ -106,7 +105,7 @@ public class SidTest
     }
 
     @Test
-    public void preDefSids() {
+    void preDefSids() {
         Identifier.Value iv;
 
         iv = searchEngine.parseSid("https://www.audible.com/pd/B017V568SY").orElseThrow();
@@ -185,7 +184,7 @@ public class SidTest
     }
 
     @Test
-    public void other() {
+    void other() {
         Identifier.Value iv;
 
         // String
@@ -228,7 +227,7 @@ public class SidTest
     }
 
     @Test
-    public void cobiss() {
+    void cobiss() {
         Identifier.Value iv;
 
         // Long

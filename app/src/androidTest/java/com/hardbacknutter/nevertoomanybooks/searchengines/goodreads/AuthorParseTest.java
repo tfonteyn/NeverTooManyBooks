@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,41 +29,37 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "FieldCanBeLocal"})
-public class AuthorParseTest
+class AuthorParseTest
         extends BaseDBTest {
 
     private static final String TAG = "AuthorParseTest";
     private static final String UTF_8 = "UTF-8";
 
-    private GoodreadsSearchEngine searchEngine;
     private GoodreadsAuthorResolver resolver;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
+        final SearchEngine searchEngine = EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
@@ -72,8 +68,8 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parse01()
-            throws IOException, SearchException, CredentialsException {
+    void parse01()
+            throws IOException {
         final String locationHeader = "https://www.goodreads.com/author/show/2965845.Frank_P_";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.goodreads_author_2965845;
@@ -88,7 +84,7 @@ public class AuthorParseTest
                                  EngineId.Goodreads, EngineId.OpenLibrary), false)
                          .apply();
 
-        Optional<String> oIv;
+        final Optional<String> oIv;
         final Author author = resolver.parse(context, document);
         assertNotNull(author);
 

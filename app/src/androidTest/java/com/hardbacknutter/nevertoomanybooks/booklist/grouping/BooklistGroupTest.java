@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,22 +26,20 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Sanity check for duplicate prefix names and any missing keys.
  */
-@SuppressWarnings("MissingJavadoc")
-public class BooklistGroupTest {
+class BooklistGroupTest {
 
     @Test
-    public void duplicates() {
+    void duplicates() {
         // loop starting at 1 must exclude BOOK
         assertEquals(0, BooklistGroup.BOOK);
 
@@ -58,7 +56,7 @@ public class BooklistGroupTest {
         final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
             final BooklistGroup group = BooklistGroup.newInstance(id, style);
-            assertNotNull("Missing id: " + id, group);
+            assertNotNull(group, "Missing id: " + id);
 
             final String prefix = group.getGroupKey().getKeyPrefix();
             if (!prefixes.add(prefix)) {
@@ -68,7 +66,7 @@ public class BooklistGroupTest {
     }
 
     @Test
-    public void keysForAllGroups() {
+    void keysForAllGroups() {
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
             final GroupKey groupKey = GroupKeyFactory.getKey(id);
             assertNotNull(groupKey);

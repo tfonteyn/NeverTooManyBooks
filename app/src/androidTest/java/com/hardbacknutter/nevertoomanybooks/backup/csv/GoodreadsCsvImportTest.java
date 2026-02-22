@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestUtils;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -58,16 +57,16 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "OptionalGetWithoutIsPresent"})
-public class GoodreadsCsvImportTest
+@SuppressWarnings("OptionalGetWithoutIsPresent")
+class GoodreadsCsvImportTest
         extends BaseDBTest {
 
     private static final String TAG = "GoodreadsCsvImportTest";
@@ -76,9 +75,9 @@ public class GoodreadsCsvImportTest
     private int booksPresent;
     private IdentifierValueDao bookIdentifierDao;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         final ServiceLocator locator = ServiceLocator.getInstance();
@@ -97,10 +96,9 @@ public class GoodreadsCsvImportTest
 
     @SuppressWarnings("LocalCanBeFinal")
     @Test
-    public void goodreads()
+    void goodreads()
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
-
 
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
@@ -251,5 +249,4 @@ public class GoodreadsCsvImportTest
             assertEquals("currently-reading", bookshelf.getName());
         }
     }
-
 }

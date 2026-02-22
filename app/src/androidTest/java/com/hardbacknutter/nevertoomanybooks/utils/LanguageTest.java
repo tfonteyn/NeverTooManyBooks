@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,27 +23,24 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LanguageTest
+class LanguageTest
         extends BaseDBTest {
 
-    private static final String TAG = "LanguageTest";
-
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void ancientGreek() {
+    void ancientGreek() {
         final Languages l = serviceLocator.getLanguages();
 
         // result is "grc" which is correct
@@ -60,7 +57,7 @@ public class LanguageTest
     }
 
     @Test
-    public void databazeKnihCzech() {
+    void databazeKnihCzech() {
         // 'český': 'cs',
         // 'slovenský': 'sk',
         // 'německý': 'de',
@@ -90,15 +87,15 @@ public class LanguageTest
     }
 
     @Test
-    public void databazeKnihSlovak() {
-        //     * //         lang_mapping = {'český': 'cs',
-        // 'slovenský': 'sk',
-        // 'německý': 'de',
-        // 'polský': 'pl',
-        // 'anglický': 'en',
-        // 'francouzský': 'fr',
-        // 'španělský': 'es',
-        // 'italský': 'it'}
+    void databazeKnihSlovak() {
+        // lang_mapping = {'český': 'cs',
+        //   'slovenský': 'sk',
+        //   'německý': 'de',
+        //   'polský': 'pl',
+        //   'anglický': 'en',
+        //   'francouzský': 'fr',
+        //   'španělský': 'es',
+        //   'italský': 'it'}
         final Languages l = serviceLocator.getLanguages();
 
         final Locale slovak = new Locale("sk", "SK");

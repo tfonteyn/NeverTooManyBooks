@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,68 +19,64 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 
-import java.util.Arrays;
-import java.util.Collection;
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SuppressWarnings("MissingJavadoc")
-@RunWith(Parameterized.class)
-public class FormatMapperTest
+class FormatMapperTest
         extends BaseDBTest {
 
-    @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {"en", "pb", "Paperback"},
-                {"en", "Dimensions 5x4", "Dimensions 5x4"},
-                {"en", "some-string", "some-string"},
-
-                {"fr", "pb", "Livre de poche"},
-
-        });
-    }
-
-    @Parameterized.Parameter(0)
-    public String fLocaleCode;
-
-    @Parameterized.Parameter(1)
-    public String fInput;
-
-    @Parameterized.Parameter(2)
-    public String fExpected;
-
     private Book book;
-
     private FormatMapper mapper;
     private String key;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
-        super.setup(fLocaleCode);
+    @NonNull
+    static Stream<Arguments> data() {
+        return Stream.of(
+                Arguments.of("en", "pb", "Paperback"),
+                Arguments.of("en", "Dimensions 5x4", "Dimensions 5x4"),
+                Arguments.of("en", "some-string", "some-string"),
+                Arguments.of("fr", "pb", "Livre de poche")
+        );
+    }
+
+    /**
+     * We're not using the {@code setup()} as usual, as we need
+     * to update the super's Locale for EACH set of test parameters.
+     *
+     * @param localeCode to use
+     */
+    private void setupThisTest(@NonNull final String localeCode)
+            throws StorageException {
+        super.setup(localeCode);
 
         book = new Book();
         mapper = new FormatMapper(Locale.UK);
         key = mapper.getKey();
     }
 
-    @Test
-    public void basic() {
+    @ParameterizedTest
+    @MethodSource("data")
+    void basic(@NonNull final String fLocaleCode,
+               @NonNull final String fInput,
+               @NonNull final String fExpected)
+            throws StorageException {
+        setupThisTest(fLocaleCode);
+
         book.putString(key, fInput);
         mapper.map(context, book);
+
         assertEquals(fExpected, book.getString(key, null));
     }
 }

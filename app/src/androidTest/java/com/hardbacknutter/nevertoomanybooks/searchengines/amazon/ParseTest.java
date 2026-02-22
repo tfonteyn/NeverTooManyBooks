@@ -27,7 +27,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -44,15 +43,14 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -61,9 +59,9 @@ public class ParseTest
     private AmazonSearchEngine searchEngine;
     private MoneyParser moneyParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
@@ -77,7 +75,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse01()
+    void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
@@ -122,7 +120,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse02()
+    void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
@@ -170,7 +168,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse10()
+    void parse10()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
@@ -217,7 +215,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse11()
+    void parse11()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.amazon.de/gp/product/3518366823";
@@ -262,7 +260,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse12()
+    void parse12()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.amazon.com/gp/product/3518366823";
@@ -306,7 +304,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse20()
+    void parse20()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.amazon.es/gp/product/1107480558";
@@ -351,7 +349,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse21()
+    void parse21()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.amazon.es/gp/product/840827578X";

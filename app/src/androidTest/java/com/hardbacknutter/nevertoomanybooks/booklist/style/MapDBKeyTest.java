@@ -30,23 +30,22 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@SuppressWarnings("MissingJavadoc")
-public class MapDBKeyTest
+class MapDBKeyTest
         extends BaseDBTest {
 
     private BookshelfDao bookshelfDao;
     private Bookshelf bookshelf;
     private UserStyle style;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -60,8 +59,8 @@ public class MapDBKeyTest
         bookshelfDao.update(context, bookshelf, Locale.UK);
     }
 
-    @After
-    public void breakdown()
+    @AfterEach
+    void breakdown()
             throws DaoWriteException {
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
@@ -73,7 +72,7 @@ public class MapDBKeyTest
      * must all have a human-readable label.
      */
     @Test
-    public void visibilityKeysHaveLabels() {
+    void visibilityKeysHaveLabels() {
         final Set<String> keys = new FieldVisibility().getKeys(true);
         assertFalse(keys.isEmpty());
 
@@ -91,7 +90,7 @@ public class MapDBKeyTest
      * must all have a human-readable label.
      */
     @Test
-    public void sortableBookLevelKeysHaveLabels() {
+    void sortableBookLevelKeysHaveLabels() {
         // all supported fields will be there.
         final Set<String> keys = style.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
@@ -111,7 +110,7 @@ public class MapDBKeyTest
      * must all have a valid domain name.
      */
     @Test
-    public void visibilityKeysHaveDomainNames() {
+    void visibilityKeysHaveDomainNames() {
         // force all fields
         style.setFieldVisibility(FieldVisibility.Screen.List, Long.MAX_VALUE);
 
@@ -132,7 +131,7 @@ public class MapDBKeyTest
      * must all have a valid domain name.
      */
     @Test
-    public void sortableBookLevelKeysHaveDomainNames() {
+    void sortableBookLevelKeysHaveDomainNames() {
         // all supported fields will be there.
         final Set<String> keys = style.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());

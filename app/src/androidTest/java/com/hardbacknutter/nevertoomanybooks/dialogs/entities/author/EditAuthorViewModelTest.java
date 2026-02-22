@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,12 +36,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EditAuthorViewModelTest
+class EditAuthorViewModelTest
         extends BaseDBTest {
 
     // wrongly stored in the db
@@ -54,9 +54,9 @@ public class EditAuthorViewModelTest
     private AuthorDao dao;
     private Locale locale;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -82,7 +82,7 @@ public class EditAuthorViewModelTest
     }
 
     @Test
-    public void rename()
+    void rename()
             throws DaoWriteException {
 
         dao.insert(context, new Author(WRONG_FAMILY, WRONG_GIVEN), locale);
@@ -105,7 +105,7 @@ public class EditAuthorViewModelTest
     }
 
     @Test
-    public void rename2()
+    void rename2()
             throws DaoWriteException {
 
         dao.insert(context, new Author(CORRECT_FAMILY, CORRECT_GIVEN), locale);

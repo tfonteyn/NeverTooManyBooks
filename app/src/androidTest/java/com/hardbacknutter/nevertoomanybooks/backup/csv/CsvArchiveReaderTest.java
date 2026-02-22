@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestUtils;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -54,22 +53,18 @@ import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
-import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-@SuppressWarnings("MissingJavadoc")
-public class CsvArchiveReaderTest
+class CsvArchiveReaderTest
         extends BaseDBTest {
 
     private static final String TAG = "CsvArchiveReaderTest";
@@ -77,9 +72,9 @@ public class CsvArchiveReaderTest
     private BookDao bookDao;
     private int booksPresent;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         bookDao = ServiceLocator.getInstance().getBookDao();
@@ -94,8 +89,8 @@ public class CsvArchiveReaderTest
 
     @SuppressWarnings("LocalCanBeFinal")
     @Test
-    public void books()
-            throws DataReaderException, DataWriterException, DaoWriteException, IOException,
+    void books()
+            throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
         File file;
@@ -255,7 +250,7 @@ public class CsvArchiveReaderTest
         assertEquals("e9787a594f11549db20f163db56a3ec9", book.getString(DBKey.BOOK_UUID, null));
 
         final List<Tag> bookTags = book.getTags();
-        TestCase.assertEquals(3, bookTags.size());
+        assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("History"));
         assertTrue(tags.contains("Europe"));
@@ -304,14 +299,14 @@ public class CsvArchiveReaderTest
         assertEquals("", book.getString(DBKey.LOANEE_NAME, null));
         assertEquals("Jonathan Harker is travelling to Castle Dracula ...",
                      book.getString(DBKey.DESCRIPTION, null));
-        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_ADDED__UTC, null));
         assertTrue(book.getIdentifierValue(Identifier.SID_GOODREADS).isEmpty());
         assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
         assertEquals("b483250f6016cbe775ce16bfbc6d64da", book.getString(DBKey.BOOK_UUID, null));
 
         final List<Tag> bookTags = book.getTags();
-        TestCase.assertEquals(2, bookTags.size());
+        assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Fiction"));
         assertTrue(tags.contains("Literary"));

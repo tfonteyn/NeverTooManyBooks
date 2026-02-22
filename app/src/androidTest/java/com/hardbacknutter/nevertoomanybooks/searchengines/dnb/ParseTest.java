@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -46,24 +45,24 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc","LongLine"})
-public class ParseTest
+@SuppressWarnings("LongLine")
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
     private static final String UTF_8 = "UTF-8";
     private DnbSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
@@ -73,7 +72,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9783453321892()
+    void parse9783453321892()
             throws IOException, SearchException, CredentialsException, StorageException {
 
         final String locationHeader = "https://katalog.dnb.de/DE/list.html?t=978-3-453-32189-2&v=plist&key.GROUP=1&sortA=bez&sortD=-dat&key=all&pr=0";
@@ -141,7 +140,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9783426226681()
+    void parse9783426226681()
             throws IOException, SearchException, CredentialsException, StorageException {
 
         final String locationHeader = "https://katalog.dnb.de/EN/list.html?key=num&key.GROUP=1&t=978-3-426-22668-1&sortD=-dat&sortA=bez&pr=0&v=plist&submit.x=19&submit.y=24";
@@ -194,7 +193,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9783734163296()
+    void parse9783734163296()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader = "https://katalog.dnb.de/DE/list.html?key=all&key.GROUP=1&t=9783734163296&sortD=-dat&sortA=bez&v=plist&submit.x=24&submit.y=20&pr=0";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -259,7 +258,7 @@ public class ParseTest
      * Does live lookups to the website !
      */
     @Test
-    public void parseMulti()
+    void parseMulti()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader = "https://katalog.dnb.de/DE/list.html?key=all&key.GROUP=1&t=asimov+nemesis&sortD=-dat&sortA=bez&pr=0&v=plist&submit.x=0&submit.y=0";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

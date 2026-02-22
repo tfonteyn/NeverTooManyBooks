@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,14 +45,13 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SuppressWarnings("MissingJavadoc")
-public class BooklistBuilderTest
+class BooklistBuilderTest
         extends BaseDBTest {
 
     private static final String TAG = "BooklistBuilderTest";
@@ -61,8 +60,8 @@ public class BooklistBuilderTest
     private Bookshelf bookshelf;
     private UserStyle style;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
@@ -76,8 +75,8 @@ public class BooklistBuilderTest
         bookshelfDao.update(context, bookshelf, Locale.UK);
     }
 
-    @After
-    public void breakdown()
+    @AfterEach
+    void breakdown()
             throws DaoWriteException {
         bookshelf.setStyle(context, getBuiltinStyle());
         bookshelfDao.update(context, bookshelf, Locale.UK);
@@ -85,7 +84,7 @@ public class BooklistBuilderTest
     }
 
     @Test
-    public void t01() {
+    void t01() {
         // force all book level fields
         style.setFieldVisibility(FieldVisibility.Screen.List, Long.MAX_VALUE);
         // all groups...
@@ -96,6 +95,7 @@ public class BooklistBuilderTest
 
         final BoBTask boBTask = new BoBTask();
 
+        //noinspection AssignmentToStaticFieldFromInstanceMethod
         DEBUG_SWITCHES.BOB_USES_STANDARD_TABLE = true;
         final Booklist booklist = boBTask.buildBooklist(context, db, bookshelf, style,
                                                         RebuildBooklist.Collapsed, criteriaFilters);

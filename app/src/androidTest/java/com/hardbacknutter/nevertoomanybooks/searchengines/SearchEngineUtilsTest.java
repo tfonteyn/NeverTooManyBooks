@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,32 +21,32 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"MissingJavadoc", "LongLine"})
-public class SearchEngineUtilsTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class SearchEngineUtilsTest
         extends BaseDBTest {
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void process() {
-        String s, c;
+    void process() {
+        final String s;
+        final String c;
 
         // \u202E is the Right-to-Left Override (RLO) BiDi control
         s = "Hello" + "\u202E" + " World" + "\u200E";
         c = SearchEngineUtils.cleanText(s);
-        Assert.assertEquals("Hello World", c);
+        assertEquals("Hello World", c);
     }
 }
 

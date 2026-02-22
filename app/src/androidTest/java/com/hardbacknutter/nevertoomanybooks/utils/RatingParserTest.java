@@ -29,23 +29,23 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class RatingParserTest {
+// FIXME: use params...
+class RatingParserTest {
 
     @Test
-    public void v5() {
+    void v5() {
         final RatingParser parser = new RatingParser(5);
         parse5withDots(parser);
     }
 
     @Test
-    public void v10() {
+    void v10() {
         final RatingParser parser = new RatingParser(10);
         parse10withDots(parser);
     }
@@ -171,7 +171,7 @@ public class RatingParserTest {
     }
 
     @Test
-    public void v5withLocales() {
+    void v5withLocales() {
         final RealNumberParser ratingNumberParser = new RealNumberParser(List.of(Locale.GERMANY,
                                                                                  Locale.FRANCE,
                                                                                  Locale.US));

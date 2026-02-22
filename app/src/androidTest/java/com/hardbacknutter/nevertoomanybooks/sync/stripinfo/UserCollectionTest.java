@@ -26,7 +26,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -40,17 +39,16 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class UserCollectionTest
+class UserCollectionTest
         extends BaseDBTest {
 
     private static final String TAG = "UserCollectionTest";
@@ -72,9 +70,9 @@ public class UserCollectionTest
     private StripInfoSearchEngine searchEngine;
     private MoneyParser moneyParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
@@ -88,7 +86,7 @@ public class UserCollectionTest
     }
 
     @Test
-    public void parseCollectionPage()
+    void parseCollectionPage()
             throws IOException, SearchException {
 
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
@@ -133,7 +131,7 @@ public class UserCollectionTest
     }
 
     @Test
-    public void parseCollectionLastPage()
+    void parseCollectionLastPage()
             throws IOException, SearchException {
 
         // The "3" near the end of the url == the 3rd page from the collection.

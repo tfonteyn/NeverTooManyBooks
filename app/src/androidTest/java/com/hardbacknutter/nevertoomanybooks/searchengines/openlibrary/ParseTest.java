@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -44,24 +43,24 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+@SuppressWarnings("LongLine")
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
 
     private OpenLibrarySearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException, SearchException, CredentialsException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
@@ -83,7 +82,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse1()
+    void parse1()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
 
@@ -125,10 +124,10 @@ public class ParseTest
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
-        Optional<String> oIv;
+        final Optional<String> oIv;
         Author author;
         assertNotNull(authors);
-        assertEquals(String.valueOf(authors), 2, authors.size());
+        assertEquals(2, authors.size(), String.valueOf(authors));
 
         author = authors.get(0);
         assertEquals("Miedema", author.getFamilyName());
@@ -186,7 +185,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse2()
+    void parse2()
             throws IOException, StorageException, SearchException, CredentialsException {
 
         // https://openlibrary.org/search.json?q=9780734418227&fields=key,editions
@@ -253,7 +252,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse3()
+    void parse3()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780141346830&fields=key,editions
 
@@ -286,7 +285,7 @@ public class ParseTest
         assertEquals("Puffin", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
-        Author author;
+        final Author author;
         Optional<String> oIv;
         assertNotNull(authors);
         assertEquals(1, authors.size());
@@ -296,7 +295,8 @@ public class ParseTest
         assertEquals("Rick", author.getGivenNames());
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
         assertEquals("1964-06-05", author.getBirthDate().orElse(null));
-        assertTrue(author.getTmpPictureFileSpec().get().contains("_openlibrary_OL30765A_0"));
+        assertTrue(
+                author.getTmpPictureFileSpec().orElseThrow().contains("_openlibrary_OL30765A_0"));
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
         assertEquals("OL30765A", oIv.get());
@@ -335,7 +335,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse4()
+    void parse4()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
 
@@ -485,7 +485,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse5()
+    void parse5()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780553276329&fields=key,editions
 
@@ -586,7 +586,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse6()
+    void parse6()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9781691706631&fields=key,editions
 
@@ -622,7 +622,7 @@ public class ParseTest
         assertEquals("Eric Robertson", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
-        Author author;
+        final Author author;
         assertNotNull(authors);
         assertEquals(1, authors.size());
 
@@ -632,7 +632,7 @@ public class ParseTest
         assertEquals(AuthorRole.UNKNOWN, author.getRole());
 
         assertEquals(1, author.getIdentifiers().size());
-        Optional<String> oIv;
+        final Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
         assertEquals("OL14948835A", oIv.get());

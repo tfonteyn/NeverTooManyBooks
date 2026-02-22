@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -50,20 +49,18 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * 2025-11-06: image downloads may fail randomly.
  * Parsing has been verified manually, and the failing url's ARE CORRECT.
  */
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -72,9 +69,9 @@ public class ParseTest
     private BibliotecePlSearchEngine searchEngine;
     private RealNumberParser ratingNumberParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (BibliotecePlSearchEngine) EngineId.BibliotecePl.createSearchEngine(context);
@@ -92,7 +89,7 @@ public class ParseTest
 
     /** Short test to verify ISBN 10/13 handling only. */
     @Test
-    public void parse9788321331966()
+    void parse9788321331966()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://w.bibliotece.pl/546206/Historia+sztuki";
@@ -110,7 +107,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9788384252963()
+    void parse9788384252963()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://w.bibliotece.pl/6985469/Ziele%C5%84";
@@ -131,7 +128,7 @@ public class ParseTest
         assertEquals("2025", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
-        Assert.assertEquals("6985469", book.requireIdentifierValue(
+        assertEquals("6985469", book.requireIdentifierValue(
                 Identifier.SID_BIBLIOTECE_PL));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
@@ -156,7 +153,7 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(1, authors.size());
 
-        Optional<String> oIv;
+        final Optional<String> oIv;
         final Author author;
         author = authors.get(0);
         assertEquals("Sobczak", author.getFamilyName());
@@ -176,7 +173,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9788380837744()
+    void parse9788380837744()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://w.bibliotece.pl/3451326/Ona+i+dom+kt%C3%B3ry+ta%C5%84czy";
@@ -199,8 +196,7 @@ public class ParseTest
 
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
-        Assert.assertEquals("3451326", book.requireIdentifierValue(
-                Identifier.SID_BIBLIOTECE_PL));
+        assertEquals("3451326", book.requireIdentifierValue(Identifier.SID_BIBLIOTECE_PL));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);
@@ -232,7 +228,7 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(1, authors.size());
 
-        Optional<String> oIv;
+        final Optional<String> oIv;
         final Author author;
         author = authors.get(0);
         assertEquals("Sobczak", author.getFamilyName());
@@ -252,7 +248,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9788368591095()
+    void parse9788368591095()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://w.bibliotece.pl/2261259/Studnia+wst%C4%85pienia";
@@ -277,8 +273,7 @@ public class ParseTest
 
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
-        Assert.assertEquals("2261259", book.requireIdentifierValue(
-                Identifier.SID_BIBLIOTECE_PL));
+        assertEquals("2261259", book.requireIdentifierValue(Identifier.SID_BIBLIOTECE_PL));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);
@@ -375,7 +370,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9788328172241()
+    void parse9788328172241()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://w.bibliotece.pl/6976045/Ruchome+miasto";
@@ -397,8 +392,7 @@ public class ParseTest
 
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
-        Assert.assertEquals("6976045", book.requireIdentifierValue(
-                Identifier.SID_BIBLIOTECE_PL));
+        assertEquals("6976045", book.requireIdentifierValue(Identifier.SID_BIBLIOTECE_PL));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);
@@ -520,7 +514,7 @@ public class ParseTest
     }
 
     @Test
-    public void parse9788377052730()
+    void parse9788377052730()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://w.bibliotece.pl/3779215/Kr%C3%B3tkie+odpowiedzi+na+wielkie+pytania";
@@ -547,8 +541,7 @@ public class ParseTest
 
         assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
 
-        Assert.assertEquals("3779215", book.requireIdentifierValue(
-                Identifier.SID_BIBLIOTECE_PL));
+        assertEquals("3779215", book.requireIdentifierValue(Identifier.SID_BIBLIOTECE_PL));
 
         final String description = book.getString(DBKey.DESCRIPTION, null);
         assertNotNull(description);
@@ -607,7 +600,7 @@ public class ParseTest
 
         Optional<String> oIv;
         Author author;
-        File authorImageFile;
+        final File authorImageFile;
         p = 0;
         author = authors.get(p++);
         assertEquals("Hawking", author.getFamilyName());

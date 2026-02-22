@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,61 +29,60 @@ import com.hardbacknutter.nevertoomanybooks.core.network.UrlPatterns;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class IdentifierTest
+class IdentifierTest
         extends BaseDBTest {
 
     private static final Pattern PATTERN = Pattern.compile("%s");
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
     @Test
-    public void createInitialList() {
+    void createInitialList() {
         final Set<String> keys = new HashSet<>();
         Identifier.createInitialList(context).forEach(i -> {
             final String key = i.getKey();
-            assertFalse("Duplicate key: " + key, keys.contains(key));
+            assertFalse(keys.contains(key), "Duplicate key: " + key);
             keys.add(key);
 
             i.getBookUri().ifPresent(bookUri -> assertEquals(
-                    "Invalid bookUri key: " + key,
                     1,
-                    PATTERN.split(bookUri, -1).length - 1));
+                    PATTERN.split(bookUri, -1).length - 1,
+                    "Invalid bookUri key: " + key));
         });
     }
 
     @Test
-    public void validateSiteUrl() {
+    void validateSiteUrl() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
             final String url = identifier.getSiteUrl();
-            assertTrue(url, UrlPatterns.isBlankOrValidUrl(url));
+            assertTrue(UrlPatterns.isBlankOrValidUrl(url), url);
         }
     }
 
     @Test
-    public void validateBookUri() {
+    void validateBookUri() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
             final String uri = identifier.getBookUri().orElse("");
-            assertTrue(uri, UrlPatterns.isBlankOrValidUriWith1s(uri));
+            assertTrue(UrlPatterns.isBlankOrValidUriWith1s(uri), uri);
         }
     }
 
     @Test
-    public void validateAuthorUri() {
+    void validateAuthorUri() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
             final String uri = identifier.getAuthorUri().orElse("");
-            assertTrue(uri, UrlPatterns.isBlankOrValidUriWith1s(uri));
+            assertTrue(UrlPatterns.isBlankOrValidUriWith1s(uri), uri);
         }
     }
 }

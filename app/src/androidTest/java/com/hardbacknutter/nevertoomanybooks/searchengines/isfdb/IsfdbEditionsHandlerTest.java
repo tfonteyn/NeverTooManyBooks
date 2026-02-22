@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -34,20 +33,19 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test parsing the Jsoup Document for ISFDB multi-edition data.
  * <p>
  * Unless noted, these tests will make a live call to the ISFDB website.
  */
-@SuppressWarnings("MissingJavadoc")
-public class IsfdbEditionsHandlerTest
+class IsfdbEditionsHandlerTest
         extends BaseDBTest {
 
     private static final String TAG = "IsfdbEditionsHandlerTes";
@@ -56,9 +54,9 @@ public class IsfdbEditionsHandlerTest
 
     private IsfdbSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
@@ -70,7 +68,7 @@ public class IsfdbEditionsHandlerTest
     }
 
     @Test
-    public void parseMultiEdition()
+    void parseMultiEdition()
             throws IOException {
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?11169";
@@ -92,7 +90,7 @@ public class IsfdbEditionsHandlerTest
     }
 
     @Test
-    public void parseMultiEdition2()
+    void parseMultiEdition2()
             throws IOException {
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?1360173";
@@ -123,7 +121,7 @@ public class IsfdbEditionsHandlerTest
      * Resulting url should have "pl.cgi".
      */
     @Test
-    public void searchSingleEditionIsbn()
+    void searchSingleEditionIsbn()
             throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9020612476&type=ISBN";
@@ -142,7 +140,7 @@ public class IsfdbEditionsHandlerTest
      * @see #searchSingleEditionIsbn()
      */
     @Test
-    public void searchMultiEditionIsbn()
+    void searchMultiEditionIsbn()
             throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";

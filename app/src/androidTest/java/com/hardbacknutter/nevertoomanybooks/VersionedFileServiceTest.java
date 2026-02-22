@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,23 +28,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "ResultOfMethodCallIgnored",
-        "StringConcatenationMissingWhitespace"})
-public class VersionedFileServiceTest
+@SuppressWarnings("ResultOfMethodCallIgnored")
+class VersionedFileServiceTest
         extends BaseDBTest {
 
     private static final String TAG = "VersionedFileServiceTst";
@@ -54,9 +53,9 @@ public class VersionedFileServiceTest
     /** Subdirectory created under the tmp dir. */
     private static final String SUBDIR = "TestDir";
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         File dir = getTmpDir();
@@ -87,8 +86,8 @@ public class VersionedFileServiceTest
     }
 
     @Test
-    public void subDir()
-            throws IOException, InterruptedException, CoverStorageException {
+    void subDir()
+            throws IOException, CoverStorageException {
         final File backupDir = new File(getTmpDir(), SUBDIR);
         backupDir.mkdir();
         assertTrue(backupDir.exists());
@@ -169,8 +168,8 @@ public class VersionedFileServiceTest
     }
 
     @Test
-    public void sameDir5()
-            throws IOException, InterruptedException, CoverStorageException {
+    void sameDir5()
+            throws IOException, CoverStorageException {
         final VersionedFileService versionedFileService = new VersionedFileService(5);
 
         final String filename = FILE_PREFIX + "_sameDir5";
@@ -186,7 +185,9 @@ public class VersionedFileServiceTest
         versionedFileService.save(file);
 
         Log.d(TAG, "Directory content after 1st save():");
-        for (final File f : dir.listFiles()) {
+        File[] dirList = dir.listFiles();
+        assertNotNull(dirList);
+        for (final File f : dirList) {
             Log.d(TAG, " - " + f.getName());
         }
 
@@ -206,7 +207,9 @@ public class VersionedFileServiceTest
         versionedFileService.save(file);
 
         Log.d(TAG, "Directory content after 2nd save():");
-        for (final File f : dir.listFiles()) {
+        dirList = dir.listFiles();
+        assertNotNull(dirList);
+        for (final File f : dirList) {
             Log.d(TAG, " - " + f.getName());
         }
 
@@ -227,7 +230,9 @@ public class VersionedFileServiceTest
         final boolean restored = versionedFileService.restore(file);
 
         Log.d(TAG, "Directory content after restore():");
-        for (final File f : dir.listFiles()) {
+        dirList = dir.listFiles();
+        assertNotNull(dirList);
+        for (final File f : dirList) {
             Log.d(TAG, " - " + f.getName());
         }
 
@@ -245,8 +250,8 @@ public class VersionedFileServiceTest
     }
 
     @Test
-    public void sameDir1()
-            throws IOException, CoverStorageException, InterruptedException {
+    void sameDir1()
+            throws IOException, CoverStorageException {
         final VersionedFileService versionedFileService = new VersionedFileService(1);
 
         final String filename = FILE_PREFIX + "_sameDir1";
@@ -262,7 +267,9 @@ public class VersionedFileServiceTest
         versionedFileService.save(file);
 
         Log.d(TAG, "Directory content after 1st save():");
-        for (final File f : dir.listFiles()) {
+        File[] dirList = dir.listFiles();
+        assertNotNull(dirList);
+        for (final File f : dirList) {
             Log.d(TAG, " - " + f.getName());
         }
 
@@ -282,7 +289,9 @@ public class VersionedFileServiceTest
         versionedFileService.save(file);
 
         Log.d(TAG, "Directory content after 2nd save():");
-        for (final File f : dir.listFiles()) {
+        dirList = dir.listFiles();
+        assertNotNull(dirList);
+        for (final File f : dirList) {
             Log.d(TAG, " - " + f.getName());
         }
 
@@ -303,7 +312,9 @@ public class VersionedFileServiceTest
         final boolean restored = versionedFileService.restore(file);
 
         Log.d(TAG, "Directory content after restore():");
-        for (final File f : dir.listFiles()) {
+        dirList = dir.listFiles();
+        assertNotNull(dirList);
+        for (final File f : dirList) {
             Log.d(TAG, " - " + f.getName());
         }
 

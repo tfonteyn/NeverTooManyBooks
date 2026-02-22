@@ -37,7 +37,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -50,20 +49,20 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * ENHANCE: this is experimental code. Parsing works, but reporting EOF is dodgy
  */
-@SuppressWarnings({"MissingJavadoc", "LongLine"})
-public class IsfdbXmlPublicationTest
+@SuppressWarnings("LongLine")
+class IsfdbXmlPublicationTest
         extends BaseDBTest {
 
     private static final String TAG = "IsfdbXmlPublicationTest";
@@ -71,9 +70,9 @@ public class IsfdbXmlPublicationTest
     private IsfdbSearchEngine searchEngine;
     private MoneyParser moneyParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
@@ -94,7 +93,7 @@ public class IsfdbXmlPublicationTest
     }
 
     @Test
-    public void singleByExtId()
+    void singleByExtId()
             throws ParserConfigurationException, IOException, SAXException {
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_425189;

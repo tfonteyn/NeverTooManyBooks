@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -48,15 +47,14 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -67,9 +65,9 @@ public class ParseTest
     private MoneyParser moneyParser;
     private RealNumberParser ratingNumberParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (StripWebSearchEngine) EngineId.StripWebBe.createSearchEngine(context);
@@ -87,7 +85,7 @@ public class ParseTest
      * Fairly standard single book.
      */
     @Test
-    public void parse01()
+    void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripweb.be/nl-nl/wanted-lucky-luke-2";
@@ -161,7 +159,7 @@ public class ParseTest
      * Multi-author where the names are plain text.
      */
     @Test
-    public void parse02()
+    void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
@@ -278,7 +276,7 @@ public class ParseTest
      * Multi-author where the names are "a" elements.
      */
     @Test
-    public void parse03()
+    void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.stripweb.be/nl-nl/xiii-box-delen-1-3";
@@ -333,7 +331,6 @@ public class ParseTest
         assertNotNull(allAuthors);
         assertEquals(8, allAuthors.size());
         Author author;
-        // ominique`, birthDate=``, deathDate=`null`, pictureU
         author = allAuthors.get(0);
         assertEquals("Corbeyran", author.getFamilyName());
         assertEquals("Éric", author.getGivenNames());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,17 +27,16 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SuppressWarnings("MissingJavadoc")
-public class EngineIdTest {
+class EngineIdTest {
 
     private static final String TAG = "EngineIdTest";
 
     @Test
-    public void dumpEngines() {
+    void dumpEngines() {
         Arrays.stream(EngineId.values())
               .filter(EngineId::isEnabled)
               .forEach(engineId -> {
@@ -47,7 +46,7 @@ public class EngineIdTest {
     }
 
     @Test
-    public void dumpSites() {
+    void dumpSites() {
         final Context context = ServiceLocator.getInstance().getAppContext();
 
         for (final Site.Type type : Site.Type.values()) {

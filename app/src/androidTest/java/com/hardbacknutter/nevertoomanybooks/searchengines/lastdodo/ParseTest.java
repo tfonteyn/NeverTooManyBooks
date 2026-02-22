@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,9 +28,9 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -44,15 +44,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class ParseTest
+@SuppressWarnings("LongLine")
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -61,9 +61,9 @@ public class ParseTest
 
     private LastDodoSearchEngine searchEngine;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (LastDodoSearchEngine) EngineId.LastDodoNl.createSearchEngine(context);
@@ -73,8 +73,8 @@ public class ParseTest
     }
 
     @Test
-    public void parse01()
-            throws SearchException, IOException, CredentialsException, StorageException {
+    void parse01()
+            throws SearchException, IOException, CredentialsException, CoverStorageException {
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -124,7 +124,8 @@ public class ParseTest
         assertEquals("Thierry", author.getGivenNames());
         assertEquals(AuthorRole.ARTIST, author.getRole());
         assertEquals("1960-05-05", author.getBirthDate().orElse(null));
-        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_1949_0_.jpg"));
+        assertTrue(
+                author.getTmpPictureFileSpec().orElseThrow().endsWith("_bedetheque_1949_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());
@@ -138,7 +139,7 @@ public class ParseTest
         assertEquals("Fred", author.getGivenNames());
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1965-01-05", author.getBirthDate().orElse(null));
-        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_58_0_.jpg"));
+        assertTrue(author.getTmpPictureFileSpec().orElseThrow().endsWith("_bedetheque_58_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());
@@ -160,7 +161,8 @@ public class ParseTest
         assertEquals("Sayago", author.getFamilyName());
         assertEquals("Nuria", author.getGivenNames());
         assertEquals(AuthorRole.COLORIST, author.getRole());
-        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_30795_0_.jpg"));
+        assertTrue(
+                author.getTmpPictureFileSpec().orElseThrow().endsWith("_bedetheque_30795_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());
@@ -195,8 +197,8 @@ public class ParseTest
      * The Series title of this test data is "Venijn, Het" which needs converting to "Het Venijn".
      */
     @Test
-    public void parse02()
-            throws SearchException, CredentialsException, StorageException, IOException {
+    void parse02()
+            throws SearchException, CredentialsException, IOException, CoverStorageException {
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/8838967-schoot-der-aarde";
 
@@ -268,8 +270,8 @@ public class ParseTest
      * 3 images
      */
     @Test
-    public void parse03()
-            throws SearchException, CredentialsException, StorageException, IOException {
+    void parse03()
+            throws SearchException, CredentialsException, IOException, CoverStorageException {
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/37600-sioban";
 
@@ -329,7 +331,7 @@ public class ParseTest
         assertEquals("Jean", author.getGivenNames());
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1949-06-07", author.getBirthDate().orElse(null));
-        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_53_0_.jpg"));
+        assertTrue(author.getTmpPictureFileSpec().orElseThrow().endsWith("_bedetheque_53_0_.jpg"));
         assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());

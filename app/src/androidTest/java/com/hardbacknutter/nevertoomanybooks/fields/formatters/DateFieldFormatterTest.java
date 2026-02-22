@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,30 +23,26 @@ package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DateFieldFormatterTest
+class DateFieldFormatterTest
         extends BaseDBTest {
 
-    private DateFieldFormatter dff;
-
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
-
     }
 
     @Test
-    public void format() {
-        dff = new DateFieldFormatter(Locale.GERMAN, false);
+    void format() {
+        final FieldFormatter<String> dff = new DateFieldFormatter(Locale.GERMAN, false);
 
         assertEquals("2025", dff.format(context, "2025-00-00"));
         assertEquals("2025", dff.format(context, "2025-00-01"));

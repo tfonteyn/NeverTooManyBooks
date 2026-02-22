@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,31 +30,29 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.InstantTaskExecutorExtension;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@SuppressWarnings("MissingJavadoc")
-public class SearchCoordinatorTest
+/** LiveData requirement: {@code @ExtendWith(InstantTaskExecutorExtension.class)} */
+@ExtendWith(InstantTaskExecutorExtension.class)
+class SearchCoordinatorTest
         extends BaseDBTest {
 
     private static final String TAG = "SearchCoordinatorTest";
-    /** LiveData requirement. */
-    @Rule
-    public TestRule rule = new InstantTaskExecutorRule();
+
     private SearchCoordinator coordinator;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         coordinator = new SearchCoordinator();
@@ -66,7 +63,7 @@ public class SearchCoordinatorTest
     }
 
     @Test
-    public void search01()
+    void search01()
             throws InterruptedException {
 
         final List<BookSearchResult> receivedValues = new ArrayList<>();

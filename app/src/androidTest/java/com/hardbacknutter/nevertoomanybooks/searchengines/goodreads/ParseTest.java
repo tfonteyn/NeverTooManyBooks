@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -51,16 +50,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
 import org.jsoup.nodes.Document;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "UnnecessaryUnicodeEscape", "LongLine"})
-public class ParseTest
+class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
@@ -69,9 +67,9 @@ public class ParseTest
     private GoodreadsSearchEngine searchEngine;
     private RealNumberParser ratingNumberParser;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
@@ -91,7 +89,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseNextDataJson9789604419197()
+    void parseNextDataJson9789604419197()
             throws IOException, StorageException, SearchException, CredentialsException {
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -197,12 +195,13 @@ public class ParseTest
     }
 
     @Test
-    public void parseNextDataJson9789028453807()
+    void parseNextDataJson9789028453807()
             throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.goodreads_next_data_9789028453807);
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test
+                        .R.raw.goodreads_next_data_9789028453807);
         searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
@@ -272,7 +271,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseNextDataJson9780062683250()
+    void parseNextDataJson9780062683250()
             throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
@@ -375,12 +374,13 @@ public class ParseTest
     }
 
     @Test
-    public void parseNextDataJson9780553803723()
+    void parseNextDataJson9780553803723()
             throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.goodreads_next_data_9780553803723);
+        final JSONObject document = loadJSONObject
+                (com.hardbacknutter.nevertoomanybooks.test
+                         .R.raw.goodreads_next_data_9780553803723);
         searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
@@ -440,7 +440,8 @@ public class ParseTest
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1920-01-02", author.getBirthDate().orElse(null));
         assertEquals("1992-04-06", author.getDeathDate().orElse(null));
-        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_goodreads_16667_0_.jpg"));
+        assertTrue(
+                author.getTmpPictureFileSpec().orElseThrow().endsWith("_goodreads_16667_0_.jpg"));
         assertEquals(21, author.getIdentifiers().size());
 
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
@@ -481,7 +482,7 @@ public class ParseTest
      * Make sure by testing for correctly missing fields.
      */
     @Test
-    public void withNulls()
+    void withNulls()
             throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
@@ -572,7 +573,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseHtml9780062683250()
+    void parseHtml9780062683250()
             throws IOException, SearchException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.goodreads.com/book/show/49867186-the-left-handed-booksellers-of-london?ac=1&from_search=true&qid=ubH6XArsmP&rank=2";
@@ -589,7 +590,7 @@ public class ParseTest
     }
 
     @Test
-    public void parseMultiResultFoundationAndEmpire()
+    void parseMultiResultFoundationAndEmpire()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader = "https://www.goodreads.com/search?q=foundation+and+empire&qid=rMtPCIQx9m";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -603,7 +604,7 @@ public class ParseTest
         // live download, results may be different
         assertEquals("Foundation and Empire", book.getString(DBKey.TITLE, null));
         assertEquals("9780553803723", book.getString(DBKey.ISBN, null));
-        assertEquals("Spectra", book.getPrimaryPublisher().get().getName());
+        assertEquals("Spectra", book.getPrimaryPublisher().orElseThrow().getName());
         // full assert is already tested in parseNextDataJson9780553803723()
     }
 }

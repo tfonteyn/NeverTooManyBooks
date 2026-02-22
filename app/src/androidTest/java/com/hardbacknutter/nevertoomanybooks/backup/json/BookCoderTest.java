@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import java.util.Collection;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.IdentifierValueCoder;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -37,26 +36,25 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONObject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
-public class BookCoderTest
+class BookCoderTest
         extends BaseDBTest {
 
     private Book book;
     private BookCoder bookCoder;
     private IdentifierValueCoder identifierValueCoder;
 
-    @Before
-    public void setup()
-            throws DaoWriteException, StorageException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         book = new Book();
         bookCoder = new BookCoder(context, serviceLocator.getStyles().getDefault());
@@ -64,7 +62,7 @@ public class BookCoderTest
     }
 
     @Test
-    public void putMoney() {
+    void putMoney() {
         final Money money = new Money(BigDecimal.valueOf(12.34d), Money.EURO);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
@@ -75,7 +73,7 @@ public class BookCoderTest
     }
 
     @Test
-    public void putMoneyComponents() {
+    void putMoneyComponents() {
         book.putDouble(DBKey.PRICE_LISTED, 12.34d);
         book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
 
@@ -86,7 +84,7 @@ public class BookCoderTest
     }
 
     @Test
-    public void putMoneyComponentsNoCurrency() {
+    void putMoneyComponentsNoCurrency() {
         book.putDouble(DBKey.PRICE_LISTED, 12.34d);
 
         final JSONObject encode = bookCoder.encode(book);
@@ -98,7 +96,7 @@ public class BookCoderTest
     }
 
     @Test
-    public void putMoneyCustomString() {
+    void putMoneyCustomString() {
         book.putString(DBKey.PRICE_LISTED, "a lot of money");
 
         final JSONObject encode = bookCoder.encode(book);
@@ -110,7 +108,7 @@ public class BookCoderTest
     }
 
     @Test
-    public void putIdentifiersValid() {
+    void putIdentifiersValid() {
         book.setIdentifierValue(Identifier.SID_GOODREADS, 1234);
         book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, "ol123");
 
@@ -128,7 +126,7 @@ public class BookCoderTest
     }
 
     @Test
-    public void putIdentifiersInvalid() {
+    void putIdentifiersInvalid() {
         book.setIdentifierValue(Identifier.SID_GOODREADS, -1234);
         book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, "");
 

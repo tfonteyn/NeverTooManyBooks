@@ -35,16 +35,15 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * To access a Calibre server on the host network from the app running on the emulator, run:
@@ -66,8 +65,7 @@ import static org.junit.Assert.assertTrue;
  *
  * <strong>IMPORTANT:</strong> this test is configured to accept all certificates!
  */
-@SuppressWarnings("MissingJavadoc")
-public class CalibreContentServerTest {
+class CalibreContentServerTest {
 
     /** 10.0.2.2 is a special alias in the emulator which redirects to the host 127.0.0.1. */
     private static final String URL = "https://10.0.2.2:8443";
@@ -77,8 +75,8 @@ public class CalibreContentServerTest {
     private CalibreContentServer server;
     private Context context;
 
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException,
                    CertificateException {
         this.context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -100,7 +98,7 @@ public class CalibreContentServerTest {
     }
 
     @Test
-    public void filenames()
+    void filenames()
             throws FileNotFoundException {
 
         final List<Author> authors = new ArrayList<>();
@@ -132,8 +130,8 @@ public class CalibreContentServerTest {
     }
 
     @Test
-    public void connection()
-            throws IOException, StorageException {
+    void connection()
+            throws IOException {
 
         assertTrue(server.validateConnection(context));
     }
