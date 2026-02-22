@@ -24,7 +24,6 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,13 +88,8 @@ class BaseDaoImpl {
     @NonNull
     final SynchronizedDb db;
 
-    /**
-     * FINAL. But not 'final' for test purposes only.
-     *
-     * @see #setTextNormalizer(TextNormalizer)
-     */
     @NonNull
-    TextNormalizer textNormalizer;
+    final TextNormalizer textNormalizer;
 
     /**
      * Constructor.
@@ -111,16 +105,6 @@ class BaseDaoImpl {
 
         this.db = db;
         textNormalizer = TextNormalizerFactory.create();
-    }
-
-    /**
-     * Allows setting an API specific normalizer for testing.
-     *
-     * @param textNormalizer to use
-     */
-    @VisibleForTesting
-    public void setTextNormalizer(@NonNull final TextNormalizer textNormalizer) {
-        this.textNormalizer = textNormalizer;
     }
 
     /**
