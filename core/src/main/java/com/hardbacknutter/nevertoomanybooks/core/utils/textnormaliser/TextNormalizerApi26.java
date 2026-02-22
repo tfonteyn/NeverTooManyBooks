@@ -20,18 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
 /**
  * Adding the full com.ibm icu would make a Transliterator usable with api 26+,
@@ -124,20 +119,26 @@ public class TextNormalizerApi26
         // No general transliteration here — keep or handle separately if needed
     }
 
-    /**
-     * Constructor.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public TextNormalizerApi26() {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d("TextNormalizer", "TextNormalizerApi26");
+    @NonNull
+    private static String transliterate(@NonNull final CharSequence text) {
+        // Step 1: Decompose accents (NFD)
+        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+        // Step 2: Remove combining diacritics (accents)
+        normalized = DIACRITICS_PATTERN.matcher(normalized).replaceAll("");
+        // Step 3: Replace extra characters that don't decompose
+        final StringBuilder builder = new StringBuilder(normalized.length());
+        for (int i = 0; i < normalized.length(); i++) {
+            final char c = normalized.charAt(i);
+            final String replacement = EXTRA_REPLACEMENTS.get(c);
+            builder.append(replacement != null ? replacement : c);
         }
+        return builder.toString();
     }
 
     @Override
     @NonNull
     public String orderByColumn(@NonNull final CharSequence text,
-                                       @NonNull final Locale locale) {
+                                @NonNull final Locale locale) {
         String result = transliterate(text);
         // remove unwanted characters; spaces are REMOVED
         result = ORDERBY_PATTERN.matcher(result).replaceAll("");
@@ -167,22 +168,6 @@ public class TextNormalizerApi26
         result = WHITESPACE.matcher(result).replaceAll(" ");
 
         return result.strip();
-    }
-    
-    @NonNull
-    private static String transliterate(@NonNull final CharSequence text) {
-        // Step 1: Decompose accents (NFD)
-        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
-        // Step 2: Remove combining diacritics (accents)
-        normalized = DIACRITICS_PATTERN.matcher(normalized).replaceAll("");
-        // Step 3: Replace extra characters that don't decompose
-        final StringBuilder builder = new StringBuilder(normalized.length());
-        for (int i = 0; i < normalized.length(); i++) {
-            final char c = normalized.charAt(i);
-            final String replacement = EXTRA_REPLACEMENTS.get(c);
-            builder.append(replacement != null ? replacement : c);
-        }
-        return builder.toString();
     }
 }
 

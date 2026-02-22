@@ -22,16 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
 import android.icu.text.Transliterator;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
-
-import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class TextNormalizerApi29
@@ -53,20 +49,10 @@ public class TextNormalizerApi29
     /** KEEP alpha/digit. KEEP single/actual spaces. */
     private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
-    /**
-     * Constructor.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public TextNormalizerApi29() {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d("TextNormalizer", "TextNormalizerApi29");
-        }
-    }
-
     @Override
     @NonNull
     public String orderByColumn(@NonNull final CharSequence text,
-                                       @NonNull final Locale locale) {
+                                @NonNull final Locale locale) {
         String result = TRANSLITERATOR.transliterate(text.toString());
         // remove unwanted characters; spaces are REMOVED
         result = ORDERBY_PATTERN.matcher(result).replaceAll("");
