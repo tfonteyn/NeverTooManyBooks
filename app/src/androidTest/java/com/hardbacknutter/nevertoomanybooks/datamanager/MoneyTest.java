@@ -20,11 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.math.BigDecimal;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.MoneyVerifier;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -35,37 +37,52 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-class MoneyTest
-        extends Base {
+@SuppressWarnings("CheckStyle")
+class MoneyTest {
 
     private static final double VALUE = 12.34d;
     private final Money money = MoneyParser.parse(BigDecimal.valueOf(VALUE), MoneyParser.GBP);
 
     private DataManager dataManager;
 
+    @SuppressWarnings("SameParameterValue")
+    private static void checkPriceData(@NonNull final DataManager dataManager,
+                                       @NonNull final String key,
+                                       final double value,
+                                       @Nullable final String currency) {
+        final Bundle rawData = dataManager.getRawData();
+
+        final Object v = rawData.get(key);
+        assertInstanceOf(Double.class, v);
+        assertEquals(value, (double) v);
+
+        final Object c = rawData.get(key + DBKey.CURRENCY_SUFFIX);
+        if (currency == null) {
+            assertNull(c);
+        } else {
+            assertInstanceOf(String.class, c);
+            assertEquals(currency, c);
+        }
+    }
+
     @BeforeEach
-    @Override
-    public void setup()
-            throws Exception {
-        super.setup();
-
-        assertNotNull(money);
-
-        dataManager = new DataManager(BundleMock.create());
+    void setup() {
+        dataManager = new DataManager();
     }
 
     @Test
     void putMoney() {
         dataManager.putMoney(DBKey.PRICE_LISTED, money);
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
     }
 
     @Test
     void putObject() {
         // Test for put(.., Object); do NOT replace with putMoney
         dataManager.put(DBKey.PRICE_LISTED, money);
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
     }
 
     @Test
@@ -73,20 +90,20 @@ class MoneyTest
         dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.GBP);
 
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, MoneyParser.GBP);
     }
 
     @Test
     void putValueOnly() {
         dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, null);
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, null);
     }
 
     @Test
     void putValueAndIllegalCurrency() {
         dataManager.putDouble(DBKey.PRICE_LISTED, VALUE);
         dataManager.putString(DBKey.PRICE_LISTED_CURRENCY, "chocolates");
-        MoneyVerifier.checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, "chocolates");
+        checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, "chocolates");
     }
 
     @Test
