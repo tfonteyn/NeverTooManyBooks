@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,14 +20,23 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
+import android.content.Context;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ImportResultsTest
-        extends Base {
+class ImportResultsTest {
+
+    private Context context;
+
+    @BeforeEach
+    void setup() {
+        context = ServiceLocator.getInstance().getLocalizedAppContext();
+    }
 
     @Test
     void t01() {
