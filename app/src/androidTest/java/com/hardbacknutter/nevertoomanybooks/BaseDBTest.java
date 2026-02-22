@@ -68,6 +68,7 @@ public abstract class BaseDBTest {
 
     protected ServiceLocator serviceLocator;
     protected Context context;
+    private Context appContext;
 
     /**
      * Setup.
@@ -85,9 +86,9 @@ public abstract class BaseDBTest {
                                        .build());
 
         serviceLocator = ServiceLocator.getInstance();
+        appContext = serviceLocator.getAppContext();
 
-        context = serviceLocator.getAppContext();
-        PreferenceManager.getDefaultSharedPreferences(context)
+        PreferenceManager.getDefaultSharedPreferences(appContext)
                          .edit()
                          .putString(Prefs.PK_UI_LOCALE, uiLocale)
                          .putString(CoverVolume.PK_VOLUME_INDEX, "0")
@@ -126,23 +127,37 @@ public abstract class BaseDBTest {
                                     "amazon,googlebooks,isfdb,bookfinder,openlibrary,stripinfo"
                                     + ",lastdodo,stripweb,bedetheque,kbnl,bol,dnb,douban")
                          .apply();
+
+        // This will use the above prefs to determine the user Locale
         context = serviceLocator.getLocalizedAppContext();
 
-        final int configuredVolume = CoverVolume.getVolume(context);
+        // Bootstrap the cover storage
+        final int configuredVolume = CoverVolume.getVolume(appContext);
         assertEquals(0, configuredVolume);
-        final boolean available = CoverVolume.isAvailable(context, configuredVolume);
+        final boolean available = CoverVolume.isAvailable(appContext, configuredVolume);
         assertTrue(available);
-
         serviceLocator.getCoverStorage().initDir();
 
+        // Bootstrap the database
         serviceLocator.getDb();
 
+        // Ensure we have a user-style for our tests
         if (getUserStyle().isEmpty()) {
             final Style style = getBuiltinStyle();
             final UserStyle clone = (UserStyle) style.clone(context);
             clone.setName("A user style");
             serviceLocator.getStyles().insertOrUpdate(context, clone);
         }
+    }
+
+    @NonNull
+    public Context getContext() {
+        return context;
+    }
+
+    @NonNull
+    public Context getAppContext() {
+        return appContext;
     }
 
     @NonNull
