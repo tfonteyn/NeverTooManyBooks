@@ -34,7 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * Test the regular expressions used by {@link DataHolderUtils#requireSeries}.
  */
-class SeriesTest {
+@SuppressWarnings("CheckStyle")
+class SeriesParseTest {
 
     /**
      * The input is a single string.
