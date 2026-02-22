@@ -317,6 +317,8 @@ dependencies {
     testImplementation(libs.junit.jupiter.params)
 
     androidTestImplementation(libs.junit.jupiter.api)
+    androidTestImplementation(libs.junit.jupiter.params)
+
     androidTestImplementation(libs.mannodermaus.android.test.core)
     androidTestRuntimeOnly(libs.mannodermaus.android.test.runner)
 
