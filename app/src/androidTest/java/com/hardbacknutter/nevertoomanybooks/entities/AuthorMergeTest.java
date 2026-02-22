@@ -52,6 +52,7 @@ class AuthorMergeTest {
 
     @Test
     void merge01() {
+
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final Author author1 = Author.from(ISAAC_ASIMOV);
@@ -69,6 +70,7 @@ class AuthorMergeTest {
 
     @Test
     void merge02() {
+
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final Author author1 = Author.from(ISAAC_ASIMOV);
@@ -86,6 +88,7 @@ class AuthorMergeTest {
 
     @Test
     void merge03() {
+
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final Author author1 = Author.from(ISAAC_ASIMOV);
@@ -101,6 +104,7 @@ class AuthorMergeTest {
 
     @Test
     void merge04() {
+
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final Author author1 = Author.from(ISAAC_ASIMOV);

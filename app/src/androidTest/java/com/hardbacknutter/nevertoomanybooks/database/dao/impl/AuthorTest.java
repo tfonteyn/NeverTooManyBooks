@@ -19,11 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi26;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerApi29;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -39,15 +36,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Run twice; against the API specific versions:
@@ -55,8 +50,7 @@ import static org.junit.Assert.assertTrue;
  */
 @MediumTest
 @SuppressWarnings("MissingJavadoc")
-@RunWith(Parameterized.class)
-public class AuthorTest
+class AuthorTest
         extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
@@ -78,30 +72,18 @@ public class AuthorTest
 
     private AuthorDao authorDao;
 
-    private final TextNormalizer textNormalizer;
-
-    public AuthorTest(@NonNull final TextNormalizer textNormalizer) {
-        this.textNormalizer = textNormalizer;
-    }
-
-    @Parameterized.Parameters
-    public static Collection<TextNormalizer> data() {
-        return List.of(new TextNormalizerApi26(),
-                       new TextNormalizerApi29());
-    }
-
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         authorDao = serviceLocator.getAuthorDao();
-        ((BaseDaoImpl) authorDao).setTextNormalizer(textNormalizer);
     }
 
     @Test
-    public void pruneAuthorList01()
+    void pruneAuthorList01()
             throws DaoWriteException {
+
         final Locale bookLocale = Locale.getDefault();
 
         final List<Author> list = new ArrayList<>();
@@ -185,8 +167,8 @@ public class AuthorTest
 
         final boolean modified = authorDao.pruneList(context, list, item -> bookLocale);
 
-        assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 4, list.size());
+        assertTrue(modified, list.toString());
+        assertEquals(4, list.size(), list.toString());
 
         assertTrue(id0 > 0);
         assertTrue(id1 > 0);
@@ -223,7 +205,7 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneAuthorList02() {
+    void pruneAuthorList02() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Author> authorList = new ArrayList<>();
@@ -265,7 +247,7 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneAuthorList03() {
+    void pruneAuthorList03() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Author> authorList = new ArrayList<>();
@@ -296,7 +278,7 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneAuthorList04() {
+    void pruneAuthorList04() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Author> authorList = new ArrayList<>();
@@ -314,7 +296,7 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneGeorgianNames01() {
+    void pruneGeorgianNames01() {
         // Georgian / Georgia
         final Locale bookLocale = new Locale("ka", "GE");
 
@@ -341,7 +323,7 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneGermanEszett() {
+    void pruneGermanEszett() {
         final Locale bookLocale = Locale.GERMANY;
 
         final List<Author> authorList = new ArrayList<>();
@@ -364,7 +346,7 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneWithDash() {
+    void pruneWithDash() {
         final Locale bookLocale = Locale.GERMANY;
 
         final String familyName = "Larsson";
