@@ -22,15 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
 import androidx.annotation.NonNull;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * REMINDER: this test <strong>MUST</strong> run as "androidTest" as we're
@@ -40,23 +39,19 @@ import static org.junit.Assert.assertEquals;
  * {@link TextNormalizerApi29} and {@link TextNormalizerApi26}
  */
 @SuppressWarnings("MissingJavadoc")
-@RunWith(Parameterized.class)
-public class TextNormalizerTest {
+class TextNormalizerTest {
 
-    private final TextNormalizer textNormalizer;
-
-    public TextNormalizerTest(@NonNull final TextNormalizer textNormalizer) {
-        this.textNormalizer = textNormalizer;
+    @NonNull
+    static Stream<Arguments> normalizers() {
+        return Stream.of(
+                Arguments.of(new TextNormalizerApi26()),
+                Arguments.of(new TextNormalizerApi29())
+        );
     }
 
-    @Parameterized.Parameters
-    public static Collection<TextNormalizer> data() {
-        return List.of(new TextNormalizerApi26(),
-                       new TextNormalizerApi29());
-    }
-
-    @Test
-    public void latinFrench() {
+    @ParameterizedTest
+    @MethodSource("normalizers")
+    void latinFrench(@NonNull final TextNormalizer textNormalizer) {
         final Locale locale = new Locale("fr", "FR");
         assertEquals("France", locale.getDisplayCountry());
         assertEquals("French", locale.getDisplayLanguage());
@@ -80,8 +75,9 @@ public class TextNormalizerTest {
         assertEquals("etatsfrancaiserepublique", textNormalizer.orderByColumn(source, locale));
     }
 
-    @Test
-    public void latinGerman() {
+    @ParameterizedTest
+    @MethodSource("normalizers")
+    void latinGerman(@NonNull final TextNormalizer textNormalizer) {
         final Locale locale = new Locale("de", "DE");
         assertEquals("Germany", locale.getDisplayCountry());
         assertEquals("German", locale.getDisplayLanguage());
@@ -102,8 +98,9 @@ public class TextNormalizerTest {
         assertEquals("jagergrosste", textNormalizer.orderByColumn(source, locale));
     }
 
-    @Test
-    public void latinPortuguese() {
+    @ParameterizedTest
+    @MethodSource("normalizers")
+    void latinPortuguese(@NonNull final TextNormalizer textNormalizer) {
         final Locale locale = new Locale("pt", "PT");
         assertEquals("Portugal", locale.getDisplayCountry());
         assertEquals("Portuguese", locale.getDisplayLanguage());
@@ -120,8 +117,9 @@ public class TextNormalizerTest {
     }
 
     // https://en.wikipedia.org/wiki/Georgian_scripts
-    @Test
-    public void georgian() {
+    @ParameterizedTest
+    @MethodSource("normalizers")
+    void georgian(@NonNull final TextNormalizer textNormalizer) {
         final Locale locale = new Locale("ka", "GE");
         assertEquals("Georgia", locale.getDisplayCountry());
         assertEquals("Georgian", locale.getDisplayLanguage());
@@ -137,8 +135,9 @@ public class TextNormalizerTest {
         assertEquals("ალექსანდრეამილახვარი", textNormalizer.orderByColumn(source, locale));
     }
 
-    @Test
-    public void greek() {
+    @ParameterizedTest
+    @MethodSource("normalizers")
+    void greek(@NonNull final TextNormalizer textNormalizer) {
         final Locale locale = new Locale("el", "GR");
         assertEquals("Greece", locale.getDisplayCountry());
         assertEquals("Greek", locale.getDisplayLanguage());
@@ -154,8 +153,9 @@ public class TextNormalizerTest {
         assertEquals("ανδρεαςκαλβος", textNormalizer.orderByColumn(source, locale));
     }
 
-    @Test
-    public void russian() {
+    @ParameterizedTest
+    @MethodSource("normalizers")
+    void russian(@NonNull final TextNormalizer textNormalizer) {
         final Locale locale = new Locale("ru", "RU");
         assertEquals("Russia", locale.getDisplayCountry());
         assertEquals("Russian", locale.getDisplayLanguage());
@@ -171,8 +171,9 @@ public class TextNormalizerTest {
         assertEquals("федоралександровичабрамов", textNormalizer.orderByColumn(source, locale));
     }
 
-    @Test
-    public void whitespace() {
+    @ParameterizedTest
+    @MethodSource("normalizers")
+    void whitespace(@NonNull final TextNormalizer textNormalizer) {
         final Locale locale = new Locale("nl", "NL");
         final String source =
                 "aBc  Def " +
