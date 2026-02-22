@@ -20,10 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -34,9 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-class FullDateParserTest
-        extends Base {
+@SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "CheckStyle"})
+class FullDateParserTest {
 
     // 1987-02-25; i.e. the day > possible month number (1..12)
     private final Optional<LocalDateTime> w_2017_01_12 =
@@ -53,7 +53,9 @@ class FullDateParserTest
 
     @Test
     void numeric() {
-        setLocale(Locale.ENGLISH);
+        Locale.setDefault(Locale.ENGLISH);
+        final List<Locale> locales = new ArrayList<>(List.of(Locale.ENGLISH));
+
         final DateParser<LocalDateTime> parser =
                 new FullDateParser(new ISODateParser(locales.get(0)), locales);
 
@@ -106,7 +108,9 @@ class FullDateParserTest
 
     @Test
     void goodreadsCsv() {
-        setLocale(Locale.ENGLISH);
+        Locale.setDefault(Locale.ENGLISH);
+        final List<Locale> locales = new ArrayList<>(List.of(Locale.ENGLISH));
+
         final DateParser<LocalDateTime> parser =
                 new FullDateParser(new ISODateParser(locales.get(0)), locales);
         assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25,
@@ -116,7 +120,9 @@ class FullDateParserTest
 
     @Test
     void englishOnly() {
-        setLocale(Locale.ENGLISH);
+        Locale.setDefault(Locale.ENGLISH);
+        final List<Locale> locales = new ArrayList<>(List.of(Locale.ENGLISH));
+
         final DateParser<LocalDateTime> parser =
                 new FullDateParser(new ISODateParser(locales.get(0)), locales);
 
@@ -135,7 +141,9 @@ class FullDateParserTest
 
     @Test
     void multiLocale() {
-        setLocale(Locale.FRENCH, Locale.GERMAN);
+        Locale.setDefault(Locale.FRENCH);
+        final List<Locale> locales = new ArrayList<>(List.of(Locale.FRENCH, Locale.GERMAN));
+
         final DateParser<LocalDateTime> parser =
                 new FullDateParser(new ISODateParser(locales.get(0)), locales);
 
