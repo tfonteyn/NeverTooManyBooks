@@ -46,6 +46,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1298,12 +1300,9 @@ public class Author
             setRealAuthor(sourceRealAuthor);
         }
 
-        if (getBirthDate().isEmpty()) {
-            source.getBirthDate().ifPresent(this::setBirthDate);
-        }
-        if (getDeathDate().isEmpty()) {
-            source.getDeathDate().ifPresent(this::setDeathDate);
-        }
+        mergeDates(this::getBirthDate, source::getBirthDate, this::setBirthDate);
+        mergeDates(this::getDeathDate, source::getDeathDate, this::setDeathDate);
+
         if (getImageUuid().isEmpty()) {
             source.getImageUuid().ifPresent(this::setImageUuid);
         }
@@ -1311,6 +1310,7 @@ public class Author
             source.getTmpPictureFileSpec().ifPresent(this::setTmpPictureFileSpec);
         }
         if (source.isComplete()) {
+            // OR with true, just set it
             complete = true;
         }
 
@@ -1318,6 +1318,33 @@ public class Author
         ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
 
         return true;
+    }
+
+    /**
+     * Merge two dates. If both are present, use the longest date string.
+     *
+     * @param myDate     this object
+     * @param sourceDate the object we're merging
+     * @param setDate    method to set the final date
+     */
+    private void mergeDates(@NonNull final Supplier<Optional<String>> myDate,
+                            @NonNull final Supplier<Optional<String>> sourceDate,
+                            @NonNull final Consumer<String> setDate) {
+        final Optional<String> oDate1 = myDate.get();
+        final Optional<String> oDate2 = sourceDate.get();
+
+        if (oDate1.isEmpty()) {
+            // We don't have a value, copy from them if they have a value
+            oDate2.ifPresent(setDate);
+        } else if (oDate2.isPresent()) {
+            // Both have values
+            final String bd1 = oDate1.get();
+            final String bd2 = oDate2.get();
+            // longest string wins
+            if (bd2.length() > bd1.length()) {
+                setDate.accept(bd2);
+            }
+        }
     }
 
     @Override
