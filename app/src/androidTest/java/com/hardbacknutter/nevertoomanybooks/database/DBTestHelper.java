@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,20 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -38,20 +35,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-
-import org.junit.Before;
-
 
 /**
  * Provides pre-initialised arrays for authors...
  * Has some helper methods to add lists to a book.
  */
-public abstract class BaseSetup
-        extends BaseDBTest {
+class DBTestHelper {
 
     final Book[] bookArray = new Book[5];
     final long[] bookIdArray = new long[5];
+    private final ServiceLocator serviceLocator;
     Author[] authorArray;
     long[] authorIdArray;
     Bookshelf[] bookshelfArray;
@@ -59,12 +52,8 @@ public abstract class BaseSetup
     long[] publisherIdArray;
     TocEntry[] tocEntryArray;
 
-    @Before
-    @CallSuper
-    public void setup()
-            throws IOException, StorageException, DaoWriteException {
-        super.setup(AppLocale.SYSTEM_LANGUAGE);
-
+    DBTestHelper(final ServiceLocator serviceLocator) {
+        this.serviceLocator = serviceLocator;
         clearDatabaseAndInitArrays();
     }
 

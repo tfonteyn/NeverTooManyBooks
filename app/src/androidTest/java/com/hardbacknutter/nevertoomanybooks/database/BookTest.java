@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -72,7 +74,7 @@ import static org.junit.Assert.assertTrue;
         "MissingJavadoc"})
 @MediumTest
 public class BookTest
-        extends BaseSetup {
+        extends BaseDBTest {
 
     private static final String EXT_JPG = ".jpg";
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
@@ -93,6 +95,8 @@ public class BookTest
     private BookDao bookDao;
     private LoaneeDao loaneeDao;
 
+    private DBTestHelper h;
+
     /**
      * Clean the database.
      * Empty the temp directory.
@@ -101,7 +105,8 @@ public class BookTest
     @Before
     public void setup()
             throws IOException, StorageException, DaoWriteException {
-        super.setup();
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+        h = new DBTestHelper(serviceLocator);
 
         bookDao = serviceLocator.getBookDao();
         loaneeDao = serviceLocator.getLoaneeDao();
@@ -122,19 +127,20 @@ public class BookTest
 
         // bookshelf[0] is the hard default
         bookshelfList.clear();
-        bookshelfList.add(bookshelfArray[0]);
+        bookshelfList.add(h.bookshelfArray[0]);
 
         // insert ONLY author[0]
-        authorIdArray[0] = serviceLocator.getAuthorDao().insert(context, authorArray[0],
-                                                                bookLocale);
+        h.authorIdArray[0] = serviceLocator.getAuthorDao().insert(context, h.authorArray[0],
+                                                                  bookLocale);
         authorList.clear();
-        authorList.add(authorArray[0]);
+        authorList.add(h.authorArray[0]);
 
         // insert ONLY publisher[0]
-        publisherIdArray[0] = serviceLocator.getPublisherDao().insert(context, publisherArray[0],
-                                                                      bookLocale);
+        h.publisherIdArray[0] = serviceLocator.getPublisherDao()
+                                              .insert(context, h.publisherArray[0],
+                                                      bookLocale);
         publisherList.clear();
-        publisherList.add(publisherArray[0]);
+        publisherList.add(h.publisherArray[0]);
 
         // No tocs
         tocEntryList.clear();
@@ -146,9 +152,9 @@ public class BookTest
             originalImageSize[cIdx] = coverFile.length();
         }
 
-        assertTrue(bookshelfArray[0].getId() > 0);
-        assertTrue(authorArray[0].getId() > 0);
-        assertTrue(publisherArray[0].getId() > 0);
+        assertTrue(h.bookshelfArray[0].getId() > 0);
+        assertTrue(h.authorArray[0].getId() > 0);
+        assertTrue(h.publisherArray[0].getId() > 0);
     }
 
     /**
@@ -181,7 +187,7 @@ public class BookTest
         book.setStage(EntityStage.Stage.Dirty);
 
         authors = book.getAuthors();
-        authors.add(this.authorArray[1]);
+        authors.add(this.h.authorArray[1]);
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
         bookDao.update(context, book, Set.of());
@@ -201,16 +207,16 @@ public class BookTest
 
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
-        assertEquals(this.bookshelfArray[0], bookshelves.get(0));
+        assertEquals(this.h.bookshelfArray[0], bookshelves.get(0));
 
         authors = book.getAuthors();
         assertEquals(2, authors.size());
-        assertEquals(this.authorArray[0], authors.get(0));
-        assertEquals(this.authorArray[1], authors.get(1));
+        assertEquals(this.h.authorArray[0], authors.get(0));
+        assertEquals(this.h.authorArray[1], authors.get(1));
 
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());
-        assertEquals(this.publisherArray[0], publishers.get(0));
+        assertEquals(this.h.publisherArray[0], publishers.get(0));
     }
 
     @Test
@@ -371,8 +377,7 @@ public class BookTest
     }
 
     private void assertBookMatchesInitialInsert(@NonNull final Book book,
-                                                @SuppressWarnings("SameParameterValue")
-                                                final int bookIdx)
+                                                @SuppressWarnings("SameParameterValue") final int bookIdx)
             throws StorageException {
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());
@@ -389,15 +394,15 @@ public class BookTest
 
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
-        assertEquals(this.bookshelfArray[0], bookshelves.get(0));
+        assertEquals(this.h.bookshelfArray[0], bookshelves.get(0));
 
         final List<Author> authors = book.getAuthors();
         assertEquals(1, authors.size());
-        assertEquals(this.authorArray[0], authors.get(0));
+        assertEquals(this.h.authorArray[0], authors.get(0));
 
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());
-        assertEquals(this.publisherArray[0], publishers.get(0));
+        assertEquals(this.h.publisherArray[0], publishers.get(0));
 
         assertBookHasPersistedCover(book, 0);
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
