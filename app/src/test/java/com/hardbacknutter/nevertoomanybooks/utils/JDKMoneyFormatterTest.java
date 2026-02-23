@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -43,8 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Test the variations of currency location (before/after), currency symbol/code,
  * decimal separator and thousands separator.
  */
-class JDKMoneyFormatterTest
-        extends Base {
+class JDKMoneyFormatterTest {
 
     private static final double VALUE = 1234.50d;
 
@@ -76,6 +74,10 @@ class JDKMoneyFormatterTest
         final Money money = new Money(BigDecimal.valueOf(input),
                                       Currency.getInstance(currencyCode));
         assertNotNull(money);
-        assertEquals(expected, f.format(context, money));
+        // The context would only be needed when a currency is not recognized by the JDK.
+        // So we force pass-in a null which in such a situation will throw NPE.
+        // Which is fine for our purpose here.
+        //noinspection DataFlowIssue
+        assertEquals(expected, f.format(null, money));
     }
 }
