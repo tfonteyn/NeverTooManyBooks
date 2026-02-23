@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import androidx.test.filters.MediumTest;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -36,17 +33,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class AuthorTest
+class AuthorTest
         extends BaseDBTest {
 
     private static final String RENAMED_FAMILY_NAME = "RenamedFamily";
@@ -57,9 +52,9 @@ public class AuthorTest
     private BookDao bookDao;
     private DBTestHelper h;
 
-    @Before
-    public void setup()
-            throws IOException, StorageException, DaoWriteException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         bookLocale = Locale.getDefault();
@@ -73,7 +68,7 @@ public class AuthorTest
      * Very basic test of insert/update/delete an Author.
      */
     @Test
-    public void crud()
+    void crud()
             throws DaoWriteException {
 
         h.authorIdArray[0] = authorDao.insert(context, h.authorArray[0], bookLocale);
@@ -103,7 +98,7 @@ public class AuthorTest
      * - rename an Author and merge books and toc-entries
      */
     @Test
-    public void renameAuthor()
+    void renameAuthor()
             throws DaoWriteException, StorageException {
 
         final List<Long> bookIdList;
@@ -189,7 +184,7 @@ public class AuthorTest
     }
 
     @Test
-    public void renameAuthorWithTocs()
+    void renameAuthorWithTocs()
             throws DaoWriteException, StorageException {
 
         final List<Long> bookIdList;
@@ -268,7 +263,7 @@ public class AuthorTest
     }
 
     @Test
-    public void realAuthor()
+    void realAuthor()
             throws DaoWriteException {
 
         int aIdx;

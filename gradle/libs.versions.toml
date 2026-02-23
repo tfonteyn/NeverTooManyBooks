@@ -81,9 +81,6 @@ jupiter = "5.14.2"
 androidxTestCore = '1.7.0'
 androidxTestRunner = '1.7.0'
 androidxTestRules = '1.7.0'
-# device tests with LiveData must add this class variable:
-#    @Rule
-#    public TestRule rule = new InstantTaskExecutorRule();
 androidxArchCoreTesting = "2.2.0"
 
 # An explicit dependency must be added to avoid gradle/studio/bugs?

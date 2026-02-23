@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,8 +64,7 @@ class UserCollectionTest
             "owned", BuiltinStyle.HARD_DEFAULT_UUID);
     private final Bookshelf wishlistBookshelf = new Bookshelf(
             "wishlist", BuiltinStyle.HARD_DEFAULT_UUID);
-    @Mock
-    BookshelfMapper bookshelfMapper;
+    private BookshelfMapper bookshelfMapper;
     private StripInfoSearchEngine searchEngine;
     private MoneyParser moneyParser;
 

@@ -24,8 +24,6 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -38,6 +36,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
+import com.hardbacknutter.nevertoomanybooks.InstantTaskExecutorExtension;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -45,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
@@ -57,23 +57,19 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings({
-        "MismatchedQueryAndUpdateOfCollection",
-        "MismatchedReadAndWriteOfArray",
-        "OverlyBroadThrowsClause",
-        "MissingJavadoc"})
-@MediumTest
-public class BookTest
+/** LiveData requirement: {@code @ExtendWith(InstantTaskExecutorExtension.class)} */
+@SuppressWarnings({"LongLine", "MismatchedQueryAndUpdateOfCollection", "MismatchedReadAndWriteOfArray"})
+@ExtendWith(InstantTaskExecutorExtension.class)
+class BookTest
         extends BaseDBTest {
 
     private static final String EXT_JPG = ".jpg";
@@ -84,12 +80,6 @@ public class BookTest
     private final String[] originalImageFileName = new String[DBKey.NR_OF_BOOK_COVERS];
     private final long[] originalImageSize = new long[DBKey.NR_OF_BOOK_COVERS];
     private final FileFilter jpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
-
-    /**
-     * LiveData requirement.
-     */
-    @Rule
-    public TestRule rule = new InstantTaskExecutorRule();
 
     private CoverStorage coverStorage;
     private BookDao bookDao;
@@ -102,8 +92,8 @@ public class BookTest
      * Empty the temp directory.
      * Copy two pictures from the Pictures directory to the temp directory.
      */
-    @Before
-    public void setup()
+    @BeforeEach
+    void setup()
             throws IOException, StorageException, DaoWriteException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         h = new DBTestHelper(serviceLocator);
@@ -114,10 +104,10 @@ public class BookTest
         coverStorage = serviceLocator.getCoverStorage();
 
         final File coverDir = coverStorage.getDir();
-        assertNotNull("Need a cover directory", coverDir);
+        assertNotNull(coverDir);
 
         final File tempDir = coverStorage.getTempDir();
-        assertNotNull("Need a temp directory", tempDir);
+        assertNotNull(tempDir);
 
         // empty the temp dir
         //noinspection ResultOfMethodCallIgnored
@@ -167,7 +157,7 @@ public class BookTest
      * </ol>
      */
     @Test
-    public void book()
+    void book()
             throws DaoWriteException, IOException, StorageException {
 
         final int bookIdx = 0;
@@ -220,7 +210,7 @@ public class BookTest
     }
 
     @Test
-    public void lending()
+    void lending()
             throws DaoWriteException, IOException, StorageException {
 
         final int bookIdx = 0;
@@ -246,7 +236,7 @@ public class BookTest
     }
 
     @Test
-    public void covers()
+    void covers()
             throws DaoWriteException, IOException, StorageException {
 
         final int bookIdx = 0;
@@ -313,7 +303,7 @@ public class BookTest
     }
 
     @Test
-    public void showBookVM()
+    void showBookVM()
             throws DaoWriteException, StorageException, IOException {
 
         final int bookIdx = 0;
@@ -378,7 +368,7 @@ public class BookTest
 
     private void assertBookMatchesInitialInsert(@NonNull final Book book,
                                                 @SuppressWarnings("SameParameterValue") final int bookIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
@@ -421,7 +411,7 @@ public class BookTest
 
     private void assertBookHasTempCover(@NonNull final Book book,
                                         @IntRange(from = 0, to = 3) final int cIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 

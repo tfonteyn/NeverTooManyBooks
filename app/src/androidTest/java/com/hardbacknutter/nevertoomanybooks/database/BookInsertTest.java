@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import androidx.test.filters.MediumTest;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -35,12 +32,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * a0: b0, b3
@@ -64,16 +61,14 @@ import static org.junit.Assert.assertTrue;
  * Pro: easier to simultaneously do manual testing.
  * Con: cannot test id's (but in a sense this is a 'pro' imho as id's should be unpredictable).
  */
-@MediumTest
-@SuppressWarnings("MissingJavadoc")
-public class BookInsertTest
+class BookInsertTest
         extends BaseDBTest {
 
     private DBTestHelper h;
 
-    @Before
-    public void setup()
-            throws IOException, StorageException, DaoWriteException {
+    @BeforeEach
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         h = new DBTestHelper(serviceLocator);
     }
@@ -82,7 +77,7 @@ public class BookInsertTest
      * Create a set of books with authors... and insert the lot.
      */
     @Test
-    public void inserting()
+    void inserting()
             throws DaoWriteException, StorageException {
         List<Long> bookIdList;
         List<AuthorWork> works;
