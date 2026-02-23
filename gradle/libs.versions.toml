@@ -80,8 +80,6 @@ jupiter = "5.14.2"
 # https://developer.android.com/jetpack/androidx/releases/test
 androidxTestCore = '1.7.0'
 androidxTestRunner = '1.7.0'
-androidxTestRules = '1.7.0'
-androidxArchCoreTesting = "2.2.0"
 
 # An explicit dependency must be added to avoid gradle/studio/bugs?
 # adding (in some unknown circumstances) two different kotlin-stdlib versions
@@ -92,7 +90,6 @@ kotlinxCoroutinesCore = "1.10.2"
 androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidxActivity" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidxAnnotation" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
-androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidxArchCoreTesting" }
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidxCamerax" }
 androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "androidxCamerax" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidxCamerax" }
@@ -116,7 +113,6 @@ androidx-preference = { group = "androidx.preference", name = "preference-ktx", 
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidxRecyclerview" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
-androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
 androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "androidxViewpager2" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
 

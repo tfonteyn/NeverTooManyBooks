@@ -115,13 +115,17 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
 
+    androidTestRuntimeOnly(libs.junit.jupiter.engine)
     androidTestImplementation(libs.junit.jupiter.api)
     androidTestImplementation(libs.junit.jupiter.params)
 
     androidTestImplementation(libs.mannodermaus.android.test.core)
     androidTestRuntimeOnly(libs.mannodermaus.android.test.runner)
 
-    androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.core) {
+        exclude group: "junit", module: "junit"
+    }
+    androidTestImplementation(libs.androidx.test.runner) {
+        exclude group: "junit", module: "junit"
+    }
 }
