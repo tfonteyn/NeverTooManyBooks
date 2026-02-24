@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageExcepti
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 @SuppressWarnings("WeakerAccess")
@@ -309,11 +308,12 @@ public class ImageHandlerViewModel
         }
 
         // Should we apply an explicit rotation angle?
-        final int explicitRotation = IntListPref
-                .getInt(context, PK_CAMERA_IMAGE_AUTOROTATE, 0);
+        final int explicitRotation =
+                ServiceLocator.getInstance().getSharedPreferences()
+                              .getIntFromString(PK_CAMERA_IMAGE_AUTOROTATE, 0);
 
         // What action (if any) should we take after we're done?
-        final NextAction action = NextAction.getAction(context);
+        final NextAction action = NextAction.getAction();
 
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,

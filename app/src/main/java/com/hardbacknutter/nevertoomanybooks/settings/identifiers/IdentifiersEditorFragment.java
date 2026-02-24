@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -165,7 +165,7 @@ public class IdentifiersEditorFragment
 
         // reminder: do not allow single-click.... we need to be able to tap the site-url
         adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(context),
+                ExtMenuButton.getPreferredMode(),
                 (v, position) -> {
                     if (position == RecyclerView.NO_POSITION) {
                         return;

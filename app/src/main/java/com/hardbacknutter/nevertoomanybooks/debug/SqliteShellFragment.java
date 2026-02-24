@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
@@ -138,9 +137,8 @@ public class SqliteShellFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection DataFlowIssue
-        maxLines = PreferenceManager.getDefaultSharedPreferences(getContext())
-                                    .getInt(PK_SQLITE_MAX_LINES, MAX_LINES);
+        maxLines = ServiceLocator.getInstance().getSharedPreferences()
+                                 .getInt(PK_SQLITE_MAX_LINES, MAX_LINES);
     }
 
     //    private void textSmaller() {

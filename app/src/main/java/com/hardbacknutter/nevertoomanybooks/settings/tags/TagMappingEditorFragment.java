@@ -545,7 +545,7 @@ public class TagMappingEditorFragment
 
             // long-click -> context menu
             holder.setOnRowLongClickListener(
-                    ExtMenuButton.getPreferredMode(parent.getContext()), (v, gridPosition) -> {
+                    ExtMenuButton.getPreferredMode(), (v, gridPosition) -> {
                         final int listIndex = gridToListPosition(gridPosition);
                         requireValidOrThrow(listIndex, gridPosition);
                         positionHandler.onShowContextMenu(v, listIndex);

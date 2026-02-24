@@ -232,7 +232,7 @@ public class AuthorWorksFragment
                .setIcon(R.drawable.delete_24px);
 
         adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(context),
+                ExtMenuButton.getPreferredMode(),
                 (anchor, position) -> {
                     final MenuMode menuMode = MenuMode.getMode(getActivity(), rowMenu);
                     if (menuMode.isPopup()) {

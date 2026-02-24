@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,11 +20,9 @@
 
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * The next action after taking a picture.
@@ -48,14 +46,12 @@ enum NextAction {
     /**
      * Get the user default action to take after taking a picture.
      *
-     * @param context Current context
-     *
      * @return next action
      */
     @NonNull
-    static NextAction getAction(@NonNull final Context context) {
-
-        final int value = IntListPref.getInt(context, PK_CAMERA_IMAGE_ACTION, Done.value);
+    static NextAction getAction() {
+        final int value = ServiceLocator.getInstance().getSharedPreferences()
+                                        .getIntFromString(PK_CAMERA_IMAGE_ACTION, Done.value);
         switch (value) {
             case 2:
                 return Edit;

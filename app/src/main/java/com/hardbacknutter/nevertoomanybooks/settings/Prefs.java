@@ -19,26 +19,45 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml".
+ * <p>
+ * This class acts as a wrapper to {@link SharedPreferences}.
+ * When reading {@code int/long} and {@code float/double} values from a backup/import
+ * the JSON parser will always read/return the 'shortest' type.
+ * For example: if {@code long} value was {@code 5}, the parser reads it as an {@code int},
+ * and later on the {@link SharedPreferences#getLong(String, long)}
+ * will throw a {@link ClassCastException}.
+ * <p>
+ * Hence, the methods here catch such, and do a manual cast to the desired type.
+ * <p>
+ * Separately, but essentially the same issue:
+ * <p>
+ * GitHub #211 some android-variations seem to 'optimise' floating point numbers
+ * when storing them in SharedPreferences,  with the results that a {@code 0.0} value
+ * will be written as {@code 0}, and subsequently treated falsly as an {@code int} by the OS.
+ * <p>
+ * Dev. note: there are some key definitions and static methods here for historical reasons.
  */
-@SuppressWarnings("WeakerAccess")
-public final class Prefs {
+public class Prefs
+        implements SharedPreferences {
 
     /**
      * The locale the user is running our app in (which can be different from the device).
@@ -48,11 +67,11 @@ public final class Prefs {
      */
     public static final String PK_UI_LOCALE = "ui.locale";
 
-    public static final String PK_UI_TOP_MENU = "ui.screen.systembars.fixed";
+    static final String PK_UI_TOP_MENU = "ui.screen.systembars.fixed";
 
-    public static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
-    public static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
-    public static final String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
+    private static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
+    private static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
+    private static final String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
 
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     private static final String EXCLUDE_ACRA_PREFIX = "^acra\\..*";
@@ -77,69 +96,44 @@ public final class Prefs {
             Languages.PK_LANG_CREATED_PREFIX.replace(".", "\\.") + ".*"
     );
 
-    private Prefs() {
-    }
+    @NonNull
+    private final SharedPreferences sharedPreferences;
 
     /**
-     * Retrieve a float value from the preferences.
-     * <p>
-     * GitHub #211 some android-variations seem to 'optimise' floating point numbers
-     * when storing them in SharedPreferences,  with the results that a {@code 0.0} value
-     * will be written as {@code 0}, and subsequently fails to read as the OS thinks
-     * it's an integer.
+     * Constructor.
      *
-     * <pre>
-     *     java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.Float
-     *     at android.app.SharedPreferencesImpl.getFloat(SharedPreferencesImpl.java:388)
-     * </pre>
-     *
-     * @param prefs    go read
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return Returns the preference value if it exists, or defValue.
+     * @param sharedPreferences to wrap
      */
-    public static float getFloat(@NonNull final SharedPreferences prefs,
-                                 @NonNull final String key,
-                                 final float defValue) {
-        try {
-            return prefs.getFloat(key, defValue);
-        } catch (@NonNull final ClassCastException e) {
-            // getAll() to bypass the type check.
-            final Object value = prefs.getAll().get(key);
-            if (value instanceof Number) {
-                return ((Number) value).floatValue();
-            }
-            return defValue;
-        }
+    public Prefs(@NonNull final SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
     }
 
-
-    public static boolean normalizeSeriesTitle(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_NORMALIZE_SERIES_TITLE, false);
+    public static boolean normalizeSeriesTitle() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_NORMALIZE_SERIES_TITLE, false);
     }
 
-    public static boolean normalizePublisherName(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_NORMALIZE_PUBLISHER_NAME, false);
+    public static boolean normalizePublisherName() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_NORMALIZE_PUBLISHER_NAME, false);
     }
 
-    public static boolean normalizeTocEntryName(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_NORMALIZE_TOC_TITLE, false);
+    public static boolean normalizeTocEntryName() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_NORMALIZE_TOC_TITLE, false);
     }
 
-    public static boolean isFixedHeaderAndFooter(@NonNull final Context context) {
+    public static boolean isFixedHeaderAndFooter() {
         // 0 -> scroll
         // 1 -> fixed
-        return 0 != IntListPref.getInt(context, PK_UI_TOP_MENU, 0);
+        return 0 != ServiceLocator.getInstance().getSharedPreferences()
+                                  .getIntFromString(PK_UI_TOP_MENU, 0);
     }
 
     public static void applyScrollFlags(@NonNull final Toolbar toolbar) {
         final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
                 toolbar.getLayoutParams();
-        if (isFixedHeaderAndFooter(toolbar.getContext())) {
+        if (isFixedHeaderAndFooter()) {
             lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
         } else {
             lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
@@ -148,5 +142,206 @@ public final class Prefs {
             );
         }
         toolbar.setLayoutParams(lp);
+    }
+
+    /**
+     * Create a new Editor for these preferences, through which you can make
+     * modifications to the data in the preferences and atomically commit those
+     * changes back to the SharedPreferences object.
+     *
+     * <p>Note that you <em>must</em> call {@link SharedPreferences.Editor#commit} to have any
+     * changes you perform in the Editor actually show up in the
+     * SharedPreferences.
+     *
+     * @return Returns a new instance of the {@link SharedPreferences.Editor} interface, allowing
+     *         you to modify the values in this SharedPreferences object.
+     */
+    @Override
+    @NonNull
+    public SharedPreferences.Editor edit() {
+        return sharedPreferences.edit();
+    }
+
+    /**
+     * Checks whether the preferences contains a preference.
+     *
+     * @param key The name of the preference to check.
+     *
+     * @return Returns true if the preference exists in the preferences,
+     *         otherwise false.
+     */
+    @Override
+    public boolean contains(@NonNull final String key) {
+        return sharedPreferences.contains(key);
+    }
+
+    @Override
+    @NonNull
+    public Map<String, ?> getAll() {
+        return sharedPreferences.getAll();
+    }
+
+    @Override
+    @Nullable
+    public Set<String> getStringSet(@NonNull final String key,
+                                    @Nullable final Set<String> defValues) {
+        // NO ClassCastException PROTECTION
+        return sharedPreferences.getStringSet(key, defValues);
+    }
+
+    /**
+     * Retrieve a boolean value from the preferences.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return Returns the preference value if it exists, or defValue.
+     */
+    @Override
+    public boolean getBoolean(@NonNull final String key,
+                              final boolean defValue) {
+        try {
+            return sharedPreferences.getBoolean(key, defValue);
+        } catch (@NonNull final ClassCastException ignore) {
+            // ignore
+        }
+        // getAll() to bypass the type check.
+        final Object value = sharedPreferences.getAll().get(key);
+        try {
+            return BooleanParser.toBoolean(value);
+        } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
+        }
+        return defValue;
+    }
+
+    /**
+     * Retrieve a String value from the preferences.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return Returns the preference value if it exists,
+     *         or defValue (which can be {@code null}.
+     */
+    @Override
+    @Nullable
+    public String getString(@NonNull final String key,
+                            @Nullable final String defValue) {
+        try {
+            return sharedPreferences.getString(key, defValue);
+        } catch (@NonNull final ClassCastException ignore) {
+            // ignore
+        }
+        // getAll() to bypass the type check.
+        final Object value = sharedPreferences.getAll().get(key);
+        if (value instanceof CharSequence) {
+            return String.valueOf(value);
+        }
+        return defValue;
+    }
+
+    /**
+     * Retrieve an int value from the preferences.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return Returns the preference value if it exists, or defValue.
+     */
+    @Override
+    public int getInt(@NonNull final String key,
+                      final int defValue) {
+        try {
+            return sharedPreferences.getInt(key, defValue);
+        } catch (@NonNull final ClassCastException ignore) {
+            // ignore
+        }
+        // getAll() to bypass the type check.
+        final Object value = sharedPreferences.getAll().get(key);
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return defValue;
+    }
+
+    public int getIntFromString(@NonNull final String key,
+                                final int defValue) {
+        final String value = sharedPreferences.getString(key, null);
+        if (value == null || value.isEmpty()) {
+            return defValue;
+        }
+
+        try {
+            return Integer.parseInt(value);
+        } catch (@NonNull final NumberFormatException ignore) {
+            return defValue;
+        }
+    }
+
+    /**
+     * Retrieve a long value from the preferences.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return Returns the preference value if it exists, or defValue.
+     */
+    @Override
+    public long getLong(@NonNull final String key,
+                        final long defValue) {
+        try {
+            return sharedPreferences.getLong(key, defValue);
+        } catch (@NonNull final ClassCastException ignore) {
+            // ignore
+        }
+        // getAll() to bypass the type check.
+        final Object value = sharedPreferences.getAll().get(key);
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        return defValue;
+    }
+
+    /**
+     * Retrieve a float value from the preferences.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return Returns the preference value if it exists, or defValue.
+     */
+    @Override
+    public float getFloat(@NonNull final String key,
+                          final float defValue) {
+        try {
+            return sharedPreferences.getFloat(key, defValue);
+        } catch (@NonNull final ClassCastException ignore) {
+            // ignore
+        }
+        // getAll() to bypass the type check.
+        final Object value = sharedPreferences.getAll().get(key);
+        if (value instanceof Number) {
+            return ((Number) value).floatValue();
+        }
+        return defValue;
+    }
+
+    @Override
+    public void registerOnSharedPreferenceChangeListener(
+            @NonNull final OnSharedPreferenceChangeListener listener) {
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    @Override
+    public void unregisterOnSharedPreferenceChangeListener(
+            @NonNull final OnSharedPreferenceChangeListener listener) {
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "Prefs{" + sharedPreferences + '}';
     }
 }

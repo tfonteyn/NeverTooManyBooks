@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.fastscroller.FastScrollerBuilder;
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public final class FastScrollerMode {
     /**
@@ -64,10 +64,9 @@ public final class FastScrollerMode {
     @SuppressLint("UseCompatLoadingForDrawables")
     @NonNull
     public static FastScrollerBuilder create(@NonNull final Context context) {
-        final int overlayType = IntListPref.getInt(context, PK_OVERLAY,
-                                                   OverlayProviderFactory.TYPE_MD2);
-
-        final int mode = IntListPref.getInt(context, PK_DRAG_HANDLE, DRAG_HANDLE_SYSTEM);
+        final Prefs prefs = ServiceLocator.getInstance().getSharedPreferences();
+        final int overlayType = prefs.getIntFromString(PK_OVERLAY, OverlayProviderFactory.TYPE_MD2);
+        final int mode = prefs.getIntFromString(PK_DRAG_HANDLE, DRAG_HANDLE_SYSTEM);
 
         switch (mode) {
             case DRAG_HANDLE_LARGE: {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -194,7 +194,7 @@ public class CalibreLibraryMappingFragment
             ErrorDialog.show(context, TAG, e,
                              getString(R.string.lbl_calibre_content_server),
                              getString(R.string.error_network_site_access_failed,
-                                       CalibreContentServer.getHostUrl(context)),
+                                       CalibreContentServer.getHostUrl()),
                              (d, w) -> {
                                  d.dismiss();
                                  // just pop, we're always called from a fragment

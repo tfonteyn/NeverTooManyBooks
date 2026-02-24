@@ -25,7 +25,6 @@ import android.os.StrictMode;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.BufferedReader;
@@ -45,9 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
-import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -88,51 +87,51 @@ public abstract class BaseDBTest {
         serviceLocator = ServiceLocator.getInstance();
         appContext = serviceLocator.getAppContext();
 
-        PreferenceManager.getDefaultSharedPreferences(appContext)
-                         .edit()
-                         .putString(Prefs.PK_UI_LOCALE, uiLocale)
-                         .putString(CoverVolume.PK_VOLUME_INDEX, "0")
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(Prefs.PK_UI_LOCALE, uiLocale)
+                      .putString(CoverVolume.PK_VOLUME_INDEX, "0")
 
-                         .putBoolean(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
-                         .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
-                         .putBoolean(ColorMapper.PK_SEARCH_REFORMAT_COLOR, true)
-                         .putBoolean(FormatMapper.PK_SEARCH_REFORMAT_FORMAT, true)
-                         .putBoolean("search.site.amazon.data.enabled", false)
-                         .putBoolean("search.site.bedetheque.data.enabled", false)
-                         .putBoolean("search.site.bol.data.enabled", false)
-                         .putBoolean("search.site.bookfinder.data.enabled", false)
-                         .putBoolean("search.site.dnb.data.enabled", false)
-                         .putBoolean("search.site.douban.data.enabled", false)
-                         .putBoolean("search.site.googlebooks.data.enabled", false)
-                         .putBoolean("search.site.isfdb.data.enabled", true)
-                         .putBoolean("search.site.kbnl.data.enabled", false)
-                         .putBoolean("search.site.lastdodo.data.enabled", false)
-                         .putBoolean("search.site.openlibrary.data.enabled", false)
-                         .putBoolean("search.site.stripinfo.data.enabled", false)
-                         .putBoolean("search.site.stripweb.data.enabled", false)
-                         .putBoolean(ReorderHelper.PK_SORT_TITLE_REORDERED, true)
-                         .putBoolean("tips.tip.book_list", false)
-                         .putBoolean("tips.tip.booklist_styles_editor", false)
-                         .putBoolean("tips.tip.configure_sites", false)
-                         .putBoolean("tips.tip.view_only_help", false)
-                         .putInt(ExportHelper.PK_BACKUP_COUNTDOWN, 5)
-                         // Bit pattern with most valid field bits turned on
-                         .putLong(FieldVisibility.PK_FIELD_VISIBILITY,
-                                  9223372036854775807L)
-                         .putString(ExtMenuButton.PK_MODE, "0")
-                         .putString(FastScrollerMode.PK_OVERLAY, "3")
-                         .putString(RebuildBooklist.PK_BOOKLIST_REBUILD_STATE, "0")
-                         .putString(EditBookViewModel.PK_EDIT_BOOK_ISBN_CHECKS, "1")
-                         .putString("search.siteOrder.data",
-                                    "amazon,googlebooks,isfdb,bookfinder,openlibrary,stripinfo"
-                                    + ",lastdodo,stripweb,bedetheque,kbnl,bol,dnb,douban")
-                         .apply();
+                      .putBoolean(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
+                      .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
+                      .putBoolean(ColorMapper.PK_SEARCH_REFORMAT_COLOR, true)
+                      .putBoolean(FormatMapper.PK_SEARCH_REFORMAT_FORMAT, true)
+                      .putBoolean("search.site.amazon.data.enabled", false)
+                      .putBoolean("search.site.bedetheque.data.enabled", false)
+                      .putBoolean("search.site.bol.data.enabled", false)
+                      .putBoolean("search.site.bookfinder.data.enabled", false)
+                      .putBoolean("search.site.dnb.data.enabled", false)
+                      .putBoolean("search.site.douban.data.enabled", false)
+                      .putBoolean("search.site.googlebooks.data.enabled", false)
+                      .putBoolean("search.site.isfdb.data.enabled", true)
+                      .putBoolean("search.site.kbnl.data.enabled", false)
+                      .putBoolean("search.site.lastdodo.data.enabled", false)
+                      .putBoolean("search.site.openlibrary.data.enabled", false)
+                      .putBoolean("search.site.stripinfo.data.enabled", false)
+                      .putBoolean("search.site.stripweb.data.enabled", false)
+                      .putBoolean(ReorderHelper.PK_SORT_TITLE_REORDERED, true)
+                      .putBoolean("tips.tip.book_list", false)
+                      .putBoolean("tips.tip.booklist_styles_editor", false)
+                      .putBoolean("tips.tip.configure_sites", false)
+                      .putBoolean("tips.tip.view_only_help", false)
+                      .putInt(ExportHelper.PK_BACKUP_COUNTDOWN, 5)
+                      // Bit pattern with most valid field bits turned on
+                      .putLong(FieldVisibility.PK_FIELD_VISIBILITY,
+                               9223372036854775807L)
+                      .putString(ExtMenuButton.PK_MODE, "0")
+                      .putString(FastScrollerMode.PK_OVERLAY, "3")
+                      .putString(RebuildBooklist.PK_BOOKLIST_REBUILD_STATE, "0")
+                      .putString(EditBookViewModel.PK_EDIT_BOOK_ISBN_CHECKS, "1")
+                      .putString("search.siteOrder.data",
+                                 "amazon,googlebooks,isfdb,bookfinder,openlibrary,stripinfo"
+                                 + ",lastdodo,stripweb,bedetheque,kbnl,bol,dnb,douban")
+                      .apply();
 
         // This will use the above prefs to determine the user Locale
         context = serviceLocator.getLocalizedAppContext();
 
         // Bootstrap the cover storage
-        final int configuredVolume = CoverVolume.getVolume(appContext);
+        final int configuredVolume = CoverVolume.getVolume();
         assertEquals(0, configuredVolume);
         final boolean available = CoverVolume.isAvailable(appContext, configuredVolume);
         assertTrue(available);

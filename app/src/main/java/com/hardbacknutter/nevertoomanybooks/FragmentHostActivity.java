@@ -89,7 +89,7 @@ public class FragmentHostActivity
 
         @Nullable
         final View contentFrame = findViewById(R.id.content_frame);
-        if (contentFrame != null && Prefs.isFixedHeaderAndFooter(this)) {
+        if (contentFrame != null && Prefs.isFixedHeaderAndFooter()) {
             InsetsListenerBuilder.create(contentFrame)
                                  .systemBars()
                                  .margins(Side.Bottom)

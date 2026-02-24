@@ -81,7 +81,7 @@ public class CalibreSyncFragment
         getFab().setVisibility(View.GONE);
 
         vb.btnLibMap.setOnClickListener(v -> {
-            if (CalibreContentServer.getHostUrl(v.getContext()).isEmpty()) {
+            if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
                 replaceFragment(CalibreLibraryMappingFragment.create(),
@@ -89,7 +89,7 @@ public class CalibreSyncFragment
             }
         });
         vb.btnImport.setOnClickListener(v -> {
-            if (CalibreContentServer.getHostUrl(v.getContext()).isEmpty()) {
+            if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
                 replaceFragment(SyncReaderFragment.create(SyncServer.CalibreCS),
@@ -97,7 +97,7 @@ public class CalibreSyncFragment
             }
         });
         vb.btnExport.setOnClickListener(v -> {
-            if (CalibreContentServer.getHostUrl(v.getContext()).isEmpty()) {
+            if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
                 replaceFragment(SyncWriterFragment.create(SyncServer.CalibreCS),

@@ -27,7 +27,7 @@ import android.view.Menu;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiContext;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 
 public enum MenuMode {
@@ -69,12 +69,15 @@ public enum MenuMode {
      * @param menu    to check
      *
      * @return mode
+     *
+     * @throws IllegalArgumentException (debug)
      */
     @NonNull
     public static MenuMode getMode(@NonNull @UiContext final Context context,
                                    @NonNull final Menu menu) {
-        final int mode = IntListPref.getInt(context, PK_UI_CONTEXT_MENUS,
-                                            UI_CONTEXT_MENUS_BY_MENU_SIZE);
+        final int mode = ServiceLocator.getInstance().getSharedPreferences()
+                                       .getIntFromString(PK_UI_CONTEXT_MENUS,
+                                                         UI_CONTEXT_MENUS_BY_MENU_SIZE);
 
         switch (mode) {
             case UI_CONTEXT_MENUS_CLASSIC: {

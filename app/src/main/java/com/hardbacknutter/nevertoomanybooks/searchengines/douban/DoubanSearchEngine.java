@@ -28,7 +28,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -235,7 +235,7 @@ public class DoubanSearchEngine
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
-        final Optional<String> oUrl = extractBookUrl(context, document);
+        final Optional<String> oUrl = extractBookUrl(document);
         if (oUrl.isPresent()) {
             final Document redirected = loadDocument(context, oUrl.get(), null);
             if (!isCancelled()) {
@@ -252,22 +252,20 @@ public class DoubanSearchEngine
      * Parse the given Document for the embedded JavaScript element containing
      * the list of books found and extract the best suited book (url).
      *
-     * @param context  Current context
      * @param document to parse
      *
      * @return url for the book details page
      */
     @VisibleForTesting
     @NonNull
-    public Optional<String> extractBookUrl(@NonNull final Context context,
-                                           @NonNull final Document document) {
+    public Optional<String> extractBookUrl(@NonNull final Document document) {
         final Optional<JSONArray> oItems = extractItemList(document);
         if (oItems.isPresent()) {
             final JSONArray items = oItems.get();
 
             final JSONObject reference;
             // Depending on user setting:
-            if (useMostRecentResult(context)) {
+            if (useMostRecentResult()) {
                 reference = findMostRecent(items);
             } else {
                 // Use the first one found
@@ -445,14 +443,12 @@ public class DoubanSearchEngine
      * Does the user prefer to always use the most recent book from the site.
      * Or do they prefer to just grab the first one found?
      *
-     * @param context Current context
-     *
      * @return {@code true} if the most recent book is preferred,
      *         {@code false} to grab the first one found
      */
-    private boolean useMostRecentResult(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_FETCH_MOST_RECENT, true);
+    private boolean useMostRecentResult() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_FETCH_MOST_RECENT, true);
     }
 
     /**

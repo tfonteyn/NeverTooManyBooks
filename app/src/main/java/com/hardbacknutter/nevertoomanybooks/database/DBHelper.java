@@ -30,7 +30,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -147,9 +146,9 @@ public class DBHelper
     public DBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
 
-        final int size = PreferenceManager.getDefaultSharedPreferences(context)
-                                          .getInt(PK_STARTUP_DB_STMT_CACHE_SIZE,
-                                                  DEFAULT_MINIMUM_STMT_CACHE_SIZE);
+        final int size = ServiceLocator.getInstance().getSharedPreferences()
+                                       .getInt(PK_STARTUP_DB_STMT_CACHE_SIZE,
+                                               DEFAULT_MINIMUM_STMT_CACHE_SIZE);
         stmtCacheSize = MathUtils.clamp(size, DEFAULT_MINIMUM_STMT_CACHE_SIZE,
                                         SQLiteDatabase.MAX_SQL_CACHE_SIZE);
     }
@@ -425,7 +424,7 @@ public class DBHelper
             LegacyUpgrades.v26onUpgrade(db);
         }
         if (oldVersion < 28) {
-            LegacyUpgrades.v28onUpgrade(context, db);
+            LegacyUpgrades.v28onUpgrade(db);
         }
         if (oldVersion < 29) {
             LegacyUpgrades.v29onUpgrade(db);
@@ -479,7 +478,7 @@ public class DBHelper
         }
         if (oldVersion < 47) {
             // GitHub #216 fix/improvements
-            CleanOptions.setOptions(context, Set.of(CleanOptions.ResolveAuthors));
+            CleanOptions.setOptions(Set.of(CleanOptions.ResolveAuthors));
             StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
         }
         if (oldVersion < 48) {
@@ -505,7 +504,7 @@ public class DBHelper
         // We have to do this here due to some users skipping updates (see GitHub #30)
         // The issue is that this only works OK if the TBL_BOOKLIST_STYLES contains
         // ALL columns at the time we're executing it.
-        LegacyUpgrades.insertGlobalStyleIfNotYetDone(context, db);
+        LegacyUpgrades.insertGlobalStyleIfNotYetDone(db);
 
         // Migrate any FieldVisibility keys + remove all obsolete keys
         LegacyUpgrades.migratePreferenceKeys(context);

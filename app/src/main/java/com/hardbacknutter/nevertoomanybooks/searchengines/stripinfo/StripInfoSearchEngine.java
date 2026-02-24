@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +46,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -217,8 +217,8 @@ public class StripInfoSearchEngine
     @Override
     public boolean isLoginToSearch(@NonNull final Context context) {
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            return PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
+            return ServiceLocator.getInstance().getSharedPreferences()
+                                 .getBoolean(PK_LOGIN_TO_SEARCH, false);
         } else {
             return false;
         }

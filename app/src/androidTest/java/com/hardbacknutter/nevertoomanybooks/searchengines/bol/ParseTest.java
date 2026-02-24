@@ -22,14 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -75,10 +74,10 @@ class ParseTest
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         // test data is pulled from the BE website
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putString(BolSearchEngine.PK_BOL_COUNTRY, "be")
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(BolSearchEngine.PK_BOL_COUNTRY, "be")
+                      .apply();
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);

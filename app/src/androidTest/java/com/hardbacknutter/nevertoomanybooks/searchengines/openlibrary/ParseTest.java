@@ -73,10 +73,10 @@ class ParseTest
         //        assertTrue("Username/password must be configured",
         //                   OpenLibraryAuth.getUsername(context).isPresent());
         //        // Force a login.
-        //        PreferenceManager.getDefaultSharedPreferences(context)
-        //                         .edit()
-        //                         .putBoolean(OpenLibrarySearchEngine.PK_LOGIN_TO_SEARCH, true)
-        //                         .apply();
+        //        ServiceLocator.getInstance().getPrefs()
+        //                      .edit()
+        //                      .putBoolean(OpenLibrarySearchEngine.PK_LOGIN_TO_SEARCH, true)
+        //                      .apply();
         //        // Uses the above setting whether to login or not
         //        searchEngine.login(context);
     }

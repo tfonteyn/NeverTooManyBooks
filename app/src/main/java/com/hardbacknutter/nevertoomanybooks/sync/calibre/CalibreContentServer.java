@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.preference.PreferenceManager;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -465,15 +464,12 @@ public final class CalibreContentServer
     /**
      * Get the default/stored host url for the Calibre Content Server instance.
      *
-     * @param context Current context
-     *
      * @return url
      */
     @NonNull
     @AnyThread
-    public static String getHostUrl(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PK_HOST_URL, "");
+    public static String getHostUrl() {
+        return ServiceLocator.getInstance().getSharedPreferences().getString(PK_HOST_URL, "");
     }
 
     /**
@@ -488,7 +484,7 @@ public final class CalibreContentServer
                              @NonNull final Uri uri) {
         final ContentResolver contentResolver = context.getContentResolver();
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
 
         // If the old one is different then the current selection, release the previous Uri
         final String oldFolder = prefs.getString(PK_LOCAL_FOLDER_URI, "");
@@ -528,8 +524,8 @@ public final class CalibreContentServer
     @AnyThread
     static Optional<Uri> getFolderUri(@NonNull final Context context) {
 
-        final String folder = PreferenceManager.getDefaultSharedPreferences(context)
-                                               .getString(PK_LOCAL_FOLDER_URI, "");
+        final String folder = ServiceLocator.getInstance().getSharedPreferences()
+                                            .getString(PK_LOCAL_FOLDER_URI, "");
         if (folder.isEmpty()) {
             return Optional.empty();
         }
@@ -1780,8 +1776,7 @@ public final class CalibreContentServer
         @NonNull
         public CalibreContentServer build()
                 throws CertificateException {
-            final SharedPreferences prefs = PreferenceManager
-                    .getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
 
             if (url == null) {
                 url = prefs.getString(PK_HOST_URL, "");

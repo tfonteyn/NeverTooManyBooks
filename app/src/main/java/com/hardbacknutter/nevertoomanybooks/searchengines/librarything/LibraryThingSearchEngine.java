@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -147,8 +147,8 @@ public class LibraryThingSearchEngine
 
     @Override
     public boolean hasRegistrationData(@NonNull final Context context) {
-        final String apiToken = PreferenceManager.getDefaultSharedPreferences(context)
-                                                 .getString(PK_API_TOKEN, null);
+        final String apiToken = ServiceLocator.getInstance().getSharedPreferences()
+                                              .getString(PK_API_TOKEN, null);
         return apiToken != null && apiToken.length() == TOKEN_LEN;
     }
 
@@ -178,8 +178,8 @@ public class LibraryThingSearchEngine
                                                           @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
 
-        final String apiToken = PreferenceManager.getDefaultSharedPreferences(context)
-                                                 .getString(PK_API_TOKEN, null);
+        final String apiToken = ServiceLocator.getInstance().getSharedPreferences()
+                                              .getString(PK_API_TOKEN, null);
         // not set, quit silently
         if (apiToken == null || apiToken.isEmpty()) {
             if (BuildConfig.DEBUG /*always */) {

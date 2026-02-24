@@ -183,7 +183,7 @@ public class SearchBookUpdatesViewModel
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PREFERENCE_PREFIX, allLocales);
+                new SyncReaderProcessor.Builder(SYNC_PREFERENCE_PREFIX, allLocales);
 
         // Image fields will be at the top of the list.
         final String[] coverDesc = context.getResources()

@@ -75,8 +75,7 @@ public class SearchAdminFragment
                     final boolean hasSites = vm.validate();
                     if (hasSites) {
                         // 2022-05-29: we now always persist.
-                        //noinspection DataFlowIssue
-                        vm.persist(getContext());
+                        vm.persist();
                         // but to keep changes minimal, we still return the list if it's single.
                         if (vm.getTypes().size() == 1) {
                             final Site.Type type = vm.getTypes().get(0);

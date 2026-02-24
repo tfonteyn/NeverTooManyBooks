@@ -204,7 +204,7 @@ public class EditBookPublisherListDialogFragment
             editEntry(position);
         });
         adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(context),
+                ExtMenuButton.getPreferredMode(),
                 (v, position) -> {
                     if (position == RecyclerView.NO_POSITION) {
                         return;

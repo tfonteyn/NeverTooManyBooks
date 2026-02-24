@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -42,6 +41,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -159,9 +159,9 @@ public class BedethequeSearchEngine
 
     private final Map<String, String> extraRequestProperties;
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
+    private final AuthorResolverHelper authorResolverHelper;
     @Nullable
     private HttpCookie sessionCookie;
-    private final AuthorResolverHelper authorResolverHelper;
 
     /**
      * Constructor.
@@ -940,8 +940,8 @@ public class BedethequeSearchEngine
                            @NonNull final String currentFormat,
                            final boolean softcover,
                            @NonNull final Book book) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
+        if (ServiceLocator.getInstance().getSharedPreferences()
+                          .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
             book.setFormat(currentFormat + (softcover ? "; " + FORMAT_COUVERTURE_SOUPLE : ""));
             return;
         }

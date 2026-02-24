@@ -34,7 +34,7 @@ import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
@@ -309,8 +309,9 @@ public class EditTextField<T, V extends EditText>
             return prefKey;
         }
 
-        private int getBits(@NonNull final Context context) {
-            switch (IntListPref.getInt(context, prefKey, -1)) {
+        private int getBits() {
+            switch (ServiceLocator.getInstance().getSharedPreferences()
+                                  .getIntFromString(prefKey, -1)) {
                 case 0:
                     return 0;
                 case 1:
@@ -336,7 +337,7 @@ public class EditTextField<T, V extends EditText>
             // get all current bits, nulling out the 3 values we handle.
             final int current = editText.getInputType() & ~MASK;
             // determine the bits to turn on
-            final int value = getBits(editText.getContext());
+            final int value = getBits();
 
             editText.setInputType(current | value);
         }

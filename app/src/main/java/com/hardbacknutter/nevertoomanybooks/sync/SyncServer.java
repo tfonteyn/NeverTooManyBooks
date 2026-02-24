@@ -135,9 +135,7 @@ public enum SyncServer
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
             final SyncReaderProcessor.Builder builder =
-                    new SyncReaderProcessor.Builder(context,
-                                                    getSyncPreferencePrefix(),
-                                                    allLocales);
+                    new SyncReaderProcessor.Builder(getSyncPreferencePrefix(), allLocales);
 
             // Cover fields will be at the top of the list.
             // There is only 1 image supported by Calibre
@@ -264,9 +262,7 @@ public enum SyncServer
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
             final SyncReaderProcessor.Builder builder =
-                    new SyncReaderProcessor.Builder(context,
-                                                    getSyncPreferencePrefix(),
-                                                    allLocales);
+                    new SyncReaderProcessor.Builder(getSyncPreferencePrefix(), allLocales);
 
             // Cover fields will be at the top of the list.
             // There are only 2 images supported by this site.

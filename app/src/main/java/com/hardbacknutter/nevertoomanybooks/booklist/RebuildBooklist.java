@@ -19,14 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public enum RebuildBooklist
         implements Parcelable {
@@ -78,14 +77,13 @@ public enum RebuildBooklist
     /**
      * Get the current preferred rebuild mode for the list.
      *
-     * @param context Current context
-     *
      * @return Mode
      */
     @NonNull
-    public static RebuildBooklist getPreferredMode(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, PK_BOOKLIST_REBUILD_STATE,
-                                             FromSaved.value);
+    public static RebuildBooklist getPreferredMode() {
+        final int value = ServiceLocator.getInstance().getSharedPreferences()
+                                        .getIntFromString(PK_BOOKLIST_REBUILD_STATE,
+                                                          FromSaved.value);
         switch (value) {
             case 3:
                 return Preferred;

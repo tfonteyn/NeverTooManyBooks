@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.core.network;
+package com.hardbacknutter.nevertoomanybooks.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -28,7 +28,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -45,8 +44,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -106,8 +107,8 @@ public class NetworkCheckerImpl
                 final boolean isNotMetered =
                         nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
-                final boolean isMeteredAllowed = PreferenceManager
-                        .getDefaultSharedPreferences(appContextSupplier.get())
+                final boolean isMeteredAllowed = ServiceLocator
+                        .getInstance().getSharedPreferences()
                         .getBoolean(PK_NETWORK_ALLOW_METERED, true);
 
                 if (BuildConfig.DEBUG && DEBUG_FLAGS.NETWORK_CHECKER) {

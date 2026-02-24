@@ -25,7 +25,6 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,6 +45,7 @@ import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
@@ -71,24 +71,21 @@ class IsbnQueue {
     /**
      * Read the previously stored list of items from the preferences.
      *
-     * @param context current context
-     *
      * @return list
      */
     @NonNull
-    static List<Item> readFromPreferences(@NonNull final Context context) {
-        final String[] isbnList = PreferenceManager.getDefaultSharedPreferences(context)
-                                                   .getString(PK_SCAN_QUEUE, "")
-                                                   .split(CSV);
+    static List<Item> readFromPreferences() {
+        final String[] isbnList = ServiceLocator.getInstance().getSharedPreferences()
+                                                .getString(PK_SCAN_QUEUE, "")
+                                                .split(CSV);
         if (isbnList.length > 0) {
             return readFromStream(Arrays.stream(isbnList));
         }
         return List.of();
     }
 
-    static void clearPreferences(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().remove(PK_SCAN_QUEUE).apply();
+    static void clearPreferences() {
+        ServiceLocator.getInstance().getSharedPreferences().edit().remove(PK_SCAN_QUEUE).apply();
     }
 
     /**
@@ -179,29 +176,25 @@ class IsbnQueue {
      * <p>
      * Use {@link #contains(ISBN)} <strong>before</strong> calling this method as needed.
      *
-     * @param context Current context
-     * @param item    to add
+     * @param item to add
      */
-    void add(@NonNull final Context context,
-             @NonNull final Item item) {
+    void add(@NonNull final Item item) {
         q.add(item);
-        writeToPreferences(context);
+        writeToPreferences();
     }
 
     /**
      * Remove the given item.
      *
-     * @param context Current context
-     * @param item    to remove
+     * @param item to remove
      *
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean remove(@NonNull final Context context,
-                   @NonNull final Item item) {
+    boolean remove(@NonNull final Item item) {
         final boolean removed = q.remove(item);
         if (removed) {
-            writeToPreferences(context);
+            writeToPreferences();
         }
         return removed;
     }
@@ -209,11 +202,10 @@ class IsbnQueue {
     /**
      * Clear the queue.
      *
-     * @param context Current context
      */
-    void clear(@NonNull final Context context) {
+    void clear() {
         q.clear();
-        clearPreferences(context);
+        clearPreferences();
     }
 
     /**
@@ -228,15 +220,14 @@ class IsbnQueue {
     /**
      * Write the current queue as a csv list of ISBNs to preferences.
      *
-     * @param context Current context
      */
-    private void writeToPreferences(@NonNull final Context context) {
+    private void writeToPreferences() {
         final String list = q.stream()
                              .map(Item::getIsbn)
                              .map(ISBN::asText)
                              .collect(Collectors.joining(CSV));
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putString(PK_SCAN_QUEUE, list).apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit().putString(PK_SCAN_QUEUE, list).apply();
     }
 
     static class Item {

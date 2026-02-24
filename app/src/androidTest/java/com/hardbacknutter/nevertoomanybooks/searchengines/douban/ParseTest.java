@@ -22,14 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -84,8 +83,8 @@ class ParseTest
     }
 
     private void setFetchMostRecent(final boolean value) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putBoolean(DoubanSearchEngine.PK_FETCH_MOST_RECENT, value).apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit().putBoolean(DoubanSearchEngine.PK_FETCH_MOST_RECENT, value).apply();
     }
 
     /**
@@ -180,12 +179,12 @@ class ParseTest
         Optional<String> oUrl;
 
         setFetchMostRecent(false);
-        oUrl = searchEngine.extractBookUrl(context, document);
+        oUrl = searchEngine.extractBookUrl(document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36874304/", oUrl.get());
 
         setFetchMostRecent(true);
-        oUrl = searchEngine.extractBookUrl(context, document);
+        oUrl = searchEngine.extractBookUrl(document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36892731/", oUrl.get());
     }
@@ -321,7 +320,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
         // There is only one result.
-        final Optional<String> oUrl = searchEngine.extractBookUrl(context, document);
+        final Optional<String> oUrl = searchEngine.extractBookUrl(document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36665775/", oUrl.get());
     }
@@ -472,13 +471,13 @@ class ParseTest
         // The first item with id="25930607" is an 'empty' book and will be rejected.
         // Instead, we'll should return the second item
         setFetchMostRecent(false);
-        oUrl = searchEngine.extractBookUrl(context, document);
+        oUrl = searchEngine.extractBookUrl(document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
 
         // The most recent one is a valid book
         setFetchMostRecent(true);
-        oUrl = searchEngine.extractBookUrl(context, document);
+        oUrl = searchEngine.extractBookUrl(document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
     }

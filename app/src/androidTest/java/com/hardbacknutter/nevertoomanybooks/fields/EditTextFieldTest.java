@@ -23,9 +23,8 @@ package com.hardbacknutter.nevertoomanybooks.fields;
 import android.text.InputType;
 import android.widget.EditText;
 
-import androidx.preference.PreferenceManager;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -60,11 +59,11 @@ class EditTextFieldTest
 
     @Test
     void setting() {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         // "1" words
-                         .putString(EditTextField.Capitalization.Title.getPrefKey(), "1")
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      // "1" words
+                      .putString(EditTextField.Capitalization.Title.getPrefKey(), "1")
+                      .apply();
 
         final EditText editText = new EditText(context);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);

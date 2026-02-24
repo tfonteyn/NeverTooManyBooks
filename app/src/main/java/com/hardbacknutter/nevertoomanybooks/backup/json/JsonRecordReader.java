@@ -28,7 +28,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -271,7 +270,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Preferences
                         || recordType == RecordType.AutoDetect) {
-                        readPreferences(context, root);
+                        readPreferences(root);
                     }
 
                     if (recordType == RecordType.Certificates
@@ -367,14 +366,13 @@ public class JsonRecordReader
         }
     }
 
-    private void readPreferences(@NonNull final Context context,
-                                 @NonNull final JSONObject root)
+    private void readPreferences(@NonNull final JSONObject root)
             throws JSONException {
         final JSONObject jsonRoot = root.optJSONObject(RecordType.Preferences.getName());
         if (jsonRoot != null) {
             // The coder itself will set/update the values directly.
             SharedPreferencesCoder.createDecoder(
-                                          PreferenceManager.getDefaultSharedPreferences(context),
+                                          ServiceLocator.getInstance().getSharedPreferences(),
                                           Prefs.EXCLUDE_WHEN_IMPORTING)
                                   .decode(jsonRoot);
 

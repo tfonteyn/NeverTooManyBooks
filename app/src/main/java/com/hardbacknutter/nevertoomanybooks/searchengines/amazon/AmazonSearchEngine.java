@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -44,6 +43,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -862,7 +862,7 @@ public class AmazonSearchEngine
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
         final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, true);
+        return ServiceLocator.getInstance().getSharedPreferences().getBoolean(key, true);
     }
 
     @NonNull

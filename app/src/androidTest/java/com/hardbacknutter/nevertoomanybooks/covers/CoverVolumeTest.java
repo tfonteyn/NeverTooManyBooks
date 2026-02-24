@@ -42,7 +42,7 @@ class CoverVolumeTest
 
     @Test
     void simple() {
-        final int configuredVolume = CoverVolume.getVolume(context);
+        final int configuredVolume = CoverVolume.getVolume();
         assertEquals(0, configuredVolume);
 
         assertTrue(CoverVolume.isAvailable(context, 0));

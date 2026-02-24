@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -217,19 +215,20 @@ public class FieldVisibility {
     /**
      * Load preferences stored values into this instance.
      *
-     * @param prefs to load from
      */
-    public void load(@NonNull final SharedPreferences prefs) {
-        setBitValue(prefs.getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE));
+    public void load() {
+        final long value = ServiceLocator.getInstance().getSharedPreferences()
+                                         .getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE);
+        setBitValue(value);
     }
 
     /**
      * Save the values from this instance to preferences.
      *
-     * @param prefs to save to
      */
-    public void save(@NonNull final SharedPreferences prefs) {
-        prefs.edit().putLong(PK_FIELD_VISIBILITY, getBitValue()).apply();
+    public void save() {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit().putLong(PK_FIELD_VISIBILITY, getBitValue()).apply();
     }
 
     /**

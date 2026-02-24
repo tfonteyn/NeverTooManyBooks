@@ -125,7 +125,7 @@ public interface TocEntryDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<TocEntry> list,
                               @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        return pruneList(context, list, Prefs.normalizeTocEntryName(context), localeSupplier);
+        return pruneList(context, list, Prefs.normalizeTocEntryName(), localeSupplier);
     }
 
     /**

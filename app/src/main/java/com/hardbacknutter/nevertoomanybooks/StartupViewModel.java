@@ -30,7 +30,6 @@ import androidx.annotation.UiThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -156,9 +155,8 @@ public class StartupViewModel
     public static void schedule(@NonNull final Context context,
                                 @StartupAction @NonNull final String key,
                                 final boolean flag) {
-        final SharedPreferences.Editor ed = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit();
+        final SharedPreferences.Editor ed = ServiceLocator.getInstance().getSharedPreferences()
+                                                          .edit();
         if (flag) {
             ed.putBoolean(key, true);
         } else {
@@ -186,7 +184,7 @@ public class StartupViewModel
 
             cleanObsoleteDirectories(context);
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
 
             // prepare the maintenance flags and counters.
             final int maintenanceCountdown = prefs.getInt(PK_MAINTENANCE_COUNTDOWN,
@@ -237,7 +235,7 @@ public class StartupViewModel
         // Clear the flag
         startTasks = false;
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         // unconditional
         startTask(new BuildLanguageMappingsTask(taskListener));
 

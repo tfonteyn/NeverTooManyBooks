@@ -168,10 +168,8 @@ public class SearchAdminViewModel
 
     /**
      * Persist ALL lists.
-     *
-     * @param context Current context
      */
-    void persist(@NonNull final Context context) {
-        typeAndSites.forEach((key, value) -> key.setSiteList(context, value));
+    void persist() {
+        typeAndSites.forEach(Site.Type::setSiteList);
     }
 }

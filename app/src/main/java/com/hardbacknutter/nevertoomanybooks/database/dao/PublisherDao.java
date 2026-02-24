@@ -63,7 +63,7 @@ public interface PublisherDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Publisher> list,
                               @NonNull final Function<Publisher, Locale> localeSupplier) {
-        return pruneList(context, list, Prefs.normalizePublisherName(context), localeSupplier);
+        return pruneList(context, list, Prefs.normalizePublisherName(), localeSupplier);
     }
 
     /**

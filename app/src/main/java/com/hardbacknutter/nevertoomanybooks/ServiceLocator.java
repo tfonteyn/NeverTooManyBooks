@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.LocaleList;
@@ -39,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
-import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -98,6 +96,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -130,6 +130,9 @@ public class ServiceLocator {
     /** Either the real Application Context, or the injected context when running in unit tests. */
     @NonNull
     private final Context appContext;
+
+    @Nullable
+    private Prefs prefs;
 
     @Nullable
     private DBHelper dbHelper;
@@ -279,8 +282,11 @@ public class ServiceLocator {
      *
      * @return global SharedPreferences
      */
-    public SharedPreferences getSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(appContext);
+    public Prefs getSharedPreferences() {
+        if (prefs == null) {
+            prefs = new Prefs(PreferenceManager.getDefaultSharedPreferences(appContext));
+        }
+        return prefs;
     }
 
     /**
@@ -397,8 +403,7 @@ public class ServiceLocator {
         synchronized (this) {
             if (fieldVisibility == null) {
                 fieldVisibility = new FieldVisibility();
-                fieldVisibility.load(PreferenceManager
-                                             .getDefaultSharedPreferences(getAppContext()));
+                fieldVisibility.load();
             }
         }
         return fieldVisibility;

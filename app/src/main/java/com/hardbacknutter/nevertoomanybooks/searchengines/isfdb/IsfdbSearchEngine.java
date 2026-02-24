@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.EOFException;
 import java.io.File;
@@ -339,8 +338,8 @@ public class IsfdbSearchEngine
 
     @Override
     public boolean isLoginToSearch(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_LOGIN_TO_SEARCH, false);
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_LOGIN_TO_SEARCH, false);
     }
 
     @Override
@@ -565,8 +564,8 @@ public class IsfdbSearchEngine
                                     @NonNull final Document document,
                                     @NonNull final Book book) {
 
-        final boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
-                                                          .getBoolean(PK_SERIES_FROM_TOC, false);
+        final boolean addSeriesFromToc = ServiceLocator.getInstance().getSharedPreferences()
+                                                       .getBoolean(PK_SERIES_FROM_TOC, false);
         final List<TocEntry> toc = new ArrayList<>();
 
         // <div class="ContentBox"> but there are two, so get last one

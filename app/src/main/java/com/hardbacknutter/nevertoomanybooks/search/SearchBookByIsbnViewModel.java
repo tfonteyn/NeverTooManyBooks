@@ -290,7 +290,7 @@ public class SearchBookByIsbnViewModel
                 return SEARCH_DUPLICATE_ISBN;
             }
             // FIRST ADD at the end of the queue.
-            scanQueue.add(context, item);
+            scanQueue.add(item);
             // THEN START the search.
             final int searchId = startSearch.apply(item.getIsbn());
             if (searchId > 0) {
@@ -299,7 +299,7 @@ public class SearchBookByIsbnViewModel
                 return searchId;
             }
             // No search was started. Remove from the queue
-            scanQueue.remove(context, item);
+            scanQueue.remove(item);
             return SEARCH_NOT_STARTED;
         }
     }
@@ -329,7 +329,7 @@ public class SearchBookByIsbnViewModel
                         atLeastOneStarted = true;
                     } else {
                         // FAIL; simple remove
-                        scanQueue.remove(context, item);
+                        scanQueue.remove(item);
                     }
                 }
             }
@@ -375,7 +375,7 @@ public class SearchBookByIsbnViewModel
         synchronized (scanQueue) {
             coordinator.cancel();
             if (clear) {
-                scanQueue.clear(context);
+                scanQueue.clear();
             }
             scanQueueUpdate.setValue(scanQueue.iterator());
         }
@@ -399,7 +399,7 @@ public class SearchBookByIsbnViewModel
             if (searchId > 0) {
                 coordinator.cancelSearch(searchId);
             }
-            scanQueue.remove(context, item);
+            scanQueue.remove(item);
         }
     }
 

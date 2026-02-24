@@ -22,12 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities.series;
 
 import android.os.Bundle;
 
-import androidx.preference.PreferenceManager;
-
 import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -56,10 +55,10 @@ class EditSeriesViewModelTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putBoolean(ReorderHelper.PK_SORT_TITLE_REORDERED, true)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(ReorderHelper.PK_SORT_TITLE_REORDERED, true)
+                      .apply();
 
         dao = serviceLocator.getSeriesDao();
         locale = context.getResources().getConfiguration().getLocales().get(0);

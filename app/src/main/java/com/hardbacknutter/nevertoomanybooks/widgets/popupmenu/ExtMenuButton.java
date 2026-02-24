@@ -19,14 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public enum ExtMenuButton
         implements Parcelable {
@@ -78,13 +77,12 @@ public enum ExtMenuButton
     /**
      * Get the current preferred rebuild mode for the list.
      *
-     * @param context Current context
-     *
      * @return Mode
      */
     @NonNull
-    public static ExtMenuButton getPreferredMode(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, PK_MODE, Always.value);
+    public static ExtMenuButton getPreferredMode() {
+        final int value = ServiceLocator.getInstance().getSharedPreferences()
+                                        .getIntFromString(PK_MODE, Always.value);
         switch (value) {
             case 2:
                 return None;

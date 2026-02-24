@@ -23,17 +23,12 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
-import java.io.IOException;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
-import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
@@ -53,10 +48,10 @@ class ExcludePatternTest
 
     @BeforeEach
     void setup()
-            throws DaoWriteException, StorageException, IOException, DataReaderException {
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences = ServiceLocator.getInstance().getSharedPreferences();
         preferences.edit()
                    .putString("acra.blah", "1")
                    .putString("blah.acra", "1")

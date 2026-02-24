@@ -22,14 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -76,8 +75,7 @@ class ParseTest
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        final SharedPreferences preferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
+        final SharedPreferences preferences = ServiceLocator.getInstance().getSharedPreferences();
         // Override the default 'false'
         preferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();
 

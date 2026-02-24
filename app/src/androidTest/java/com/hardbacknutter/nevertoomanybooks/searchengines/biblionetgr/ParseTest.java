@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.biblionetgr;
 
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -77,10 +76,11 @@ class ParseTest
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean(EngineId.BiblionetGr.getPreferenceKey()
-                                     + ".resolve.authors.wikidata", true)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(EngineId.BiblionetGr.getPreferenceKey()
+                                  + ".resolve.authors.wikidata", true)
+                      .apply();
 
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);

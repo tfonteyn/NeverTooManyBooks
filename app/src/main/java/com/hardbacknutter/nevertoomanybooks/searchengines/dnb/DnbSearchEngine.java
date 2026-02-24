@@ -542,7 +542,7 @@ public class DnbSearchEngine
             // different certs.
             // URGENT: Review on 1-April-2026 (haha..) to see if their new
             //  certs are still broken.
-//                if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+//                if (ServiceLocator.getInstance().getPrefs().getBoolean(
 //                        PK_COVERS_FROM_PORTAL, false)) {
 //                    // TRY the hires/portal link first
 //                    final Optional<String> fileSpec =

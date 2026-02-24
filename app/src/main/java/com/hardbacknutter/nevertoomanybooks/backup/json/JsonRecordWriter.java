@@ -27,7 +27,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -209,7 +208,7 @@ public class JsonRecordWriter
                 final JsonCoder<SharedPreferences> coder =
                         SharedPreferencesCoder.createEncoder(Prefs.EXCLUDE_WHEN_EXPORTING);
                 jsonData.put(RecordType.Preferences.getName(), coder.encode(
-                        PreferenceManager.getDefaultSharedPreferences(context)));
+                        ServiceLocator.getInstance().getSharedPreferences()));
                 results.preferences = 1;
             }
 

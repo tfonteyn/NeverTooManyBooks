@@ -27,7 +27,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -536,15 +535,13 @@ public class SyncReaderProcessor {
         /**
          * Constructor.
          *
-         * @param context          Current context
          * @param preferencePrefix for the site/fields
          * @param locales          to use
          */
-        public Builder(@NonNull final Context context,
-                       @NonNull final String preferencePrefix,
+        public Builder(@NonNull final String preferencePrefix,
                        @NonNull final List<Locale> locales) {
             this.preferencePrefix = preferencePrefix;
-            prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            prefs = ServiceLocator.getInstance().getSharedPreferences();
             this.realNumberParser = new RealNumberParser(locales);
         }
 

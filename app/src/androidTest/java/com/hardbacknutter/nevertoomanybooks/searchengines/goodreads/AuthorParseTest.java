@@ -22,12 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.io.IOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -77,12 +76,13 @@ class AuthorParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
         // limit to Goodreads only
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean(AuthorResolverFactory.getKey(
-                                 EngineId.Goodreads, EngineId.Goodreads), true)
-                         .putBoolean(AuthorResolverFactory.getKey(
-                                 EngineId.Goodreads, EngineId.OpenLibrary), false)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(AuthorResolverFactory.getKey(
+                              EngineId.Goodreads, EngineId.Goodreads), true)
+                      .putBoolean(AuthorResolverFactory.getKey(
+                              EngineId.Goodreads, EngineId.OpenLibrary), false)
+                      .apply();
 
         final Optional<String> oIv;
         final Author author = resolver.parse(context, document);

@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -194,14 +193,12 @@ public class BolSearchEngine
      * The Netherlands+rest-of-the-world.
      * The user can set their personal preference to BE or NL in the settings.
      *
-     * @param context Current context
-     *
      * @return "be" or "nl"
      */
     @NonNull
-    private String getCountry(@NonNull final Context context) {
-        String country = PreferenceManager.getDefaultSharedPreferences(context)
-                                          .getString(PK_BOL_COUNTRY, null);
+    private String getCountry() {
+        String country = ServiceLocator.getInstance().getSharedPreferences()
+                                       .getString(PK_BOL_COUNTRY, null);
         if (country != null && !country.isEmpty()) {
             return country;
         } else {
@@ -223,7 +220,7 @@ public class BolSearchEngine
     public Locale getLocale(@NonNull final Context context) {
         // The site can display in French, but we always access the site in Dutch for now.
         // This should not cause any issue as searches show books in all languages.
-        return new Locale("nl", getCountry(context).toUpperCase(Locale.ROOT));
+        return new Locale("nl", getCountry().toUpperCase(Locale.ROOT));
     }
 
     /**
@@ -249,7 +246,7 @@ public class BolSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String hostUrl = getHostUrl();
-        final String country = getCountry(context);
+        final String country = getCountry();
         final String url = hostUrl + String.format(BY_ISBN, country, validIsbn);
         final Document document = loadDocument(context, url, Map.of(
                 HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
@@ -290,7 +287,7 @@ public class BolSearchEngine
         }
 
         final String hostUrl = getHostUrl();
-        final String country = getCountry(context);
+        final String country = getCountry();
         final String url = hostUrl + String.format(BY_TEXT, country, words);
         final Document document = loadDocument(context, url, Map.of(
                 HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
@@ -324,7 +321,7 @@ public class BolSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
-        final String aHref = String.format("a[href^=/%1$s/nl/p/]", getCountry(context));
+        final String aHref = String.format("a[href^=/%1$s/nl/p/]", getCountry());
         final Element urlElement = document.selectFirst(aHref);
         // urlElement will be null if there were no results.
         if (urlElement != null) {
@@ -748,7 +745,7 @@ public class BolSearchEngine
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
         final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         if (prefs.contains(key)) {
             return prefs.getBoolean(key, false);
         } else {
@@ -795,6 +792,6 @@ public class BolSearchEngine
             }
         }
 
-        return getHostUrl() + String.format(BY_TEXT, getCountry(context), fields);
+        return getHostUrl() + String.format(BY_TEXT, getCountry(), fields);
     }
 }

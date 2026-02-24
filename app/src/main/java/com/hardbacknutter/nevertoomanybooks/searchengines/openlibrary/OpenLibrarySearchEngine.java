@@ -27,7 +27,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -219,8 +218,8 @@ public class OpenLibrarySearchEngine
     @Override
     public boolean isLoginToSearch(@NonNull final Context context) {
         if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
-            return PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
+            return ServiceLocator.getInstance().getSharedPreferences()
+                                 .getBoolean(PK_LOGIN_TO_SEARCH, false);
         } else {
             return false;
         }

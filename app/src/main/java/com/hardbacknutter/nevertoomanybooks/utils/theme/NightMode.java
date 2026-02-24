@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,15 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.utils.theme;
 
 import android.app.Application;
-import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.math.MathUtils;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public final class NightMode {
 
@@ -67,21 +65,19 @@ public final class NightMode {
      * <p>
      * Must be called from {@link Application#onCreate()}.
      *
-     * @param context Current context
      */
-    public static void init(@NonNull final Context context) {
-        apply(getSetting(context));
+    public static void init() {
+        apply(getSetting());
     }
 
     /**
      * Get the current preference setting.
      *
-     * @param context Current context
-     *
      * @return the stored index into {@link #NIGHT_MODES}
      */
-    public static int getSetting(@NonNull final Context context) {
-        return IntListPref.getInt(context, PK_UI_THEME_MODE, 0);
+    public static int getSetting() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getIntFromString(PK_UI_THEME_MODE, 0);
     }
 
     /**

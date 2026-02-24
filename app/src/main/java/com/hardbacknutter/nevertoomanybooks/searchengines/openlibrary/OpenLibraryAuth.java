@@ -27,7 +27,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -40,6 +39,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
@@ -105,17 +105,15 @@ public class OpenLibraryAuth
     /**
      * Get the username as configured in the settings.
      *
-     * @param context Current context
-     *
      * @return username
      *
      * @see #getUserId()
      */
     @AnyThread
     @NonNull
-    public static Optional<String> getUsername(@NonNull final Context context) {
-        final String username = PreferenceManager.getDefaultSharedPreferences(context)
-                                                 .getString(PK_HOST_USER, null);
+    public static Optional<String> getUsername() {
+        final String username = ServiceLocator.getInstance().getSharedPreferences()
+                                              .getString(PK_HOST_USER, null);
         if (username != null && !username.isEmpty()) {
             return Optional.of(username);
         }
@@ -179,7 +177,7 @@ public class OpenLibraryAuth
     public String login(@NonNull final Context context)
             throws IOException, CredentialsException, StorageException {
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
 
         // Always FIRST check the configuration for having a username/password.
         final String username = prefs.getString(PK_HOST_USER, "");

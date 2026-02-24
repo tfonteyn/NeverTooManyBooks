@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,13 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public enum ScanMode
         implements Parcelable {
@@ -46,8 +45,6 @@ public enum ScanMode
      */
     Batch(3);
 
-    private static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
-
     /** {@link Parcelable}. */
     public static final Creator<ScanMode> CREATOR = new Creator<>() {
         @Override
@@ -62,6 +59,7 @@ public enum ScanMode
             return new ScanMode[size];
         }
     };
+    private static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
     private final int value;
 
     ScanMode(final int value) {
@@ -71,13 +69,12 @@ public enum ScanMode
     /**
      * Get the user preferred single-scan mode: either {@link #Single} or {@link #Continuous}.
      *
-     * @param context Current context
-     *
      * @return scan mode
      */
     @NonNull
-    public static ScanMode getScannerModeSingle(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, PK_SCANNER_MODE_SINGLE, Single.value);
+    public static ScanMode getScannerModeSingle() {
+        final int value = ServiceLocator.getInstance().getSharedPreferences()
+                                        .getIntFromString(PK_SCANNER_MODE_SINGLE, Single.value);
         if (value == Continuous.value) {
             return Continuous;
         } else {

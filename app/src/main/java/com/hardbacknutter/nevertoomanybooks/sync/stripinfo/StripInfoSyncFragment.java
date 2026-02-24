@@ -78,7 +78,7 @@ public class StripInfoSyncFragment
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         vb.btnLibMap.setOnClickListener(v -> {
-            if (StripInfoAuth.getUsername(v.getContext()).isPresent()) {
+            if (StripInfoAuth.getUsername().isPresent()) {
                 replaceFragment(StripInfoBookshelfMappingFragment.create(),
                                 StripInfoBookshelfMappingFragment.TAG);
             } else {
@@ -86,7 +86,7 @@ public class StripInfoSyncFragment
             }
         });
         vb.btnImport.setOnClickListener(v -> {
-            if (StripInfoAuth.getUsername(v.getContext()).isPresent()) {
+            if (StripInfoAuth.getUsername().isPresent()) {
                 replaceFragment(SyncReaderFragment.create(SyncServer.StripInfo),
                                 SyncReaderFragment.TAG);
             } else {
@@ -94,7 +94,7 @@ public class StripInfoSyncFragment
             }
         });
         vb.btnExport.setOnClickListener(v -> {
-            if (StripInfoAuth.getUsername(v.getContext()).isPresent()) {
+            if (StripInfoAuth.getUsername().isPresent()) {
                 replaceFragment(SyncWriterFragment.create(SyncServer.StripInfo),
                                 SyncWriterFragment.TAG);
             } else {

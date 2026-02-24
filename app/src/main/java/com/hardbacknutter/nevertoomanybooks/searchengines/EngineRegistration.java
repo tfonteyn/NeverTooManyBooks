@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -42,6 +41,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public class EngineRegistration {
 
@@ -63,7 +63,7 @@ public class EngineRegistration {
                 .filter(Site::isActive)
                 .map(Site::getEngineId)
                 .filter(engineId -> engineId.supports(SearchEngine.UserRegistration.class))
-                .filter(engineId -> shouldPrompt(context, engineId))
+                .filter(engineId -> shouldPrompt(engineId))
                 .collect(Collectors.toCollection(ArrayDeque::new));
 
         if (stack.isEmpty()) {
@@ -161,21 +161,19 @@ public class EngineRegistration {
                      .show();
     }
 
-    private static boolean shouldPrompt(@NonNull final Context context,
-                                        @NonNull final EngineId engineId) {
+    private static boolean shouldPrompt(@NonNull final EngineId engineId) {
         final String key = engineId.getPreferenceKey() + ".registration.prompt";
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(key, true);
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(key, true);
     }
 
-    private static void setShouldPrompt(@NonNull final Context context,
-                                        @NonNull final EngineId engineId,
+    private static void setShouldPrompt(@NonNull final EngineId engineId,
                                         final boolean flag) {
         final String key = engineId.getPreferenceKey() + ".registration.prompt";
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putBoolean(key, flag)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(key, flag)
+                      .apply();
     }
 
     enum RegistrationAction {

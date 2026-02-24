@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -177,13 +176,13 @@ public class ExportHelper
 
         try {
             dataWriter = encoding.createWriter(context, getRecordTypes(),
-                                               getLastDone(context).orElse(null),
+                                               getLastDone().orElse(null),
                                                tmpFile);
 
             results.add(dataWriter.write(context, progressListener));
             isEmpty = results.isEmpty();
             // If the backup was a full backup remember that.
-            setLastDone(context);
+            setLastDone();
 
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException
@@ -224,12 +223,10 @@ public class ExportHelper
     /**
      * Get the last time we made a full export in the currently set encoding.
      *
-     * @param context Current context
-     *
      * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
      */
     @NonNull
-    private Optional<LocalDateTime> getLastDone(@NonNull final Context context) {
+    private Optional<LocalDateTime> getLastDone() {
         if (isIncremental()) {
             final String key;
             if (encoding == ArchiveWriterEncoding.Zip) {
@@ -239,8 +236,8 @@ public class ExportHelper
                 key = PK_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt();
             }
 
-            final String lastDone = PreferenceManager.getDefaultSharedPreferences(context)
-                                                     .getString(key, null);
+            final String lastDone = ServiceLocator.getInstance().getSharedPreferences()
+                                                  .getString(key, null);
             if (lastDone != null && !lastDone.isEmpty()) {
                 return dateParser.parse(lastDone);
             }
@@ -251,16 +248,14 @@ public class ExportHelper
     /**
      * Store the LocalDateTime(ZoneOffset.UTC) of the last full backup/export
      * in the given encoding.
-     *
-     * @param context Current context
      */
-    private void setLastDone(@NonNull final Context context) {
+    private void setLastDone() {
         if (!isIncremental()) {
             final String date = LocalDateTime.now(ZoneOffset.UTC)
                                              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            final SharedPreferences.Editor editor = PreferenceManager
-                    .getDefaultSharedPreferences(context)
+            final SharedPreferences.Editor editor = ServiceLocator
+                    .getInstance().getSharedPreferences()
                     .edit();
             if (encoding == ArchiveWriterEncoding.Zip) {
                 // backwards compatibility

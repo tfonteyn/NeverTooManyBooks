@@ -29,7 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +88,7 @@ public class AuthorWorksViewModel
     private AuthorDao authorDao;
     private BookDao bookDao;
     private TocEntryDao tocEntryDao;
-    
+
     /** Initial Bookshelf is set in {@link #init}. */
     private Bookshelf bookshelf;
     /** Initially we get toc entries and books. */
@@ -190,8 +189,7 @@ public class AuthorWorksViewModel
 
             allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;
 
-            final SharedPreferences prefs = PreferenceManager
-                    .getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
             orderByColumn = prefs.getString(PK_ORDER_BY_COLUMN, DBKey.TITLE_OB);
             showTocEntries = prefs.getBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries);
             showBooks = prefs.getBoolean(PK_SHOW_BOOKS, showBooks);
@@ -220,9 +218,10 @@ public class AuthorWorksViewModel
             onWorksUpdated.postValue(null);
             // Activity subtitle will show the bookshelf name (or empty for all-shelves)
             // + the number of works shown.
-            onBookshelfUpdated.postValue(context.getString(R.string.name_hash_nr,
-                                                           allBookshelves ? "" : bookshelf.getName(),
-                                                           works.size()));
+            onBookshelfUpdated.postValue(context.getString(
+                    R.string.name_hash_nr,
+                    allBookshelves ? "" : bookshelf.getName(),
+                    works.size()));
         });
     }
 
@@ -236,10 +235,11 @@ public class AuthorWorksViewModel
                    final boolean showBooks) {
         this.showTocEntries = showTocEntries;
         this.showBooks = showBooks;
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries)
-                         .putBoolean(PK_SHOW_BOOKS, showBooks)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries)
+                      .putBoolean(PK_SHOW_BOOKS, showBooks)
+                      .apply();
 
         reloadWorkList(context);
     }
@@ -261,16 +261,17 @@ public class AuthorWorksViewModel
                           @AuthorDao.WorksOrderBy @NonNull final String orderByColumn) {
         this.orderByColumn = orderByColumn;
 
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putString(PK_ORDER_BY_COLUMN, orderByColumn)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(PK_ORDER_BY_COLUMN, orderByColumn)
+                      .apply();
 
         reloadWorkList(context);
     }
 
     /**
      * Are we / should we display the list for 'All Bookshelves' or only for the
-     * previously set single Bookshelf?
+     * previously set single Bookshelf.
      *
      * @return {@code true} for all shelves.
      */

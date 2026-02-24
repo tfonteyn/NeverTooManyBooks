@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Handler;
@@ -27,10 +26,11 @@ import android.os.Looper;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public final class SoundManager {
 
@@ -72,11 +72,10 @@ public final class SoundManager {
     /**
      * Optionally beep if the scanned barcode represents a valid ISBN.
      *
-     * @param context Current context
      */
-    public static void beepOnValidIsbn(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(PK_SOUNDS_SCAN_ISBN_VALID, false)) {
+    public static void beepOnValidIsbn() {
+        if (ServiceLocator.getInstance().getSharedPreferences()
+                          .getBoolean(PK_SOUNDS_SCAN_ISBN_VALID, false)) {
             beep(POSITIVE);
         }
     }
@@ -84,10 +83,9 @@ public final class SoundManager {
     /**
      * Optionally beep if the scanned barcode is not a valid ISBN.
      *
-     * @param context Current context
      */
-    public static void beepOnInvalidIsbn(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
+    public static void beepOnInvalidIsbn() {
+        if (ServiceLocator.getInstance().getSharedPreferences()
                              .getBoolean(PK_SOUNDS_SCAN_ISBN_INVALID, true)) {
             beep(NEGATIVE);
         }
@@ -96,10 +94,9 @@ public final class SoundManager {
     /**
      * Optionally beep if the scan produced a valid barcode (of any type).
      *
-     * @param context Current context
      */
-    public static void beepOnBarcodeFound(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
+    public static void beepOnBarcodeFound() {
+        if (ServiceLocator.getInstance().getSharedPreferences()
                              .getBoolean(PK_SOUNDS_SCAN_FOUND_BARCODE, true)) {
             beep(EVENT);
         }

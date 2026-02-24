@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -61,8 +60,7 @@ public class FieldVisibilityPreferenceFragment
         // This MUST be done in onCreate/onCreatePreferences,
         // and BEFORE we inflate the XML screen definition
         dataStore = new VSDataStore();
-        //noinspection DataFlowIssue
-        dataStore.load(PreferenceManager.getDefaultSharedPreferences(getContext()));
+        dataStore.load();
         getPreferenceManager().setPreferenceDataStore(dataStore);
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
@@ -87,20 +85,16 @@ public class FieldVisibilityPreferenceFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection DataFlowIssue
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-        dataStore.load(prefs);
-        prefs.registerOnSharedPreferenceChangeListener(this);
+        dataStore.load();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onPause() {
-        //noinspection DataFlowIssue
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-        prefs.unregisterOnSharedPreferenceChangeListener(this);
-        dataStore.save(prefs);
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .unregisterOnSharedPreferenceChangeListener(this);
+        dataStore.save();
         super.onPause();
     }
 
@@ -134,12 +128,12 @@ public class FieldVisibilityPreferenceFragment
             return fieldVisibility.isVisible(key).orElse(true);
         }
 
-        void load(@NonNull final SharedPreferences prefs) {
-            fieldVisibility.load(prefs);
+        void load() {
+            fieldVisibility.load();
         }
 
-        void save(@NonNull final SharedPreferences prefs) {
-            fieldVisibility.save(prefs);
+        void save() {
+            fieldVisibility.save();
         }
     }
 }

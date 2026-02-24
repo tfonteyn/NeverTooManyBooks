@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -100,7 +100,7 @@ public final class AppLocaleImpl
     @NonNull
     public Context apply(@NonNull final Context context) {
         // Create the Locale at first access, or if the persisted is different from the current.
-        final String localeSpec = getPersistedLocaleSpec(context);
+        final String localeSpec = getPersistedLocaleSpec();
 
         final boolean changed = preferredLocale == null || !preferredLocaleSpec.equals(localeSpec);
         if (changed) {
@@ -268,15 +268,13 @@ public final class AppLocaleImpl
     /**
      * Get the user-preferred Locale as stored in the preferences.
      *
-     * @param context Current context
-     *
      * @return a Locale specification as used for Android resources;
      *         or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
     @NonNull
-    public String getPersistedLocaleSpec(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(Prefs.PK_UI_LOCALE, SYSTEM_LANGUAGE);
+    public String getPersistedLocaleSpec() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getString(Prefs.PK_UI_LOCALE, SYSTEM_LANGUAGE);
     }
 
     @Override

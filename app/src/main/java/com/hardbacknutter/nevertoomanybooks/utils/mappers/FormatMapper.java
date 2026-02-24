@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -176,16 +176,14 @@ public final class FormatMapper
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param locale  Current Locale
+     * @param locale Current Locale
      *
      * @return instance
      */
     @NonNull
-    static Optional<Mapper> create(@NonNull final Context context,
-                                   @NonNull final Locale locale) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(PK_SEARCH_REFORMAT_FORMAT, true)) {
+    static Optional<Mapper> create(@NonNull final Locale locale) {
+        if (ServiceLocator.getInstance().getSharedPreferences()
+                          .getBoolean(PK_SEARCH_REFORMAT_FORMAT, true)) {
             return Optional.of(new FormatMapper(locale));
         } else {
             return Optional.empty();

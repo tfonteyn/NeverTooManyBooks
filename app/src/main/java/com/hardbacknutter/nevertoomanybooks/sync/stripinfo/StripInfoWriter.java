@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -65,13 +64,12 @@ public class StripInfoWriter
     private final CollectionFormUploader collectionForm;
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
-    @SuppressWarnings("FieldCanBeLocal")
-    private SyncWriterResults results;
-
     @NonNull
     private final BookDao bookDao;
     @NonNull
     private final StripInfoDao stripInfoDao;
+    @SuppressWarnings("FieldCanBeLocal")
+    private SyncWriterResults results;
 
     /**
      * Constructor.
@@ -118,7 +116,7 @@ public class StripInfoWriter
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         @Nullable
         final LocalDateTime dateSince;
         if (incremental) {
@@ -174,9 +172,9 @@ public class StripInfoWriter
 
         // always set the sync date!
         prefs.edit()
-              .putString(StripInfoHandler.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
-                      DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-              .apply();
+             .putString(StripInfoHandler.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
+                     DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+             .apply();
         return results;
     }
 

@@ -32,7 +32,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,6 +46,7 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -256,7 +256,7 @@ public class CoverStorage {
 
         final Context context = appContextSupplier.get();
 
-        final int volume = CoverVolume.getVolume(context);
+        final int volume = CoverVolume.getVolume();
 
         final File[] externalFilesDirs = context
                 .getExternalFilesDirs(Environment.DIRECTORY_PICTURES);
@@ -625,8 +625,8 @@ public class CoverStorage {
      */
     @AnyThread
     private boolean isUndoEnabled() {
-        return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(PK_ENABLE_UNDO, true);
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_ENABLE_UNDO, true);
     }
 
     /**
@@ -636,8 +636,8 @@ public class CoverStorage {
      */
     @AnyThread
     public boolean isImageCachingEnabled() {
-        return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                                .getBoolean(PK_CACHE_RESIZED_IMAGES, false);
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_CACHE_RESIZED_IMAGES, false);
     }
 
     /**
@@ -647,10 +647,10 @@ public class CoverStorage {
      */
     @AnyThread
     public void setImageCachingEnabled(final boolean enable) {
-        PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                         .edit()
-                         .putBoolean(PK_CACHE_RESIZED_IMAGES, enable)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(PK_CACHE_RESIZED_IMAGES, enable)
+                      .apply();
     }
 
     /**

@@ -26,7 +26,6 @@ import android.database.sqlite.SQLiteDoneException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -209,12 +208,12 @@ public class StripInfoReader
         }
 
         // always set the sync date!
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(StripInfoHandler.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
-                        DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(StripInfoHandler.PK_LAST_SYNC,
+                                 LocalDateTime.now(ZoneOffset.UTC).format(
+                                         DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                      .apply();
 
         return results;
     }

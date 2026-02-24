@@ -38,7 +38,6 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -113,13 +112,11 @@ public class EditBookFragment
      * Check if the {@code external id} edit tab should be shown.
      * This is an 'advanced' user preference.
      *
-     * @param context Current context
-     *
      * @return flag
      */
-    public static boolean isShowExternalIdTab(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_EDIT_BOOK_TABS_EXTERNAL_ID, false);
+    public static boolean isShowExternalIdTab() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_EDIT_BOOK_TABS_EXTERNAL_ID, false);
     }
 
     @Override
@@ -355,7 +352,7 @@ public class EditBookFragment
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));
             }
-            if (isShowExternalIdTab(container)) {
+            if (isShowExternalIdTab()) {
                 tabList.add(new TabInfo(EditBookExternalIdFragment::new,
                                         R.string.lbl_tab_lbl_ext_id,
                                         R.string.lbl_tab_lbl_ext_id));

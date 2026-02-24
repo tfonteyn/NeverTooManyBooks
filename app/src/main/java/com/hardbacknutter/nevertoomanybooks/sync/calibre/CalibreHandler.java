@@ -309,7 +309,7 @@ public class CalibreHandler {
             ErrorDialog.show(context, TAG, e,
                              context.getString(R.string.lbl_calibre_content_server),
                              context.getString(R.string.error_network_site_access_failed,
-                                               CalibreContentServer.getHostUrl(context)));
+                                               CalibreContentServer.getHostUrl()));
         });
     }
 

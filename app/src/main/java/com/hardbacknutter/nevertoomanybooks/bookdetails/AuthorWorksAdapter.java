@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,7 +89,7 @@ public class AuthorWorksAdapter
                               @NonNull final List<Author> authors,
                               @NonNull final List<? extends AuthorWork> works) {
         inflater = LayoutInflater.from(context);
-        this.contextMenuMode = ExtMenuButton.getPreferredMode(context);
+        this.contextMenuMode = ExtMenuButton.getPreferredMode();
         this.style = style;
         this.authors = authors;
         this.works = works;

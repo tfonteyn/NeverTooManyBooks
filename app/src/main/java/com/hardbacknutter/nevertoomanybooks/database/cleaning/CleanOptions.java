@@ -20,16 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.cleaning;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 
 public enum CleanOptions {
@@ -66,27 +64,26 @@ public enum CleanOptions {
      *       StartupViewModel.PK_REBUILD_INDEXES, true);
      * </pre>
      *
-     * @param context Current context
      * @param options to set
      */
-    public static void setOptions(@NonNull final Context context,
-                                  @NonNull final Set<CleanOptions> options) {
+    public static void setOptions(@NonNull final Set<CleanOptions> options) {
 
         final Set<String> all = options.stream()
                                        .map(Enum::name)
                                        .collect(Collectors.toSet());
 
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putStringSet(PK_OPTIONS, all)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putStringSet(PK_OPTIONS, all)
+                      .apply();
     }
 
     @SuppressWarnings({"CheckStyle", "OverlyBroadCatchBlock"})
     @NonNull
-    static Set<CleanOptions> readOptions(@NonNull final Context context) {
+    static Set<CleanOptions> readOptions() {
         @Nullable
-        final Set<String> all = PreferenceManager.getDefaultSharedPreferences(context)
-                                                 .getStringSet(PK_OPTIONS, null);
+        final Set<String> all = ServiceLocator.getInstance().getSharedPreferences()
+                                              .getStringSet(PK_OPTIONS, null);
 
         final Set<CleanOptions> options = EnumSet.noneOf(CleanOptions.class);
         if (all != null) {
@@ -102,10 +99,10 @@ public enum CleanOptions {
         return options;
     }
 
-    static void clearOptions(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .remove(PK_OPTIONS)
-                         .apply();
+    static void clearOptions() {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .remove(PK_OPTIONS)
+                      .apply();
     }
 }

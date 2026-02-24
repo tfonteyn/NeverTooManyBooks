@@ -260,7 +260,7 @@ public class EditBookTocFragment
             editEntry(tocEntryList.get(position), position);
         });
         adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(context),
+                ExtMenuButton.getPreferredMode(),
                 (v, position) -> {
                     if (position == RecyclerView.NO_POSITION) {
                         return;

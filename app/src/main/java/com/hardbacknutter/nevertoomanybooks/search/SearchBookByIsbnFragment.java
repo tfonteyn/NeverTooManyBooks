@@ -396,19 +396,19 @@ public class SearchBookByIsbnFragment
         });
 
         final Context context = getContext();
-        //noinspection DataFlowIssue
-        final List<IsbnQueue.Item> items = IsbnQueue.readFromPreferences(context);
+        final List<IsbnQueue.Item> items = IsbnQueue.readFromPreferences();
         if (items.isEmpty()) {
             afterOnViewCreated();
         } else {
             final int size = items.size();
+            //noinspection DataFlowIssue
             final String msg = context.getResources().getQuantityString(
                     R.plurals.confirm_queue_has_x_items, size, size);
             new MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.lbl_search_isbn)
                     .setMessage(msg)
                     .setNeutralButton(R.string.action_delete, (d, w) -> {
-                        IsbnQueue.clearPreferences(context);
+                        IsbnQueue.clearPreferences();
                         afterOnViewCreated();
                         d.dismiss();
                     })
@@ -943,11 +943,9 @@ public class SearchBookByIsbnFragment
         final ISBN code = new ISBN(barCode, strictIsbn);
         if (code.isValid()) {
             if (strictIsbn) {
-                //noinspection DataFlowIssue
-                SoundManager.beepOnValidIsbn(getContext());
+                SoundManager.beepOnValidIsbn();
             } else {
-                //noinspection DataFlowIssue
-                SoundManager.beepOnBarcodeFound(getContext());
+                SoundManager.beepOnBarcodeFound();
             }
 
             switch (vm.getScannerMode()) {
@@ -971,8 +969,7 @@ public class SearchBookByIsbnFragment
                 }
             }
         } else {
-            //noinspection DataFlowIssue
-            SoundManager.beepOnInvalidIsbn(getContext());
+            SoundManager.beepOnInvalidIsbn();
 
             if (vm.getScannerMode() == ScanMode.Batch) {
                 // invalid code but we're in batch mode.
@@ -1437,8 +1434,7 @@ public class SearchBookByIsbnFragment
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_BARCODE_SCAN) {
-                //noinspection DataFlowIssue
-                vm.setScannerMode(ScanMode.getScannerModeSingle(getContext()));
+                vm.setScannerMode(ScanMode.getScannerModeSingle());
                 startScanner();
                 return true;
 

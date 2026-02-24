@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -672,7 +672,7 @@ public class BiblionetGrSearchEngine
                 case "Subject": {
                     // Subject -> use for tags
                     // Note: the html shows there might be another "tags" section
-                    processSubjectTags(context, data, book);
+                    processSubjectTags(data, book);
                     break;
                 }
             }
@@ -697,12 +697,10 @@ public class BiblionetGrSearchEngine
         addPriceListed(context, parser, text, MoneyParser.EUR, book);
     }
 
-    private void processSubjectTags(@NonNull final Context context,
-                                    @NonNull final Element data,
+    private void processSubjectTags(@NonNull final Element data,
                                     @NonNull final Book book) {
-        final boolean keepPrefix = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(PK_TAG_PREFIX_NUMBER, false);
+        final boolean keepPrefix = ServiceLocator.getInstance().getSharedPreferences()
+                                                 .getBoolean(PK_TAG_PREFIX_NUMBER, false);
 
         final List<String> tagNames = new ArrayList<>();
         // [741.5] Κόμικς

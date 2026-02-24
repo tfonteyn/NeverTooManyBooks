@@ -135,7 +135,7 @@ public class DBCleaner {
     public void clean(@NonNull final Context context)
             throws DaoWriteException {
 
-        final Set<CleanOptions> options = CleanOptions.readOptions(context);
+        final Set<CleanOptions> options = CleanOptions.readOptions();
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
@@ -175,7 +175,7 @@ public class DBCleaner {
         }
 
         // Lastly, always clear the options
-        CleanOptions.clearOptions(context);
+        CleanOptions.clearOptions();
     }
 
     /**

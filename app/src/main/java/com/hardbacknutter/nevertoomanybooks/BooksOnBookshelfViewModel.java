@@ -348,7 +348,7 @@ public class BooksOnBookshelfViewModel
             tagDao = serviceLocator.getTagDao();
 
             // first start of the activity, read from user preference
-            rebuildMode = RebuildBooklist.getPreferredMode(context);
+            rebuildMode = RebuildBooklist.getPreferredMode();
 
             if (args != null) {
                 proposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
@@ -454,8 +454,8 @@ public class BooksOnBookshelfViewModel
 
     //TEST: do we need resetPreferredListRebuildMode?
     // we don't always call it when the style changes
-    void resetPreferredListRebuildMode(@NonNull final Context context) {
-        rebuildMode = RebuildBooklist.getPreferredMode(context);
+    void resetPreferredListRebuildMode() {
+        rebuildMode = RebuildBooklist.getPreferredMode();
     }
 
     @NonNull
@@ -702,16 +702,14 @@ public class BooksOnBookshelfViewModel
     /**
      * Get the mode to use for the context-menu's.
      *
-     * @param context                 Current context
      * @param hasEmbeddedDetailsFrame whether the display Activity is showing
      *                                the embedded details-frame.
      *
      * @return the mode to use
      */
     @NonNull
-    ExtMenuButton getShowContextMenuMode(@NonNull final Context context,
-                                         final boolean hasEmbeddedDetailsFrame) {
-        final ExtMenuButton preferredMode = ExtMenuButton.getPreferredMode(context);
+    ExtMenuButton getShowContextMenuMode(final boolean hasEmbeddedDetailsFrame) {
+        final ExtMenuButton preferredMode = ExtMenuButton.getPreferredMode();
         if (preferredMode == ExtMenuButton.IfRoom && hasEmbeddedDetailsFrame) {
             return ExtMenuButton.None;
         } else {

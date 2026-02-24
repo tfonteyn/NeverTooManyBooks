@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -709,7 +708,7 @@ public class StripWebSearchEngine
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
         final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         if (prefs.contains(key)) {
             return prefs.getBoolean(key, false);
         } else {

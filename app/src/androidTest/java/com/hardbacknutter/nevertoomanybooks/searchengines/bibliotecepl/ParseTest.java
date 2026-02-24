@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl;
 
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -79,10 +78,11 @@ class ParseTest
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean(EngineId.BibliotecePl.getPreferenceKey()
-                                     + ".resolve.authors.wikidata", true)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(EngineId.BibliotecePl.getPreferenceKey()
+                                  + ".resolve.authors.wikidata", true)
+                      .apply();
 
         ratingNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }

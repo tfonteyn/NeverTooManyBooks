@@ -22,14 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -82,10 +81,11 @@ class ParseTest
         // The Goodreads resolver is by default always true,
         // but the wikidata one is by default false.
         // For these tests we want both
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean(EngineId.Goodreads.getPreferenceKey()
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(EngineId.Goodreads.getPreferenceKey()
                                      + ".resolve.authors.wikidata", true)
-                         .apply();
+                      .apply();
     }
 
     @Test

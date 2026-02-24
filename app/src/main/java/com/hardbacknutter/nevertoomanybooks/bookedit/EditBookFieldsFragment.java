@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,8 +73,7 @@ public class EditBookFieldsFragment
             registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
                     barCode -> {
                         vm.getBook().setIsbn(barCode);
-                        //noinspection DataFlowIssue
-                        SoundManager.beepOnBarcodeFound(getContext());
+                        SoundManager.beepOnBarcodeFound();
                     }));
 
     /**
@@ -157,7 +156,7 @@ public class EditBookFieldsFragment
         vb.bookshelves.setOnClickListener(v -> editBookshelves());
 
         // ISBN: manual edit of the field, or click the end-icon to scan a barcode
-        isbnValidityCheck = vm.getLevel(context);
+        isbnValidityCheck = vm.getLevel();
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
         isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(

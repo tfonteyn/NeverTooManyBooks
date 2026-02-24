@@ -29,7 +29,6 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,15 +151,14 @@ public final class LegacyUpgrades {
                 DBDefinitions.DOM_STYLE_LAYOUT);
     }
 
-    static void v28onUpgrade(@NonNull final Context context,
-                             @NonNull final SQLiteDatabase db) {
+    static void v28onUpgrade(@NonNull final SQLiteDatabase db) {
         TBL_BOOKLIST_STYLES.alterTableAddColumns(
                 db,
                 DBDefinitions.DOM_STYLE_TITLE_SHOW_REORDERED);
 
         // migrateReorderPref
-        final int value = PreferenceManager.getDefaultSharedPreferences(context)
-                                           .getBoolean("show.title.reordered", false)
+        final int value = ServiceLocator.getInstance().getSharedPreferences()
+                                        .getBoolean("show.title.reordered", false)
                           ? 1 : 0;
 
         // We apply the setting to ALL styles as it was the default for all.
@@ -239,7 +237,7 @@ public final class LegacyUpgrades {
                             @NonNull final SQLiteDatabase db) {
         v35AddCitationType(db);
         v35AddIdentifiersTable(context, db);
-        v35AddMappingTables(context, db);
+        v35AddMappingTables(db);
 
         // The format was changed
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
@@ -327,8 +325,7 @@ public final class LegacyUpgrades {
                                .collect(Collectors.joining(",")));
     }
 
-    private static void v35AddMappingTables(@NonNull final Context context,
-                                            @NonNull final SQLiteDatabase db) {
+    private static void v35AddMappingTables(@NonNull final SQLiteDatabase db) {
         TBL_TAG_MAPPINGS.create(db, true);
         TagMappingDaoImpl.onPostCreate(db);
 
@@ -340,7 +337,7 @@ public final class LegacyUpgrades {
         final FieldVisibility globalFieldVisibility = ServiceLocator
                 .getInstance().getGlobalFieldVisibility();
         globalFieldVisibility.setVisible(DBKey.FK_TAG, true);
-        globalFieldVisibility.save(PreferenceManager.getDefaultSharedPreferences(context));
+        globalFieldVisibility.save();
 
     }
 
@@ -573,7 +570,7 @@ public final class LegacyUpgrades {
     }
 
     static void v44onUpgrade(@NonNull final Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         // If the user never enabled the zoom-slider, force the default back to zero
         if (!prefs.getBoolean(CameraConfig.PK_CAMERA_ZOOM_CONTROL_SHOW, false)) {
             prefs.edit().putFloat(CameraConfig.PK_CAMERA_ZOOM_CONTROL_VALUE, 0f).apply();
@@ -599,7 +596,7 @@ public final class LegacyUpgrades {
         // GitHub #200: in short: #193 introduced a bug where the order-by column
         // could contain spaces. This led to "mergeable" data not being found,
         // which in turn led to creating duplicates.
-        CleanOptions.setOptions(context, Set.of(
+        CleanOptions.setOptions(Set.of(
                 CleanOptions.RemoveDuplicateAuthors,
                 CleanOptions.RemoveDuplicatePublishers,
                 CleanOptions.RemoveDuplicateSeries,
@@ -777,11 +774,9 @@ public final class LegacyUpgrades {
      * Depending on the upgrade path of some users... add the global style
      * if it does not already exist.
      *
-     * @param context Current context
-     * @param db      Database Access
+     * @param db Database Access
      */
-    static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
-                                              @NonNull final SQLiteDatabase db) {
+    static void insertGlobalStyleIfNotYetDone(@NonNull final SQLiteDatabase db) {
         final boolean isPresent;
         try (SQLiteStatement stmt = db.compileStatement(
                 "SELECT COUNT(" + DBKey.STYLE.TYPE + ") FROM " + TBL_BOOKLIST_STYLES.getName()
@@ -793,7 +788,7 @@ public final class LegacyUpgrades {
             return;
         }
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         final GlobalStyle style = GlobalStyle.createDefault();
         style.setSortAuthorByGivenName(
                 prefs.getBoolean("sort.author.name.given_first", false));
@@ -814,11 +809,11 @@ public final class LegacyUpgrades {
      * @param context Current context
      */
     public static void migratePreferenceKeys(@NonNull final Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
 
         // This will take care of old keys in general, but will
         // ALSO copy the FieldVisibility.PK_LOANS which is still in use.
-        migrateGlobalFieldVisibility(prefs);
+        migrateGlobalFieldVisibility();
 
         // Now remove all obsolete keys.
         final SharedPreferences.Editor editor = prefs.edit();
@@ -903,9 +898,9 @@ public final class LegacyUpgrades {
     /**
      * Check and migrate pre-db25 global field visibility keys.
      *
-     * @param prefs to migrate
      */
-    private static void migrateGlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
+    private static void migrateGlobalFieldVisibility() {
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         final Pattern dot = Pattern.compile("\\.");
         final List<String> oldVisKeys = prefs.getAll()
                                              .keySet()
@@ -922,7 +917,7 @@ public final class LegacyUpgrades {
                 fieldVisibility.setVisible(dbKey, value);
             });
 
-            fieldVisibility.save(prefs);
+            fieldVisibility.save();
         }
     }
 

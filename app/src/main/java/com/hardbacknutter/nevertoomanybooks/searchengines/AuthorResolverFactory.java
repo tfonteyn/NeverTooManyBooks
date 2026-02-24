@@ -24,13 +24,13 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
@@ -65,7 +65,7 @@ public final class AuthorResolverFactory {
 
         switch (engineId) {
             case Bedetheque: {
-                if (isEnabled(context, engineId)) {
+                if (isEnabled(engineId)) {
                     return List.of(BedethequeAuthorResolver.create(context, searchEngine));
                 }
                 break;
@@ -73,35 +73,35 @@ public final class AuthorResolverFactory {
             case BiblionetGr:
             case BibliotecePl:
             case Bnf: {
-                if (isEnabled(context, engineId, EngineId.Wikidata, false)) {
+                if (isEnabled(engineId, EngineId.Wikidata, false)) {
                     return List.of(WikidataAuthorResolver.create(context, searchEngine));
                 }
                 break;
             }
             case DatabazeKnih: {
-                if (isEnabled(context, engineId)) {
+                if (isEnabled(engineId)) {
                     return List.of(DatabazeKnihAuthorResolver.create(context, searchEngine));
                 }
                 break;
             }
             case Dnb: {
-                if (isEnabled(context, engineId)) {
+                if (isEnabled(engineId)) {
                     return List.of(DnbAuthorResolver.create(context, searchEngine));
                 }
                 break;
             }
             case Goodreads: {
                 final List<AuthorResolver> list = new ArrayList<>();
-                if (isEnabled(context, engineId)) {
+                if (isEnabled(engineId)) {
                     list.add(GoodreadsAuthorResolver.create(context, searchEngine));
                 }
-                if (isEnabled(context, engineId, EngineId.Wikidata, false)) {
+                if (isEnabled(engineId, EngineId.Wikidata, false)) {
                     list.add(WikidataAuthorResolver.create(context, searchEngine));
                 }
                 return list;
             }
             case Isfdb: {
-                if (isEnabled(context, engineId)) {
+                if (isEnabled(engineId)) {
                     return List.of(IsfdbAuthorResolver.create(context, searchEngine));
                 }
                 break;
@@ -109,19 +109,19 @@ public final class AuthorResolverFactory {
             case LastDodoNl:
             case StripInfoBe:
             case StripWebBe: {
-                if (isEnabled(context, engineId, EngineId.Bedetheque, true)) {
+                if (isEnabled(engineId, EngineId.Bedetheque, true)) {
                     return List.of(BedethequeAuthorResolver.create(context, searchEngine));
                 }
                 break;
             }
             case OpenLibrary: {
-                if (isEnabled(context, engineId)) {
+                if (isEnabled(engineId)) {
                     return List.of(OpenLibraryAuthorResolver.create(context, searchEngine));
                 }
                 break;
             }
             case Wikidata: {
-                if (isEnabled(context, engineId)) {
+                if (isEnabled(engineId)) {
                     return List.of(WikidataAuthorResolver.create(context, searchEngine));
                 }
                 break;
@@ -157,7 +157,7 @@ public final class AuthorResolverFactory {
                           EngineId.Isfdb,
                           EngineId.OpenLibrary,
                           EngineId.Wikidata)
-                      .filter(engineId -> isEnabled(context, engineId))
+                      .filter(AuthorResolverFactory::isEnabled)
                       .collect(Collectors.toList());
 
         // These Engine resolvers rely on their SID.
@@ -166,7 +166,7 @@ public final class AuthorResolverFactory {
                 Stream.of(EngineId.DatabazeKnih,
                           EngineId.Dnb,
                           EngineId.Goodreads)
-                      .filter(engineId -> isEnabled(context, engineId))
+                      .filter(AuthorResolverFactory::isEnabled)
                       // Sanity check, all engines here should have keys,
                       // or we should not have added them!
                       .filter(engineId -> engineId.getIdentifierKey() != null)
@@ -182,33 +182,29 @@ public final class AuthorResolverFactory {
     /**
      * An engine using its own resolver.
      *
-     * @param context  Current context
      * @param engineId the engine == resolver id
      *
      * @return flag
      */
-    private static boolean isEnabled(@NonNull final Context context,
-                                     @NonNull final EngineId engineId) {
-        return isEnabled(context, engineId, engineId, true);
+    private static boolean isEnabled(@NonNull final EngineId engineId) {
+        return isEnabled(engineId, engineId, true);
     }
 
     /**
      * An engine using a given resolver.
      *
-     * @param context  Current context
      * @param engine   id
      * @param resolver id
      * @param defValue default
      *
      * @return flag
      */
-    private static boolean isEnabled(@NonNull final Context context,
-                                     @NonNull final EngineId engine,
+    private static boolean isEnabled(@NonNull final EngineId engine,
                                      @NonNull final EngineId resolver,
                                      final boolean defValue) {
 
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(getKey(engine, resolver), defValue);
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(getKey(engine, resolver), defValue);
     }
 
     // Allow easier use for testing

@@ -27,7 +27,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -159,8 +159,9 @@ public final class Site
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
-    private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
-        active = prefs.getBoolean(getPrefPrefix() + PK_SUFFIX_ACTIVE, active);
+    private void loadFromPrefs() {
+        active = ServiceLocator.getInstance().getSharedPreferences()
+                               .getBoolean(getPrefPrefix() + PK_SUFFIX_ACTIVE, active);
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
@@ -276,7 +277,7 @@ public final class Site
             EngineId.registerSites(context, this, languages);
 
             // apply stored user preferences to the list
-            loadPrefs(context);
+            loadPrefs();
         }
 
         /**
@@ -291,20 +292,18 @@ public final class Site
             EngineId.registerSites(context, this, languages);
 
             // overwrite stored user preferences with the defaults from the list
-            savePrefs(context);
+            savePrefs();
         }
 
         /**
          * Replace the current list with the given list. A deep-copy will be taken.
          *
-         * @param context Current context
-         * @param sites   list to use
+         * @param sites list to use
          */
-        public void setSiteList(@NonNull final Context context,
-                                @NonNull final Collection<Site> sites) {
+        public void setSiteList(@NonNull final Collection<Site> sites) {
             siteList.clear();
             sites.stream().map(Site::new).forEach(siteList::add);
-            savePrefs(context);
+            savePrefs();
         }
 
         /**
@@ -363,14 +362,13 @@ public final class Site
         /**
          * Load the site settings and the order of the list.
          *
-         * @param context Current context
          */
         @VisibleForTesting
-        void loadPrefs(@NonNull final Context context) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            siteList.forEach(site -> site.loadFromPrefs(prefs));
+        void loadPrefs() {
+            siteList.forEach(Site::loadFromPrefs);
 
-            final String order = prefs.getString(PREFS_ORDER_PREFIX + key, null);
+            final String order = ServiceLocator.getInstance().getSharedPreferences()
+                                               .getString(PREFS_ORDER_PREFIX + key, null);
             if (order != null) {
                 final List<EngineId> list = new ArrayList<>();
                 Arrays.stream(order.split(","))
@@ -395,7 +393,7 @@ public final class Site
                     siteList.stream()
                             .filter(site -> !reorderedList.contains(site))
                             .forEach(reorderedList::add);
-                    savePrefs(context);
+                    savePrefs();
                 }
 
                 // simply replace in the new order.
@@ -407,11 +405,10 @@ public final class Site
         /**
          * Save the settings for each site in this list + the order of the sites in the list.
          *
-         * @param context Current context
          */
-        void savePrefs(@NonNull final Context context) {
-            final SharedPreferences.Editor ed = PreferenceManager
-                    .getDefaultSharedPreferences(context).edit();
+        void savePrefs() {
+            final SharedPreferences.Editor ed = ServiceLocator.getInstance().getSharedPreferences()
+                                                              .edit();
 
             final String order = siteList.stream().map(site -> {
                 // store individual site settings

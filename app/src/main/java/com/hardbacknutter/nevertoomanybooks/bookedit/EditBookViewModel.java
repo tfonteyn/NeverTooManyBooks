@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -219,14 +218,13 @@ public class EditBookViewModel
     /**
      * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
      *
-     * @param context Current context
-     *
      * @return Validity level
      */
     @NonNull
-    ISBN.Validity getLevel(@NonNull final Context context) {
+    ISBN.Validity getLevel() {
         // -1 default (i.e. invalid) will force the Validity default enum to be returned.
-        final int id = IntListPref.getInt(context, PK_EDIT_BOOK_ISBN_CHECKS, -1);
+        final int id = ServiceLocator.getInstance().getSharedPreferences()
+                                     .getIntFromString(PK_EDIT_BOOK_ISBN_CHECKS, -1);
         return ISBN.Validity.byId(id);
     }
 

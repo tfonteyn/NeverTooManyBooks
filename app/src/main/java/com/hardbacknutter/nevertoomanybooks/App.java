@@ -142,7 +142,7 @@ public class App
         ActivityRestarter.init(this);
         // setup support for custom themes, dynamic colours and day/night modes.
         ThemeColorController.init(this);
-        NightMode.init(this);
+        NightMode.init();
     }
 
     private void initLogger() {

@@ -26,13 +26,12 @@ import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -80,28 +79,25 @@ public final class CoverVolume {
     }
 
     /**
-     * Set the user preferred volume.
-     *
-     * @param context Current context
-     * @param volume  to set
-     */
-    public static void setVolume(@NonNull final Context context,
-                                 final int volume) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putString(PK_VOLUME_INDEX, String.valueOf(volume))
-                         .apply();
-    }
-
-    /**
      * Get the currently configured (user preferred) volume.
-     *
-     * @param context Current context
      *
      * @return the volume
      */
-    public static int getVolume(@NonNull final Context context) {
-        return IntListPref.getInt(context, PK_VOLUME_INDEX, 0);
+    public static int getVolume() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getIntFromString(PK_VOLUME_INDEX, 0);
+    }
+
+    /**
+     * Set the user preferred volume.
+     *
+     * @param volume to set
+     */
+    public static void setVolume(final int volume) {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(PK_VOLUME_INDEX, String.valueOf(volume))
+                      .apply();
     }
 
     /**

@@ -211,7 +211,7 @@ public class PreferredStylesFragment
             adapter.notifyItemChanged(position);
         });
         adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(getContext()), (anchor, position) -> {
+                ExtMenuButton.getPreferredMode(), (anchor, position) -> {
                     final Context context = anchor.getContext();
 
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);

@@ -87,7 +87,7 @@ public interface SeriesDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Series> list,
                               @NonNull final Function<Series, Locale> localeSupplier) {
-        return pruneList(context, list, Prefs.normalizeSeriesTitle(context), localeSupplier);
+        return pruneList(context, list, Prefs.normalizeSeriesTitle(), localeSupplier);
     }
 
     /**

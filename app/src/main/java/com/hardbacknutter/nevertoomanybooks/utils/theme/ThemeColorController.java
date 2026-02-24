@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Adapted from the excellent article
@@ -71,7 +71,7 @@ public final class ThemeColorController {
 
     /** {@link #PK_UI_THEME_COLOR} value - the original NeverTooManyBooks blue-grey theme. */
     private static final int PK_UI_THEME_COLOR_BLUE_GREY = 0;
-    /** {@link #PK_UI_THEME_COLOR} value - the Dynamic-Colours theme available on Android 12+ */
+    /** {@link #PK_UI_THEME_COLOR} value - the Dynamic-Colours theme available on Android 12+. */
     private static final int PK_UI_THEME_COLOR_DYNAMIC = 1;
 
     @SuppressWarnings("StaticVariableMayNotBeInitialized")
@@ -125,7 +125,8 @@ public final class ThemeColorController {
                       .filter(ref -> ref.get() == null)
                       .forEach(activities::remove);
 
-            final int setting = IntListPref.getInt(activity, PK_UI_THEME_COLOR, 0);
+            final int setting = ServiceLocator.getInstance().getSharedPreferences()
+                                              .getIntFromString(PK_UI_THEME_COLOR, 0);
             switch (setting) {
                 case PK_UI_THEME_COLOR_DYNAMIC:
                     DynamicColors.applyToActivityIfAvailable(activity);

@@ -50,7 +50,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -333,7 +332,7 @@ public class BooksOnBookshelf
         InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
         // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
 
-        if (Prefs.isFixedHeaderAndFooter(this)) {
+        if (Prefs.isFixedHeaderAndFooter()) {
             InsetsListenerBuilder.create(vb.contentFrame)
                                  .systemBars()
                                  .margins(Side.Bottom)
@@ -724,7 +723,7 @@ public class BooksOnBookshelf
 
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         fabMenu.getItem(R.id.fab4_search_external_id)
-               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab(this)));
+               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab()));
     }
 
     /**
@@ -835,7 +834,7 @@ public class BooksOnBookshelf
     }
 
     private int getOffscreenCacheSize() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         // Protect against silly values
         return MathUtils.clamp(prefs.getInt(PK_OFFSCREEN_CACHE_SIZE, DEFAULT_OFFSCREEN_CACHE_SIZE),
                                MIN_OFFSCREEN_CACHE_SIZE, MAX_OFFSCREEN_CACHE_SIZE);
@@ -1007,7 +1006,7 @@ public class BooksOnBookshelf
 
         // update the fab menu visibility depending on current user settings
         fabMenu.getItem(R.id.fab4_search_external_id)
-               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab(this)));
+               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab()));
 
         // Always update the list of bookshelves
         // This will be redundant if the user just came back from
@@ -1581,7 +1580,7 @@ public class BooksOnBookshelf
         // This **MAY** provide better accuracy when switching style...
         saveListPosition();
 
-        vm.resetPreferredListRebuildMode(this);
+        vm.resetPreferredListRebuildMode();
         vm.onStyleChanged(this, uuid);
 
         // New style, so the layout might have changed
@@ -1667,7 +1666,7 @@ public class BooksOnBookshelf
         adapter = vm.createBooklistAdapter(this, hasEmbeddedDetailsFrame());
         adapter.setOnRowClickListener(this::onRowClicked);
         adapter.setOnRowShowMenuListener(
-                vm.getShowContextMenuMode(this, hasEmbeddedDetailsFrame()),
+                vm.getShowContextMenuMode(hasEmbeddedDetailsFrame()),
                 this::onCreateContextMenu);
 
         // Combine the adapters for the list header and the actual list

@@ -22,11 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -62,10 +61,10 @@ class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putString(LibraryThingSearchEngine.PK_API_TOKEN, TOKEN)
-                         .apply();
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(LibraryThingSearchEngine.PK_API_TOKEN, TOKEN)
+                      .apply();
     }
 
     @Test

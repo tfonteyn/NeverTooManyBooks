@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class CameraConfig {
@@ -110,10 +108,9 @@ public final class CameraConfig {
             LoggerFactory.getLogger().e(TAG, e);
         }
 
-        final SharedPreferences p = ServiceLocator.getInstance().getSharedPreferences();
-
-        torchEnabled = p.getBoolean(PK_CAMERA_TORCH_STATUS, false);
-        zoomValue = Prefs.getFloat(p, PK_CAMERA_ZOOM_CONTROL_VALUE, DEFAULT_ZOOM_VALUE);
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
+        torchEnabled = prefs.getBoolean(PK_CAMERA_TORCH_STATUS, false);
+        zoomValue = prefs.getFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, DEFAULT_ZOOM_VALUE);
     }
 
     /**
@@ -144,10 +141,10 @@ public final class CameraConfig {
      * @return lens-facing identifier, or {@link #NO_LENS_FACING_PREFERENCE} for no-preference
      */
     public int getLensFacing() {
-        final SharedPreferences p = ServiceLocator.getInstance().getSharedPreferences();
         // By default -1, which for the scanner contract call means 'no preference'
-        final int lensFacing = IntListPref.getInt(p, PK_CAMERA_LENS_FACING,
-                                                  NO_LENS_FACING_PREFERENCE);
+        final int lensFacing = ServiceLocator.getInstance().getSharedPreferences()
+                                             .getIntFromString(PK_CAMERA_LENS_FACING,
+                                                               NO_LENS_FACING_PREFERENCE);
         // we must verify the id, as the preference could have been imported from another device
         if (lensIds.contains(lensFacing)) {
             return lensFacing;

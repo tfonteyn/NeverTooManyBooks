@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public class AddBookBySearchContract
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCANNER_MODE,
-                                  (Parcelable) ScanMode.getScannerModeSingle(context));
+                                  (Parcelable) ScanMode.getScannerModeSingle());
 
             case ScanBatch:
                 return FragmentHostActivityLauncher

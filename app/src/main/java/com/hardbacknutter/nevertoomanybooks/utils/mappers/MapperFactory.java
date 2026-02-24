@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,8 +46,8 @@ public final class MapperFactory {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        ColorMapper.create(context, userLocale).ifPresent(mappers::add);
-        FormatMapper.create(context, userLocale).ifPresent(mappers::add);
+        ColorMapper.create(userLocale).ifPresent(mappers::add);
+        FormatMapper.create(userLocale).ifPresent(mappers::add);
 
         mappers.add(new TagMapper(userLocale));
 

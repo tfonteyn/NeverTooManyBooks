@@ -178,7 +178,7 @@ public class StartupActivity
     }
 
     private void initStorage() {
-        final int configuredVolume = CoverVolume.getVolume(this);
+        final int configuredVolume = CoverVolume.getVolume();
         final boolean available = CoverVolume.isAvailable(this, configuredVolume);
         try {
             if (available) {
@@ -272,7 +272,7 @@ public class StartupActivity
                             break;
                         }
                         case 1 /* R.string.option_storage_select */: {
-                            CoverVolume.setVolume(this, 0);
+                            CoverVolume.setVolume(0);
                             // and repeat the InitStorage stage with the new volume set
                             nextStage(Stage.InitStorage);
                             break;

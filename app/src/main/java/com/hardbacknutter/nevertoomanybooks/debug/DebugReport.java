@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -147,6 +147,8 @@ public class DebugReport {
     }
 
     public void addPreferences() {
+        // DO NOT use ServiceLocator.getInstance().getSharedPreferences()
+        // We WANT the raw values.
         final Map<String, ?> map = PreferenceManager
                 .getDefaultSharedPreferences(context).getAll();
 
