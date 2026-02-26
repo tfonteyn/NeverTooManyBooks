@@ -144,32 +144,12 @@ public class Prefs
         toolbar.setLayoutParams(lp);
     }
 
-    /**
-     * Create a new Editor for these preferences, through which you can make
-     * modifications to the data in the preferences and atomically commit those
-     * changes back to the SharedPreferences object.
-     *
-     * <p>Note that you <em>must</em> call {@link SharedPreferences.Editor#commit} to have any
-     * changes you perform in the Editor actually show up in the
-     * SharedPreferences.
-     *
-     * @return Returns a new instance of the {@link SharedPreferences.Editor} interface, allowing
-     *         you to modify the values in this SharedPreferences object.
-     */
     @Override
     @NonNull
     public SharedPreferences.Editor edit() {
         return sharedPreferences.edit();
     }
 
-    /**
-     * Checks whether the preferences contains a preference.
-     *
-     * @param key The name of the preference to check.
-     *
-     * @return Returns true if the preference exists in the preferences,
-     *         otherwise false.
-     */
     @Override
     public boolean contains(@NonNull final String key) {
         return sharedPreferences.contains(key);
@@ -189,14 +169,6 @@ public class Prefs
         return sharedPreferences.getStringSet(key, defValues);
     }
 
-    /**
-     * Retrieve a boolean value from the preferences.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return Returns the preference value if it exists, or defValue.
-     */
     @Override
     public boolean getBoolean(@NonNull final String key,
                               final boolean defValue) {
@@ -215,15 +187,6 @@ public class Prefs
         return defValue;
     }
 
-    /**
-     * Retrieve a String value from the preferences.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return Returns the preference value if it exists,
-     *         or defValue (which can be {@code null}.
-     */
     @Override
     @Nullable
     public String getString(@NonNull final String key,
@@ -241,14 +204,6 @@ public class Prefs
         return defValue;
     }
 
-    /**
-     * Retrieve an int value from the preferences.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return Returns the preference value if it exists, or defValue.
-     */
     @Override
     public int getInt(@NonNull final String key,
                       final int defValue) {
@@ -265,6 +220,17 @@ public class Prefs
         return defValue;
     }
 
+    /**
+     * {@code ListPreference} stores the selected {@code int} value as a {@code String}.
+     * This convenience method reads the value as a {@code String}
+     * and parses/returns it as an {@code int}.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist,
+     *                 or if the stored value is somehow invalid
+     *
+     * @return Returns the preference value if it exists, or defValue.
+     */
     public int getIntFromString(@NonNull final String key,
                                 final int defValue) {
         final String value = sharedPreferences.getString(key, null);
@@ -279,14 +245,6 @@ public class Prefs
         }
     }
 
-    /**
-     * Retrieve a long value from the preferences.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return Returns the preference value if it exists, or defValue.
-     */
     @Override
     public long getLong(@NonNull final String key,
                         final long defValue) {
@@ -303,14 +261,6 @@ public class Prefs
         return defValue;
     }
 
-    /**
-     * Retrieve a float value from the preferences.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return Returns the preference value if it exists, or defValue.
-     */
     @Override
     public float getFloat(@NonNull final String key,
                           final float defValue) {
