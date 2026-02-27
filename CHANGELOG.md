@@ -1,3 +1,18 @@
+### 7.14.0
+
+NEW:
+
+- improve performance/responsiveness during concurrent book searches
+
+FIXES:
+
+- #235: import failure when a default bookshelf was set
+- #232: fix 'chip' colors in the search queue for failed searches
+- #229: enhance dnb.de handling to respect the site (robot) guidelines better.
+  Note that searches _might_ take a bit longer.
+
+---
+
 ### 7.13.0
 
 NEW:
