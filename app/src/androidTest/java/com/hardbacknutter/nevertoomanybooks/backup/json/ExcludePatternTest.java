@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -29,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -64,7 +63,7 @@ class ExcludePatternTest
     @Test
     void encoding() {
         final JsonCoder<SharedPreferences> encoder = SharedPreferencesCoder.createEncoder(
-                Prefs.EXCLUDE_WHEN_EXPORTING);
+                Excludes.EXCLUDE_WHEN_EXPORTING);
 
         final JSONObject jsonObject = encoder.encode(preferences);
 

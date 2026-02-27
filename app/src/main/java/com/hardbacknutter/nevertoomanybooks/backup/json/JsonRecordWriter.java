@@ -71,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -206,7 +205,7 @@ public class JsonRecordWriter
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
 
                 final JsonCoder<SharedPreferences> coder =
-                        SharedPreferencesCoder.createEncoder(Prefs.EXCLUDE_WHEN_EXPORTING);
+                        SharedPreferencesCoder.createEncoder(Excludes.EXCLUDE_WHEN_EXPORTING);
                 jsonData.put(RecordType.Preferences.getName(), coder.encode(
                         ServiceLocator.getInstance().getSharedPreferences()));
                 results.preferences = 1;

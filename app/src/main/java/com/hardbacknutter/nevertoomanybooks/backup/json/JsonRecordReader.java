@@ -80,7 +80,6 @@ import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -373,7 +372,7 @@ public class JsonRecordReader
             // The coder itself will set/update the values directly.
             SharedPreferencesCoder.createDecoder(
                                           ServiceLocator.getInstance().getSharedPreferences(),
-                                          Prefs.EXCLUDE_WHEN_IMPORTING)
+                                          Excludes.EXCLUDE_WHEN_IMPORTING)
                                   .decode(jsonRoot);
 
             ServiceLocator.getInstance().onPreferencesUpdated();

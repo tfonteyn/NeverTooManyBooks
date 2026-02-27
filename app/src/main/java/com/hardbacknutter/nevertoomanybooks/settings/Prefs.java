@@ -24,17 +24,12 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
- * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml".
- * <p>
  * This class acts as a wrapper to {@link SharedPreferences}.
  * When reading {@code int/long} and {@code float/double} values from a backup/import
  * the JSON parser will always read/return the 'shortest' type.
@@ -50,33 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * when storing them in SharedPreferences,  with the results that a {@code 0.0} value
  * will be written as {@code 0}, and subsequently treated falsly as an {@code int} by the OS.
  * <p>
- * Dev. note: there are some key definitions and static methods here for historical reasons.
+ * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml".
  */
 public class Prefs
         implements SharedPreferences {
-
-    /** The prefix of all "acra" settings which need to be excluded during import/export. */
-    private static final String EXCLUDE_ACRA_PREFIX = "^acra\\..*";
-
-    /**
-     * Regular expressions for the keys which will be excluded
-     * during an import of the preferences.
-     */
-    public static final List<String> EXCLUDE_WHEN_IMPORTING = List.of(
-            EXCLUDE_ACRA_PREFIX,
-            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\."),
-            Languages.PK_LANG_CREATED_PREFIX.replace(".", "\\.") + ".*"
-    );
-
-    /**
-     * Regular expressions for the keys which will be excluded
-     * during an export of the preferences.
-     */
-    public static final List<String> EXCLUDE_WHEN_EXPORTING = List.of(
-            EXCLUDE_ACRA_PREFIX,
-            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\."),
-            Languages.PK_LANG_CREATED_PREFIX.replace(".", "\\.") + ".*"
-    );
 
     @NonNull
     private final SharedPreferences sharedPreferences;
