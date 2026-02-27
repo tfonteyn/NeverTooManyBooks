@@ -31,17 +31,27 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface PublisherDao
         extends Purgeable, Positional {
+
+    /**
+     * Preference key: whether to normalize the publisher name during pruning.
+     * <p>
+     * Type: {@code boolean}
+     *
+     * @see #pruneList(Context, Collection, Function)
+     * @see #pruneList(Context, Collection, boolean, Function)
+     */
+    String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
 
     /**
      * Get a unique list of all publisher names.
@@ -63,7 +73,9 @@ public interface PublisherDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Publisher> list,
                               @NonNull final Function<Publisher, Locale> localeSupplier) {
-        return pruneList(context, list, Prefs.normalizePublisherName(), localeSupplier);
+        final boolean normalize = ServiceLocator.getInstance().getSharedPreferences()
+                                                .getBoolean(PK_NORMALIZE_PUBLISHER_NAME, false);
+        return pruneList(context, list, normalize, localeSupplier);
     }
 
     /**

@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
@@ -39,11 +40,20 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface TocEntryDao
         extends Purgeable, Positional {
+
+    /**
+     * Preference key: whether to normalize the title during pruning.
+     * <p>
+     * Type: {@code boolean}
+     *
+     * @see #pruneList(Context, Collection, Function)
+     * @see #pruneList(Context, Collection, boolean, Function)
+     */
+    String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
@@ -125,7 +135,9 @@ public interface TocEntryDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<TocEntry> list,
                               @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        return pruneList(context, list, Prefs.normalizeTocEntryName(), localeSupplier);
+        final boolean normalize = ServiceLocator.getInstance().getSharedPreferences()
+                                                .getBoolean(PK_NORMALIZE_TOC_TITLE, false);
+        return pruneList(context, list, normalize, localeSupplier);
     }
 
     /**

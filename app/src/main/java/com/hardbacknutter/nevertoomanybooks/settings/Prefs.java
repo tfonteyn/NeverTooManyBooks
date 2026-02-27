@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -55,10 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  */
 public class Prefs
         implements SharedPreferences {
-
-    private static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
-    private static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
-    private static final String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
 
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     private static final String EXCLUDE_ACRA_PREFIX = "^acra\\..*";
@@ -93,21 +88,6 @@ public class Prefs
      */
     public Prefs(@NonNull final SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
-    }
-
-    public static boolean normalizeSeriesTitle() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(PK_NORMALIZE_SERIES_TITLE, false);
-    }
-
-    public static boolean normalizePublisherName() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(PK_NORMALIZE_PUBLISHER_NAME, false);
-    }
-
-    public static boolean normalizeTocEntryName() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(PK_NORMALIZE_TOC_TITLE, false);
     }
 
     @Override
