@@ -71,7 +71,7 @@ public class UserInterfacePreferenceFragment
     }
 
     private void initLanguage() {
-        final ListPreference p = findPreference(Prefs.PK_UI_LOCALE);
+        final ListPreference p = findPreference(AppLocale.PK_UI_LOCALE);
         //noinspection DataFlowIssue
         p.setDefaultValue(AppLocale.SYSTEM_LANGUAGE);
         p.setEntries(vm.getUiLanguageEntries());

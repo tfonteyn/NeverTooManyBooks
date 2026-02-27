@@ -68,7 +68,7 @@ class ExcludePatternTest
 
         final JSONObject jsonObject = encoder.encode(preferences);
 
-        assertTrue(jsonObject.has(Prefs.PK_UI_LOCALE));
+        assertTrue(jsonObject.has(AppLocale.PK_UI_LOCALE));
 
         assertFalse(jsonObject.has("acra.blah"));
         assertTrue(jsonObject.has("blah.acra"));

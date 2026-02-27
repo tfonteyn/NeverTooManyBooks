@@ -56,14 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 public class Prefs
         implements SharedPreferences {
 
-    /**
-     * The locale the user is running our app in (which can be different from the device).
-     * {@code String}: The literal {@code "system"} or an Android Locale code.
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl
-     */
-    public static final String PK_UI_LOCALE = "ui.locale";
-
     private static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
     private static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
     private static final String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";

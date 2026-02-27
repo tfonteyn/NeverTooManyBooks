@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
@@ -89,7 +89,7 @@ public abstract class BaseDBTest {
 
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()
-                      .putString(Prefs.PK_UI_LOCALE, uiLocale)
+                      .putString(AppLocale.PK_UI_LOCALE, uiLocale)
                       .putString(CoverVolume.PK_VOLUME_INDEX, "0")
 
                       .putBoolean(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)

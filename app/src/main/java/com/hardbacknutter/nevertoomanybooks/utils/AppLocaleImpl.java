@@ -43,7 +43,6 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -272,9 +271,9 @@ public final class AppLocaleImpl
      *         or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
     @NonNull
-    public String getPersistedLocaleSpec() {
+    private String getPersistedLocaleSpec() {
         return ServiceLocator.getInstance().getSharedPreferences()
-                             .getString(Prefs.PK_UI_LOCALE, SYSTEM_LANGUAGE);
+                             .getString(PK_UI_LOCALE, SYSTEM_LANGUAGE);
     }
 
     @Override

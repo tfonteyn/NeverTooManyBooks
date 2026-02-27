@@ -39,6 +39,14 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 public interface AppLocale {
 
     /**
+     * Preference key: The locale the user is running our app in
+     * (which can be different from the device).
+     * <p>
+     * {@code String}: The literal {@code "system"} or an Android Locale code.
+     */
+    String PK_UI_LOCALE = "ui.locale";
+
+    /**
      * Value stored in preferences if the user runs our app in the default device language.
      */
     String SYSTEM_LANGUAGE = "system";
@@ -115,6 +123,11 @@ public interface AppLocale {
     @FunctionalInterface
     interface OnLocaleChangedListener {
 
+        /**
+         * Callback.
+         *
+         * @param context Current context
+         */
         void onLocaleChanged(@NonNull Context context);
     }
 }
