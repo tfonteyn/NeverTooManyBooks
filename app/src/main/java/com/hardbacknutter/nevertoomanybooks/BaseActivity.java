@@ -30,14 +30,63 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.appbar.AppBarLayout;
 
 /**
  * Base class for all Activity's (except the startup and ACRA activity).
  * <p>
- * Provides EdgeToEdge basics and localised-context for the ui-language setting.
+ * Handles EdgeToEdge basics and localised-context for the ui-language setting.
+ * Provides methods to make the system/menu bar scrolling or fixed.
  */
 public abstract class BaseActivity
         extends AppCompatActivity {
+
+    /**
+     * Preference key: Whether to use scrolling or fixed  system/menu bars.
+     * <p>
+     * Type: stringified int
+     * <p>
+     * {@code 0}: scroll
+     * {@code 1}: fixed
+     */
+    public static final String PK_UI_TOP_MENU = "ui.screen.systembars.fixed";
+
+    /**
+     * Check if the system/menu bar should be scrolling or fixed.
+     *
+     * @return {@code true} for fixed, {@code false} for scrolling
+     *
+     * @see #applyScrollFlags(Toolbar)
+     */
+    static boolean useFixedHeaderAndFooter() {
+        // 0 -> scroll
+        // 1 -> fixed
+        return 0 != ServiceLocator.getInstance().getSharedPreferences()
+                                  .getIntFromString(PK_UI_TOP_MENU, 0);
+    }
+
+    /**
+     * Apply the scroll flags to the toolbar according to use preferences.
+     *
+     * @param toolbar to handle
+     *
+     * @see #useFixedHeaderAndFooter()
+     */
+    static void applyScrollFlags(@NonNull final Toolbar toolbar) {
+        final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
+                toolbar.getLayoutParams();
+        if (useFixedHeaderAndFooter()) {
+            lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
+        } else {
+            lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                              | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                              | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+            );
+        }
+        toolbar.setLayoutParams(lp);
+    }
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {

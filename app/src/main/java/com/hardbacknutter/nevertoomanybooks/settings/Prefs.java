@@ -23,9 +23,6 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-
-import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.List;
 import java.util.Map;
@@ -66,8 +63,6 @@ public class Prefs
      * @see com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl
      */
     public static final String PK_UI_LOCALE = "ui.locale";
-
-    static final String PK_UI_TOP_MENU = "ui.screen.systembars.fixed";
 
     private static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
     private static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
@@ -121,27 +116,6 @@ public class Prefs
     public static boolean normalizeTocEntryName() {
         return ServiceLocator.getInstance().getSharedPreferences()
                              .getBoolean(PK_NORMALIZE_TOC_TITLE, false);
-    }
-
-    public static boolean isFixedHeaderAndFooter() {
-        // 0 -> scroll
-        // 1 -> fixed
-        return 0 != ServiceLocator.getInstance().getSharedPreferences()
-                                  .getIntFromString(PK_UI_TOP_MENU, 0);
-    }
-
-    public static void applyScrollFlags(@NonNull final Toolbar toolbar) {
-        final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
-                toolbar.getLayoutParams();
-        if (isFixedHeaderAndFooter()) {
-            lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
-        } else {
-            lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
-                              | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-                              | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
-            );
-        }
-        toolbar.setLayoutParams(lp);
     }
 
     @Override

@@ -36,6 +36,7 @@ import androidx.preference.Preference;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -122,7 +123,7 @@ public class UserInterfacePreferenceFragment
     }
 
     private void initTopMenuBehaviour() {
-        final Preference p = findPreference(Prefs.PK_UI_TOP_MENU);
+        final Preference p = findPreference(BaseActivity.PK_UI_TOP_MENU);
         //noinspection DataFlowIssue
         p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
         p.setOnPreferenceChangeListener((preference, newValue) -> {
