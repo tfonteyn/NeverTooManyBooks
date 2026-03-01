@@ -67,7 +67,7 @@ public class SearchCoordinator
 
     protected final MutableLiveData<LiveDataEvent<TaskProgress>>
             searchCoordinatorProgress = new MutableLiveData<>();
-    protected final MutableLiveData<LiveDataEvent<Boolean>>
+    private final MutableLiveData<LiveDataEvent<Boolean>>
             searchCoordinatorCancelled = new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<Boolean>>
             searchCoordinatorFinished = new MutableLiveData<>();
