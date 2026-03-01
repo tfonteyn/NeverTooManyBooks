@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * The final result from a book search.
@@ -64,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
  */
 public final class BookSearchResult {
 
+    private static final String TAG = "BookSearchResult";
+
     /** Routing purposes. */
     private final int searchId;
     /** Routing purposes. */
@@ -77,6 +80,9 @@ public final class BookSearchResult {
 
     @Nullable
     private final EditBookOutput editBookOutput;
+
+    @NonNull
+    private final Type type;
 
     /**
      * {@link SearchCoordinator}.
@@ -97,6 +103,7 @@ public final class BookSearchResult {
         this.scanMode = scanMode;
         this.errorsByEngineId = errorsByEngineId;
         this.editBookOutput = null;
+        this.type = Type.Search;
     }
 
     /**
@@ -105,14 +112,14 @@ public final class BookSearchResult {
      *
      * @param editBookOutput report
      */
-    public BookSearchResult(@Nullable final EditBookOutput editBookOutput) {
+    public BookSearchResult(@NonNull final EditBookOutput editBookOutput) {
         this.searchId = 0;
         this.book = null;
         this.scanMode = null;
         this.errorsByEngineId = Map.of();
         this.editBookOutput = editBookOutput;
+        this.type = Type.Update;
     }
-
 
     /**
      * {@link SearchCoordinator}.
@@ -224,14 +231,22 @@ public final class BookSearchResult {
      * {@link SearchBookUpdatesViewModel}.
      * Get the final report of a search.
      *
-     * @return report
-     *
-     * @throws NullPointerException when the expected result is <strong>not</strong> the
-     *                              final result of a {@link SearchBookUpdatesViewModel} execution.
+     * @return report; can be {@code null} if for example the search was cancelled
      */
-    @NonNull
+    @Nullable
     public EditBookOutput getEditBookOutput() {
-        return Objects.requireNonNull(editBookOutput, "editBookOutput was null");
+        // GitHub #236: we had a null here at a place where we should not have had a null.
+        // Suspicion is LiveData and the cancellation queue being pulled more than once.
+        // Hence, dump the state and a stack trace each time we're null for now.
+        if (editBookOutput == null) {
+            LoggerFactory.getLogger().e(TAG, this, new Throwable());
+        }
+        return editBookOutput;
+    }
+
+    @NonNull
+    public Type getType() {
+        return type;
     }
 
     @Override
@@ -243,7 +258,8 @@ public final class BookSearchResult {
             return false;
         }
         final BookSearchResult that = (BookSearchResult) o;
-        return searchId == that.searchId
+        return type == that.type
+               && searchId == that.searchId
                && scanMode == that.scanMode
                && Objects.equals(book, that.book)
                && Objects.equals(errorsByEngineId, that.errorsByEngineId)
@@ -252,18 +268,24 @@ public final class BookSearchResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(searchId, scanMode, book, errorsByEngineId, editBookOutput);
+        return Objects.hash(type, searchId, scanMode, book, errorsByEngineId, editBookOutput);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BookSearchResult{"
-               + "searchId=" + searchId
+               + "type=" + type
+               + ", searchId=" + searchId
                + ", scanMode=" + scanMode
                + ", errorsByEngineId=`" + errorsByEngineId + '`'
                + ", book=" + book
                + ", editBookOutput=" + editBookOutput
                + '}';
+    }
+
+    public enum Type {
+        Search,
+        Update
     }
 }
