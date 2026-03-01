@@ -46,6 +46,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
@@ -144,18 +145,7 @@ public class SearchBookUpdatesFragment
         vm.onSearchFinished().observe(getViewLifecycleOwner(), this::onOneDone);
 
         // User cancelled the update
-        vm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
-            // Unlikely to be seen...
-            Snackbar.make(vb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                    .show();
-            // FIXME: this is a kludge...
-            // report up what work did get done + the last book we did.
-            final BookSearchResult result = vm.pollCancelledQueue();
-            if (result != null) {
-                onAllDone(LiveDataEvent.of(result));
-            }
-        });
-
+        vm.onSearchCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
         // The full list was processed
         vm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
         // Something terrible happened and we're aborting
@@ -261,10 +251,45 @@ public class SearchBookUpdatesFragment
         closeProgressDialog();
 
         message.process(result -> {
-            //noinspection DataFlowIssue
-            getActivity().setResult(Activity.RESULT_OK,
-                                    result.getEditBookOutput().createResultIntent());
-            getActivity().finish();
+            @Nullable
+            final EditBookOutput editBookOutput = result.getEditBookOutput();
+            if (editBookOutput != null) {
+                //noinspection DataFlowIssue
+                getActivity().setResult(Activity.RESULT_OK, editBookOutput.createResultIntent());
+                getActivity().finish();
+            } else {
+                // We should never get here, flw...
+                //noinspection DataFlowIssue
+                getActivity().setResult(Activity.RESULT_CANCELED);
+                getActivity().finish();
+            }
+        });
+    }
+
+    private void onCancelled(@NonNull final LiveDataEvent<Boolean> message) {
+        closeProgressDialog();
+
+        message.process(ignoreTrue -> {
+            // We *should* get the last result which was pushed onto the queue when
+            // the user tapped cancel, but due to LiveData, we *might* come here
+            // twice and find an empty queue. Hence, we *must* guard against
+            // not only the queue being empty, but also against the item polled
+            // having no EditBookOutput (it being of a single result instead of the list-result)
+            // ==> see the BookSearchResult class docs
+            final BookSearchResult result = vm.pollCancelledQueue();
+            if (result != null) {
+                @Nullable
+                final EditBookOutput editBookOutput = result.getEditBookOutput();
+                if (editBookOutput != null) {
+                    // We should not get here, but adding this code makes us future proof.
+                    //noinspection DataFlowIssue
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            editBookOutput.createResultIntent());
+                    getActivity().finish();
+                    return;
+                }
+            }
+            showMessageAndFinishActivity(getString(R.string.cancelled));
         });
     }
 
