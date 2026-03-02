@@ -68,7 +68,7 @@ public class SearchBookByIsbnViewModel
     /** The batch mode queue. */
     private final IsbnQueue scanQueue = new IsbnQueue();
 
-    private final MutableLiveData<Iterator<IsbnQueue.Item>> scanQueueUpdate =
+    private final MutableLiveData<Iterator<QueuedItem<ISBN>>> scanQueueUpdate =
             new MutableLiveData<>();
 
     @NonNull
@@ -221,7 +221,7 @@ public class SearchBookByIsbnViewModel
     }
 
     @NonNull
-    LiveData<Iterator<IsbnQueue.Item>> onScanQueueUpdate() {
+    LiveData<Iterator<QueuedItem<ISBN>>> onScanQueueUpdate() {
         return scanQueueUpdate;
     }
 
@@ -230,7 +230,7 @@ public class SearchBookByIsbnViewModel
     }
 
     @NonNull
-    Iterator<IsbnQueue.Item> getScanQueue() {
+    Iterator<QueuedItem<ISBN>> getScanQueue() {
         return scanQueue.iterator();
     }
 
@@ -239,19 +239,17 @@ public class SearchBookByIsbnViewModel
      * <p>
      * <strong>Does</strong> trigger {@link #onScanQueueUpdate}.
      *
-     * @param context     current context
      * @param items       to add
      * @param startSearch method
      *
      * @return {@code true} if at least one item was added and a search started for it
      */
-    boolean addToQueueAndStartSearch(@NonNull final Context context,
-                                     @NonNull final List<IsbnQueue.Item> items,
+    boolean addToQueueAndStartSearch(@NonNull final List<QueuedItem<ISBN>> items,
                                      @NonNull final Function<ISBN, Integer> startSearch) {
         boolean atLeastOneStarted = false;
         synchronized (scanQueue) {
-            for (final IsbnQueue.Item item : items) {
-                final int searchId = addToQueueAndStartSearch(context, item, startSearch);
+            for (final QueuedItem<ISBN> item : items) {
+                final int searchId = addToQueueAndStartSearch(item, startSearch);
                 if (searchId > 0) {
                     atLeastOneStarted = true;
                 }
@@ -269,7 +267,6 @@ public class SearchBookByIsbnViewModel
      * <p>
      * Does <strong>NOT</strong> trigger {@link #onScanQueueUpdate}.
      *
-     * @param context     current context
      * @param item        to add
      * @param startSearch method
      *
@@ -278,21 +275,20 @@ public class SearchBookByIsbnViewModel
      *         This is not necessarily an error;
      *         {@link #SEARCH_DUPLICATE_ISBN} if the item ISBN was already present.
      */
-    int addToQueueAndStartSearch(@NonNull final Context context,
-                                 @NonNull final IsbnQueue.Item item,
+    int addToQueueAndStartSearch(@NonNull final QueuedItem<ISBN> item,
                                  @NonNull final Function<ISBN, Integer> startSearch) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "addToQueueAndStartSearch", "item=" + item);
         }
         synchronized (scanQueue) {
             // duplicates are rejected
-            if (scanQueue.contains(item.getIsbn())) {
+            if (scanQueue.contains(item.getCode())) {
                 return SEARCH_DUPLICATE_ISBN;
             }
             // FIRST ADD at the end of the queue.
             scanQueue.add(item);
             // THEN START the search.
-            final int searchId = startSearch.apply(item.getIsbn());
+            final int searchId = startSearch.apply(item.getCode());
             if (searchId > 0) {
                 item.setSearchId(searchId);
                 scanQueueUpdate.setValue(scanQueue.iterator());
@@ -309,21 +305,19 @@ public class SearchBookByIsbnViewModel
      * <p>
      * <strong>Does</strong> trigger {@link #onScanQueueUpdate}.
      *
-     * @param context     current context
      * @param startSearch method
      *
      * @return {@code true} if at least one search was started
      */
-    boolean startQueueSearches(@NonNull final Context context,
-                               @NonNull final Function<ISBN, Integer> startSearch) {
+    boolean startQueueSearches(@NonNull final Function<ISBN, Integer> startSearch) {
         boolean atLeastOneStarted = false;
         synchronized (scanQueue) {
-            final Iterator<IsbnQueue.Item> list = scanQueue.iterator();
+            final Iterator<QueuedItem<ISBN>> list = scanQueue.iterator();
             while (list.hasNext()) {
-                final IsbnQueue.Item item = list.next();
+                final QueuedItem<ISBN> item = list.next();
                 // not started yet?
                 if (!item.isSearching()) {
-                    final int searchId = startSearch.apply(item.getIsbn());
+                    final int searchId = startSearch.apply(item.getCode());
                     if (searchId > 0) {
                         item.setSearchId(searchId);
                         atLeastOneStarted = true;
@@ -365,12 +359,10 @@ public class SearchBookByIsbnViewModel
      * <p>
      * <strong>Does</strong> trigger {@link #onScanQueueUpdate()}.
      *
-     * @param context     Current context
      * @param coordinator used to cancel searches
      * @param clear       flag
      */
-    void clearQueueAndCancelSearches(@NonNull final Context context,
-                                     @NonNull final SearchCoordinator coordinator,
+    void clearQueueAndCancelSearches(@NonNull final SearchCoordinator coordinator,
                                      final boolean clear) {
         synchronized (scanQueue) {
             coordinator.cancel();
@@ -386,13 +378,11 @@ public class SearchBookByIsbnViewModel
      * <p>
      * Does <strong>NOT</strong> trigger {@link #onScanQueueUpdate()}.
      *
-     * @param context     Current context
      * @param coordinator used to cancel searches
      * @param item        to remove/cancel
      */
-    void removeFromQueueAndCancelSearch(@NonNull final Context context,
-                                        @NonNull final SearchCoordinator coordinator,
-                                        @NonNull final IsbnQueue.Item item) {
+    void removeFromQueueAndCancelSearch(@NonNull final SearchCoordinator coordinator,
+                                        @NonNull final QueuedItem<ISBN> item) {
         synchronized (scanQueue) {
             // don't care about the result, we're discarding the whole item
             final int searchId = item.getSearchId();

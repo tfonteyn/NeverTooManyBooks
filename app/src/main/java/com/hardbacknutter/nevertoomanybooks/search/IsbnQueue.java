@@ -24,7 +24,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,27 +35,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Most methods will need external synchronization.
  */
 class IsbnQueue {
-
-    private static final String TAG = "IsbnQueue";
 
     /** Storage key into preferences for the current queue. */
     private static final String PK_SCAN_QUEUE = "scan.queue";
@@ -66,7 +58,7 @@ class IsbnQueue {
     private static final String CSV = ",";
 
     @SuppressWarnings("TypeMayBeWeakened")
-    private final Queue<Item> q = new ConcurrentLinkedQueue<>();
+    private final Queue<QueuedItem<ISBN>> q = new ConcurrentLinkedQueue<>();
 
     /**
      * Read the previously stored list of items from the preferences.
@@ -74,7 +66,7 @@ class IsbnQueue {
      * @return list
      */
     @NonNull
-    static List<Item> readFromPreferences() {
+    static List<QueuedItem<ISBN>> readFromPreferences() {
         final String[] isbnList = ServiceLocator.getInstance().getSharedPreferences()
                                                 .getString(PK_SCAN_QUEUE, "")
                                                 .split(CSV);
@@ -103,8 +95,8 @@ class IsbnQueue {
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    static List<Item> readFromFile(@NonNull final Context context,
-                                   @NonNull final Uri uri)
+    static List<QueuedItem<ISBN>> readFromFile(@NonNull final Context context,
+                                         @NonNull final Uri uri)
             throws IOException {
         //TODO: should be run as background task, and use LiveData to update the view...
         // ... but it's so fast for any reasonable length list....
@@ -124,7 +116,7 @@ class IsbnQueue {
     }
 
     @NonNull
-    private static List<Item> readFromStream(@NonNull final Stream<String> stream) {
+    private static List<QueuedItem<ISBN>> readFromStream(@NonNull final Stream<String> stream) {
         final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
         return stream
                 // allow multiple csv
@@ -137,12 +129,12 @@ class IsbnQueue {
                 // valid codes only
                 .map(s -> new ISBN(s, strictIsbn))
                 .filter(ISBN::isValid)
-                .map(Item::new)
+                .map(QueuedItem::new)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    Iterator<Item> iterator() {
+    Iterator<QueuedItem<ISBN>> iterator() {
         return q.iterator();
     }
 
@@ -154,7 +146,7 @@ class IsbnQueue {
      * @return item
      */
     @NonNull
-    Optional<Item> bySearchId(final int searchId) {
+    Optional<QueuedItem<ISBN>> bySearchId(final int searchId) {
         return q.stream()
                 .filter(item -> item.getSearchId() == searchId)
                 .findAny();
@@ -168,7 +160,7 @@ class IsbnQueue {
      * @return {@code true} if already present
      */
     boolean contains(@NonNull final ISBN isbn) {
-        return q.stream().anyMatch(qi -> qi.isbn.equals(isbn));
+        return q.stream().anyMatch(qi -> qi.getCode().equals(isbn));
     }
 
     /**
@@ -178,7 +170,7 @@ class IsbnQueue {
      *
      * @param item to add
      */
-    void add(@NonNull final Item item) {
+    void add(@NonNull final QueuedItem<ISBN> item) {
         q.add(item);
         writeToPreferences();
     }
@@ -191,7 +183,7 @@ class IsbnQueue {
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean remove(@NonNull final Item item) {
+    boolean remove(@NonNull final QueuedItem<ISBN> item) {
         final boolean removed = q.remove(item);
         if (removed) {
             writeToPreferences();
@@ -214,7 +206,7 @@ class IsbnQueue {
      * @return flag
      */
     boolean isSearching() {
-        return q.stream().anyMatch(Item::isSearching);
+        return q.stream().anyMatch(QueuedItem::isSearching);
     }
 
     /**
@@ -223,87 +215,11 @@ class IsbnQueue {
      */
     private void writeToPreferences() {
         final String list = q.stream()
-                             .map(Item::getIsbn)
+                             .map(QueuedItem::getCode)
                              .map(ISBN::asText)
                              .collect(Collectors.joining(CSV));
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit().putString(PK_SCAN_QUEUE, list).apply();
     }
 
-    static class Item {
-        @NonNull
-        private final ISBN isbn;
-        /** Set when the search is started. */
-        private int searchId;
-        /** Set whn the result is in. */
-        @Nullable
-        private BookSearchResult result;
-
-        Item(@NonNull final ISBN isbn) {
-            this.isbn = isbn;
-        }
-
-        @NonNull
-        ISBN getIsbn() {
-            return isbn;
-        }
-
-        /**
-         * Is there an active search for this item.
-         *
-         * @return flag
-         */
-        boolean isSearching() {
-            return searchId > 0 && result == null;
-        }
-
-        int getSearchId() {
-            return searchId;
-        }
-
-        void setSearchId(final int searchId) {
-            this.searchId = searchId;
-        }
-
-        @Nullable
-        BookSearchResult getResult() {
-            return result;
-        }
-
-        void setResult(@NonNull final BookSearchResult result) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "result=" + result);
-            }
-            this.result = result;
-        }
-
-        @Override
-        public boolean equals(@Nullable final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            final Item item = (Item) o;
-            return searchId == item.searchId
-                   && Objects.equals(isbn, item.isbn)
-                   && Objects.equals(result, item.result);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(isbn, searchId, result);
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "Entry{"
-                   + "isbn=" + isbn
-                   + ", searchId=" + searchId
-                   + ", result=" + result
-                   + '}';
-        }
-    }
 }

@@ -205,8 +205,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     <li>User scans a code</li>
  *     <li>{@link #onBarcodeScanned(String)}</li>
  *     <li>{@link #preSearchAddToQueue(ISBN)}</li>
- *     <li>{@link SearchBookByIsbnViewModel#addToQueueAndStartSearch(Context, IsbnQueue.Item,
- *                                                                   Function)}</li>
+ *     <li>{@link SearchBookByIsbnViewModel#addToQueueAndStartSearch(QueuedItem, Function)}</li>
  *     <li>scanner starts again</li>
  * </ol>
  * <ol>
@@ -296,8 +295,7 @@ public class SearchBookByIsbnFragment
                                         // option 0: Save for later
                                         // option 1: Clear queue
                                         final boolean clear = option == 1;
-                                        vm.clearQueueAndCancelSearches(getContext(), coordinator,
-                                                                       clear);
+                                        vm.clearQueueAndCancelSearches(coordinator, clear);
                                         //noinspection DataFlowIssue
                                         getActivity().setResult(Activity.RESULT_OK,
                                                                 createResultIntent());
@@ -392,11 +390,11 @@ public class SearchBookByIsbnFragment
 
         vb.btnClearQueue.setOnClickListener(v -> {
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            vm.clearQueueAndCancelSearches(v.getContext(), coordinator, true);
+            vm.clearQueueAndCancelSearches(coordinator, true);
         });
 
         final Context context = getContext();
-        final List<IsbnQueue.Item> items = IsbnQueue.readFromPreferences();
+        final List<QueuedItem<ISBN>> items = IsbnQueue.readFromPreferences();
         if (items.isEmpty()) {
             afterOnViewCreated();
         } else {
@@ -835,10 +833,7 @@ public class SearchBookByIsbnFragment
      * @param code to search for
      */
     private void preSearchAddToQueue(@NonNull final ISBN code) {
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        final int searchId = vm.addToQueueAndStartSearch(context, new IsbnQueue.Item(code),
-                                                         this::startSearch);
+        final int searchId = vm.addToQueueAndStartSearch(new QueuedItem<>(code), this::startSearch);
 
         // REMINDER: We have a queue, but we can get here for any of these:
         // - manual entry / single scan (duplicates n/a)
@@ -875,7 +870,8 @@ public class SearchBookByIsbnFragment
 
         // ScanMode.Continuous / ScanMode.Batch
         // Starting a new search failed
-        new MaterialAlertDialogBuilder(context)
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.progress_msg_searching)
                 .setMessage(R.string.error_book_search_failed)
                 .setNegativeButton(R.string.action_stop_scanning, (d, w) -> {
@@ -913,13 +909,11 @@ public class SearchBookByIsbnFragment
      *
      * @param items to search for
      */
-    private void startSearch(@NonNull final List<IsbnQueue.Item> items) {
+    private void startSearch(@NonNull final List<QueuedItem<ISBN>> items) {
         // Do NOT switch on the ScanMode.Batch or otherwise
         // but DO hide the progress
         setEnableProgressMessages(false);
-        //noinspection DataFlowIssue
-        final boolean searchStarted = vm.addToQueueAndStartSearch(
-                getContext(), items, this::startSearch);
+        final boolean searchStarted = vm.addToQueueAndStartSearch(items, this::startSearch);
 
         if (searchStarted) {
             Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
@@ -1106,7 +1100,7 @@ public class SearchBookByIsbnFragment
     private void onOpenUri(@NonNull final Uri uri) {
         try {
             //noinspection DataFlowIssue
-            final List<IsbnQueue.Item> items = IsbnQueue.readFromFile(getContext(), uri);
+            final List<QueuedItem<ISBN>> items = IsbnQueue.readFromFile(getContext(), uri);
             if (!items.isEmpty()) {
                 startSearch(items);
             }
@@ -1121,7 +1115,7 @@ public class SearchBookByIsbnFragment
      *
      * @param list to display; can be empty
      */
-    private void onQueueUpdated(@NonNull final Iterator<IsbnQueue.Item> list) {
+    private void onQueueUpdated(@NonNull final Iterator<QueuedItem<ISBN>> list) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onQueueUpdated");
         }
@@ -1132,7 +1126,7 @@ public class SearchBookByIsbnFragment
         }
 
         while (list.hasNext()) {
-            final IsbnQueue.Item item = list.next();
+            final QueuedItem<ISBN> item = list.next();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 LoggerFactory.getLogger().d(TAG, "onQueueUpdated", "item=" + item);
@@ -1142,7 +1136,7 @@ public class SearchBookByIsbnFragment
             // RTL-friendly Chip Layout
             chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
             chip.setTag(item);
-            chip.setText(item.getIsbn().asText());
+            chip.setText(item.getCode().asText());
             chip.setCheckable(false);
             chip.setOnCloseIconClickListener(this::removeFromQueue);
             chip.setOnClickListener(this::onQueueItemClicked);
@@ -1197,7 +1191,8 @@ public class SearchBookByIsbnFragment
      * @param chip clicked
      */
     private void onQueueItemClicked(@NonNull final View chip) {
-        final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
+        @SuppressWarnings("unchecked")
+        final QueuedItem<ISBN> item = (QueuedItem<ISBN>) chip.getTag();
         @Nullable
         final BookSearchResult result = item.getResult();
         final boolean hasErrors = result != null && result.hasErrors();
@@ -1214,7 +1209,7 @@ public class SearchBookByIsbnFragment
         final String info;
         if (hasBook) {
             final StringJoiner sj = new StringJoiner("\n");
-            sj.add(item.getIsbn().asText());
+            sj.add(item.getCode().asText());
 
             final Book book = result.getBook();
             final Author primaryAuthor = book.getPrimaryAuthor();
@@ -1227,7 +1222,7 @@ public class SearchBookByIsbnFragment
         } else {
             // No result (yet); the search is ongoing
             // or there was a result, but not enough data to constitute a Book
-            info = item.getIsbn().asText();
+            info = item.getCode().asText();
         }
         dvb.info.setText(info);
 
@@ -1319,10 +1314,10 @@ public class SearchBookByIsbnFragment
      * @param chip to remove
      */
     private void removeFromQueue(@NonNull final View chip) {
-        final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
+        @SuppressWarnings("unchecked")
+        final QueuedItem<ISBN> item = (QueuedItem<ISBN>) chip.getTag();
         // remove but update the view manually to avoid flicker
-        //noinspection DataFlowIssue
-        vm.removeFromQueueAndCancelSearch(getContext(), coordinator, item);
+        vm.removeFromQueueAndCancelSearch(coordinator, item);
         vb.queue.removeView(chip);
         updateQueueViewsVisibility();
     }
