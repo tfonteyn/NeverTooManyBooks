@@ -146,9 +146,10 @@ public class SearchBookUpdatesFragment
 
         // User cancelled the update
         vm.onSearchCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+
         // The full list was processed
         vm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
-        // Something terrible happened and we're aborting
+        // There was an Exception thrown during the search and we're aborting
         vm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
 
         final FloatingActionButton fab = getFab();

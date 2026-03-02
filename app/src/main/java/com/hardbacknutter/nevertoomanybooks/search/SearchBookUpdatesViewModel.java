@@ -125,11 +125,25 @@ public class SearchBookUpdatesViewModel
     private int currentCursorCount;
     private int cachedSize;
 
+    /**
+     * Individual searches report back via the {@link SearchCoordinator} observables.
+     * <p>
+     * This observable reports back when the entire list has finished with some degree of success.
+     *
+     * @return final/complete result
+     */
     @NonNull
     LiveData<LiveDataEvent<BookSearchResult>> onAllDone() {
         return listFinished;
     }
 
+    /**
+     * Individual searches report back via the {@link SearchCoordinator} observables.
+     * <p>
+     * This observable reports back when there was an overal failure and we had to abort.
+     *
+     * @return final/complete result
+     */
     @NonNull
     LiveData<LiveDataEvent<Throwable>> onAbort() {
         return listFailed;
@@ -295,7 +309,7 @@ public class SearchBookUpdatesViewModel
 
     /**
      * Update the covers {@link SyncAction}.
-     * Does nothing if the field ws not actually added before.
+     * Does nothing if the field was not actually added before.
      *
      * @param action to set
      */
@@ -500,9 +514,8 @@ public class SearchBookUpdatesViewModel
 
     /**
      * Process the search-result data for one book.
-     *
-     * @param context    Current context
-     * @param remoteBook results of the search
+     * <p>
+     * Indirectly called by the observable {@link SearchCoordinator#onSearchFinished()}.
      */
     @UiThread
     void processOne(@NonNull final Context context,
@@ -546,7 +559,6 @@ public class SearchBookUpdatesViewModel
                 this::postSearch);
     }
 
-
     /**
      * Clean-up up and report the final outcome.
      * <p>
@@ -586,8 +598,10 @@ public class SearchBookUpdatesViewModel
                                                                  lastBookIdProcessed);
         final BookSearchResult result = new BookSearchResult(editBookOutput);
         if (success) {
+            // Bypass the SearchCoordinator, and report the final result directly.
             listFinished.setValue(LiveDataEvent.of(result));
         } else {
+            // Use the standard SearchCoordinator queue reporting.
             pushResultCanceled(result);
         }
     }
