@@ -344,7 +344,7 @@
     <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
     <string name="option_isbn_strict">ISBN estrito</string>
-    <string name="confirm_leave_isbn_search">Existem pesquisas em curso e/ou resultados não guardados.</string>
+    <string name="confirm_leave_code_search">Existem pesquisas em curso e/ou resultados não guardados.</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
     <string name="confirm_delete_style">Excluir o estilo “%1$s”?</string>
     <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de as fundir?</string>

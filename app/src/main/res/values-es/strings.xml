@@ -183,7 +183,7 @@
     <string name="confirm_rebuild_orderby_columns">Esto reconstruirá los datos de clasificación cuando se reinicie la aplicación. ¿Estás seguro de que quieres continuar?</string>
     <string name="confirm_registration_benefits">Esta característica se beneficia del registro con %1$s. ¿Desea ver más información o deshabilitar este mensaje?\nPuede encontrar esta información más adelante en la sección «%2$s» en la configuración.</string>
     <string name="confirm_registration_required">Esta función requiere registro con %1$s. ¿Te gustaría ver más información?</string>
-    <string name="confirm_leave_isbn_search">Hay búsquedas en curso y/o resultados no guardados.</string>
+    <string name="confirm_leave_code_search">Hay búsquedas en curso y/o resultados no guardados.</string>
     <string name="confirm_remove_toc_entry">¿Eliminar el título «%1$s» de %2$s este libro?</string>
     <string name="confirm_scope_for_change">Has cambiado:\n «%1$s»\n a\n «%2$s»\n\n¿Cómo desea aplicar este cambio?\nNota: La opción «%3$s» se aplicará al instante. Si elige «%4$s», se creará un nuevo %5$s.</string>
     <string name="confirm_scope_for_delete">Eliminar el título «%1$s» por %2$s.\n\n¿Cómo desea aplicar este cambio?\nADVERTENCIA: ¡La opción «%3$s» no se puede deshacer!</string>

@@ -172,7 +172,7 @@
     <string name="confirm_delete_toc_entry_from_x_books">Radera ”%1$s” av %2$s?\n\nDen kommer att tas bort från %3$s. Böckerna själva kommer inte att raderas.</string>
     <string name="confirm_duplicate_book_message">Boken du försöker lägga till finns redan i databasen. Är du säker på att du vill lägga till en kopia till?</string>
     <string name="confirm_email_file">Vill du skicka den här filen som ett e-postbilaga?</string>
-    <string name="confirm_leave_isbn_search">Det finns pågående sökningar och/eller osparade resultat.</string>
+    <string name="confirm_leave_code_search">Det finns pågående sökningar och/eller osparade resultat.</string>
     <string name="confirm_merge_authors">Författaren du ändrar finns redan. Vill du slå ihop dem?</string>
     <string name="confirm_merge_bookshelves">Bokhyllan du ändrar finns redan. Vill du slå ihop dem?</string>
     <string name="confirm_merge_publishers">Förlaget du ändrar finns redan. Vill du slå ihop dem?</string>

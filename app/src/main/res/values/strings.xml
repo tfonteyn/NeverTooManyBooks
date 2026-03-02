@@ -1006,8 +1006,8 @@
     <string name="confirm_continue">Are you sure you want to continue?</string>
     <!-- Message shown when the user is editing and presses 'back' before saving. -->
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
-    <!-- Message shown when the user is searching for ISBN codes in batch-mode, and presses 'back'. -->
-    <string name="confirm_leave_isbn_search">There are ongoing searches and/or unsaved results.</string>
+    <!-- Message shown when the user is searching for ISBN or other codes in batch-mode, and presses 'back'. -->
+    <string name="confirm_leave_code_search">There are ongoing searches and/or unsaved results.</string>
 
     <!-- Param 1: book title
          Param 2: author name -->

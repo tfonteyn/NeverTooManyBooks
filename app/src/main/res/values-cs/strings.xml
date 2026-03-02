@@ -192,7 +192,7 @@
     <string name="confirm_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat?</string>
     <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s. Chcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
-    <string name="confirm_leave_isbn_search">Probíhá vyhledávání a/nebo nejsou uloženy výsledky.</string>
+    <string name="confirm_leave_code_search">Probíhá vyhledávání a/nebo nejsou uloženy výsledky.</string>
     <string name="confirm_remove_toc_entry">Odebrat z této knihy titul „%1$s“ od autora %2$s?</string>
     <string name="confirm_scope_for_change">Změnili jste:
 \n „%1$s“

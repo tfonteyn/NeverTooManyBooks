@@ -262,7 +262,7 @@
     <string name="menu_search_updates">Busca de atualizações</string>
     <string name="action_stop_searching">Parar de pesquisar</string>
     <string name="action_save_for_later">Salvar para depois</string>
-    <string name="confirm_leave_isbn_search">Há pesquisas em andamento e/ou resultados não salvos.</string>
+    <string name="confirm_leave_code_search">Há pesquisas em andamento e/ou resultados não salvos.</string>
     <string name="site_description_polish">Polonês</string>
     <string name="warning_delete_default_bookshelf">Esta é a sua estante padrão. Se você apagar, a nova será: “%1$s”.\n\nUse “%2$s” no menu principal para escolher outra estante padrão.</string>
     <string name="action_set_as_default">Definir como padrão</string>

@@ -205,7 +205,7 @@
     <string name="lbl_wikidata_claim_author_id">Wikidata “claim/P” kods autora id</string>
     <string name="action_stop_searching">Pārtrauciet meklēšanu</string>
     <string name="action_save_for_later">Saglabāt vēlāk</string>
-    <string name="confirm_leave_isbn_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
+    <string name="confirm_leave_code_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
     <string name="lbl_author_role_foreword">Priekšvārds</string>
     <string name="lbl_author_role_afterword">Pēcvārds</string>
     <string name="lbl_image_2">Attēls 3</string>

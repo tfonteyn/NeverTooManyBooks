@@ -864,7 +864,7 @@
     <string name="pt_fetch_author_info">獲取作者資訊</string>
     <string name="pt_fetch_author_info_using_site_x">從 %1$s 取得作者信息</string>
     <string name="lbl_wikidata_claim_author_id">作者 ID 的 Wikidata「claim/P」代碼</string>
-    <string name="confirm_leave_isbn_search">有進行中的搜尋和/或為未儲存的結果。</string>
+    <string name="confirm_leave_code_search">有進行中的搜尋和/或為未儲存的結果。</string>
     <string name="action_save_for_later">儲存以便稍後處理</string>
     <string name="lbl_author_role_foreword">前言</string>
     <string name="lbl_author_role_afterword">後記</string>

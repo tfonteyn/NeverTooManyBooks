@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -721,7 +722,7 @@
     <string name="option_lend_out_book">Požičať…</string>
     <string name="option_goto_next_book_without_cover">Preskočiť na nasledujúcu knihu bez obálky</string>
     <string name="option_search_books_in_series">Knihy v tejto sérii</string>
-    <string name="confirm_leave_isbn_search">Prebieha vyhľadávanie a/alebo sú neuložené výsledky.</string>
+    <string name="confirm_leave_code_search">Prebieha vyhľadávanie a/alebo sú neuložené výsledky.</string>
     <string name="confirm_remove_toc_entry">Odstrániť názov „%1$s“ od %2$s z tejto knihy?</string>
     <string name="btn_show_list">Zobraziť zoznam</string>
     <string name="option_apply_to_this_node_only">Iba tento uzol</string>

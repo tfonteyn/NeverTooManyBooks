@@ -868,7 +868,7 @@
     <string name="lbl_wikidata_claim_author_id">Wikidata «claim/P»: código para o id da autoría</string>
     <string name="action_stop_searching">Deter a busca</string>
     <string name="action_save_for_later">Gardar para máis tarde</string>
-    <string name="confirm_leave_isbn_search">Hai buscas en curso e/ou resultados non gardados.</string>
+    <string name="confirm_leave_code_search">Hai buscas en curso e/ou resultados non gardados.</string>
     <string name="lbl_author_role_foreword">prólogo</string>
     <string name="lbl_author_role_afterword">epílogo</string>
     <string name="lbl_image_2">Imaxe 3</string>

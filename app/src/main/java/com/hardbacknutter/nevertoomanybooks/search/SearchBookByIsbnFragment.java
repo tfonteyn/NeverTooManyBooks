@@ -289,7 +289,7 @@ public class SearchBookByIsbnFragment
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
                     new MaterialAlertDialogBuilder(getContext())
-                            .setTitle(R.string.confirm_leave_isbn_search)
+                            .setTitle(R.string.confirm_leave_code_search)
                             .setSingleChoiceItems(R.array.lbl_leave_search_options,
                                                   -1, (d, option) -> {
                                         d.dismiss();

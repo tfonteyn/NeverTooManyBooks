@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -465,7 +466,7 @@
     <string name="action_clear_queue">Várólista törlése</string>
     <string name="lbl_publisher">Kiadó</string>
     <string name="confirm_unsaved_edits">Nem mentett módosításai vannak, ha most kilép, ezek elvesznek.</string>
-    <string name="confirm_leave_isbn_search">Vannak folyamatban lévő keresések és/vagy mentetlen eredmények.</string>
+    <string name="confirm_leave_code_search">Vannak folyamatban lévő keresések és/vagy mentetlen eredmények.</string>
     <string name="confirm_remove_toc_entry">Eltávolítja a könyvből a következőt: „%2$s - %1$s”?</string>
     <string name="confirm_scope_for_delete">A következő törlése: „%2$s - %1$s”\n\nHogyan kívánja alkalmazni ezt a módosítást?\nMegjegyzés: Az „%3$s” választás nem vonható vissza!</string>
     <string name="confirm_delete_book">Ez teljesen törli a következő könyvet: „%2$s - %1$s”\n\nBiztosan folytatja?</string>

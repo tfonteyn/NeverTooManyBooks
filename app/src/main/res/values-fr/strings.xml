@@ -185,7 +185,7 @@
     <string name="confirm_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l’application. Es-tu sûr de vouloir continuer ?</string>
     <string name="confirm_registration_benefits">Cette fonctionnalité bénéficie d’une inscription avec %1$s. Souhaitez-vous avoir plus d’informations ou désactiver ce message ?\nVous trouverez ces informations ultérieurement dans la section « %2$s » des paramètres.</string>
     <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s. Souhaitez-vous avoir plus d’informations ?</string>
-    <string name="confirm_leave_isbn_search">Il y a des recherches en cours et/ou des résultats non sauvegardés.</string>
+    <string name="confirm_leave_code_search">Il y a des recherches en cours et/ou des résultats non sauvegardés.</string>
     <string name="confirm_remove_toc_entry">Supprimer le titre « %1$s » par %2$s de ce livre ?</string>
     <string name="confirm_scope_for_change">Vous avez changé :\n « %1$s »\n en\n « %2$s »\n\nComment souhaitez-vous appliquer ce changement ?\nNote : votre choix « %3$s » sera pris en compte instantanément. Si vous choisissez « %4$s », alors un nouveau %5$s sera créé.</string>
     <string name="confirm_scope_for_delete">Supprimer le titre « %1$s » par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
