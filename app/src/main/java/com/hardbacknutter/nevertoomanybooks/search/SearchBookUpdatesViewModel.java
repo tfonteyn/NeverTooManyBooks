@@ -518,24 +518,43 @@ public class SearchBookUpdatesViewModel
      * Indirectly called by the observable {@link SearchCoordinator#onSearchFinished()}.
      */
     @UiThread
-    void processOne(@NonNull final Context context,
-                    @Nullable final Book remoteBook) {
+    void processOne() {
+        // There is no explicit relation between the observable being triggered
+        // and the queue order. We just grab what's available, if anything.
+        @Nullable
+        final BookSearchResult result = pollFinishedQueue();
+        // Hence, this CAN be {@code null}.
+        if (result == null) {
+            return;
+        }
+
+        // Paranoia... should never be the case... flw
+        if (!result.hasBook()) {
+            return;
+        }
+
+        final Book remoteBook = result.getBook();
+
+        // Background task safe context.
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
-                    final Context c = ServiceLocator.getInstance().getLocalizedAppContext();
+                    // paranoia... remoteBook is never null at this point (see above),
+                    // but we want to guard against future code changes elsewhere.
+                    //noinspection ConstantValue
                     if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
                         final Book delta;
                         try {
                             //noinspection DataFlowIssue
-                            delta = syncProcessor.process(c, currentBookId, currentBook,
+                            delta = syncProcessor.process(context, currentBookId, currentBook,
                                                           remoteBook, currentFieldsWanted);
                         } catch (@NonNull final IOException e) {
                             throw new UncheckedIOException(e);
                         }
                         if (delta != null) {
                             try {
-                                bookDao.update(c, delta);
+                                bookDao.update(context, delta);
                             } catch (@NonNull final StorageException | DaoWriteException e) {
                                 // ignore, but log it.
                                 LoggerFactory.getLogger().e(TAG, e);
@@ -557,6 +576,9 @@ public class SearchBookUpdatesViewModel
                     nextBook(context);
                 },
                 this::postSearch);
+
+        // Trigger a UI update if needed
+        retriggerSearchFinished();
     }
 
     /**

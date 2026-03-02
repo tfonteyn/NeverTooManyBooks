@@ -235,17 +235,7 @@ public class SearchBookUpdatesFragment
     }
 
     private void onOneDone(@NonNull final LiveDataEvent<Boolean> message) {
-        message.process(trigger -> {
-            @Nullable
-            final BookSearchResult result = vm.pollFinishedQueue();
-            if (result == null) {
-                return;
-            }
-            //noinspection DataFlowIssue
-            vm.processOne(getContext(), result.getBook());
-
-            vm.retriggerSearchFinished();
-        });
+        message.process(ignoreAlwaysTrue -> vm.processOne());
     }
 
     private void onAllDone(@NonNull final LiveDataEvent<BookSearchResult> message) {
