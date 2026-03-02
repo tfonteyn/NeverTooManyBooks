@@ -315,7 +315,7 @@
     <string name="lbl_tag_mapper_apply_purge_unused">Eliminare i tag inutilizzati</string>
     <string name="lbl_connection_timeout">Timeout connessione (secondi)</string>
     <string name="lbl_cover_back">Copertina posteriore</string>
-    <string name="lbl_cover_front">Copertura</string>
+    <string name="lbl_cover_front">Copertina</string>
     <string name="lbl_covers">Copertine</string>
     <string name="lbl_covers_long">Immagini delle copertine</string>
     <string name="lbl_credentials">Credenziali utente</string>
