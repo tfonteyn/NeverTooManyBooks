@@ -108,24 +108,91 @@ public class SearchCoordinator
     private String listElementPrefixString;
 
     /**
-     * Process the message and start another task if required.
+     * Lookup the {@link BookSearch} which the given task belongs to.
+     *
+     * @param taskId to lookup
+     *
+     * @return BookSearch, can be {@code null} if already removed
+     */
+    @Nullable
+    private BookSearch getBookSearch(final int taskId) {
+        synchronized (activeSearches) {
+            final Integer searchId = task2searchId.get(taskId);
+            if (searchId == null) {
+                return null;
+            }
+            return activeSearches.get(searchId);
+        }
+    }
+
+    /**
+     * Process the finished/cancelled result and remove the task.
+     * <p>
+     * We get here from {@link SearchTaskListener#onFinished(int, Book)}
+     * or from {@link SearchTaskListener#onCancelled(int, Book)}.
      *
      * @param taskId of task; this is the engine id.
      * @param result of a search;
      *               Will never be {@code null} for successful searches.
      *               MAY be {@code null} for cancelled searches.
      *               WILL be {@code null} for failed searches.
+     *
+     * @see #onSearchTaskFailed(int, Throwable)
      */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private synchronized void onSearchTaskFinished(final int taskId,
                                                    @Nullable final Book result) {
         final BookSearch currentSearch = getBookSearch(taskId);
         if (currentSearch != null) {
             final SearchTask currentTask = currentSearch.removeTask(taskId);
             task2searchId.remove(taskId);
+
             onSearchTaskFinished(currentSearch, currentTask, result);
         }
     }
 
+    /**
+     * Process the failure and remove the task.
+     * <p>
+     * We get here from {@link SearchTaskListener#onFailure(int, Throwable)}.
+     *
+     * @param taskId of task; this is the engine id.
+     * @param e      (optional) error thrown
+     *
+     * @see #onSearchTaskFinished(int, Book)
+     */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private synchronized void onSearchTaskFailed(final int taskId,
+                                                 @Nullable final Throwable e) {
+        final BookSearch currentSearch = getBookSearch(taskId);
+        if (currentSearch != null) {
+            final SearchTask currentTask = currentSearch.removeTask(taskId);
+            task2searchId.remove(taskId);
+            // paranoia....
+            synchronized (currentSearch) {
+                // Always store, even if the Exception is null
+                currentSearch.addError(currentTask.getSearchEngine().getEngineId(), e);
+            }
+            onSearchTaskFinished(currentSearch, currentTask, null);
+        }
+    }
+
+    /**
+     * Process the result/failure and start another task if required.
+     * <p>
+     * We get here from one of these.
+     * <ul>
+     *     <li>{@link SearchTaskListener#onFinished(int, Book)}
+     *         --> {@link #onSearchTaskFinished(int, Book)}</li>
+     *     <li>{@link SearchTaskListener#onCancelled(int, Book)}
+     *     --> {@link #onSearchTaskFinished(int, Book)}</li>
+     *     <li>{@link #onSearchTaskFailed(int, Throwable)}</li>
+     * </ul>
+     *
+     * @param currentSearch the currently running search
+     * @param currentTask   the current task
+     * @param result        the result of that task, can be {@code null}.
+     */
     private void onSearchTaskFinished(@NonNull final BookSearch currentSearch,
                                       @NonNull final SearchTask currentTask,
                                       @Nullable final Book result) {
@@ -150,7 +217,7 @@ public class SearchCoordinator
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         boolean searchStarted = false;
 
-        if (!cancelRequested.get()) {
+        if (!isCancelled()) {
             //  update our listener with the current progress status
             synchronized (searchCoordinatorProgress) {
                 searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
@@ -177,39 +244,26 @@ public class SearchCoordinator
         synchronized (activeSearches) {
             // If we didn't start a new search (which might not be active yet!),
             // and there are no previous searches still running (or we got cancelled)
-            // then we are done.
-            currentIsDone = !searchStarted && (!currentSearch.isActive() || cancelRequested.get());
+            // then we are done and the current search is removed from the active list.
+            currentIsDone = !searchStarted && (!currentSearch.isActive() || isCancelled());
             if (currentIsDone) {
                 activeSearches.remove(currentSearch.getId());
             }
         }
 
-        // it is, report back to the user
+        // If this search is done, collect the full set of data (results and errors) for it,
+        // and queue the result for processing by the UI.
         if (currentIsDone) {
-            final BookSearchResult data = currentSearch.finish(context, engineLocaleCache);
-            if (cancelRequested.get()) {
-                pushResultCanceled(data);
+            final BookSearchResult searchResult = currentSearch.finish(context, engineLocaleCache);
+            if (isCancelled()) {
+                // Partial results up to the time of cancellation,
+                // the actual data of this search can be null.
+                pushResultCanceled(searchResult);
             } else {
-                pushResultFinished(data);
+                // Full result...  but if we found nothing, or we had a failure,
+                // the actual data of this search can be null.
+                pushResultFinished(searchResult);
             }
-        }
-    }
-
-    /**
-     * Lookup the {@link BookSearch} which the given task belongs to.
-     *
-     * @param taskId to lookup
-     *
-     * @return BookSearch, can be {@code null} if already removed
-     */
-    @Nullable
-    private BookSearch getBookSearch(final int taskId) {
-        synchronized (activeSearches) {
-            final Integer searchId = task2searchId.get(taskId);
-            if (searchId == null) {
-                return null;
-            }
-            return activeSearches.get(searchId);
         }
     }
 
@@ -230,22 +284,6 @@ public class SearchCoordinator
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger()
                          .d(TAG, "pushResultCanceled", data);
-        }
-    }
-
-    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
-    private synchronized void onSearchTaskFailed(final int taskId,
-                                                 @Nullable final Throwable e) {
-        final BookSearch currentSearch = getBookSearch(taskId);
-        if (currentSearch != null) {
-            final SearchTask currentTask = currentSearch.removeTask(taskId);
-            task2searchId.remove(taskId);
-
-            synchronized (currentSearch) {
-                // Always store, even if the Exception is null
-                currentSearch.addError(currentTask.getSearchEngine().getEngineId(), e);
-            }
-            onSearchTaskFinished(currentSearch, currentTask, null);
         }
     }
 
@@ -278,9 +316,9 @@ public class SearchCoordinator
     }
 
     /**
-     * Handles both Successful and Failed searches.
+     * Observable to indicate a search was finished (success/failed).
      *
-     * @return book data
+     * @return currently always the value {@code true}
      *
      * @see #pollFinishedQueue()
      * @see #retriggerSearchFinished()
@@ -290,6 +328,11 @@ public class SearchCoordinator
         return searchCoordinatorFinished;
     }
 
+    /**
+     * Poll the next available result.
+     *
+     * @return result; can be {@code null} if there is none right now.
+     */
     @Nullable
     public BookSearchResult pollFinishedQueue() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
@@ -300,6 +343,9 @@ public class SearchCoordinator
         return searchCoordinatorFinishedQueue.poll();
     }
 
+    /**
+     * Trigger the observable if there is more finished search-data available.
+     */
     public void retriggerSearchFinished() {
         if (!searchCoordinatorFinishedQueue.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
@@ -312,9 +358,9 @@ public class SearchCoordinator
     }
 
     /**
-     * The result if the user cancelled the search.
+     * Observable to indicate a search was cancelled.
      *
-     * @return book data found so far
+     * @return currently always the value {@code true}
      *
      * @see #pollCancelledQueue()
      * @see #retriggerCancelledQueue()
@@ -324,13 +370,31 @@ public class SearchCoordinator
         return searchCoordinatorCancelled;
     }
 
+    /**
+     * Poll the next available cancellation info.
+     *
+     * @return result; can be {@code null} if there is none right now.
+     */
     @Nullable
     public BookSearchResult pollCancelledQueue() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "pollCancelledQueue",
+                            "size=" + searchCoordinatorCancelledQueue.size());
+        }
         return searchCoordinatorCancelledQueue.poll();
     }
 
+    /**
+     * Trigger the observable if there is more cancelled search-info available.
+     */
     public void retriggerCancelledQueue() {
         if (!searchCoordinatorCancelledQueue.isEmpty()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "retriggerCancelledQueue",
+                                "size=" + searchCoordinatorCancelledQueue.size());
+            }
             searchCoordinatorCancelled.setValue(LiveDataEvent.of(true));
         }
     }
@@ -372,7 +436,6 @@ public class SearchCoordinator
         return new TaskProgress(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
                                 progressMax, progressCount, null);
     }
-
 
     @Override
     protected void onCleared() {
@@ -571,7 +634,7 @@ public class SearchCoordinator
         }
 
         // refuse new searches if we're shutting down.
-        if (cancelRequested.get()) {
+        if (isCancelled()) {
             return false;
         }
 
@@ -609,7 +672,7 @@ public class SearchCoordinator
         }
 
         // refuse new searches if we're shutting down.
-        if (cancelRequested.get()) {
+        if (isCancelled()) {
             return false;
         }
 
@@ -654,7 +717,7 @@ public class SearchCoordinator
                                         "waitForIsbnOrCode=" + waitForIsbnOrCode);
         }
         // refuse new searches if we're shutting down.
-        if (cancelRequested.get()) {
+        if (isCancelled()) {
             return false;
         }
 
@@ -699,6 +762,11 @@ public class SearchCoordinator
         return true;
     }
 
+    /**
+     * Set the base message for progress updates.
+     *
+     * @param baseMessage to use
+     */
     protected void setBaseMessage(@Nullable final String baseMessage) {
         this.baseMessage = baseMessage;
     }
