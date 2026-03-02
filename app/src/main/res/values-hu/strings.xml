@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -685,7 +682,7 @@
     <string name="unknown_title">[Ismeretlen cím]</string>
     <string name="X_tip_update_fields_from_internet">A külső hivatkozások csak tényleges kapcsolat mellett kerülnek feldolgozásra. Ennek eredményeként a „Megtekintés itt…” menü csak azt mutatja, ami elérhető.</string>
     <string name="info_progress_x_percent">%1$d%% olvasva</string>
-    <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">dokumentáció</a>az azonosítókról szerkesztés előtt.]]></string>
+    <string name="info_identifier_editor"><![CDATA[Szerkesztés előtt kérjük, olvassa el az azonosítókról szóló <a href="%1$s">dokumentációt</a>.]]></string>
     <string name="pe_thumbnails_cache_resized_stored">Átméretezett képek gyorsítótárazása (görgetés gyorsabb lesz, több tárhelyet használ)</string>
     <string name="pt_search_reformat_color">„Könyvszín” elnevezések egységesítése</string>
     <string name="pt_search_reformat_format">„Könyvformátum” elnevezések egységesítése</string>
