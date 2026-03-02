@@ -207,7 +207,7 @@ public abstract class SearchBookBaseFragment
         return coordinator.search(criteria);
     }
 
-    private void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignored) {
+    private void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignoreAlwaysTrue) {
         closeProgressDialog();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();

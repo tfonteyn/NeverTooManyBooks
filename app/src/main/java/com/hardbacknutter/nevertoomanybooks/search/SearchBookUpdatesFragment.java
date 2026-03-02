@@ -269,7 +269,7 @@ public class SearchBookUpdatesFragment
     private void onCancelled(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
 
-        message.process(ignoreTrue -> {
+        message.process(ignoreAlwaysTrue -> {
             // We *should* get the last result which was pushed onto the queue when
             // the user tapped cancel, but due to LiveData, we *might* come here
             // twice and find an empty queue. Hence, we *must* guard against
