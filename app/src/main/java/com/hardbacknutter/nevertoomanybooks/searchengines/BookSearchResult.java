@@ -85,8 +85,8 @@ public final class BookSearchResult {
     private final Type type;
 
     /**
-     * {@link SearchCoordinator}.
      * Constructor.
+     * {@link SearchCoordinator} all individual site searches have finished.
      *
      * @param searchId         id
      * @param book             with data found
@@ -107,8 +107,8 @@ public final class BookSearchResult {
     }
 
     /**
-     * {@link SearchBookUpdatesViewModel}.
      * Constructor.
+     * {@link SearchBookUpdatesViewModel} on the final search result being a success or cancel.
      *
      * @param editBookOutput report
      */

@@ -584,11 +584,11 @@ public class SearchBookUpdatesViewModel
     /**
      * Clean-up up and report the final outcome.
      * <p>
-     * Callers:
+     * Called when we're:
      * <ul>
-     *  <li>when we're all done; success==true</li>
-     *  <li>when we've not started a search (for whatever reason)</li>
-     *  <li>when we're cancelled</li>
+     *  <li>all done</li>
+     *  <li>not started a search (for whatever reason)</li>
+     *  <li>cancelled</li>
      * </ul>
      *
      * @param success {@code true} if the search was successful
@@ -606,6 +606,18 @@ public class SearchBookUpdatesViewModel
         // the last book id which was handled; can be used to restart the update.
         lastBookIdProcessed = currentBookId;
 
+        final BookSearchResult result = createBookSearchResult();
+        if (success) {
+            // Bypass the SearchCoordinator, and report the final result directly.
+            listFinished.setValue(LiveDataEvent.of(result));
+        } else {
+            // Use the standard SearchCoordinator queue reporting.
+            pushResultCanceled(result);
+        }
+    }
+
+    @NonNull
+    private BookSearchResult createBookSearchResult() {
         // bookIdList==null: all books
         // || a list of books (i.e. 1 or more books)
         //FIXME: we should only return true if we actually modified a book
@@ -618,14 +630,7 @@ public class SearchBookUpdatesViewModel
         final EditBookOutput editBookOutput = new EditBookOutput(modified,
                                                                  repositionToBookId,
                                                                  lastBookIdProcessed);
-        final BookSearchResult result = new BookSearchResult(editBookOutput);
-        if (success) {
-            // Bypass the SearchCoordinator, and report the final result directly.
-            listFinished.setValue(LiveDataEvent.of(result));
-        } else {
-            // Use the standard SearchCoordinator queue reporting.
-            pushResultCanceled(result);
-        }
+        return new BookSearchResult(editBookOutput);
     }
 
     /**
@@ -648,15 +653,9 @@ public class SearchBookUpdatesViewModel
         // the last book id which was handled; can be used to restart the update.
         lastBookIdProcessed = currentBookId;
 
-        //        final Bundle results = ServiceLocator.newBundle();
-        //        results.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
-        //
-        //        // if applicable, pass the first book for repositioning the list on screen
-        //        if (bookIdList != null && !bookIdList.isEmpty()) {
-        //            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
-        //        }
-
+        // TODO maybe....  use createBookSearchResult to return
         final LiveDataEvent<Throwable> message = LiveDataEvent.of(e);
+        // Bypass the SearchCoordinator, and report the final result directly.
         listFailed.setValue(message);
     }
 
