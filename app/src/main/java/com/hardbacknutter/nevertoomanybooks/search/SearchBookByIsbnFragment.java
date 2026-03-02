@@ -1156,14 +1156,14 @@ public class SearchBookByIsbnFragment
                     if (result.hasBook()) {
                         // There was an error, but the book has (some) usable data
                         chip.setChipBackgroundColorResource(
-                                R.color.isbn_queue_success_with_partial_errors);
+                                R.color.queue_search_success_with_partial_errors);
                     } else {
                         // There was an error, and the book has no useful data
-                        chip.setChipBackgroundColorResource(R.color.isbn_queue_failure);
+                        chip.setChipBackgroundColorResource(R.color.queue_search_failure);
                     }
                 } else if (result.hasBook()) {
                     // no error, and the book has usable data
-                    chip.setChipBackgroundColorResource(R.color.isbn_queue_success);
+                    chip.setChipBackgroundColorResource(R.color.queue_search_success);
                 }
             }
             vb.queue.addView(chip);
