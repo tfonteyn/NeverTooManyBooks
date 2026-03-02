@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -64,9 +66,11 @@ public class SearchBookByIsbnViewModel
 
     /** The {@link ScanMode} to start in. */
     public static final String BKEY_SCANNER_MODE = TAG + ":scanMode";
+    /** Storage key into preferences for the current queue. */
+    private static final String PK_SCAN_QUEUE = "scan.queue";
 
     /** The batch mode queue. */
-    private final IsbnQueue scanQueue = new IsbnQueue();
+    private final ItemQueue<ISBN> scanQueue = new ItemQueue<>(PK_SCAN_QUEUE, new IsbnFactory());
 
     private final MutableLiveData<Iterator<QueuedItem<ISBN>>> scanQueueUpdate =
             new MutableLiveData<>();
@@ -232,6 +236,22 @@ public class SearchBookByIsbnViewModel
     @NonNull
     Iterator<QueuedItem<ISBN>> getScanQueue() {
         return scanQueue.iterator();
+    }
+
+    @NonNull
+    List<QueuedItem<ISBN>> readItemQueueFromFile(@NonNull final Context context,
+                                                 @NonNull final Uri uri)
+            throws IOException {
+        return scanQueue.readFromFile(context, uri);
+    }
+
+    @NonNull
+    List<QueuedItem<ISBN>> readItemQueueFromPreferences() {
+        return scanQueue.readFromPreferences();
+    }
+
+    void itemQueueClearPreferences() {
+        scanQueue.clearPreferences();
     }
 
     /**

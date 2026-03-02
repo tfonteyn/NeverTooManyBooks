@@ -38,27 +38,45 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 
 /**
  * Most methods will need external synchronization.
+ *
+ * @param <CODE> queue item type
  */
-class IsbnQueue {
-
-    /** Storage key into preferences for the current queue. */
-    private static final String PK_SCAN_QUEUE = "scan.queue";
+class ItemQueue<CODE extends Code> {
 
     /** File reader buffer. */
     private static final int BUFFER_SIZE = 65535;
     private static final String CSV = ",";
 
     @SuppressWarnings("TypeMayBeWeakened")
-    private final Queue<QueuedItem<ISBN>> q = new ConcurrentLinkedQueue<>();
+    private final Queue<QueuedItem<CODE>> q = new ConcurrentLinkedQueue<>();
+
+    /** Storage key into preferences for the current queue. */
+    @NonNull
+    private final String pkScanQueue;
+    @NonNull
+    private final Function<String, CODE> codeFactory;
+
+    /**
+     * Constructor.
+     *
+     * @param pkScanQueue Storage key into preferences for the current queue
+     * @param codeFactory a method which can take a String,
+     *                    and return a new instance of a {@code CODE}
+     */
+    ItemQueue(@NonNull final String pkScanQueue,
+              @NonNull final Function<String, CODE> codeFactory) {
+        this.pkScanQueue = pkScanQueue;
+        this.codeFactory = codeFactory;
+    }
 
     /**
      * Read the previously stored list of items from the preferences.
@@ -66,24 +84,24 @@ class IsbnQueue {
      * @return list
      */
     @NonNull
-    static List<QueuedItem<ISBN>> readFromPreferences() {
-        final String[] isbnList = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getString(PK_SCAN_QUEUE, "")
-                                                .split(CSV);
-        if (isbnList.length > 0) {
-            return readFromStream(Arrays.stream(isbnList));
+    List<QueuedItem<CODE>> readFromPreferences() {
+        final String[] list = ServiceLocator.getInstance().getSharedPreferences()
+                                            .getString(pkScanQueue, "")
+                                            .split(CSV);
+        if (list.length > 0) {
+            return readFromStream(Arrays.stream(list));
         }
         return List.of();
     }
 
-    static void clearPreferences() {
-        ServiceLocator.getInstance().getSharedPreferences().edit().remove(PK_SCAN_QUEUE).apply();
+    void clearPreferences() {
+        ServiceLocator.getInstance().getSharedPreferences().edit().remove(pkScanQueue).apply();
     }
 
     /**
-     * Import a list of ISBNs from a text file.
+     * Import a list of {@code CODE}s from a text file.
      * <p>
-     * Format supported:  one or more (CSV) ISBN on each line of the text file.
+     * Format supported: one or more (CSV) {@code CODE}s on each line of the text file.
      * Whitespace and '-' are taken care of as usual, any other text will either
      * cause the line to be skipped, or the import to fail completely.
      *
@@ -95,8 +113,8 @@ class IsbnQueue {
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    static List<QueuedItem<ISBN>> readFromFile(@NonNull final Context context,
-                                         @NonNull final Uri uri)
+    List<QueuedItem<CODE>> readFromFile(@NonNull final Context context,
+                                        @NonNull final Uri uri)
             throws IOException {
         //TODO: should be run as background task, and use LiveData to update the view...
         // ... but it's so fast for any reasonable length list....
@@ -116,8 +134,7 @@ class IsbnQueue {
     }
 
     @NonNull
-    private static List<QueuedItem<ISBN>> readFromStream(@NonNull final Stream<String> stream) {
-        final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
+    private List<QueuedItem<CODE>> readFromStream(@NonNull final Stream<String> stream) {
         return stream
                 // allow multiple csv
                 .map(line -> line.split(CSV))
@@ -127,14 +144,14 @@ class IsbnQueue {
                 // must not be blank
                 .filter(s -> !s.isBlank())
                 // valid codes only
-                .map(s -> new ISBN(s, strictIsbn))
-                .filter(ISBN::isValid)
+                .map(codeFactory)
+                .filter(CODE::isValid)
                 .map(QueuedItem::new)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    Iterator<QueuedItem<ISBN>> iterator() {
+    Iterator<QueuedItem<CODE>> iterator() {
         return q.iterator();
     }
 
@@ -146,31 +163,31 @@ class IsbnQueue {
      * @return item
      */
     @NonNull
-    Optional<QueuedItem<ISBN>> bySearchId(final int searchId) {
+    Optional<QueuedItem<CODE>> bySearchId(final int searchId) {
         return q.stream()
                 .filter(item -> item.getSearchId() == searchId)
                 .findAny();
     }
 
     /**
-     * Check if the given ISBN is already in the queue.
+     * Check if the given {@code CODE} is already in the queue.
      *
-     * @param isbn to find
+     * @param code to find
      *
      * @return {@code true} if already present
      */
-    boolean contains(@NonNull final ISBN isbn) {
-        return q.stream().anyMatch(qi -> qi.getCode().equals(isbn));
+    boolean contains(@NonNull final CODE code) {
+        return q.stream().anyMatch(qi -> qi.getCode().equals(code));
     }
 
     /**
      * Unconditionally add the given item.
      * <p>
-     * Use {@link #contains(ISBN)} <strong>before</strong> calling this method as needed.
+     * Use {@link #contains(CODE)} <strong>before</strong> calling this method as needed.
      *
      * @param item to add
      */
-    void add(@NonNull final QueuedItem<ISBN> item) {
+    void add(@NonNull final QueuedItem<CODE> item) {
         q.add(item);
         writeToPreferences();
     }
@@ -183,7 +200,7 @@ class IsbnQueue {
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean remove(@NonNull final QueuedItem<ISBN> item) {
+    boolean remove(@NonNull final QueuedItem<CODE> item) {
         final boolean removed = q.remove(item);
         if (removed) {
             writeToPreferences();
@@ -193,7 +210,6 @@ class IsbnQueue {
 
     /**
      * Clear the queue.
-     *
      */
     void clear() {
         q.clear();
@@ -210,16 +226,14 @@ class IsbnQueue {
     }
 
     /**
-     * Write the current queue as a csv list of ISBNs to preferences.
-     *
+     * Write the current queue as a csv list of {@code CODE}s to preferences.
      */
     private void writeToPreferences() {
         final String list = q.stream()
                              .map(QueuedItem::getCode)
-                             .map(ISBN::asText)
+                             .map(CODE::asText)
                              .collect(Collectors.joining(CSV));
         ServiceLocator.getInstance().getSharedPreferences()
-                      .edit().putString(PK_SCAN_QUEUE, list).apply();
+                      .edit().putString(pkScanQueue, list).apply();
     }
-
 }

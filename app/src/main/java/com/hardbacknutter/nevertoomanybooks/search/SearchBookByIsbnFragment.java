@@ -394,7 +394,7 @@ public class SearchBookByIsbnFragment
         });
 
         final Context context = getContext();
-        final List<QueuedItem<ISBN>> items = IsbnQueue.readFromPreferences();
+        final List<QueuedItem<ISBN>> items = vm.readItemQueueFromPreferences();
         if (items.isEmpty()) {
             afterOnViewCreated();
         } else {
@@ -406,7 +406,7 @@ public class SearchBookByIsbnFragment
                     .setTitle(R.string.lbl_search_isbn)
                     .setMessage(msg)
                     .setNeutralButton(R.string.action_delete, (d, w) -> {
-                        IsbnQueue.clearPreferences();
+                        vm.itemQueueClearPreferences();
                         afterOnViewCreated();
                         d.dismiss();
                     })
@@ -1100,7 +1100,7 @@ public class SearchBookByIsbnFragment
     private void onOpenUri(@NonNull final Uri uri) {
         try {
             //noinspection DataFlowIssue
-            final List<QueuedItem<ISBN>> items = IsbnQueue.readFromFile(getContext(), uri);
+            final List<QueuedItem<ISBN>> items = vm.readItemQueueFromFile(getContext(), uri);
             if (!items.isEmpty()) {
                 startSearch(items);
             }
