@@ -329,6 +329,13 @@ class BookSearch {
         return sitesInOrder;
     }
 
+    /**
+     * Remove the task from the active list, and return it.
+     *
+     * @param taskId to remove
+     *
+     * @return the removed task
+     */
     @NonNull
     SearchTask removeTask(final int taskId) {
         return Objects.requireNonNull(activeTasks.remove(taskId),
