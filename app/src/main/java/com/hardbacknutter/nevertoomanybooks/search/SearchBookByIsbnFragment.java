@@ -767,7 +767,7 @@ public class SearchBookByIsbnFragment
     }
 
     private boolean isBatchOrHasQueue() {
-        return vb.queue.getChildCount() > 0 || vm.getScannerMode() == ScanMode.Batch;
+        return qvm.getQueueSize() > 0 || vm.getScannerMode() == ScanMode.Batch;
     }
 
     /**
@@ -1000,11 +1000,11 @@ public class SearchBookByIsbnFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchFinished",
                                         vm.getScannerMode(),
-                                        "queue=" + vb.queue.getChildCount(),
+                                        "queue=" + qvm.getQueueSize(),
                                         result);
         }
 
-        if (vb.queue.getChildCount() == 0
+        if (qvm.getQueueSize() == 0
             // Check the scan-mode as it was used for **this** scan-result!
             && (result.getScanMode() == ScanMode.Off
                 || result.getScanMode() == ScanMode.Continuous)) {
@@ -1025,7 +1025,7 @@ public class SearchBookByIsbnFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchResults",
                                         vm.getScannerMode(),
-                                        "queue=" + vb.queue.getChildCount(),
+                                        "queue=" + qvm.getQueueSize(),
                                         result);
         }
 
@@ -1043,7 +1043,7 @@ public class SearchBookByIsbnFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchResultsSaveBook",
                                         vm.getScannerMode(),
-                                        "queue=" + vb.queue.getChildCount(),
+                                        "queue=" + qvm.getQueueSize(),
                                         result);
         }
 
@@ -1355,7 +1355,7 @@ public class SearchBookByIsbnFragment
 
         // Enabled when there is a non-empty queue.
         // We don't look for 'searching' or 'results' items
-        backPressedWithActiveSearches.setEnabled(vb.queue.getChildCount() > 0);
+        backPressedWithActiveSearches.setEnabled(qvm.getQueueSize() > 0);
     }
 
     /**

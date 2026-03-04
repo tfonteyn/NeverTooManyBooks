@@ -182,6 +182,10 @@ class ItemQueue<CODE extends Code> {
         return q.stream().anyMatch(qi -> qi.getCode().equals(code));
     }
 
+    public int size() {
+        return q.size();
+    }
+
     /**
      * Unconditionally add the given item.
      * <p>

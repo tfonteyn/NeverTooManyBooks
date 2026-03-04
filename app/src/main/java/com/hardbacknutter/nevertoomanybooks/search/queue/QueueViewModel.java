@@ -94,6 +94,10 @@ public abstract class QueueViewModel<CODE extends Code>
         return queue.isSearching();
     }
 
+    public int getQueueSize() {
+        return queue.size();
+    }
+
     /**
      * Get an iterator over the queue.
      *
