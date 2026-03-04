@@ -25,20 +25,36 @@ import androidx.annotation.NonNull;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 
-public class IsbnFactory
-        implements Function<String, ISBN> {
+@SuppressWarnings("WeakerAccess")
+public class IsbnQueueViewModel
+        extends QueueViewModel<ISBN> {
 
-    private final boolean strictIsbn;
+    /** Storage key into preferences for the current queue. */
+    private static final String PK_SCAN_QUEUE = "scan.queue";
 
-    IsbnFactory() {
-        strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
+    /**
+     * Pseudo constructor.
+     */
+    public void init() {
+        super.init(PK_SCAN_QUEUE, new IsbnFactory());
     }
 
-    @Override
-    @NonNull
-    public ISBN apply(@NonNull final String s) {
-        return new ISBN(s, strictIsbn);
+    private static class IsbnFactory
+            implements Function<String, ISBN> {
+
+        private final boolean strictIsbn;
+
+        IsbnFactory() {
+            strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
+        }
+
+        @Override
+        @NonNull
+        public ISBN apply(@NonNull final String s) {
+            return new ISBN(s, strictIsbn);
+        }
     }
 }

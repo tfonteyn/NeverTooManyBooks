@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.search;
+package com.hardbacknutter.nevertoomanybooks.search.queue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-class QueuedItem<CODE extends Code> {
+public class QueuedItem<CODE extends Code> {
 
     private static final String TAG = "QueuedItem";
 
@@ -43,12 +43,22 @@ class QueuedItem<CODE extends Code> {
     @Nullable
     private BookSearchResult result;
 
-    QueuedItem(@NonNull final CODE code) {
+    /**
+     * Constructor.
+     *
+     * @param code the {@link Code} this item will represent
+     */
+    public QueuedItem(@NonNull final CODE code) {
         this.code = code;
     }
 
+    /**
+     * Get the wrapped {@link Code} for this item.
+     *
+     * @return code
+     */
     @NonNull
-    CODE getCode() {
+    public CODE getCode() {
         return code;
     }
 
@@ -57,7 +67,7 @@ class QueuedItem<CODE extends Code> {
      *
      * @return flag
      */
-    boolean isSearching() {
+    public boolean isSearching() {
         return searchId > 0 && result == null;
     }
 
@@ -69,8 +79,13 @@ class QueuedItem<CODE extends Code> {
         this.searchId = searchId;
     }
 
+    /**
+     * Get the result of the search.
+     *
+     * @return result; can be {@code null}
+     */
     @Nullable
-    BookSearchResult getResult() {
+    public BookSearchResult getResult() {
         return result;
     }
 

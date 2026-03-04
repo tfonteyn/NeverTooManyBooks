@@ -88,6 +88,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
+import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -205,13 +207,13 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     <li>User scans a code</li>
  *     <li>{@link #onBarcodeScanned(String)}</li>
  *     <li>{@link #preSearchAddToQueue(ISBN)}</li>
- *     <li>{@link SearchBookByIsbnViewModel#addToQueueAndStartSearch(QueuedItem, Function)}</li>
+ *     <li>{@link QueueViewModel#addToQueueAndStartSearch(QueuedItem, Function)}</li>
  *     <li>scanner starts again</li>
  * </ol>
  * <ol>
  *     <li>{@link SearchBookBaseFragment}#onSearchFinished(LiveDataEvent)</li>
  *     <li>{@link #onSearchFinished(BookSearchResult)}</li>
- *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
  *     <li>all this in the background as the scanner is still running</li>
  * </ol>
  * <p>
@@ -221,22 +223,22 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * Manual Entry
  * <ol>
- *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
  *     <li>done.</li>
  * </ol>
  * Single scan
  * <ol>
- *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
  *     <li>done.</li>
  * </ol>
  * Continuous scan
  * <ol>
- *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
  *     <li>scanner starts again</li>
  * </ol>
  * Batch scan
  * <ol>
- *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
  *     <li>scanner starts again</li>
  * </ol>
  */
@@ -274,7 +276,10 @@ public class SearchBookByIsbnFragment
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
 
+    /** Handles ISBN and fragment data. */
     private SearchBookByIsbnViewModel vm;
+    /** Handles the queue. */
+    private IsbnQueueViewModel qvm;
 
     /**
      * Intercept 'back' when there are items in the queue still being searched for.
@@ -295,7 +300,7 @@ public class SearchBookByIsbnFragment
                                         // option 0: Save for later
                                         // option 1: Clear queue
                                         final boolean clear = option == 1;
-                                        vm.clearQueueAndCancelSearches(coordinator, clear);
+                                        qvm.clearQueueAndCancelSearches(coordinator, clear);
                                         //noinspection DataFlowIssue
                                         getActivity().setResult(Activity.RESULT_OK,
                                                                 createResultIntent());
@@ -321,9 +326,13 @@ public class SearchBookByIsbnFragment
 
         createActivityLaunchers();
 
-        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        final ViewModelProvider vmp = new ViewModelProvider(this);
+        vm = vmp.get(SearchBookByIsbnViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), getArguments());
+
+        qvm = vmp.get(IsbnQueueViewModel.class);
+        qvm.init();
     }
 
     private void createActivityLaunchers() {
@@ -376,7 +385,7 @@ public class SearchBookByIsbnFragment
             updateEmbeddedScannerViewsVisibility(false);
         }
 
-        vm.onScanQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
+        qvm.onQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_search_isbn);
@@ -390,11 +399,11 @@ public class SearchBookByIsbnFragment
 
         vb.btnClearQueue.setOnClickListener(v -> {
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            vm.clearQueueAndCancelSearches(coordinator, true);
+            qvm.clearQueueAndCancelSearches(coordinator, true);
         });
 
         final Context context = getContext();
-        final List<QueuedItem<ISBN>> items = vm.readItemQueueFromPreferences();
+        final List<QueuedItem<ISBN>> items = qvm.readFromPreferences();
         if (items.isEmpty()) {
             afterOnViewCreated();
         } else {
@@ -406,7 +415,7 @@ public class SearchBookByIsbnFragment
                     .setTitle(R.string.lbl_search_isbn)
                     .setMessage(msg)
                     .setNeutralButton(R.string.action_delete, (d, w) -> {
-                        vm.itemQueueClearPreferences();
+                        qvm.clearPreferences();
                         afterOnViewCreated();
                         d.dismiss();
                     })
@@ -587,7 +596,7 @@ public class SearchBookByIsbnFragment
                 startScanner();
             }
         }
-        onQueueUpdated(vm.getScanQueue());
+        onQueueUpdated(qvm.getQueue());
     }
 
     @Override
@@ -733,8 +742,13 @@ public class SearchBookByIsbnFragment
         }
         vm.setScannerStarted(false);
         if (done) {
-            vm.setScannerMode(ScanMode.Off);
+            setScannerMode(ScanMode.Off);
         }
+    }
+
+    private void setScannerMode(@NonNull final ScanMode scanMode) {
+        vm.setScannerMode(scanMode);
+        onQueueUpdated(qvm.getQueue());
     }
 
     /**
@@ -833,7 +847,8 @@ public class SearchBookByIsbnFragment
      * @param code to search for
      */
     private void preSearchAddToQueue(@NonNull final ISBN code) {
-        final int searchId = vm.addToQueueAndStartSearch(new QueuedItem<>(code), this::startSearch);
+        final int searchId = qvm.addToQueueAndStartSearch(new QueuedItem<>(code),
+                                                          this::startSearch);
 
         // REMINDER: We have a queue, but we can get here for any of these:
         // - manual entry / single scan (duplicates n/a)
@@ -861,7 +876,7 @@ public class SearchBookByIsbnFragment
 
         // ScanMode.Continuous / ScanMode.Batch
 
-        if (searchId > 0 || searchId == SearchBookByIsbnViewModel.SEARCH_DUPLICATE_ISBN) {
+        if (searchId > 0 || searchId == QueueViewModel.SEARCH_DUPLICATE_ITEM) {
             // Search started; or it was a duplicate (silently rejected)
             // Go scan the next book.
             startScanner();
@@ -913,7 +928,7 @@ public class SearchBookByIsbnFragment
         // Do NOT switch on the ScanMode.Batch or otherwise
         // but DO hide the progress
         setEnableProgressMessages(false);
-        final boolean searchStarted = vm.addToQueueAndStartSearch(items, this::startSearch);
+        final boolean searchStarted = qvm.addToQueueAndStartSearch(items, this::startSearch);
 
         if (searchStarted) {
             Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
@@ -996,7 +1011,7 @@ public class SearchBookByIsbnFragment
             // user interactive; we'll end up in #onSearchResults
             super.onSearchFinished(result);
         } else {
-            vm.onQueueSearchResults(result);
+            qvm.onQueueSearchResults(result);
         }
     }
 
@@ -1100,7 +1115,7 @@ public class SearchBookByIsbnFragment
     private void onOpenUri(@NonNull final Uri uri) {
         try {
             //noinspection DataFlowIssue
-            final List<QueuedItem<ISBN>> items = vm.readItemQueueFromFile(getContext(), uri);
+            final List<QueuedItem<ISBN>> items = qvm.readFromFile(getContext(), uri);
             if (!items.isEmpty()) {
                 startSearch(items);
             }
@@ -1317,7 +1332,7 @@ public class SearchBookByIsbnFragment
         @SuppressWarnings("unchecked")
         final QueuedItem<ISBN> item = (QueuedItem<ISBN>) chip.getTag();
         // remove but update the view manually to avoid flicker
-        vm.removeFromQueueAndCancelSearch(coordinator, item);
+        qvm.removeFromQueueAndCancelSearch(coordinator, item);
         vb.queue.removeView(chip);
         updateQueueViewsVisibility();
     }
@@ -1328,7 +1343,7 @@ public class SearchBookByIsbnFragment
     private void updateQueueViewsVisibility() {
         vb.queueGroup.setVisibility(isBatchOrHasQueue() ? View.VISIBLE : View.GONE);
 
-        final boolean searching = vm.isQueueSearching();
+        final boolean searching = qvm.isQueueSearching();
         if (searching) {
             vb.queueProgress.setVisibility(View.VISIBLE);
             vb.queueProgress.startAnimation(
@@ -1351,7 +1366,7 @@ public class SearchBookByIsbnFragment
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         onClearSearchCriteria();
-        onQueueUpdated(vm.getScanQueue());
+        onQueueUpdated(qvm.getQueue());
         vm.onBookEditingDone(data);
 
         if (vm.getScannerMode() == ScanMode.Continuous) {
@@ -1370,7 +1385,7 @@ public class SearchBookByIsbnFragment
                 //noinspection DataFlowIssue
                 final String s = vb.isbn.getText().toString().strip();
                 vb.isbn.setText("");
-                vm.setScannerMode(ScanMode.Single);
+                setScannerMode(ScanMode.Single);
                 onBarcodeScanned(s);
             });
 
@@ -1391,7 +1406,7 @@ public class SearchBookByIsbnFragment
                 //noinspection DataFlowIssue
                 final String s = vb.isbn.getText().toString().strip();
                 vb.isbn.setText("");
-                vm.setScannerMode(ScanMode.Batch);
+                setScannerMode(ScanMode.Batch);
                 onBarcodeScanned(s);
             });
 
@@ -1429,13 +1444,13 @@ public class SearchBookByIsbnFragment
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_BARCODE_SCAN) {
-                vm.setScannerMode(ScanMode.getScannerModeSingle());
+                setScannerMode(ScanMode.getScannerModeSingle());
                 startScanner();
                 return true;
 
             } else if (menuItemId == R.id.MENU_BARCODE_SCAN_BATCH) {
                 // don't clear
-                vm.setScannerMode(ScanMode.Batch);
+                setScannerMode(ScanMode.Batch);
                 startScanner();
                 return true;
 

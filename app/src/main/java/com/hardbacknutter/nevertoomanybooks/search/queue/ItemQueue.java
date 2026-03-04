@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.search;
+package com.hardbacknutter.nevertoomanybooks.search.queue;
 
 import android.content.Context;
 import android.net.Uri;
@@ -100,6 +100,8 @@ class ItemQueue<CODE extends Code> {
 
     /**
      * Import a list of {@code CODE}s from a text file.
+     * The results are <strong>not</strong> added to the queue.
+     * That is up to the caller.
      * <p>
      * Format supported: one or more (CSV) {@code CODE}s on each line of the text file.
      * Whitespace and '-' are taken care of as usual, any other text will either

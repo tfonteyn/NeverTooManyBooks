@@ -21,25 +21,17 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -50,30 +42,16 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SearchBookByIsbnViewModel
         extends ViewModel {
-
-    static final int SEARCH_NOT_STARTED = 0;
-    static final int SEARCH_DUPLICATE_ISBN = -1;
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
 
     /** The {@link ScanMode} to start in. */
     public static final String BKEY_SCANNER_MODE = TAG + ":scanMode";
-    /** Storage key into preferences for the current queue. */
-    private static final String PK_SCAN_QUEUE = "scan.queue";
-
-    /** The batch mode queue. */
-    private final ItemQueue<ISBN> scanQueue = new ItemQueue<>(PK_SCAN_QUEUE, new IsbnFactory());
-
-    private final MutableLiveData<Iterator<QueuedItem<ISBN>>> scanQueueUpdate =
-            new MutableLiveData<>();
 
     @NonNull
     private final EditBookOutput resultData = new EditBookOutput();
@@ -209,9 +187,6 @@ public class SearchBookByIsbnViewModel
 
     void setScannerMode(@NonNull final ScanMode scanMode) {
         this.scanMode = scanMode;
-        synchronized (scanQueue) {
-            scanQueueUpdate.setValue(scanQueue.iterator());
-        }
     }
 
     @NonNull
@@ -222,195 +197,6 @@ public class SearchBookByIsbnViewModel
     @NonNull
     List<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
         return bookDao.getBookIdAndTitleByIsbn(code);
-    }
-
-    @NonNull
-    LiveData<Iterator<QueuedItem<ISBN>>> onScanQueueUpdate() {
-        return scanQueueUpdate;
-    }
-
-    boolean isQueueSearching() {
-        return scanQueue.isSearching();
-    }
-
-    @NonNull
-    Iterator<QueuedItem<ISBN>> getScanQueue() {
-        return scanQueue.iterator();
-    }
-
-    @NonNull
-    List<QueuedItem<ISBN>> readItemQueueFromFile(@NonNull final Context context,
-                                                 @NonNull final Uri uri)
-            throws IOException {
-        return scanQueue.readFromFile(context, uri);
-    }
-
-    @NonNull
-    List<QueuedItem<ISBN>> readItemQueueFromPreferences() {
-        return scanQueue.readFromPreferences();
-    }
-
-    void itemQueueClearPreferences() {
-        scanQueue.clearPreferences();
-    }
-
-    /**
-     * Add the list of items to the queue and start a search for them.
-     * <p>
-     * <strong>Does</strong> trigger {@link #onScanQueueUpdate}.
-     *
-     * @param items       to add
-     * @param startSearch method
-     *
-     * @return {@code true} if at least one item was added and a search started for it
-     */
-    boolean addToQueueAndStartSearch(@NonNull final List<QueuedItem<ISBN>> items,
-                                     @NonNull final Function<ISBN, Integer> startSearch) {
-        boolean atLeastOneStarted = false;
-        synchronized (scanQueue) {
-            for (final QueuedItem<ISBN> item : items) {
-                final int searchId = addToQueueAndStartSearch(item, startSearch);
-                if (searchId > 0) {
-                    atLeastOneStarted = true;
-                }
-            }
-
-            if (atLeastOneStarted) {
-                scanQueueUpdate.setValue(scanQueue.iterator());
-            }
-        }
-        return atLeastOneStarted;
-    }
-
-    /**
-     * Add a single item to the queue and start a search for it.
-     * <p>
-     * Does <strong>NOT</strong> trigger {@link #onScanQueueUpdate}.
-     *
-     * @param item        to add
-     * @param startSearch method
-     *
-     * @return the searchId, or:
-     *         {@link #SEARCH_NOT_STARTED} if no search was started.
-     *         This is not necessarily an error;
-     *         {@link #SEARCH_DUPLICATE_ISBN} if the item ISBN was already present.
-     */
-    int addToQueueAndStartSearch(@NonNull final QueuedItem<ISBN> item,
-                                 @NonNull final Function<ISBN, Integer> startSearch) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "addToQueueAndStartSearch", "item=" + item);
-        }
-        synchronized (scanQueue) {
-            // duplicates are rejected
-            if (scanQueue.contains(item.getCode())) {
-                return SEARCH_DUPLICATE_ISBN;
-            }
-            // FIRST ADD at the end of the queue.
-            scanQueue.add(item);
-            // THEN START the search.
-            final int searchId = startSearch.apply(item.getCode());
-            if (searchId > 0) {
-                item.setSearchId(searchId);
-                scanQueueUpdate.setValue(scanQueue.iterator());
-                return searchId;
-            }
-            // No search was started. Remove from the queue
-            scanQueue.remove(item);
-            return SEARCH_NOT_STARTED;
-        }
-    }
-
-    /**
-     * Start searches for all current items in the queue.
-     * <p>
-     * <strong>Does</strong> trigger {@link #onScanQueueUpdate}.
-     *
-     * @param startSearch method
-     *
-     * @return {@code true} if at least one search was started
-     */
-    boolean startQueueSearches(@NonNull final Function<ISBN, Integer> startSearch) {
-        boolean atLeastOneStarted = false;
-        synchronized (scanQueue) {
-            final Iterator<QueuedItem<ISBN>> list = scanQueue.iterator();
-            while (list.hasNext()) {
-                final QueuedItem<ISBN> item = list.next();
-                // not started yet?
-                if (!item.isSearching()) {
-                    final int searchId = startSearch.apply(item.getCode());
-                    if (searchId > 0) {
-                        item.setSearchId(searchId);
-                        atLeastOneStarted = true;
-                    } else {
-                        // FAIL; simple remove
-                        scanQueue.remove(item);
-                    }
-                }
-            }
-            scanQueueUpdate.setValue(scanQueue.iterator());
-        }
-        return atLeastOneStarted;
-    }
-
-    /**
-     * Called when a search result came in for an item in the queue.
-     * Updated the item and triggers a {@link #onScanQueueUpdate}.
-     *
-     * @param result received
-     */
-    void onQueueSearchResults(@NonNull final BookSearchResult result) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "onQueueSearchResults", "result=" + result);
-        }
-        synchronized (scanQueue) {
-            scanQueue.bySearchId(result.getSearchId()).ifPresent(item -> {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    LoggerFactory.getLogger().d(TAG, "onQueueSearchResults|mapped",
-                                                "result=" + result);
-                }
-                item.setResult(result);
-                scanQueueUpdate.setValue(scanQueue.iterator());
-            });
-        }
-    }
-
-    /**
-     * Remove all items from the queue; cancel any searches for them.
-     * <p>
-     * <strong>Does</strong> trigger {@link #onScanQueueUpdate()}.
-     *
-     * @param coordinator used to cancel searches
-     * @param clear       flag
-     */
-    void clearQueueAndCancelSearches(@NonNull final SearchCoordinator coordinator,
-                                     final boolean clear) {
-        synchronized (scanQueue) {
-            coordinator.cancel();
-            if (clear) {
-                scanQueue.clear();
-            }
-            scanQueueUpdate.setValue(scanQueue.iterator());
-        }
-    }
-
-    /**
-     * Remove the given code from the queue; cancel any searches for it.
-     * <p>
-     * Does <strong>NOT</strong> trigger {@link #onScanQueueUpdate()}.
-     *
-     * @param coordinator used to cancel searches
-     * @param item        to remove/cancel
-     */
-    void removeFromQueueAndCancelSearch(@NonNull final SearchCoordinator coordinator,
-                                        @NonNull final QueuedItem<ISBN> item) {
-        synchronized (scanQueue) {
-            // don't care about the result, we're discarding the whole item
-            final int searchId = item.getSearchId();
-            if (searchId > 0) {
-                coordinator.cancelSearch(searchId);
-            }
-            scanQueue.remove(item);
-        }
     }
 
     /**
