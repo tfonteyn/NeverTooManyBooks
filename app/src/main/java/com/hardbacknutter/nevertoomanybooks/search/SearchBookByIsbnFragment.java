@@ -207,13 +207,13 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     <li>User scans a code</li>
  *     <li>{@link #onBarcodeScanned(String)}</li>
  *     <li>{@link #preSearchAddToQueue(ISBN)}</li>
- *     <li>{@link QueueViewModel#addToQueueAndStartSearch(QueuedItem, Function)}</li>
+ *     <li>{@link QueueViewModel#add(QueuedItem, Function)}</li>
  *     <li>scanner starts again</li>
  * </ol>
  * <ol>
  *     <li>{@link SearchBookBaseFragment}#onSearchFinished(LiveDataEvent)</li>
  *     <li>{@link #onSearchFinished(BookSearchResult)}</li>
- *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onResult(BookSearchResult)} </li>
  *     <li>all this in the background as the scanner is still running</li>
  * </ol>
  * <p>
@@ -223,22 +223,22 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * Manual Entry
  * <ol>
- *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onResult(BookSearchResult)} </li>
  *     <li>done.</li>
  * </ol>
  * Single scan
  * <ol>
- *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onResult(BookSearchResult)} </li>
  *     <li>done.</li>
  * </ol>
  * Continuous scan
  * <ol>
- *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onResult(BookSearchResult)} </li>
  *     <li>scanner starts again</li>
  * </ol>
  * Batch scan
  * <ol>
- *     <li>{@link QueueViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>{@link QueueViewModel#onResult(BookSearchResult)} </li>
  *     <li>scanner starts again</li>
  * </ol>
  */
@@ -300,7 +300,7 @@ public class SearchBookByIsbnFragment
                                         // option 0: Save for later
                                         // option 1: Clear queue
                                         final boolean clear = option == 1;
-                                        qvm.clearQueueAndCancelSearches(coordinator, clear);
+                                        qvm.clear(coordinator, clear);
                                         //noinspection DataFlowIssue
                                         getActivity().setResult(Activity.RESULT_OK,
                                                                 createResultIntent());
@@ -385,7 +385,7 @@ public class SearchBookByIsbnFragment
             updateEmbeddedScannerViewsVisibility(false);
         }
 
-        qvm.onQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
+        qvm.onUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_search_isbn);
@@ -399,7 +399,7 @@ public class SearchBookByIsbnFragment
 
         vb.btnClearQueue.setOnClickListener(v -> {
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            qvm.clearQueueAndCancelSearches(coordinator, true);
+            qvm.clear(coordinator, true);
         });
 
         final Context context = getContext();
@@ -596,7 +596,7 @@ public class SearchBookByIsbnFragment
                 startScanner();
             }
         }
-        onQueueUpdated(qvm.getQueue());
+        onQueueUpdated(qvm.iterator());
     }
 
     @Override
@@ -748,7 +748,7 @@ public class SearchBookByIsbnFragment
 
     private void setScannerMode(@NonNull final ScanMode scanMode) {
         vm.setScannerMode(scanMode);
-        onQueueUpdated(qvm.getQueue());
+        onQueueUpdated(qvm.iterator());
     }
 
     /**
@@ -767,7 +767,7 @@ public class SearchBookByIsbnFragment
     }
 
     private boolean isBatchOrHasQueue() {
-        return qvm.getQueueSize() > 0 || vm.getScannerMode() == ScanMode.Batch;
+        return qvm.getSize() > 0 || vm.getScannerMode() == ScanMode.Batch;
     }
 
     /**
@@ -847,8 +847,8 @@ public class SearchBookByIsbnFragment
      * @param code to search for
      */
     private void preSearchAddToQueue(@NonNull final ISBN code) {
-        final int searchId = qvm.addToQueueAndStartSearch(new QueuedItem<>(code),
-                                                          this::startSearch);
+        final int searchId = qvm.add(new QueuedItem<>(code),
+                                     this::startSearch);
 
         // REMINDER: We have a queue, but we can get here for any of these:
         // - manual entry / single scan (duplicates n/a)
@@ -928,7 +928,7 @@ public class SearchBookByIsbnFragment
         // Do NOT switch on the ScanMode.Batch or otherwise
         // but DO hide the progress
         setEnableProgressMessages(false);
-        final boolean searchStarted = qvm.addToQueueAndStartSearch(items, this::startSearch);
+        final boolean searchStarted = qvm.add(items, this::startSearch);
 
         if (searchStarted) {
             Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
@@ -1000,18 +1000,18 @@ public class SearchBookByIsbnFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchFinished",
                                         vm.getScannerMode(),
-                                        "queue=" + qvm.getQueueSize(),
+                                        "queue=" + qvm.getSize(),
                                         result);
         }
 
-        if (qvm.getQueueSize() == 0
+        if (qvm.getSize() == 0
             // Check the scan-mode as it was used for **this** scan-result!
             && (result.getScanMode() == ScanMode.Off
                 || result.getScanMode() == ScanMode.Continuous)) {
             // user interactive; we'll end up in #onSearchResults
             super.onSearchFinished(result);
         } else {
-            qvm.onQueueSearchResults(result);
+            qvm.onResult(result);
         }
     }
 
@@ -1025,7 +1025,7 @@ public class SearchBookByIsbnFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchResults",
                                         vm.getScannerMode(),
-                                        "queue=" + qvm.getQueueSize(),
+                                        "queue=" + qvm.getSize(),
                                         result);
         }
 
@@ -1043,7 +1043,7 @@ public class SearchBookByIsbnFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchResultsSaveBook",
                                         vm.getScannerMode(),
-                                        "queue=" + qvm.getQueueSize(),
+                                        "queue=" + qvm.getSize(),
                                         result);
         }
 
@@ -1332,7 +1332,7 @@ public class SearchBookByIsbnFragment
         @SuppressWarnings("unchecked")
         final QueuedItem<ISBN> item = (QueuedItem<ISBN>) chip.getTag();
         // remove but update the view manually to avoid flicker
-        qvm.removeFromQueueAndCancelSearch(coordinator, item);
+        qvm.remove(coordinator, item);
         vb.queue.removeView(chip);
         updateQueueViewsVisibility();
     }
@@ -1343,7 +1343,7 @@ public class SearchBookByIsbnFragment
     private void updateQueueViewsVisibility() {
         vb.queueGroup.setVisibility(isBatchOrHasQueue() ? View.VISIBLE : View.GONE);
 
-        final boolean searching = qvm.isQueueSearching();
+        final boolean searching = qvm.isSearching();
         if (searching) {
             vb.queueProgress.setVisibility(View.VISIBLE);
             vb.queueProgress.startAnimation(
@@ -1355,7 +1355,7 @@ public class SearchBookByIsbnFragment
 
         // Enabled when there is a non-empty queue.
         // We don't look for 'searching' or 'results' items
-        backPressedWithActiveSearches.setEnabled(qvm.getQueueSize() > 0);
+        backPressedWithActiveSearches.setEnabled(qvm.getSize() > 0);
     }
 
     /**
@@ -1366,7 +1366,7 @@ public class SearchBookByIsbnFragment
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         onClearSearchCriteria();
-        onQueueUpdated(qvm.getQueue());
+        onQueueUpdated(qvm.iterator());
         vm.onBookEditingDone(data);
 
         if (vm.getScannerMode() == ScanMode.Continuous) {

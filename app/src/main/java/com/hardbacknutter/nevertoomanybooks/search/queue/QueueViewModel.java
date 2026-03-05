@@ -44,21 +44,21 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public abstract class QueueViewModel<CODE extends Code>
         extends ViewModel {
 
-    /** Return code from {@link #addToQueueAndStartSearch(QueuedItem, Function)}. */
+    /** Return code from {@link #add(QueuedItem, Function)}. */
     public static final int SEARCH_NOT_STARTED = 0;
-    /** Return code from {@link #addToQueueAndStartSearch(QueuedItem, Function)}. */
+    /** Return code from {@link #add(QueuedItem, Function)}. */
     public static final int SEARCH_DUPLICATE_ITEM = -1;
 
     /** Log tag. */
     private static final String TAG = "QueueViewModel";
 
-    private final MutableLiveData<Iterator<QueuedItem<CODE>>> queueUpdate =
+    private final MutableLiveData<Iterator<QueuedItem<CODE>>> onUpdate =
             new MutableLiveData<>();
 
-    private final Object queueLock = new Object();
+    private final Object lock = new Object();
 
     /** The batch mode queue. */
-    @GuardedBy("queueLock")
+    @GuardedBy("lock")
     private ItemQueue<CODE> queue;
 
     /**
@@ -81,8 +81,8 @@ public abstract class QueueViewModel<CODE extends Code>
      * @return an iterator over the queue
      */
     @NonNull
-    public LiveData<Iterator<QueuedItem<CODE>>> onQueueUpdate() {
-        return queueUpdate;
+    public LiveData<Iterator<QueuedItem<CODE>>> onUpdate() {
+        return onUpdate;
     }
 
     /**
@@ -90,11 +90,11 @@ public abstract class QueueViewModel<CODE extends Code>
      *
      * @return flag
      */
-    public boolean isQueueSearching() {
+    public boolean isSearching() {
         return queue.isSearching();
     }
 
-    public int getQueueSize() {
+    public int getSize() {
         return queue.size();
     }
 
@@ -104,33 +104,33 @@ public abstract class QueueViewModel<CODE extends Code>
      * @return iterator
      */
     @NonNull
-    public Iterator<QueuedItem<CODE>> getQueue() {
+    public Iterator<QueuedItem<CODE>> iterator() {
         return queue.iterator();
     }
 
     /**
      * Add the list of items to the queue and start a search for them.
      * <p>
-     * <strong>Does</strong> trigger {@link #onQueueUpdate}.
+     * <strong>Does</strong> trigger {@link #onUpdate}.
      *
      * @param items       to add
      * @param startSearch method
      *
      * @return {@code true} if at least one item was added and a search started for it
      */
-    public boolean addToQueueAndStartSearch(@NonNull final List<QueuedItem<CODE>> items,
-                                            @NonNull final Function<CODE, Integer> startSearch) {
+    public boolean add(@NonNull final List<QueuedItem<CODE>> items,
+                       @NonNull final Function<CODE, Integer> startSearch) {
         boolean atLeastOneStarted = false;
-        synchronized (queueLock) {
+        synchronized (lock) {
             for (final QueuedItem<CODE> item : items) {
-                final int searchId = addToQueueAndStartSearch(item, startSearch);
+                final int searchId = add(item, startSearch);
                 if (searchId > 0) {
                     atLeastOneStarted = true;
                 }
             }
 
             if (atLeastOneStarted) {
-                queueUpdate.setValue(queue.iterator());
+                onUpdate.setValue(queue.iterator());
             }
         }
         return atLeastOneStarted;
@@ -139,7 +139,7 @@ public abstract class QueueViewModel<CODE extends Code>
     /**
      * Add a single item to the queue and start a search for it.
      * <p>
-     * Does <strong>NOT</strong> trigger {@link #onQueueUpdate}.
+     * Does <strong>NOT</strong> trigger {@link #onUpdate}.
      *
      * @param item        to add
      * @param startSearch method
@@ -149,12 +149,12 @@ public abstract class QueueViewModel<CODE extends Code>
      *         This is not necessarily an error;
      *         {@link #SEARCH_DUPLICATE_ITEM} if the item was already present.
      */
-    public int addToQueueAndStartSearch(@NonNull final QueuedItem<CODE> item,
-                                        @NonNull final Function<CODE, Integer> startSearch) {
+    public int add(@NonNull final QueuedItem<CODE> item,
+                   @NonNull final Function<CODE, Integer> startSearch) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "addToQueueAndStartSearch", "item=" + item);
         }
-        synchronized (queueLock) {
+        synchronized (lock) {
             // duplicates are rejected
             if (queue.contains(item.getCode())) {
                 return SEARCH_DUPLICATE_ITEM;
@@ -165,7 +165,7 @@ public abstract class QueueViewModel<CODE extends Code>
             final int searchId = startSearch.apply(item.getCode());
             if (searchId > 0) {
                 item.setSearchId(searchId);
-                queueUpdate.setValue(queue.iterator());
+                onUpdate.setValue(queue.iterator());
                 return searchId;
             }
             // No search was started. Remove from the queue
@@ -177,15 +177,15 @@ public abstract class QueueViewModel<CODE extends Code>
     /**
      * Start searches for all current items in the queue.
      * <p>
-     * <strong>Does</strong> trigger {@link #onQueueUpdate}.
+     * <strong>Does</strong> trigger {@link #onUpdate}.
      *
      * @param startSearch method
      *
      * @return {@code true} if at least one search was started
      */
-    public boolean startQueueSearches(@NonNull final Function<CODE, Integer> startSearch) {
+    public boolean startSearches(@NonNull final Function<CODE, Integer> startSearch) {
         boolean atLeastOneStarted = false;
-        synchronized (queueLock) {
+        synchronized (lock) {
             final Iterator<QueuedItem<CODE>> list = queue.iterator();
             while (list.hasNext()) {
                 final QueuedItem<CODE> item = list.next();
@@ -201,29 +201,29 @@ public abstract class QueueViewModel<CODE extends Code>
                     }
                 }
             }
-            queueUpdate.setValue(queue.iterator());
+            onUpdate.setValue(queue.iterator());
         }
         return atLeastOneStarted;
     }
 
     /**
      * Called when a search result came in for an item in the queue.
-     * Updated the item and triggers a {@link #onQueueUpdate}.
+     * Updated the item and triggers a {@link #onUpdate}.
      *
      * @param result received
      */
-    public void onQueueSearchResults(@NonNull final BookSearchResult result) {
+    public void onResult(@NonNull final BookSearchResult result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onQueueSearchResults", "result=" + result);
         }
-        synchronized (queueLock) {
+        synchronized (lock) {
             queue.bySearchId(result.getSearchId()).ifPresent(item -> {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     LoggerFactory.getLogger().d(TAG, "onQueueSearchResults|mapped",
                                                 "result=" + result);
                 }
                 item.setResult(result);
-                queueUpdate.setValue(queue.iterator());
+                onUpdate.setValue(queue.iterator());
             });
         }
     }
@@ -231,33 +231,33 @@ public abstract class QueueViewModel<CODE extends Code>
     /**
      * Remove all items from the queue; cancel any searches for them.
      * <p>
-     * <strong>Does</strong> trigger {@link #onQueueUpdate()}.
+     * <strong>Does</strong> trigger {@link #onUpdate()}.
      *
      * @param coordinator used to cancel searches
      * @param clear       flag
      */
-    public void clearQueueAndCancelSearches(@NonNull final SearchCoordinator coordinator,
-                                            final boolean clear) {
-        synchronized (queueLock) {
+    public void clear(@NonNull final SearchCoordinator coordinator,
+                      final boolean clear) {
+        synchronized (lock) {
             coordinator.cancel();
             if (clear) {
                 queue.clear();
             }
-            queueUpdate.setValue(queue.iterator());
+            onUpdate.setValue(queue.iterator());
         }
     }
 
     /**
      * Remove the given code from the queue; cancel any searches for it.
      * <p>
-     * Does <strong>NOT</strong> trigger {@link #onQueueUpdate()}.
+     * Does <strong>NOT</strong> trigger {@link #onUpdate()}.
      *
      * @param coordinator used to cancel searches
      * @param item        to remove/cancel
      */
-    public void removeFromQueueAndCancelSearch(@NonNull final SearchCoordinator coordinator,
-                                               @NonNull final QueuedItem<CODE> item) {
-        synchronized (queueLock) {
+    public void remove(@NonNull final SearchCoordinator coordinator,
+                       @NonNull final QueuedItem<CODE> item) {
+        synchronized (lock) {
             // don't care about the result, we're discarding the whole item
             final int searchId = item.getSearchId();
             if (searchId > 0) {
