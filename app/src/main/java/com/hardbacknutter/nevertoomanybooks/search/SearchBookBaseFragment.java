@@ -183,6 +183,10 @@ public abstract class SearchBookBaseFragment
         }
     }
 
+    boolean isSearchActive() {
+        return coordinator.isSearchActive();
+    }
+
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * The results come back in {@link #onSearchResults(BookSearchResult)}.

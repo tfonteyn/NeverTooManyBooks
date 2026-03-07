@@ -243,7 +243,7 @@ public class SearchBookByTextFragment
         viewToModel();
 
         // check if we have an active search, if so, quit silently.
-        if (coordinator.isSearchActive()) {
+        if (isSearchActive()) {
             return;
         }
 

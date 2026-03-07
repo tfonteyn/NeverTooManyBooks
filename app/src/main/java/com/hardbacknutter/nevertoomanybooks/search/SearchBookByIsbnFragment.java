@@ -784,7 +784,7 @@ public class SearchBookByIsbnFragment
     private void preSearchInteractively(@NonNull final ISBN code) {
         // paranoia: we should not be in the situation... flw
         // check if we have an active search, if so, quit silently.
-        if (coordinator.isSearchActive()) {
+        if (isSearchActive()) {
             return;
         }
 
