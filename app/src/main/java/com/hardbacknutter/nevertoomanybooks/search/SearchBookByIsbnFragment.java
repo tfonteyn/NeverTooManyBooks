@@ -611,7 +611,7 @@ public class SearchBookByIsbnFragment
      * @see #startScannerActivity()
      */
     private void startScanner() {
-        setEnableProgressMessages(!isBatchOrHasQueue());
+        setEnableProgressMessages(!isQueueEnabled());
         if (useEmbeddedScanner) {
             // The embedded scanner must handle permissions locally
             permissionRequester.request(Manifest.permission.CAMERA, isGranted -> {
@@ -757,7 +757,7 @@ public class SearchBookByIsbnFragment
      * @param code to search for
      */
     private void prepare(@NonNull final ISBN code) {
-        if (isBatchOrHasQueue()) {
+        if (isQueueEnabled()) {
             // We're running with a queue, add it to the queue
             preSearchAddToQueue(code);
         } else {
@@ -766,7 +766,12 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    private boolean isBatchOrHasQueue() {
+    /**
+     * Check if we have an active queue, or if we're in batch mode (which will populate the queue).
+     *
+     * @return flag
+     */
+    private boolean isQueueEnabled() {
         return qvm.getSize() > 0 || vm.getScannerMode() == ScanMode.Batch;
     }
 
@@ -783,7 +788,7 @@ public class SearchBookByIsbnFragment
             return;
         }
 
-        setEnableProgressMessages(!isBatchOrHasQueue());
+        setEnableProgressMessages(!isQueueEnabled());
 
         // Check if the ISBN already exists in our database,
         final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
@@ -847,10 +852,9 @@ public class SearchBookByIsbnFragment
      * @param code to search for
      */
     private void preSearchAddToQueue(@NonNull final ISBN code) {
-        final int searchId = qvm.add(new QueuedItem<>(code),
-                                     this::startSearch);
+        final int searchId = qvm.add(new QueuedItem<>(code), this::startSearch);
 
-        // REMINDER: We have a queue, but we can get here for any of these:
+        // REMINDER: We have a queue, but we can get here from either of these:
         // - manual entry / single scan (duplicates n/a)
         // - continuous scan / batch mode
 
@@ -1136,7 +1140,7 @@ public class SearchBookByIsbnFragment
         }
 
         // TODO: this can cause flicker if the updates comes too fast
-        if (isBatchOrHasQueue()) {
+        if (isQueueEnabled()) {
             vb.queue.removeAllViews();
         }
 
@@ -1341,7 +1345,7 @@ public class SearchBookByIsbnFragment
      * Common code to update the visibility of the UI queue.
      */
     private void updateQueueViewsVisibility() {
-        vb.queueGroup.setVisibility(isBatchOrHasQueue() ? View.VISIBLE : View.GONE);
+        vb.queueGroup.setVisibility(isQueueEnabled() ? View.VISIBLE : View.GONE);
 
         final boolean searching = qvm.isSearching();
         if (searching) {
