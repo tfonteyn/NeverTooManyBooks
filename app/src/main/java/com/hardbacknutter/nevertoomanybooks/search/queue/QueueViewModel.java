@@ -138,8 +138,6 @@ public abstract class QueueViewModel<CODE extends Code>
 
     /**
      * Add a single item to the queue and start a search for it.
-     * <p>
-     * Does <strong>NOT</strong> trigger {@link #onUpdate}.
      *
      * @param item        to add
      * @param startSearch method

@@ -238,7 +238,7 @@ public abstract class SearchBookBaseFragment
 
     /**
      * This is the base method which will interact with the user as needed.
-     * Override as needed, call super as needed only.
+     * Override as needed, call super <strong>only if in an interactive mode</strong>.
      *
      * @param result from a search
      */

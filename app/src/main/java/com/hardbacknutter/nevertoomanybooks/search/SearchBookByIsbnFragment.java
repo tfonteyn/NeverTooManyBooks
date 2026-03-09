@@ -426,7 +426,7 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Called if there is no Queue.
+     * Called if there is no Queue or if the user discarded a stored queue.
      */
     private void afterOnViewCreated() {
         vb.isbn.requestFocus();
@@ -573,10 +573,12 @@ public class SearchBookByIsbnFragment
         vb.isbn.onKey(key);
     }
 
+    @Override
     protected void modelToView() {
         vb.isbn.setText(vm.getIsbnText());
     }
 
+    @Override
     protected void viewToModel() {
         //noinspection DataFlowIssue
         vm.setIsbnText(vb.isbn.getText().toString().strip());
@@ -586,13 +588,14 @@ public class SearchBookByIsbnFragment
     public void onResume() {
         super.onResume();
         if (vm.onResumeFromSettings()) {
-            // we have just returned from the settings screen
+            // We have just returned from the settings screen.
+            // If the embedded scanner is in use and started, it needs
+            // restarting to force it to pick up any new settings.
             if (useEmbeddedScanner && vm.isScannerStarted()
                 // Paranoia, should never be null here
                 && scanner != null) {
                 scanner.stop();
                 vm.setScannerStarted(false);
-                // recreate/restart so we pick up the new settings
                 startScanner();
             }
         }
@@ -761,7 +764,6 @@ public class SearchBookByIsbnFragment
             // We're running with a queue, add it to the queue
             preSearchAddToQueue(code);
         } else {
-            // We're not using a queue.
             preSearchInteractively(code);
         }
     }
@@ -776,7 +778,8 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Prepare to search. We're NOT running with a queue.
+     * We're running in simple interactive mode.
+     * Prepare to search.
      * Check for codes already existing locally, interact with the user as needed.
      *
      * @param code to search for
@@ -806,7 +809,7 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Interactive mode; no queue.
+     * We're running in simple interactive mode.
      * Called <strong>before</strong> a search is started if the entered code
      * is already present in the local database.
      *
@@ -814,6 +817,7 @@ public class SearchBookByIsbnFragment
      * @param existingIds the local books which use that code
      * @param onAdd       action to take when the user selects "add anyway"
      */
+    @SuppressWarnings("TypeMayBeWeakened")
     private void onBookAlreadyPresent(@NonNull final ISBN code,
                                       @NonNull final List<Pair<Long, String>> existingIds,
                                       @NonNull final Runnable onAdd) {
@@ -848,16 +852,21 @@ public class SearchBookByIsbnFragment
     /**
      * Prepare to search. We're running with a queue, add the code to the queue.
      * Only interact with the user when adding/starting a search failed.
+     * <p>
+     * REMINDER: We have a queue, but we can get here from either of these:
+     * <ul>
+     *     <li>manual entry / single scan (duplicates n/a);
+     *         <strong>while in queue/batch mode</strong></li>
+     *     <li>continuous scan or queue/batch mode</li>
+     * </ul>
      *
      * @param code to search for
      */
     private void preSearchAddToQueue(@NonNull final ISBN code) {
         final int searchId = qvm.add(new QueuedItem<>(code), this::startSearch);
 
-        // REMINDER: We have a queue, but we can get here from either of these:
-        // - manual entry / single scan (duplicates n/a)
-        // - continuous scan / batch mode
-
+        // Is this a manual search (user enters ISBN)
+        // or a single scan (scan returns ISBN)
         if (vm.getScannerMode() == ScanMode.Off
             || vm.getScannerMode() == ScanMode.Single) {
             // duplicate check N/A
@@ -878,17 +887,16 @@ public class SearchBookByIsbnFragment
             return;
         }
 
-        // ScanMode.Continuous / ScanMode.Batch
-
+        // We're either in ScanMode.Continuous or ScanMode.Batch
+        // Was a search started? or it was a duplicate (silently rejected)?
         if (searchId > 0 || searchId == QueueViewModel.SEARCH_DUPLICATE_ITEM) {
-            // Search started; or it was a duplicate (silently rejected)
             // Go scan the next book.
             startScanner();
             return;
         }
 
-        // ScanMode.Continuous / ScanMode.Batch
-        // Starting a new search failed
+        // We're either in ScanMode.Continuous or ScanMode.Batch
+        // Starting a new search failed, ask the user what to do next.
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.progress_msg_searching)
@@ -904,7 +912,6 @@ public class SearchBookByIsbnFragment
                 .create()
                 .show();
     }
-
 
     /**
      * Sits between {@link #prepare(ISBN)} and {@link #startSearch(BookSearchCriteria)}
