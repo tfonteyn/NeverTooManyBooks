@@ -45,6 +45,22 @@ see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBook
 Signer "DN: CN=ca"; SHA-256 digest:
 df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
 
+**Warning**: when installing on devices with the newest Google updates, this app may be scanned and
+flagged as _fake_.
+
+What you can do:
+
+- Visit [https://keepandroidopen.org/](https://keepandroidopen.org/)
+- Log an issue and ask for details; but read the above site **FIRST**.
+- Ignore the false positive, and install anyhow.
+- Read the source code and build the app yourself from the source, and install that.
+- Feel free to not install/delete the app.
+
+What you should not do:
+
+- blame the developer and start wild accusations. All the sources are here, and you can build/verify
+  for yourself every single line.
+
 ## User Interface languages:
 
 - Chinese Simplified(CN), Chinese Traditional(TW),

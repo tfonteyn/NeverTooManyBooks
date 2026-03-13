@@ -66,6 +66,8 @@ android {
     namespace = "com.hardbacknutter.nevertoomanybooks"
     compileSdk = libs.versions.compileSdk.get().toInteger()
 
+    // https://developer.android.com/studio/publish/app-signing
+    // https://source.android.com/docs/security/features/apksigning
     signingConfigs {
         release {
             storeFile = file(props["sign.storeFile"])
