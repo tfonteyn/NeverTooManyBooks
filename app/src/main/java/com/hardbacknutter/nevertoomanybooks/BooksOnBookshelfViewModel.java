@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
@@ -1060,15 +1061,17 @@ public class BooksOnBookshelfViewModel
      */
     void setAuthorComplete(@NonNull final Author author,
                            final boolean complete) {
-        if (authorDao.setComplete(author, complete)) {
-            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            final int[] positions =
-                    booklist.updateAuthorComplete(author.getId(), author.isComplete())
-                            .stream()
-                            .mapToInt(BooklistNode::getAdapterPosition)
-                            .toArray();
-            positionsUpdated.setValue(positions);
-        }
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            if (authorDao.setComplete(author, complete)) {
+                Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+                final int[] positions =
+                        booklist.updateAuthorComplete(author.getId(), author.isComplete())
+                                .stream()
+                                .mapToInt(BooklistNode::getAdapterPosition)
+                                .toArray();
+                positionsUpdated.postValue(positions);
+            }
+        });
     }
 
     /**
@@ -1081,15 +1084,17 @@ public class BooksOnBookshelfViewModel
      */
     void setSeriesComplete(@NonNull final Series series,
                            final boolean complete) {
-        if (seriesDao.setComplete(series, complete)) {
-            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            final int[] positions =
-                    booklist.updateSeriesComplete(series.getId(), series.isComplete())
-                            .stream()
-                            .mapToInt(BooklistNode::getAdapterPosition)
-                            .toArray();
-            positionsUpdated.setValue(positions);
-        }
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            if (seriesDao.setComplete(series, complete)) {
+                Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+                final int[] positions =
+                        booklist.updateSeriesComplete(series.getId(), series.isComplete())
+                                .stream()
+                                .mapToInt(BooklistNode::getAdapterPosition)
+                                .toArray();
+                positionsUpdated.postValue(positions);
+            }
+        });
     }
 
     /**
