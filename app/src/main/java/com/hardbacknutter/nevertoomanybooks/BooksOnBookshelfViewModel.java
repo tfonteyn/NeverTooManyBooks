@@ -1368,9 +1368,11 @@ public class BooksOnBookshelfViewModel
      */
     void delete(@NonNull final Context context,
                 @NonNull final Series series) {
-        if (seriesDao.delete(context, series)) {
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        }
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            if (seriesDao.delete(context, series)) {
+                triggerRebuildList.postValue(LiveDataEvent.of(false));
+            }
+        });
     }
 
     /**
@@ -1381,9 +1383,11 @@ public class BooksOnBookshelfViewModel
      */
     void delete(@NonNull final Context context,
                 @NonNull final Publisher publisher) {
-        if (publisherDao.delete(context, publisher)) {
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        }
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            if (publisherDao.delete(context, publisher)) {
+                triggerRebuildList.postValue(LiveDataEvent.of(false));
+            }
+        });
     }
 
     /**
@@ -1394,9 +1398,11 @@ public class BooksOnBookshelfViewModel
      */
     void delete(@NonNull final Context context,
                 @NonNull final Bookshelf bookshelf) {
-        if (bookshelfDao.delete(context, bookshelf)) {
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        }
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            if (bookshelfDao.delete(context, bookshelf)) {
+                triggerRebuildList.postValue(LiveDataEvent.of(false));
+            }
+        });
     }
 
     /**
@@ -1407,9 +1413,11 @@ public class BooksOnBookshelfViewModel
      */
     void delete(@NonNull final Context context,
                 @NonNull final Tag tag) {
-        if (tagDao.delete(tag)) {
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        }
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            if (tagDao.delete(tag)) {
+                triggerRebuildList.postValue(LiveDataEvent.of(false));
+            }
+        });
     }
 
     /**
