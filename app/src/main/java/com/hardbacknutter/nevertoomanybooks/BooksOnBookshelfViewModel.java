@@ -1150,9 +1150,11 @@ public class BooksOnBookshelfViewModel
             throw new IllegalArgumentException(ERROR_NO_BOOK_IDS);
         }
 
-        bookDao.setLocation(bookIds, location);
-        // ALWAYS rebuild
-        triggerRebuildList.setValue(LiveDataEvent.of(false));
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            bookDao.setLocation(bookIds, location);
+            // ALWAYS rebuild
+            triggerRebuildList.postValue(LiveDataEvent.of(false));
+        });
     }
 
     /**
