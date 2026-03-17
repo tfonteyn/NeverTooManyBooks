@@ -552,8 +552,12 @@ public class SearchBookByIsbnFragment
             final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
             final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
             if (!code.isValid()) {
-                vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
-                                              code.asText()));
+                final String text = code.asText();
+                if (text.isEmpty()) {
+                    vb.lblIsbn.setError(getString(R.string.vldt_non_blank_required));
+                } else {
+                    vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, text));
+                }
                 return;
             }
 
