@@ -71,9 +71,13 @@ public class Booklist
     private static final String _FROM_ = " FROM ";
     private static final String _LIKE_x = " LIKE ?";
     private static final String _LIMIT_ = " LIMIT ";
+    private static final String _OFFSET_ = " OFFSET ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _SET_ = " SET ";
     private static final String _WHERE_ = " WHERE ";
+
+    private static final String _ASC_ = " ASC ";
+    private static final String _DESC_ = " DESC ";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
 
@@ -322,12 +326,20 @@ public class Booklist
                                         final long currentLastId,
                                         @SuppressWarnings("SameParameterValue") final int pageSize) {
 
-        // If we don't have a current page, or the jump is too far, use OFFSET
-        if (currentPage == null || Math.abs(targetPage - currentPage) > 1) {
+        // Use OFFSET when:
+        // If we don't have a current page,
+        if (currentPage == null
+            // or we want the first page (i.e. 0)
+            || targetPage == 0
+            // or we don't want to move at all (reload same page)
+            || targetPage == currentPage
+            // or the jump is too far,
+            || Math.abs(targetPage - currentPage) > 1) {
+
             final int offset = targetPage * pageSize;
             final String sql = baseCursorSql
                                + _ORDER_BY_ + listTable.dot(DBKey.PK_ID)
-                               + _LIMIT_ + pageSize + " OFFSET " + offset;
+                               + _LIMIT_ + pageSize + _OFFSET_ + offset;
             return new Pair<>(db.rawQuery(sql, null), false);
         }
 
@@ -335,18 +347,18 @@ public class Booklist
         if (targetPage > currentPage) {
             final String sql = baseCursorSql
                                + _AND_ + listTable.dot(DBKey.PK_ID) + '>' + currentLastId
-                               + _ORDER_BY_ + listTable.dot(DBKey.PK_ID) + " ASC "
+                               + _ORDER_BY_ + listTable.dot(DBKey.PK_ID) + _ASC_
                                + _LIMIT_ + pageSize;
             return new Pair<>(db.rawQuery(sql, null), false);
-        } else {
-            // BACKWARD one page
-            final String sql = baseCursorSql
-                               + _AND_ + listTable.dot(DBKey.PK_ID) + '<' + currentFirstId
-                               + _ORDER_BY_ + listTable.dot(DBKey.PK_ID) + " DESC "
-                               + _LIMIT_ + pageSize;
-            // Results will be in reverse order! So return 'true' as the 'reverse' flag.
-            return new Pair<>(db.rawQuery(sql, null), true);
         }
+
+        // BACKWARD one page
+        final String sql = baseCursorSql
+                           + _AND_ + listTable.dot(DBKey.PK_ID) + '<' + currentFirstId
+                           + _ORDER_BY_ + listTable.dot(DBKey.PK_ID) + _DESC_
+                           + _LIMIT_ + pageSize;
+        // Results will be in reverse order! So return 'true' as the 'reverse' flag.
+        return new Pair<>(db.rawQuery(sql, null), true);
     }
 
     /**
