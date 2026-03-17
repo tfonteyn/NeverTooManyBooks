@@ -1110,12 +1110,6 @@ public class BooksOnBookshelfViewModel
                         @NonNull final Set<Long> bookshelfIds,
                         @Nullable final Bundle extras) {
 
-        final List<Bookshelf> bookshelves = bookshelfDao
-                .getAll()
-                .stream()
-                .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
-                .collect(Collectors.toList());
-
         if (extras == null) {
             throw new IllegalArgumentException(ERROR_NO_EXTRAS);
         }
@@ -1125,9 +1119,17 @@ public class BooksOnBookshelfViewModel
             throw new IllegalArgumentException(ERROR_NO_BOOK_IDS);
         }
 
-        bookDao.setBookshelves(context, bookIds, bookshelves);
-        // ALWAYS rebuild
-        triggerRebuildList.setValue(LiveDataEvent.of(false));
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            final List<Bookshelf> bookshelves = bookshelfDao
+                    .getAll()
+                    .stream()
+                    .filter(bookshelf -> bookshelfIds.contains(bookshelf.getId()))
+                    .collect(Collectors.toList());
+
+            bookDao.setBookshelves(context, bookIds, bookshelves);
+            // ALWAYS rebuild
+            triggerRebuildList.postValue(LiveDataEvent.of(false));
+        });
     }
 
     /**
