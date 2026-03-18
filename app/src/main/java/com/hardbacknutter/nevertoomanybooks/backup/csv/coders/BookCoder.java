@@ -512,8 +512,9 @@ public class BookCoder {
 
         if (book.contains(CsvGoodreads.BOOKSHELVES)
             || book.contains(CsvGoodreads.EXCLUSIVE_SHELF)) {
-            //ENHANCE: provide mapping for the Goodreads "read", "to-read" and "currently-reading"
-            // fixed shelves. For now we just create those 3 when not there yet.
+            //ENHANCE: provide mapping for the Goodreads
+            // "read", "to-read", "currently-reading" and "did-not-finish"
+            // fixed shelves. For now we just create those when not there yet.
             // If 'read' is present, we also set our DBKey.READ__BOOL flag.
             final StringList<Bookshelf> grBookshelfCoder = getGoodreads().getBookshelfCoder();
             processBookshelf(book, grBookshelfCoder, CsvGoodreads.BOOKSHELVES, list);
