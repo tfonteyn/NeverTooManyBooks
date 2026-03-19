@@ -133,8 +133,10 @@ public class CalibrePreferencesFragment
 
     @Override
     protected void proposeValidation() {
-        if (!hostUrlValidator.isValidUrl(pHostUrl)) {
-            hostUrlValidator.showUrlInvalidDialog(pHostUrl, this::popBackStackOrFinish);
+        if (!hostUrlValidator.isValidUrl(pHostUrl.getText())) {
+            hostUrlValidator.showUrlInvalidDialog(pHostUrl.getContext(),
+                                                  pHostUrl.getText(),
+                                                  this::popBackStackOrFinish);
             return;
         }
         super.proposeValidation();

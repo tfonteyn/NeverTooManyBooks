@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,10 +50,11 @@ public class AmazonPreferencesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (hostUrlValidator.isValidUrl(pHostUrl)) {
+                    if (hostUrlValidator.isValidUrl(pHostUrl.getText())) {
                         popBackStackOrFinish();
                     } else {
-                        hostUrlValidator.showUrlInvalidDialog(pHostUrl,
+                        hostUrlValidator.showUrlInvalidDialog(pHostUrl.getContext(),
+                                                              pHostUrl.getText(),
                                                               () -> popBackStackOrFinish());
                     }
                 }

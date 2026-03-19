@@ -55,7 +55,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  *     <li>custom preference dialogs</li>
  *     <li>auto-scroll key</li>
  * </ul>
- *
+ * <p>
  * It is the equivalent of the {@link com.hardbacknutter.nevertoomanybooks.BaseFragment}.
  */
 public abstract class BasePreferenceFragment
@@ -212,7 +212,10 @@ public abstract class BasePreferenceFragment
     @NonNull
     protected HostUrlValidator initHostUrlPreference(@NonNull final EditTextPreference pHostUrl) {
         final HostUrlValidator hostUrlValidator = new HostUrlValidator();
-        pHostUrl.setSummaryProvider(hostUrlValidator);
+
+        pHostUrl.setSummaryProvider((Preference.SummaryProvider<EditTextPreference>) preference ->
+                hostUrlValidator.getSummary(preference.getContext(), preference.getText()));
+
         pHostUrl.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT
                                   | InputType.TYPE_TEXT_VARIATION_URI);
