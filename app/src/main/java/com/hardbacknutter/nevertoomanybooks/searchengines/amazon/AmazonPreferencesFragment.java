@@ -53,9 +53,12 @@ public class AmazonPreferencesFragment
                     if (hostUrlValidator.isValidUrl(pHostUrl.getText())) {
                         popBackStackOrFinish();
                     } else {
-                        hostUrlValidator.showUrlInvalidDialog(pHostUrl.getContext(),
-                                                              pHostUrl.getText(),
-                                                              () -> popBackStackOrFinish());
+                        //noinspection DataFlowIssue
+                        hostUrlValidator.showUrlInvalidDialog(
+                                getContext(),
+                                pHostUrl.getText(),
+                                null,
+                                () -> popBackStackOrFinish());
                     }
                 }
             };

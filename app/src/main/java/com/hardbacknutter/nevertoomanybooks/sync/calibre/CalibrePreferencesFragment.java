@@ -136,6 +136,7 @@ public class CalibrePreferencesFragment
         if (!hostUrlValidator.isValidUrl(pHostUrl.getText())) {
             hostUrlValidator.showUrlInvalidDialog(pHostUrl.getContext(),
                                                   pHostUrl.getText(),
+                                                  null,
                                                   this::popBackStackOrFinish);
             return;
         }

@@ -49,12 +49,17 @@ public class HostUrlValidator {
 
     public void showUrlInvalidDialog(@NonNull final Context context,
                                      @Nullable final CharSequence text,
+                                     @Nullable final Runnable onEdit,
                                      @Nullable final Runnable onDiscard) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.info_24px)
                 .setTitle(R.string.error_invalid_url)
                 .setMessage(text)
-                .setPositiveButton(R.string.action_edit, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_edit, (d, w) -> {
+                    if (onEdit != null) {
+                        onEdit.run();
+                    }
+                })
                 .setNegativeButton(R.string.action_discard, (d, w) -> {
                     if (onDiscard != null) {
                         onDiscard.run();
