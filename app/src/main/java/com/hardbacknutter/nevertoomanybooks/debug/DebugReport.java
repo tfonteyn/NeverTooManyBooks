@@ -29,7 +29,6 @@ import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -147,10 +146,9 @@ public class DebugReport {
     }
 
     public void addPreferences() {
-        // DO NOT use ServiceLocator.getInstance().getSharedPreferences()
-        // We WANT the raw values.
-        final Map<String, ?> map = PreferenceManager
-                .getDefaultSharedPreferences(context).getAll();
+        // We want the raw values.
+        final Map<String, ?> map = ServiceLocator.getInstance().getRawSharedPreferences()
+                                                 .getAll();
 
         preferences = map.keySet()
                          .stream()

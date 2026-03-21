@@ -20,12 +20,10 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
-import androidx.preference.PreferenceManager;
 
 public final class IntListPref {
     private IntListPref() {
@@ -35,21 +33,13 @@ public final class IntListPref {
      * {@link ListPreference} stores the selected value as a String.
      * But they are really Integer values. Hence, this transmogrification....
      *
-     * @param context  Current context
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist,
-     *                 or if the stored value is somehow invalid
+     * @param preferences to read from
+     * @param key         The name of the preference to retrieve.
+     * @param defValue    Value to return if this preference does not exist,
+     *                    or if the stored value is somehow invalid
      *
      * @return int (stored as String) global preference
      */
-    public static int getInt(@NonNull final Context context,
-                             @NonNull final String key,
-                             final int defValue) {
-        final SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(context);
-        return getInt(preferences, key, defValue);
-    }
-
     public static int getInt(@NonNull final SharedPreferences preferences,
                              @NonNull final String key,
                              final int defValue) {

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.LocaleList;
@@ -27,7 +28,6 @@ import android.os.LocaleList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.net.CookieHandler;
@@ -280,13 +280,27 @@ public class ServiceLocator {
     /**
      * Get the Application Context Global Preferences.
      *
-     * @return global SharedPreferences
+     * @return global {@link Prefs}
      */
+    @NonNull
     public Prefs getSharedPreferences() {
         if (prefs == null) {
-            prefs = new Prefs(PreferenceManager.getDefaultSharedPreferences(appContext));
+            prefs = new Prefs(getRawSharedPreferences());
         }
         return prefs;
+    }
+
+    /**
+     * Get the <strong>raw</strong> Global Preferences.
+     *
+     * @return raw SharedPreferences
+     */
+    @NonNull
+    public SharedPreferences getRawSharedPreferences() {
+        // Use same file name as used by the legacy androidx.preference
+        return appContext.getSharedPreferences(
+                appContext.getPackageName() + "_preferences",
+                Context.MODE_PRIVATE);
     }
 
     /**
