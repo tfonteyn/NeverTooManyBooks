@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,8 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
@@ -36,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 
 @Keep
 public class StripInfoBePreferencesFragment
-        extends ConnectionValidationBasePreferenceFragment {
+        extends BasePreferenceFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "StripInfoBePrefFrag";
@@ -53,20 +55,14 @@ public class StripInfoBePreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
+        initLoginPrefs();
+        initCredentialPreferences(StripInfoAuth.PK_HOST_USER, StripInfoAuth.PK_HOST_PASS);
         //noinspection DataFlowIssue
         findPreference(EngineId.StripInfoBe.getPreferenceKey()
                        + AuthorResolverFactory.PK_RESOLVE_AUTHORS
                        + EngineId.Bedetheque.getPreferenceKey())
                 .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
                                     getString(R.string.site_bedetheque)));
-
-        initLoginPrefs();
-
-        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            initValidator(R.string.site_stripinfo_be);
-            initCredentialPreferences(StripInfoAuth.PK_HOST_USER,
-                                      StripInfoAuth.PK_HOST_PASS);
-        }
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -100,12 +96,17 @@ public class StripInfoBePreferencesFragment
     }
 
     @Override
-    protected boolean shouldProposeValidation() {
-        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            return pLoginToSearch.isChecked()
-                   || pSyncEnabled.isChecked();
-        } else {
-            return false;
-        }
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        new ConnectionValidationHelper(
+                R.string.site_stripinfo_be, this, getProgressFrame(), () -> {
+            if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+                return pLoginToSearch.isChecked() || pSyncEnabled.isChecked();
+            } else {
+                return false;
+            }
+        }, this::popBackStackOrFinish);
     }
 }

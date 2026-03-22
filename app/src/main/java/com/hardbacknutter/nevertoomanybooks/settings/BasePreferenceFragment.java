@@ -205,24 +205,53 @@ public abstract class BasePreferenceFragment
      * Initialise a field with an editable url.
      * The summary will indicate if the URL is valid or not.
      *
-     * @param pHostUrl the preference to init
-     *
-     * @return the validator
+     * @param urlValidator to use
+     * @param pHostUrl     the preference to init
      */
-    @NonNull
-    protected HostUrlValidator initHostUrlPreference(@NonNull final EditTextPreference pHostUrl) {
-        final HostUrlValidator hostUrlValidator = new HostUrlValidator();
+    protected void initHostUrlPreference(@NonNull final HostUrlValidator urlValidator,
+                                         @NonNull final EditTextPreference pHostUrl) {
 
         pHostUrl.setSummaryProvider((Preference.SummaryProvider<EditTextPreference>) preference ->
-                hostUrlValidator.getSummary(preference.getContext(), preference.getText()));
+                urlValidator.getSummary(preference.getContext(), preference.getText()));
 
         pHostUrl.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT
                                   | InputType.TYPE_TEXT_VARIATION_URI);
             editText.selectAll();
         });
+    }
 
-        return hostUrlValidator;
+    /**
+     * Set up the credentials preferences with the required listeners
+     * and summary providers.
+     *
+     * @param pkHostUser preference key for the username field
+     * @param pkHostPass preference key for the password field
+     */
+    protected void initCredentialPreferences(@NonNull final CharSequence pkHostUser,
+                                             @NonNull final CharSequence pkHostPass) {
+        final EditTextPreference pUsername = findPreference(pkHostUser);
+        //noinspection DataFlowIssue
+        pUsername.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT);
+            editText.selectAll();
+        });
+
+        final EditTextPreference pPassword = findPreference(pkHostPass);
+        //noinspection DataFlowIssue
+        pPassword.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            editText.selectAll();
+        });
+        pPassword.setSummaryProvider(preference -> {
+            final String value = ((EditTextPreference) preference).getText();
+            if (value == null || value.isEmpty()) {
+                return getString(R.string.preference_not_set);
+            } else {
+                return "********";
+            }
+        });
     }
 
     /**

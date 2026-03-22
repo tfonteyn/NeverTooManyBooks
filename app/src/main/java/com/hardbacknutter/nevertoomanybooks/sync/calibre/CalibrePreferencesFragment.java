@@ -47,12 +47,12 @@ import java.time.format.FormatStyle;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
-import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.CalibreConnectionValidationHelper;
 
 @Keep
 public class CalibrePreferencesFragment
-        extends ConnectionValidationBasePreferenceFragment {
+        extends BasePreferenceFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "CalibrePreferencesFrag";
@@ -71,15 +71,12 @@ public class CalibrePreferencesFragment
     private final ActivityResultLauncher<String> openCaUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenCaUri));
-    private HostUrlValidator hostUrlValidator;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
-
-        initValidator(R.string.site_calibre);
 
         //noinspection DataFlowIssue
         pSyncEnabled = findPreference(CalibreHandler.PK_ENABLED);
@@ -97,8 +94,6 @@ public class CalibrePreferencesFragment
 
         //noinspection DataFlowIssue
         pHostUrl = findPreference(CalibreContentServer.PK_HOST_URL);
-        //noinspection DataFlowIssue
-        hostUrlValidator = initHostUrlPreference(pHostUrl);
 
         //noinspection DataFlowIssue
         pCACert = findPreference(PSK_CA_FROM_FILE);
@@ -118,29 +113,21 @@ public class CalibrePreferencesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final CalibreConnectionValidationHelper validationHelper =
+                new CalibreConnectionValidationHelper(
+                        this, getProgressFrame(),
+                        () -> pSyncEnabled.isChecked(),
+                        () -> pHostUrl.getText(),
+                        this::popBackStackOrFinish);
+
+        initHostUrlPreference(validationHelper.getHostUrlValidator(), pHostUrl);
+
         pickFolderLauncher = registerForActivityResult(
                 new GetDirectoryUriContract(), o -> {
                     //noinspection DataFlowIssue
                     o.ifPresent(uri -> CalibreContentServer.setFolderUri(getContext(), uri));
                     setDownloadFolderSummary(pDownloadFolder);
                 });
-    }
-
-    @Override
-    protected boolean shouldProposeValidation() {
-        return pSyncEnabled.isChecked();
-    }
-
-    @Override
-    protected void proposeValidation() {
-        if (!hostUrlValidator.isValidUrl(pHostUrl.getText())) {
-            hostUrlValidator.showUrlInvalidDialog(pHostUrl.getContext(),
-                                                  pHostUrl.getText(),
-                                                  null,
-                                                  this::popBackStackOrFinish);
-            return;
-        }
-        super.proposeValidation();
     }
 
     /**

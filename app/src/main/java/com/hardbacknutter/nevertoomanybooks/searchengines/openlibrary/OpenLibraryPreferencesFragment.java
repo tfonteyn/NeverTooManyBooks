@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,19 +20,22 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationHelper;
 
 @Keep
 public class OpenLibraryPreferencesFragment
-        extends ConnectionValidationBasePreferenceFragment {
+        extends BasePreferenceFragment {
 
     // category
     private static final String PSK_CREDENTIALS = "psk_credentials";
@@ -47,12 +50,7 @@ public class OpenLibraryPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_openlibrary, rootKey);
 
         initLoginPrefs();
-
-        if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
-            initValidator(R.string.site_open_library);
-            initCredentialPreferences(OpenLibraryAuth.PK_HOST_USER,
-                                      OpenLibraryAuth.PK_HOST_PASS);
-        }
+        initCredentialPreferences(OpenLibraryAuth.PK_HOST_USER, OpenLibraryAuth.PK_HOST_PASS);
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -74,11 +72,17 @@ public class OpenLibraryPreferencesFragment
     }
 
     @Override
-    protected boolean shouldProposeValidation() {
-        if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
-            return pLoginToSearch.isChecked();
-        } else {
-            return false;
-        }
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        new ConnectionValidationHelper(
+                R.string.site_open_library, this, getProgressFrame(), () -> {
+            if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
+                return pLoginToSearch.isChecked();
+            } else {
+                return false;
+            }
+        }, this::popBackStackOrFinish);
     }
 }

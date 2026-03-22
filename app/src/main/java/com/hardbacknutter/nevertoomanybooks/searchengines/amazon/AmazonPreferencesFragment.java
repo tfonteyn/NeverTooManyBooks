@@ -74,8 +74,8 @@ public class AmazonPreferencesFragment
 
         //noinspection DataFlowIssue
         pHostUrl = findPreference(PK_HOST_URL);
-        //noinspection DataFlowIssue
-        hostUrlValidator = initHostUrlPreference(pHostUrl);
+        hostUrlValidator = new HostUrlValidator();
+        initHostUrlPreference(hostUrlValidator, pHostUrl);
     }
 
     @Override
