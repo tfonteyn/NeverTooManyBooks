@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
@@ -39,7 +40,8 @@ public class BnfPreferencesFragment
 
         //noinspection DataFlowIssue
         findPreference(EngineId.Bnf.getPreferenceKey()
-                       + ".resolve.authors.wikidata")
+                       + AuthorResolverFactory.PK_RESOLVE_AUTHORS
+                       + EngineId.Wikidata.getPreferenceKey())
                 .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
                                     getString(R.string.site_wikidata)));
     }

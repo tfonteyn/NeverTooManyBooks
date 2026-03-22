@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,8 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
@@ -38,7 +40,9 @@ public class LastDodoPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
 
         //noinspection DataFlowIssue
-        findPreference("lastdodo.resolve.authors.bedetheque")
+        findPreference(EngineId.LastDodoNl.getPreferenceKey()
+                       + AuthorResolverFactory.PK_RESOLVE_AUTHORS
+                       + EngineId.Bedetheque.getPreferenceKey())
                 .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
                                     getString(R.string.site_bedetheque)));
     }

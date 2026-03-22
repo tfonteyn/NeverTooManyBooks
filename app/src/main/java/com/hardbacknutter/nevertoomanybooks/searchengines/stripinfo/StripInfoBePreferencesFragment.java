@@ -28,7 +28,10 @@ import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 
 @Keep
@@ -51,7 +54,9 @@ public class StripInfoBePreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
         //noinspection DataFlowIssue
-        findPreference("stripinfo.resolve.authors.bedetheque")
+        findPreference(EngineId.StripInfoBe.getPreferenceKey()
+                       + AuthorResolverFactory.PK_RESOLVE_AUTHORS
+                       + EngineId.Bedetheque.getPreferenceKey())
                 .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
                                     getString(R.string.site_bedetheque)));
 

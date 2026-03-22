@@ -45,7 +45,7 @@ public final class AuthorResolverFactory {
      * Pref key.
      * "[engine].resolve.authors.[resolver]"
      */
-    private static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
+    public static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
 
     private AuthorResolverFactory() {
     }
