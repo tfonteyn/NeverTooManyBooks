@@ -198,7 +198,8 @@ public final class ExMsg {
         if (e instanceof NetworkUnavailableException) {
             return context.getString(R.string.error_network_please_connect);
 
-        } else if (e instanceof NetworkException) {
+        } else if (e instanceof NetworkException
+                   || e instanceof java.net.ConnectException) {
             return context.getString(R.string.error_network_failed_try_again);
 
         } else if (e instanceof HttpNotFoundException) {
