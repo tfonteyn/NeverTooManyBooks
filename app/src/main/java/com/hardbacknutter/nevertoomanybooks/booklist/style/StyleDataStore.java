@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
  * <p>
  * NEWTHINGS: style option: add a PK, add it to the get/set, keep in sync with
  *  "res/xml/preferences_style.xml"
-
+ *
  * @see BookLevelFieldVisibility
  * @see BookDetailsFieldVisibility
  * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.UnderEach
@@ -128,6 +128,11 @@ public class StyleDataStore
      * @see BaseStyle#setSortAuthorByGivenName(boolean)
      */
     public static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
+
+    public static final String PSK_STYLE_AUTHOR = "psk_style_author";
+    public static final String PSK_STYLE_SERIES = "psk_style_series";
+    public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
+    public static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
 
     /** Detail screens: Show the images for each book. */
     public static final String[] PK_DETAILS_SHOW_COVER = new String[DBKey.NR_OF_BOOK_COVERS];

@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -42,7 +43,7 @@ class SeriesBooklistGroup
         implements UnderEachGroup {
 
     private static final GroupPrefs GROUP_PREFS =
-            new GroupPrefs("psk_style_series",
+            new GroupPrefs(StyleDataStore.PSK_STYLE_SERIES,
                            Style.UnderEach.Series.getPrefKey());
 
     /** DomainExpression for displaying the data. */

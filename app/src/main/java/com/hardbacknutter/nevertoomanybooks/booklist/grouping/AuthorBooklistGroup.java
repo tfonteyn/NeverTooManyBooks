@@ -49,7 +49,7 @@ public class AuthorBooklistGroup
         implements UnderEachGroup {
 
     private static final GroupPrefs GROUP_PREFS =
-            new GroupPrefs("psk_style_author",
+            new GroupPrefs(StyleDataStore.PSK_STYLE_AUTHOR,
                            Style.UnderEach.Author.getPrefKey(),
                            StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE);
 
