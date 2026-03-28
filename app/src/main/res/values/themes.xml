@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -98,7 +98,6 @@
         <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
-        <item name="switchPreferenceStyle">@style/Widget.App.SwitchPreference</item>
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
 
         <item name="recyclerViewStyle">@style/Widget.App.RecyclerView</item>
@@ -120,11 +119,6 @@
 
         <!-- Material3 theme OVERLAYS! -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <!-- The intention of the next line was to apply the M3 look to the androidx.preference
-             library's use of AlertDialog; but it does not seem to do anything.
-             Leaving this as reminder/docs.
-             -->
-        <!-- <item name="alertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
 
         <!-- Date(range) picker - Dialog styling. -->
         <item name="materialCalendarTheme">@style/ThemeOverlay.App.MaterialCalendarTheme</item>

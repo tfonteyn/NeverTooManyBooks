@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -86,11 +86,6 @@
     <style name="Widget.App.Switch"
            parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
-    </style>
-
-    <style name="Widget.App.SwitchPreference"
-           parent="Preference.SwitchPreference.Material">
-        <item name="android:widgetLayout">@layout/preference_widget_material_switch</item>
     </style>
 
     <style name="Widget.App.LinearProgressIndicator"

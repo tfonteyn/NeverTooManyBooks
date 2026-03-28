@@ -55,7 +55,8 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 /**
  * Editor for the groups of a single style.
  * <p>
- * Note this is NOT extending BasePreferenceFragment.
+ * Note this is NOT extending
+ * {@link com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment}.
  * We must handle the base functionality (e.g. StyleViewModel) ourselves.
  */
 @Keep

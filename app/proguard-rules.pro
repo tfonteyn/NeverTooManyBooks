@@ -28,13 +28,8 @@
 # used by acra
 -dontwarn com.google.auto.service.AutoService
 
-
 # The below and more is now done with the "@Keep" annotation.
 # Keeping for reference for now.
-
-# fragments only referenced from xml and started by
-# androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
-#-keep public class * extends androidx.preference.PreferenceFragmentCompat
 
 # SearchEngine constructors are called using reflection
 #-keepclassmembers public class * extends com.hardbacknutter.nevertoomanybooks.searches.SearchEngine {

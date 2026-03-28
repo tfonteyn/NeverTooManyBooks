@@ -33,7 +33,6 @@ androidxExifinterface = "1.4.2"
 androidxFragment = "1.8.9"
 androidxInterpolator = "1.0.0"
 androidxLifecycle = "2.10.0"
-androidxPreference = "1.2.1"
 androidxRecyclerview = "1.4.0"
 androidxViewpager2 = '1.1.0'
 androidxWindow = "1.5.1"
@@ -109,7 +108,6 @@ androidx-fragment = { group = "androidx.fragment", name = "fragment-ktx", versio
 androidx-interpolator = { group = "androidx.interpolator", name = "interpolator", version.ref = "androidxInterpolator" }
 androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
-androidx-preference = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidxPreference" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidxRecyclerview" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
