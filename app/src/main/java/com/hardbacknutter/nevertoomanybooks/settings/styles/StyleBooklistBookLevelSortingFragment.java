@@ -166,11 +166,10 @@ public class StyleBooklistBookLevelSortingFragment
         // set up the adapters
 
         // The adapter for the fixed Group columns.
-        final HeaderAdapter headerAdapter = new HeaderAdapter(context, vm.getGroupSortingFields());
+        final HeaderAdapter headerAdapter = new HeaderAdapter(vm.getGroupSortingFields());
 
         // The adapter for the list.
         listAdapter = new BookLevelColumnWrapperListAdapter(
-                context,
                 vm.getBookLevelColumnList(),
                 vh -> itemTouchHelper.startDrag(vh));
 
@@ -253,13 +252,10 @@ public class StyleBooklistBookLevelSortingFragment
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param items   List of columns (in WrappedBookLevelColumn)
+         * @param items List of columns (in WrappedBookLevelColumn)
          */
-        HeaderAdapter(
-                @NonNull final Context context,
-                @NonNull final List<StyleViewModel.WrappedBookLevelColumn> items) {
-            super(context, items, null);
+        HeaderAdapter(@NonNull final List<StyleViewModel.WrappedBookLevelColumn> items) {
+            super(items, null);
         }
 
         @NonNull
@@ -268,7 +264,7 @@ public class StyleBooklistBookLevelSortingFragment
                                                   final int viewType) {
 
             final RowEditStyleBookLevelColumnBinding vb = RowEditStyleBookLevelColumnBinding
-                    .inflate(getLayoutInflater(), parent, false);
+                    .inflate(LayoutInflater.from(parent.getContext()), parent, false);
             final HeaderRowHolder holder = new HeaderRowHolder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
@@ -289,15 +285,13 @@ public class StyleBooklistBookLevelSortingFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param items             List of columns (in WrappedBookLevelColumn)
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         BookLevelColumnWrapperListAdapter(
-                @NonNull final Context context,
                 @NonNull final List<StyleViewModel.WrappedBookLevelColumn> items,
                 @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(items, dragStartListener);
         }
 
         @NonNull
@@ -306,7 +300,7 @@ public class StyleBooklistBookLevelSortingFragment
                                          final int viewType) {
 
             final RowEditStyleBookLevelColumnBinding vb = RowEditStyleBookLevelColumnBinding
-                    .inflate(getLayoutInflater(), parent, false);
+                    .inflate(LayoutInflater.from(parent.getContext()), parent, false);
             final Holder holder = new Holder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

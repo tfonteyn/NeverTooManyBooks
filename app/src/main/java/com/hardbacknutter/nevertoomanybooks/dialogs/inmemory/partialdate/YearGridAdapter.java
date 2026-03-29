@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -42,14 +41,11 @@ class YearGridAdapter
     private final int endYear;
     @NonNull
     private final Consumer<Integer> yearListener;
-    private final LayoutInflater inflater;
 
-    YearGridAdapter(@NonNull final Context context,
-                    final int initYear,
+    YearGridAdapter(final int initYear,
                     final int startYear,
                     final int endYear,
                     @NonNull final Consumer<Integer> yearListener) {
-        inflater = LayoutInflater.from(context);
         this.initYear = initYear;
         this.startYear = startYear;
         this.endYear = endYear;
@@ -60,7 +56,7 @@ class YearGridAdapter
     @Override
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final MaterialButton view = (MaterialButton) inflater
+        final MaterialButton view = (MaterialButton) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.partial_date_picker_year, parent, false);
         return new Holder(view);
     }

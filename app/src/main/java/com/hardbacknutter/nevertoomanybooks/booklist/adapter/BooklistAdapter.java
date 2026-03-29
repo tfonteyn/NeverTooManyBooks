@@ -75,8 +75,6 @@ public class BooklistAdapter
     private static final String TAG = "BooklistAdapter";
     private static final String ERROR_NULL_BOOKLIST = "booklist";
 
-    @NonNull
-    private final LayoutInflater inflater;
     /** Top margin to use for Level 1. */
     @Dimension
     private final int level1topMargin;
@@ -131,7 +129,6 @@ public class BooklistAdapter
                            @NonNull final Style style,
                            @NonNull final ScreenLayout layout,
                            @NonNull final CoverScale coverScale) {
-        this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.layout = layout;
 
@@ -347,7 +344,8 @@ public class BooklistAdapter
                 break;
         }
 
-        final View itemView = inflater.inflate(layoutId, parent, false);
+        final View itemView = LayoutInflater.from(parent.getContext())
+                                            .inflate(layoutId, parent, false);
 
         //noinspection DataFlowIssue
         final int level = booklistCursor.getInt(DBKey.BL_NODE.LEVEL);

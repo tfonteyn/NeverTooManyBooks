@@ -190,13 +190,9 @@ public class EditBookPublisherListDialogFragment
     }
 
     private void initListView() {
-        final Context context = getContext();
-
         publisherList = vm.getBook().getPublishers();
 
-        //noinspection DataFlowIssue
-        adapter = new PublisherListAdapter(context, publisherList,
-                                           vh -> itemTouchHelper.startDrag(vh));
+        adapter = new PublisherListAdapter(publisherList, vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> {
             if (position == RecyclerView.NO_POSITION) {
                 return;
@@ -462,22 +458,20 @@ public class EditBookPublisherListDialogFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param items             List of Publishers
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        PublisherListAdapter(@NonNull final Context context,
-                             @NonNull final List<Publisher> items,
+        PublisherListAdapter(@NonNull final List<Publisher> items,
                              @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(items, dragStartListener);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_publisher_list, parent, false);
+            final View view = LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.row_edit_publisher_list, parent, false);
             final Holder holder = new Holder(view);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

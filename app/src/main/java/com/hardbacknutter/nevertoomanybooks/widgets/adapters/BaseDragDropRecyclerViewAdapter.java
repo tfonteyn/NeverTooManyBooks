@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 
 import androidx.annotation.CallSuper;
@@ -75,10 +73,6 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
     /** Optional. */
     @Nullable
     private final StartDragListener dragStartListener;
-    /** Cached inflater. */
-    @NonNull
-    private final LayoutInflater inflater;
-
     @Nullable
     protected OnRowClickListener rowClickListener;
     @Nullable
@@ -89,14 +83,11 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
     /**
      * Constructor.
      *
-     * @param context           Current context
      * @param items             List of items
      * @param dragStartListener Listener to handle the user moving rows up and down
      */
-    protected BaseDragDropRecyclerViewAdapter(@NonNull final Context context,
-                                              @NonNull final List<Item> items,
+    protected BaseDragDropRecyclerViewAdapter(@NonNull final List<Item> items,
                                               @Nullable final StartDragListener dragStartListener) {
-        inflater = LayoutInflater.from(context);
         this.dragStartListener = dragStartListener;
         this.items = items;
     }
@@ -122,11 +113,6 @@ public abstract class BaseDragDropRecyclerViewAdapter<Item, VHT extends Checkabl
                                          @Nullable final OnRowClickListener listener) {
         this.rowShowMenuListener = listener;
         this.contextMenuMode = contextMenuMode;
-    }
-
-    @NonNull
-    protected LayoutInflater getLayoutInflater() {
-        return inflater;
     }
 
     @SuppressLint("ClickableViewAccessibility")

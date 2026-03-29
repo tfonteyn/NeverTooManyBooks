@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,9 +138,8 @@ class MultiChoiceDelegate
             vb.message.setVisibility(View.GONE);
         }
 
-        final Context context = vb.getRoot().getContext();
         final ChecklistRecyclerAdapter<Long> adapter = new ChecklistRecyclerAdapter<>(
-                context, itemIds, items::get, vm.getCurrentSelection(),
+                itemIds, items::get, vm.getCurrentSelection(),
                 (id, checked) -> {
                     if (checked) {
                         vm.getCurrentSelection().add(id);

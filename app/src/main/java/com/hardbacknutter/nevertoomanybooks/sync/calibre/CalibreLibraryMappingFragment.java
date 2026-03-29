@@ -258,8 +258,7 @@ public class CalibreLibraryMappingFragment
         } else {
             vb.headerVlibs.setVisibility(View.VISIBLE);
             vb.virtualLibraries.setVisibility(View.VISIBLE);
-            //noinspection DataFlowIssue
-            vb.virtualLibraries.setAdapter(new VirtualLibraryMapperAdapter(getContext()));
+            vb.virtualLibraries.setAdapter(new VirtualLibraryMapperAdapter());
         }
     }
 
@@ -286,16 +285,10 @@ public class CalibreLibraryMappingFragment
     public class VirtualLibraryMapperAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        /** Cached inflater. */
-        private final LayoutInflater inflater;
-
         /**
          * Constructor.
-         *
-         * @param context Current context
          */
-        VirtualLibraryMapperAdapter(@NonNull final Context context) {
-            inflater = LayoutInflater.from(context);
+        VirtualLibraryMapperAdapter() {
         }
 
         @NonNull
@@ -304,8 +297,8 @@ public class CalibreLibraryMappingFragment
                                          final int viewType) {
             final Context context = requireContext();
 
-            final Holder holder = new Holder(
-                    RowEditCalibreLibraryBinding.inflate(inflater, parent, false));
+            final Holder holder = new Holder(RowEditCalibreLibraryBinding.inflate(
+                    LayoutInflater.from(context), parent, false));
 
             holder.vb.bookshelf.setAdapter(bookshelfAdapter);
             holder.vb.bookshelf.setOnItemClickListener((av, v, position, id) -> {

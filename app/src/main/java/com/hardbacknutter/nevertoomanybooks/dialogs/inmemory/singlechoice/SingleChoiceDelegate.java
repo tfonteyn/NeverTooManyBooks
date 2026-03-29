@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.singlechoice;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -111,9 +110,8 @@ class SingleChoiceDelegate {
             vb.message.setVisibility(View.GONE);
         }
 
-        final Context context = vb.getRoot().getContext();
         final RadioGroupRecyclerAdapter<Long> adapter = new RadioGroupRecyclerAdapter<>(
-                context, itemIds, items::get, vm.getCurrentSelection(),
+                itemIds, items::get, vm.getCurrentSelection(),
                 vm::setCurrentSelection);
         vb.itemList.setAdapter(adapter);
     }

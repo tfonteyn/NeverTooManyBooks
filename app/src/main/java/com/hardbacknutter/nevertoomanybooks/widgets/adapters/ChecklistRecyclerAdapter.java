@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -44,9 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceMultiBinding;
 public class ChecklistRecyclerAdapter<T>
         extends RecyclerView.Adapter<ChecklistRecyclerAdapter.Holder> {
 
-    /** Cached inflater. */
-    @NonNull
-    private final LayoutInflater inflater;
     @NonNull
     private final List<T> items;
     @NonNull
@@ -60,19 +56,16 @@ public class ChecklistRecyclerAdapter<T>
     /**
      * Constructor.
      *
-     * @param context       Current context
      * @param items         List of items
      * @param labelSupplier given the position in the list, supply a label for the item
      * @param selection     (optional) the pre-selected item ids
      * @param listener      (optional) to send a selection to as the user changes them;
      *                      alternatively use {@link #getSelection()} when done.
      */
-    public ChecklistRecyclerAdapter(@NonNull final Context context,
-                                    @NonNull final List<T> items,
+    public ChecklistRecyclerAdapter(@NonNull final List<T> items,
                                     @NonNull final Function<Integer, CharSequence> labelSupplier,
                                     @Nullable final Set<T> selection,
                                     @Nullable final SelectionListener<T> listener) {
-        inflater = LayoutInflater.from(context);
         this.items = items;
         this.labelSupplier = labelSupplier;
         this.selection = selection != null ? selection : new HashSet<>();
@@ -83,7 +76,8 @@ public class ChecklistRecyclerAdapter<T>
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final RowChoiceMultiBinding vb = RowChoiceMultiBinding.inflate(inflater, parent, false);
+        final RowChoiceMultiBinding vb = RowChoiceMultiBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
         final Holder holder = new Holder(vb);
         holder.vb.btnOption.setOnClickListener(v -> onItemCheckChanged(holder));
         return holder;

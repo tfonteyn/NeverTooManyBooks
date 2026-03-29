@@ -764,7 +764,7 @@ public class BooksOnBookshelf
     }
 
     private void createBooklistView() {
-        headerAdapter = new HeaderAdapter(this, () -> vm.getHeaderContent(this));
+        headerAdapter = new HeaderAdapter(() -> vm.getHeaderContent(this));
 
         positioningHelper = new PositioningHelper(vb.content.list, headerAdapter.getItemCount());
 

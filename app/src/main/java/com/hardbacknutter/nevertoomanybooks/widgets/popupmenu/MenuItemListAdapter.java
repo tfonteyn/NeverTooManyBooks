@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,24 +44,17 @@ class MenuItemListAdapter
 
     @NonNull
     private final List<ExtMenuItem> list = new ArrayList<>();
-    /** Cached inflater. */
-    @NonNull
-    private final LayoutInflater inflater;
-
     @NonNull
     private final MenuCallback menuCallback;
 
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param menuCallback callback for title change requests and dismiss/item selection
      */
     @SuppressLint("UseCompatLoadingForDrawables")
-    MenuItemListAdapter(@NonNull final Context context,
-                        @NonNull final MenuCallback menuCallback) {
+    MenuItemListAdapter(@NonNull final MenuCallback menuCallback) {
 
-        inflater = LayoutInflater.from(context);
         this.menuCallback = menuCallback;
     }
 
@@ -91,7 +84,8 @@ class MenuItemListAdapter
     @Override
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final View root = inflater.inflate(viewType, parent, false);
+        final View root = LayoutInflater.from(parent.getContext())
+                                        .inflate(viewType, parent, false);
 
         final Holder holder = new Holder(viewType, root);
         if (holder.textView != null) {

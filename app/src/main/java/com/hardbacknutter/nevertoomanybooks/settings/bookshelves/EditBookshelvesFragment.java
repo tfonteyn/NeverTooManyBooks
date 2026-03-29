@@ -181,11 +181,12 @@ public class EditBookshelvesFragment
         fab.setOnClickListener(v -> createNewBookshelf());
 
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.list.getLayoutManager();
-        final Context context = getContext();
         //noinspection DataFlowIssue
-        adapter = new BookshelfAdapter(context, layoutManager.getSpanCount(),
+        adapter = new BookshelfAdapter(layoutManager.getSpanCount(),
                                        vm.getList(), positionHandler);
 
+        final Context context = getContext();
+        //noinspection DataFlowIssue
         final GridDividerItemDecoration decoration =
                 new GridDividerItemDecoration(context, false, true);
         vb.list.addItemDecoration(decoration);
@@ -365,16 +366,14 @@ public class EditBookshelvesFragment
         /**
          * Constructor.
          *
-         * @param context         Current context
          * @param columnCount     from the grid layout
          * @param items           to display
          * @param positionHandler Proxy between adapter and ViewModel.
          */
-        BookshelfAdapter(@NonNull final Context context,
-                         @IntRange(from = 1) final int columnCount,
+        BookshelfAdapter(@IntRange(from = 1) final int columnCount,
                          @NonNull final List<Bookshelf> items,
                          @NonNull final PositionHandler positionHandler) {
-            super(context, columnCount);
+            super(columnCount);
             this.items = items;
             this.positionHandler = positionHandler;
         }
@@ -383,8 +382,8 @@ public class EditBookshelvesFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditBookshelfBinding vb = RowEditBookshelfBinding
-                    .inflate(getInflater(), parent, false);
+            final RowEditBookshelfBinding vb = RowEditBookshelfBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
             adjustColumns(vb.getRoot());
             final Holder holder = new Holder(vb);
 

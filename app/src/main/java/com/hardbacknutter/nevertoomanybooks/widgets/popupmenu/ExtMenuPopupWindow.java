@@ -98,7 +98,7 @@ public class ExtMenuPopupWindow {
         popupWindow.setBackgroundDrawable(context.getDrawable(R.drawable.bg_popupmenu));
         popupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
 
-        adapter = new MenuItemListAdapter(context, menuCallback);
+        adapter = new MenuItemListAdapter(menuCallback);
         vb.itemList.setAdapter(adapter);
     }
 

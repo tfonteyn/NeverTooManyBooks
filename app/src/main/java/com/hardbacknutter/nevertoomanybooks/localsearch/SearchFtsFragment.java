@@ -120,8 +120,7 @@ public class SearchFtsFragment
 
         textWatcher = (ExtTextWatcher) s -> vm.userIsActive(true);
 
-        //noinspection DataFlowIssue
-        searchAdapter = new SearchAdapter(getContext(), vm.getSearchResults(), id ->
+        searchAdapter = new SearchAdapter(vm.getSearchResults(), id ->
                 displayBookLauncher.launch(new ShowBookPagerContract.Input(id, vm.getBookshelf())));
         vb.searchResults.setAdapter(searchAdapter);
         // Timer will be started in OnResume().

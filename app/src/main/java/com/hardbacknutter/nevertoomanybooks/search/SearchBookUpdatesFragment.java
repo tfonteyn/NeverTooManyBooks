@@ -175,7 +175,7 @@ public class SearchBookUpdatesFragment
     private void initAdapter() {
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.fieldList.getLayoutManager();
         //noinspection DataFlowIssue
-        vb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), vm.getSyncFields(),
+        vb.fieldList.setAdapter(new SyncFieldAdapter(vm.getSyncFields(),
                                                      layoutManager.getSpanCount()));
     }
 

@@ -193,8 +193,7 @@ public class PreferredStylesFragment
         toolbar.setSubtitle(null);
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
-        //noinspection DataFlowIssue
-        adapter = new StylesAdapter(getContext(), vm.getList(), positionHandler,
+        adapter = new StylesAdapter(vm.getList(), positionHandler,
                                     vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> {
             if (position == RecyclerView.NO_POSITION) {
@@ -230,6 +229,7 @@ public class PreferredStylesFragment
                 });
         adapter.registerAdapterDataObserver(adapterObserver);
 
+        //noinspection DataFlowIssue
         final MaterialDividerItemDecoration decoration =
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL);
         vb.list.addItemDecoration(decoration);
@@ -387,16 +387,14 @@ public class PreferredStylesFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param items             List of styles
          * @param positionHandler   Proxy between adapter and ViewModel
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        StylesAdapter(@NonNull final Context context,
-                      @NonNull final List<Style> items,
+        StylesAdapter(@NonNull final List<Style> items,
                       @NonNull final PositionHandler positionHandler,
                       @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(items, dragStartListener);
             this.positionHandler = positionHandler;
         }
 
@@ -406,7 +404,7 @@ public class PreferredStylesFragment
                                          final int viewType) {
 
             final RowEditPreferredStylesBinding vb = RowEditPreferredStylesBinding.inflate(
-                    getLayoutInflater(), parent, false);
+                    LayoutInflater.from(parent.getContext()), parent, false);
             final Holder holder = new Holder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

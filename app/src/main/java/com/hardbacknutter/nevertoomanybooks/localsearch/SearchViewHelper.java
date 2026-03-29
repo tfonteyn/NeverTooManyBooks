@@ -91,8 +91,7 @@ public class SearchViewHelper {
 
         textWatcher = s -> timerDelegate.userIsActive(true);
 
-        searchAdapter = new SearchAdapter(this.searchView.getContext(), searchResults,
-                                          this::onResultSelected);
+        searchAdapter = new SearchAdapter(searchResults, this::onResultSelected);
         resultsView.setAdapter(searchAdapter);
 
         this.searchView.inflateMenu(R.menu.search_view);

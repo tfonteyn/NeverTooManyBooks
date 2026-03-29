@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -147,7 +147,7 @@ class BookshelfFiltersDelegate
 
         final Context context = vb.getRoot().getContext();
 
-        adapter = new PFilterListAdapter(context, vm.getFilterList(), modificationListener);
+        adapter = new PFilterListAdapter(vm.getFilterList(), modificationListener);
         vb.filterList.setAdapter(adapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));

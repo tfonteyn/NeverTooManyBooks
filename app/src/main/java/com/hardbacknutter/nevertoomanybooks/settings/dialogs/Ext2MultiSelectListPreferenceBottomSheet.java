@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -93,9 +93,7 @@ public class Ext2MultiSelectListPreferenceBottomSheet
         vb.title.setText(delegate.getDialogTitle());
         delegate.bindMessageView(vb.message);
 
-        //noinspection DataFlowIssue
         final ChecklistRecyclerAdapter<CharSequence> adapter = new ChecklistRecyclerAdapter<>(
-                getContext(),
                 List.of(delegate.getEntryValues()),
                 position -> delegate.getEntries()[position],
                 delegate.getNewValues(),

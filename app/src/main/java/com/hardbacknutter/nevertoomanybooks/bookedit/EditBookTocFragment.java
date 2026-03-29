@@ -245,13 +245,9 @@ public class EditBookTocFragment
     }
 
     private void initListView() {
-        final Context context = getContext();
-
         tocEntryList = vm.getBook().getToc();
 
-        //noinspection DataFlowIssue
-        adapter = new TocListEditAdapter(context, tocEntryList,
-                                         vh -> itemTouchHelper.startDrag(vh));
+        adapter = new TocListEditAdapter(tocEntryList, vh -> itemTouchHelper.startDrag(vh));
 
         adapter.setOnRowClickListener((v, position) -> {
             if (position == RecyclerView.NO_POSITION) {
@@ -282,9 +278,9 @@ public class EditBookTocFragment
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.tocList.setAdapter(adapter);
 
-
+        //noinspection DataFlowIssue
         vb.tocList.addItemDecoration(
-                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.tocList.setHasFixedSize(true);
     }
 
@@ -823,14 +819,12 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param items             List of {@link TocEntry}'s
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        TocListEditAdapter(@NonNull final Context context,
-                           @NonNull final List<TocEntry> items,
+        TocListEditAdapter(@NonNull final List<TocEntry> items,
                            @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(items, dragStartListener);
         }
 
         @NonNull
@@ -839,7 +833,7 @@ public class EditBookTocFragment
                                          final int viewType) {
 
             final RowEditTocEntryBinding vb = RowEditTocEntryBinding.inflate(
-                    getLayoutInflater(), parent, false);
+                    LayoutInflater.from(parent.getContext()), parent, false);
             final Holder holder = new Holder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

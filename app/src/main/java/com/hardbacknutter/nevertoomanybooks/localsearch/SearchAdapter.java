@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.localsearch;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -36,16 +35,13 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowSearchResultBinding;
 public class SearchAdapter
         extends RecyclerView.Adapter<SearchAdapter.Holder> {
 
-    private final LayoutInflater inflater;
     @NonNull
     private final List<FtsSearchResult> list;
     @NonNull
     private final Consumer<Long> displayBook;
 
-    SearchAdapter(@NonNull final Context context,
-                  @NonNull final List<FtsSearchResult> list,
+    SearchAdapter(@NonNull final List<FtsSearchResult> list,
                   @NonNull final Consumer<Long> displayBook) {
-        inflater = LayoutInflater.from(context);
         this.list = list;
         this.displayBook = displayBook;
     }
@@ -54,8 +50,8 @@ public class SearchAdapter
     @Override
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final RowSearchResultBinding vb = RowSearchResultBinding.inflate(inflater, parent,
-                                                                         false);
+        final RowSearchResultBinding vb = RowSearchResultBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
         return new Holder(vb, displayBook);
     }
 
@@ -78,7 +74,7 @@ public class SearchAdapter
         private long id;
 
         Holder(@NonNull final RowSearchResultBinding vb,
-                      @NonNull final Consumer<Long> displayBook) {
+               @NonNull final Consumer<Long> displayBook) {
             super(vb.getRoot());
             this.vb = vb;
             this.vb.getRoot().setOnClickListener(v -> displayBook.accept(id));

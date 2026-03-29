@@ -128,7 +128,7 @@ public class StyleGroupsFragment
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
-        
+
         final Style style = vm.getStyle();
 
         final Toolbar toolbar = getToolbar();
@@ -147,8 +147,7 @@ public class StyleGroupsFragment
 
         // Set up the adapter for the list.
         final GroupWrapperListAdapter listAdapter =
-                new GroupWrapperListAdapter(context,
-                                            vm.createWrappedGroupList(),
+                new GroupWrapperListAdapter(vm.createWrappedGroupList(),
                                             vh -> itemTouchHelper.startDrag(vh));
 
         vb.groupList.setAdapter(listAdapter);
@@ -190,14 +189,12 @@ public class StyleGroupsFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param items             List of groups (in WrappedGroup)
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        GroupWrapperListAdapter(@NonNull final Context context,
-                                @NonNull final List<StyleViewModel.WrappedGroup> items,
+        GroupWrapperListAdapter(@NonNull final List<StyleViewModel.WrappedGroup> items,
                                 @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(items, dragStartListener);
         }
 
         @NonNull
@@ -206,7 +203,7 @@ public class StyleGroupsFragment
                                          final int viewType) {
 
             final RowEditStyleGroupsBinding vb = RowEditStyleGroupsBinding
-                    .inflate(getLayoutInflater(), parent, false);
+                    .inflate(LayoutInflater.from(parent.getContext()), parent, false);
             final Holder holder = new Holder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

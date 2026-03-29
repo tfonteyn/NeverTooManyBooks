@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
@@ -149,8 +148,6 @@ public class IdentifiersEditorFragment
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 
-        final Context context = getContext();
-
         final String info = getString(R.string.info_identifier_editor,
                                       getString(R.string.github_help_url));
         vb.info.setText(HtmlFormatter.linkify(info));
@@ -158,10 +155,10 @@ public class IdentifiersEditorFragment
 
         //noinspection DataFlowIssue
         vb.list.addItemDecoration(
-                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.list.setHasFixedSize(true);
 
-        adapter = new IdentifierAdapter(context, vm.getIdentifiers());
+        adapter = new IdentifierAdapter(vm.getIdentifiers());
 
         // reminder: do not allow single-click.... we need to be able to tap the site-url
         adapter.setOnRowShowMenuListener(
@@ -282,7 +279,6 @@ public class IdentifiersEditorFragment
 
         @NonNull
         private final List<Identifier> identifiers;
-        private final LayoutInflater inflater;
         private final HtmlFormatter<String> htmlFormatter;
         @Nullable
         private OnRowClickListener rowClickListener;
@@ -291,9 +287,7 @@ public class IdentifiersEditorFragment
         @Nullable
         private ExtMenuButton contextMenuMode;
 
-        IdentifierAdapter(@NonNull final Context context,
-                          @NonNull final List<Identifier> identifiers) {
-            inflater = LayoutInflater.from(context);
+        IdentifierAdapter(@NonNull final List<Identifier> identifiers) {
             this.identifiers = identifiers;
 
             htmlFormatter = new HtmlFormatter<String>()
@@ -327,8 +321,8 @@ public class IdentifiersEditorFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditIdentifierBinding vb = RowEditIdentifierBinding
-                    .inflate(inflater, parent, false);
+            final RowEditIdentifierBinding vb = RowEditIdentifierBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
             final Holder holder = new Holder(vb, htmlFormatter);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

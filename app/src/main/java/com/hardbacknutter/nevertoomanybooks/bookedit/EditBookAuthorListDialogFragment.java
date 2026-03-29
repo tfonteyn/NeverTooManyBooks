@@ -194,12 +194,9 @@ public class EditBookAuthorListDialogFragment
     }
 
     private void initListView() {
-        final Context context = getContext();
-
         authorList = vm.getBook().getAuthors();
 
-        //noinspection DataFlowIssue
-        adapter = new AuthorListAdapter(context, authorList, vm.getStyle(),
+        adapter = new AuthorListAdapter(authorList, vm.getStyle(),
                                         vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> {
             if (position == RecyclerView.NO_POSITION) {
@@ -496,16 +493,14 @@ public class EditBookAuthorListDialogFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param items             List of Authors
          * @param style             to use
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        AuthorListAdapter(@NonNull final Context context,
-                          @NonNull final List<Author> items,
+        AuthorListAdapter(@NonNull final List<Author> items,
                           @NonNull final Style style,
                           @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(items, dragStartListener);
             formatter = new EntityFormatter<>(Details.Full, style);
         }
 
@@ -514,7 +509,7 @@ public class EditBookAuthorListDialogFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final View view = getLayoutInflater()
+            final View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.row_edit_author_list, parent, false);
             final Holder holder = new Holder(view, formatter);
             holder.setOnRowClickListener(rowClickListener);

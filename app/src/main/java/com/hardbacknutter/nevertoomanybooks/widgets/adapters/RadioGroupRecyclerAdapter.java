@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -43,9 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceSingleBinding;
 public class RadioGroupRecyclerAdapter<T>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
-    /** Cached inflater. */
-    @NonNull
-    private final LayoutInflater inflater;
     @NonNull
     private final List<T> items;
     @NonNull
@@ -59,7 +55,6 @@ public class RadioGroupRecyclerAdapter<T>
     /**
      * Constructor.
      *
-     * @param context       Current context
      * @param items         List of items
      * @param labelSupplier given the position in the list, supply a label for the item
      * @param selection     (optional) the pre-selected item
@@ -67,13 +62,11 @@ public class RadioGroupRecyclerAdapter<T>
      *                      to this listener each time it changes;
      *                      Alternatively use {@link #getSelection()} when done.
      */
-    public RadioGroupRecyclerAdapter(@NonNull final Context context,
-                                     @NonNull final List<T> items,
+    public RadioGroupRecyclerAdapter(@NonNull final List<T> items,
                                      @NonNull final Function<Integer, CharSequence> labelSupplier,
                                      @Nullable final T selection,
                                      @Nullable final SelectionListener<T> listener) {
 
-        inflater = LayoutInflater.from(context);
         this.items = items;
         this.labelSupplier = labelSupplier;
         this.selection = selection;
@@ -84,7 +77,8 @@ public class RadioGroupRecyclerAdapter<T>
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final RowChoiceSingleBinding vb = RowChoiceSingleBinding.inflate(inflater, parent, false);
+        final RowChoiceSingleBinding vb = RowChoiceSingleBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
         final Holder holder = new Holder(vb);
         holder.vb.btnOption.setOnClickListener(v -> onItemCheckChanged(holder));
         return holder;

@@ -470,7 +470,6 @@ class CoverBrowserDelegate
 
         @NonNull
         private final ImageViewLoader imageLoader;
-        private final LayoutInflater inflater;
         @NonNull
         private final List<AltEdition> items;
         @NonNull
@@ -489,7 +488,6 @@ class CoverBrowserDelegate
                        @NonNull final List<AltEdition> items,
                        @NonNull final PositionHandler positionHandler,
                        @NonNull final ExecutorService executor) {
-            inflater = LayoutInflater.from(context);
             this.items = items;
             this.positionHandler = positionHandler;
 
@@ -509,7 +507,7 @@ class CoverBrowserDelegate
                                          final int viewType) {
 
             final RowCoverBrowserGalleryBinding vb = RowCoverBrowserGalleryBinding
-                    .inflate(inflater, parent, false);
+                    .inflate(LayoutInflater.from(parent.getContext()), parent, false);
             return new Holder(vb, maxWidth, maxHeight);
         }
 

@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -155,10 +154,8 @@ public class EditBookTagsDialogFragment
         final List<Tag> availableTags = vm.getAllTags();
         availableTags.removeAll(bookTags);
 
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        availableTagsAdapter = new TagAdapter(context, availableTags);
-        bookTagsAdapter = new TagAdapter(context, bookTags);
+        availableTagsAdapter = new TagAdapter(availableTags);
+        bookTagsAdapter = new TagAdapter(bookTags);
         availableTagsAdapter.setDestination(bookTagsAdapter);
         bookTagsAdapter.setDestination(availableTagsAdapter);
 
@@ -249,18 +246,16 @@ public class EditBookTagsDialogFragment
 
     private static class TagAdapter
             extends RecyclerView.Adapter<Holder> {
+
         @NonNull
-        private final LayoutInflater inflater;
         private final OnRowClickListener onRowClickListener;
         @NonNull
         private final List<Tag> tags;
 
         private TagAdapter destination;
 
-        TagAdapter(@NonNull final Context context,
-                   @NonNull final List<Tag> tagList) {
+        TagAdapter(@NonNull final List<Tag> tagList) {
             this.tags = tagList;
-            inflater = LayoutInflater.from(context);
 
             onRowClickListener = (v, position) -> {
                 if (position == RecyclerView.NO_POSITION) {
@@ -337,8 +332,8 @@ public class EditBookTagsDialogFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditBookTagListBinding vb = RowEditBookTagListBinding.inflate(inflater, parent,
-                                                                                   false);
+            final RowEditBookTagListBinding vb = RowEditBookTagListBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
             return new Holder(vb, onRowClickListener);
         }
 

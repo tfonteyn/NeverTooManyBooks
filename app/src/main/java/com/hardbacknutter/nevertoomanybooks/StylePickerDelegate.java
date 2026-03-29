@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,14 +87,14 @@ class StylePickerDelegate
         return view;
     }
 
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
-    }
-
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 
     @Override
@@ -114,8 +114,7 @@ class StylePickerDelegate
         final Context context = vb.getRoot().getContext();
 
         //noinspection DataFlowIssue
-        adapter = new RadioGroupRecyclerAdapter<>(context,
-                                                  vm.getStyles(),
+        adapter = new RadioGroupRecyclerAdapter<>(vm.getStyles(),
                                                   position -> vm.getLabel(context, position),
                                                   vm.getSelectedStyle(),
                                                   vm::setSelectedStyle);

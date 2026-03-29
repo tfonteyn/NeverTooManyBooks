@@ -56,9 +56,6 @@ public class AuthorWorksAdapter
     private static final int XOFF = 24;
     private static final int YOFF = -160;
 
-    /** Cached inflater. */
-    @NonNull
-    private final LayoutInflater inflater;
     @NonNull
     private final List<? extends AuthorWork> works;
     @NonNull
@@ -88,14 +85,13 @@ public class AuthorWorksAdapter
                               @NonNull final Style style,
                               @NonNull final List<Author> authors,
                               @NonNull final List<? extends AuthorWork> works) {
-        inflater = LayoutInflater.from(context);
         this.contextMenuMode = ExtMenuButton.getPreferredMode();
         this.style = style;
         this.authors = authors;
         this.works = works;
 
-        authorFormatter = new ClickableListFormatter<>(context, author ->
-                author.getLabel(context, Details.AutoSelect, style));
+        authorFormatter = new ClickableListFormatter<>(context, (c, author) ->
+                author.getLabel(c, Details.AutoSelect, style));
     }
 
     /**
@@ -124,7 +120,8 @@ public class AuthorWorksAdapter
     public AuthorWorkHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                final int viewType) {
         final AuthorWorkHolder holder;
-        final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(inflater, parent, false);
+        final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
         switch (AuthorWork.Type.getType((char) viewType)) {
             case TocEntry: {
                 holder = new TocEntryHolder(vb, style, authorFormatter);

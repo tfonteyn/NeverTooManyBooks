@@ -75,10 +75,8 @@ public class Ext2ListPreferenceBottomSheet
         vb.title.setText(delegate.getDialogTitle());
         delegate.bindMessageView(vb.message);
 
-        //noinspection DataFlowIssue
         final RadioGroupRecyclerAdapter<CharSequence> adapter =
-                new RadioGroupRecyclerAdapter<>(getContext(),
-                                                List.of(delegate.getEntryValues()),
+                new RadioGroupRecyclerAdapter<>(List.of(delegate.getEntryValues()),
                                                 pos -> delegate.getEntries()[pos],
                                                 delegate.getInitialSelection(),
                                                 value -> delegate.saveValue(value));

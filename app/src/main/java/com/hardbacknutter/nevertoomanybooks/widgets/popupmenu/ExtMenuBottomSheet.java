@@ -115,8 +115,7 @@ public class ExtMenuBottomSheet
             vb.message.setVisibility(View.VISIBLE);
         }
 
-        //noinspection DataFlowIssue
-        final MenuItemListAdapter adapter = new MenuItemListAdapter(getContext(), menuCallback);
+        final MenuItemListAdapter adapter = new MenuItemListAdapter(menuCallback);
         adapter.setMenu(menuList);
         vb.itemList.setAdapter(adapter);
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,6 @@ public final class PFilterViewHolderFactory {
     /**
      * Create a ViewHolder to display the given filter type.
      *
-     * @param inflater   The LayoutInflater object that can be used to inflate any views
      * @param parent     The ViewGroup into which the new View will be added after it is bound to
      *                   an adapter position.
      * @param filterType The view type of the filter (a layout id)
@@ -52,10 +51,11 @@ public final class PFilterViewHolderFactory {
      */
     @SuppressWarnings("rawtypes")
     @NonNull
-    public static PFilterViewHolder create(@NonNull final LayoutInflater inflater,
-                                           @NonNull final ViewGroup parent,
+    public static PFilterViewHolder create(@NonNull final ViewGroup parent,
                                            @LayoutRes final int filterType,
                                            @NonNull final ModificationListener listener) {
+
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (filterType == R.layout.row_edit_bookshelf_filter_bitmask) {
             final RowEditBookshelfFilterBitmaskBinding vb =
                     RowEditBookshelfFilterBitmaskBinding.inflate(inflater, parent, false);

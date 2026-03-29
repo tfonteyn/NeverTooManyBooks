@@ -325,8 +325,8 @@ public class ShowBookDetailsViewModel
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
-                                       new ClickableListFormatter<Author>(context, author ->
-                                               author.getLabel(context, Details.Full, style))));
+                                       new ClickableListFormatter<Author>(context, (c, author) ->
+                                               author.getLabel(c, Details.Full, style))));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
                                        DBKey.FK_SERIES,

@@ -214,8 +214,8 @@ public class BookHolder
 
             if (use.contains(DBKey.FK_AUTHOR)) {
                 // private rd, not the methods 'rowData' !
-                authorFormatter = new ClickableListFormatter<>(context, rd ->
-                        rd.getString(DBKey.AUTHOR.FORMATTED_FULL_NAME));
+                authorFormatter = new ClickableListFormatter<>(context, (c, holder) ->
+                        holder.getString(DBKey.AUTHOR.FORMATTED_FULL_NAME));
             }
             if (use.contains(DBKey.PAGES)) {
                 pagesFormatter = new PagesFormatter();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,8 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAd
 public class MultiChoiceAlertDialogBuilder<T> {
 
     @NonNull
-    private final LayoutInflater layoutInflater;
-    @NonNull
     private final Context context;
     @NonNull
     private final Set<T> selectedItems = new HashSet<>();
@@ -92,7 +90,6 @@ public class MultiChoiceAlertDialogBuilder<T> {
      */
     public MultiChoiceAlertDialogBuilder(@NonNull final Context context) {
         this.context = context;
-        this.layoutInflater = LayoutInflater.from(context);
     }
 
     @NonNull
@@ -233,7 +230,7 @@ public class MultiChoiceAlertDialogBuilder<T> {
         Objects.requireNonNull(positiveButtonConsumer);
 
         final DialogSelectMultipleSimpleBinding vb = DialogSelectMultipleSimpleBinding.inflate(
-                layoutInflater, null, false);
+                LayoutInflater.from(context), null, false);
         // Ensure the drag handle is hidden.
         vb.dragHandle.setVisibility(View.GONE);
         // Ensure the unused title field is hidden
@@ -247,7 +244,7 @@ public class MultiChoiceAlertDialogBuilder<T> {
         }
 
         final ChecklistRecyclerAdapter<T> adapter = new ChecklistRecyclerAdapter<>(
-                context, items, position -> itemLabels.get(position), selectedItems,
+                items, position -> itemLabels.get(position), selectedItems,
                 (id, checked) -> {
                     if (checked) {
                         selectedItems.add(id);

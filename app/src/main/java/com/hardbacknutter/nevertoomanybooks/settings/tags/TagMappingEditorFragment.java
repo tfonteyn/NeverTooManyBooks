@@ -144,8 +144,6 @@ public class TagMappingEditorFragment
         super.onViewCreated(view, savedInstanceState);
         InsetsListenerBuilder.apply(vb.tagList);
 
-        final Context context = getContext();
-
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
 
@@ -155,11 +153,12 @@ public class TagMappingEditorFragment
 
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.tagList.getLayoutManager();
         //noinspection DataFlowIssue
-        adapter = new TagAdapter(context, layoutManager.getSpanCount(), vm.getTagMappings(),
+        adapter = new TagAdapter(layoutManager.getSpanCount(), vm.getTagMappings(),
                                  positionHandler);
 
+        //noinspection DataFlowIssue
         final GridDividerItemDecoration decoration =
-                new GridDividerItemDecoration(context, false, true);
+                new GridDividerItemDecoration(getContext(), false, true);
         vb.tagList.addItemDecoration(decoration);
 
         vb.tagList.setAdapter(adapter);
@@ -513,16 +512,14 @@ public class TagMappingEditorFragment
         /**
          * Constructor.
          *
-         * @param context         Current context
          * @param columnCount     from the grid layout
          * @param items           to display
          * @param positionHandler Proxy between adapter and ViewModel.
          */
-        TagAdapter(@NonNull final Context context,
-                   @IntRange(from = 1) final int columnCount,
+        TagAdapter(@IntRange(from = 1) final int columnCount,
                    @NonNull final List<TagMapping> items,
                    @NonNull final PositionHandler positionHandler) {
-            super(context, columnCount);
+            super(columnCount);
             this.items = items;
             this.positionHandler = positionHandler;
         }
@@ -531,8 +528,8 @@ public class TagMappingEditorFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditTagMappingBinding vb =
-                    RowEditTagMappingBinding.inflate(getInflater(), parent, false);
+            final RowEditTagMappingBinding vb = RowEditTagMappingBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
             adjustColumns(vb.getRoot());
             final Holder holder = new Holder(vb);
 

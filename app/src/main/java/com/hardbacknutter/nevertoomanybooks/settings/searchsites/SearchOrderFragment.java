@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,7 +122,7 @@ public class SearchOrderFragment
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         vb.siteList.setHasFixedSize(true);
 
-        listAdapter = new SearchSiteListAdapter(getContext(), vm.getList(type),
+        listAdapter = new SearchSiteListAdapter(vm.getList(type),
                                                 vh -> itemTouchHelper.startDrag(vh));
         vb.siteList.setAdapter(listAdapter);
 
@@ -196,22 +196,20 @@ public class SearchOrderFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param sites             to use
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        SearchSiteListAdapter(@NonNull final Context context,
-                              @NonNull final List<Site> sites,
+        SearchSiteListAdapter(@NonNull final List<Site> sites,
                               @NonNull final StartDragListener dragStartListener) {
-            super(context, sites, dragStartListener);
+            super(sites, dragStartListener);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditSearchsiteBinding vb =
-                    RowEditSearchsiteBinding.inflate(getLayoutInflater(), parent, false);
+            final RowEditSearchsiteBinding vb = RowEditSearchsiteBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
             final Holder holder = new Holder(vb);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

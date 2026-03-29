@@ -190,13 +190,9 @@ public class EditBookSeriesListDialogFragment
     }
 
     private void initListView() {
-        final Context context = getContext();
-
         seriesList = vm.getBook().getSeries();
 
-        //noinspection DataFlowIssue
-        adapter = new SeriesListAdapter(context, seriesList,
-                                        vh -> itemTouchHelper.startDrag(vh));
+        adapter = new SeriesListAdapter(seriesList, vh -> itemTouchHelper.startDrag(vh));
         adapter.setOnRowClickListener((v, position) -> {
             if (position == RecyclerView.NO_POSITION) {
                 return;
@@ -466,22 +462,20 @@ public class EditBookSeriesListDialogFragment
         /**
          * Constructor.
          *
-         * @param context           Current context
          * @param items             List of Series
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        SeriesListAdapter(@NonNull final Context context,
-                          @NonNull final List<Series> items,
+        SeriesListAdapter(@NonNull final List<Series> items,
                           @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(items, dragStartListener);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_series_list, parent, false);
+            final View view = LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.row_edit_series_list, parent, false);
             final Holder holder = new Holder(view);
             holder.setOnRowClickListener(rowClickListener);
             holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);

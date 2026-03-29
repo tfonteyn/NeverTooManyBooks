@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
-import android.content.Context;
 import android.content.res.Resources;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -35,26 +33,15 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
 
     private static final String ERROR_NO_LIST_INDEX_FOR_POSITION = "No ListIndex for position=";
 
-    /** Cached inflater. */
-    @NonNull
-    private final LayoutInflater inflater;
     private final int columnCount;
 
     /**
      * Constructor.
      *
-     * @param context     Current context
      * @param columnCount the number of columns to be used
      */
-    protected MultiColumnRecyclerViewAdapter(@NonNull final Context context,
-                                             final int columnCount) {
-        this.inflater = LayoutInflater.from(context);
+    protected MultiColumnRecyclerViewAdapter(final int columnCount) {
         this.columnCount = columnCount;
-    }
-
-    @NonNull
-    protected LayoutInflater getInflater() {
-        return inflater;
     }
 
     protected void requireValidOrThrow(final int position,

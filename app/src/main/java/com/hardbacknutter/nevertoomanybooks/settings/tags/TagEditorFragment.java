@@ -136,15 +136,13 @@ public class TagEditorFragment
         super.onViewCreated(view, savedInstanceState);
         InsetsListenerBuilder.apply(vb.tagList);
 
-        final Context context = getContext();
-
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.tagList.getLayoutManager();
         //noinspection DataFlowIssue
-        adapter = new TagAdapter(context, layoutManager.getSpanCount(), vm.getTags(),
-                                 positionHandler);
+        adapter = new TagAdapter(layoutManager.getSpanCount(), vm.getTags(), positionHandler);
 
+        //noinspection DataFlowIssue
         final GridDividerItemDecoration decoration =
-                new GridDividerItemDecoration(context, false, true);
+                new GridDividerItemDecoration(getContext(), false, true);
         vb.tagList.addItemDecoration(decoration);
 
         vb.tagList.setAdapter(adapter);
@@ -392,16 +390,14 @@ public class TagEditorFragment
         /**
          * Constructor.
          *
-         * @param context         Current context
          * @param columnCount     from the grid layout
          * @param items           to display
          * @param positionHandler Proxy between adapter and ViewModel.
          */
-        TagAdapter(@NonNull final Context context,
-                   @IntRange(from = 1) final int columnCount,
+        TagAdapter(@IntRange(from = 1) final int columnCount,
                    @NonNull final List<Tag> items,
                    @NonNull final PositionHandler positionHandler) {
-            super(context, columnCount);
+            super(columnCount);
             this.items = items;
             this.positionHandler = positionHandler;
         }
@@ -410,8 +406,8 @@ public class TagEditorFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditTagNameBinding vb =
-                    RowEditTagNameBinding.inflate(getInflater(), parent, false);
+            final RowEditTagNameBinding vb = RowEditTagNameBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
             adjustColumns(vb.getRoot());
             final Holder holder = new Holder(vb);
 

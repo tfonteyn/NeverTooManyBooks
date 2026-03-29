@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.sync;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,14 +44,12 @@ public class SyncFieldAdapter
     /**
      * Constructor.
      *
-     * @param context     Current context.
      * @param syncFields  to show
      * @param columnCount the number of columns to be used
      */
-    public SyncFieldAdapter(@NonNull final Context context,
-                            @NonNull final Collection<SyncField> syncFields,
+    public SyncFieldAdapter(@NonNull final Collection<SyncField> syncFields,
                             final int columnCount) {
-        super(context, columnCount);
+        super(columnCount);
         this.syncFields = syncFields.toArray(Z_ARRAY_SYNC_FIELD);
     }
 
@@ -61,7 +59,7 @@ public class SyncFieldAdapter
                                      final int viewType) {
 
         final RowSyncfieldConfigBinding vb = RowSyncfieldConfigBinding
-                .inflate(getInflater(), parent, false);
+                .inflate(LayoutInflater.from(parent.getContext()), parent, false);
         adjustColumns(vb.getRoot());
         final Holder holder = new Holder(vb);
 

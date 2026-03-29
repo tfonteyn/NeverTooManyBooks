@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.header;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,19 +35,14 @@ public class HeaderAdapter
         extends RecyclerView.Adapter<HeaderAdapter.HeaderViewHolder> {
 
     @NonNull
-    private final LayoutInflater inflater;
-    @NonNull
     private final Supplier<BooklistHeader> headerSupplier;
 
     /**
      * Constructor.
      *
-     * @param context        Current context
      * @param headerSupplier a supplier to get the current header values from
      */
-    public HeaderAdapter(@NonNull final Context context,
-                         @NonNull final Supplier<BooklistHeader> headerSupplier) {
-        inflater = LayoutInflater.from(context);
+    public HeaderAdapter(@NonNull final Supplier<BooklistHeader> headerSupplier) {
         this.headerSupplier = headerSupplier;
         setHasStableIds(true);
     }
@@ -58,7 +52,7 @@ public class HeaderAdapter
     public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                final int viewType) {
         final BooksonbookshelfHeaderBinding vb = BooksonbookshelfHeaderBinding
-                .inflate(inflater, parent, false);
+                .inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new HeaderViewHolder(vb);
     }
 

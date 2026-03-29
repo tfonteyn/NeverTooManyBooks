@@ -38,7 +38,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -60,7 +60,7 @@ public class ClickableListFormatter<T>
     private static final String ZERO_WIDTH_SPACE = "\u200B";
 
     @NonNull
-    private final Function<T, String> textSupplier;
+    private final BiFunction<Context, T, String> textSupplier;
 
     @NonNull
     private final Drawable icon;
@@ -74,7 +74,7 @@ public class ClickableListFormatter<T>
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public ClickableListFormatter(@NonNull final Context context,
-                                  @NonNull final Function<T, String> textSupplier) {
+                                  @NonNull final BiFunction<Context, T, String> textSupplier) {
         this.textSupplier = textSupplier;
 
         isRTL = context.getResources().getConfiguration()
@@ -141,7 +141,7 @@ public class ClickableListFormatter<T>
             final T entity = rawValue.get(i);
             final ImageSpan imageSpan = new CenteredImageSpan(icon);
 
-            final Spanned text = Html.fromHtml(textSupplier.apply(entity),
+            final Spanned text = Html.fromHtml(textSupplier.apply(context, entity),
                                                Html.FROM_HTML_MODE_COMPACT);
             if (isRTL) {
                 // Text first, then icon

@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -210,11 +209,8 @@ class PartialDatePickerDelegate
         final Optional<Integer> oYear = vm.getYear();
         final int year = oYear.orElse(now);
 
-        final Context context = owner.getContext();
-
-        //noinspection DataFlowIssue
         final YearGridAdapter adapter =
-                new YearGridAdapter(context, year, START_YEAR, now + FUTURE, pick -> {
+                new YearGridAdapter(year, START_YEAR, now + FUTURE, pick -> {
                     hideYearPicker();
                     updateYear(pick);
                 });

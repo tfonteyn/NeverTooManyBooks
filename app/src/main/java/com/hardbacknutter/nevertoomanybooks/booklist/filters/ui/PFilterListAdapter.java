@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.filters.ui;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -39,19 +37,15 @@ public class PFilterListAdapter
     private final List<PFilter<?>> filters;
     @NonNull
     private final ModificationListener listener;
-    private final LayoutInflater layoutInflater;
 
     /**
      * Constructor.
      *
-     * @param context  Current context
      * @param filters  List of items
      * @param listener listener which will be notified if a filter is modified
      */
-    public PFilterListAdapter(@NonNull final Context context,
-                              @NonNull final List<PFilter<?>> filters,
+    public PFilterListAdapter(@NonNull final List<PFilter<?>> filters,
                               @NonNull final ModificationListener listener) {
-        layoutInflater = LayoutInflater.from(context);
         this.filters = filters;
         this.listener = listener;
     }
@@ -60,8 +54,7 @@ public class PFilterListAdapter
     @Override
     public PFilterViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                 final int viewType) {
-        return PFilterViewHolderFactory.create(layoutInflater, parent,
-                                               viewType, listener);
+        return PFilterViewHolderFactory.create(parent, viewType, listener);
     }
 
     @Override
