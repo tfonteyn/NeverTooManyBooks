@@ -487,7 +487,8 @@ public class BooklistAdapter
      */
     @Override
     @Nullable
-    public CharSequence getPopupText(final int position) {
+    public CharSequence getPopupText(@NonNull final Context context,
+                                     final int position) {
         final CharSequence lev1 = getLevelText(1, position);
         if (lev1 == null) {
             return null;

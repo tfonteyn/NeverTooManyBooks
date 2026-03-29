@@ -173,8 +173,9 @@ public class AuthorWorksAdapter
 
     @NonNull
     @Override
-    public String getPopupText(final int position) {
-        return works.get(position).getLabel(inflater.getContext(), Details.AutoSelect, style);
+    public String getPopupText(@NonNull final Context context,
+                               final int position) {
+        return works.get(position).getLabel(context, Details.AutoSelect, style);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

@@ -243,7 +243,7 @@ class FastScrollerOverlay
             return previousPopupText;
         }
 
-        final CharSequence text = provider.getPopupText(position);
+        final CharSequence text = provider.getPopupText(mRecyclerView.getContext(), position);
         if (text != null && !text.equals(previousPopupText)) {
             mRecyclerView.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
         }

@@ -20,6 +20,9 @@
 
 package com.hardbacknutter.fastscroller;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public interface OverlayProvider {
@@ -66,11 +69,13 @@ public interface OverlayProvider {
         /**
          * Get the popup text for the given position.
          *
+         * @param context  Current context
          * @param position to use
          *
          * @return the text
          */
         @Nullable
-        CharSequence getPopupText(int position);
+        CharSequence getPopupText(@NonNull Context context,
+                                  int position);
     }
 }
