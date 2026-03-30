@@ -84,7 +84,7 @@ public class BedethequeAuthorResolver
     @NonNull
     private final Locale locale;
     private final BedethequeCacheDao cacheDao;
-    private TextNormalizer textNormalizer;
+    private final TextNormalizer textNormalizer;
 
     /**
      * Private Constructor.

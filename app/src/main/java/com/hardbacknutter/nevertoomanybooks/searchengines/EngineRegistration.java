@@ -63,7 +63,7 @@ public class EngineRegistration {
                 .filter(Site::isActive)
                 .map(Site::getEngineId)
                 .filter(engineId -> engineId.supports(SearchEngine.UserRegistration.class))
-                .filter(engineId -> shouldPrompt(engineId))
+                .filter(EngineRegistration::shouldPrompt)
                 .collect(Collectors.toCollection(ArrayDeque::new));
 
         if (stack.isEmpty()) {

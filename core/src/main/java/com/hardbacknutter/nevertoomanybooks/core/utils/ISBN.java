@@ -816,7 +816,8 @@ public class ISBN
     @NonNull
     public String toString() {
         return "ISBN{"
-               + "codeType=" + codeType
+               + "strictIsbn=" + strictIsbn
+               + ", codeType=" + codeType
                + ", codeText=" + codeText
                + ", codeDigits=" + codeDigits
                + '}';

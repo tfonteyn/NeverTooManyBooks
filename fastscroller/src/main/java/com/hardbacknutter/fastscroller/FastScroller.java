@@ -22,6 +22,7 @@ package com.hardbacknutter.fastscroller;
 
 import androidx.annotation.Nullable;
 
+@FunctionalInterface
 public interface FastScroller {
 
     /**
