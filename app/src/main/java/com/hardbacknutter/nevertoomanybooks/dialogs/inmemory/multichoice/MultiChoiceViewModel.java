@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,6 +41,7 @@ public class MultiChoiceViewModel
     @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private Set<Long> currentSelection;
+    private boolean preferenceChanged;
     @Nullable
     private Bundle extras;
 
@@ -68,8 +69,16 @@ public class MultiChoiceViewModel
         }
     }
 
+    void add(@NonNull final Long value) {
+        this.preferenceChanged = this.preferenceChanged || currentSelection.add(value);
+    }
+
+    void remove(@NonNull final Long value) {
+        this.preferenceChanged = this.preferenceChanged || currentSelection.remove(value);
+    }
+
     boolean isModified() {
-        return !previousSelection.equals(currentSelection);
+        return preferenceChanged;
     }
 
     @NonNull
@@ -77,7 +86,6 @@ public class MultiChoiceViewModel
         return previousSelection;
     }
 
-    // adding/removing items is done directly on the set.
     @NonNull
     Set<Long> getCurrentSelection() {
         return currentSelection;

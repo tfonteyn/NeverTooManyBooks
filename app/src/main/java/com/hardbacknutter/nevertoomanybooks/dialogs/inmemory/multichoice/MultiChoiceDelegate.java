@@ -142,9 +142,9 @@ class MultiChoiceDelegate
                 itemIds, items::get, vm.getCurrentSelection(),
                 (id, checked) -> {
                     if (checked) {
-                        vm.getCurrentSelection().add(id);
+                        vm.add(id);
                     } else {
-                        vm.getCurrentSelection().remove(id);
+                        vm.remove(id);
                     }
                 });
         vb.itemList.setAdapter(adapter);

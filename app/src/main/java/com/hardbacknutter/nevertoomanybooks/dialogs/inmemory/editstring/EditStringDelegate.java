@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Objects;
 
@@ -114,16 +117,28 @@ class EditStringDelegate
             toolbar.setTitle(dialogTitle);
         }
 
-        if (dialogMessage != null && !dialogMessage.isEmpty()) {
-            vb.message.setText(dialogMessage);
-            vb.message.setVisibility(View.VISIBLE);
-        } else {
-            vb.message.setVisibility(View.GONE);
-        }
+        bindMessageView(vb.message);
+        bindEditText(vb.editString);
+    }
 
-        vb.editString.setInputType(inputType);
-        vb.editString.setText(vm.getCurrentValue());
-        vb.editString.requestFocus();
+    private void bindMessageView(@Nullable final TextView messageView) {
+        if (messageView != null) {
+            if (dialogMessage == null || dialogMessage.isEmpty()) {
+                messageView.setVisibility(View.GONE);
+            } else {
+                messageView.setText(dialogMessage);
+                messageView.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void bindEditText(@NonNull final TextInputEditText editText) {
+        editText.setInputType(inputType);
+        editText.setText(vm.getCurrentValue());
+        // Place cursor at the end
+        //noinspection DataFlowIssue
+        editText.setSelection(editText.getText().length());
+        editText.requestFocus();
     }
 
     @Override
