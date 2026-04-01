@@ -103,14 +103,14 @@ public class SearchEngineConfig {
      * <p>
      * {@code boolean}
      */
-    private static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
+    public static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * HTTP GET/HEAD requests will log urls, response-codes and manual redirects.
      * <p>
      * {@code boolean}
      */
-    private static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
+    static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
     private static final int TO_MILLIS = 1000;
 
     @NonNull
@@ -267,9 +267,9 @@ public class SearchEngineConfig {
      * @return milliseconds
      */
     public int getConnectTimeoutInMs() {
-        return getTimeoutValueInMs(engineId.getPreferenceKey()
-                                   + '.' + PK_TIMEOUT_CONNECT_IN_SECONDS,
-                                   connectTimeoutMs);
+        return getTimeoutValueInMs(
+                engineId.getPreferenceKey() + '.' + PK_TIMEOUT_CONNECT_IN_SECONDS,
+                connectTimeoutMs);
     }
 
     /**
@@ -278,9 +278,9 @@ public class SearchEngineConfig {
      * @return milliseconds
      */
     public int getReadTimeoutInMs() {
-        return getTimeoutValueInMs(engineId.getPreferenceKey()
-                                   + '.' + PK_TIMEOUT_READ_IN_SECONDS,
-                                   readTimeoutMs);
+        return getTimeoutValueInMs(
+                engineId.getPreferenceKey() + '.' + PK_TIMEOUT_READ_IN_SECONDS,
+                readTimeoutMs);
     }
 
     /**
@@ -291,10 +291,6 @@ public class SearchEngineConfig {
     @NonNull
     public Throttler getThrottler() {
         return throttler;
-    }
-
-    public int getThrottlerDelayInMs() {
-        return throttler.getDelayInMillis();
     }
 
     @NonNull

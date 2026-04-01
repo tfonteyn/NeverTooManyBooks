@@ -50,7 +50,6 @@ public final class FormatMapper
      * <p>
      * {@code boolean}
      */
-    @VisibleForTesting
     public static final String PK_SEARCH_REFORMAT_FORMAT = "search.reformat.format";
 
     /** Maps site format terminology to our own. */

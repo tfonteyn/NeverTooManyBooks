@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,80 +20,121 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.hardware.camera2.CameraMetadata;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.ListPreference;
 
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
-/**
- * Used/defined in xml/preferences.xml
- */
+
 @Keep
 public class BarcodePreferenceFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
+    /** Fragment/Log tag. */
+    public static final String TAG = "BarcodePreferenceFrg";
+
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
-
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        final CameraConfig cameraConfig = new CameraConfig(getContext());
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
-        final List<Integer> cameras = cameraConfig.getAvailableLensFacingIds();
-        final int max = cameras.size() + 1;
-        final CharSequence[] cameraLabels = new CharSequence[max];
-        final CharSequence[] cameraValues = new CharSequence[max];
-        cameraLabels[0] = getString(R.string.lbl_system_default);
-        cameraValues[0] = "-1";
+        factory.header(R.string.pt_barcode_scanner);
 
-        int i = 0;
-        for (final Integer value : cameras) {
-            i++;
-            cameraValues[i] = String.valueOf(value);
-            if (value == CameraMetadata.LENS_FACING_FRONT) {
-                cameraLabels[i] = getString(R.string.pe_camera_front);
-            } else if (value == CameraMetadata.LENS_FACING_BACK) {
-                cameraLabels[i] = getString(R.string.pe_camera_back);
-            }
-        }
-        final ListPreference cameraPref = findPreference(CameraConfig.PK_CAMERA_LENS_FACING);
-        //noinspection DataFlowIssue
-        cameraPref.setEntries(cameraLabels);
-        cameraPref.setEntryValues(cameraValues);
-
-        //noinspection DataFlowIssue
-        findPreference(SoundManager.PK_SOUNDS_SCAN_FOUND_BARCODE)
-                .setOnPreferenceChangeListener((preference, newValue) -> {
-                    if (newValue instanceof Boolean && (Boolean) newValue) {
-                        SoundManager.beep(SoundManager.EVENT);
-                    }
-                    return true;
+        factory.singleChoice(ScanMode.PK_SCANNER_MODE_SINGLE,
+                             R.string.pt_scan_mode,
+                             R.array.pe_scan_mode_single,
+                             R.array.pv_scan_mode_single, null, p -> {
+                    p.setIcon(R.drawable.barcode_24px);
+                    p.setSelectedIndex(1);
                 });
-        //noinspection DataFlowIssue
-        findPreference(SoundManager.PK_SOUNDS_SCAN_ISBN_VALID)
-                .setOnPreferenceChangeListener((preference, newValue) -> {
-                    if (newValue instanceof Boolean && (Boolean) newValue) {
-                        SoundManager.beep(SoundManager.POSITIVE);
+
+        factory.singleChoice(CameraConfig.PK_CAMERA_LENS_FACING,
+                             R.string.pt_camera_lens_facing, null, p -> {
+                    p.setIcon(R.drawable.photo_camera_24px);
+
+                    final CameraConfig cameraConfig = new CameraConfig(getContext());
+                    final List<Integer> cameras = cameraConfig.getAvailableLensFacingIds();
+                    // Add 1 for the system-default value
+                    final int size = cameras.size() + 1;
+                    final CharSequence[] labels = new CharSequence[size];
+                    final CharSequence[] values = new CharSequence[size];
+                    labels[0] = getString(R.string.lbl_system_default);
+                    values[0] = "-1";
+
+                    int i = 0;
+                    for (final Integer value : cameras) {
+                        i++;
+                        values[i] = String.valueOf(value);
+                        if (value == CameraMetadata.LENS_FACING_FRONT) {
+                            labels[i] = getString(R.string.pe_camera_front);
+                        } else if (value == CameraMetadata.LENS_FACING_BACK) {
+                            labels[i] = getString(R.string.pe_camera_back);
+                        }
                     }
-                    return true;
+
+                    p.setEntries(labels);
+                    p.setEntryValues(values);
+                    p.setSelectedIndex(0);
                 });
-        //noinspection DataFlowIssue
-        findPreference(SoundManager.PK_SOUNDS_SCAN_ISBN_INVALID)
-                .setOnPreferenceChangeListener((preference, newValue) -> {
-                    if (newValue instanceof Boolean && (Boolean) newValue) {
-                        SoundManager.beep(SoundManager.NEGATIVE);
-                    }
-                    return true;
+
+        factory.bool(CameraConfig.PK_CAMERA_ZOOM_CONTROL_SHOW,
+                     R.string.pt_barcode_zoom_control,
+                     R.string.disabled, R.string.enabled, null, p -> {
+                    p.setIcon(R.drawable.loupe_24px);
                 });
+        factory.bool(CameraConfig.PK_CAMERA_AUTO_FOCUS,
+                     R.string.pt_barcode_zoom_control,
+                     R.string.disabled, R.string.enabled, null, p -> {
+                    p.setIcon(R.drawable.center_focus_weak_24px);
+                    p.setChecked(true);
+                });
+
+        factory.header(R.string.pt_barcode_sounds);
+
+        factory.bool(SoundManager.PK_SOUNDS_SCAN_FOUND_BARCODE,
+                     R.string.pt_scanning_beep_on_barcode_found,
+                     (s, newValue) -> onChangeSound(newValue, SoundManager.EVENT),
+                     p -> {
+                    p.setIcon(R.drawable.surround_sound_24px);
+                    p.setChecked(true);
+                });
+        factory.bool(SoundManager.PK_SOUNDS_SCAN_ISBN_VALID,
+                     R.string.pt_scanning_beep_on_valid,
+                     (s, newValue) -> onChangeSound(newValue, SoundManager.POSITIVE),
+                     p -> {
+                    p.setIcon(R.drawable.surround_sound_24px);
+                });
+        factory.bool(SoundManager.PK_SOUNDS_SCAN_ISBN_INVALID,
+                     R.string.pt_scanning_beep_on_invalid,
+                     (s, newValue) -> onChangeSound(newValue, SoundManager.NEGATIVE),
+                     p -> {
+                    p.setIcon(R.drawable.surround_sound_24px);
+                    p.setChecked(true);
+                });
+
+        return factory;
     }
 
+    private boolean onChangeSound(@Nullable final Object newValue,
+                                  @SoundManager.Tone final int event) {
+        final boolean enable = newValue != null && (boolean) newValue;
+        if (enable) {
+            SoundManager.beep(event);
+        }
+        return true;
+    }
 }

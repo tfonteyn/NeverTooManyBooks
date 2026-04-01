@@ -45,7 +45,6 @@ public final class ColorMapper
      * <p>
      * {@code boolean}
      */
-    @VisibleForTesting
     public static final String PK_SEARCH_REFORMAT_COLOR = "search.reformat.color";
 
     /** Maps site colour terminology to our own. */

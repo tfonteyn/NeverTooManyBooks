@@ -28,7 +28,6 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -125,7 +124,6 @@ public class EditBookViewModel
      *
      * @see ISBN.Validity
      */
-    @VisibleForTesting
     public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
     /** the list with all fields. */

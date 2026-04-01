@@ -93,8 +93,7 @@ public class BiblionetGrSearchEngine
      * Subject tags on the site have a code prefixed. By default, we drop this
      * but the user can enable this in the settings.
      */
-    private static final String PK_TAG_PREFIX_NUMBER =
-            PREFERENCE_KEY + ".search.tag.prefix_number";
+    static final String PK_TAG_PREFIX_NUMBER = PREFERENCE_KEY + ".search.tag.prefix_number";
 
     /**
      * Encoded text is:  σύνθετη αναζήτηση = “advanced search”.

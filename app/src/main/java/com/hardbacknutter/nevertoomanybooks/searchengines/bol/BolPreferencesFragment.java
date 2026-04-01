@@ -20,72 +20,76 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
-import android.os.Bundle;
+import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.ListPreference;
-import androidx.preference.SwitchPreference;
 
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class BolPreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
-    private static final String DEF_COUNTRY = "";
-
-    /** These values are used in the search url as-is. */
-    private final CharSequence[] entryValues = {DEF_COUNTRY, "be", "nl"};
-    private final CharSequence[] entries = new CharSequence[entryValues.length];
-
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_bol, rootKey);
+    protected SettingsManager.Builder onCreateSettings() {
+        final Context context = getContext();
 
-        entries[0] = getString(R.string.lbl_system_default);
-        //FIXME: these will always show in the device language
-        // and not in the user-selected language
-        entries[1] = new Locale("nl", "BE").getDisplayCountry();
-        entries[2] = new Locale("nl", "NL").getDisplayCountry();
-
-        final ListPreference p = findPreference(BolSearchEngine.PK_BOL_COUNTRY);
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        p.setEntries(entries);
-        p.setEntryValues(entryValues);
+        final SettingsManager.Builder factory = new SettingsManager.Builder(context, store);
 
-        // The ListPreference has an issue that the initial value is set during the inflation
-        // step. At that time, the default value is ONLY available from XML.
-        // Internally it will then use this to set the value.
-        // Workaround: set the default, and if the pref has no value, set it as well...
-        p.setDefaultValue(DEF_COUNTRY);
-        if (p.getValue() == null) {
-            p.setValue(DEF_COUNTRY);
-        }
+        final String pk = EngineId.Bol.getPreferenceKey();
 
-        initSearchMenuPref(EngineId.Bol);
-    }
+        factory.header(EngineId.Bol.getLabelResId());
 
-    /**
-     * Set this manually, as the default depends on the user language.
-     *
-     * @param engineId to use
-     */
-    @SuppressWarnings("DataFlowIssue")
-    private void initSearchMenuPref(@NonNull final EngineId engineId) {
-        final SearchEngine.SearchOnSite searchEngine = (SearchEngine.SearchOnSite)
-                engineId.createSearchEngine(getContext());
-        final SwitchPreference preference = findPreference(
-                engineId.getPreferenceKey() + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU);
-        preference.setChecked(searchEngine.isShowSearchOnSiteMenu(getContext()));
+        factory.singleChoice(BolSearchEngine.PK_BOL_COUNTRY,
+                             R.string.lbl_country, null, p -> {
+                    p.setIcon(R.drawable.language_24px);
+                    p.setEntries(new CharSequence[]{
+                            getString(R.string.lbl_system_default),
+                            //FIXME: these will always show in the device language
+                            // and not in the user-selected language
+                            new Locale("nl", "BE").getDisplayCountry(),
+                            new Locale("nl", "NL").getDisplayCountry()
+                    });
+                    p.setEntryValues(new CharSequence[]{"", "be", "nl"});
+                    p.setSelectedIndex(0);
+                });
+
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU,
+                     R.string.pt_search_show_menu_options, null, p -> {
+                    p.setIcon(R.drawable.shop_24px);
+
+                    // The default depends on the user language.
+                    final boolean checked = ((SearchEngine.SearchOnSite)
+                            EngineId.Bol.createSearchEngine(context))
+                            .isShowSearchOnSiteMenu(context);
+                    p.setChecked(checked);
+                });
+
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_ISBN_PREFER_10,
+                     R.string.pt_search_prefer_isbn10, null, p -> {
+                    p.setIcon(R.drawable.barcode_24px);
+                });
+
+
+        CommonSettingsFactory.timeouts(factory, pk);
+        CommonSettingsFactory.troubleshoot(factory, pk);
+
+        return factory;
     }
 }

@@ -137,7 +137,7 @@ public class DnbSearchEngine
      * <p>
      * {@code boolean}
      */
-    private static final String PK_COVERS_FROM_PORTAL =
+    static final String PK_COVERS_FROM_PORTAL =
             PREFERENCE_KEY + ".covers.from.portal";
 
     // we could probably just use the bare "https://katalog.dnb.de"...

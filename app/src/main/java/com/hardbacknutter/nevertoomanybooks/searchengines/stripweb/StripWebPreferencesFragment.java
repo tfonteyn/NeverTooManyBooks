@@ -19,51 +19,66 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 
-import android.os.Bundle;
+import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class StripWebPreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
+    private static final String PK_SEARCH_WEBSITE_MENU =
+            EngineId.StripWebBe.getPreferenceKey()
+            + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_stripweb, rootKey);
-
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        findPreference(EngineId.StripWebBe.getPreferenceKey()
-                       + AuthorResolverFactory.PK_RESOLVE_AUTHORS
-                       + EngineId.Bedetheque.getPreferenceKey())
-                .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
-                                    getString(R.string.site_bedetheque)));
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+        final String pk = EngineId.StripWebBe.getPreferenceKey();
 
-        initSearchMenuPref(EngineId.StripWebBe);
-    }
+        factory.header(EngineId.StripWebBe.getLabelResId());
 
-    /**
-     * Set this manually, as the default depends on the user language.
-     *
-     * @param engineId to use
-     */
-    @SuppressWarnings("DataFlowIssue")
-    private void initSearchMenuPref(@NonNull final EngineId engineId) {
-        final SearchEngine.SearchOnSite searchEngine = (SearchEngine.SearchOnSite)
-                engineId.createSearchEngine(getContext());
-        final SwitchPreference preference = findPreference(
-                engineId.getPreferenceKey() + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU);
-        preference.setChecked(searchEngine.isShowSearchOnSiteMenu(getContext()));
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU,
+                     R.string.pt_search_show_menu_options, null, p -> {
+                    p.setIcon(R.drawable.shop_24px);
+
+                    // The default depends on the user language.
+                    final Context context = getContext();
+                    final boolean checked = ((SearchEngine.SearchOnSite)
+                            EngineId.StripWebBe.createSearchEngine(context))
+                            .isShowSearchOnSiteMenu(context);
+                    p.setChecked(checked);
+                });
+
+        factory.bool(pk + AuthorResolverFactory.PK_RESOLVE_AUTHORS
+                     + EngineId.Bedetheque.getPreferenceKey(),
+                     0, null, p -> {
+                    p.setIcon(R.drawable.cloud_download_24px);
+                    p.setChecked(true);
+                    p.setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
+                                         getString(R.string.site_bedetheque)));
+                });
+
+        CommonSettingsFactory.timeouts(factory, pk);
+        CommonSettingsFactory.troubleshoot(factory, pk);
+
+        return factory;
     }
 }

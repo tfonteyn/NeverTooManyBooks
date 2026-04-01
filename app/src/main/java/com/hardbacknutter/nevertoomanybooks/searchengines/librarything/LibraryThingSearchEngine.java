@@ -27,7 +27,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.fragment.app.Fragment;
 
@@ -75,9 +74,8 @@ public class LibraryThingSearchEngine
 
     private static final String PREFERENCE_KEY = "librarything";
 
-    @VisibleForTesting
     static final String PK_API_TOKEN = PREFERENCE_KEY + ".api.token";
-    private static final int TOKEN_LEN = 32;
+    static final int TOKEN_LEN = 32;
 
     @Nullable
     private FutureHttp<Boolean> httpGet;

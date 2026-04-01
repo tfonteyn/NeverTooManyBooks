@@ -23,7 +23,6 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -59,6 +58,7 @@ public class ConnectionValidationHelper {
     protected final Fragment owner;
     @NonNull
     protected final Runnable finish;
+
     @NonNull
     private final View progressFrame;
     @NonNull
@@ -67,12 +67,13 @@ public class ConnectionValidationHelper {
     private final BooleanSupplier shouldProposeValidation;
     @Nullable
     private ProgressDelegate progressDelegate;
+
     @SuppressWarnings("FieldCanBeLocal")
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (vm.isEnabled() && shouldProposeValidation.getAsBoolean()) {
+                    if (shouldProposeValidation()) {
                         proposeValidation();
                     } else {
                         finish.run();
@@ -84,7 +85,7 @@ public class ConnectionValidationHelper {
      * Constructor. Should be called from {@code Fragment#onViewCreated}.
      *
      * @param siteResId         for the site we're validating
-     * @param owner             of the helper
+     * @param owner             of this helper
      * @param progressFrame     to use
      * @param proposeValidation callback to check if when finishing,
      *                          the connection should be validated
@@ -117,13 +118,19 @@ public class ConnectionValidationHelper {
         }
     }
 
+    boolean shouldProposeValidation() {
+        return vm.isEnabled() && shouldProposeValidation.getAsBoolean();
+    }
+
     /**
      * Called when the user taps "back" AND if validation/authentication is enabled.
      * <p>
      * Prompt the user to either start a connection test, or continue with the "back" action.
+     * <p>
+     * Dev. note: 'final' as a reminder we should NOT override this,
+     * use a customized {@link OnBackPressedCallback} instead.
      */
-    @CallSuper
-    protected void proposeValidation() {
+    final void proposeValidation() {
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(owner.getContext())
                 .setIcon(R.drawable.info_24px)
@@ -194,8 +201,7 @@ public class ConnectionValidationHelper {
                                      context.getString(R.string.error_network_failed_try_again));
                     return;
                 }
-            }
-            if (e instanceof ConnectException) {
+            } else if (e instanceof ConnectException) {
                 //noinspection DataFlowIssue
                 final Optional<String> msg = ExMsg.map(context, e);
                 if (msg.isPresent()) {

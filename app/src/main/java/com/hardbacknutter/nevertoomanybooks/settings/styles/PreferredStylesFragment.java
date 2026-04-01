@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -362,7 +363,10 @@ public class PreferredStylesFragment
             final Context context = itemView.getContext();
             vb.styleName.setText(style.getLabel(context));
             vb.type.setText(style.getType().getLabel(context));
-            vb.groups.setText(style.getGroupsSummaryText(context));
+
+            vb.groups.setText(style.getGroupList().stream()
+                                   .map(element -> element.getLabel(context))
+                                   .collect(Collectors.joining(", ")));
 
             // set the 'preferred' state of the current row
             setChecked(style.isPreferred());

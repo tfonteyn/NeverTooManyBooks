@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,20 +19,31 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 public class SqlitePreferenceFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
-    @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_sqlite_shell, rootKey);
+    @NonNull
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
+        //noinspection DataFlowIssue
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+        factory.floatRange(SqliteShellFragment.PK_SQLITE_MAX_LINES,
+                           R.string.debug_sq_shell_max_rows,
+                           10, 9999, null, p -> {
+                    p.setIcon(R.drawable.table_rows_24px);
+                    p.setValue(200);
+                });
+
+        return factory;
     }
 }

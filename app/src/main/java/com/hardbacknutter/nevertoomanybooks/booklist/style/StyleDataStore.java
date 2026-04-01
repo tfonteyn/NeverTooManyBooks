@@ -23,7 +23,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
-import androidx.preference.PreferenceDataStore;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
+import com.hardbacknutter.prefslib.SettingsDataStore;
 
 /**
  * Definitions and transmogrifying (Hi Calvin) API for preference keys and actual style values.
@@ -44,14 +44,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
  *  "res/xml/preferences_style_book_details.xml"
  * <p>
  * NEWTHINGS: style option: add a PK, add it to the get/set, keep in sync with
- *  "res/xml/preferences_style.xml"
+ *  {@link com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBaseFragment}
  *
  * @see BookLevelFieldVisibility
  * @see BookDetailsFieldVisibility
  * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.UnderEach
  */
+@SuppressWarnings("StaticMethodOnlyUsedInOneClass")
 public class StyleDataStore
-        extends PreferenceDataStore {
+        implements SettingsDataStore {
 
     /** Style display name. */
     public static final String PK_NAME = "style.booklist.name";
@@ -133,15 +134,18 @@ public class StyleDataStore
     public static final String PSK_STYLE_SERIES = "psk_style_series";
     public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
     public static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
+    public static final String PSK_LIST_BOOK_LEVEL_FIELDS = "psk_style_book_level_fields";
+    public static final String PSK_LIST_BOOK_LEVEL_SORTING = "psk_style_book_level_sorting";
 
     /** Detail screens: Show the images for each book. */
     public static final String[] PK_DETAILS_SHOW_COVER = new String[DBKey.NR_OF_BOOK_COVERS];
+    public static final String PK_LIST_BOOK_SHOW_COVER_0 = "style.booklist.show.thumbnails";
 
-    private static final String VIS_PREFIX = "style.booklist.show.";
+    /** Visibility prefix. */
+    public static final String VIS_PREFIX = "style.booklist.show.";
 
     /** Map preference key to {@link DBKey}. */
     private static final Map<String, String> PK_LIST_SHOW_FIELD_TO_DB_KEY = new HashMap<>();
-
     /** Map preference key to {@link DBKey}. */
     private static final Map<String, String> PK_DETAILS_SHOW_FIELD_TO_DB_KEY = new HashMap<>();
 
@@ -192,10 +196,16 @@ public class StyleDataStore
         }
     }
 
+    /**
+     * The style we're editing.
+     * <p>
+     * A {@link UserStyle} or {@link GlobalStyle},
+     * but <strong>never</strong> a {@link BuiltinStyle}
+     */
     @NonNull
     private final WritableStyle style;
     @NonNull
-    private final MutableLiveData<Void> onModified;
+    private final MutableLiveData<String> onModified;
 
     private boolean modified;
 
@@ -206,7 +216,7 @@ public class StyleDataStore
      * @param onModified the LiveData to update when this store is modified
      */
     public StyleDataStore(@NonNull final WritableStyle style,
-                          @NonNull final MutableLiveData<Void> onModified) {
+                          @NonNull final MutableLiveData<String> onModified) {
         this.style = style;
         this.onModified = onModified;
     }
@@ -261,11 +271,13 @@ public class StyleDataStore
     }
 
     /**
-     * Flag this data-story as being modified.
+     * Flag this data-store as being modified.
+     *
+     * @param key which was updated
      */
-    public void setModified() {
+    public void setModified(@NonNull final String key) {
         modified = true;
-        onModified.setValue(null);
+        onModified.setValue(key);
     }
 
     /**
@@ -278,78 +290,42 @@ public class StyleDataStore
     }
 
     @Override
-    public void putInt(@NonNull final String key,
-                       final int value) {
-        switch (key) {
-            case PK_EXPANSION_LEVEL:
-                style.setExpansionLevel(value);
-                break;
-
-            case PK_COVER_SCALE:
-                style.setCoverScale(CoverScale.byId(value));
-                break;
-
-            case PK_TEXT_SCALE:
-                style.setTextScale(TextScale.byId(value));
-                break;
-
-            default:
-                throw new IllegalArgumentException(key);
-        }
-        setModified();
-    }
-
-    @Override
-    public int getInt(@NonNull final String key,
-                      final int defValue) {
-        switch (key) {
-            case PK_EXPANSION_LEVEL:
-                return style.getExpansionLevel();
-
-            case PK_COVER_SCALE:
-                return style.getCoverScale().getId();
-
-            case PK_TEXT_SCALE:
-                return style.getTextScale().getId();
-
-            default:
-                throw new IllegalArgumentException(key);
-        }
-    }
-
-    @Override
     public void putBoolean(@NonNull final String key,
-                           final boolean value) {
+                           @Nullable final Boolean value) {
+        // Sanity check, should never happen... flw
+        if (value == null) {
+            return;
+        }
 
         switch (key) {
             case PK_GROUP_ROW_HEIGHT:
                 style.setGroupRowUsesPreferredHeight(value);
-                setModified();
+                setModified(key);
                 return;
 
             case PK_SHOW_GROUP_BOOK_COUNT:
                 style.setShowGroupBookCount(value);
-                setModified();
+                setModified(key);
                 return;
 
             case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
                 style.setShowAuthorByGivenName(value);
-                setModified();
+                setModified(key);
                 return;
 
             case PK_SHOW_TITLES_REORDERED:
                 style.setShowReorderedTitle(value);
-                setModified();
+                setModified(key);
                 return;
 
             case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 style.setSortAuthorByGivenName(value);
-                setModified();
+                setModified(key);
                 return;
 
             case PK_USE_READ_PROGRESS:
                 style.setUseReadProgress(value);
-                setModified();
+                setModified(key);
                 return;
         }
 
@@ -357,7 +333,7 @@ public class StyleDataStore
         if (listDbKey != null) {
             style.setFieldVisibility(FieldVisibility.Screen.List,
                                      listDbKey, value);
-            setModified();
+            setModified(key);
             return;
         }
 
@@ -365,14 +341,14 @@ public class StyleDataStore
         if (detailDbKey != null) {
             style.setFieldVisibility(FieldVisibility.Screen.Detail,
                                      detailDbKey, value);
-            setModified();
+            setModified(key);
             return;
         }
 
         final Style.UnderEach underEach = Style.UnderEach.findByPrefKey(key);
         if (underEach != null) {
             style.setShowBooksUnderEachGroup(underEach.getGroupId(), value);
-            setModified();
+            setModified(key);
             return;
         }
 
@@ -381,7 +357,7 @@ public class StyleDataStore
 
     @Override
     public boolean getBoolean(@NonNull final String key,
-                              final boolean defValue) {
+                              @Nullable final Boolean defValue) {
         switch (key) {
             case PK_GROUP_ROW_HEIGHT:
                 return style.isGroupRowUsesPreferredHeight();
@@ -425,37 +401,45 @@ public class StyleDataStore
                           @Nullable final String value) {
         switch (key) {
             case PK_NAME: {
-                // The DataStores lives inside a ViewModel, so we can't get a Context
-                // and use the type independent #getLabel(Context).
-                // But we only allow name editing for a UserStyle anyhow.
+                // We only allow name editing for a UserStyle.
+                // We should never get here if it's not a UserStyle... but paranoia...
                 if (style.getType() == Style.Type.User) {
                     //noinspection DataFlowIssue
                     ((UserStyle) style).setName(value);
                 }
-                // else: We can't stop the framework calling us... just ignore
                 break;
             }
             case PK_LAYOUT: {
-                style.setLayout(ScreenLayout.byId(Integer.parseInt(value)));
+                style.setLayout(value != null
+                                ? ScreenLayout.byId(Integer.parseInt(value))
+                                : ScreenLayout.List);
                 break;
             }
             case PK_COVER_CLICK_ACTION: {
-                style.setCoverClickAction(Style.CoverClickAction.byId(Integer.parseInt(value)));
+                style.setCoverClickAction(
+                        value != null
+                        ? Style.CoverClickAction.byId(Integer.parseInt(value))
+                        : Style.CoverClickAction.OpenBookDetails);
                 break;
             }
             case PK_COVER_LONG_CLICK_ACTION: {
-                style.setCoverLongClickAction(Style.CoverLongClickAction.byId(
-                        Integer.parseInt(value)));
+                style.setCoverLongClickAction(
+                        value != null
+                        ? Style.CoverLongClickAction.byId(Integer.parseInt(value))
+                        : Style.CoverLongClickAction.PopupMenu);
                 break;
             }
             case PK_CITATION_TYPE: {
-                style.setCitationType(CitationType.byId(Integer.parseInt(value)));
+                style.setCitationType(
+                        value != null
+                        ? CitationType.byId(Integer.parseInt(value))
+                        : CitationType.Default);
                 break;
             }
             default:
                 throw new IllegalArgumentException(key);
         }
-        setModified();
+        setModified(key);
     }
 
     @Nullable
@@ -464,11 +448,12 @@ public class StyleDataStore
                             @Nullable final String defValue) {
         switch (key) {
             case PK_NAME: {
-                // See remarks in #putString
+                // We only allow name editing for a UserStyle.
                 if (style.getType() == Style.Type.User) {
                     return ((UserStyle) style).getName();
                 } else {
-                    // We can't stop the framework calling us... just return bogus
+                    // We should never get here if it's not a UserStyle... but paranoia...
+                    // Just return bogus
                     return "";
                 }
             }
@@ -508,7 +493,7 @@ public class StyleDataStore
             default:
                 throw new IllegalArgumentException(key);
         }
-        setModified();
+        setModified(key);
     }
 
     @Nullable
@@ -525,5 +510,74 @@ public class StyleDataStore
             default:
                 throw new IllegalArgumentException(key);
         }
+    }
+
+    @Override
+    public void putFloat(@NonNull final String key,
+                         @Nullable final Float value) {
+        // Sanity check, should never happen... flw
+        if (value == null) {
+            return;
+        }
+
+        switch (key) {
+            case PK_EXPANSION_LEVEL:
+                style.setExpansionLevel(value.intValue());
+                break;
+
+            case PK_COVER_SCALE:
+                style.setCoverScale(CoverScale.byId(value.intValue()));
+                break;
+
+            case PK_TEXT_SCALE:
+                style.setTextScale(TextScale.byId(value.intValue()));
+                break;
+
+            default:
+                throw new IllegalArgumentException(key);
+        }
+        setModified(key);
+    }
+
+    @Override
+    public float getFloat(@NonNull final String key,
+                          @Nullable final Float defValue) {
+        switch (key) {
+            case PK_EXPANSION_LEVEL:
+                return style.getExpansionLevel();
+
+            case PK_COVER_SCALE:
+                return style.getCoverScale().getId();
+
+            case PK_TEXT_SCALE:
+                return style.getTextScale().getId();
+
+            default:
+                throw new IllegalArgumentException(key);
+        }
+    }
+
+    @Override
+    public void putLong(@NonNull final String key,
+                        @Nullable final Long value) {
+        throw new IllegalArgumentException(key);
+    }
+
+    @Override
+    public long getLong(@NonNull final String key,
+                        @Nullable final Long defValue) {
+        throw new IllegalArgumentException(key);
+    }
+
+    @Override
+    public void putInt(@NonNull final String key,
+                       @Nullable final Integer value) {
+
+    }
+
+    @Override
+    public int getInt(@NonNull final String key,
+                      @Nullable final Integer defValue) {
+        throw new IllegalArgumentException(key);
     }
 }

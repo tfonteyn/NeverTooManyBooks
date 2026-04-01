@@ -57,7 +57,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class ImageHandlerViewModel
         extends ViewModel {
 
-    private static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
+    public static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
 
     private final MutableLiveData<LiveDataEvent<TransformationResult>> transformationResult =
             new MutableLiveData<>();

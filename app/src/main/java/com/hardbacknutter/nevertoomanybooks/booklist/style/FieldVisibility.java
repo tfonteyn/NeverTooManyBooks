@@ -77,6 +77,10 @@ public class FieldVisibility {
      * The position in the list represents their bit-number in the {@link #bits} value.
      * <p>
      * <strong>NEVER CHANGE THE ORDER. NEW ENTRIES MUST BE ADDED AT THE END.</strong>
+     * <p>
+     *  NEWTHINGS: new fields visibility.
+     *   Add to list and to:
+     *   {@link com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment}
      */
     private static final List<String> DB_KEYS = List.of(
             // bit 0..3
@@ -146,10 +150,6 @@ public class FieldVisibility {
             DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
             DBKey.COVER[2],
             DBKey.COVER[3]
-
-            // NEWTHINGS: BookLevelField: add new field above
-            //  and also to:
-            //  res/xml/preferences_field_visibility.xml
 
             // FIXME: DBKey.BOOK_CONTENT_TYPE: has the same DBKey column name as DBKey.FK_TOC_ENTRY
             //  book-edit: toc/content_type are shown/hidden in a single fragment

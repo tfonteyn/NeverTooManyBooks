@@ -48,10 +48,10 @@ public class AuthorBooklistGroup
         extends BooklistGroupImpl
         implements UnderEachGroup {
 
-    private static final GroupPrefs GROUP_PREFS =
-            new GroupPrefs(StyleDataStore.PSK_STYLE_AUTHOR,
-                           Style.UnderEach.Author.getPrefKey(),
-                           StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE);
+    private static final GroupSettings GROUP_PREFS =
+            new GroupSettings(StyleDataStore.PSK_STYLE_AUTHOR,
+                              Style.UnderEach.Author.getPrefKey(),
+                              StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE);
 
     /** DomainExpression for displaying the data. Style dependent. */
     @NonNull
@@ -120,7 +120,7 @@ public class AuthorBooklistGroup
 
     @NonNull
     @Override
-    public GroupPrefs getGroupPrefs() {
+    public GroupSettings getGroupSettings() {
         return GROUP_PREFS;
     }
 

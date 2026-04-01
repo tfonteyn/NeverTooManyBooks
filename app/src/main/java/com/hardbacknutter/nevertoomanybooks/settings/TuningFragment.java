@@ -20,67 +20,61 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.SharedPreferences;
-import android.os.Bundle;
-
 import androidx.annotation.Keep;
-import androidx.annotation.Nullable;
-import androidx.preference.SeekBarPreference;
+import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class TuningFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
     public static final String TAG = "TuningFragment";
 
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-
-        setPreferencesFromResource(R.xml.preferences_tuning, rootKey);
-
-        final SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
-
-        SeekBarPreference p;
-        // set all values from code to avoid the XML being out-of-sync
-
-        p = findPreference(Tuning.PK_OFFSCREEN_CACHE_SIZE);
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        p.setSummary(getString(R.string.lbl_default_x,
-                               String.valueOf(Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE)));
-        p.setDefaultValue(Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE);
-        p.setMin(Tuning.MIN_OFFSCREEN_CACHE_SIZE);
-        p.setMax(Tuning.MAX_OFFSCREEN_CACHE_SIZE);
-        // because androidx.preferences is [bug]'d
-        //noinspection DataFlowIssue
-        p.setValue(prefs.getInt(Tuning.PK_OFFSCREEN_CACHE_SIZE,
-                                Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE));
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
+        factory.header(R.string.lbl_database, p -> {
+            p.setSummary(R.string.lbl_troubleshooting_warning);
+        });
 
-        p = findPreference(BooklistCursor.PK_PAGE_SIZE);
-        //noinspection DataFlowIssue
-        p.setSummary(getString(R.string.lbl_default_x,
-                               String.valueOf(BooklistCursor.PAGE_SIZE_DEFAULT)));
-        p.setDefaultValue(BooklistCursor.PAGE_SIZE_DEFAULT);
-        p.setMin(BooklistCursor.PAGE_SIZE_MIN);
-        p.setMax(BooklistCursor.PAGE_SIZE_MAX);
-        // because androidx.preferences is [bug]'d
-        p.setValue(prefs.getInt(BooklistCursor.PK_PAGE_SIZE,
-                                BooklistCursor.PAGE_SIZE_DEFAULT));
+        factory.floatRange(Tuning.PK_OFFSCREEN_CACHE_SIZE,
+                           R.string.tuning_offscreen_cache_size,
+                           Tuning.MIN_OFFSCREEN_CACHE_SIZE,
+                           Tuning.MAX_OFFSCREEN_CACHE_SIZE, null, p -> {
+                    p.setValue(Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE);
+                    p.setSummary(getString(R.string.lbl_default_x, String.valueOf(
+                            Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE)));
+                });
 
-        p = findPreference(BooklistCursor.PK_LRU_LIST_MULTIPLIER);
-        //noinspection DataFlowIssue
-        p.setSummary(getString(R.string.lbl_default_x,
-                               String.valueOf(BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT)));
-        p.setDefaultValue(BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT);
-        p.setMin(BooklistCursor.LRU_LIST_MULTIPLIER_MIN);
-        p.setMax(BooklistCursor.LRU_LIST_MULTIPLIER_MAX);
-        // because androidx.preferences is [bug]'d
-        p.setValue(prefs.getInt(BooklistCursor.PK_LRU_LIST_MULTIPLIER,
-                                BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT));
+        factory.floatRange(BooklistCursor.PK_PAGE_SIZE,
+                           R.string.tuning_page_size,
+                           BooklistCursor.PAGE_SIZE_MIN,
+                           BooklistCursor.PAGE_SIZE_MAX, null, p -> {
+                    p.setValue(BooklistCursor.PAGE_SIZE_DEFAULT);
+                    p.setSummary(getString(R.string.lbl_default_x, String.valueOf(
+                            BooklistCursor.PAGE_SIZE_DEFAULT)));
+                });
+
+        factory.floatRange(BooklistCursor.PK_LRU_LIST_MULTIPLIER,
+                           R.string.tuning_lru_list_multiplier,
+                           BooklistCursor.LRU_LIST_MULTIPLIER_MIN,
+                           BooklistCursor.LRU_LIST_MULTIPLIER_MAX, null, p -> {
+                    p.setValue(BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT);
+                    p.setSummary(getString(R.string.lbl_default_x, String.valueOf(
+                            BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT)));
+                });
+
+        return factory;
     }
 }

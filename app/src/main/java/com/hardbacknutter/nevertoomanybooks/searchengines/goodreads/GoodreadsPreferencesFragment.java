@@ -19,31 +19,58 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
-import android.os.Bundle;
-
 import androidx.annotation.Keep;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class GoodreadsPreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_goodreads, rootKey);
-
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        findPreference(EngineId.Goodreads.getPreferenceKey()
-                       + AuthorResolverFactory.PK_RESOLVE_AUTHORS
-                       + EngineId.Wikidata.getPreferenceKey())
-                .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
-                                    getString(R.string.site_wikidata)));
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+        final String pk = EngineId.Goodreads.getPreferenceKey();
+
+        factory.header(EngineId.Goodreads.getLabelResId());
+
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_ISBN_PREFER_10,
+                     R.string.pt_search_prefer_isbn10, null, p -> {
+                    p.setIcon(R.drawable.barcode_24px);
+                });
+
+        factory.bool(pk + AuthorResolverFactory.PK_RESOLVE_AUTHORS + pk,
+                     R.string.pt_fetch_author_info, null, p -> {
+                    p.setIcon(R.drawable.cloud_download_24px);
+                    p.setChecked(true);
+                });
+
+        factory.bool(pk + AuthorResolverFactory.PK_RESOLVE_AUTHORS
+                     + EngineId.Wikidata.getPreferenceKey(),
+                     0, null, p -> {
+                    p.setIcon(R.drawable.cloud_download_24px);
+                    p.setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
+                                         getString(R.string.site_wikidata)));
+                });
+
+
+        CommonSettingsFactory.timeouts(factory, pk);
+        CommonSettingsFactory.troubleshoot(factory, pk);
+
+        return factory;
     }
 }

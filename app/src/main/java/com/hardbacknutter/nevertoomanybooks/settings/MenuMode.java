@@ -47,7 +47,7 @@ public enum MenuMode {
      * <p>
      * {@code int}
      */
-    private static final String PK_UI_CONTEXT_MENUS = "ui.menu.context.mode";
+    public static final String PK_UI_CONTEXT_MENUS = "ui.menu.context.mode";
 
     /** Always show as traditional PopupMenu. */
     private static final int UI_CONTEXT_MENUS_CLASSIC = 0;

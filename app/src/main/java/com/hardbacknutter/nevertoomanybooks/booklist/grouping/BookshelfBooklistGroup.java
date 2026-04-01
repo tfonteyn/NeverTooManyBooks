@@ -44,9 +44,9 @@ class BookshelfBooklistGroup
         extends BooklistGroupImpl
         implements UnderEachGroup {
 
-    private static final GroupPrefs GROUP_PREFS =
-            new GroupPrefs(StyleDataStore.PSK_STYLE_BOOKSHELF,
-                           Style.UnderEach.Bookshelf.getPrefKey());
+    private static final GroupSettings GROUP_PREFS =
+            new GroupSettings(StyleDataStore.PSK_STYLE_BOOKSHELF,
+                              Style.UnderEach.Bookshelf.getPrefKey());
 
     /** DomainExpression for displaying the data. */
     @NonNull
@@ -87,7 +87,7 @@ class BookshelfBooklistGroup
 
     @NonNull
     @Override
-    public GroupPrefs getGroupPrefs() {
+    public GroupSettings getGroupSettings() {
         return GROUP_PREFS;
     }
 

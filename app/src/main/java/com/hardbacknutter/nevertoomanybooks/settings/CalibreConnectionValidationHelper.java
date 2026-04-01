@@ -22,8 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -39,30 +42,63 @@ public class CalibreConnectionValidationHelper
     @NonNull
     private final Supplier<String> urlSupplier;
 
+    @SuppressWarnings("FieldCanBeLocal")
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (shouldProposeValidation()) {
+                        final CharSequence url = urlSupplier.get();
+                        if (hostUrlValidator.isValidUrl(url)) {
+                            proposeValidation();
+                        } else {
+                            showInvalidUrlDialog(url);
+                        }
+                    } else {
+                        finish.run();
+                    }
+                }
+            };
+
+    /**
+     * Constructor. Should be called from {@code Fragment#onViewCreated}.
+     *
+     * @param owner             of this helper
+     * @param progressFrame     to use
+     * @param proposeValidation callback to check if when finishing,
+     *                          the connection should be validated
+     * @param hostUrlValidator  to use
+     * @param urlSupplier       the url to use with the hostUrlValidator
+     * @param finish            callback to finish the Fragment/Activity
+     */
     public CalibreConnectionValidationHelper(@NonNull final Fragment owner,
                                              @NonNull final View progressFrame,
-                                             @NonNull final BooleanSupplier shouldProposeValidation,
+                                             @NonNull final BooleanSupplier proposeValidation,
+                                             @NonNull final HostUrlValidator hostUrlValidator,
                                              @NonNull final Supplier<String> urlSupplier,
                                              @NonNull final Runnable finish) {
-        super(R.string.site_calibre, owner, progressFrame, shouldProposeValidation, finish);
+        super(R.string.site_calibre, owner, progressFrame, proposeValidation, finish);
+        this.hostUrlValidator = hostUrlValidator;
         this.urlSupplier = urlSupplier;
 
-        hostUrlValidator = new HostUrlValidator();
+        //noinspection DataFlowIssue
+        owner.getActivity().getOnBackPressedDispatcher()
+             .addCallback(owner.getViewLifecycleOwner(), backPressedCallback);
     }
 
-    @NonNull
-    public HostUrlValidator getHostUrlValidator() {
-        return hostUrlValidator;
-    }
-
-    @Override
-    protected void proposeValidation() {
-        final CharSequence text = urlSupplier.get();
-        if (!hostUrlValidator.isValidUrl(text)) {
-            //noinspection DataFlowIssue
-            hostUrlValidator.showUrlInvalidDialog(owner.getContext(), text, null, finish);
-            return;
-        }
-        super.proposeValidation();
+    private void showInvalidUrlDialog(@NonNull final CharSequence url) {
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(owner.getContext())
+                .setIcon(R.drawable.info_24px)
+                .setTitle(R.string.error_invalid_url)
+                .setMessage(url)
+                .setPositiveButton(R.string.action_edit, (d, w) -> {
+                    // no action, just stay on the screen
+                })
+                .setNegativeButton(R.string.action_not_now, (d, w) -> {
+                    finish.run();
+                })
+                .create()
+                .show();
     }
 }

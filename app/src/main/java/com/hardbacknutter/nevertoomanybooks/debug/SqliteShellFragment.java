@@ -59,7 +59,7 @@ public class SqliteShellFragment
 
     private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
 
-    private static final String PK_SQLITE_MAX_LINES = "sqlite.shell.max.lines";
+    static final String PK_SQLITE_MAX_LINES = "sqlite.shell.max.lines";
 
     private static final int MAX_LINES = 200;
 

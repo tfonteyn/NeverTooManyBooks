@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,47 +19,44 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.searchsites;
 
-import android.content.Context;
-import android.os.Bundle;
-
 import androidx.annotation.Keep;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class SiteConfigPreferenceFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "SiteConfigPrefFrag";
 
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
+        //noinspection DataFlowIssue
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
-        final Context context = getContext();
-
-        final PreferenceCategory root = findPreference("psk_root_cat");
+        factory.header(R.string.lbl_settings);
 
         for (final EngineId engineId : EngineId.values()) {
             final Class<? extends Fragment> clazz = engineId.getPreferenceFragmentClazz();
             if (clazz != null && engineId.isEnabled()) {
-                //noinspection DataFlowIssue
-                final Preference preference = new Preference(context);
-                preference.setTitle(engineId.getLabelResId());
-                preference.setFragment(clazz.getName());
-                preference.setKey(engineId.getPreferenceKey());
-                //noinspection DataFlowIssue
-                root.addPreference(preference);
+                factory.fragment(engineId.getPreferenceKey(),
+                                 engineId.getLabelResId(),
+                                 clazz.getName(), R.id.content_frame, null);
             }
         }
+
+        return factory;
     }
 }

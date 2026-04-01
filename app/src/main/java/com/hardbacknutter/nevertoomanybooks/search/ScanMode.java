@@ -59,7 +59,7 @@ public enum ScanMode
             return new ScanMode[size];
         }
     };
-    private static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
+    public static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
     private final int value;
 
     ScanMode(final int value) {

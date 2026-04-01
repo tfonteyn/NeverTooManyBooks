@@ -136,7 +136,7 @@ class BooklistGroupImpl
 
     @Nullable
     @Override
-    public GroupPrefs getGroupPrefs() {
+    public GroupSettings getGroupSettings() {
         return null;
     }
 

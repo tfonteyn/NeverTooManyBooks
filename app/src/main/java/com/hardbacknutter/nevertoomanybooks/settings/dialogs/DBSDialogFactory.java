@@ -1,0 +1,107 @@
+/*
+ * @Copyright 2018-2026 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
+
+import android.content.Context;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
+import com.hardbacknutter.prefslib.Setting;
+import com.hardbacknutter.prefslib.SettingsDialogFactory;
+
+public class DBSDialogFactory
+        implements SettingsDialogFactory {
+
+    static final String BKEY_KEY = "key";
+    static final String BKEY_DIALOG_MESSAGE = "msg";
+
+    private static final String ERROR_UNKNOWN_TYPE = "Unsupported Setting type: ";
+
+    /**
+     * Create a new instance.
+     * Provides M3 (floating) dialogs and full support for BottomSheets.
+     * <p>
+     * Fullscreen dialogs (for devices with small screens) are NOT implemented.
+     *
+     * @param context       Current context
+     * @param setting       to provide the dialog for
+     * @param dialogMessage optional message
+     *
+     * @return new instance
+     *
+     * @throws IllegalArgumentException (debug) unsupported {@link Setting.Type}
+     */
+    @Override
+    @NonNull
+    public DialogFragment create(@NonNull final Context context,
+                                 @NonNull final Setting setting,
+                                 @Nullable final String dialogMessage) {
+        final DialogFragment fragment;
+        final DialogMode dialogMode = DialogMode.getMode(context);
+        final Setting.Type type = setting.getType();
+        switch (dialogMode) {
+            case Dialog: {
+                switch (type) {
+                    case String:
+                        fragment = new EditStringDialogFragment();
+                        break;
+                    case SingleChoice:
+                        fragment = new SingleChoiceDialogFragment();
+                        break;
+                    case MultiChoice:
+                        fragment = new MultiChoiceDialogFragment();
+                        break;
+                    default:
+                        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE + type);
+                }
+                break;
+            }
+            case BottomSheet: {
+                if (type == Setting.Type.String) {
+                    fragment = new EditStringBottomSheet();
+                } else if (type == Setting.Type.SingleChoice) {
+                    fragment = new SingleChoiceDialogFragment();
+                } else if (type == Setting.Type.MultiChoice) {
+                    fragment = new MultiChoiceBottomSheet();
+                } else {
+                    throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE + type);
+                }
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException("dialogMode=" + dialogMode
+                                                   + ", preference=" + setting);
+            }
+        }
+
+        final Bundle args = new Bundle(2);
+        args.putString(BKEY_KEY, setting.getKey());
+        if (dialogMessage != null) {
+            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
+        }
+        fragment.setArguments(args);
+        return fragment;
+    }
+}

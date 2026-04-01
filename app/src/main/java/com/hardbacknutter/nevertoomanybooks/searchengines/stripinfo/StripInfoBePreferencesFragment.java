@@ -25,80 +25,99 @@ import android.view.View;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
+import com.hardbacknutter.prefslib.BooleanSetting;
+import com.hardbacknutter.prefslib.Setting;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class StripInfoBePreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "StripInfoBePrefFrag";
-    /** Category. */
-    private static final String PSK_CREDENTIALS = "psk_credentials";
 
-    private SwitchPreference pSyncEnabled;
-    private SwitchPreference pLoginToSearch;
-    private PreferenceCategory pcCredentials;
+    private static final String PK = EngineId.StripInfoBe.getPreferenceKey();
+    private static final String PK_PASSWORD = PK + SiteAuthModule.PK_SUFFIX_HOST_PASSWORD;
+    private static final String PK_USER = PK + SiteAuthModule.PK_SUFFIX_HOST_USER;
 
+    @Nullable
+    private BooleanSetting pSyncEnabled;
+    @Nullable
+    private BooleanSetting pLoginToSearch;
+
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
-
-        initLoginPrefs();
-        initCredentialPreferences(StripInfoAuth.PK_HOST_USER, StripInfoAuth.PK_HOST_PASS);
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        findPreference(EngineId.StripInfoBe.getPreferenceKey()
-                       + AuthorResolverFactory.PK_RESOLVE_AUTHORS
-                       + EngineId.Bedetheque.getPreferenceKey())
-                .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
-                                    getString(R.string.site_bedetheque)));
-    }
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
-    @SuppressWarnings("DataFlowIssue")
-    private void initLoginPrefs() {
-        pLoginToSearch = findPreference(StripInfoSearchEngine.PK_LOGIN_TO_SEARCH);
-        pLoginToSearch.setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
-        pLoginToSearch.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof Boolean) {
-                final boolean loginOn = (Boolean) newValue;
-                final boolean syncOn = pSyncEnabled.isChecked();
-                pcCredentials.setEnabled(loginOn || syncOn);
-            }
-            return true;
-        });
+        factory.header(EngineId.StripInfoBe.getLabelResId());
 
-        pSyncEnabled = findPreference(StripInfoHandler.PK_ENABLED);
-        pSyncEnabled.setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
-        pSyncEnabled.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof Boolean) {
-                final boolean loginOn = pLoginToSearch.isChecked();
-                final boolean syncOn = (Boolean) newValue;
-                pcCredentials.setEnabled(loginOn || syncOn);
-            }
-            return true;
-        });
+        factory.bool(PK + '.' + SearchEngineConfig.PK_SEARCH_ISBN_PREFER_10,
+                     R.string.pt_search_prefer_isbn10, null, p -> {
+                    p.setIcon(R.drawable.barcode_24px);
+                });
+        factory.bool(PK + AuthorResolverFactory.PK_RESOLVE_AUTHORS
+                     + EngineId.Bedetheque.getPreferenceKey(),
+                     0, null, p -> {
+                    p.setIcon(R.drawable.cloud_download_24px);
+                    p.setChecked(true);
+                    p.setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
+                                         getString(R.string.site_bedetheque)));
+                });
 
-        pcCredentials = findPreference(PSK_CREDENTIALS);
-        pcCredentials.setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
-        pcCredentials.setEnabled(BuildConfig.ENABLE_STRIP_INFO_LOGIN
-                                 && (pLoginToSearch.isChecked() || pSyncEnabled.isChecked()));
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            factory.bool(StripInfoSearchEngine.PK_LOGIN_TO_SEARCH,
+                         R.string.lbl_login_to_search,
+                         this::onChangeLoginToSearch, p -> {
+                        p.setIcon(R.drawable.login_24px);
+                    });
+            factory.bool(StripInfoHandler.PK_ENABLED,
+                         R.string.option_enable_sync_options,
+                         R.string.disabled, R.string.enabled,
+                         this::onChangeEnableSync, p -> {
+                        p.setIcon(R.drawable.login_24px);
+                    });
+
+            CommonSettingsFactory.credentials(factory, PK);
+        }
+
+        CommonSettingsFactory.timeouts(factory, PK);
+        CommonSettingsFactory.troubleshoot(factory, PK);
+
+        return factory;
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            final SettingsManager settingsManager = getSettingsManager();
+            pSyncEnabled = settingsManager
+                    .requireSetting(StripInfoHandler.PK_ENABLED);
+            pLoginToSearch = settingsManager
+                    .requireSetting(StripInfoSearchEngine.PK_LOGIN_TO_SEARCH);
+
+            enableCredentials(pLoginToSearch.isChecked() || pSyncEnabled.isChecked());
+        }
 
         new ConnectionValidationHelper(
                 R.string.site_stripinfo_be, this, getProgressFrame(), () -> {
@@ -108,5 +127,25 @@ public class StripInfoBePreferencesFragment
                 return false;
             }
         }, this::popBackStackOrFinish);
+    }
+
+    private boolean onChangeEnableSync(@NonNull final Setting setting,
+                                       @Nullable final Object newValue) {
+        final boolean enabled = newValue != null && (boolean) newValue;
+        //noinspection DataFlowIssue
+        enableCredentials(pLoginToSearch.isChecked() || enabled);
+        return true;
+    }
+
+    private boolean onChangeLoginToSearch(@NonNull final Setting setting,
+                                          @Nullable final Object newValue) {
+        final boolean enabled = newValue != null && (boolean) newValue;
+        //noinspection DataFlowIssue
+        enableCredentials(enabled || pSyncEnabled.isChecked());
+        return true;
+    }
+
+    private void enableCredentials(final boolean enable) {
+        getSettingsManager().setEnabled(enable, PK_USER, PK_PASSWORD);
     }
 }

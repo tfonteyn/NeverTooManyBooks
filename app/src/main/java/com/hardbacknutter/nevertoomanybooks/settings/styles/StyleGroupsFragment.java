@@ -75,8 +75,8 @@ public class StyleGroupsFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (vm.hasGroupsSelected()) {
-                        vm.updateStyleGroups();
+                    if (vm.getGroups().stream().anyMatch(StyleViewModel.WrappedGroup::isPresent)) {
+                        vm.updateGroups();
                         // just pop, we're always called from a fragment
                         getParentFragmentManager().popBackStack();
 
@@ -147,7 +147,7 @@ public class StyleGroupsFragment
 
         // Set up the adapter for the list.
         final GroupWrapperListAdapter listAdapter =
-                new GroupWrapperListAdapter(vm.createWrappedGroupList(),
+                new GroupWrapperListAdapter(vm.getGroups(),
                                             vh -> itemTouchHelper.startDrag(vh));
 
         vb.groupList.setAdapter(listAdapter);

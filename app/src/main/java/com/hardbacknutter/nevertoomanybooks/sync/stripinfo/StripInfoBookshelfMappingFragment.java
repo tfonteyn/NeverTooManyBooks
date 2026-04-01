@@ -23,10 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
-import androidx.preference.ListPreference;
 
 import java.util.List;
 
@@ -34,11 +31,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
+import com.hardbacknutter.prefslib.SingleChoiceSetting;
 
 public class StripInfoBookshelfMappingFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "StripInfoBookshelfMapF";
@@ -51,37 +52,29 @@ public class StripInfoBookshelfMappingFragment
     @NonNull
     public static Fragment create() {
         final Fragment fragment = new StripInfoBookshelfMappingFragment();
+        // 2026-03-24: We're not using this for now, but want to keep the same
+        // logic as used by the Calibre bookshelf mapper.
         final Bundle args = new Bundle(1);
         args.putParcelable(SyncServer.BKEY_SITE, SyncServer.StripInfo);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_stripinfo_mapping, rootKey);
+    @NonNull
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
+        //noinspection DataFlowIssue
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-        final long id = bookshelfDao.getCurrent()
-                                    .orElseGet(bookshelfDao::getDefault)
-                                    .getId();
-        final Pair<CharSequence[], CharSequence[]> values = getBookshelves();
-        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, id, values);
-        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_DIGITAL, id, values);
-        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, id, values);
-    }
-
-    /**
-     * Get two arrays with matching name and id's for all Bookshelves.
-     *
-     * @return Pair of (entries,entryValues)
-     */
-    @NonNull
-    private Pair<CharSequence[], CharSequence[]> getBookshelves() {
+        final String defBookshelfId = String.valueOf(bookshelfDao.getCurrent()
+                                                     .orElseGet(bookshelfDao::getDefault)
+                                                     .getId());
         final List<Bookshelf> all = ServiceLocator.getInstance().getBookshelfDao().getAll();
-        final CharSequence[] entries = new CharSequence[all.size()];
-        final CharSequence[] entryValues = new CharSequence[all.size()];
+        final int size = all.size();
+        final CharSequence[] entries = new CharSequence[size];
+        final CharSequence[] entryValues = new CharSequence[size];
 
         int i = 0;
         for (final Bookshelf bookshelf : all) {
@@ -90,27 +83,42 @@ public class StripInfoBookshelfMappingFragment
             i++;
         }
 
-        return new Pair<>(entries, entryValues);
+        factory.header(R.string.lbl_assign_bookshelves);
+
+        factory.singleChoice(BookshelfMapper.PK_BOOKSHELF_OWNED,
+                             R.string.lbl_strip_info_bookshelf_assigned_to_owned_books,
+                             null, p -> {
+                    initBookshelfMapperPref(p, entries, entryValues, defBookshelfId);
+                });
+
+        factory.singleChoice(BookshelfMapper.PK_BOOKSHELF_DIGITAL,
+                             R.string.lbl_strip_info_bookshelf_assigned_to_digital_books,
+                             null, p -> {
+                    initBookshelfMapperPref(p, entries, entryValues, defBookshelfId);
+                });
+
+        factory.singleChoice(BookshelfMapper.PK_BOOKSHELF_WISHLIST,
+                             R.string.lbl_strip_info_bookshelf_assigned_to_wishlist,
+                             null, p -> {
+                    initBookshelfMapperPref(p, entries, entryValues, defBookshelfId);
+                });
+
+        return factory;
     }
 
-    private void initBookshelfMapperPref(
-            @NonNull final CharSequence key,
-            final long defaultId,
-            @NonNull final Pair<CharSequence[], CharSequence[]> values) {
+    private void initBookshelfMapperPref(@NonNull final SingleChoiceSetting p,
+                                         @NonNull final CharSequence[] entries,
+                                         @NonNull final CharSequence[] entryValues,
+                                         @NonNull final String defaultBookshelfId) {
 
-        final ListPreference p = findPreference(key);
-        //noinspection DataFlowIssue
-        p.setEntries(values.first);
-        p.setEntryValues(values.second);
+        p.setEntries(entries);
+        p.setEntryValues(entryValues);
 
-        // The ListPreference has an issue that the initial value is set during the inflation
-        // step. At that time, the default value is ONLY available from XML.
-        // Internally it will then use this to set the value.
-        // Workaround: set the default, and if the pref has no value, set it as well...
-        final String defValue = String.valueOf(defaultId);
-        p.setDefaultValue(defValue);
-        if (p.getValue() == null) {
-            p.setValue(defValue);
+        for (int i = 0; i < entryValues.length; i++) {
+            if (entryValues[i].equals(defaultBookshelfId)) {
+                p.setSelectedIndex(i);
+                break;
+            }
         }
     }
 }

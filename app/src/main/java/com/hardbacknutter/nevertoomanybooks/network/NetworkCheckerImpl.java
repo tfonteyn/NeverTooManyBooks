@@ -26,7 +26,6 @@ import android.net.NetworkCapabilities;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -57,7 +56,6 @@ public class NetworkCheckerImpl
     /** Log tag. */
     private static final String TAG = "NetworkCheckerImpl";
 
-    @VisibleForTesting
     public static final String PK_NETWORK_ALLOW_METERED = "network.allow.metered";
 
     /** Timeout for {@link #ping(String, int)}; connection to the DNS server. */

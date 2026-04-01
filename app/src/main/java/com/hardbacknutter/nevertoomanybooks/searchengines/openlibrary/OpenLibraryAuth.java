@@ -72,7 +72,7 @@ public class OpenLibraryAuth
     static final String PK_HOST_PASS = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
 
     /** the id returned in the cookie. Stored for easy access. */
-    private static final String PK_HOST_USER_ID = PREFERENCE_KEY + ".host.userId";
+    private static final String PK_HOST_USER_ID = PREFERENCE_KEY + PK_SUFFIX_HOST_USER;
 
     private static final String USER_LOGIN_URL = "/account/login";
 

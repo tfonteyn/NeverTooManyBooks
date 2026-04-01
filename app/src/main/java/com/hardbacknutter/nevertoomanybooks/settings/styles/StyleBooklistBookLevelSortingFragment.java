@@ -119,7 +119,7 @@ public class StyleBooklistBookLevelSortingFragment
             return false;
         }
 
-        vm.getBookLevelColumnList().get(menuOwner).setSort(nextValue);
+        vm.getBookLevelFieldsSorting().get(menuOwner).setSort(nextValue);
         adapter.notifyItemChanged(menuOwner);
         return true;
     }
@@ -168,7 +168,7 @@ public class StyleBooklistBookLevelSortingFragment
 
         // The adapter for the list.
         adapter = new BookLevelColumnWrapperListAdapter(
-                vm.getBookLevelColumnList(),
+                vm.getBookLevelFieldsSorting(),
                 vh -> itemTouchHelper.startDrag(vh));
 
         adapter.setOnRowShowMenuListener(
@@ -178,7 +178,7 @@ public class StyleBooklistBookLevelSortingFragment
                         return;
                     }
                     final Menu menu = MenuUtils.create(v.getContext(), R.menu.sorting_options);
-                    final String label = vm.getBookLevelColumnList().get(position)
+                    final String label = vm.getBookLevelFieldsSorting().get(position)
                                            .getLabel(v.getContext());
                     menuLauncher.launch(v, label, null, position, menu);
         });
@@ -246,7 +246,7 @@ public class StyleBooklistBookLevelSortingFragment
         /**
          * Constructor.
          *
-         * @param items List of columns (in WrappedBookLevelField)
+         * @param items List of columns
          */
         HeaderAdapter(@NonNull final List<StyleViewModel.WrappedBookLevelField> items) {
             super(items, null);
@@ -279,7 +279,7 @@ public class StyleBooklistBookLevelSortingFragment
         /**
          * Constructor.
          *
-         * @param items             List of columns (in WrappedBookLevelField)
+         * @param items             List of columns
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         BookLevelColumnWrapperListAdapter(

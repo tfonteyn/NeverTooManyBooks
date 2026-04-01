@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Map;
+
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
@@ -72,22 +75,23 @@ public class StyleDefaultsFragment
     }
 
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         //noinspection DataFlowIssue
         settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
-        super.onCreatePreferences(savedInstanceState, rootKey);
-
-        pName.setVisible(false);
-        pGroups.setVisible(false);
-        pExpansionLevel.setVisible(false);
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getSettingsManager().setVisible(Map.of(
+                StyleDataStore.PK_NAME, false,
+                StyleDataStore.PK_GROUPS, false,
+                StyleDataStore.PK_EXPANSION_LEVEL, false
+        ));
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_styles_long);

@@ -42,9 +42,9 @@ class PublisherBooklistGroup
         extends BooklistGroupImpl
         implements UnderEachGroup {
 
-    private static final GroupPrefs GROUP_PREFS =
-            new GroupPrefs(StyleDataStore.PSK_STYLE_PUBLISHER,
-                           Style.UnderEach.Publisher.getPrefKey());
+    private static final GroupSettings GROUP_PREFS =
+            new GroupSettings(StyleDataStore.PSK_STYLE_PUBLISHER,
+                              Style.UnderEach.Publisher.getPrefKey());
 
     /** DomainExpression for displaying the data. */
     @NonNull
@@ -83,7 +83,7 @@ class PublisherBooklistGroup
 
     @NonNull
     @Override
-    public GroupPrefs getGroupPrefs() {
+    public GroupSettings getGroupSettings() {
         return GROUP_PREFS;
     }
 

@@ -104,7 +104,6 @@ public class DoubanSearchEngine
      * <p>
      * Type: {@code boolean}
      */
-    @VisibleForTesting
     public static final String PK_FETCH_MOST_RECENT =
             PREFERENCE_KEY + ".search.result.order.by.date";
 

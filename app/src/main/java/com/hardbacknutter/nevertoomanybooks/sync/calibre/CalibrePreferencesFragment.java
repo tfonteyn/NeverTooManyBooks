@@ -23,6 +23,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.LocaleList;
+import android.text.InputType;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -30,9 +31,8 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
-import androidx.preference.SwitchPreference;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -43,16 +43,27 @@ import java.security.cert.X509Certificate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibreConnectionValidationHelper;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
+import com.hardbacknutter.prefslib.BooleanSetting;
+import com.hardbacknutter.prefslib.Setting;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
+import com.hardbacknutter.prefslib.StringSetting;
 
 @Keep
 public class CalibrePreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "CalibrePreferencesFrag";
@@ -60,52 +71,80 @@ public class CalibrePreferencesFragment
     private static final String PSK_CA_FROM_FILE = "psk_ca_from_file";
     private static final String PSK_PICK_FOLDER = "psk_pick_folder";
 
-    /** Let the user pick the 'root' folder for storing Calibre downloads. */
-    private ActivityResultLauncher<Uri> pickFolderLauncher;
-
-    private SwitchPreference pSyncEnabled;
-    private Preference pDownloadFolder;
-    private EditTextPreference pHostUrl;
-    private Preference pCACert;
-
     private final ActivityResultLauncher<String> openCaUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
                                       o -> o.ifPresent(this::onOpenCaUri));
 
+    /** Let the user pick the 'root' folder for storing Calibre downloads. */
+    private ActivityResultLauncher<Uri> pickFolderLauncher;
+
+    private HostUrlValidator hostUrlValidator;
+
+    private BooleanSetting pSyncEnabled;
+    private StringSetting pHostUrl;
+
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        //noinspection DataFlowIssue
-        pSyncEnabled = findPreference(CalibreHandler.PK_ENABLED);
+        hostUrlValidator = new HostUrlValidator();
+    }
 
+    @NonNull
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        pDownloadFolder = findPreference(PSK_PICK_FOLDER);
-        //noinspection DataFlowIssue
-        setDownloadFolderSummary(pDownloadFolder);
-        pDownloadFolder.setOnPreferenceClickListener(preference -> {
-            //noinspection DataFlowIssue
-            pickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
-                                                          .orElse(null));
-            return true;
-        });
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
-        //noinspection DataFlowIssue
-        pHostUrl = findPreference(CalibreContentServer.PK_HOST_URL);
+        factory.header(R.string.lbl_calibre_content_server);
 
-        //noinspection DataFlowIssue
-        pCACert = findPreference(PSK_CA_FROM_FILE);
-        //noinspection DataFlowIssue
-        pCACert.setSummary(createCaSummary());
-        pCACert.setOnPreferenceClickListener(preference -> {
-            openCaUriLauncher.launch("*/*");
-            return true;
-        });
+        factory.bool(CalibreHandler.PK_ENABLED,
+                     R.string.option_enable_sync_options,
+                     R.string.disabled, R.string.enabled,
+                     this::onChangeEnableSync, null);
 
-        initCredentialPreferences(CalibreContentServer.PK_HOST_USER,
-                                  CalibreContentServer.PK_HOST_PASS);
+        factory.action(PSK_PICK_FOLDER,
+                       R.string.option_download_folder,
+                       this::onPickFolder, p -> {
+                    p.setIcon(R.drawable.folder_24px);
+                    p.setSummaryProvider(this::getDownloadFolderSummary);
+                }
+        );
+
+        factory.text(CalibreContentServer.PK_HOST_URL,
+                     R.string.lbl_website_address, null, p -> {
+                    p.setIcon(R.drawable.link_24px);
+                    p.setInputType(InputType.TYPE_CLASS_TEXT
+                                   | InputType.TYPE_TEXT_VARIATION_URI);
+                    p.setSummaryProvider(c -> hostUrlValidator.getSummary(c, p.getValue()));
+                });
+
+        factory.action(PSK_CA_FROM_FILE,
+                       R.string.lbl_certificate_ca,
+                       this::onPickCA, p -> {
+                    p.setIcon(R.drawable.security_24px);
+                    p.setSummaryProvider(this::getCaSummary);
+                }
+        );
+
+        final String pk = CalibreContentServer.PREFERENCE_KEY;
+        CommonSettingsFactory.credentials(factory, pk);
+        CommonSettingsFactory.timeouts(factory, pk);
+
+        return factory;
+    }
+
+    private boolean onPickFolder(@NonNull final Setting setting) {
+        //noinspection DataFlowIssue
+        pickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
+                                                      .orElse(null));
+        return true;
+    }
+
+    private boolean onPickCA(@NonNull final Setting setting) {
+        openCaUriLauncher.launch("*/*");
+        return true;
     }
 
     @Override
@@ -113,35 +152,69 @@ public class CalibrePreferencesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final CalibreConnectionValidationHelper validationHelper =
-                new CalibreConnectionValidationHelper(
-                        this, getProgressFrame(),
-                        () -> pSyncEnabled.isChecked(),
-                        () -> pHostUrl.getText(),
-                        this::popBackStackOrFinish);
+        final SettingsManager settingsManager = getSettingsManager();
+        pSyncEnabled = settingsManager.requireSetting(CalibreHandler.PK_ENABLED);
+        pHostUrl = settingsManager.requireSetting(CalibreContentServer.PK_HOST_URL);
 
-        initHostUrlPreference(validationHelper.getHostUrlValidator(), pHostUrl);
+        new CalibreConnectionValidationHelper(
+                this, getProgressFrame(),
+                () -> pSyncEnabled.isChecked(),
+                hostUrlValidator, () -> pHostUrl.getValue(),
+                this::popBackStackOrFinish);
 
         pickFolderLauncher = registerForActivityResult(
                 new GetDirectoryUriContract(), o -> {
                     //noinspection DataFlowIssue
                     o.ifPresent(uri -> CalibreContentServer.setFolderUri(getContext(), uri));
-                    setDownloadFolderSummary(pDownloadFolder);
+                    // Refresh the summary
+                    //noinspection DataFlowIssue
+                    getSettingsManager().reload(getContext(), PSK_PICK_FOLDER);
                 });
     }
 
-    /**
-     * Read the existing download folder, and set the preference summary.
-     *
-     * @param preference to use
-     */
-    private void setDownloadFolderSummary(@NonNull final Preference preference) {
+    private boolean onChangeEnableSync(@NonNull final Setting setting,
+                                       @Nullable final Object newValue) {
+        final boolean enable = newValue != null && (boolean) newValue;
+        // Simple flip the state of all settings except PK_ENABLED itself.
+
+        final SettingsManager settingsManager = getSettingsManager();
+        final List<String> keys = settingsManager
+                .getSettings()
+                .stream()
+                .map(Setting::getKey)
+                .filter(key -> !key.equals(CalibreHandler.PK_ENABLED))
+                .collect(Collectors.toList());
+        settingsManager.setEnabled(enable, keys);
+        return true;
+    }
+
+    private void onOpenCaUri(@NonNull final Uri uri) {
+        final Context context = getContext();
         //noinspection DataFlowIssue
-        final Uri uri = CalibreContentServer.getFolderUri(getContext()).orElse(null);
-        if (uri == null) {
-            preference.setSummary(R.string.preference_not_set);
-        } else {
-            final DocumentFile df = DocumentFile.fromTreeUri(getContext(), uri);
+        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+            if (is != null) {
+                final X509Certificate ca;
+                try (BufferedInputStream bis = new BufferedInputStream(is)) {
+                    ca = (X509Certificate) CertificateFactory
+                            .getInstance("X.509").generateCertificate(bis);
+                }
+                CalibreContentServer.setCertificate(context, ca);
+            }
+        } catch (@NonNull final IOException | CertificateException e) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_import_failed, Snackbar.LENGTH_LONG)
+                    .show();
+        }
+
+        // Refresh the summary
+        getSettingsManager().reload(context, PSK_CA_FROM_FILE);
+    }
+
+    @NonNull
+    private String getDownloadFolderSummary(@NonNull final Context context) {
+        final Uri uri = CalibreContentServer.getFolderUri(context).orElse(null);
+        if (uri != null) {
+            final DocumentFile df = DocumentFile.fromTreeUri(context, uri);
             if (df != null) {
                 // Normally this will always return a name
                 String name = df.getName();
@@ -151,43 +224,19 @@ public class CalibrePreferencesFragment
                     // not nice, but better than nothing...
                     name = uri.getLastPathSegment();
                 }
-                preference.setSummary(name);
-            } else {
-                // should never happen... flw
-                preference.setSummary(R.string.preference_not_set);
-            }
-        }
-    }
-
-    private void onOpenCaUri(@NonNull final Uri uri) {
-        //noinspection DataFlowIssue
-        try (InputStream is = getContext().getContentResolver().openInputStream(uri)) {
-            if (is != null) {
-                final X509Certificate ca;
-                try (BufferedInputStream bis = new BufferedInputStream(is)) {
-                    ca = (X509Certificate) CertificateFactory
-                            .getInstance("X.509").generateCertificate(bis);
+                // The name SHOULD always be non-null now... flw
+                if (name != null) {
+                    return name;
                 }
-                CalibreContentServer.setCertificate(getContext(), ca);
             }
-        } catch (@NonNull final IOException | CertificateException e) {
-            pCACert.setSummary(R.string.error_certificate_invalid);
-            return;
         }
-
-        pCACert.setSummary(createCaSummary());
+        // a valid "not set", or as fallback if anything goes bad above.
+        return context.getString(R.string.preference_not_set);
     }
 
-    /**
-     * Read the existing CA file from storage, and create the preference summary.
-     *
-     * @return text to display as the summary
-     */
     @NonNull
-    private String createCaSummary() {
+    private String getCaSummary(@NonNull final Context context) {
         try {
-            final Context context = getContext();
-            //noinspection DataFlowIssue
             final X509Certificate ca = CalibreContentServer.getCertificate(context);
             ca.checkValidity();
 
@@ -205,19 +254,19 @@ public class CalibrePreferencesFragment
                                                     .atZone(ZoneId.systemDefault())
                                                     .toLocalDate());
 
-            return getString(R.string.lbl_certificate_issued_to,
-                             ca.getSubjectX500Principal().getName())
+            return context.getString(R.string.lbl_certificate_issued_to,
+                                     ca.getSubjectX500Principal().getName())
                    + '\n'
-                   + getString(R.string.lbl_certificate_issued_by,
-                               ca.getIssuerX500Principal().getName())
+                   + context.getString(R.string.lbl_certificate_issued_by,
+                                       ca.getIssuerX500Principal().getName())
                    + '\n'
-                   + getString(R.string.lbl_certificate_validity_period, from, until);
+                   + context.getString(R.string.lbl_certificate_validity_period, from, until);
 
         } catch (@NonNull final CertificateException e) {
-            return getString(R.string.error_certificate_invalid);
+            return context.getString(R.string.error_certificate_invalid);
 
         } catch (@NonNull final IOException e) {
-            return getString(R.string.preference_not_set);
+            return context.getString(R.string.preference_not_set);
         }
     }
 }

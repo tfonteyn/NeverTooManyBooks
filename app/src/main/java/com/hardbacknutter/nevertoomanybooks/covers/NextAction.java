@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 /**
  * The next action after taking a picture.
  */
-enum NextAction {
+public enum NextAction {
     /** Do nothing. */
     Done(0),
     /** Start the internal editor. */
@@ -35,7 +35,7 @@ enum NextAction {
     /** Start an external editor. */
     EditWith(2);
 
-    private static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
+    public static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
 
     private final int value;
 

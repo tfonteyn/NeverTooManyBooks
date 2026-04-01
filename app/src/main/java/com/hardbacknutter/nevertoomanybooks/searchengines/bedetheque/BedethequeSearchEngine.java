@@ -99,7 +99,7 @@ public class BedethequeSearchEngine
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
 
     /** Whether we can map as usual, or (true) if we want to keep the French format names. */
-    private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES =
+    static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES =
             PREFERENCE_KEY + ".resolve.formats";
 
     /** These are generic author names which are really the colour. */

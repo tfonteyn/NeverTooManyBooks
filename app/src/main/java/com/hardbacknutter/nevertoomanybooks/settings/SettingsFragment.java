@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.storage.StorageVolume;
@@ -34,15 +33,12 @@ import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -50,19 +46,23 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookViewModel;
+import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -71,6 +71,15 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.prefslib.BooleanSetting;
+import com.hardbacknutter.prefslib.Setting;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
+import com.hardbacknutter.prefslib.SingleChoiceSetting;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
 /**
@@ -83,20 +92,21 @@ import com.hardbacknutter.util.livedataevent.LiveDataEvent;
  *  to allow access to storage etc...
  */
 public class SettingsFragment
-        extends BasePreferenceFragment
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        extends BaseSettingsFragment {
 
     /** Fragment/Log tag. */
     private static final String TAG = "SettingsFragment";
 
+    private static final String PSK_ADVANCED_OPTIONS = "psk_advanced_options";
+    private static final String PSK_BARCODE = "psk_barcode";
     private static final String PSK_CALIBRE = "psk_calibre";
+    private static final String PSK_FIELDS_VISIBILITY = "psk_fields_visibility";
+    private static final String PSK_IDENTIFIERS = "psk_identifiers";
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
     private static final String PSK_TAGS = "psk_tags";
-    private static final String PSK_IDENTIFIERS = "psk_identifiers";
+    private static final String PSK_THUMBNAILS = "psk_thumbnails";
     private static final String PSK_USER_INTERFACE = "psk_user_interface";
-
-    private static final int ANDROID_9 = 9;
 
     private final ActivityResultLauncher<Void> editSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
@@ -133,91 +143,253 @@ public class SettingsFragment
                     getActivity().finish();
                 }
             };
-
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private TitleOrderByHelper titleOrderByHelper;
     private StorageVolumeHelper storageVolumeHelper;
 
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
         //noinspection DataFlowIssue
-        vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), getArguments());
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
-        setPreferencesFromResource(R.xml.preferences, rootKey);
+        factory.header(R.string.pc_ui);
+        factory.fragment(PSK_USER_INTERFACE,
+                         R.string.pc_ui,
+                         com.hardbacknutter.nevertoomanybooks.settings
+                                 .UserInterfacePreferenceFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.display_settings_24px);
+                    final Context context = getContext();
+                    p.setSummary(String.join(", ", List.of(
+                            context.getString(R.string.pt_ui_language),
+                            context.getString(R.string.pt_ui_theme),
+                            context.getString(R.string.pt_ui_theme_colors),
+                            // don't list more, keep it clean
+                            "…")));
+                });
 
-        initUiSummary();
+        factory.header(R.string.pc_search);
 
-        initFastscrollerPreference();
+        factory.action(PSK_SEARCH_SITE_ORDER,
+                       R.string.lbl_websites,
+                       this::onSetSearchSiteOrder, p -> {
+                    p.setIcon(R.drawable.search_24px);
+                    p.setSummary(R.string.pt_website_search_order_and_enable);
+                }
+        );
 
-        //noinspection DataFlowIssue
-        findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {
-            editSitesLauncher.launch(null);
-            return true;
-        });
+        factory.bool(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED,
+                     R.string.pt_allow_metered_network_data,  null, p -> {
+                    p.setIcon(R.drawable.data_usage_24px);
+                    p.setChecked(true);
+                });
 
-        //noinspection DataFlowIssue
-        findPreference(PSK_TAGS).setOnPreferenceClickListener(p -> {
-            manageTagsLauncher.launch(null);
-            return true;
-        });
-        //noinspection DataFlowIssue
-        findPreference(PSK_IDENTIFIERS).setOnPreferenceClickListener(p -> {
-            manageIdentitiesLauncher.launch(null);
-            return true;
-        });
+        factory.bool(FormatMapper.PK_SEARCH_REFORMAT_FORMAT,
+                     R.string.pt_search_reformat_format,  null, p -> {
+                    p.setIcon(R.drawable.merge_24px);
+                    p.setChecked(true);
+                });
 
-        // Add flag to indicate we'll be editing the global-style when coming from here
-        //noinspection DataFlowIssue
-        findPreference(PSK_STYLE_DEFAULTS)
-                .getExtras().putBoolean(StyleViewModel.BKEY_GLOBAL_STYLE, true);
+        factory.bool(ColorMapper.PK_SEARCH_REFORMAT_COLOR,
+                     R.string.pt_search_reformat_color, null, p -> {
+                    p.setIcon(R.drawable.merge_24px);
+                    p.setChecked(true);
+                });
 
-        //noinspection DataFlowIssue
-        titleOrderByHelper = new TitleOrderByHelper(
-                getContext(), findPreference(ReorderHelper.PK_SORT_TITLE_REORDERED));
+        factory.header(R.string.lbl_sorting);
 
-        initStorageVolumePreference();
-    }
+        // This is the global setting used for
+        // - book, toc and series titles.
+        // - publisher name.
+        //
+        // It decides how the OB columns are populated.
+        // If the user changes this setting, a rebuild of all OB columns is needed!
+        // ENHANCE: create TWO OB columns for each title column to avoid rebuilds
+        // ENHANCE: add a style override setting
+        // ENHANCE: split this into 2: book/series,toc titles + publisher name
+        factory.bool(ReorderHelper.PK_SORT_TITLE_REORDERED,
+                     R.string.ps_show_titles_reordered_on,
+                     this::onChangeSortTitleReordered, p -> {
+                    p.setIcon(R.drawable.sort_24px);
+                    p.setSummaryProvider(c -> getTitleOrderSummary(p));
+                    p.setChecked(true);
+                });
 
-    private void initUiSummary() {
-        final StringJoiner uiSummary = new StringJoiner(", ");
-        uiSummary.add(getString(R.string.pt_ui_language));
-        uiSummary.add(getString(R.string.pt_ui_theme));
-        uiSummary.add(getString(R.string.pt_ui_theme_colors));
-        // don't list more, keep it clean
-        uiSummary.add("…");
+        factory.bool(ReorderHelper.PK_DEDUP_TRY_REORDERED,
+                     R.string.pt_deduplication_title_matching,
+                     R.string.pt_deduplication_title_matching_summary_off,
+                     R.string.pt_deduplication_title_matching_summary_on,
+                     null, p -> {
+                    p.setIcon(R.drawable.equal_24px);
+                });
 
-        //noinspection DataFlowIssue
-        findPreference(PSK_USER_INTERFACE).setSummary(uiSummary.toString());
-    }
+        factory.header(R.string.lbl_style);
 
-    private void initFastscrollerPreference() {
-        final Preference pFastscroller = findPreference(FastScrollerMode.PK_OVERLAY);
-        //noinspection DataFlowIssue
-        pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
-            vm.setOnBackRequiresActivityRecreation();
-            return true;
-        });
-    }
+        factory.fragment(PSK_STYLE_DEFAULTS,
+                         R.string.action_edit_defaults,
+                         com.hardbacknutter.nevertoomanybooks.settings.styles
+                                 .StyleDefaultsFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.style_24px);
+                    p.setArgumentSupplier(() -> {
+                        // Add a flag to indicate we want to edit the global-style
+                        final Bundle args = new Bundle(1);
+                        args.putBoolean(StyleViewModel.BKEY_GLOBAL_STYLE, true);
+                        return args;
+                    });
+                });
 
-    private void initStorageVolumePreference() {
-        final ListPreference pStorageVolume = findPreference(CoverVolume.PK_VOLUME_INDEX);
-        // On Android 9+, the Context#getExternalFilesDirs method will return
-        // both internal and sdcard directories.
-        // Android 8.x it "depends" ... as this is quite old now,
-        // we simply do not support 8.x for moving the cover storage.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            //noinspection DataFlowIssue
-            pStorageVolume.setEnabled(false);
-            pStorageVolume.setSummary(getString(R.string.warning_requires_android_x, ANDROID_9));
-        } else {
-            //noinspection DataFlowIssue
-            storageVolumeHelper = new StorageVolumeHelper(getContext(), pStorageVolume);
-        }
+        factory.header(R.string.pc_edit);
+
+        factory.fragment(PSK_THUMBNAILS,
+                         R.string.lbl_images,
+                         com.hardbacknutter.nevertoomanybooks.settings
+                                 .ImagesPreferenceFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                });
+
+        factory.singleChoice(EditTextField.Capitalization.Title.getPrefKey(),
+                             R.string.pt_capitalize_title,
+                             R.array.pe_edit_capitalize,
+                             R.array.pv_edit_capitalize, null, p -> {
+                    p.setIcon(R.drawable.titlecase_24px);
+                    // default 1: capitalize all words.
+                    p.setSelectedIndex(1);
+                });
+        factory.singleChoice(EditBookViewModel.PK_EDIT_BOOK_ISBN_CHECKS,
+                             R.string.pt_edit_book_isbn_checks,
+                             R.array.pe_edit_book_isbn_checks,
+                             R.array.pv_edit_book_isbn_checks, null, p -> {
+                    p.setIcon(R.drawable.check_24px);
+                    // default 1: Loose
+                    p.setSelectedIndex(1);
+                });
+
+        factory.fragment(PSK_BARCODE,
+                         R.string.pt_barcode_scanner,
+                         com.hardbacknutter.nevertoomanybooks.settings
+                                 .BarcodePreferenceFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.barcode_scanner_24px);
+                });
+
+        factory.header(R.string.pc_lists);
+
+        factory.singleChoice(RebuildBooklist.PK_BOOKLIST_REBUILD_STATE,
+                             R.string.pt_bob_list_rebuild_state,
+                             R.array.pe_bob_list_state,
+                             R.array.pv_bob_list_state, null, p -> {
+                    p.setIcon(R.drawable.view_list_24px);
+                    // Default: Booklist.PREF_REBUILD_SAVED_STATE == 0
+                    p.setSelectedIndex(0);
+                });
+        factory.singleChoice(ExtMenuButton.PK_MODE,
+                             R.string.pt_bob_row_menu,
+                             R.array.pe_bob_row_menu,
+                             R.array.pv_bob_row_menu, null, p -> {
+                    p.setIcon(R.drawable.view_list_24px);
+                    // Default: ExtMenuButton.Always == 0
+                    p.setSelectedIndex(0);
+                });
+        factory.singleChoice(FastScrollerMode.PK_OVERLAY,
+                             R.string.pt_fast_scroller_overlay,
+                             R.array.pe_fastscroller_overlay,
+                             R.array.pv_fastscroller_overlay,
+                             this::onChangeScrollerOverlay, p -> {
+                    p.setIcon(R.drawable.chat_24px);
+                    // Default: OverlayProviderFactory.TYPE_MD2 == 3
+                    p.setSelectedIndex(0);
+                });
+
+        factory.header(R.string.pc_advanced_options);
+
+        factory.action(PSK_TAGS,
+                       R.string.lbl_tags,
+                       this::onEditTags, p -> {
+                    p.setIcon(R.drawable.tag_24px);
+                }
+        );
+
+        factory.action(PSK_IDENTIFIERS,
+                       R.string.lbl_identifiers,
+                       this::onEditIdentifiers, p -> {
+                    p.setIcon(R.drawable.label_24px);
+                }
+        );
+
+        factory.fragment(PSK_FIELDS_VISIBILITY,
+                         R.string.pt_field_visibility,
+                         com.hardbacknutter.nevertoomanybooks.settings
+                                 .FieldVisibilityPreferenceFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.visibility_24px);
+                });
+
+        factory.bool(FieldVisibility.PK_LOANS,
+                     R.string.pt_lending_enabled,
+                     R.string.disabled, R.string.enabled,
+                     this::onChangeEnableLending, p -> {
+                    p.setIcon(R.drawable.group_24px);
+                    p.setChecked(true);
+                });
+        factory.bool(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID,
+                     R.string.pt_allow_editing_external_id,
+                     R.string.disabled, R.string.enabled,
+                     null, p -> {
+                    p.setIcon(R.drawable.tab_24px);
+                });
+
+        factory.fragment(PSK_CALIBRE,
+                         R.string.pt_calibre_content_server,
+                         com.hardbacknutter.nevertoomanybooks.sync.calibre
+                                 .CalibrePreferencesFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.cloud_24px);
+                    p.setSummaryProvider(c -> CalibreHandler.isSyncEnabled()
+                                              ? c.getString(R.string.enabled)
+                                              : c.getString(R.string.disabled));
+                });
+
+        factory.singleChoice(CoverVolume.PK_VOLUME_INDEX,
+                             R.string.pt_storage_volume,
+                             this::onChangeVolumeIndex, p -> {
+                    p.setIcon(R.drawable.folder_24px);
+
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                        p.setSummary(getString(R.string.warning_requires_android_x, 9));
+                    } else {
+                        final Context context = getContext();
+                        final List<StorageVolume> storageVolumes =
+                                CoverVolume.getAvailable(context);
+
+                        final int size = storageVolumes.size();
+                        final CharSequence[] labels = new CharSequence[size];
+                        final CharSequence[] values = new CharSequence[size];
+
+                        for (int i = 0; i < size; i++) {
+                            final StorageVolume sv = storageVolumes.get(i);
+                            labels[i] = sv.getDescription(context);
+                            values[i] = String.valueOf(i);
+                        }
+
+                        p.setEntries(labels);
+                        p.setEntryValues(values);
+                        // Default: 0 == internal 'shared' storage.
+                        p.setSelectedIndex(0);
+                    }
+                });
+
+        factory.fragment(PSK_ADVANCED_OPTIONS,
+                         R.string.pt_maintenance,
+                         com.hardbacknutter.nevertoomanybooks.settings
+                                 .MaintenanceFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.settings_24px);
+                });
+
+        return factory;
     }
 
     @Override
@@ -233,57 +405,132 @@ public class SettingsFragment
         toolbar.setTitle(R.string.lbl_settings);
         toolbar.setSubtitle("");
 
-        if (storageVolumeHelper != null) {
-            vm.onProgress()
-              .observe(getViewLifecycleOwner(), storageVolumeHelper::onProgress);
-            vm.onMoveCancelled()
-              .observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveCancelled);
-            vm.onMoveFailure()
-              .observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFailure);
-            vm.onMoveFinished()
-              .observe(getViewLifecycleOwner(), storageVolumeHelper::onMoveFinished);
+        vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), getArguments());
+
+        final SettingsManager settingsManager = getSettingsManager();
+        final SingleChoiceSetting pStorageVolume = settingsManager
+                .requireSetting(CoverVolume.PK_VOLUME_INDEX);
+        // On Android 9+, the Context#getExternalFilesDirs method will return
+        // both internal and sdcard directories.
+        // Android 8.x it "depends" ... as this is quite old now,
+        // we simply do not support 8.x for moving the cover storage.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            settingsManager.setEnabled(false, CoverVolume.PK_VOLUME_INDEX);
+        } else {
+            storageVolumeHelper = new StorageVolumeHelper(getContext(), pStorageVolume);
+            storageVolumeHelper.initObservers(vm, getViewLifecycleOwner());
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        final SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
-        //noinspection DataFlowIssue
-        prefs.registerOnSharedPreferenceChangeListener(this);
-
-        //noinspection DataFlowIssue
-        findPreference(PSK_CALIBRE).setSummary(CalibreHandler.isSyncEnabled()
-                                               ? R.string.enabled : R.string.disabled);
+    private boolean onEditIdentifiers(@NonNull final Setting setting) {
+        manageIdentitiesLauncher.launch(null);
+        return true;
     }
 
-    @Override
-    public void onPause() {
-        //noinspection DataFlowIssue
-        getPreferenceScreen().getSharedPreferences()
-                             .unregisterOnSharedPreferenceChangeListener(this);
-
-        super.onPause();
+    private boolean onEditTags(@NonNull final Setting setting) {
+        manageTagsLauncher.launch(null);
+        return true;
     }
 
-    @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
-                                          @Nullable final String key) {
-        if (ReorderHelper.PK_SORT_TITLE_REORDERED.equals(key)) {
-            // Set the activity result so our caller will recreate itself
-            vm.setOnBackRequiresActivityRecreation();
+    private boolean onSetSearchSiteOrder(@NonNull final Setting setting) {
+        editSitesLauncher.launch(null);
+        return true;
+    }
 
-        } else if (FieldVisibility.PK_LOANS.equals(key)) {
-            // Copy the legacy format to the bitfield.
-            // We're leaving the legacy flag so the fragment will update the UI
-            // automatically.
-            final boolean lending = prefs.getBoolean(key, false);
-            final FieldVisibility fieldVisibility =
-                    ServiceLocator.getInstance().getGlobalFieldVisibility();
-            fieldVisibility.setVisible(DBKey.LOANEE_NAME, lending);
-            fieldVisibility.save();
+    private boolean onChangeScrollerOverlay(@NonNull final Setting setting,
+                                            @Nullable final Object newValue) {
+        vm.setOnBackRequiresActivityRecreation();
+        return true;
+    }
+
+    private boolean onChangeVolumeIndex(@NonNull final Setting setting,
+                                        @Nullable final Object newValue) {
+        final int volumeIndex = newValue != null ? (int) newValue : 0;
+        return storageVolumeHelper.onStorageVolumeChange(volumeIndex);
+    }
+
+    private boolean onChangeSortTitleReordered(@NonNull final Setting setting,
+                                               @Nullable final Object newValue) {
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.warning_24px)
+                .setMessage(R.string.confirm_rebuild_orderby_columns)
+                // this dialog is important. Make sure the user pays some attention
+                .setCancelable(false)
+                .setNegativeButton(R.string.cancel, (d, w) -> {
+                    // revert/store the original value
+                    ((BooleanSetting) setting).setChecked(vm.getStoredTitleOrderBy());
+                    getSettingsManager().save(setting);
+                    // and remove any scheduling
+                    StartupViewModel.schedule(context,
+                                              StartupViewModel.PK_REBUILD_TITLE_OB,
+                                              false);
+                })
+                .setPositiveButton(R.string.ok, (d, w) -> {
+                    // Update/store the new value
+                    final boolean checked = newValue != null && (boolean) newValue;
+                    ((BooleanSetting) setting).setChecked(checked);
+                    getSettingsManager().save(setting);
+                    // and schedule the rebuild
+                    StartupViewModel.schedule(context,
+                                              StartupViewModel.PK_REBUILD_TITLE_OB,
+                                              true);
+                })
+                .create()
+                .show();
+
+        // Never let the system update the preference value,
+        // it's handled in above Dialog.
+        return false;
+    }
+
+    private boolean onChangeEnableLending(@NonNull final Setting setting,
+                                          @Nullable final Object newValue) {
+        final boolean visible = newValue != null && (boolean) newValue;
+        // Copy the legacy format to the bitfield.
+        final FieldVisibility fieldVisibility =
+                ServiceLocator.getInstance().getGlobalFieldVisibility();
+        fieldVisibility.setVisible(DBKey.LOANEE_NAME, visible);
+        fieldVisibility.save();
+        // The legacy flag is stored as normal
+        return true;
+    }
+
+    @NonNull
+    private CharSequence getTitleOrderSummary(@NonNull final BooleanSetting p) {
+        final Context context = getContext();
+        @SuppressWarnings("DataFlowIssue")
+        String summary = p.isChecked()
+                         ? context.getString(R.string.ps_show_titles_reordered_on)
+                         : context.getString(R.string.ps_show_titles_reordered_off);
+
+        final Spannable spannable;
+        // Use the 'schedulerKey' to get the condition!
+        if (ServiceLocator.getInstance().getSharedPreferences()
+                          .getBoolean(StartupViewModel.PK_REBUILD_TITLE_OB, false)) {
+            // don't use android.R.attr.colorError which is API 29+ only
+            @ColorInt
+            final int color = AttrUtils.getColorInt(context, androidx.appcompat.R.attr.colorError);
+            final int warningStart = summary.length() + 1;
+            // Add the warning
+            final Locale locale = context.getResources().getConfiguration()
+                                         .getLocales().get(0);
+            summary += '\n' + context.getString(R.string.warning_restart_required)
+                                     .toUpperCase(locale);
+            spannable = new SpannableString(summary);
+            spannable.setSpan(new ForegroundColorSpan(color),
+                              warningStart, summary.length(), 0);
+        } else {
+            @ColorInt
+            final int color = AttrUtils.getColorInt(context, android.R.attr.textColorPrimary);
+            spannable = new SpannableString(summary);
+            spannable.setSpan(new ForegroundColorSpan(color), 0, summary.length(), 0);
         }
+
+        return spannable;
     }
 
     /**
@@ -296,39 +543,26 @@ public class SettingsFragment
 
         @NonNull
         private final Context context;
-        private final ListPreference storageVolumePref;
+        private final SingleChoiceSetting storageVolumePref;
         @Nullable
         private ProgressDelegate progressDelegate;
         private int volumeChangedOptionChosen;
 
         StorageVolumeHelper(@NonNull final Context context,
-                            @NonNull final ListPreference preference) {
+                            @NonNull final SingleChoiceSetting preference) {
             this.context = context;
             this.storageVolumePref = preference;
-
-            this.storageVolumePref.setSummaryProvider(
-                    ListPreference.SimpleSummaryProvider.getInstance());
-
-            final List<StorageVolume> storageVolumes = CoverVolume.getAvailable(context);
-
-            final int max = storageVolumes.size();
-            final CharSequence[] entries = new CharSequence[max];
-            final CharSequence[] entryValues = new CharSequence[max];
-
-            for (int i = 0; i < max; i++) {
-                final StorageVolume sv = storageVolumes.get(i);
-                entries[i] = sv.getDescription(context);
-                entryValues[i] = String.valueOf(i);
-            }
-
-            storageVolumePref.setEntries(entries);
-            storageVolumePref.setEntryValues(entryValues);
-            storageVolumePref.setOnPreferenceChangeListener(this::onStorageVolumeChange);
         }
 
-        private boolean onStorageVolumeChange(@NonNull final Preference pref,
-                                              @NonNull final Object newValue) {
-            final int newVolumeIndex = storageVolumePref.findIndexOfValue((String) newValue);
+        void initObservers(@NonNull final SettingsViewModel vm,
+                           @NonNull final LifecycleOwner viewLifecycleOwner) {
+            vm.onProgress().observe(viewLifecycleOwner, this::onProgress);
+            vm.onMoveCancelled().observe(viewLifecycleOwner, this::onMoveCancelled);
+            vm.onMoveFailure().observe(viewLifecycleOwner, this::onMoveFailure);
+            vm.onMoveFinished().observe(viewLifecycleOwner, this::onMoveFinished);
+        }
+
+        boolean onStorageVolumeChange(final int newVolumeIndex) {
             final CharSequence newVolumeDesc = storageVolumePref.getEntries()[newVolumeIndex];
 
             if (vm.isMissingStorageVolume()) {
@@ -408,14 +642,14 @@ public class SettingsFragment
          */
         private boolean setStorageVolume(final int volume) {
             storageVolumePref.setValue(String.valueOf(volume));
-            //noinspection OverlyBroadCatchBlock
+            getSettingsManager().save(storageVolumePref);
             try {
                 // Init the newly configured volume
                 ServiceLocator.getInstance().getCoverStorage().initDir();
                 vm.setOnBackRequiresActivityRecreation();
                 return true;
 
-            } catch (@NonNull final StorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 // This should never happen... flw
                 // To get here the user would have to have displayed the dialog,
                 // manually removed the SDCARD
@@ -425,7 +659,7 @@ public class SettingsFragment
             }
         }
 
-        void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
+        private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
             message.process(progress -> {
                 if (progressDelegate == null) {
                     progressDelegate = new ProgressDelegate(getProgressFrame())
@@ -446,7 +680,7 @@ public class SettingsFragment
             }
         }
 
-        void onMoveFinished(@NonNull final LiveDataEvent<Integer> message) {
+        private void onMoveFinished(@NonNull final LiveDataEvent<Integer> message) {
             closeProgressDialog();
 
             message.process(volume -> {
@@ -457,7 +691,7 @@ public class SettingsFragment
             });
         }
 
-        void onMoveFailure(@NonNull final LiveDataEvent<Throwable> message) {
+        private void onMoveFailure(@NonNull final LiveDataEvent<Throwable> message) {
             closeProgressDialog();
 
             message.process(e -> {
@@ -468,7 +702,7 @@ public class SettingsFragment
             });
         }
 
-        void onMoveCancelled(@NonNull final LiveDataEvent<Integer> message) {
+        private void onMoveCancelled(@NonNull final LiveDataEvent<Integer> message) {
             closeProgressDialog();
 
             message.process(volumeOrCancelCode -> {
@@ -486,106 +720,6 @@ public class SettingsFragment
                 // FIXME: need better msg + tell user to clean up the destination
                 showMessageAndFinishActivity(getString(R.string.cancelled));
             });
-        }
-    }
-
-    /**
-     * Encapsulates all the code to handle the
-     * {@link ReorderHelper#PK_SORT_TITLE_REORDERED} preference.
-     */
-    private class TitleOrderByHelper {
-
-        @NonNull
-        private final Context context;
-        private final SwitchPreference titleOrderByPref;
-        private final PreferenceSummaryProvider summaryProvider;
-
-        TitleOrderByHelper(@NonNull final Context context,
-                           @NonNull final SwitchPreference preference) {
-            this.context = context;
-            this.titleOrderByPref = preference;
-
-            titleOrderByPref.setOnPreferenceChangeListener(this::onChanged);
-            summaryProvider = new PreferenceSummaryProvider(context);
-            titleOrderByPref.setSummaryProvider(summaryProvider);
-        }
-
-        boolean onChanged(@NonNull final Preference pref,
-                          @NonNull final Object newValue) {
-            final boolean checked = (Boolean) newValue;
-
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.warning_24px)
-                    .setMessage(R.string.confirm_rebuild_orderby_columns)
-                    // this dialog is important. Make sure the user pays some attention
-                    .setCancelable(false)
-                    // Cancelling will revert to the original value and remove any scheduling
-                    .setNegativeButton(R.string.cancel, (d, w) -> {
-                        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB,
-                                                  false);
-                        titleOrderByPref.setChecked(vm.getStoredTitleOrderBy());
-                        // Force the summary to redisplay by
-                        // re-setting the provider will call the protected "notifyChanged()"
-                        // as (of course..) Android does not allow an easier solution.
-                        // Note to self: fork or replace the androidx.preference lib...
-                        titleOrderByPref.setSummaryProvider(summaryProvider);
-                    })
-                    // Confirming will persist the new value and schedule the rebuild
-                    .setPositiveButton(R.string.ok, (d, w) -> {
-                        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB,
-                                                  true);
-                        titleOrderByPref.setChecked(checked);
-                    })
-                    .create()
-                    .show();
-            // Do not let the system update the preference value.
-            return false;
-        }
-
-        private class PreferenceSummaryProvider
-                implements Preference.SummaryProvider<SwitchPreference> {
-            private final Context context;
-
-            PreferenceSummaryProvider(@NonNull final Context context) {
-                this.context = context;
-            }
-
-            @NonNull
-            @Override
-            public CharSequence provideSummary(@NonNull final SwitchPreference preference) {
-                String summary = preference.isChecked()
-                                 ? context.getString(R.string.ps_show_titles_reordered_on)
-                                 : context.getString(R.string.ps_show_titles_reordered_off);
-
-                final Spannable spannable;
-                // Use the 'schedulerKey' to get the condition!
-                //noinspection DataFlowIssue
-                if (preference.getSharedPreferences()
-                              .getBoolean(StartupViewModel.PK_REBUILD_TITLE_OB, false)) {
-                    // don't use android.R.attr.colorError which is API 29+ only
-                    @ColorInt
-                    final int color = AttrUtils
-                            .getColorInt(context, androidx.appcompat.R.attr.colorError);
-
-                    final int warningStart = summary.length() + 1;
-                    // Add the warning
-                    final Locale locale = context.getResources().getConfiguration()
-                                                 .getLocales().get(0);
-                    summary += '\n' + context.getString(R.string.warning_restart_required)
-                                             .toUpperCase(locale);
-                    spannable = new SpannableString(summary);
-                    spannable.setSpan(new ForegroundColorSpan(color),
-                                      warningStart, summary.length(), 0);
-                } else {
-                    @ColorInt
-                    final int color = AttrUtils.getColorInt(
-                            context, android.R.attr.textColorPrimary);
-                    spannable = new SpannableString(summary);
-                    spannable.setSpan(new ForegroundColorSpan(color), 0, summary.length(), 0);
-                }
-
-                return spannable;
-            }
         }
     }
 }

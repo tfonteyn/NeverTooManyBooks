@@ -206,5 +206,11 @@
             translatable="false">Rows affected: %1$d</string>
     <string name="debug_sq_shell_warning_updates_not_allowed"
             translatable="false">Updates are not allowed</string>
+    <string name="tuning_offscreen_cache_size"
+            translatable="false">Offscreen view cache size</string>
+    <string name="tuning_page_size"
+            translatable="false">Page size</string>
+    <string name="tuning_lru_list_multiplier"
+            translatable="false">Cursor cache multiplier</string>
     <!-- endregion -->
 </resources>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,43 +19,61 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
-import android.os.Bundle;
+import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class BertrandPtPreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
+    private static final String PK_SEARCH_WEBSITE_MENU =
+            EngineId.BertrandPt.getPreferenceKey()
+            + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_bertrandpt, rootKey);
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
+        //noinspection DataFlowIssue
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+        final String pk = EngineId.BertrandPt.getPreferenceKey();
 
-        initSearchMenuPref(EngineId.BertrandPt);
-    }
+        factory.header(EngineId.BertrandPt.getLabelResId());
 
-    /**
-     * Set this manually, as the default depends on the user language.
-     *
-     * @param engineId to use
-     */
-    @SuppressWarnings("DataFlowIssue")
-    private void initSearchMenuPref(@NonNull final EngineId engineId) {
-        final SearchEngine.SearchOnSite searchEngine = (SearchEngine.SearchOnSite)
-                engineId.createSearchEngine(getContext());
-        final SwitchPreference preference = findPreference(
-                engineId.getPreferenceKey() + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU);
-        preference.setChecked(searchEngine.isShowSearchOnSiteMenu(getContext()));
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU,
+                     R.string.pt_search_show_menu_options, null, p -> {
+                    p.setIcon(R.drawable.shop_24px);
+
+                    // The default depends on the user language.
+                    final Context context = getContext();
+                    final boolean checked = ((SearchEngine.SearchOnSite)
+                            EngineId.BertrandPt.createSearchEngine(context))
+                            .isShowSearchOnSiteMenu(context);
+                    p.setChecked(checked);
+                });
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_ISBN_PREFER_10,
+                     R.string.pt_search_prefer_isbn10, null, p -> {
+                    p.setIcon(R.drawable.barcode_24px);
+                });
+
+
+        CommonSettingsFactory.timeouts(factory, pk);
+        CommonSettingsFactory.troubleshoot(factory, pk);
+
+        return factory;
     }
 }

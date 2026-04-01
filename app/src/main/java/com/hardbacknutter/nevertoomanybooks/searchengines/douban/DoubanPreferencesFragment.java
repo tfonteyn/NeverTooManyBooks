@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,22 +19,50 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
-import android.os.Bundle;
-
 import androidx.annotation.Keep;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 @Keep
 public class DoubanPreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
+    @NonNull
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_douban, rootKey);
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
+        //noinspection DataFlowIssue
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+        final String pk = EngineId.Douban.getPreferenceKey();
+
+        factory.header(EngineId.Douban.getLabelResId());
+
+        factory.bool(DoubanSearchEngine.PK_FETCH_MOST_RECENT,
+                     R.string.pt_search_result_order,
+                     R.string.pe_search_result_order_first_found,
+                     R.string.pe_search_result_order_most_recent,
+                     null, p -> {
+                    p.setIcon(R.drawable.sort_24px);
+                });
+
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_ISBN_PREFER_10,
+                     R.string.pt_search_prefer_isbn10, null, p -> {
+                    p.setIcon(R.drawable.barcode_24px);
+                });
+
+        CommonSettingsFactory.timeouts(factory, pk);
+        CommonSettingsFactory.troubleshoot(factory, pk);
+
+        return factory;
     }
 }

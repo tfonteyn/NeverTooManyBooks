@@ -84,7 +84,7 @@ public class CoverStorage {
      * @see #setImageCachingEnabled(boolean)
      * @see #isImageCachingEnabled()
      */
-    private static final String PK_CACHE_RESIZED_IMAGES = "image.cache.resized";
+    public static final String PK_CACHE_RESIZED_IMAGES = "image.cache.resized";
 
     /** Subdirectory of the Covers directory. */
     private static final String TMP_SUB_DIR = "tmp";

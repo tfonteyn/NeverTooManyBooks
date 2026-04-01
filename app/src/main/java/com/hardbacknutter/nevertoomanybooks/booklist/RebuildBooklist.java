@@ -23,7 +23,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
@@ -65,7 +64,6 @@ public enum RebuildBooklist
     /**
      * Global preference setting.
      */
-    @VisibleForTesting
     public static final String PK_BOOKLIST_REBUILD_STATE = "booklist.rebuild.state";
 
     private final int value;

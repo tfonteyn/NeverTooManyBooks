@@ -32,9 +32,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -62,12 +63,14 @@ public class StyleViewModel
     /** boolean. Flag indicating we're editing the global style settings. */
     public static final String BKEY_GLOBAL_STYLE = TAG + ":global";
 
-    private final MutableLiveData<Void> onDataStoreModified = new MutableLiveData<>();
+    private final MutableLiveData<String> onDataStoreModified = new MutableLiveData<>();
     private final MutableLiveData<String> onNameNotUnique = new MutableLiveData<>();
 
-    @NonNull
-    private final List<WrappedBookLevelField> wrappedBookLevelFieldList = new ArrayList<>();
+    private StyleDataStore styleDataStore;
+    private StylesHelper stylesHelper;
+
     private String templateUuid;
+
     /**
      * The style we're editing.
      * <p>
@@ -75,12 +78,12 @@ public class StyleViewModel
      * but <strong>never</strong> a {@link BuiltinStyle}
      */
     private WritableStyle style;
-    /** The list of groups with a boolean flag for when the user is editing the groups. */
-    @Nullable
-    private List<WrappedGroup> wrappedGroupList;
 
-    private StyleDataStore styleDataStore;
-    private StylesHelper stylesHelper;
+    @Nullable
+    private List<WrappedBookLevelField> wrappedBookLevelFields;
+    @Nullable
+    private List<WrappedGroup> wrappedGroups;
+    private boolean isDefaultStyle;
 
     @DrawableRes
     static int getIconResId(@NonNull final Sort sort) {
@@ -131,7 +134,8 @@ public class StyleViewModel
         if (style == null) {
             stylesHelper = ServiceLocator.getInstance().getStyles();
 
-            if (args.getBoolean(BKEY_GLOBAL_STYLE, false)) {
+            isDefaultStyle = args.getBoolean(BKEY_GLOBAL_STYLE, false);
+            if (isDefaultStyle) {
                 style = (WritableStyle) stylesHelper.getGlobalStyle();
 
             } else {
@@ -168,18 +172,18 @@ public class StyleViewModel
         }
     }
 
-    @NonNull
-    LiveData<Void> onModified() {
-        return onDataStoreModified;
+    boolean isDefaultStyle() {
+        return isDefaultStyle;
     }
 
+    /**
+     * WARNING: do not use the style to build summaries for the current fragment.
+     * Those current style settings will not have been saved back to the Style yet.
+     *
+     * @return style
+     */
     @NonNull
-    LiveData<String> onNameNotUnique() {
-        return onNameNotUnique;
-    }
-
-    @NonNull
-    WritableStyle getStyle() {
+    Style getStyle() {
         return style;
     }
 
@@ -200,148 +204,186 @@ public class StyleViewModel
         return Objects.requireNonNull(templateUuid, "templateUuid");
     }
 
+
     /**
-     * Called when the user leaves the fragment. Save any updates needed.
+     * The list of groups. This is the combination of:
+     * <ol>
+     *     <li>The groups already in the Style; initially with {@code present = true}</li>
+     *     <li>All other groups; initially with {@code present = false}</li>
+     * </ol>
+     * The user will be able to order them, and adding or removing them from the style.
+     *
+     * @return groups
+     */
+    @NonNull
+    List<WrappedGroup> getGroups() {
+        if (wrappedGroups == null) {
+            // Build an array list with the groups already present in the style
+            wrappedGroups = style
+                    .getGroupList()
+                    .stream()
+                    .map(group -> new WrappedGroup(group, true))
+                    .collect(Collectors.toList());
+
+            // Get all other groups and add any missing ones to the list
+            // so the user can add them if wanted.
+            BooklistGroup.getAllGroups(style)
+                         .stream()
+                         .filter(group -> !style.hasGroup(group.getId()))
+                         .forEach(group -> wrappedGroups.add(new WrappedGroup(group, false)));
+        }
+        return wrappedGroups;
+    }
+
+    /**
+     * Update the style with the selected groups.
+     */
+    void updateGroups() {
+        //noinspection DataFlowIssue
+        style.setGroupList(wrappedGroups.stream()
+                                        .filter(WrappedGroup::isPresent)
+                                        .map(WrappedGroup::getGroup)
+                                        .collect(Collectors.toList()));
+        styleDataStore.setModified(StyleDataStore.PK_GROUPS);
+    }
+
+    /**
+     * Get a csv list of all groups present in the Style.
      *
      * @param context Current context
      *
-     * @return status
+     * @return csv list
      */
     @NonNull
-    Saved insertOrUpdateStyle(@NonNull final Context context) {
-        if (!styleDataStore.isModified()) {
-            return new Saved(true, false);
-        }
-
-        if (!isNameUnique(context)) {
-            return new Saved(false, true);
-        }
-
-        final boolean success = stylesHelper.insertOrUpdate(context, style);
-        return new Saved(success, true);
-    }
-
-    @NonNull
-    List<WrappedGroup> createWrappedGroupList() {
-        // Build an array list with the groups already present in the style
-        wrappedGroupList = style
-                .getGroupList()
-                .stream()
-                .map(group -> new WrappedGroup(group, true))
-                .collect(Collectors.toList());
-
-        // Get all other groups and add any missing ones to the list so the user can
-        // add them if wanted.
-        BooklistGroup.getAllGroups(style)
-                     .stream()
-                     .filter(group -> !style.hasGroup(group.getId()))
-                     .forEach(group -> wrappedGroupList.add(new WrappedGroup(group, false)));
-
-        return wrappedGroupList;
-    }
-
-    boolean hasGroupsSelected() {
-        //noinspection DataFlowIssue
-        return wrappedGroupList.stream().anyMatch(WrappedGroup::isPresent);
+    String getGroupsSummary(@NonNull final Context context) {
+        return style.getGroupList()
+                    .stream()
+                    .map(element -> element.getLabel(context))
+                    .collect(Collectors.joining(", "));
     }
 
     /**
-     * Collect the user selected groups, and update the style.
+     * The list of fields which can be displayed on the book level.
+     * This is for the purpose of ordering and independent from the fields actually displayed.
+     * <p>
+     * The user will be able to order them, and and set the ordering for each.
+     *
+     * @return list
      */
-    void updateStyleGroups() {
-        //noinspection DataFlowIssue
-        style.setGroupList(wrappedGroupList.stream()
-                                           .filter(WrappedGroup::isPresent)
-                                           .map(WrappedGroup::getGroup)
-                                           .collect(Collectors.toList()));
-        styleDataStore.setModified();
+    @NonNull
+    List<WrappedBookLevelField> getBookLevelFieldsSorting() {
+        if (wrappedBookLevelFields == null) {
+            wrappedBookLevelFields = style
+                    .getBookLevelFieldsOrderBy()
+                    .entrySet()
+                    .stream()
+                    .map(e -> new WrappedBookLevelField(
+                            e.getKey(), e.getValue()))
+                    .collect(Collectors.toList());
+        }
+        return wrappedBookLevelFields;
     }
+
+    /**
+     * Update the style with the selected book level fields.
+     */
+    void updateBookLevelFieldsSorting() {
+        //noinspection DataFlowIssue
+        final Map<String, Sort> fields = wrappedBookLevelFields
+                .stream().collect(Collectors.toMap(
+                        WrappedBookLevelField::getDbKey,
+                        WrappedBookLevelField::getSort,
+                        (existingKey, replacement) -> {
+                            throw new IllegalArgumentException("keys should already be unique");
+                        },
+                        LinkedHashMap::new));
+        style.setBookLevelFieldsOrderBy(fields);
+        styleDataStore.setModified(StyleDataStore.PSK_LIST_BOOK_LEVEL_SORTING);
+    }
+
+    /**
+     * Get a csv list of all book level fields present in the Style,
+     * together with the ordering (asc/desc).
+     * Unordered fields are not listed.
+     *
+     * @param context Current context
+     *
+     * @return csv list
+     */
+    @NonNull
+    String getBookLevelFieldsSortingSummary(@NonNull final Context context) {
+        return style.getBookLevelFieldsOrderBy()
+                    .entrySet()
+                    .stream()
+                    .filter(field -> field.getValue() != Sort.Unsorted)
+                    .map(field -> context.getString(R.string.a_b,
+                                                    MapDBKey.getLabel(context, field.getKey()),
+                                                    field.getValue().getSymbol()))
+                    .collect(Collectors.joining(", "));
+    }
+
+
+    /**
+     * Get a csv list of all book level fields which will be visible.
+     * <p>
+     * <strong>READ ONLY, modification will be lost</strong>
+     *
+     * @param context Current context
+     *
+     * @return csv list
+     */
+    @NonNull
+    String getBookLevelFieldsVisibilitySummary(@NonNull final Context context) {
+        final String labels = style
+                .getFieldVisibilityKeys(FieldVisibility.Screen.List, false)
+                .stream()
+                .map(key -> MapDBKey.getLabel(context, key))
+                .sorted()
+                .collect(Collectors.joining(", "));
+
+        if (labels.isEmpty()) {
+            return context.getString(R.string.none);
+        } else {
+            return labels;
+        }
+    }
+
 
     /**
      * Get the groups from the style which support sorting.
-     * They will be wrapped in a {@link WrappedBookLevelField}
-     * containing the group key and sort-setting.
      * <p>
      * These are meant to be displayed at the top of the list (a header)
-     * to show the user these <strong>come first in the sorting process</strong>
-     * i.e. <strong>informative only</strong>
+     * to show the user these <strong>come first in the sorting process</strong>.
+     * <p>
+     * <strong>READ ONLY, modification will be lost</strong>
      *
-     * @return list
-     *
-     * @see #getBookLevelColumnList()
+     * @return NEW list
      */
     @NonNull
     List<WrappedBookLevelField> getGroupSortingFields() {
-        return style.getGroupList()
-                    .stream()
-                    .flatMap(booklistGroup -> booklistGroup.getGroupDomainExpressions().stream())
-                    // only show the groups that do sorting
-                    .filter(domainExpression -> domainExpression.getSort() != Sort.Unsorted)
-                    // We can get duplicate names;
-                    // e.g. "Year Read" and "Month Read" both use "Read"
-                    // as the name. So use a LinkedHashMap to prevent duplicates
-                    .collect(Collectors.toMap(
-                            domainExpression -> domainExpression.getDomain().getName(),
-                            DomainExpression::getSort,
-                            (existingKey, replacement) -> existingKey,
-                            LinkedHashMap::new))
-                    .entrySet()
-                    .stream()
-                    // Now convert the map back a list
-                    .map(entry -> new WrappedBookLevelField(
-                            entry.getKey(),
-                            entry.getValue()))
-                    .collect(Collectors.toList());
-    }
-
-    /**
-     * Get the columns which can be displayed on the book level.
-     * They will be wrapped in a {@link WrappedBookLevelField}
-     * containing the column key and sort-setting.
-     * <p>
-     * These are displayed as the main list allowing the user to re-order,
-     * and set the sorting preference.
-     *
-     * @return list
-     */
-    @NonNull
-    List<WrappedBookLevelField> getBookLevelColumnList() {
-        if (wrappedBookLevelFieldList.isEmpty()) {
-            style.getBookLevelFieldsOrderBy().forEach((dbKey, sort) -> wrappedBookLevelFieldList
-                    .add(new WrappedBookLevelField(dbKey, sort)));
-        }
-        return wrappedBookLevelFieldList;
-    }
-
-    /**
-     * Called when the user leaves (back-press) the screen,
-     * to save the current configuration to the Style.
-     */
-    void updateBookLevelFieldsSorting() {
-        style.setBookLevelFieldsOrderBy(
-                wrappedBookLevelFieldList
-                        .stream()
-                        .collect(Collectors.toMap(WrappedBookLevelField::getDbKey,
-                                                  WrappedBookLevelField::getSort,
-                                                  (existingKey, replacement) -> {
-                                                      throw new IllegalArgumentException(
-                                                              "keys should already be unique");
-                                                  },
-                                                  LinkedHashMap::new)));
-
-        styleDataStore.setModified();
-    }
-
-    @NonNull
-    String getBookLevelSortingPreferenceSummary(@NonNull final Context context) {
-        return getBookLevelColumnList()
+        return style
+                .getGroupList()
                 .stream()
-                .filter(column -> column.getSort() != Sort.Unsorted)
-                .map(column -> context.getString(R.string.a_b,
-                                                 column.getLabel(context),
-                                                 column.getSort().getSymbol()))
-                .collect(Collectors.joining(", "));
+                // only show the groups that are sorted
+                .flatMap(group -> group.getGroupDomainExpressions().stream())
+                .filter(domainExpression -> domainExpression.getSort() != Sort.Unsorted)
+                // We can get duplicate names;
+                // e.g. "Year Read" and "Month Read" both use "Read" as the name.
+                // So we use a LinkedHashMap (preserving the order!) to prevent duplicates
+                .collect(Collectors.toMap(
+                        domainExpression -> domainExpression.getDomain().getName(),
+                        DomainExpression::getSort,
+                        (existingKey, replacement) -> existingKey,
+                        LinkedHashMap::new))
+                .entrySet()
+                .stream()
+                // Now convert the map back to a list
+                .map(entry -> new WrappedBookLevelField(
+                        entry.getKey(),
+                        entry.getValue()))
+                .collect(Collectors.toList());
     }
+
 
     /**
      * It IS legal to use the same name as a builtin Style.
@@ -383,6 +425,37 @@ public class StyleViewModel
         }
 
         return true;
+    }
+
+    @NonNull
+    LiveData<String> onNameNotUnique() {
+        return onNameNotUnique;
+    }
+
+    @NonNull
+    LiveData<String> onDataStoreModified() {
+        return onDataStoreModified;
+    }
+
+    /**
+     * Called when the user leaves the fragment. Save any updates needed.
+     *
+     * @param context Current context
+     *
+     * @return status
+     */
+    @NonNull
+    Saved insertOrUpdateStyle(@NonNull final Context context) {
+        if (!styleDataStore.isModified()) {
+            return new Saved(true, false);
+        }
+
+        if (!isNameUnique(context)) {
+            return new Saved(false, true);
+        }
+
+        final boolean success = stylesHelper.insertOrUpdate(context, style);
+        return new Saved(success, true);
     }
 
     // temporary until the db layer is updated... almost certain we'll regret doing it this way...

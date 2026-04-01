@@ -242,12 +242,12 @@ public interface BooklistGroup {
     void setAccumulatedDomains(@NonNull List<Domain> accumulatedDomains);
 
     /**
-     * Get the {@link GroupPrefs} structure for this group.
+     * Get the {@link GroupSettings} structure for this group.
      *
      * @return structure with preference category and keys.
      */
     @Nullable
-    GroupPrefs getGroupPrefs();
+    GroupSettings getGroupSettings();
 
     // NEWTHINGS: BooklistGroup add IntDef
     @IntDef({

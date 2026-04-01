@@ -108,7 +108,7 @@ public final class SoundManager {
             EVENT
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface Tone {
+    public @interface Tone {
 
     }
 }

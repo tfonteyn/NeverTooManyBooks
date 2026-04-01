@@ -77,7 +77,7 @@ public final class CameraConfig {
     private static final float DEFAULT_ZOOM_VALUE = 0.0f;
 
     /** boolean, default {@code true}. */
-    private static final String PK_CAMERA_AUTO_FOCUS = "camera.auto.focus";
+    public static final String PK_CAMERA_AUTO_FOCUS = "camera.auto.focus";
 
     /** Stores the current status. */
     private static final String PK_CAMERA_TORCH_STATUS = "camera.torch.status";

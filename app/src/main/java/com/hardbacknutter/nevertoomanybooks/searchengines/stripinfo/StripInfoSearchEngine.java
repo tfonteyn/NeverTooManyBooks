@@ -114,7 +114,8 @@ public class StripInfoSearchEngine
 
     private static final String PREFERENCE_KEY = "stripinfo";
 
-    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY + ".login.to.search";
+    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY
+                                             + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
     /** Colour string values as used on the site. Complete 2019-10-29. */

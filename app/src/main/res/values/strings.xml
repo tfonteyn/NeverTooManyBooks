@@ -2416,4 +2416,10 @@
     -->
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="lbl_api_token"
+            translatable="false">API Token</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="vldt_exact_length_required"
+            translatable="false">Empty value or exact length of %1$d characters required.</string>
 </resources>

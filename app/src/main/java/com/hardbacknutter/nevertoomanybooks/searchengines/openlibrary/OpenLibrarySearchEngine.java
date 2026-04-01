@@ -101,7 +101,8 @@ public class OpenLibrarySearchEngine
 
     private static final String PREFERENCE_KEY = "openlibrary";
 
-    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY + ".login.to.search";
+    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY
+                                             + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
     private static final String BASE_BOOK_URL = "/search.json?"
                                                 + "q=%1$s"
                                                 + "&fields=key,editions";

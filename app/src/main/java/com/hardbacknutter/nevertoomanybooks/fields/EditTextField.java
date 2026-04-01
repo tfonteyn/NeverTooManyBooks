@@ -29,7 +29,6 @@ import android.widget.EditText;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -272,9 +271,6 @@ public class EditTextField<T, V extends EditText>
         notifyIfChanged(previous);
     }
 
-    /**
-     * Used/defined in xml/preferences.xml
-     */
     public enum Capitalization {
         /**
          * The default value for all fields.
@@ -303,7 +299,6 @@ public class EditTextField<T, V extends EditText>
             this.defaultVal = defaultVal;
         }
 
-        @VisibleForTesting
         @NonNull
         public String getPrefKey() {
             return prefKey;

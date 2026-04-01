@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class SettingsContract
         final Intent intent = FragmentHostActivityLauncher
                 .createIntent(context, SettingsFragment.class);
         if (scrollToKey != null) {
-            intent.putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY, scrollToKey);
+            intent.putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY, scrollToKey);
         }
         return intent;
     }

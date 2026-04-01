@@ -133,7 +133,8 @@ public class IsfdbSearchEngine
     static final Map<String, Book.ContentType> TYPE_MAP = new HashMap<>();
     /** Preferences - Type: {@code boolean}. */
     static final String PK_SERIES_FROM_TOC = PREFERENCE_KEY + ".search.toc.series";
-    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY + ".login.to.search";
+    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY
+                                             + SiteAuthModule.PK_SUFFIX_LOGIN_TO_SEARCH;
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
 

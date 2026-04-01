@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
@@ -41,7 +42,7 @@ public class StyleFragment
         extends StyleBaseFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = "StylePreferenceFragment";
+    private static final String TAG = "StyleFragment";
     private static final String SIS_NAME_SET = TAG + ":nameSet";
 
     /** Set the hosting Activity result, and close it. */
@@ -68,19 +69,13 @@ public class StyleFragment
     private boolean nameSet;
 
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState != null) {
             nameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
         }
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         final Style style = vm.getStyle();
 
@@ -110,7 +105,7 @@ public class StyleFragment
         // We only do this once.
         if (vm.getStyle().getId() == 0 && !nameSet) {
             nameSet = true;
-            getPreferenceManager().showDialog(pName);
+            getSettingsManager().performClick(StyleDataStore.PK_NAME);
         }
     }
 

@@ -20,19 +20,27 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.EditTextPreference;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
+import com.hardbacknutter.prefslib.StringSetting;
 
 /**
  * The user can edit the Amazon URL to direct it to their local site.
@@ -41,41 +49,81 @@ import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
  */
 @Keep
 public class AmazonPreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
     /** Preferences - Type: {@code String}. */
     private static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
                                               + '.' + SearchEngineConfig.PK_HOST_URL;
+    private StringSetting pHostUrl;
+    private HostUrlValidator hostUrlValidator;
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
+                @SuppressWarnings("DataFlowIssue")
                 @Override
                 public void handleOnBackPressed() {
-                    if (hostUrlValidator.isValidUrl(pHostUrl.getText())) {
+                    final String url = pHostUrl.getValue();
+                    if (hostUrlValidator.isValidUrl(url)) {
                         popBackStackOrFinish();
                     } else {
                         //noinspection DataFlowIssue
-                        hostUrlValidator.showUrlInvalidDialog(
-                                getContext(),
-                                pHostUrl.getText(),
-                                null,
-                                () -> popBackStackOrFinish());
+                        new MaterialAlertDialogBuilder(getContext())
+                                .setIcon(R.drawable.info_24px)
+                                .setTitle(R.string.error_invalid_url)
+                                .setMessage(url)
+                                .setPositiveButton(R.string.action_edit, (d, w)
+                                        -> getSettingsManager().performClick(PK_HOST_URL))
+                                .setNegativeButton(R.string.action_discard, (d, w)
+                                        -> popBackStackOrFinish())
+                                .create()
+                                .show();
                     }
                 }
             };
 
-    private EditTextPreference pHostUrl;
-    private HostUrlValidator hostUrlValidator;
-
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        //noinspection DataFlowIssue
-        pHostUrl = findPreference(PK_HOST_URL);
         hostUrlValidator = new HostUrlValidator();
-        initHostUrlPreference(hostUrlValidator, pHostUrl);
+    }
+
+    @NonNull
+    @Override
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = new SharedPreferencesDataStore(
+                ServiceLocator.getInstance().getSharedPreferences());
+        //noinspection DataFlowIssue
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
+
+        final String pk = EngineId.Amazon.getPreferenceKey();
+
+        factory.header(EngineId.Amazon.getLabelResId());
+
+        factory.text(PK_HOST_URL,
+                     R.string.lbl_website_address, null, p -> {
+                    p.setIcon(R.drawable.link_24px);
+                    p.setInputType(InputType.TYPE_CLASS_TEXT
+                                   | InputType.TYPE_TEXT_VARIATION_URI);
+                    //noinspection DataFlowIssue
+                    p.setValue(EngineId.Amazon.getConfig().getHostUrl());
+                    p.setSummaryProvider(c -> hostUrlValidator.getSummary(c, p.getValue()));
+                });
+
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU,
+                     R.string.pt_search_show_menu_options, null, p -> {
+                    p.setIcon(R.drawable.shop_24px);
+                    p.setChecked(true);
+                });
+
+        factory.bool(pk + '.' + SearchEngineConfig.PK_SEARCH_ISBN_PREFER_10,
+                     R.string.pt_search_prefer_isbn10, null, p -> {
+                    p.setIcon(R.drawable.barcode_24px);
+                });
+
+
+        CommonSettingsFactory.troubleshoot(factory, pk);
+
+        return factory;
     }
 
     @Override
@@ -86,5 +134,7 @@ public class AmazonPreferencesFragment
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        pHostUrl = getSettingsManager().requireSetting(PK_HOST_URL);
     }
 }

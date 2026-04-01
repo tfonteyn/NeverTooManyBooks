@@ -163,10 +163,12 @@ public final class CalibreContentServer
     /** Preferences prefix. */
     public static final String PREFERENCE_KEY = "calibre";
 
-    /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     static final String PK_HOST_URL = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
-    static final String PK_HOST_USER = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
-    static final String PK_HOST_PASS = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
+
+    private static final String PK_HOST_USER = PREFERENCE_KEY
+                                               + '.' + SearchEngineConfig.PK_HOST_USER;
+    private static final String PK_HOST_PASS = PREFERENCE_KEY
+                                               + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
     /**
      * Calibre treats the ISBN as just another identifier.
      * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre

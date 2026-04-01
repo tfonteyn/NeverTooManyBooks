@@ -19,278 +19,497 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.SeekBarPreference;
-import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupPrefs;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
+import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupSettings;
+import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.prefslib.BooleanSetting;
+import com.hardbacknutter.prefslib.FloatSetting;
+import com.hardbacknutter.prefslib.Setting;
+import com.hardbacknutter.prefslib.SettingsDataStore;
+import com.hardbacknutter.prefslib.SettingsManager;
+import com.hardbacknutter.prefslib.SingleChoiceSetting;
 
 /**
- * Base fragment for editing a Style, or the Style defaults.
+ * Base fragment for editing a {@link Style}, or the Style defaults.
  */
 public abstract class StyleBaseFragment
-        extends BasePreferenceFragment {
+        extends BaseSettingsFragment {
 
-    private static final String PSK_LIST_BOOK_LEVEL_FIELDS = "psk_style_book_level_fields";
-    private static final String PSK_LIST_BOOK_LEVEL_SORTING = "psk_style_book_level_sorting";
-
-    private static final String PSK_LIST_BOOK_SHOW_COVER_0 = "style.booklist.show.thumbnails";
     @NonNull
-    private final SwitchPreference[] pShowCoversOnDetailsScreen =
-            new SwitchPreference[DBKey.NR_OF_BOOK_COVERS];
+    private final BooleanSetting[] pShowCoversOnDetailsScreen =
+            new BooleanSetting[DBKey.NR_OF_BOOK_COVERS];
+
     StyleViewModel vm;
-    EditTextPreference pName;
-    SeekBarPreference pExpansionLevel;
-    Preference pGroups;
 
-    private Preference pCoverLongClick;
+    private FloatSetting pExpansionLevel;
+    private BooleanSetting pShowCovers;
+    private SingleChoiceSetting pLayout;
 
-    private SeekBarPreference pCoverScale;
-    private SeekBarPreference pTextScale;
-    private Preference pListBookLevelSorting;
-    private Preference pListBookLevelFields;
-    private SwitchPreference pShowCovers;
-
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+    }
+
+    @NonNull
+    @Override
+    protected SettingsManager.Builder onCreateSettings() {
+        final SettingsDataStore store = vm.getStyleDataStore();
         //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
+        final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store);
 
-        // redirect storage to the database
-        // This MUST be done in onCreate/onCreatePreferences,
-        // and BEFORE we inflate the XML screen definition
-        getPreferenceManager().setPreferenceDataStore(vm.getStyleDataStore());
+        factory.text(StyleDataStore.PK_NAME,
+                     R.string.lbl_name, null, p -> {
+                    p.setIcon(R.drawable.edit_24px);
+                });
 
-        super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_style, rootKey);
+        factory.header(R.string.pc_bob_list);
 
-        pName = findPreference(StyleDataStore.PK_NAME);
-        //noinspection DataFlowIssue
-        pName.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT);
-            editText.selectAll();
-        });
+        factory.multiChoice(StyleDataStore.PK_LIST_HEADER,
+                            R.string.pt_bob_header,
+                            R.array.pe_bob_header,
+                            R.array.pv_bob_header,
+                            null, p -> {
+                    p.setIcon(R.drawable.view_headline_24px);
+                    p.setValue(BooklistHeader.SHOW_STYLE_NAME, BooklistHeader.SHOW_BOOK_COUNT);
+                });
 
-        pGroups = findPreference(StyleDataStore.PK_GROUPS);
-        pExpansionLevel = findPreference(StyleDataStore.PK_EXPANSION_LEVEL);
+        factory.fragment(StyleDataStore.PK_GROUPS,
+                         R.string.pt_bob_groups,
+                         com.hardbacknutter.nevertoomanybooks.settings.styles
+                                 .StyleGroupsFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.format_list_bulleted_24px);
+                    p.setSummaryProvider(c -> vm.getGroupsSummary(c));
+                });
 
-        // List layout
-        final Preference pLayout = findPreference(StyleDataStore.PK_LAYOUT);
-        //noinspection DataFlowIssue
-        pLayout.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof String) {
-                updateLayoutPrefs();
-                return true;
-            }
-            return false;
-        });
+        factory.floatRange(StyleDataStore.PK_EXPANSION_LEVEL,
+                           R.string.pt_bob_list_state_expansion_level,
+                           1, 4, null, p -> {
+                    p.setIcon(R.drawable.format_indent_increase_24px);
+                    p.setValue(1);
+                });
 
-        // Used only in grid-mode, hidden in list-mode
-        pCoverLongClick = findPreference(StyleDataStore.PK_COVER_LONG_CLICK_ACTION);
+        factory.fragment(StyleDataStore.PSK_LIST_BOOK_LEVEL_SORTING,
+                         R.string.lbl_sorting,
+                         com.hardbacknutter.nevertoomanybooks.settings.styles
+                                 .StyleBooklistBookLevelSortingFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.sort_24px);
+                    p.setSummaryProvider(c -> vm.getBookLevelFieldsSortingSummary(c));
+                });
+
+        factory.header(R.string.pc_bob_layout);
+
+        factory.singleChoice(StyleDataStore.PK_LAYOUT,
+                             R.string.pt_layout,
+                             R.array.pe_bob_layout,
+                             R.array.pv_bob_layout,
+                             this::onChangeLayout, p -> {
+                    p.setIcon(R.drawable.aod_24px);
+                    p.setSelectedIndex(0);
+                });
+
+        factory.fragment(StyleDataStore.PSK_LIST_BOOK_LEVEL_FIELDS,
+                         R.string.pt_bob_show_details,
+                         com.hardbacknutter.nevertoomanybooks.settings.styles
+                                 .StyleBooklistBookLevelFieldsFragment.class.getName(),
+                         R.id.content_frame, p -> {
+                    p.setIcon(R.drawable.menu_book_24px);
+                    p.setSummaryProvider(c -> vm.getBookLevelFieldsVisibilitySummary(c));
+                });
+
+        factory.bool(StyleDataStore.PK_SHOW_GROUP_BOOK_COUNT,
+                     R.string.pt_bob_show_group_book_count, null, p -> {
+                    p.setIcon(R.drawable.functions_24px);
+                    p.setChecked(true);
+                });
+
+        // Showing thumbnails is really part of 'Extra Book Details',
+        // but this is more user-friendly.
+        factory.bool(StyleDataStore.PK_LIST_BOOK_SHOW_COVER_0,
+                     R.string.pt_bob_cover_show,
+                     this::onChangeListBookCover, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                    p.setChecked(true);
+                });
+
+        // Used for both list and grid-mode (key="style.booklist.layout")
+        // For simplicity, we always show this option even if the user hides all covers
+        // with the key=PSK_LIST_BOOK_SHOW_COVER_0 option.
+        factory.singleChoice(StyleDataStore.PK_COVER_CLICK_ACTION,
+                             R.string.pt_bob_cover_click,
+                             R.array.pe_bob_cover_click,
+                             R.array.pv_bob_cover_click, null, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                    p.setSelectedIndex(0);
+                });
+
+        // Shown in grid-mode, hidden in list-mode
+        factory.singleChoice(StyleDataStore.PK_COVER_LONG_CLICK_ACTION,
+                             R.string.pt_bob_cover_long_click,
+                             R.array.pe_bob_cover_long_click,
+                             R.array.pv_bob_cover_long_click, null, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                    p.setSelectedIndex(0);
+                });
 
         // For simplicity, we always show this option even if the user hides all covers
         // with the "pShowCovers" option.
-        pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
+        factory.floatRange(StyleDataStore.PK_COVER_SCALE,
+                           R.string.pt_bob_cover_scale,
+                           1, 4, null, p -> {
+                    p.setIcon(R.drawable.photo_size_select_small_24px);
+                    p.setValue(CoverScale.Medium.ordinal());
+                    p.setSummaryProvider(c -> CoverScale.byId((int) p.getValue())
+                                                        .getLabel(c));
+                });
 
-        pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
+        factory.floatRange(StyleDataStore.PK_TEXT_SCALE,
+                           R.string.pt_bob_font_size,
+                           0, 4, null, p -> {
+                    p.setIcon(R.drawable.format_size_24px);
+                    p.setValue(TextScale.Medium.ordinal());
+                    p.setSummaryProvider(c -> TextScale.byId((int) p.getValue())
+                                                       .getLabel(c));
+                });
 
-        //noinspection DataFlowIssue
-        findPreference(StyleDataStore.PK_LIST_HEADER)
-                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+        // This is the value used for the "android:layout_height" of a GROUP row
+        //             true : "?attr/listPreferredItemHeightSmall"
+        //             false: "wrap_content"
+        factory.bool(StyleDataStore.PK_GROUP_ROW_HEIGHT,
+                     R.string.pt_line_spacing,
+                     R.string.size_small, R.string.size_large,
+                     null, p -> {
+                    p.setIcon(R.drawable.format_line_spacing_24px);
+                    p.setChecked(true);
+                });
 
-        pListBookLevelFields = findPreference(PSK_LIST_BOOK_LEVEL_FIELDS);
-        pShowCovers = findPreference(PSK_LIST_BOOK_SHOW_COVER_0);
+        factory.header(R.string.pc_book_detail_screen);
 
-        pListBookLevelSorting = findPreference(PSK_LIST_BOOK_LEVEL_SORTING);
+        factory.bool(StyleDataStore.PK_DETAILS_SHOW_COVER[0],
+                     R.string.lbl_cover_front,
+                     this::onChangeDetailsShowCover0, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                    p.setChecked(true);
+                });
+        factory.bool(StyleDataStore.PK_DETAILS_SHOW_COVER[1],
+                     R.string.lbl_cover_back,
+                     null, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                    p.setChecked(true);
+                });
+        factory.bool(StyleDataStore.PK_DETAILS_SHOW_COVER[2],
+                     R.string.lbl_image_2,
+                     null, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                    p.setChecked(true);
+                });
+        factory.bool(StyleDataStore.PK_DETAILS_SHOW_COVER[3],
+                     R.string.lbl_image_3,
+                     null, p -> {
+                    p.setIcon(R.drawable.image_24px);
+                    p.setChecked(true);
+                });
 
-        // Book details page
-        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
-            pShowCoversOnDetailsScreen[cIdx] =
-                    findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[cIdx]);
-        }
+        factory.header(R.string.pc_reading);
 
-        //noinspection DataFlowIssue
-        pShowCoversOnDetailsScreen[0].setOnPreferenceChangeListener((preference, newValue) -> {
-            // Covers on DETAIL screen:
-            // Setting cover 0 to false
-            if (newValue instanceof Boolean && !(Boolean) newValue) {
-                // Set all others to false as well
-                for (int cIdx = 1; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
-                    pShowCoversOnDetailsScreen[cIdx].setChecked(false);
-                }
-            }
-            return true;
-        });
+        factory.bool(StyleDataStore.PK_USE_READ_PROGRESS,
+                     R.string.lbl_track_progress,
+                     R.string.ps_use_read_progress_off,
+                     R.string.ps_use_read_progress_on,
+                     null, p -> {
+                    p.setIcon(R.drawable.menu_book_24px);
+                });
 
-        // Author
-        //noinspection DataFlowIssue
-        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE)
-                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+        factory.header(R.string.lbl_titles);
 
-        // First call sets the current situation before the screen is visible.
-        updateLayoutPrefs();
+        factory.bool(StyleDataStore.PK_SHOW_TITLES_REORDERED,
+                     R.string.pc_formatting,
+                     R.string.ps_show_titles_reordered_off,
+                     R.string.ps_show_titles_reordered_on,
+                     null, p -> {
+                    p.setIcon(R.drawable.reorder_24px);
+                });
+
+        factory.singleChoice(StyleDataStore.PK_CITATION_TYPE,
+                             R.string.lbl_citation_type,
+                             R.array.lbl_style_citation_type,
+                             R.array.pv_style_citation_type,
+                             null, p -> {
+                    p.setIcon(R.drawable.share_24px);
+                    p.setSelectedIndex(0);
+                });
+
+        factory.header(StyleDataStore.PSK_STYLE_AUTHOR,
+                       R.string.lbl_author);
+
+        factory.bool(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST,
+                     R.string.pc_formatting,
+                     R.string.ps_show_author_name_family_first,
+                     R.string.ps_show_author_name_given_first,
+                     null, p -> {
+                    p.setIcon(R.drawable.reorder_24px);
+                });
+        factory.bool(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST,
+                     R.string.lbl_sorting,
+                     R.string.ps_sort_author_name_family_first,
+                     R.string.ps_sort_author_name_given_first,
+                     null, p -> {
+                    p.setIcon(R.drawable.sort_24px);
+                });
+
+        // Enabled if Group 'Author' is present in this style.
+        //
+        // See {@link BooklistBuilder.TableBuilder#joinWithAuthors}
+        // for why this is a MultiSelectListPreference?
+        factory.multiChoice(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_ROLE,
+                            R.string.pt_main_author_type,
+                            R.array.pe_author_type,
+                            R.array.pv_author_type,
+                            null, p -> {
+                    p.setIcon(R.drawable.looks_one_24px);
+                    // The default is 'not set', which means we take the Author
+                    // in position 1 to be the primary.
+                });
+
+        // Enabled if Group 'Author' is present in this style.
+        factory.bool(Style.UnderEach.Author.getPrefKey(),
+                     R.string.pt_bob_books_under_multiple_authors,
+                     R.string.ps_bob_books_under_multiple_authors_main_only,
+                     R.string.ps_bob_books_under_multiple_authors_each,
+                     null, p -> {
+                    p.setIcon(R.drawable.functions_24px);
+                });
+
+        factory.header(StyleDataStore.PSK_STYLE_SERIES,
+                       R.string.lbl_series);
+
+        // Enabled if Group 'Series' is present in this style.
+        factory.bool(Style.UnderEach.Series.getPrefKey(),
+                     R.string.pt_bob_books_under_multiple_series,
+                     R.string.ps_bob_books_under_multiple_series_main_only,
+                     R.string.ps_bob_books_under_multiple_series_each,
+                     null, p -> {
+                    p.setIcon(R.drawable.functions_24px);
+                });
+
+        factory.header(StyleDataStore.PSK_STYLE_PUBLISHER,
+                       R.string.lbl_publisher);
+
+        // Enabled if Group 'Publisher' is present in this style.
+        factory.bool(Style.UnderEach.Publisher.getPrefKey(),
+                     R.string.pt_bob_books_under_multiple_publishers,
+                     R.string.ps_bob_books_under_multiple_publishers_main_only,
+                     R.string.ps_bob_books_under_multiple_publishers_each,
+                     null, p -> {
+                    p.setIcon(R.drawable.functions_24px);
+                });
+
+        // ENHANCE: enable this if/when we introduce the concept of a PRIMARY Bookshelf.
+        //  All other plumbing is already implemented.
+        // factory.header(StyleDataStore.PSK_STYLE_BOOKSHELF,
+        //                R.string.lbl_bookshelf);
+        //
+        // // Enabled if Group 'Bookshelf' is present in this style.
+        // factory.checkable(Style.UnderEach.Bookshelf.getPrefKey(),
+        //                   R.string.ps_bob_books_under_multiple_bookshelfs,
+        //                   R.string.ps_bob_books_under_multiple_bookshelfs_main_only,
+        //                   R.string.ps_bob_books_under_multiple_bookshelfs_each, p -> {
+        //             p.setIcon(R.drawable.functions_24px);
+        //         });
+
+        return factory;
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        //noinspection DataFlowIssue
+        vm.init(getContext(), requireArguments());
+        // init the vm BEFORE calling the super, as onCreateSettings uses it.
         super.onViewCreated(view, savedInstanceState);
 
-        vm.onModified().observe(getViewLifecycleOwner(), aVoid -> {
-            updateSummaries();
-            updateLayoutPrefs();
-        });
+        final SettingsManager settingsManager = getSettingsManager();
+        pExpansionLevel = settingsManager.requireSetting(StyleDataStore.PK_EXPANSION_LEVEL);
+        pShowCovers = settingsManager.requireSetting(StyleDataStore.PK_LIST_BOOK_SHOW_COVER_0);
+        pLayout = settingsManager.requireSetting(StyleDataStore.PK_LAYOUT);
+
+        // Book details page
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            pShowCoversOnDetailsScreen[cIdx] = settingsManager
+                    .requireSetting(StyleDataStore.PK_DETAILS_SHOW_COVER[cIdx]);
+        }
+
         vm.onNameNotUnique().observe(getViewLifecycleOwner(), this::onNameNotUnique);
+    }
+
+    private boolean onChangeDetailsShowCover0(@NonNull final Setting setting,
+                                              @Nullable final Object newValue) {
+        // Covers on DETAIL screen: Setting cover 0 to false
+        final boolean enabled = newValue != null && (boolean) newValue;
+        if (!enabled) {
+            final SettingsManager settingsManager = getSettingsManager();
+            // Set all others to false as well
+            for (int cIdx = 1; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+                pShowCoversOnDetailsScreen[cIdx].setChecked(false);
+                settingsManager.save(pShowCoversOnDetailsScreen[cIdx]);
+            }
+        }
+        return true;
+    }
+
+    private boolean onChangeListBookCover(@NonNull final Setting setting,
+                                          @Nullable final Object newValue) {
+        final SettingsManager settingsManager = getSettingsManager();
+        final boolean enabled = newValue != null && (boolean) newValue;
+        settingsManager.setEnabled(enabled,
+                                   StyleDataStore.PK_COVER_CLICK_ACTION,
+                                   StyleDataStore.PK_COVER_SCALE);
+        settingsManager.setEnabled(enabled, StyleDataStore.PK_DETAILS_SHOW_COVER);
+        return true;
+    }
+
+    private boolean onChangeLayout(@NonNull final Setting setting,
+                                   @Nullable final Object newValue) {
+        final SettingsManager settingsManager = getSettingsManager();
+        final int newIndex;
+        if (newValue == null) {
+            newIndex = 0;
+        } else {
+            newIndex = Integer.parseInt((String) newValue);
+        }
+        final ScreenLayout layout = ScreenLayout.byId(newIndex);
+
+        // The whole point of Grid is to show covers
+        if (layout == ScreenLayout.Grid) {
+            pShowCovers.setChecked(true);
+            settingsManager.save(pShowCovers);
+        }
+        // else ScreenLayout.List: no specific changes, leave it to the user
+
+        updateLayoutVisibility(layout);
+        return true;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        updatePreferenceVisibility();
-        updateSummaries();
-        updateLayoutPrefs();
+        updateLayoutVisibility(ScreenLayout.byId(pLayout.getSelectedIndex()));
+        updateGroupSettings();
     }
 
     /**
-     * Show the preferences for groups we have and hide for groups we don't/no longer have.
-     * When one preference is visible, make the category visible.
-     */
-    private void updatePreferenceVisibility() {
-        final WritableStyle style = vm.getStyle();
-
-        final PreferenceScreen screen = getPreferenceScreen();
-        BooklistGroup.getAllGroups(style).forEach(
-                group -> {
-                    final GroupPrefs groupPrefs = group.getGroupPrefs();
-                    // Not all groups have preferences
-                    if (groupPrefs == null) {
-                        return;
-                    }
-                    final PreferenceCategory category =
-                            screen.findPreference(groupPrefs.getCategory());
-                    // We may implement plumbing, but not want to expose it
-                    // to the user (yet)
-                    if (category == null) {
-                        return;
-                    }
-
-                    final boolean visible = style.hasGroup(group.getId());
-                    for (final String key : groupPrefs.getKeys()) {
-                        final Preference preference = category.findPreference(key);
-                        if (preference != null) {
-                            preference.setVisible(visible);
-                        }
-                    }
-
-                    int i = 0;
-                    while (i < category.getPreferenceCount()) {
-                        if (category.getPreference(i).isVisible()) {
-                            category.setVisible(true);
-                            return;
-                        }
-                        i++;
-                    }
-                });
-    }
-
-    /**
-     * The summary for these Preference's reflect what is selected on ANOTHER screen
-     * or changes to ANOTHER KEY.
-     * (this also means we cannot use SummaryProvider's for these)
-     */
-    private void updateSummaries() {
-        final WritableStyle style = vm.getStyle();
-        final Context context = getContext();
-
-        // List
-
-        //noinspection DataFlowIssue
-        pGroups.setSummary(style.getGroupsSummaryText(context));
-        // the 'level expansion' depends on the number of groups in use
-        pExpansionLevel.setMax(style.getGroupCount());
-        pExpansionLevel.setValue(style.getExpansionLevel());
-        pListBookLevelSorting.setSummary(vm.getBookLevelSortingPreferenceSummary(context));
-
-
-        // List layout
-        pListBookLevelFields.setSummary(
-                createVisibilitySummary(context, style, FieldVisibility.Screen.List));
-
-        pCoverScale.setSummary(style.getCoverScale().getLabel(context));
-        pTextScale.setSummary(style.getTextScale().getLabel(context));
-    }
-
-    @NonNull
-    private String createVisibilitySummary(@NonNull final Context context,
-                                           @NonNull final Style style,
-                                           @NonNull final FieldVisibility.Screen screen) {
-        final String labels = style.getFieldVisibilityKeys(screen, false)
-                                   .stream()
-                                   .map(key -> MapDBKey.getLabel(context, key)).sorted()
-                                   .collect(Collectors.joining(", "));
-
-        if (labels.isEmpty()) {
-            return context.getString(R.string.none);
-        } else {
-            return labels;
-        }
-    }
-
-    /**
-     * Use the given {@link ScreenLayout} to show/hide the applicable preferences.
+     * Use the <strong>current layout setting</strong>.
      *
-     * @throws IllegalArgumentException when there is a bug with the enums
+     * @param layout current value of the setting.
+     *
+     * @throws IllegalArgumentException (debug) for an unknown layout
      */
-    private void updateLayoutPrefs() {
-        final ScreenLayout layout = vm.getStyle().getLayout();
+    private void updateLayoutVisibility(@NonNull final ScreenLayout layout) {
+        final SettingsManager settingsManager = getSettingsManager();
         switch (layout) {
             case List: {
-                pShowCovers.setVisible(true);
-                // N/A in list-mode
-                pCoverLongClick.setVisible(false);
+                settingsManager.setVisible(Map.of(
+                        StyleDataStore.PK_LIST_BOOK_SHOW_COVER_0, true,
+                        StyleDataStore.PK_COVER_LONG_CLICK_ACTION, false));
                 break;
             }
             case Grid: {
-                // The point of Grid is to show covers
-                pShowCovers.setVisible(false);
-                pShowCovers.setChecked(true);
-
-                pCoverLongClick.setVisible(true);
+                settingsManager.setVisible(Map.of(
+                        StyleDataStore.PK_LIST_BOOK_SHOW_COVER_0, false,
+                        StyleDataStore.PK_COVER_LONG_CLICK_ACTION, true));
                 break;
             }
             default:
                 throw new IllegalArgumentException(layout.toString());
         }
+    }
+
+    /**
+     * Show the settings for groups we have and hide for groups we don't or no longer have.
+     * When one setting is visible, make the category visible.
+     * Adjust the Expansion Leveld field according to the number off groups.
+     * Update all affected summaries by notifying the adapter.
+     * <p>
+     * Read directly from the style as group changes are handled in another Fragment.
+     */
+    private void updateGroupSettings() {
+        final SettingsManager settingsManager = getSettingsManager();
+        final Style style = vm.getStyle();
+        // Not all groups have settings
+        BooklistGroup.getAllGroups(style).forEach(group -> {
+            final GroupSettings groupSettings = group.getGroupSettings();
+            if (groupSettings == null) {
+                return;
+            }
+            final boolean hasGroup = style.hasGroup(group.getId());
+            final String headerKey = groupSettings.getHeaderKey();
+            final Set<String> currentlyVisible = new HashSet<>(
+                    settingsManager.getVisibleChildren(headerKey));
+            final Map<String, Boolean> updates = new HashMap<>();
+            groupSettings.getKeys().forEach(k -> {
+                updates.put(k, hasGroup);
+                if (!hasGroup) {
+                    currentlyVisible.remove(k);
+                }
+            });
+            updates.put(headerKey, !currentlyVisible.isEmpty());
+            settingsManager.setVisible(updates);
+        });
+
+        // Adjusting/showing the pExpansionLevel is not applicable for the default style.
+        // We need to check this explicitly, as the default style
+        // will always have ALL groups which have configuration settings.
+        if (!vm.isDefaultStyle()) {
+            // The 'level expansion' depends on the number of groups in use
+            // which could have been changed when returning from the groups fragment.
+            final int groupCount = style.getGroupCount();
+            if (groupCount > 1) {
+                pExpansionLevel.setValueTo(groupCount);
+                // Update, but do not save it (no need)
+                pExpansionLevel.setValue(style.getExpansionLevel());
+                settingsManager.setVisible(Map.of(pExpansionLevel.getKey(), true));
+            } else {
+                settingsManager.setVisible(Map.of(pExpansionLevel.getKey(), false));
+            }
+        }
+
+        // Force an update for the summaries of the above touched settings.
+        //noinspection DataFlowIssue
+        settingsManager.reload(
+                getContext(),
+                // These represent Fragments; we need to force the summaries to be read
+                // from the style after we come back here
+                StyleDataStore.PK_GROUPS,
+                StyleDataStore.PSK_LIST_BOOK_LEVEL_FIELDS,
+                StyleDataStore.PSK_LIST_BOOK_LEVEL_SORTING,
+                // We've potentially changed this from code
+                StyleDataStore.PK_EXPANSION_LEVEL);
     }
 
     private void onNameNotUnique(@NonNull final CharSequence message) {
@@ -301,7 +520,7 @@ public abstract class StyleBaseFragment
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, (d, w) -> {
                     d.dismiss();
-                    getPreferenceManager().showDialog(pName);
+                    getSettingsManager().performClick(StyleDataStore.PK_NAME);
                 })
                 .create()
                 .show();

@@ -33,6 +33,12 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 public interface SiteAuthModule {
 
+    /** Preference. Suffix added to the site PreferenceKey. */
+    String PK_SUFFIX_LOGIN_TO_SEARCH = ".login.to.search";
+    /** Preference. Suffix added to the site PreferenceKey. */
+    String PK_SUFFIX_HOST_USER = ".host.user";
+    /** Preference. Suffix added to the site PreferenceKey. */
+    String PK_SUFFIX_HOST_PASSWORD = ".host.password";
 
     /**
      * Performs a login using the stored credentials.
