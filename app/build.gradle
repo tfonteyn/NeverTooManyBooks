@@ -247,6 +247,7 @@ dependencies {
     implementation project(path: ":Insets")
     implementation project(path: ":LiveDataEvent")
     implementation project(path: ":Logger")
+    implementation project(path: ":PrefsLib")
     implementation project(path: ":repacked-org-json")
 
     coreLibraryDesugaring(libs.google.desugar)

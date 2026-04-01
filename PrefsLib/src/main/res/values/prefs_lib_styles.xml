@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2026 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="PrefsLib.Header.Holder"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:paddingStart">?attr/listPreferredItemPaddingStart</item>
+        <item name="android:paddingEnd">?attr/listPreferredItemPaddingEnd</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:baselineAligned">false</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="PrefsLib.Holder"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/listPreferredItemHeightSmall</item>
+        <item name="android:paddingStart">?attr/listPreferredItemPaddingStart</item>
+        <item name="android:paddingEnd">?attr/listPreferredItemPaddingEnd</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:baselineAligned">false</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="PrefsLib.Header.Title"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PrefsLib.Title"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
+    </style>
+
+    <style name="PrefsLib.Header.Summary"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">10</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
+        <!-- extra padding to make the information/message stand out a bit -->
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="PrefsLib.Summary"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">10</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
+    </style>
+
+    <style name="PrefsLib.Icon"
+           parent="Widget.MaterialComponents.ShapeableImageView">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxWidth">48dp</item>
+        <item name="android:maxHeight">48dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="tint">?attr/colorControlNormal</item>
+    </style>
+
+    <style name="PrefsLib.Switch"
+           parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+    </style>
+
+    <style name="PrefsLib.Slider"
+           parent="Widget.Material3.Slider">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:valueFrom">0</item>
+        <item name="android:valueTo">100</item>
+        <item name="labelBehavior">gone</item>
+        <item name="thumbColor">?attr/colorPrimary</item>
+        <item name="trackColorInactive">?attr/colorSurfaceVariant</item>
+        <item name="tickColorActive">@android:color/transparent</item>
+        <item name="tickColorInactive">@android:color/transparent</item>
+    </style>
+
+    <style name="PrefsLib.Slider.Value"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">36dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceListItem</item>
+    </style>
+
+
+    <style name="PrefsLib.Dialog.Container"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">48dp</item>
+        <item name="android:layout_marginBottom">48dp</item>
+    </style>
+
+    <style name="PrefsLib.Dialog.Message"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">10</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+    </style>
+
+    <style name="PrefsLib.Dialog.Settings"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">?attr/listPreferredItemPaddingStart</item>
+        <item name="android:paddingEnd">?attr/listPreferredItemPaddingEnd</item>
+    </style>
+
+    <style name="PrefsLib.Dialog.TIL"
+           parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="endIconMode">clear_text</item>
+    </style>
+
+    <style name="PrefsLib.Dialog.TIE"
+           parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:inputType">text</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginEnd">20dp</item>
+    </style>
+</resources>
