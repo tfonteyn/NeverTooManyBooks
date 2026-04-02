@@ -105,14 +105,16 @@ public abstract class FlexClassicDialogFragment
     }
 
     /**
-     * Overrule/force this dialog to fullscreen mode.
+     * Overrule/force this dialog to use floating dialogs or fullscreen mode
+     * instead of relying on the screen size.
      * <p>
      * <strong>Must</strong> be called from the child class {@link #onCreate(Bundle)}
      * after it has called {@link FlexClassicDialogFragment#onCreate(Bundle)}.
+     *
+     * @param enabled flag
      */
-    @SuppressWarnings("unused")
-    protected void forceFullscreen() {
-        fullscreen = true;
+    protected void setFullscreen(final boolean enabled) {
+        fullscreen = enabled;
     }
 
     /**
