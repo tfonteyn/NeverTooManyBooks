@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -135,7 +134,7 @@ class PreferredStylesViewModelTest
 
 
         // Test the prepared style
-        final WritableStyle editedStyle = styleVm.getStyle();
+        final Style editedStyle = styleVm.getStyle();
         // It's not saved to the db yet
         assertEquals(0, editedStyle.getId());
         // but should have a new UUID assigned to it
@@ -147,8 +146,8 @@ class PreferredStylesViewModelTest
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
         final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
-        assertTrue(dbResult.success);
-        assertTrue(dbResult.wasModified);
+        assertTrue(dbResult.isSuccess());
+        assertTrue(dbResult.isModified());
 
         listVm.onStyleEdited(context, editedStyle.getUuid(), initialStyle.getUuid());
 
@@ -203,7 +202,7 @@ class PreferredStylesViewModelTest
 
 
         // Test the prepared style
-        final WritableStyle editedStyle = styleVm.getStyle();
+        final Style editedStyle = styleVm.getStyle();
         // It's not saved to the db yet
         assertEquals(0, editedStyle.getId());
         // but should have a new UUID assigned to it
@@ -215,8 +214,8 @@ class PreferredStylesViewModelTest
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
         final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
-        assertTrue(dbResult.success);
-        assertTrue(dbResult.wasModified);
+        assertTrue(dbResult.isSuccess());
+        assertTrue(dbResult.isModified());
 
         listVm.onStyleEdited(context, editedStyle.getUuid(), initialStyle.getUuid());
 
@@ -274,7 +273,7 @@ class PreferredStylesViewModelTest
 
 
         // Test the prepared style
-        final WritableStyle editedStyle = styleVm.getStyle();
+        final Style editedStyle = styleVm.getStyle();
         // id/uuid is kept
         assertEquals(initialStyle.getId(), editedStyle.getId());
         assertEquals(initialStyle.getUuid(), editedStyle.getUuid());
@@ -285,8 +284,8 @@ class PreferredStylesViewModelTest
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
         final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
-        assertTrue(dbResult.success);
-        assertTrue(dbResult.wasModified);
+        assertTrue(dbResult.isSuccess());
+        assertTrue(dbResult.isModified());
 
         listVm.onStyleEdited(context, editedStyle.getUuid(), initialStyle.getUuid());
 

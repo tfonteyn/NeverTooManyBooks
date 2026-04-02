@@ -51,8 +51,8 @@ public class StyleDefaultsFragment
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
                     final StyleViewModel.Saved dbResult = vm.insertOrUpdateStyle(getContext());
-                    if (dbResult.success) {
-                        if (dbResult.wasModified) {
+                    if (dbResult.isSuccess()) {
+                        if (dbResult.isModified()) {
                             settingsViewModel.setForceRebuildBooklist();
                         }
 

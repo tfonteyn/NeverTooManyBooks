@@ -51,10 +51,10 @@ public class StyleFragment
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
                     final StyleViewModel.Saved dbResult = vm.insertOrUpdateStyle(getContext());
-                    if (dbResult.success) {
+                    if (dbResult.isSuccess()) {
                         final Intent resultIntent = EditStyleContract
                                 .createResult(vm.getTemplateUuid(),
-                                              dbResult.wasModified,
+                                              dbResult.isModified(),
                                               vm.getStyle().getUuid());
 
                         //noinspection DataFlowIssue

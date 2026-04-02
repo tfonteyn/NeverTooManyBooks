@@ -387,14 +387,22 @@ public class StyleViewModel
 
     // temporary until the db layer is updated... almost certain we'll regret doing it this way...
     static class Saved {
-        final boolean success;
-        /** {@code true} if the style was modified. */
-        final boolean wasModified;
+        private final boolean success;
+
+        private final boolean modified;
 
         Saved(final boolean success,
-              final boolean wasModified) {
+              final boolean modified) {
             this.success = success;
-            this.wasModified = wasModified;
+            this.modified = modified;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public boolean isModified() {
+            return modified;
         }
     }
 
