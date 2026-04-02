@@ -239,6 +239,7 @@ dependencies {
     implementation project(path: ":fastscroller")
     implementation project(path: ":zratingbar")
     implementation project(path: ":Insets")
+    implementation project(path: ":LiveDataEvent")
     implementation project(path: ":Logger")
     implementation project(path: ":repacked-org-json")
 

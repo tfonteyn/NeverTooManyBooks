@@ -37,7 +37,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.menus.AuthorViewAuthorOnSiteMenuHand
 import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
 @SuppressWarnings("WeakerAccess")
 public class AuthorWorksViewModel

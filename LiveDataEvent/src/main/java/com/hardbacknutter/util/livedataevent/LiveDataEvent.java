@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.core.tasks;
+package com.hardbacknutter.util.livedataevent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,9 +26,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * TODO: our use of observables is not always best-practice. Maybe look at RxJava
- * <p>
- * Prevent acting twice on a delivered {@link androidx.lifecycle.LiveData} event.
+ * Prevents acting twice on a delivered {@code androidx.lifecycle.LiveData}.
  * <p>
  * See <a href="https://medium.com/androiddevelopers/ac2622673150">this Medium post</a>
  * <p>
@@ -37,7 +35,9 @@ import java.util.function.Consumer;
  * <p>
  * <a href = "https://developer.android.com/topic/architecture/ui-layer/events#consuming-trigger-updates">
  * consuming-trigger-updates</a>
- * Problem: the UI layer must perform a handshake with the VM for each and every UI update.
+ * <p>
+ * Bottom line: this seems to be the least intrusive and slim solution for something
+ * Google failed to properly implement.
  *
  * @param <T> type of payload
  */
@@ -87,11 +87,6 @@ public final class LiveDataEvent<T> {
 
     /**
      * Process the payload.
-     * <p>
-     * For a {@link MTask#onFinished()} and {@link MTask#onFailure()},
-     * the payload will never be {@code null}.
-     * <p>
-     * For a {@link MTask#onCancelled()}, the payload <strong>may</strong> be {@code null}.
      * <p>
      * The payload is <strong>only</strong> passed to the given Consumer the first time
      * this method is called. Subsequent calls are simply ignored.
