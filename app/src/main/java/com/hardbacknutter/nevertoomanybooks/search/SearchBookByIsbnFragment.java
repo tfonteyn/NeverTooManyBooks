@@ -377,8 +377,10 @@ public class SearchBookByIsbnFragment
         vb.zoomSlider.addOnChangeListener((slider, zoomValue, fromUser) -> {
             if (fromUser) {
                 vm.getCameraConfig().setZoomValue(zoomValue);
-                //noinspection DataFlowIssue
-                scanner.setLinearZoom(zoomValue);
+                if (scanner != null) {
+                    scanner.setLinearZoom(zoomValue);
+                }
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                     slider.performHapticFeedback(
                             HapticFeedbackConstants.SEGMENT_FREQUENT_TICK);
