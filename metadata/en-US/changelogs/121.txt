@@ -1,0 +1,3 @@
+FIXES:
+- #236: cancelling an update potentially caused a crash
+- #239: adjusting the zoom slider before the scanner was started would crash
