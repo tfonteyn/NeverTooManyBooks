@@ -1,3 +1,11 @@
+### 7.15.0
+
+FIXES:
+
+- #236: cancelling an update potentially caused a crash
+- #239: adjusting the zoom slider before the scanner was started would crash
+
+---
 ### 7.14.0
 
 NEW:
@@ -12,7 +20,6 @@ FIXES:
   Note that searches _might_ take a bit longer.
 
 ---
-
 ### 7.13.0
 
 NEW:
@@ -26,7 +33,6 @@ FIXES:
 - #226: original language field was overlapping the title field
 
 ---
-
 ### 7.12.0
 
 NEW:
@@ -42,7 +48,6 @@ FIXES:
 - #225: series number sorting on the book-level
 
 ---
-
 ### 7.11.0
 
 NEW:
@@ -68,7 +73,6 @@ FIXES:
 - #220 Identifiers back button doesn't work as expected
 
 ---
-
 ### 7.10.3
 
 FIXES
@@ -79,7 +83,6 @@ This is an emergency patch for the above issue. If you don't have this issue,
 you can/should skip this update.
 
 ---
-
 ### 7.10.2
 
 FIXES:
@@ -89,7 +92,6 @@ FIXES:
 Most users can skip this update; only relevant for some Android derived OS's.
 
 ---
-
 ### 7.10.1
 
 FIXES
@@ -98,7 +100,6 @@ FIXES
 - #208 author images were not displayed
 
 ---
-
 ### 7.10.0
 
 NEW:
@@ -117,7 +118,6 @@ FIXES:
 - #205: BC imports ignore the "read=0" flag if a "read_end" is set.
 
 ---
-
 ### 7.9.0
 
 NEW:
@@ -131,7 +131,6 @@ NEW:
 - support for directly importing Book-Catalogue _bcbk_ files.
 
 ---
-
 ### 7.8.3
 
 FIXES:
@@ -141,7 +140,6 @@ FIXES:
 - #192 provide an "add all" + "remove all" button for book tags.
 
 ---
-
 ### 7.8.2
 
 FIXES:
@@ -153,7 +151,6 @@ FIXES:
 - #177 reload book-data after renaming authors
 
 ---
-
 ### 7.8.1
 
 FIXES:
@@ -166,7 +163,6 @@ fail with an error mentioning
 Solution: install 7.8.1.
 
 ---
-
 ### 7.8.0
 
 NEW:
@@ -188,7 +184,6 @@ FIXES:
 - renaming Series/Publishers from "Name, The" to "The Name" now works correctly.
 
 ---
-
 ### 7.7.0
 
 NEW:
@@ -204,7 +199,6 @@ FIXES:
 - on-screen keyboard fixes for Android 15+ Edge2Edge usage
 
 ---
-
 ### 7.6.0
 
 NEW:
@@ -220,7 +214,6 @@ FIXES:
 - A lot of smaller issues, see #162, #167, #171, #174, #175, #176, #178, #179, #180
 
 ---
-
 ### 7.5.0
 
 NEW:
@@ -239,7 +232,6 @@ FIXES:
 - #159: CSV import: ratings and prices with a comma decimal separator failed to import.
 
 ---
-
 ### 7.4.1
 
 FIXES:
@@ -247,7 +239,6 @@ FIXES:
 - fix duplicate images during backup
 
 ---
-
 ### 7.4.0
 
 NEW:
@@ -268,7 +259,6 @@ FIXES:
 - performance: optimizations for memory handling and loading images
 
 ---
-
 ### 7.3.2
 
 - OpenLibrary + ISFDB author pseudonym lookups were overwriting instead of enhancing.
@@ -277,7 +267,6 @@ FIXES:
 - #90 / #140: crash after a warm-start (switching between apps)
 
 ---
-
 ### 7.3.0
 
 NEW:
@@ -296,7 +285,6 @@ FIXES:
 - fixes for Android 8..10 devices where merging Authors (etc) would sometimes fail.
 
 ---
-
 ### 7.2.1
 
 FIXES:
@@ -307,7 +295,6 @@ FIXES:
   - Goodreads was missing
 
 ---
-
 ### 7.2.0
 
 NEW:
@@ -326,7 +313,6 @@ FIXES:
 - #120 improvements to scrolling to the correct book
 
 ---
-
 ### 7.1.0
 
 NEW:
@@ -354,7 +340,6 @@ REMOVED:
 - local search from the book-details screen.
 
 ---
-
 ### 7.0.4
 
 FIXES
@@ -362,7 +347,6 @@ FIXES
 - GitHub #115: when filtering on bookshelves and **not** grouping by them, a crash occurred.
 
 ---
-
 ### 7.0.3
 
 FIXES
@@ -372,7 +356,6 @@ FIXES
 - GitHub #110: crash after upgrade when there was an active filter on genre
 
 ---
-
 ### 7.0.2
 
 FIXES
@@ -380,7 +363,6 @@ FIXES
 - GitHub #102
 
 ---
-
 ### 7.0.1
 
 NEW:
@@ -410,7 +392,6 @@ FIXES:
   i.e. we got "Kim" and "Stanley Robinson" instead of "Kim Stanley" and "Robinson".
 
 ---
-
 ### 6.4.0
 
 NEW:
@@ -441,7 +422,6 @@ FIXES:
   buttons offscreen
 
 ---
-
 ### 6.3.1
 
 FIXES
@@ -451,7 +431,6 @@ FIXES
   while the 'new' device does not have secondary storage.
 
 ---
-
 ### 6.3.0
 
 NEW:
@@ -471,7 +450,6 @@ FIXES:
 - Fix a TOC lookup for existing titles when manually editing a TOC list
 
 ---
-
 ### 6.2.0
 
 NEW:
@@ -494,7 +472,6 @@ FIXES:
 - various fixes to toolbar menus on dialogs and BottomSheets
 
 ---
-
 ### 6.1.3
 
 FIXES:
@@ -502,7 +479,6 @@ FIXES:
 - #70 the Contacts app can return 'null' values. Ignore those.
 
 ---
-
 ### 6.1.2
 
 FIXES:
@@ -510,7 +486,6 @@ FIXES:
 - #68 permissions issue when the covers were moved to secondary storage
 
 ---
-
 ### 6.1.1
 
 FIXES:
@@ -519,7 +494,6 @@ FIXES:
 - #65 regression: picking the first-publication date was crashing when using a BottomSheet dialog.
 
 ---
-
 ### 6.1.0
 
 NEW:
@@ -534,7 +508,6 @@ FIXES:
 - Duplicate menu icons on the style picker and filters
 
 ---
-
 ### 6.0.1
 
 - fix #58
@@ -542,7 +515,6 @@ FIXES:
 Most users can skip this version as the issue seems to be specific to a HUAWEI device.
 
 ---
-
 ### 6.0.0
 
 NEW:
@@ -570,20 +542,17 @@ REMOVED:
 - LibraryThing alternative-edition search
 
 ---
-
 ### 5.6.0
 
 - Chinese translation completed.
 
 ---
-
 ### 5.5.1
 
 - fix #43 : doing a multi-version upgrade could result in a crash related to the Styles table. Fixed
   now.
 
 ---
-
 ### 5.5.0
 
 NEW:
@@ -599,26 +568,22 @@ FIXES:
 - LastDodo site: better handling of duplicate authors
 
 ---
-
 ### 5.4.0
 
 - Vietnamese translation completed.
 
 ---
-
 ### 5.3.2
 
 - partial Vietnamese translation activated.
 - added haptic feedback to the ISBN keypad (follows your device haptic settings)
 
 ---
-
 ### 5.3.1
 
 - fixes an issue with the "Set complete" function for both Authors and Series.
 
 ---
-
 ### 5.3.0
 
 NEW:
@@ -637,13 +602,11 @@ FIXES:
 - books without a cover are now displayed properly in list-mode.
 
 ---
-
 ### 5.2.4
 
 - Optimized build of 5.2.3 with better responsiveness during book searches.
 
 ---
-
 ### 5.2.3
 
 NEW:
@@ -666,14 +629,12 @@ REMOVED:
 - predefined style "Compact" has been removed. It's easy to recreate as a user-style if needed.
 
 ---
-
 ### 5.1.1
 
 - fix issue #27
 - sync menu visibility no longer needs a restart
 
 ---
-
 ### 5.1.0
 
 NEW:
@@ -694,7 +655,6 @@ FIXES:
 - user editable URLs are now checked for being syntactically valid.
 
 ---
-
 ### 5.0.0
 
 NEW:
@@ -717,13 +677,11 @@ FIXES:
   the original "The Title" and provide the usual dynamic reordering instead.
 
 ---
-
 ### 4.6.6
 
 - fix #21 regression bug in UI in export
 
 ---
-
 ### 4.6.5
 
 NEW:
@@ -740,20 +698,17 @@ FIXES:
   instead of partially linked as before.
 
 ---
-
 ### 4.6.0
 
 - Cover operations can now be undone (via the cover context menu).
   This can be disabled in preferences if you are low on storage space.
 
 ---
-
 ### 4.5.1
 
 - fix UI bug in export
 
 ---
-
 ### 4.5.0
 
 NEW:
@@ -780,21 +735,18 @@ FIXES:
 - fixed obscure bug the list would not rebuild after editing multiple books.
 
 ---
-
 ### 4.4.2
 
 - fix #17 : Devices like the Pixel 6a which have a `height:expanded/width:compact` screen size
   should now display the filter and style-picker dialogs correctly.
 
 ---
-
 ### 4.4.1
 
 - fix GoogleBooks engine compression support.
 - fix setting a books read-status from the book-list row menus.
 
 ---
-
 ### 4.4.0
 
 NEW:
@@ -834,20 +786,17 @@ REMOVED:
 - The crop option "whole picture" was removed and this behaviour is now always on.
 
 ---
-
 ### 4.3.5
 
 - fix #12; the cover browser is now fullscreen on medium screens.
 
 ---
-
 ### 4.3.4
 
 - fix #10 : when searching by Author/Title a search was quitting at the first "not-found".
   The search will now proceed to the next site.
 
 ---
-
 ### 4.3.3
 
 NEW:
@@ -868,7 +817,6 @@ FIXES:
   [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
 
 ---
-
 ### 4.3.0
 
 NEW:
@@ -884,7 +832,6 @@ FIXES:
   (e.g. multiple authors for a book are now accepted).
 
 ---
-
 ### 4.2.0
 
 NEW:
@@ -898,7 +845,6 @@ FIXES:
 - filter/style dialogs now expand properly on smaller screens.
 
 ---
-
 ### 4.1.2
 
 - fix: enable KBNL and BedeTheque globally making them actually available. When upgrading,
@@ -906,7 +852,6 @@ FIXES:
 - Updated amazon price parsing for better results.
 
 ---
-
 ### 4.1.1
 
 - Added more defensive checks and extra logging to the parsers which should help with
@@ -915,7 +860,6 @@ FIXES:
 - fix for an issue with the debug-report.
 
 ---
-
 ### 4.1.0
 
 NEW:
@@ -931,7 +875,6 @@ FIXES:
 - Importing Calibre library data now correctly maps bookshelves
 
 ---
-
 ### 4.0.0
 
 NEW:
