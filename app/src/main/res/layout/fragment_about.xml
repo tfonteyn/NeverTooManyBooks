@@ -187,6 +187,7 @@
         style="@style/About.DebugVersion"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="a95 d37"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="a95 d37 s 12345678"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

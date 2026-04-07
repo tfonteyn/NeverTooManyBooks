@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,7 +74,8 @@ public class AboutFragment
         //noinspection StringConcatenationMissingWhitespace
         final String code = "a" + packageInfoWrapper.getVersionCode()
                             + " d" + DBHelper.DATABASE_VERSION
-                            + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
+                            + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "")
+                            + ' ' + BuildConfig.GIT_HASH;
         vb.debugVersion.setText(code);
 
         vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(

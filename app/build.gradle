@@ -26,6 +26,10 @@ plugins {
     alias libs.plugins.mannodermaus.junit5
 }
 
+def buildingFromCommitHash = providers.exec {
+    commandLine 'git', 'rev-parse', '--short', 'HEAD'
+}.standardOutput.asText.get().strip()
+
 /*
     $HOME/.gradle/gradle.properties:
         NeverTooManyBooks.properties=$HOME/blah/blah/NeverTooManyBooks.properties
@@ -94,6 +98,8 @@ android {
 
         buildConfigField("String[]", "SUPPORTED_LOCALES",
                 "new String[]{\"" + supportedLocales.join("\",\"") + "\"}")
+
+        buildConfigField("String", "GIT_HASH", "\"${buildingFromCommitHash}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =
