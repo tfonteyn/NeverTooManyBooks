@@ -895,4 +895,5 @@
     <string name="pt_ui_screen_systembars_behavior">Menú superior</string>
     <string name="pt_screen_header_scroll">Ocultar el menú al desplazar</string>
     <string name="pt_screen_header_fixed">Mantener el menú fijo</string>
+    <string name="pt_fetch_hires_images">Obtener imágenes de alta resolución</string>
 </resources>

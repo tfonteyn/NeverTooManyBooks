@@ -892,4 +892,5 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_ui_screen_systembars_behavior">Άνω μενού</string>
     <string name="pt_screen_header_scroll">Να κρύβεται το μενού κατά την κύλιση</string>
     <string name="pt_screen_header_fixed">Διατήρηση του μενού στη θέση του</string>
+    <string name="pt_fetch_hires_images">Λήψη εικόνων υψηλής ανάλυσης</string>
 </resources>

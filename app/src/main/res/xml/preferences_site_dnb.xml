@@ -41,14 +41,13 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_fetch_author_info" />
 
-        <!-- Disabled, see DnbSslContextFactory. -->
-        <!--        <SwitchPreference-->
-        <!--            android:defaultValue="false"-->
-        <!--            android:icon="@drawable/image_24px"-->
-        <!--            android:key="dnb.covers.from.portal"-->
-        <!--            android:summaryOff="@string/no"-->
-        <!--            android:summaryOn="@string/yes"-->
-        <!--            android:title="Use portal/hires" />-->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/image_24px"
+            android:key="dnb.covers.from.portal"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_fetch_hires_images" />
 
     </PreferenceCategory>
 

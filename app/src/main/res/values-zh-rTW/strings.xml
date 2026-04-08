@@ -887,4 +887,5 @@
     <string name="pt_ui_screen_systembars_behavior">頂部選單</string>
     <string name="pt_screen_header_scroll">讓選單隨螢幕其他部分一起捲動</string>
     <string name="pt_screen_header_fixed">保持選單固定顯示</string>
+    <string name="pt_fetch_hires_images">獲取高解析度圖像</string>
 </resources>

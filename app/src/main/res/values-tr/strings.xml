@@ -892,4 +892,5 @@
     <string name="pt_ui_screen_systembars_behavior">Üst menü</string>
     <string name="pt_screen_header_scroll">Kaydırırken menüyü gizle</string>
     <string name="pt_screen_header_fixed">Menüyü sabitle</string>
+    <string name="pt_fetch_hires_images">Yüksek çözünürlüklü resimleri getir</string>
 </resources>

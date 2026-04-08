@@ -1732,6 +1732,9 @@
     <string name="pe_thumbnails_cache_resized_each_time">Resize images each time they are needed (uses less storage, scrolling will be slower)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cache resized images (scrolling will be faster, uses more storage)</string>
 
+    <!-- SwitchPreference title: some sites offer standard or high resolution cover images. -->
+    <string name="pt_fetch_hires_images">Fetch high resolution images</string>
+
     <!-- SwitchPreference title -->
     <string name="pt_search_reformat_format">Standardize “book format” names</string>
     <!-- SwitchPreference title -->

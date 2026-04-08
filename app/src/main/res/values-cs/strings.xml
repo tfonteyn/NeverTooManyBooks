@@ -913,4 +913,5 @@
     <string name="pt_ui_screen_systembars_behavior">Horní menu</string>
     <string name="pt_screen_header_scroll">Při posouvání nechat menu odsunout</string>
     <string name="pt_screen_header_fixed">Nechat menu připnuté</string>
+    <string name="pt_fetch_hires_images">Stahovat obrázky ve vysokém rozlišení</string>
 </resources>

@@ -889,4 +889,5 @@
     <string name="pt_ui_screen_systembars_behavior">Oberes Menü</string>
     <string name="pt_screen_header_scroll">Menü beim Scrollen ausblenden</string>
     <string name="pt_screen_header_fixed">Menü oben fixieren</string>
+    <string name="pt_fetch_hires_images">Bilder in hoher Auflösung abrufen</string>
 </resources>

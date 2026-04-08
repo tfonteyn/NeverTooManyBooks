@@ -911,4 +911,5 @@
     <string name="pt_ui_screen_systembars_behavior">Верхнее меню</string>
     <string name="pt_screen_header_fixed">Оставить меню закрепленным</string>
     <string name="pt_screen_header_scroll">Подвинуть меню при прокрутке</string>
+    <string name="pt_fetch_hires_images">Загружать изображения высокого разрешения</string>
 </resources>

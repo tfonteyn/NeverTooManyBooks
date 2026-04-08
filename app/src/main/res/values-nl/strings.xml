@@ -889,4 +889,5 @@
     <string name="pt_ui_screen_systembars_behavior">Hoofdmenu</string>
     <string name="pt_screen_header_scroll">Menu verbergen tijdens scrollen</string>
     <string name="pt_screen_header_fixed">Menu vastzetten bovenaan</string>
+    <string name="pt_fetch_hires_images">Afbeeldingen in hoge resolutie ophalen</string>
 </resources>

@@ -513,24 +513,18 @@ public class DnbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            // Disabled, see DnbSslContextFactory.
-            // As we need a custom keystore/certs, we can't use the same
-            // Http client to talk to the portal sit which uses
-            // different certs.
-            // URGENT: Review on 1-April-2026 (haha..) to see if their new
-            //  certs are still broken.
-//                if (ServiceLocator.getInstance().getPrefs().getBoolean(
-//                        PK_COVERS_FROM_PORTAL, false)) {
-//                    // TRY the hires/portal link first
-//                    final Optional<String> fileSpec =
-//                            saveImage(context, HIRES_IMAGE_SEARCH + book.getIsbn(), null,
-//                                      book.getIsbn(), 0, null);
-//                    if (fileSpec.isPresent()) {
-//                        CoverFileSpecArray.setFileSpec(book, 0, fileSpec.get());
-//                        // success, we're done here
-//                        return;
-//                    }
-//                }
+            if (ServiceLocator.getInstance().getSharedPreferences()
+                              .getBoolean(PK_COVERS_FROM_PORTAL, false)) {
+                final String url = HIRES_IMAGE_SEARCH + book.getIsbn();
+                // No referer
+                final Optional<String> fileSpec = saveImage(
+                        context, url, null, book.getIsbn(), 0, null);
+                if (fileSpec.isPresent()) {
+                    CoverFileSpecArray.setFileSpec(book, 0, fileSpec.get());
+                    // success, we're done here
+                    return;
+                }
+            }
             // Standard parsing, also used as fallback if the hires/portal call fails.
             parseCover(context, document, book.getIsbn(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));

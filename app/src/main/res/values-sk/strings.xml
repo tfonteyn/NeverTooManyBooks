@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -900,4 +902,5 @@
     <string name="pt_ui_screen_systembars_behavior">Horné menu</string>
     <string name="pt_screen_header_scroll">Pri posúvaní nechať menu odsunúť</string>
     <string name="pt_screen_header_fixed">Nechať menu pripnuté</string>
+    <string name="pt_fetch_hires_images">Sťahovať obrázky vo vysokom rozlíšení</string>
 </resources>
