@@ -179,8 +179,7 @@ public class AuthorDaoImpl
                                        @NonNull final Locale locale) {
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                textNormalizer.orderByColumn(author.getFamilyName(), locale),
-                textNormalizer.orderByColumn(author.getGivenNames(), locale)})) {
+                author.getFamilyName(), author.getGivenNames()})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Author(rowData.getLong(DBKey.PK_ID), rowData));
@@ -1043,8 +1042,8 @@ public class AuthorDaoImpl
          */
         static final String FIND_BY_NAME =
                 SELECT_ALL
-                + _WHERE_ + DBKey.AUTHOR.FAMILY_NAME_OB + "=?" + _COLLATION
-                + _AND_ + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?" + _COLLATION;
+                + _WHERE_ + DBKey.AUTHOR.FAMILY_NAME + "=?" + _COLLATION
+                + _AND_ + DBKey.AUTHOR.GIVEN_NAMES + "=?" + _COLLATION;
 
         /**
          * All {@link Author}s for a {@link Book}.

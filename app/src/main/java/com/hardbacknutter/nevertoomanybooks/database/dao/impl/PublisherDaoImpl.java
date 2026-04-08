@@ -92,13 +92,11 @@ public class PublisherDaoImpl
                                           @NonNull final Locale locale) {
 
         final String name = publisher.getName();
-        final String obName = new ReorderHelper(LocaleListUtils.asList(
+        final String reorderedName = new ReorderHelper(LocaleListUtils.asList(
                 context.getResources().getConfiguration().getLocales()))
-                .reorderForSorting(context, name, locale);
+                .reorder(context, name, locale);
 
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                textNormalizer.orderByColumn(name, locale),
-                textNormalizer.orderByColumn(obName, locale)})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name, reorderedName})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Publisher(rowData.getLong(DBKey.PK_ID), rowData));
@@ -562,12 +560,12 @@ public class PublisherDaoImpl
         /**
          * Find a {@link Publisher} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches PUBLISHER_NAME_OB on both original and (potentially) reordered name.
+         * Searches for a match of original OR reordered name.
          */
         static final String FIND_BY_NAME =
                 SELECT_ALL
-                + _WHERE_ + DBKey.PUBLISHER.NAME_OB + "=?" + _COLLATION
-                + _OR_ + DBKey.PUBLISHER.NAME_OB + "=?" + _COLLATION;
+                + _WHERE_ + DBKey.PUBLISHER.NAME + "=?" + _COLLATION
+                + _OR_ + DBKey.PUBLISHER.NAME + "=?" + _COLLATION;
 
 
         /**

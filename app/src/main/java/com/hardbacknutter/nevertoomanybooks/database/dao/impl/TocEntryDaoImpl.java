@@ -185,16 +185,14 @@ public class TocEntryDaoImpl
                                          @NonNull final Locale locale) {
 
         final String title = tocEntry.getTitle();
-        final String obTitle = new ReorderHelper(LocaleListUtils.asList(
+        final String reorderedTitle = new ReorderHelper(LocaleListUtils.asList(
                 context.getResources().getConfiguration().getLocales()))
-                .reorderForSorting(context, title, locale);
+                .reorder(context, title, locale);
 
         final String searchDateIso = tocEntry.getFirstPublicationDate().getIsoString();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_AUTHOR_AND_TITLE, new String[]{
-                String.valueOf(tocEntry.getPrimaryAuthor().getId()),
-                textNormalizer.orderByColumn(title, locale),
-                textNormalizer.orderByColumn(obTitle, locale)})) {
+                String.valueOf(tocEntry.getPrimaryAuthor().getId()), title, reorderedTitle})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final String fpd = rowData.getString(DBKey.FIRST_PUBLICATION_DATE);
@@ -627,7 +625,7 @@ public class TocEntryDaoImpl
         /**
          * Find a {@link TocEntry} by name <strong>for a specific {@link Author}</strong>
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches TITLE_OB on both original and (potentially) reordered title.
+         * Searches for a match of original OR reordered title.
          * <p>
          * The ORDER BY ensures that when we do a lookup, the oldest date is used by preference
          * and empty values are sorted LAST.
@@ -637,8 +635,8 @@ public class TocEntryDaoImpl
                 + _FROM_
                 + TBL_TOC_ENTRIES.startJoin(TBL_AUTHORS)
                 + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_AUTHOR) + "=?"
-                + _AND_ + '(' + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=? " + _COLLATION
-                + _OR_ + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=?" + _COLLATION + ')'
+                + _AND_ + '(' + TBL_TOC_ENTRIES.dot(DBKey.TITLE) + "=? " + _COLLATION
+                + _OR_ + TBL_TOC_ENTRIES.dot(DBKey.TITLE) + "=?" + _COLLATION + ')'
                 + _ORDER_BY_ + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION_DATE);
 
         /**

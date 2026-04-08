@@ -94,13 +94,11 @@ public class SeriesDaoImpl
                                        @NonNull final Locale locale) {
 
         final String title = series.getTitle();
-        final String obTitle = new ReorderHelper(LocaleListUtils.asList(
+        final String reorderedTitle = new ReorderHelper(LocaleListUtils.asList(
                 context.getResources().getConfiguration().getLocales()))
-                .reorderForSorting(context, title, locale);
+                .reorder(context, title, locale);
 
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
-                textNormalizer.orderByColumn(title, locale),
-                textNormalizer.orderByColumn(obTitle, locale)})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{title, reorderedTitle})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Series(rowData.getLong(DBKey.PK_ID), rowData));
@@ -630,12 +628,12 @@ public class SeriesDaoImpl
         /**
          * Find a {@link Series} by Title.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Searches SERIES_TITLE_OB on both original and (potentially) reordered title.
+         * Searches for a match of original OR reordered title.
          */
         static final String FIND_BY_NAME =
                 SELECT_ALL
-                + _WHERE_ + DBKey.SERIES.TITLE_OB + "=?" + _COLLATION
-                + _OR_ + DBKey.SERIES.TITLE_OB + "=?" + _COLLATION;
+                + _WHERE_ + DBKey.SERIES.TITLE + "=?" + _COLLATION
+                + _OR_ + DBKey.SERIES.TITLE + "=?" + _COLLATION;
 
         /**
          * All {@link Series}s for a {@link Book}.
