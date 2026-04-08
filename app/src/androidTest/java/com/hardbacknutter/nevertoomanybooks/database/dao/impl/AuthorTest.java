@@ -358,4 +358,25 @@ class AuthorTest
         assertEquals(familyName, author.getFamilyName());
         assertEquals(dashAbsent, author.getGivenNames());
     }
+
+    @Test
+    void pruneWithDash2() {
+        final Locale bookLocale = Locale.US;
+
+        final String familyName = "Pelt";
+        final String dashAbsent = "JeanMarie";
+        final String dashPresent = "Jean-Marie";
+
+        final List<Author> authorList = new ArrayList<>();
+        authorList.add(new Author(familyName, dashAbsent));
+        authorList.add(new Author(familyName, dashPresent));
+
+        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
+        assertTrue(modified);
+
+        assertEquals(1, authorList.size());
+        final Author author = authorList.get(0);
+        assertEquals(familyName, author.getFamilyName());
+        assertEquals(dashAbsent, author.getGivenNames());
+    }
 }

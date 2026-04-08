@@ -38,6 +38,21 @@ class TextNormalizerTest {
     }
 
     @Test
+    void other() {
+        final Locale locale = new Locale("en", "GB");
+
+        String source;
+
+        source = "JeanMarie";
+        assertEquals("JeanMarie", textNormalizer.normalize(source));
+        assertEquals("jeanmarie", textNormalizer.orderByColumn(source, locale));
+
+        source = "Jean-Marie";
+        assertEquals("Jean Marie", textNormalizer.normalize(source));
+        assertEquals("jeanmarie", textNormalizer.orderByColumn(source, locale));
+    }
+
+    @Test
     void latinFrench() {
 
         final Locale locale = new Locale("fr", "FR");
