@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.X509TrustManager;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -74,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -199,8 +195,6 @@ public class DnbSearchEngine
     private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
-    @NonNull
-    private final X509TrustManager x509TrustManager;
     private final AuthorResolverHelper authorResolverHelper;
 
     /**
@@ -218,15 +212,6 @@ public class DnbSearchEngine
     public DnbSearchEngine(@NonNull final Context appContext,
                            @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-
-        try {
-            // this is a kludge... see DnbSslContextFactory why
-            x509TrustManager = DnbSslContextFactory.getTmf(appContext);
-            setSslContext(DnbSslContextFactory.getSslContext(appContext));
-        } catch (@NonNull final CertificateException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new IllegalStateException("The dnb certificates have likely become invalid", e);
-        }
 
         authorResolverHelper = new AuthorResolverHelper();
     }
@@ -271,14 +256,6 @@ public class DnbSearchEngine
                 .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
                 .addInterceptor(new ThrottlingInterceptor(throttler))
                 .addInterceptor(new RateLimitInterceptor(throttler, enableLog));
-
-        // this is a kludge... see DnbSslContextFactory why
-        final SSLContext sslContext = getSslContext();
-        if (sslContext != null) {
-            final SniSslSocketFactory sniSslSocketFactory = new SniSslSocketFactory(
-                    sslContext.getSocketFactory());
-            builder.sslSocketFactory(sniSslSocketFactory, x509TrustManager);
-        }
 
         if (enableLog) {
             // use the app context, it's the non-translatable name used as a log tag
