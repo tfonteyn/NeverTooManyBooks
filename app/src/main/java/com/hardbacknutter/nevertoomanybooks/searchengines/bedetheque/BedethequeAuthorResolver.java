@@ -252,7 +252,8 @@ public class BedethequeAuthorResolver
      * @return [0A-Z] of the first character
      */
     private char firstChar(@NonNull final CharSequence name) {
-        final String normalized = textNormalizer.normalize(String.valueOf(name.charAt(0)));
+        // transliterate is 'enough'
+        final String normalized = textNormalizer.transliterate(String.valueOf(name.charAt(0)));
         if (normalized.isEmpty()) {
             return '0';
         }

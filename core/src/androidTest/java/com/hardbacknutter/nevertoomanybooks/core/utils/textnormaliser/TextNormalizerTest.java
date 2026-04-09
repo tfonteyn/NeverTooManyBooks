@@ -99,6 +99,15 @@ class TextNormalizerTest {
         source = "Jäger, (größte)";
         assertEquals("Jager grosste", textNormalizer.normalize(source));
         assertEquals("jagergrosste", textNormalizer.orderByColumn(source, locale));
+
+        source = "Jan Groß";
+        assertEquals("Jan Gross", textNormalizer.normalize(source));
+        assertEquals("jangross", textNormalizer.orderByColumn(source, locale));
+
+        source = "Jan Gross";
+        assertEquals("Jan Gross", textNormalizer.normalize(source));
+        assertEquals("jangross", textNormalizer.orderByColumn(source, locale));
+
     }
 
     @Test

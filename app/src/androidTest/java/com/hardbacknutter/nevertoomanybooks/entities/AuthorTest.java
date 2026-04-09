@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.os.Parcel;
 
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
@@ -70,14 +68,5 @@ class AuthorTest
         assertEquals(pAuthor.isComplete(), author.isComplete());
         assertEquals(pAuthor.getRole(), author.getRole());
         assertEquals(pAuthor.getRealAuthor(), author.getRealAuthor());
-    }
-
-    @Test
-    void norm() {
-        final Locale bookLocale = Locale.GERMANY;
-        final String n1 = textNormalizer.normalize("Jan Groß").toLowerCase(bookLocale);
-        final String n2 = textNormalizer.normalize("Jan Gross").toLowerCase(bookLocale);
-
-        assertEquals(n1, n2);
     }
 }

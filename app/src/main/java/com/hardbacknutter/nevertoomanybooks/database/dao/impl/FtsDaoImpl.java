@@ -114,7 +114,7 @@ public class FtsDaoImpl
         if (text == null || text.isBlank()) {
             stmt.bindNull(position);
         } else {
-            // Simple normalize, we want to remove any '-'
+            // Simple normalize, this is the database insert
             stmt.bindString(position, textNormalizer.normalize(text));
         }
     }
@@ -125,7 +125,7 @@ public class FtsDaoImpl
         if (list.isEmpty()) {
             stmt.bindNull(position);
         } else {
-            // Simple normalize, we want to remove any '-'
+            // Simple normalize, this is the database insert
             final String normalized = list
                     .stream()
                     .map(textNormalizer::normalize)

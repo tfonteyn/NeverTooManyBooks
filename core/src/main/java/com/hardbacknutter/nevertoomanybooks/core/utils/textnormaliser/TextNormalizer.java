@@ -57,11 +57,34 @@ import java.util.Locale;
 public interface TextNormalizer {
 
     /**
+     * Transliterate the given string.
+     *
+     * @param text to normalise
+     *
+     * @return normalized text
+     */
+    @NonNull
+    String transliterate(@NonNull CharSequence text);
+
+    /**
+     * Normalise the given string and remove any non-alpha/digit/space characters.
+     * <p>
+     * The case is preserved.
+     * White-space is condensed to a single-space and <strong>KEPT</strong>
+     *
+     * @param text to normalise
+     *
+     * @return normalized text
+     */
+    @NonNull
+    String normalize(@NonNull CharSequence text);
+
+    /**
      * Prepare a string to be inserted in the 'Order By' column.
      * e.g. Author names, the Title of a book...
      * <p>
      * The result is all lowercase.
-     * Spaces are <strong>REMOVED</strong>
+     * White-space is <strong>REMOVED</strong>
      *
      * @param text   to normalise
      * @param locale Current Locale
@@ -87,17 +110,4 @@ public interface TextNormalizer {
      */
     @NonNull
     String ftsNormalise(@NonNull CharSequence text);
-
-    /**
-     * Normalise the given string and remove any non-alpha/digit/space characters.
-     * <p>
-     * The case is preserved.
-     * Spaces are <strong>KEPT</strong>
-     *
-     * @param text to normalise
-     *
-     * @return normalized text
-     */
-    @NonNull
-    String normalize(@NonNull CharSequence text);
 }

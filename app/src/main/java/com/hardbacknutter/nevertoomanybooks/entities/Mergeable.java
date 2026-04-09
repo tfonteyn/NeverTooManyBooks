@@ -54,12 +54,16 @@ public interface Mergeable {
     List<String> getNameFields();
 
     /**
-     * Convenience method to <strong>diacritics-NOT-sensitive</strong> compare two Merge-ables.
-     * Always <strong>case-sensitive</strong>.
+     * Convenience method to compare two Merge-ables.
+     * <ol>
+     *     <li>diacritics are normalised</li>
+     *     <li>white-space is condensed to single-space</li>
+     *     <li>case-sensitive</li>
+     * </ol>
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if it's the same name (except for diacritics)
+     * @return {@code true} if it's the same name
      */
     default boolean isSameName(@Nullable final Mergeable that) {
         if (that == null) {

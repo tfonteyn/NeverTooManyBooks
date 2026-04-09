@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
  *
  * @noinspection CheckStyle
  */
-public class TextNormalizerApi26
+class TextNormalizerApi26
         implements TextNormalizer {
 
     /** Remove Unicode combining marks (accents, diacritics). */
@@ -59,18 +59,6 @@ public class TextNormalizerApi26
 
     /** Manual replacements for characters that don’t decompose into ASCII. */
     private static final Map<Character, String> EXTRA_REPLACEMENTS = new HashMap<>();
-
-    /** Replace repeated/special whitespace characters with a single space. */
-    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
-
-    /** KEEP alpha/digit. REMOVE SPACES */
-    private static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
-
-    /** KEEP alpha/digit. KEEP white-space and '-' */
-    private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d\\s-]");
-
-    /** KEEP alpha/digit. KEEP single/actual spaces. */
-    private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
     static {
         // German (de)
@@ -119,29 +107,44 @@ public class TextNormalizerApi26
         // No general transliteration here — keep or handle separately if needed
     }
 
+    @Override
     @NonNull
-    private static String transliterate(@NonNull final CharSequence text) {
-        // Step 1: Decompose accents (NFD)
+    public String transliterate(@NonNull final CharSequence text) {
+        // Decompose accents (NFD)
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
-        // Step 2: Remove combining diacritics (accents)
-        normalized = DIACRITICS_PATTERN.matcher(normalized).replaceAll("");
-        // Step 3: Replace extra characters that don't decompose
-        final StringBuilder builder = new StringBuilder(normalized.length());
+        // Remove combining diacritics (accents)
+        normalized = DIACRITICS_PATTERN.matcher(normalized).replaceAll(TNP.REMOVE);
+        // Replace extra characters that don't decompose
+        final StringBuilder result = new StringBuilder(normalized.length());
         for (int i = 0; i < normalized.length(); i++) {
             final char c = normalized.charAt(i);
             final String replacement = EXTRA_REPLACEMENTS.get(c);
-            builder.append(replacement != null ? replacement : c);
+            result.append(replacement != null ? replacement : c);
         }
-        return builder.toString();
+        return result.toString();
+    }
+
+    @Override
+    @NonNull
+    public String normalize(@NonNull final CharSequence text) {
+        String result;
+        result = transliterate(text);
+        // REPLACE unwanted characters with a space; spaces are KEPT
+        result = TNP.NORMALIZE_PATTERN.matcher(result).replaceAll(TNP.SINGLE_SPACE);
+        // Condense all special or duplicate whitespace into single spaces
+        result = TNP.WHITESPACE.matcher(result).replaceAll(TNP.SINGLE_SPACE);
+
+        return result.strip();
     }
 
     @Override
     @NonNull
     public String orderByColumn(@NonNull final CharSequence text,
                                 @NonNull final Locale locale) {
-        String result = transliterate(text);
+        String result;
+        result = transliterate(text);
         // remove unwanted characters; spaces are REMOVED
-        result = ORDERBY_PATTERN.matcher(result).replaceAll("");
+        result = TNP.ORDERBY_PATTERN.matcher(result).replaceAll(TNP.REMOVE);
 
         return result.toLowerCase(locale);
     }
@@ -149,23 +152,12 @@ public class TextNormalizerApi26
     @Override
     @NonNull
     public String ftsNormalise(@NonNull final CharSequence text) {
-        String result = transliterate(text);
+        String result;
+        result = transliterate(text);
         // REMOVE unwanted characters; whitespace and '-'  are KEPT
-        result = FTS_PATTERN.matcher(result).replaceAll("");
+        result = TNP.FTS_PATTERN.matcher(result).replaceAll(TNP.REMOVE);
         // Condense all special or duplicate whitespace into single spaces
-        result = WHITESPACE.matcher(result).replaceAll(" ");
-
-        return result.strip();
-    }
-
-    @Override
-    @NonNull
-    public String normalize(@NonNull final CharSequence text) {
-        String result = transliterate(text);
-        // REPLACE unwanted characters with a space; spaces are KEPT
-        result = NORMALIZE_PATTERN.matcher(result).replaceAll(" ");
-        // Condense all special or duplicate whitespace into single spaces
-        result = WHITESPACE.matcher(result).replaceAll(" ");
+        result = TNP.WHITESPACE.matcher(result).replaceAll(TNP.SINGLE_SPACE);
 
         return result.strip();
     }
