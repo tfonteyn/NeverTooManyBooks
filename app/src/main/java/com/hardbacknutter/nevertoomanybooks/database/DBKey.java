@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 
 /**
  * Keys used as domain names / Bundle keys.
@@ -139,6 +140,11 @@ public final class DBKey {
     /** A rating goes from 1 to 5 stars, in 0.5 increments; 0 == not set. */
     public static final String RATING = "rating";
     public static final String READ__BOOL = "read";
+    /**
+     * A JSON object containing pages or percentage.
+     *
+     * @see ReadingProgress
+     */
     public static final String READ_PROGRESS = "read_progress";
     public static final String READ_START__DATE = "read_start";
     public static final String READ_END__DATE = "read_end";
