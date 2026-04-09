@@ -450,6 +450,9 @@ public class CalibreContentServerWriter
                     changes.put(cf.getCalibreKey(), localBook.getString(cf.getDbKey()));
                     break;
                 }
+                case CalibreCustomField.TYPE_COMPOSITE:
+                    // These are never written as they are a calculated field in Calibre.
+                    break;
                 default:
                     throw new IllegalArgumentException(cf.getType());
             }

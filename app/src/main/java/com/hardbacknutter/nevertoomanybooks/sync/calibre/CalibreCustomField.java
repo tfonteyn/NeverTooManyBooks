@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,9 +59,11 @@ public class CalibreCustomField
         }
     };
 
+    // TODO: transform to enum. This does mean changing the database table format.
     public static final String TYPE_BOOL = "bool";
-    public static final String TYPE_DATETIME = "datetime";
     public static final String TYPE_COMMENTS = "comments";
+    public static final String TYPE_COMPOSITE = "composite";
+    public static final String TYPE_DATETIME = "datetime";
     public static final String TYPE_TEXT = "text";
 
     static final String METADATA_DATATYPE = "datatype";
@@ -169,7 +171,7 @@ public class CalibreCustomField
                + '}';
     }
 
-    @StringDef({TYPE_BOOL, TYPE_DATETIME, TYPE_TEXT, TYPE_COMMENTS})
+    @StringDef({TYPE_BOOL, TYPE_COMMENTS, TYPE_COMPOSITE, TYPE_DATETIME, TYPE_TEXT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
 
