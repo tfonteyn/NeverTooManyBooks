@@ -1,3 +1,5 @@
 NEW:
 - #169: dd support for high resolution covers from DNB (Enable in the site settings to use)
 - Added support for the new Calibre "pages" and "#read_progress" fields.
+- The Websites settings list now provides direct access to individual
+  site settings using a row menu button.
