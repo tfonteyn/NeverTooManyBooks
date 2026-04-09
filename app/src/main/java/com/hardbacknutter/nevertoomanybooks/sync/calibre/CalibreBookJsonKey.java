@@ -30,13 +30,14 @@ final class CalibreBookJsonKey {
     static final String ID = "application_id";
     static final String UUID = "uuid";
     static final String TITLE = "title";
-    static final String DESCRIPTION = "comments";
+    static final String COMMENTS = "comments";
     static final String LAST_MODIFIED = "last_modified";
     static final String RATING = "rating";
 
     static final String SERIES = "series";
     static final String SERIES_INDEX = "series_index";
 
+    /** A single publisher name. */
     static final String PUBLISHER = "publisher";
 
     static final String TAGS_ARRAY = "tags";
@@ -44,11 +45,13 @@ final class CalibreBookJsonKey {
     static final String LANGUAGES_ARRAY = "languages";
     static final String AUTHOR_ARRAY = "authors";
 
+    /** Not an array, but an object with key:value pairs. */
     static final String IDENTIFIERS = "identifiers";
+
     /** The URL when reading; Base64 encoded image when writing. */
     static final String COVER = "cover";
 
-    static final String DATE_PUBLISHED = "pubdate";
+    static final String PUBLICATION_DATE = "pubdate";
     static final String EBOOK_FORMAT = "main_format";
 
     /**
