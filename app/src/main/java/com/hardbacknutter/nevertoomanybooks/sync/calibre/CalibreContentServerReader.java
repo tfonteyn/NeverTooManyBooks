@@ -520,6 +520,10 @@ public class CalibreContentServerReader
             book.setDescription(calibreBook.getString(CalibreBookJsonKey.COMMENTS));
         }
 
+        if (!calibreBook.isNull(CalibreBookJsonKey.PAGES)) {
+            book.setPages(calibreBook.getInt(CalibreBookJsonKey.PAGES));
+        }
+
         if (!calibreBook.isNull(CalibreBookJsonKey.RATING)) {
             @IntRange(from = 0, to = 5)
             final int rating = calibreBook.getInt(CalibreBookJsonKey.RATING);

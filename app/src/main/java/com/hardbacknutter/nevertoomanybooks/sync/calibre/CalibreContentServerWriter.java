@@ -292,7 +292,6 @@ public class CalibreContentServerWriter
             throws JSONException, IOException {
 
         // Empty fields MUST be included to make the server remove the data.
-
         final JSONObject changes = new JSONObject();
         changes.put(CalibreBookJsonKey.TITLE,
                     localBook.getTitle());
@@ -324,6 +323,8 @@ public class CalibreContentServerWriter
         changes.put(CalibreBookJsonKey.IDENTIFIERS,
                     collectIdentifiers(calibreBookIdentifiers, localBook));
 
+        collectPages(localBook, changes);
+
         collectCustomFields(library, localBook, changes);
 
         if (doCovers) {
@@ -331,6 +332,21 @@ public class CalibreContentServerWriter
         }
 
         return changes;
+    }
+
+    private void collectPages(@NonNull final Book localBook,
+                              @NonNull final JSONObject changes) {
+        // Calibre only supports an 'int' typed pages, but we use a string.
+        // Hence, only add if we can convert to int.
+        final String pagesStr = localBook.getString(DBKey.PAGES, null);
+        if (pagesStr != null && !pagesStr.isEmpty()) {
+            try {
+                final int pages = Integer.parseInt(pagesStr);
+                changes.put(CalibreBookJsonKey.PAGES, pages);
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
+            }
+        }
     }
 
     @NonNull

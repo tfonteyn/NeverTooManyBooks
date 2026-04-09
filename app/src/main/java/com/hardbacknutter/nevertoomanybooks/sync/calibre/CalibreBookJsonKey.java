@@ -25,54 +25,92 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
  */
 final class CalibreBookJsonKey {
 
-    static final String USER_METADATA = "user_metadata";
-
-    static final String ID = "application_id";
-    static final String UUID = "uuid";
-    static final String TITLE = "title";
-    static final String COMMENTS = "comments";
-    static final String LAST_MODIFIED = "last_modified";
-    static final String RATING = "rating";
-
-    static final String SERIES = "series";
-    static final String SERIES_INDEX = "series_index";
-
-    /** A single publisher name. */
-    static final String PUBLISHER = "publisher";
-
-    static final String TAGS_ARRAY = "tags";
-
-    static final String LANGUAGES_ARRAY = "languages";
     static final String AUTHOR_ARRAY = "authors";
-
-    /** Not an array, but an object with key:value pairs. */
-    static final String IDENTIFIERS = "identifiers";
-
+    static final String COMMENTS = "comments";
     /** The URL when reading; Base64 encoded image when writing. */
     static final String COVER = "cover";
-
-    static final String PUBLICATION_DATE = "pubdate";
     static final String EBOOK_FORMAT = "main_format";
+    static final String ID = "application_id";
+    /** Not an array, but an object with key:value pairs. */
+    static final String IDENTIFIERS = "identifiers";
+    static final String LANGUAGES_ARRAY = "languages";
+    static final String LAST_MODIFIED = "last_modified";
+    /** {@code int}. */
+    static final String PAGES = "pages";
+    static final String PUBLICATION_DATE = "pubdate";
+    /** A single publisher name. */
+    static final String PUBLISHER = "publisher";
+    static final String RATING = "rating";
+    static final String SERIES = "series";
+    static final String SERIES_INDEX = "series_index";
+    static final String TAGS_ARRAY = "tags";
+    static final String TITLE = "title";
+    static final String USER_METADATA = "user_metadata";
+    static final String UUID = "uuid";
 
     /**
      * <pre>
      * {
-     *   "link_maps": {},
-     *   "thumbnail": "/get/thumb/1/calibre-test",
-     *   "pubdate": "2009-08-14T23:00:00+00:00",
-     *   "identifiers": {
-     *     "isbn": "9781101061275"
-     *   },
-     *   "user_categories": {},
-     *   "application_id": 1,
-     *   "authors": [
-     *     "Alastair Reynolds"
-     *   ],
-     *   "uuid": "8c6a22d4-d6bd-430e-9ae0-fa13d442e823",
+     *   "title": "On the Steel Breeze",
+     *   "publisher": "Gollancz",
+     *   "pages": 0,
+     *   "pubdate": "2022-01-15T00:00:00+00:00",
      *   "author_sort_map": {
      *     "Alastair Reynolds": "Reynolds, Alastair"
      *   },
-     *   "publisher": "Gollancz",
+     *   "comments": "blah blah",
+     *   "user_metadata": {
+     *     "#read_progress": {
+     *       "table": "custom_column_1",
+     *       "column": "value",
+     *       "datatype": "composite",
+     *       "is_multiple": null,
+     *       "kind": "field",
+     *       "name": "Read progress",
+     *       "search_terms": [
+     *         "#read_progress"
+     *       ],
+     *       "label": "read_progress",
+     *       "colnum": 1,
+     *       "display": {
+     *         "composite_template": "{id:reading_progress()}",
+     *         "composite_sort": "number",
+     *         "make_category": false,
+     *         "contains_html": false,
+     *         "composite_show_in_comments": false,
+     *         "composite_store_template_value_in_opf": false,
+     *         "use_decorations": false,
+     *         "description": "To customize this, read the help for the reading_progress() template function in the calibre User Manual",
+     *         "web_search_template": ""
+     *       },
+     *       "is_custom": true,
+     *       "is_category": false,
+     *       "link_column": "value",
+     *       "category_sort": "value",
+     *       "is_csp": false,
+     *       "is_editable": true,
+     *       "rec_index": 23,
+     *       "#value#": "4%",
+     *       "is_multiple2": {}
+     *     }
+     *   },
+     *   "user_categories": {},
+     *   "thumbnail": "/get/thumb/2/calibre-test",
+     *   "last_modified": "2026-04-09T14:25:26.129803+00:00",
+     *   "link_maps": {},
+     *   "uuid": "590901b3-7ace-41ab-9217-3497d4787d07",
+     *   "authors": [
+     *     "Alastair Reynolds"
+     *   ],
+     *   "languages": [
+     *     "eng"
+     *   ],
+     *   "series": "Poseidon's Children",
+     *   "rating": 2.0,
+     *   "title_sort": "On the Steel Breeze",
+     *   "author_sort": "Reynolds, Alastair",
+     *   "application_id": 2,
+     *   "series_index": 2.0,
      *   "tags": [
      *     "Action & Adventure",
      *     "Fiction",
@@ -80,40 +118,37 @@ final class CalibreBookJsonKey {
      *     "Science Fiction",
      *     "Space Opera"
      *   ],
-     *   "last_modified": "2025-01-08T22:53:56+00:00",
-     *   "user_metadata": {},
-     *   "rating": 5,
-     *   "author_sort": "Reynolds, Alastair",
-     *   "languages": [
-     *     "eng"
-     *   ],
-     *   "comments": "blah blah...",
-     *   "timestamp": "2025-01-08T22:53:56+00:00",
-     *   "series_index": 1,
-     *   "title": "House of Suns",
-     *   "series": "House of Suns",
-     *   "title_sort": "House of Suns",
-     *   "cover": "/get/cover/1/calibre-test",
+     *   "timestamp": "2025-01-08T22:54:04+00:00",
+     *   "cover": "/get/cover/2/calibre-test",
+     *   "identifiers": {
+     *     "isbn": "9780575090453",
+     *     "google": "AEFJAgAAQBAJ",
+     *     "goodreads": "15999018"
+     *   },
      *   "format_metadata": {
      *     "epub": {
-     *       "path": "C:\\tmp\\calibre-test\\Alastair Reynolds\\House of Suns (1)\\House of Suns - Alastair Reynolds.epub",
-     *       "size": 535543,
-     *       "mtime": "2025-01-08T22:53:56.786683+00:00"
+     *       "path": "C:\\tmp\\calibre-test\\Alastair Reynolds\\On the Steel Breeze (2)\\On the Steel Breeze - Alastair Reynolds.epub",
+     *       "size": 1685564,
+     *       "mtime": "2025-01-08T22:54:04.607814+00:00"
      *     }
      *   },
      *   "formats": [
      *     "epub"
      *   ],
      *   "main_format": {
-     *     "epub": "/get/epub/1/calibre-test"
+     *     "epub": "/get/epub/2/calibre-test"
      *   },
      *   "other_formats": {},
      *   "category_urls": {
+     *     "publisher": {
+     *       "Gollancz": "/ajax/books_in/7075626c6973686572/31/calibre-test"
+     *     },
      *     "authors": {
      *       "Alastair Reynolds": "/ajax/books_in/617574686f7273/31/calibre-test"
      *     },
-     *     "publisher": {
-     *       "Gollancz": "/ajax/books_in/7075626c6973686572/31/calibre-test"
+     *     "languages": {},
+     *     "series": {
+     *       "Poseidon's Children": "/ajax/books_in/736572696573/32/calibre-test"
      *     },
      *     "tags": {
      *       "Action & Adventure": "/ajax/books_in/74616773/31/calibre-test",
@@ -121,10 +156,6 @@ final class CalibreBookJsonKey {
      *       "Hard Science Fiction": "/ajax/books_in/74616773/33/calibre-test",
      *       "Science Fiction": "/ajax/books_in/74616773/34/calibre-test",
      *       "Space Opera": "/ajax/books_in/74616773/35/calibre-test"
-     *     },
-     *     "languages": {},
-     *     "series": {
-     *       "House of Suns": "/ajax/books_in/736572696573/31/calibre-test"
      *     }
      *   }
      * }
