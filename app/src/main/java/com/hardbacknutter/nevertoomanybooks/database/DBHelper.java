@@ -97,10 +97,11 @@ public class DBHelper
      * v7.11.0: 48
      * v7.12.0: 49
      * v7.13.0: 50
+     * v7.16.0: 51
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 50;
+    public static final int DATABASE_VERSION = 51;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -494,12 +495,18 @@ public class DBHelper
             // Repair all builtin Identifiers:
             LegacyUpgrades.updateIdentifierWikidataAuthorIdClaims(context, db);
         }
+        if (oldVersion < 51) {
+            // Nothing, but we needed to trigger the below call to addCalibreCustomFields
+        }
 
         // We have to do this here as we're always inserting all columns,
         // which may be created at various points in the updates.
         // Any identifier already existing will simply be skipped.
         // See GitHub #185
         LegacyUpgrades.addIdentifiersIfNotYetDone(context, db);
+
+        // Same as above, but for Calibre.
+        LegacyUpgrades.addCalibreCustomFields(db);
 
         // We have to do this here due to some users skipping updates (see GitHub #30)
         // The issue is that this only works OK if the TBL_BOOKLIST_STYLES contains

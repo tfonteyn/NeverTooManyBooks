@@ -47,9 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
@@ -76,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -85,6 +88,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
@@ -124,6 +128,7 @@ public final class LegacyUpgrades {
     private static final String DROP_TABLE_ = "DROP TABLE ";
     private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_ = "SELECT ";
+    private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
     private static final String UPDATE_ = "UPDATE ";
     private static final String _FROM_ = " FROM ";
     private static final String _RENAME_TO_ = " RENAME TO ";
@@ -643,6 +648,29 @@ public final class LegacyUpgrades {
 
     /**
      * Called at the end of {@link DBHelper#onUpgrade(SQLiteDatabase, int, int)}.
+     * Adds {@link CalibreCustomField}s which were added after the initial app release.
+     *
+     * @param db Database Access
+     */
+    static void addCalibreCustomFields(@NonNull final SQLiteDatabase db) {
+        final CalibreCustomField field = new CalibreCustomField("#read_progress",
+                                                                CalibreCustomField.TYPE_COMPOSITE,
+                                                                DBKey.READ_PROGRESS);
+
+        // key must be unique
+        if (isPresent(db, TBL_CALIBRE_CUSTOM_FIELDS, DBKey.CALIBRE.CUSTOM_FIELD_NAME,
+                      field.getCalibreKey())) {
+            return;
+        }
+
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(
+                db.compileStatement(CalibreCustomFieldDaoImpl.Sql.INSERT))) {
+            CalibreCustomFieldDaoImpl.doInsert(field, stmt);
+        }
+    }
+
+    /**
+     * Called at the end of {@link DBHelper#onUpgrade(SQLiteDatabase, int, int)}.
      * Add a set of Identifiers which were added after the initial app release.
      *
      * @param context Current context
@@ -712,17 +740,7 @@ public final class LegacyUpgrades {
                                       @NonNull final Identifier identifier) {
 
         // key must be unique
-        boolean found = false;
-        try (SQLiteStatement stmt = db.compileStatement(
-                "SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
-                + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
-            stmt.bindString(1, identifier.getKey());
-            found = 1 == stmt.simpleQueryForLong();
-        } catch (@NonNull final SQLiteDoneException ignore) {
-            // ignore
-        }
-        if (found) {
-            // The identifier is already present
+        if (isPresent(db, TBL_IDENTIFIERS, DBKey.IDENTIFIERS.KEY, identifier.getKey())) {
             return;
         }
 
@@ -767,6 +785,30 @@ public final class LegacyUpgrades {
             }
             stmt.executeInsert();
         }
+    }
+
+    /**
+     * Check if there is already a row (table/column) with the given value.
+     *
+     * @param db              Database Access
+     * @param tableDefinition table to evaluate
+     * @param column          to evaluate
+     * @param value           to look for
+     *
+     * @return flag
+     */
+    private static boolean isPresent(@NonNull final SQLiteDatabase db,
+                                     @NonNull final TableDefinition tableDefinition,
+                                     @NonNull final String column,
+                                     @NonNull final String value) {
+        try (SQLiteStatement stmt = db.compileStatement(
+                SELECT_1_FROM_ + tableDefinition.getName() + _WHERE_ + column + "=?")) {
+            stmt.bindString(1, value);
+            return 1 == stmt.simpleQueryForLong();
+        } catch (@NonNull final SQLiteDoneException ignore) {
+            // ignore
+        }
+        return false;
     }
 
     /**
@@ -939,5 +981,4 @@ public final class LegacyUpgrades {
                      .map(Tag::new)
                      .collect(Collectors.toList());
     }
-
 }

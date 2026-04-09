@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,8 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.IntRange;
@@ -31,12 +31,14 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 
@@ -67,24 +69,48 @@ public class CalibreCustomFieldDaoImpl
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         //noinspection CheckStyle
         final String[][] all = {
-                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.READ__BOOL},
+                // Standard Calibre Release: 9.5 [13 Mar, 2026]
+                {"#read_progress", CalibreCustomField.TYPE_COMPOSITE, DBKey.READ_PROGRESS},
 
+                // All of the below are custom fields as defined by NTMB.
+                // These need to be manually defined in Calibre.
+                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.READ__BOOL},
                 {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.READ_START__DATE},
                 {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.READ_END__DATE},
                 {"#date_read", CalibreCustomField.TYPE_DATETIME, DBKey.READ_END__DATE},
-
+                // Supporting two different datatypes for the notes field
                 {"#notes", CalibreCustomField.TYPE_TEXT, DBKey.PERSONAL_NOTES},
                 {"#notes", CalibreCustomField.TYPE_COMMENTS, DBKey.PERSONAL_NOTES}
         };
 
-        final ContentValues cv = new ContentValues();
-        for (final String[] row : all) {
-            cv.clear();
-            cv.put(DBKey.CALIBRE.CUSTOM_FIELD_NAME, row[0]);
-            cv.put(DBKey.CALIBRE.CUSTOM_FIELD_TYPE, row[1]);
-            cv.put(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING, row[2]);
-            db.insert(TBL_CALIBRE_CUSTOM_FIELDS.getName(), null, cv);
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
+            for (final String[] row : all) {
+                final CalibreCustomField field = new CalibreCustomField(row[0], row[1], row[2]);
+                doInsert(field, stmt);
+            }
+        } catch (@NonNull final SQLException e) {
+            // log, but just rethrow insert errors... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw e;
         }
+    }
+
+    /**
+     * Insert the field.
+     * <strong>Exception handling and {@code -1} returns MUST be done by the caller</strong>
+     *
+     * @param field to insert
+     * @param stmt  statement to run
+     *
+     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     */
+    public static long doInsert(@NonNull final CalibreCustomField field,
+                                @NonNull final ExtSQLiteStatement stmt) {
+
+        stmt.bindString(1, field.getCalibreKey());
+        stmt.bindString(2, field.getType());
+        stmt.bindString(3, field.getDbKey());
+        return stmt.executeInsert();
     }
 
     @Override
@@ -100,10 +126,7 @@ public class CalibreCustomFieldDaoImpl
 
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            stmt.bindString(1, calibreCustomField.getCalibreKey());
-            stmt.bindString(2, calibreCustomField.getType());
-            stmt.bindString(3, calibreCustomField.getDbKey());
-            iId = stmt.executeInsert();
+            iId = doInsert(calibreCustomField, stmt);
         }
 
         if (iId != -1) {
@@ -173,10 +196,10 @@ public class CalibreCustomFieldDaoImpl
         }
     }
 
-    private static final class Sql {
+    public static final class Sql {
 
         /** Insert a {@link CalibreCustomField}. */
-        static final String INSERT =
+        public static final String INSERT =
                 INSERT_INTO_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
                 + '(' + DBKey.CALIBRE.CUSTOM_FIELD_NAME
                 + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE

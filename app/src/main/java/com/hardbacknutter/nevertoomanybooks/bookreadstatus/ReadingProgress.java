@@ -66,13 +66,24 @@ public final class ReadingProgress
     private int totalPages = 1;
     private boolean asPercentage;
 
-    private ReadingProgress(@IntRange(from = 0, to = 100) final int percentage) {
+    /**
+     * Constructor.
+     *
+     * @param percentage read
+     */
+    public ReadingProgress(@IntRange(from = 0, to = 100) final int percentage) {
         asPercentage = true;
         setPercentage(percentage);
     }
 
-    private ReadingProgress(@IntRange(from = 0) final int currentPage,
-                            @IntRange(from = 1) final int totalPages) {
+    /**
+     * Constructor.
+     *
+     * @param currentPage number
+     * @param totalPages  number
+     */
+    public ReadingProgress(@IntRange(from = 0) final int currentPage,
+                           @IntRange(from = 1) final int totalPages) {
         asPercentage = false;
         setPages(currentPage, totalPages);
     }

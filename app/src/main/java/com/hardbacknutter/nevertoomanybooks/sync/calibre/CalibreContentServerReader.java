@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -676,33 +677,12 @@ public class CalibreContentServerReader
 
             final Iterator<String> it = remotes.keys();
             while (it.hasNext()) {
-                String calKey = it.next();
+                final String calKey = it.next();
                 if (!remotes.isNull(calKey)) {
                     final String sid = remotes.optString(calKey);
                     if (!sid.isEmpty()) {
                         // MUST be converted to lc before we try and map
-                        calKey = calKey.toLowerCase(Locale.ENGLISH);
-
-                        if (CalibreContentServer.IDENTIFIER_ISBN.equals(calKey)) {
-                            book.setIsbn(sid);
-
-                        } else if (calKey.length() > 6 && calKey.startsWith("amazon")) {
-                            // Other than strict "amazon", there are variants
-                            // for local sites; e.g. "amazon_nl", "amazon_fr",...
-                            // The actual ASIN is always the same,
-                            // so just use the first one found.
-                            if (book.getIdentifierValue(Identifier.SID_ASIN).isEmpty()) {
-                                ivs.add(new Identifier.Value(Identifier.SID_ASIN, sid));
-                            }
-                        } else {
-                            // Map the calKey to our key, or if not found,
-                            // just use the calKey itself
-                            String key = CalibreContentServer.IDENTIFIER_MAPPING_READER.get(calKey);
-                            if (key == null) {
-                                key = calKey;
-                            }
-                            ivs.add(new Identifier.Value(key, sid));
-                        }
+                        convertIdentifier(book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
                     }
                 }
             }
@@ -712,40 +692,114 @@ public class CalibreContentServerReader
         }
     }
 
+    private void convertIdentifier(@NonNull final Book book,
+                                   @NonNull final String calKey,
+                                   @NonNull final String sid,
+                                   @NonNull final List<Identifier.Value> ivs) {
+        if (CalibreContentServer.IDENTIFIER_ISBN.equals(calKey)) {
+            book.setIsbn(sid);
+
+        } else if (calKey.length() > 6 && calKey.startsWith("amazon")) {
+            // Other than strict "amazon", there are variants
+            // for local sites; e.g. "amazon_nl", "amazon_fr",...
+            // The actual ASIN is always the same,
+            // so just use the first one found.
+            if (book.getIdentifierValue(Identifier.SID_ASIN).isEmpty()) {
+                ivs.add(new Identifier.Value(Identifier.SID_ASIN, sid));
+            }
+        } else {
+            // Map the calKey to our key, or if not found,
+            // just use the calKey itself
+            String key = CalibreContentServer.IDENTIFIER_MAPPING_READER.get(calKey);
+            if (key == null) {
+                key = calKey;
+            }
+            ivs.add(new Identifier.Value(key, sid));
+        }
+    }
+
     private void convertCustomFields(@NonNull final JSONObject calibreBook,
                                      @NonNull final Book book) {
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
         if (userMetaData != null && library != null) {
-            for (final CalibreCustomField cf : library.getCustomFields()) {
+            // Sanity check, at this point it should always be true
+            library.getCustomFields().forEach(cf -> {
                 final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
-
-                // Sanity check, at this point it should always be true
                 if (data != null && cf.getType().equals(data.getString(
                         CalibreCustomField.METADATA_DATATYPE))) {
-
+                    // Sanity check, should always be present
                     if (!data.isNull(CalibreCustomField.VALUE)) {
-                        switch (cf.getType()) {
-                            case CalibreCustomField.TYPE_BOOL: {
-                                book.putBoolean(cf.getDbKey(),
-                                                data.getBoolean(CalibreCustomField.VALUE));
-                                break;
-                            }
-                            case CalibreCustomField.TYPE_DATETIME:
-                            case CalibreCustomField.TYPE_COMMENTS:
-                            case CalibreCustomField.TYPE_TEXT: {
-                                final String value = data.getString(CalibreCustomField.VALUE);
-                                // ignore a remote 'not-set' value
-                                if (!VALUE_IS_NONE.equals(value)) {
-                                    book.putString(cf.getDbKey(), value);
-                                }
-                                break;
-                            }
-                            default:
-                                throw new IllegalArgumentException(cf.getType());
+                        // Special handling fields
+                        if (DBKey.READ_PROGRESS.equals(cf.getDbKey())) {
+                            convertReadingProgress(data, book);
+                        } else {
+                            // otherwise just by type
+                            convertCustomFieldByType(cf, data, book);
                         }
                     }
                 }
+            });
+        }
+    }
+
+    private void convertReadingProgress(@NonNull final JSONObject data,
+                                        @NonNull final Book book) {
+        // "#value#": "4%"
+        // "#value#": "100 / 332"
+        // "#value#": "0.25"
+        final String value = data.getString(CalibreCustomField.VALUE);
+        if (value.length() > 1 && value.endsWith("%")) {
+            try {
+                final int percentage = Integer
+                        .parseInt(value.substring(0, value.length() - 1));
+                book.setReadingProgress(new ReadingProgress(percentage));
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
             }
+        } else if (value.contains("/")) {
+            final String[] split = value.split("/");
+            if (split.length == 2) {
+                try {
+                    final int page = Integer.parseInt(split[0]);
+                    final int total = Integer.parseInt(split[1]);
+                    book.setReadingProgress(new ReadingProgress(page, total));
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
+                }
+            }
+        } else {
+            // fraction or unknown format
+            try {
+                final int percentage = (int) (Float.parseFloat(value) * 100);
+                book.setReadingProgress(new ReadingProgress(percentage));
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
+            }
+        }
+    }
+
+    private void convertCustomFieldByType(@NonNull final CalibreCustomField cf,
+                                          @NonNull final JSONObject data,
+                                          @NonNull final Book book) {
+        switch (cf.getType()) {
+            case CalibreCustomField.TYPE_BOOL: {
+                book.putBoolean(cf.getDbKey(),
+                                data.getBoolean(CalibreCustomField.VALUE));
+                break;
+            }
+            case CalibreCustomField.TYPE_COMMENTS:
+            case CalibreCustomField.TYPE_COMPOSITE:
+            case CalibreCustomField.TYPE_DATETIME:
+            case CalibreCustomField.TYPE_TEXT: {
+                final String value = data.getString(CalibreCustomField.VALUE);
+                // ignore a remote 'not-set' value
+                if (!VALUE_IS_NONE.equals(value)) {
+                    book.putString(cf.getDbKey(), value);
+                }
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(cf.getType());
         }
     }
 
