@@ -912,4 +912,6 @@
     <string name="pt_screen_header_fixed">Оставить меню закрепленным</string>
     <string name="pt_screen_header_scroll">Подвинуть меню при прокрутке</string>
     <string name="pt_fetch_hires_images">Загружать изображения высокого разрешения</string>
+    <string name="action_sync_pull">Получить изменения</string>
+    <string name="action_sync_push">Отправить изменения</string>
 </resources>

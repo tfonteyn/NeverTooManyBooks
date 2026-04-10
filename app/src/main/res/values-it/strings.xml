@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -894,4 +897,6 @@
     <string name="pt_screen_header_scroll">Nascondi il menu durante lo scorrimento</string>
     <string name="pt_screen_header_fixed">Mantieni il menu fissato</string>
     <string name="pt_fetch_hires_images">Cerca immagini ad alta risoluzione</string>
+    <string name="action_sync_pull">Scarica modifiche</string>
+    <string name="action_sync_push">Invia modifiche</string>
 </resources>

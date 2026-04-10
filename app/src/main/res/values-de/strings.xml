@@ -890,4 +890,6 @@
     <string name="pt_screen_header_scroll">Menü beim Scrollen ausblenden</string>
     <string name="pt_screen_header_fixed">Menü oben fixieren</string>
     <string name="pt_fetch_hires_images">Bilder in hoher Auflösung abrufen</string>
+    <string name="action_sync_pull">Änderungen abrufen</string>
+    <string name="action_sync_push">Änderungen übertragen</string>
 </resources>

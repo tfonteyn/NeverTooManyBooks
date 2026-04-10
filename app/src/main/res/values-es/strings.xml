@@ -896,4 +896,6 @@
     <string name="pt_screen_header_scroll">Ocultar el menú al desplazar</string>
     <string name="pt_screen_header_fixed">Mantener el menú fijo</string>
     <string name="pt_fetch_hires_images">Obtener imágenes de alta resolución</string>
+    <string name="action_sync_pull">Descargar cambios</string>
+    <string name="action_sync_push">Subir cambios</string>
 </resources>

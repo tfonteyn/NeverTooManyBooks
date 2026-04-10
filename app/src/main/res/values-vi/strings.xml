@@ -885,4 +885,6 @@
     <string name="pt_screen_header_scroll">Ẩn menu khi cuộn</string>
     <string name="pt_screen_header_fixed">Giữ menu cố định</string>
     <string name="pt_fetch_hires_images">Tải hình ảnh độ phân giải cao</string>
+    <string name="action_sync_pull">Tải các thay đổi</string>
+    <string name="action_sync_push">Đẩy các thay đổi</string>
 </resources>

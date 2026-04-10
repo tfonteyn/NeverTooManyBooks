@@ -914,4 +914,6 @@
     <string name="pt_screen_header_scroll">Při posouvání nechat menu odsunout</string>
     <string name="pt_screen_header_fixed">Nechat menu připnuté</string>
     <string name="pt_fetch_hires_images">Stahovat obrázky ve vysokém rozlišení</string>
+    <string name="action_sync_pull">Stáhnout změny</string>
+    <string name="action_sync_push">Odeslat změny</string>
 </resources>

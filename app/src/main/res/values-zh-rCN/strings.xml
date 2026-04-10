@@ -887,4 +887,6 @@
     <string name="pt_screen_header_scroll">滚动时让菜单随屏幕其他部分一起滚动</string>
     <string name="pt_screen_header_fixed">保持菜单固定显示</string>
     <string name="pt_fetch_hires_images">获取高分辨率图像</string>
+    <string name="action_sync_pull">拉取更改</string>
+    <string name="action_sync_push">推送更改</string>
 </resources>

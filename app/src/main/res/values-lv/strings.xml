@@ -241,4 +241,6 @@
     <string name="pt_screen_header_fixed">Pievienot izvēlni augšā</string>
     <string name="httpErrorTooManyRequests">Tiek apstrādāts pārāk liels pieprasījumu skaits. Vēlāk mēģiniet vēlreiz.</string>
     <string name="pt_fetch_hires_images">Iegūt augstas izšķirtspējas attēlus</string>
+    <string name="action_sync_pull">Saņemt izmaiņas</string>
+    <string name="action_sync_push">Nosūtīt izmaiņas</string>
 </resources>

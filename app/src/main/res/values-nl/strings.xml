@@ -890,4 +890,6 @@
     <string name="pt_screen_header_scroll">Menu verbergen tijdens scrollen</string>
     <string name="pt_screen_header_fixed">Menu vastzetten bovenaan</string>
     <string name="pt_fetch_hires_images">Afbeeldingen in hoge resolutie ophalen</string>
+    <string name="action_sync_pull">Wijzigingen ophalen</string>
+    <string name="action_sync_push">Wijzigingen doorvoeren</string>
 </resources>

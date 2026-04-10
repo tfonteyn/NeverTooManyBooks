@@ -905,4 +905,6 @@
     <string name="pt_screen_header_fixed">Zachować menu przypięte</string>
     <string name="pt_screen_header_scroll">Przy przewijaniu przesuwać menu</string>
     <string name="pt_fetch_hires_images">Pobieraj obrazy w wysokiej rozdzielczości</string>
+    <string name="action_sync_pull">Pobierz zmiany</string>
+    <string name="action_sync_push">Wyślij zmiany</string>
 </resources>

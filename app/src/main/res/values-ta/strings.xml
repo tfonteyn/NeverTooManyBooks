@@ -890,4 +890,6 @@
     <string name="pt_screen_header_scroll">ஸ்க்ரோல் செய்யும்போது மெனுவை மறைக்கவும்</string>
     <string name="pt_screen_header_fixed">மெனுவை நிலையாக வைக்கவும்</string>
     <string name="pt_fetch_hires_images">உயர்தர படங்களைப் பெறுக</string>
+    <string name="action_sync_pull">மாற்றங்களைப் பெறுக</string>
+    <string name="action_sync_push">மாற்றங்களைச் செலுத்துக</string>
 </resources>

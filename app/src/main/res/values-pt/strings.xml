@@ -896,4 +896,6 @@
     <string name="pt_screen_header_scroll">Ocultar o menu ao deslizar</string>
     <string name="pt_screen_header_fixed">Manter o menu fixado</string>
     <string name="pt_fetch_hires_images">Obter imagens de alta resolução</string>
+    <string name="action_sync_pull">Receber alterações</string>
+    <string name="action_sync_push">Enviar alterações</string>
 </resources>

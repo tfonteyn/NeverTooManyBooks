@@ -898,4 +898,6 @@
     <string name="pt_screen_header_scroll">Masquer le menu lors du défilement</string>
     <string name="pt_screen_header_fixed">Garder le menu épinglé</string>
     <string name="pt_fetch_hires_images">Récupérer des images en haute résolution</string>
+    <string name="action_sync_pull">Récupérer les modifications</string>
+    <string name="action_sync_push">Envoyer les modifications</string>
 </resources>

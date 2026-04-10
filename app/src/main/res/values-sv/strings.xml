@@ -893,4 +893,6 @@
     <string name="pt_screen_header_scroll">Dölj menyn vid skrollning</string>
     <string name="pt_screen_header_fixed">Håll menyn fäst</string>
     <string name="pt_fetch_hires_images">Hämta högupplösta bilder</string>
+    <string name="action_sync_pull">Hämta ändringar</string>
+    <string name="action_sync_push">Skicka ändringar</string>
 </resources>

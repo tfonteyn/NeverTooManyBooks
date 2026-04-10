@@ -279,4 +279,6 @@
     <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
     <string name="pt_screen_header_scroll">Esconder o menu ao rolar</string>
     <string name="pt_fetch_hires_images">Buscar imagens de alta resolução</string>
+    <string name="action_sync_pull">Puxar alterações</string>
+    <string name="action_sync_push">Enviar alterações</string>
 </resources>

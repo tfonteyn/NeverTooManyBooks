@@ -888,4 +888,6 @@
     <string name="pt_screen_header_scroll">讓選單隨螢幕其他部分一起捲動</string>
     <string name="pt_screen_header_fixed">保持選單固定顯示</string>
     <string name="pt_fetch_hires_images">獲取高解析度圖像</string>
+    <string name="action_sync_pull">拉取更改</string>
+    <string name="action_sync_push">推送更改</string>
 </resources>

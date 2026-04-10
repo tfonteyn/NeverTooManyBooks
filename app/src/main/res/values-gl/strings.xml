@@ -891,4 +891,6 @@
     <string name="pt_screen_header_scroll">Agochar o menú ao desprazar</string>
     <string name="pt_screen_header_fixed">Manter o menú fixado</string>
     <string name="pt_fetch_hires_images">Obter imaxes de alta resolución</string>
+    <string name="action_sync_pull">Baixar cambios</string>
+    <string name="action_sync_push">Subir cambios</string>
 </resources>

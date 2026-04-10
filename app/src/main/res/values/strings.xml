@@ -1219,6 +1219,11 @@
     <!-- Menu option -->
     <string name="action_set_as_default">Set as default</string>
 
+    <!-- Menu option: synchronisation with a remote service; pulling down new data from the remote. -->
+    <string name="action_sync_pull">Pull changes</string>
+    <!-- Menu option: synchronisation with a remote service; pushing new data to the remote. -->
+    <string name="action_sync_push">Push changes</string>
+
     <!-- endregion -->
     <!-- region ========== Toolbar, Activity and Dialog titles. -->
     <!-- Toolbar/Screen title. -->
