@@ -54,7 +54,7 @@ public interface SeriesDao
      * @see #pruneList(Context, Collection, boolean, Function)
      * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
      */
-    String PK_NORMALISE_SERIES_TITLE = "normalize.series.title";
+    String PK_NORMALISE_SERIES_TITLE = "normalise.series.title";
 
     /**
      * Get a unique list of all {@link Series} titles.

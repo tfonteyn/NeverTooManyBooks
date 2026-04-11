@@ -54,7 +54,7 @@ public interface PublisherDao
      * @see #pruneList(Context, Collection, boolean, Function)
      * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
      */
-    String PK_NORMALISE_PUBLISHER_NAME = "normalize.publisher.name";
+    String PK_NORMALISE_PUBLISHER_NAME = "normalise.publisher.name";
 
     /**
      * Get a unique list of all publisher names.

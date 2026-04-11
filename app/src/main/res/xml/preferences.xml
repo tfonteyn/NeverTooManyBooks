@@ -223,7 +223,7 @@
         <!--        <SwitchPreference-->
         <!--            android:defaultValue="false"-->
         <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
-        <!--            android:key="normalize.series.title"-->
+        <!--            android:key="normalise.series.title"-->
         <!--            android:summaryOff="@string/no"-->
         <!--            android:summaryOn="@string/yes"-->
         <!--            android:title="@string/pt_normalise_series_title" />-->
@@ -231,7 +231,7 @@
         <!--        <SwitchPreference-->
         <!--            android:defaultValue="false"-->
         <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
-        <!--            android:key="normalize.publisher.name"-->
+        <!--            android:key="normalise.publisher.name"-->
         <!--            android:summaryOff="@string/no"-->
         <!--            android:summaryOn="@string/yes"-->
         <!--            android:title="@string/pt_normalise_publisher_name" />-->

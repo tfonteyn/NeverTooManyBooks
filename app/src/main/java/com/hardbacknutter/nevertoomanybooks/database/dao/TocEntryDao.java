@@ -56,7 +56,7 @@ public interface TocEntryDao
      * @see #pruneList(Context, Collection, boolean, Function)
      * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
      */
-    String PK_NORMALISE_TOC_TITLE = "normalize.toc.title";
+    String PK_NORMALISE_TOC_TITLE = "normalise.toc.title";
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
