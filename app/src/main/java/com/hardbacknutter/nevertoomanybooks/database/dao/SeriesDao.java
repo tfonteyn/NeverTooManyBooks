@@ -23,12 +23,14 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -50,6 +52,7 @@ public interface SeriesDao
      *
      * @see #pruneList(Context, Collection, Function)
      * @see #pruneList(Context, Collection, boolean, Function)
+     * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
      */
     String PK_NORMALISE_SERIES_TITLE = "normalize.series.title";
 
@@ -112,10 +115,35 @@ public interface SeriesDao
      *
      * @return {@code true} if the list was modified.
      */
+    default boolean pruneList(@NonNull final Context context,
+                              @NonNull final Collection<Series> list,
+                              final boolean normalise,
+                              @NonNull final Function<Series, Locale> localeSupplier) {
+        return pruneList(context, list, normalise, localeSupplier,
+                // Don't look up the locale a 2nd time.
+                         (current, locale) -> fixId(context, current, locale));
+    }
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     * <p>
+     * <strong>Tests only.</strong>
+     * Allows overriding the normalisation flag and use a custom (nop) id-fixeer.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param normalise      flag, whether to normalise the title
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     * @param idFixer        how to call {@link #fixId(Context, Series, Locale)}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    @VisibleForTesting
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Series> list,
                       boolean normalise,
-                      @NonNull Function<Series, Locale> localeSupplier);
+                      @NonNull Function<Series, Locale> localeSupplier,
+                      @NonNull BiConsumer<Series, Locale> idFixer);
 
     /**
      * Rebuild the OB columns for the table(s) of this dao.

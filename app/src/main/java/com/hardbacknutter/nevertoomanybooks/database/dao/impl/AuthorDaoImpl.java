@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -377,7 +378,8 @@ public class AuthorDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Author> list,
-                             @NonNull final Function<Author, Locale> localeSupplier) {
+                             @NonNull final Function<Author, Locale> localeSupplier,
+                             @NonNull final BiConsumer<Author, Locale> idFixer) {
         // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
@@ -405,9 +407,7 @@ public class AuthorDaoImpl
         }
 
         final EntityMergeHelper<Author> mergeHelper = new AuthorMergeHelper();
-        return mergeHelper.merge(context, list, localeSupplier,
-                // Don't look up the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, locale))
+        return mergeHelper.merge(context, list, localeSupplier, idFixer)
                || modified;
     }
 
@@ -535,9 +535,9 @@ public class AuthorDaoImpl
             final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, textNormaliser.orderByColumn(author.getFamilyName(), locale));
+                stmt.bindString(2, textNormaliser.strict(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, textNormaliser.orderByColumn(author.getGivenNames(), locale));
+                stmt.bindString(4, textNormaliser.strict(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
                 stmt.bindString(7, author.getImageUuid().orElse(null));
@@ -587,9 +587,9 @@ public class AuthorDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, textNormaliser.orderByColumn(author.getFamilyName(), locale));
+                stmt.bindString(2, textNormaliser.strict(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, textNormaliser.orderByColumn(author.getGivenNames(), locale));
+                stmt.bindString(4, textNormaliser.strict(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
                 stmt.bindString(7, author.getImageUuid().orElse(null));
@@ -880,8 +880,8 @@ public class AuthorDaoImpl
                 final String givenNamesOb = cursor.getString(4);
 
                 // reordering is not applicable, we just want to re-normalise.
-                final String newFamilyOb = textNormaliser.orderByColumn(familyName, locale);
-                final String newGivenOb = textNormaliser.orderByColumn(givenNames, locale);
+                final String newFamilyOb = textNormaliser.strict(familyName, locale);
+                final String newGivenOb = textNormaliser.strict(givenNames, locale);
 
                 // only update the database if actually needed.
                 if (!Objects.equals(familyNameOb, newFamilyOb)

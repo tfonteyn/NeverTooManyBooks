@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -446,7 +447,8 @@ public class BookshelfDaoImpl
 
     @Override
     public boolean pruneList(@NonNull final Context context,
-                             @NonNull final Collection<Bookshelf> list) {
+                             @NonNull final Collection<Bookshelf> list,
+                             @NonNull final BiConsumer<Bookshelf, Locale> idFixer) {
         // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
@@ -454,9 +456,7 @@ public class BookshelfDaoImpl
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final EntityMergeHelper<Bookshelf> mergeHelper = new EntityMergeHelper<>();
-        return mergeHelper.merge(context, list, current -> userLocale,
-                // Don't look up the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, locale));
+        return mergeHelper.merge(context, list, current -> userLocale, idFixer);
     }
 
     @Override

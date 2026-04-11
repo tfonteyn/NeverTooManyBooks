@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -39,6 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SeriesTest
         extends BaseDBTest {
 
+    private static final String THE_TITLE = "The title";
+    private static final String TITLE_THE = "title, The";
+
     private SeriesDao seriesDao;
 
     @BeforeEach
@@ -51,12 +53,9 @@ class SeriesTest
 
     /**
      * Fairly generic and 'normally' sorted names and numbers.
-     *
-     * @throws DaoWriteException on conflicts
      */
     @Test
-    void pruneSeries01List()
-            throws DaoWriteException {
+    void pruneSeries01List() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Series> list = new ArrayList<>();
@@ -64,11 +63,6 @@ class SeriesTest
 
         // keep, position 0
         series = Series.from("The series (5)");
-        seriesDao.fixId(context, series, bookLocale);
-        long id0 = series.getId();
-        if (id0 == 0) {
-            id0 = seriesDao.insert(context, series, bookLocale);
-        }
         series.setId(100);
         series.setComplete(true);
         list.add(series);
@@ -90,11 +84,6 @@ class SeriesTest
 
         // keep, position 1
         series = Series.from("De reeks (1)");
-        seriesDao.fixId(context, series, bookLocale);
-        long id1 = series.getId();
-        if (id1 == 0) {
-            id1 = seriesDao.insert(context, series, bookLocale);
-        }
         series.setId(200);
         list.add(series);
 
@@ -107,36 +96,31 @@ class SeriesTest
 
         // keep, position 2. Note duplicate id, but different nr as compared to position 0
         series = Series.from("The series (6)");
-        seriesDao.fixId(context, series, bookLocale);
-        long id2 = series.getId();
-        if (id2 == 0) {
-            id2 = seriesDao.insert(context, series, bookLocale);
-        }
         series.setId(100);
         list.add(series);
 
-        final boolean modified = seriesDao.pruneList(context, list, item -> bookLocale);
+        // Explicit: NO normalisation
+        final boolean modified = seriesDao.pruneList(context, list, false,
+                                                     item -> bookLocale,
+                                                     (p, l) -> {
+                                                     });
 
         assertTrue(modified, list.toString());
         assertEquals(3, list.size(), list.toString());
 
-        assertTrue(id0 > 0);
-        assertTrue(id1 > 0);
-        assertTrue(id2 > 0);
-
         series = list.get(0);
-        assertEquals(id0, series.getId());
+        assertEquals(100, series.getId());
         assertEquals("The series", series.getTitle());
         assertEquals("5", series.getNumber());
         assertTrue(series.isComplete());
 
         series = list.get(1);
-        assertEquals(id1, series.getId());
+        assertEquals(200, series.getId());
         assertEquals("De reeks", series.getTitle());
         assertEquals("1", series.getNumber());
 
         series = list.get(2);
-        assertEquals(id2, series.getId());
+        assertEquals(100, series.getId());
         assertEquals("The series", series.getTitle());
         assertEquals("6", series.getNumber());
     }
@@ -153,22 +137,31 @@ class SeriesTest
 
         final List<Series> list = new ArrayList<>();
 
-        final Series series1 = Series.from("The title");
-        series1.setId(1);
+        final Series series1 = Series.from(THE_TITLE);
+        series1.setId(100);
         series1.setNumber("1");
         list.add(series1);
 
-        final Series series2 = Series.from("title, The");
+        final Series series2 = Series.from(TITLE_THE);
         // Set the SAME id, so the only diff is the title!
-        series2.setId(1);
+        series2.setId(100);
         series2.setNumber("1");
         list.add(series2);
 
-        // Note we force normalisation here - this is the test for it... duh...
+        // FORCE normalisation - this is the test for it... duh...
         final boolean modified = seriesDao.pruneList(context, list, true,
-                                                     item -> bookLocale);
+                                                     item -> bookLocale,
+                                                     (p, l) -> {
+                                                     });
 
         assertTrue(modified, list.toString());
         assertEquals(1, list.size());
+
+        Series series;
+
+        series = list.get(0);
+        assertEquals(100, series.getId());
+        assertEquals(THE_TITLE, series.getTitle());
+        assertEquals("1", series.getNumber());
     }
 }

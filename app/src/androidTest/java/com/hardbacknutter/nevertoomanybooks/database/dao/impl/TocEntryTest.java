@@ -25,10 +25,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -44,7 +42,6 @@ class TocEntryTest
         extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
-    private AuthorDao authorDao;
     private TocEntryDao tocEntryDao;
 
     @BeforeEach
@@ -52,46 +49,43 @@ class TocEntryTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        authorDao = serviceLocator.getAuthorDao();
         tocEntryDao = serviceLocator.getTocEntryDao();
     }
 
     @Test
-    void pruneTocEntries01()
-            throws DaoWriteException {
+    void pruneTocEntries01() {
         final Locale bookLocale = Locale.getDefault();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, bookLocale);
-        long authorId0 = author0.getId();
-        if (authorId0 == 0) {
-            authorId0 = authorDao.insert(context, author0, bookLocale);
-        }
-        assertTrue(authorId0 > 0);
+        author0.setId(100);
 
         final List<TocEntry> list = new ArrayList<>();
         TocEntry tocEntry;
 
-        // All ids are set == 0
-
-
         // keep, position 0, merged with next entry with the same title
         tocEntry = new TocEntry(author0, "title 1");
+        tocEntry.setId(1001);
         list.add(tocEntry);
 
         // keep, position 1
         tocEntry = new TocEntry(author0, "title 2", new PartialDate(2019, 0, 0));
+        tocEntry.setId(1002);
         list.add(tocEntry);
 
         // discard after merging with position 0
         tocEntry = new TocEntry(author0, "title 1", new PartialDate(1978, 0, 0));
+        tocEntry.setId(1001);
         list.add(tocEntry);
 
         // discard in favour of position 1
         tocEntry = new TocEntry(author0, "title 2");
+        tocEntry.setId(0);
         list.add(tocEntry);
 
-        final boolean modified = tocEntryDao.pruneList(context, list, item -> bookLocale);
+        final boolean modified = tocEntryDao.pruneList(context, list, false,
+                                                       item -> bookLocale,
+                                                       (p, l) -> {
+                                                       });
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -101,6 +95,7 @@ class TocEntryTest
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
         assertEquals("title 1", tocEntry.getTitle());
+        assertEquals(1001, tocEntry.getId());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
         assertEquals(1978, (long) fpd.get());
@@ -108,28 +103,21 @@ class TocEntryTest
         // second element is the first "title 2"
         tocEntry = list.get(1);
         assertEquals("title 2", tocEntry.getTitle());
+        assertEquals(1002, tocEntry.getId());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
         assertEquals(2019, (long) fpd.get());
     }
 
     @Test
-    void pruneTocEntries02()
-            throws DaoWriteException {
+    void pruneTocEntries02() {
         final Locale bookLocale = Locale.getDefault();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, bookLocale);
-        long authorId0 = author0.getId();
-        if (authorId0 == 0) {
-            authorId0 = authorDao.insert(context, author0, bookLocale);
-        }
-        assertTrue(authorId0 > 0);
+        author0.setId(100);
 
         final List<TocEntry> list = new ArrayList<>();
         TocEntry tocEntry;
-
-        // ids are set, results same as if ids were all 0
 
         tocEntry = new TocEntry(1, author0, "title 1", PartialDate.NOT_SET, 0);
         list.add(tocEntry);
@@ -139,11 +127,14 @@ class TocEntryTest
 
         tocEntry = new TocEntry(1, author0, "title 1", new PartialDate(1978, 0, 0), 0);
         list.add(tocEntry);
+
         tocEntry = new TocEntry(2, author0, "title 2", PartialDate.NOT_SET, 0);
         list.add(tocEntry);
 
-        // pruning will reset the id's to 0 as the entries don't exist in the db
-        final boolean modified = tocEntryDao.pruneList(context, list, item -> bookLocale);
+        final boolean modified = tocEntryDao.pruneList(context, list, false,
+                                                       item -> bookLocale,
+                                                       (p, l) -> {
+                                                       });
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -152,7 +143,7 @@ class TocEntryTest
 
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
-        assertEquals(0, tocEntry.getId());
+        assertEquals(1, tocEntry.getId());
         assertEquals("title 1", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
@@ -160,7 +151,7 @@ class TocEntryTest
 
         // second element is the first "title 2"
         tocEntry = list.get(1);
-        assertEquals(0, tocEntry.getId());
+        assertEquals(2, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
@@ -169,17 +160,11 @@ class TocEntryTest
 
 
     @Test
-    void pruneTocEntries03()
-            throws DaoWriteException {
+    void pruneTocEntries03() {
         final Locale bookLocale = Locale.getDefault();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, bookLocale);
-        long authorId0 = author0.getId();
-        if (authorId0 == 0) {
-            authorId0 = authorDao.insert(context, author0, bookLocale);
-        }
-        assertTrue(authorId0 > 0);
+        author0.setId(100);
 
         final List<TocEntry> list = new ArrayList<>();
         TocEntry tocEntry;
@@ -214,10 +199,13 @@ class TocEntryTest
         list.add(tocEntry);
 
         // keep, position 5
-        tocEntry = new TocEntry(0, author0, "title 3", new PartialDate(1975, 0, 0), 0);
+        tocEntry = new TocEntry(5, author0, "title 3", new PartialDate(1975, 0, 0), 0);
         list.add(tocEntry);
 
-        final boolean modified = tocEntryDao.pruneList(context, list, item -> bookLocale);
+        final boolean modified = tocEntryDao.pruneList(context, list, false,
+                                                       item -> bookLocale,
+                                                       (p, l) -> {
+                                                       });
 
         assertTrue(modified, list.toString());
         assertEquals(6, list.size(), list.toString());
@@ -226,7 +214,7 @@ class TocEntryTest
 
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
-        assertEquals(0, tocEntry.getId());
+        assertEquals(1, tocEntry.getId());
         assertEquals("title 1", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
@@ -234,15 +222,15 @@ class TocEntryTest
 
         // second element is the first "title 2"
         tocEntry = list.get(1);
-        assertEquals(0, tocEntry.getId());
+        assertEquals(2, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
         assertEquals(2019, (long) fpd.get());
 
-        // this is the third "title 2" with the id reset to 0
+        // this is the third "title 2"
         tocEntry = list.get(2);
-        assertEquals(0, tocEntry.getId());
+        assertEquals(2, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
@@ -256,14 +244,14 @@ class TocEntryTest
         assertEquals(1955, (long) fpd.get());
 
         tocEntry = list.get(4);
-        assertEquals(0, tocEntry.getId());
+        assertEquals(4, tocEntry.getId());
         assertEquals("title 3", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
         assertEquals(1965, (long) fpd.get());
 
         tocEntry = list.get(5);
-        assertEquals(0, tocEntry.getId());
+        assertEquals(5, tocEntry.getId());
         assertEquals("title 3", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());

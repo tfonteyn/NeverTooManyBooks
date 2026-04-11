@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -158,7 +159,8 @@ public class PublisherDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Publisher> list,
                              final boolean normalise,
-                             @NonNull final Function<Publisher, Locale> localeSupplier) {
+                             @NonNull final Function<Publisher, Locale> localeSupplier,
+                             @NonNull final BiConsumer<Publisher, Locale> idFixer) {
         // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
@@ -176,9 +178,7 @@ public class PublisherDaoImpl
         }
 
         final EntityMergeHelper<Publisher> mergeHelper = new EntityMergeHelper<>();
-        return mergeHelper.merge(context, list, localeSupplier,
-                // Don't look up the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, locale));
+        return mergeHelper.merge(context, list, localeSupplier, idFixer);
     }
 
     @Override
@@ -296,7 +296,7 @@ public class PublisherDaoImpl
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, name);
-            stmt.bindString(2, textNormaliser.orderByColumn(obName, locale));
+            stmt.bindString(2, textNormaliser.strict(obName, locale));
             iId = stmt.executeInsert();
         }
 
@@ -323,7 +323,7 @@ public class PublisherDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, publisher.getName());
-            stmt.bindString(2, textNormaliser.orderByColumn(obName, locale));
+            stmt.bindString(2, textNormaliser.strict(obName, locale));
 
             stmt.bindLong(3, publisher.getId());
             rowsAffected = stmt.executeUpdateDelete();
@@ -452,7 +452,7 @@ public class PublisherDaoImpl
 
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, locale);
-                final String rObTitle = textNormaliser.orderByColumn(rTitle, locale);
+                final String rObTitle = textNormaliser.strict(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

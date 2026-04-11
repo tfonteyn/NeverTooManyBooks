@@ -23,11 +23,13 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -135,8 +137,29 @@ public interface BookshelfDao {
      *
      * @return {@code true} if the list was modified.
      */
+    default boolean pruneList(@NonNull final Context context,
+                              @NonNull final Collection<Bookshelf> list) {
+        return pruneList(context, list,
+                // Don't look up the locale a 2nd time.
+                         (current, locale) -> fixId(context, current, locale));
+    }
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     * <p>
+     * <strong>Tests only.</strong>
+     * Allows overriding the normalisation flag and use a custom (nop) id-fixeer.
+     *
+     * @param context Current context
+     * @param list    List to clean up
+     * @param idFixer how to call {@link #fixId(Context, Bookshelf, Locale)}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    @VisibleForTesting
     boolean pruneList(@NonNull Context context,
-                      @NonNull Collection<Bookshelf> list);
+                      @NonNull Collection<Bookshelf> list,
+                      @NonNull BiConsumer<Bookshelf, Locale> idFixer);
 
     /**
      * Purge book list node state data for the given {@link Bookshelf}.

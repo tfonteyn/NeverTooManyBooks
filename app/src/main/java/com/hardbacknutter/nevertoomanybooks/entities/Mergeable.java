@@ -55,9 +55,9 @@ public interface Mergeable {
     /**
      * Convenience method to compare two Merge-ables.
      * <ol>
-     *     <li>diacritics are normalised</li>
-     *     <li>white-space is condensed to single-space</li>
-     *     <li>case-sensitive</li>
+     *     <li>Diacritics are normalised</li>
+     *     <li>White-space is condensed to single-space</li>
+     *     <li><strong>Case-sensitive</strong></li>
      * </ol>
      *
      * @param that the one to compare with
@@ -69,7 +69,8 @@ public interface Mergeable {
             return false;
         }
         final TextNormaliser textNormaliser = new TextNormaliser();
-        // Single-spaces in the string are preserved.
+        // Use basic normalisation as we want to detect differences
+        // in case and whitespace usage.
         return Objects.hash(getNameFields()
                                     .stream()
                                     .map(textNormaliser::normalise)

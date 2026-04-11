@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.lang.annotation.Retention;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -103,9 +105,32 @@ public interface AuthorDao
      *
      * @return {@code true} if the list was modified.
      */
+    default boolean pruneList(@NonNull final Context context,
+                              @NonNull final Collection<Author> list,
+                              @NonNull final Function<Author, Locale> localeSupplier) {
+        return pruneList(context, list, localeSupplier,
+                // Don't look up the locale a 2nd time.
+                         (current, locale) -> fixId(context, current, locale));
+    }
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     * <p>
+     * <strong>Tests only.</strong>
+     * Allows overriding the normalisation flag and use a custom (nop) id-fixeer.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     * @param idFixer        how to call {@link #fixId(Context, Author, Locale)}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    @VisibleForTesting
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Author> list,
-                      @NonNull Function<Author, Locale> localeSupplier);
+                      @NonNull Function<Author, Locale> localeSupplier,
+                      @NonNull BiConsumer<Author, Locale> idFixer);
 
     /**
      * Rebuild the OB columns for the table(s) of this dao.

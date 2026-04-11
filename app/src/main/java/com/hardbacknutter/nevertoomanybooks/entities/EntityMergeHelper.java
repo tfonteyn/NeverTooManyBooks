@@ -20,24 +20,30 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
 public class EntityMergeHelper<T extends Mergeable> {
+
+    private static final String TAG = "EntityMergeHelper";
 
     /** Keep track of id. */
     private final Map<Long, T> idCodes = new HashMap<>();
@@ -95,6 +101,8 @@ public class EntityMergeHelper<T extends Mergeable> {
      *                       the item passed in
      *
      * @return {@code true} if the list was modified.
+     *
+     * @throws IllegalStateException (debug) if the end result has duplicate ids
      */
     public final boolean merge(@NonNull final Context context,
                                @NonNull final Collection<T> list,
@@ -107,15 +115,17 @@ public class EntityMergeHelper<T extends Mergeable> {
             final T current = iterator.next();
             final Locale currentLocale = localeSupplier.apply(current);
 
+            // 2026-04-11: fixId/findByName uses the full name
             idFixer.accept(current, currentLocale);
 
+            // 2026-04-11: Use strict normalisation as we want maximum de-duplication.
+            final List<String> fields = current
+                    .getNameFields()
+                    .stream()
+                    .map(text -> textNormaliser.strict(text, currentLocale))
+                    .collect(Collectors.toList());
+
             final long id = current.getId();
-            // Single-spaces in the string are preserved.
-            final List<String> fields = current.getNameFields()
-                                               .stream()
-                                               .map(textNormaliser::normalise)
-                                               .map(name -> name.toLowerCase(currentLocale))
-                                               .collect(Collectors.toList());
             final int hash = Objects.hash(fields);
 
             // Check if there is a previous occurrence, either by id, or by value (hash)
@@ -155,6 +165,24 @@ public class EntityMergeHelper<T extends Mergeable> {
                 listModified = true;
             }
         }
+
+        if (BuildConfig.DEBUG /* always */) {
+            // This is a quick way of manual verification whether there are duplicate ids.
+            // Theoretically Series is allowed to, as a book_series link ALWAYS
+            // has a number as well which must be different.
+            // Author, Publisher...  MAY hav duplicates...
+            // TODO / TEST: when do we see duplicates and when are they allowed.
+            final Set<Long> seen = new HashSet<>();
+            final boolean hasDuplicateIds = list.stream()
+                                                .map(Mergeable::getId)
+                                                .filter(id -> id != 0)
+                                                .anyMatch(id -> !seen.add(id));
+
+            if (hasDuplicateIds) {
+                Log.d(TAG, "hasDuplicateIds: " + list);
+            }
+        }
+
         return listModified;
     }
 }

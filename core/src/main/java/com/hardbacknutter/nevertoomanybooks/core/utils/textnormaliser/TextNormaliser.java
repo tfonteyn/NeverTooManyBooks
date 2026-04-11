@@ -61,10 +61,10 @@ public class TextNormaliser
         implements TextTransliterator {
 
     /** KEEP alpha/digit. KEEP SINGLE spaces. */
-    private static final Pattern NORMALISE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
+    private static final Pattern KEEP_SPACES_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
     /** KEEP alpha/digit. REMOVE ALL white-space */
-    private static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
+    private static final Pattern REMOVE_SPACES_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
 
     /** Replace ALL white-space characters with a single space. */
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
@@ -92,10 +92,12 @@ public class TextNormaliser
     }
 
     /**
-     * Normalise the given string and remove any non-alpha/digit/space characters.
-     * <p>
-     * The case is preserved.
-     * White-space is condensed to a single-space and <strong>KEPT</strong>
+     * Normalise the given string but keep it user readable.
+     * <ol>
+     *     <li>Remove any non-alpha/digit characters</li>
+     *     <li>Condense white-space to a single-space and <strong>KEEP</strong></li>
+     *     <li>Case is preserved</li>
+     * </ol>
      *
      * @param text to normalise
      *
@@ -103,21 +105,16 @@ public class TextNormaliser
      */
     @NonNull
     public String normalise(@NonNull final CharSequence text) {
-        String result = transliterator.transliterate(text);
-        // REPLACE unwanted characters with a space; spaces are KEPT
-        result = NORMALISE_PATTERN.matcher(result).replaceAll(SINGLE_SPACE);
-        // Condense all special or duplicate whitespace into single spaces
-        result = WHITESPACE.matcher(result).replaceAll(SINGLE_SPACE);
-
-        return result.strip();
+        return normalise(text, true);
     }
 
     /**
-     * Prepare a string to be inserted in the 'Order By' column.
-     * e.g. Author names, the Title of a book...
-     * <p>
-     * The result is all lowercase.
-     * White-space is <strong>REMOVED</strong>
+     * Normalise the given string fully.
+     * <ol>
+     *     <li>Remove any non-alpha/digit characters</li>
+     *     <li>White-space is <strong>REMOVED</strong></li>
+     *     <li>Forced to lowercase</li>
+     * </ol>
      *
      * @param text   to normalise
      * @param locale Current Locale
@@ -125,12 +122,40 @@ public class TextNormaliser
      * @return normalised text; always lowercase
      */
     @NonNull
-    public String orderByColumn(@NonNull final CharSequence text,
-                                @NonNull final Locale locale) {
-        String result = transliterator.transliterate(text);
-        // remove unwanted characters; spaces are REMOVED
-        result = ORDERBY_PATTERN.matcher(result).replaceAll(REMOVE);
+    public String strict(@NonNull final CharSequence text,
+                         @NonNull final Locale locale) {
+        return normalise(text, false).toLowerCase(locale);
+    }
 
-        return result.toLowerCase(locale);
+    /**
+     * Normalise the given string.
+     * <ol>
+     *     <li>Remove any non-alpha/digit characters</li>
+     *     <li>Case is preserved</li>
+     * </ol>
+     *
+     * @param text             to normalise
+     * @param keepSingleSpaces {@code true} to condense white-space to a single-space
+     *                         and <strong>KEEP</strong>,
+     *                         or {@code false} to remove ALL white-space.
+     *
+     * @return normalised text
+     */
+    @NonNull
+    private String normalise(@NonNull final CharSequence text,
+                             final boolean keepSingleSpaces) {
+        String result = transliterator.transliterate(text);
+
+        if (keepSingleSpaces) {
+            // REPLACE unwanted characters with a space; spaces are KEPT
+            result = KEEP_SPACES_PATTERN.matcher(result).replaceAll(SINGLE_SPACE);
+            // Condense all special or duplicate whitespace into single spaces
+            result = WHITESPACE.matcher(result).replaceAll(SINGLE_SPACE).strip();
+            return result;
+
+        } else {
+            // remove unwanted characters; spaces are REMOVED
+            return REMOVE_SPACES_PATTERN.matcher(result).replaceAll(REMOVE);
+        }
     }
 }

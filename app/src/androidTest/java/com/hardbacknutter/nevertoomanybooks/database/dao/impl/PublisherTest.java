@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -56,8 +55,7 @@ class PublisherTest
     }
 
     @Test
-    void bidi()
-            throws DaoWriteException {
+    void bidi() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -65,32 +63,46 @@ class PublisherTest
         final Publisher p2;
         final Publisher p3;
 
-        p1 = new Publisher("Zsolnay, Paul");
+        final String name1 = "Zsolnay, Paul";
+        final String name2 = "Paul Zsolnay Verlag";
+
+        p1 = new Publisher(name1);
         p1.setId(1467);
         list.add(p1);
-        publisherDao.insert(context, p1, bookLocale);
 
-        p2 = new Publisher("Paul Zsolnay Verlag");
+        p2 = new Publisher(name2);
         p2.setId(1468);
         list.add(p2);
 
         // bidi character in front
-        p3 = new Publisher("\u200EPaul Zsolnay Verlag");
+        p3 = new Publisher("\u200E" + name2);
         // same id as p2
         p3.setId(1468);
         list.add(p3);
 
         assertNotEquals(p2, p3);
 
-        final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
+        final boolean modified = publisherDao.pruneList(context, list, false,
+                                                        item -> bookLocale,
+                                                        (p, l) -> {
+                                                        });
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
+
+        Publisher publisher;
+
+        publisher = list.get(0);
+        assertEquals(1467, publisher.getId());
+        assertEquals(name1, publisher.getName());
+
+        publisher = list.get(1);
+        assertEquals(1468, publisher.getId());
+        assertEquals(name2, publisher.getName());
     }
 
     @Test
-    void prunePublisherNames01()
-            throws DaoWriteException {
+    void prunePublisherNames01() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -98,21 +110,11 @@ class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id0 = publisher.getId();
-        if (id0 == 0) {
-            id0 = publisherDao.insert(context, publisher, bookLocale);
-        }
         publisher.setId(1001);
         list.add(publisher);
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id1 = publisher.getId();
-        if (id1 == 0) {
-            id1 = publisherDao.insert(context, publisher, bookLocale);
-        }
         publisher.setId(1002);
         list.add(publisher);
 
@@ -121,26 +123,26 @@ class PublisherTest
         publisher.setId(1002);
         list.add(publisher);
 
-        final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
+        // Explicit: NO normalisation and NO idFixer
+        final boolean modified = publisherDao.pruneList(context, list, false,
+                                                        item -> bookLocale,
+                                                        (p, l) -> {
+                                                        });
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
 
-        assertTrue(id0 > 0);
-        assertTrue(id1 > 0);
-
         publisher = list.get(0);
-        assertEquals(id0, publisher.getId());
+        assertEquals(1001, publisher.getId());
         assertEquals(SOME_PUBLISHER, publisher.getName());
 
         publisher = list.get(1);
-        assertEquals(id1, publisher.getId());
+        assertEquals(1002, publisher.getId());
         assertEquals(THE_PUBLISHER, publisher.getName());
     }
 
     @Test
-    void prunePublisherNames02()
-            throws DaoWriteException {
+    void prunePublisherNames02() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -148,55 +150,39 @@ class PublisherTest
 
         // Keep; list will not be modified
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id0 = publisher.getId();
-        if (id0 == 0) {
-            id0 = publisherDao.insert(context, publisher, bookLocale);
-        }
         publisher.setId(1001);
         list.add(publisher);
 
-        // Keep; list will not be modified
+        // Discard; no id, and same data as the next element which HAS an id
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id1 = publisher.getId();
-        if (id1 == 0) {
-            id1 = publisherDao.insert(context, publisher, bookLocale);
-        }
         publisher.setId(0);
         list.add(publisher);
 
-        // Discard; reordered but same as position 1
-        publisher = new Publisher(PUBLISHER_THE);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id2 = publisher.getId();
-        if (id2 == 0) {
-            id2 = publisherDao.insert(context, publisher, bookLocale);
-        }
+        // Keep; same data as entry above, but WITH id, hence this on "wins"
+        publisher = new Publisher(THE_PUBLISHER);
         publisher.setId(1002);
         list.add(publisher);
 
-        final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
+        // Explicit: NO normalisation
+        final boolean modified = publisherDao.pruneList(context, list, false,
+                                                        item -> bookLocale,
+                                                        (p, l) -> {
+                                                        });
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
 
-        assertTrue(id0 > 0);
-        assertTrue(id1 > 0);
-        assertTrue(id2 > 0);
-
         publisher = list.get(0);
-        assertEquals(id0, publisher.getId());
+        assertEquals(1001, publisher.getId());
         assertEquals(SOME_PUBLISHER, publisher.getName());
 
         publisher = list.get(1);
-        assertEquals(id1, publisher.getId());
+        assertEquals(1002, publisher.getId());
         assertEquals(THE_PUBLISHER, publisher.getName());
     }
 
     @Test
-    void prunePublisherNames03()
-            throws DaoWriteException {
+    void prunePublisherNames03() {
         final Locale bookLocale = Locale.getDefault();
 
         final List<Publisher> list = new ArrayList<>();
@@ -204,32 +190,12 @@ class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id0 = publisher.getId();
-        if (id0 == 0) {
-            id0 = publisherDao.insert(context, publisher, bookLocale);
-        }
         publisher.setId(1001);
         list.add(publisher);
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id1 = publisher.getId();
-        if (id1 == 0) {
-            id1 = publisherDao.insert(context, publisher, bookLocale);
-        }
         publisher.setId(1002);
-        list.add(publisher);
-
-        // Discard; reordered but same as position 1
-        publisher = new Publisher(PUBLISHER_THE);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id2 = publisher.getId();
-        if (id2 == 0) {
-            id2 = publisherDao.insert(context, publisher, bookLocale);
-        }
-        publisher.setId(0);
         list.add(publisher);
 
         // Discard in favour of position 0
@@ -237,13 +203,8 @@ class PublisherTest
         publisher.setId(0);
         list.add(publisher);
 
-        // Keep, but merge with the next entry and copy the id=1003
+        // Keep, but merge with the next entry and use the id=1003
         publisher = new Publisher(JOSE_PUBLISHER);
-        publisherDao.fixId(context, publisher, bookLocale);
-        long id3 = publisher.getId();
-        if (id3 == 0) {
-            id3 = publisherDao.insert(context, publisher, bookLocale);
-        }
         publisher.setId(0);
         list.add(publisher);
 
@@ -252,26 +213,65 @@ class PublisherTest
         publisher.setId(1003);
         list.add(publisher);
 
-        final boolean modified = publisherDao.pruneList(context, list, item -> bookLocale);
+        // Explicit: NO normalisation
+        final boolean modified = publisherDao.pruneList(context, list, false,
+                                                        item -> bookLocale,
+                                                        (p, l) -> {
+                                                        });
 
         assertTrue(modified, list.toString());
         assertEquals(3, list.size(), list.toString());
 
-        assertTrue(id0 > 0);
-        assertTrue(id1 > 0);
-        assertTrue(id2 > 0);
-        assertTrue(id3 > 0);
-
         publisher = list.get(0);
-        assertEquals(id0, publisher.getId());
+        assertEquals(1001, publisher.getId());
         assertEquals(SOME_PUBLISHER, publisher.getName());
 
         publisher = list.get(1);
-        assertEquals(id1, publisher.getId());
+        assertEquals(1002, publisher.getId());
         assertEquals(THE_PUBLISHER, publisher.getName());
 
         publisher = list.get(2);
-        assertEquals(id3, publisher.getId());
+        assertEquals(1003, publisher.getId());
         assertEquals(JOSE_PUBLISHER, publisher.getName());
+    }
+
+    /**
+     * Prune a list which contains both the non-reordered AND the reordered name (of a series).
+     */
+    @Test
+    void pruneReorderedDuplications() {
+        final Locale bookLocale = Locale.getDefault();
+
+        final List<Publisher> list = new ArrayList<>();
+
+        final Publisher p1 = Publisher.from(THE_PUBLISHER);
+        p1.setId(1);
+        list.add(p1);
+
+        final Publisher p2 = Publisher.from(SOME_PUBLISHER);
+        p2.setId(2);
+        list.add(p2);
+
+        final Publisher p3 = Publisher.from(PUBLISHER_THE);
+        // Set the SAME id, so the only diff is the name!
+        p3.setId(1);
+        list.add(p3);
+
+        // FORCE normalisation - this is the test for it... duh...
+        final boolean modified = publisherDao.pruneList(context, list, true,
+                                                        item -> bookLocale,
+                                                        (p, l) -> {
+                                                        });
+
+        assertTrue(modified, list.toString());
+        assertEquals(2, list.size());
+
+        Publisher publisher;
+
+        publisher = list.get(0);
+        assertEquals(THE_PUBLISHER, publisher.getName());
+
+        publisher = list.get(1);
+        assertEquals(SOME_PUBLISHER, publisher.getName());
     }
 }

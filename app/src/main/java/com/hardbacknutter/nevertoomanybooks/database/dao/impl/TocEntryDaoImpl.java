@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -104,7 +105,8 @@ public class TocEntryDaoImpl
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<TocEntry> list,
                              final boolean normalise,
-                             @NonNull final Function<TocEntry, Locale> localeSupplier) {
+                             @NonNull final Function<TocEntry, Locale> localeSupplier,
+                             @NonNull final BiConsumer<TocEntry, Locale> idFixer) {
         // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
@@ -122,9 +124,7 @@ public class TocEntryDaoImpl
         }
 
         final EntityMergeHelper<TocEntry> mergeHelper = new TocEntryMergeHelper();
-        return mergeHelper.merge(context, list, localeSupplier,
-                // Don't look up the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, locale));
+        return mergeHelper.merge(context, list, localeSupplier, idFixer);
     }
 
     @Override
@@ -332,7 +332,7 @@ public class TocEntryDaoImpl
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, author.getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
-                    stmtInsToc.bindString(3, textNormaliser.orderByColumn(obTitle, locale));
+                    stmtInsToc.bindString(3, textNormaliser.strict(obTitle, locale));
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
 
@@ -349,7 +349,7 @@ public class TocEntryDaoImpl
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
                     stmtUpdToc.bindString(1, tocEntry.getTitle());
-                    stmtUpdToc.bindString(2, textNormaliser.orderByColumn(obTitle, locale));
+                    stmtUpdToc.bindString(2, textNormaliser.strict(obTitle, locale));
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());
@@ -501,7 +501,7 @@ public class TocEntryDaoImpl
 
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, locale);
-                final String rObTitle = textNormaliser.orderByColumn(rTitle, locale);
+                final String rObTitle = textNormaliser.strict(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

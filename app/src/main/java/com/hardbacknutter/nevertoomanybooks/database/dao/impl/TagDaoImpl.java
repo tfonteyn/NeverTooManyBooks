@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -163,16 +164,15 @@ public class TagDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Tag> list,
-                             @NonNull final Function<Tag, Locale> localeSupplier) {
+                             @NonNull final Function<Tag, Locale> localeSupplier,
+                             @NonNull final BiConsumer<Tag, Locale> idFixer) {
         // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
         }
 
         final EntityMergeHelper<Tag> mergeHelper = new EntityMergeHelper<>();
-        return mergeHelper.merge(context, list, localeSupplier,
-                // Don't look up the locale a 2nd time.
-                                 (current, locale) -> fixId(current));
+        return mergeHelper.merge(context, list, localeSupplier, idFixer);
     }
 
     @Override

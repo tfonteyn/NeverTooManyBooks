@@ -159,7 +159,7 @@ public class BookDaoHelper {
             final String obTitle = new ReorderHelper(locales)
                     .reorderForSorting(context, title, bookLocale);
 
-            book.putString(DBKey.TITLE_OB, textNormaliser.orderByColumn(obTitle, bookLocale));
+            book.putString(DBKey.TITLE_OB, textNormaliser.strict(obTitle, bookLocale));
         }
 
         // normalise/store only valid bits

@@ -62,7 +62,7 @@ public class BedethequeCacheDaoImpl
     @NonNull
     public Optional<BdtAuthor> findByName(@NonNull final String name,
                                           @NonNull final Locale locale) {
-        final String nameOb = textNormaliser.orderByColumn(name, locale);
+        final String nameOb = textNormaliser.strict(name, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{nameOb, nameOb})) {
             if (cursor.moveToFirst()) {
@@ -110,7 +110,7 @@ public class BedethequeCacheDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     stmt.bindString(1, bdtAuthor.getName());
-                    stmt.bindString(2, textNormaliser.orderByColumn(bdtAuthor.getName(), locale));
+                    stmt.bindString(2, textNormaliser.strict(bdtAuthor.getName(), locale));
                     stmt.bindString(3, bdtAuthor.getUrl());
                     iId = stmt.executeInsert();
                     if (iId != -1) {
@@ -163,8 +163,8 @@ public class BedethequeCacheDaoImpl
                     if (bdtAuthor.getId() == 0) {
                         // insert the name from the last AS-IS
                         stmtInsert.bindString(1, bdtAuthor.getName());
-                        stmtInsert.bindString(2, textNormaliser.orderByColumn(bdtAuthor.getName(),
-                                                                              locale));
+                        stmtInsert.bindString(2, textNormaliser.strict(bdtAuthor.getName(),
+                                                                       locale));
                         stmtInsert.bindString(3, bdtAuthor.getUrl());
                         iId = stmtInsert.executeInsert();
                         if (iId != -1) {
@@ -210,7 +210,7 @@ public class BedethequeCacheDaoImpl
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 // the name from the last AS-IS
                 stmt.bindString(1, bdtAuthor.getName());
-                stmt.bindString(2, textNormaliser.orderByColumn(bdtAuthor.getName(), locale));
+                stmt.bindString(2, textNormaliser.strict(bdtAuthor.getName(), locale));
                 stmt.bindString(3, bdtAuthor.getUrl());
 
                 // if there is no real-name, or it's identical to the list name
@@ -220,7 +220,7 @@ public class BedethequeCacheDaoImpl
                     stmt.bindNull(5);
                 } else {
                     stmt.bindString(4, realName);
-                    stmt.bindString(5, textNormaliser.orderByColumn(realName, locale));
+                    stmt.bindString(5, textNormaliser.strict(realName, locale));
                 }
 
                 stmt.bindLong(6, bdtAuthor.getId());
