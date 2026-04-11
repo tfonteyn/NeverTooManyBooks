@@ -48,7 +48,7 @@ public interface TocEntryDao
         extends Purgeable, Positional {
 
     /**
-     * Preference key: whether to normalise the title during pruning.
+     * Preference key: whether to reorder the title during pruning.
      * <p>
      * Type: {@code boolean}
      *
@@ -56,7 +56,7 @@ public interface TocEntryDao
      * @see #pruneList(Context, Collection, boolean, Function)
      * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
      */
-    String PK_NORMALISE_TOC_TITLE = "normalise.toc.title";
+    String PK_PRUNE_LIST_REORDER_TOC_TITLE = "prune.list.reorder.toc.title";
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
@@ -139,7 +139,7 @@ public interface TocEntryDao
                               @NonNull final Collection<TocEntry> list,
                               @NonNull final Function<TocEntry, Locale> localeSupplier) {
         final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_NORMALISE_TOC_TITLE, false);
+                                                .getBoolean(PK_PRUNE_LIST_REORDER_TOC_TITLE, false);
         return pruneList(context, list, normalise, localeSupplier);
     }
 

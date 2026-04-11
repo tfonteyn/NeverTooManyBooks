@@ -46,7 +46,7 @@ public interface SeriesDao
         extends Purgeable, Positional {
 
     /**
-     * Preference key: whether to normalise the title during pruning.
+     * Preference key: whether to reorder the title during pruning.
      * <p>
      * Type: {@code boolean}
      *
@@ -54,7 +54,7 @@ public interface SeriesDao
      * @see #pruneList(Context, Collection, boolean, Function)
      * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
      */
-    String PK_NORMALISE_SERIES_TITLE = "normalise.series.title";
+    String PK_PRUNE_LIST_REORDER_SERIES_TITLE = "prune.list.reorder.series.title";
 
     /**
      * Get a unique list of all {@link Series} titles.
@@ -101,7 +101,7 @@ public interface SeriesDao
                               @NonNull final Collection<Series> list,
                               @NonNull final Function<Series, Locale> localeSupplier) {
         final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_NORMALISE_SERIES_TITLE, false);
+                                                .getBoolean(PK_PRUNE_LIST_REORDER_SERIES_TITLE, false);
         return pruneList(context, list, normalise, localeSupplier);
     }
 

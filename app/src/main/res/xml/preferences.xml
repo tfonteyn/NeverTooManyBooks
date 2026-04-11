@@ -223,18 +223,16 @@
         <!--        <SwitchPreference-->
         <!--            android:defaultValue="false"-->
         <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
-        <!--            android:key="normalise.series.title"-->
-        <!--            android:summaryOff="@string/no"-->
-        <!--            android:summaryOn="@string/yes"-->
-        <!--            android:title="@string/pt_normalise_series_title" />-->
+        <!--            android:key="prune.list.reorder.series.title"-->
+        <!--            android:summary="@string/pt_prune_list_reorder_series_title_summary"-->
+        <!--            android:title="@string/pt_prune_list_reorder_series_title" />-->
 
         <!--        <SwitchPreference-->
         <!--            android:defaultValue="false"-->
         <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
-        <!--            android:key="normalise.publisher.name"-->
-        <!--            android:summaryOff="@string/no"-->
-        <!--            android:summaryOn="@string/yes"-->
-        <!--            android:title="@string/pt_normalise_publisher_name" />-->
+        <!--            android:key="prune.list.reorder.publisher.name"-->
+        <!--            android:summary="@string/pt_prune_list_reorder_publisher_name_summary"-->
+        <!--            android:title="@string/pt_prune_list_reorder_publisher_name" />-->
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment"

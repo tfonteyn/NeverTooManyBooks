@@ -2387,11 +2387,18 @@
     <!-- endregion -->
 
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_normalise_series_title"
-            translatable="false">Normalize series titles (EXPERIMENTAL, see Help)</string>
+    <string name="pt_prune_list_reorder_series_title"
+            translatable="false">Series title matching</string>
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_normalise_publisher_name"
-            translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
+    <string name="pt_prune_list_reorder_series_title_summary"
+            translatable="false">Match titles like “The Classics” and “Classics, The”.</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="pt_prune_list_reorder_publisher_name"
+            translatable="false">Publisher name matching</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="pt_prune_list_reorder_publisher_name_summary"
+            translatable="false">Match names like “The Library Press” and “Library Press, The”.</string>
+
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advise to take a backup before proceeding!</string>

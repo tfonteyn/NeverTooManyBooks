@@ -46,7 +46,7 @@ public interface PublisherDao
         extends Purgeable, Positional {
 
     /**
-     * Preference key: whether to normalise the publisher name during pruning.
+     * Preference key: whether to reorder the publisher name during pruning.
      * <p>
      * Type: {@code boolean}
      *
@@ -54,7 +54,7 @@ public interface PublisherDao
      * @see #pruneList(Context, Collection, boolean, Function)
      * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
      */
-    String PK_NORMALISE_PUBLISHER_NAME = "normalise.publisher.name";
+    String PK_PRUNE_LIST_REORDER_PUBLISHER_NAME = "prune.list.reorder.publisher.name";
 
     /**
      * Get a unique list of all publisher names.
@@ -77,7 +77,7 @@ public interface PublisherDao
                               @NonNull final Collection<Publisher> list,
                               @NonNull final Function<Publisher, Locale> localeSupplier) {
         final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_NORMALISE_PUBLISHER_NAME, false);
+                                                .getBoolean(PK_PRUNE_LIST_REORDER_PUBLISHER_NAME, false);
         return pruneList(context, list, normalise, localeSupplier);
     }
 
