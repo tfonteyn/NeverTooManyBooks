@@ -62,6 +62,7 @@ public final class ASIN
         return valid;
     }
 
+    @NonNull
     @Override
     public String asText() {
         return code;
