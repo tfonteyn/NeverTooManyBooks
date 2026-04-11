@@ -44,14 +44,14 @@ public interface PublisherDao
         extends Purgeable, Positional {
 
     /**
-     * Preference key: whether to normalize the publisher name during pruning.
+     * Preference key: whether to normalise the publisher name during pruning.
      * <p>
      * Type: {@code boolean}
      *
      * @see #pruneList(Context, Collection, Function)
      * @see #pruneList(Context, Collection, boolean, Function)
      */
-    String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
+    String PK_NORMALISE_PUBLISHER_NAME = "normalize.publisher.name";
 
     /**
      * Get a unique list of all publisher names.
@@ -73,9 +73,9 @@ public interface PublisherDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Publisher> list,
                               @NonNull final Function<Publisher, Locale> localeSupplier) {
-        final boolean normalize = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_NORMALIZE_PUBLISHER_NAME, false);
-        return pruneList(context, list, normalize, localeSupplier);
+        final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
+                                                .getBoolean(PK_NORMALISE_PUBLISHER_NAME, false);
+        return pruneList(context, list, normalise, localeSupplier);
     }
 
     /**
@@ -83,14 +83,14 @@ public interface PublisherDao
      *
      * @param context        Current context
      * @param list           List to clean up
-     * @param normalize      flag, whether to normalise the name
+     * @param normalise      flag, whether to normalise the name
      * @param localeSupplier deferred supplier for a {@link Locale}.
      *
      * @return {@code true} if the list was modified.
      */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Publisher> list,
-                      boolean normalize,
+                      boolean normalise,
                       @NonNull Function<Publisher, Locale> localeSupplier);
 
     /**

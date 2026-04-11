@@ -787,7 +787,7 @@ public class ExtArrayAdapter<T>
                 results.count = values.size();
             } else {
                 final String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
-                final String ndPrefixString = normalizeAndLowercase(prefixString);
+                final String ndPrefixString = normaliseAndLowercase(prefixString);
 
                 final int count = values.size();
                 final Collection<T> newValues = new ArrayList<>();
@@ -799,13 +799,13 @@ public class ExtArrayAdapter<T>
 
                     // First match against the whole, non-split value
                     if (valueText.startsWith(prefixString)
-                        || normalizeAndLowercase(valueText).startsWith(ndPrefixString)) {
+                        || normaliseAndLowercase(valueText).startsWith(ndPrefixString)) {
                         newValues.add(value);
                     } else {
                         final String[] words = valueText.split(" ");
                         for (final String word : words) {
                             if (word.startsWith(prefixString)
-                                || normalizeAndLowercase(word).startsWith(ndPrefixString)) {
+                                || normaliseAndLowercase(word).startsWith(ndPrefixString)) {
                                 newValues.add(value);
                                 break;
                             }
@@ -821,16 +821,16 @@ public class ExtArrayAdapter<T>
         }
 
         /**
-         * Normalize a given string to contain only lower case alpha/digit
+         * Normalise a given string to contain only lower case alpha/digit
          * and single space characters.
          *
          * @param text to normalise
          *
-         * @return normalized text
+         * @return normalised text
          */
         @NonNull
-        private String normalizeAndLowercase(@NonNull final CharSequence text) {
-            return textNormaliser.normalize(text).toLowerCase(Locale.getDefault());
+        private String normaliseAndLowercase(@NonNull final CharSequence text) {
+            return textNormaliser.normalise(text).toLowerCase(Locale.getDefault());
         }
     }
 

@@ -28,9 +28,9 @@ interface TextTransliterator {
     /**
      * Transliterate the given string.
      *
-     * @param text to normalise
+     * @param text to process
      *
-     * @return normalized text
+     * @return transliterated text
      */
     @NonNull
     String transliterate(@NonNull CharSequence text);

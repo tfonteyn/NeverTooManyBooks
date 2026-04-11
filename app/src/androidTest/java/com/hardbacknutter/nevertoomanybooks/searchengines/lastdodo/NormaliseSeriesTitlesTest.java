@@ -35,10 +35,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class NormalizeSeriesTitlesTest
+class NormaliseSeriesTitlesTest
         extends BaseDBTest {
 
-    private static final String TAG = "normalizeSeriesTitlesTe";
+    private static final String TAG = "normaliseSeriesTitlesTe";
 
     private LastDodoSearchEngine searchEngine;
     private Book book;
@@ -57,10 +57,10 @@ class NormalizeSeriesTitlesTest
 
     /** Dutch test data using site locale Dutch. */
     @Test
-    void normalize() {
+    void normalise() {
         book.add(Series.from("titel, De"));
 
-        searchEngine.normalizeSeriesTitles(context, book);
+        searchEngine.normaliseSeriesTitles(context, book);
 
         final List<Series> series = book.getSeries();
         assertEquals(1, series.size());
@@ -69,10 +69,10 @@ class NormalizeSeriesTitlesTest
 
     /** Dutch test data using site locale Dutch. */
     @Test
-    void normalize1() {
+    void normalise1() {
         book.add(Series.from("Dames van de Pillar To Post, De"));
 
-        searchEngine.normalizeSeriesTitles(context, book);
+        searchEngine.normaliseSeriesTitles(context, book);
 
         final List<Series> series = book.getSeries();
         assertEquals(1, series.size());
@@ -81,11 +81,11 @@ class NormalizeSeriesTitlesTest
 
     /** Dutch test data using site locale Dutch. */
     @Test
-    void normalize2() {
+    void normalise2() {
         book.add(Series.from("titel, De"));
         book.add(Series.from("De titel"));
 
-        searchEngine.normalizeSeriesTitles(context, book);
+        searchEngine.normaliseSeriesTitles(context, book);
 
         final List<Series> series = book.getSeries();
         assertEquals(1, series.size());

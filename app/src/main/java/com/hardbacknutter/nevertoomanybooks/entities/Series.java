@@ -317,7 +317,7 @@ public class Series
             final String uNumber = StringCoder.unEscape(matcher.group(2));
 
             final Series newSeries = new Series(uTitle);
-            newSeries.setNumber(normalizeNumber(uNumber));
+            newSeries.setNumber(normaliseNumber(uNumber));
             return newSeries;
 
         } else {
@@ -401,7 +401,7 @@ public class Series
         if (!uNumber.isEmpty()) {
             final Matcher matcher = NUMBER_PATTERN.matcher(uNumber);
             if (matcher.find()) {
-                newSeries.setNumber(normalizeNumber(matcher.group(1)));
+                newSeries.setNumber(normaliseNumber(matcher.group(1)));
                 return newSeries;
             }
         }
@@ -418,7 +418,7 @@ public class Series
      * @return final resulting number string
      */
     @NonNull
-    private static String normalizeNumber(@Nullable final String source) {
+    private static String normaliseNumber(@Nullable final String source) {
         if (source == null) {
             return "";
         }

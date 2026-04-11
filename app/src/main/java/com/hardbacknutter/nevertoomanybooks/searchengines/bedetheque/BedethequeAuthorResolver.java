@@ -252,11 +252,11 @@ public class BedethequeAuthorResolver
      */
     private char firstChar(@NonNull final CharSequence name) {
         // transliterate is 'enough'
-        final String normalized = textNormaliser.transliterate(String.valueOf(name.charAt(0)));
-        if (normalized.isEmpty()) {
+        final String normalised = textNormaliser.transliterate(String.valueOf(name.charAt(0)));
+        if (normalised.isEmpty()) {
             return '0';
         }
-        final char c1 = normalized.toUpperCase(locale).charAt(0);
+        final char c1 = normalised.toUpperCase(locale).charAt(0);
         return Character.isAlphabetic(c1) ? c1 : '0';
     }
 

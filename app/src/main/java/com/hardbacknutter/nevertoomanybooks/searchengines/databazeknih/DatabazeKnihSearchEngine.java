@@ -477,7 +477,7 @@ public class DatabazeKnihSearchEngine
                 // 0..100 / 20 -> 0.0..5.0
                 final String s = percentage.toString().strip();
                 final float rating = (float) Integer.parseInt(s) / 20;
-                ratingParser.normalize(rating).ifPresent(book::setRating);
+                ratingParser.normalise(rating).ifPresent(book::setRating);
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }

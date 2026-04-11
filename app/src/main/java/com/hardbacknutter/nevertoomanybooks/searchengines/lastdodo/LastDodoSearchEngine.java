@@ -645,7 +645,7 @@ public class LastDodoSearchEngine
         // post-process all found data.
 
 
-        normalizeSeriesTitles(context, book);
+        normaliseSeriesTitles(context, book);
 
         // It seems the site only lists a single number,
         // although a book can be in several Series.
@@ -698,7 +698,7 @@ public class LastDodoSearchEngine
      * @param book    to process
      */
     @VisibleForTesting
-    public void normalizeSeriesTitles(@NonNull final Context context,
+    public void normaliseSeriesTitles(@NonNull final Context context,
                                       @NonNull final Book book) {
 
         final List<Series> seriesList = book.getSeries();

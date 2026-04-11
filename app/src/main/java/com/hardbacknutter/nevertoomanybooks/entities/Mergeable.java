@@ -72,11 +72,11 @@ public interface Mergeable {
         // Single-spaces in the string are preserved.
         return Objects.hash(getNameFields()
                                     .stream()
-                                    .map(textNormaliser::normalize)
+                                    .map(textNormaliser::normalise)
                                     .collect(Collectors.toList()))
                == Objects.hash(that.getNameFields()
                                    .stream()
-                                   .map(textNormaliser::normalize)
+                                   .map(textNormaliser::normalise)
                                    .collect(Collectors.toList()));
     }
 

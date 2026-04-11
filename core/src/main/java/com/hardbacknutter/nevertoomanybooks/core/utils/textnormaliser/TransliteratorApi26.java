@@ -110,13 +110,13 @@ class TransliteratorApi26
     @NonNull
     public String transliterate(@NonNull final CharSequence text) {
         // Decompose accents (NFD)
-        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+        String normalised = Normalizer.normalize(text, Normalizer.Form.NFD);
         // Remove combining diacritics (accents)
-        normalized = DIACRITICS_PATTERN.matcher(normalized).replaceAll("");
+        normalised = DIACRITICS_PATTERN.matcher(normalised).replaceAll("");
         // Replace extra characters that don't decompose
-        final StringBuilder result = new StringBuilder(normalized.length());
-        for (int i = 0; i < normalized.length(); i++) {
-            final char c = normalized.charAt(i);
+        final StringBuilder result = new StringBuilder(normalised.length());
+        for (int i = 0; i < normalised.length(); i++) {
+            final char c = normalised.charAt(i);
             final String replacement = EXTRA_REPLACEMENTS.get(c);
             result.append(replacement != null ? replacement : c);
         }

@@ -438,7 +438,7 @@ public class GoogleBooksSearchEngine
         // so we rely on decimal separator "." ... flw...
         f = volumeInfo.optFloat("averageRating");
         if (!Float.isNaN(f) && f > 0) {
-            ratingParser.normalize(f).ifPresent(book::setRating);
+            ratingParser.normalise(f).ifPresent(book::setRating);
         }
 
         s = volumeInfo.optString("language", null);

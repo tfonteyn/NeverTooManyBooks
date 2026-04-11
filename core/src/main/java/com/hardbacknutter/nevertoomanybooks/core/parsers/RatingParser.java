@@ -85,7 +85,7 @@ public class RatingParser {
         try {
             final float rating = parser.apply(s);
             if (rating > 0) {
-                return normalize(rating);
+                return normalise(rating);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
@@ -101,7 +101,7 @@ public class RatingParser {
      * @return a value within the range 0..5
      */
     @NonNull
-    public Optional<Float> normalize(final float rating) {
+    public Optional<Float> normalise(final float rating) {
         if (Float.isNaN(rating)) {
             return Optional.empty();
         }

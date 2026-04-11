@@ -32,7 +32,7 @@ public interface Code {
     boolean isValid();
 
     /**
-     * Get the code as a normalized text string.
+     * Get the code as a normalised text string.
      * Normalization format depends on the implementation.
      *
      * @return string

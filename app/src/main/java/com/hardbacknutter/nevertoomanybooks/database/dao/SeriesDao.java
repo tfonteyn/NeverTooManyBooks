@@ -44,14 +44,14 @@ public interface SeriesDao
         extends Purgeable, Positional {
 
     /**
-     * Preference key: whether to normalize the title during pruning.
+     * Preference key: whether to normalise the title during pruning.
      * <p>
      * Type: {@code boolean}
      *
      * @see #pruneList(Context, Collection, Function)
      * @see #pruneList(Context, Collection, boolean, Function)
      */
-    String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
+    String PK_NORMALISE_SERIES_TITLE = "normalize.series.title";
 
     /**
      * Get a unique list of all {@link Series} titles.
@@ -97,9 +97,9 @@ public interface SeriesDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Series> list,
                               @NonNull final Function<Series, Locale> localeSupplier) {
-        final boolean normalize = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_NORMALIZE_SERIES_TITLE, false);
-        return pruneList(context, list, normalize, localeSupplier);
+        final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
+                                                .getBoolean(PK_NORMALISE_SERIES_TITLE, false);
+        return pruneList(context, list, normalise, localeSupplier);
     }
 
     /**
@@ -107,14 +107,14 @@ public interface SeriesDao
      *
      * @param context        Current context
      * @param list           List to clean up
-     * @param normalize      flag, whether to normalise the title
+     * @param normalise      flag, whether to normalise the title
      * @param localeSupplier deferred supplier for a {@link Locale}.
      *
      * @return {@code true} if the list was modified.
      */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Series> list,
-                      boolean normalize,
+                      boolean normalise,
                       @NonNull Function<Series, Locale> localeSupplier);
 
     /**

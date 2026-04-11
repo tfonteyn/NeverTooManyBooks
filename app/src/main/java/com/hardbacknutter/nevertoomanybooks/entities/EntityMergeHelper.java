@@ -113,7 +113,7 @@ public class EntityMergeHelper<T extends Mergeable> {
             // Single-spaces in the string are preserved.
             final List<String> fields = current.getNameFields()
                                                .stream()
-                                               .map(textNormaliser::normalize)
+                                               .map(textNormaliser::normalise)
                                                .map(name -> name.toLowerCase(currentLocale))
                                                .collect(Collectors.toList());
             final int hash = Objects.hash(fields);

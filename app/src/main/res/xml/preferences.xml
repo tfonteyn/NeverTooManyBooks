@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -226,7 +226,7 @@
         <!--            android:key="normalize.series.title"-->
         <!--            android:summaryOff="@string/no"-->
         <!--            android:summaryOn="@string/yes"-->
-        <!--            android:title="@string/pt_normalize_series_title" />-->
+        <!--            android:title="@string/pt_normalise_series_title" />-->
 
         <!--        <SwitchPreference-->
         <!--            android:defaultValue="false"-->
@@ -234,7 +234,7 @@
         <!--            android:key="normalize.publisher.name"-->
         <!--            android:summaryOff="@string/no"-->
         <!--            android:summaryOn="@string/yes"-->
-        <!--            android:title="@string/pt_normalize_publisher_name" />-->
+        <!--            android:title="@string/pt_normalise_publisher_name" />-->
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment"

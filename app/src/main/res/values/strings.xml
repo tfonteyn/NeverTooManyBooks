@@ -2387,10 +2387,10 @@
     <!-- endregion -->
 
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_normalize_series_title"
+    <string name="pt_normalise_series_title"
             translatable="false">Normalize series titles (EXPERIMENTAL, see Help)</string>
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_normalize_publisher_name"
+    <string name="pt_normalise_publisher_name"
             translatable="false">Normalize publisher names (EXPERIMENTAL, see Help)</string>
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"

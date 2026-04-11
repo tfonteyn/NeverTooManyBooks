@@ -46,14 +46,14 @@ public interface TocEntryDao
         extends Purgeable, Positional {
 
     /**
-     * Preference key: whether to normalize the title during pruning.
+     * Preference key: whether to normalise the title during pruning.
      * <p>
      * Type: {@code boolean}
      *
      * @see #pruneList(Context, Collection, Function)
      * @see #pruneList(Context, Collection, boolean, Function)
      */
-    String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
+    String PK_NORMALISE_TOC_TITLE = "normalize.toc.title";
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
@@ -135,9 +135,9 @@ public interface TocEntryDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<TocEntry> list,
                               @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        final boolean normalize = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_NORMALIZE_TOC_TITLE, false);
-        return pruneList(context, list, normalize, localeSupplier);
+        final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
+                                                .getBoolean(PK_NORMALISE_TOC_TITLE, false);
+        return pruneList(context, list, normalise, localeSupplier);
     }
 
     /**
@@ -145,14 +145,14 @@ public interface TocEntryDao
      *
      * @param context        Current context
      * @param list           List to clean up
-     * @param normalize      flag, whether to normalise the title
+     * @param normalise      flag, whether to normalise the title
      * @param localeSupplier deferred supplier for a {@link Locale}.
      *
      * @return {@code true} if the list was modified.
      */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<TocEntry> list,
-                      boolean normalize,
+                      boolean normalise,
                       @NonNull Function<TocEntry, Locale> localeSupplier);
 
     /**

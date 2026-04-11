@@ -44,11 +44,11 @@ class TextNormaliserTest {
         String source;
 
         source = "JeanMarie";
-        assertEquals("JeanMarie", textNormaliser.normalize(source));
+        assertEquals("JeanMarie", textNormaliser.normalise(source));
         assertEquals("jeanmarie", textNormaliser.orderByColumn(source, locale));
 
         source = "Jean-Marie";
-        assertEquals("Jean Marie", textNormaliser.normalize(source));
+        assertEquals("Jean Marie", textNormaliser.normalise(source));
         assertEquals("jeanmarie", textNormaliser.orderByColumn(source, locale));
     }
 
@@ -62,19 +62,19 @@ class TextNormaliserTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", textNormaliser.normalize(source));
+        assertEquals("aBc Def", textNormaliser.normalise(source));
         assertEquals("abcdef", textNormaliser.orderByColumn(source, locale));
 
         source = "États";
-        assertEquals("Etats", textNormaliser.normalize(source));
+        assertEquals("Etats", textNormaliser.normalise(source));
         assertEquals("etats", textNormaliser.orderByColumn(source, locale));
 
         source = "Première République française";
-        assertEquals("Premiere Republique francaise", textNormaliser.normalize(source));
+        assertEquals("Premiere Republique francaise", textNormaliser.normalise(source));
         assertEquals("premiererepubliquefrancaise", textNormaliser.orderByColumn(source, locale));
 
         source = "États, (française) \"République\"";
-        assertEquals("Etats francaise Republique", textNormaliser.normalize(source));
+        assertEquals("Etats francaise Republique", textNormaliser.normalise(source));
         assertEquals("etatsfrancaiserepublique", textNormaliser.orderByColumn(source, locale));
     }
 
@@ -88,24 +88,24 @@ class TextNormaliserTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", textNormaliser.normalize(source));
+        assertEquals("aBc Def", textNormaliser.normalise(source));
         assertEquals("abcdef", textNormaliser.orderByColumn(source, locale));
 
         source = "Jäger";
-        assertEquals("Jager", textNormaliser.normalize(source));
+        assertEquals("Jager", textNormaliser.normalise(source));
         assertEquals("jager", textNormaliser.orderByColumn(source, locale));
 
         // 2025-09-21: behaviour change: "ß" is transliterated to "ss"
         source = "Jäger, (größte)";
-        assertEquals("Jager grosste", textNormaliser.normalize(source));
+        assertEquals("Jager grosste", textNormaliser.normalise(source));
         assertEquals("jagergrosste", textNormaliser.orderByColumn(source, locale));
 
         source = "Jan Groß";
-        assertEquals("Jan Gross", textNormaliser.normalize(source));
+        assertEquals("Jan Gross", textNormaliser.normalise(source));
         assertEquals("jangross", textNormaliser.orderByColumn(source, locale));
 
         source = "Jan Gross";
-        assertEquals("Jan Gross", textNormaliser.normalize(source));
+        assertEquals("Jan Gross", textNormaliser.normalise(source));
         assertEquals("jangross", textNormaliser.orderByColumn(source, locale));
 
     }
@@ -120,11 +120,11 @@ class TextNormaliserTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", textNormaliser.normalize(source));
+        assertEquals("aBc Def", textNormaliser.normalise(source));
         assertEquals("abcdef", textNormaliser.orderByColumn(source, locale));
 
         source = "Luís de Camões";
-        assertEquals("Luis de Camoes", textNormaliser.normalize(source));
+        assertEquals("Luis de Camoes", textNormaliser.normalise(source));
         assertEquals("luisdecamoes", textNormaliser.orderByColumn(source, locale));
     }
 
@@ -139,11 +139,11 @@ class TextNormaliserTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", textNormaliser.normalize(source));
+        assertEquals("aBc Def", textNormaliser.normalise(source));
         assertEquals("abcdef", textNormaliser.orderByColumn(source, locale));
 
         source = "ალექსანდრე ამილახვარი";
-        assertEquals("ალექსანდრე ამილახვარი", textNormaliser.normalize(source));
+        assertEquals("ალექსანდრე ამილახვარი", textNormaliser.normalise(source));
         assertEquals("ალექსანდრეამილახვარი", textNormaliser.orderByColumn(source, locale));
     }
 
@@ -157,11 +157,11 @@ class TextNormaliserTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", textNormaliser.normalize(source));
+        assertEquals("aBc Def", textNormaliser.normalise(source));
         assertEquals("abcdef", textNormaliser.orderByColumn(source, locale));
 
         source = "Ἀνδρέας Κάλβος";
-        assertEquals("Ανδρεας Καλβος", textNormaliser.normalize(source));
+        assertEquals("Ανδρεας Καλβος", textNormaliser.normalise(source));
         assertEquals("ανδρεαςκαλβος", textNormaliser.orderByColumn(source, locale));
     }
 
@@ -175,11 +175,11 @@ class TextNormaliserTest {
         String source;
 
         source = "aBc Def";
-        assertEquals("aBc Def", textNormaliser.normalize(source));
+        assertEquals("aBc Def", textNormaliser.normalise(source));
         assertEquals("abcdef", textNormaliser.orderByColumn(source, locale));
 
         source = "Фёдор Алекса́ндрович Абра́мов";
-        assertEquals("Федор Александрович Абрамов", textNormaliser.normalize(source));
+        assertEquals("Федор Александрович Абрамов", textNormaliser.normalise(source));
         assertEquals("федоралександровичабрамов", textNormaliser.orderByColumn(source, locale));
     }
 
@@ -194,7 +194,7 @@ class TextNormaliserTest {
                 (char) 0x00A0 +
                 (char) 0x3000 +
                 "ghi";
-        assertEquals("aBc Def ghi", textNormaliser.normalize(source));
+        assertEquals("aBc Def ghi", textNormaliser.normalise(source));
         assertEquals("abcdefghi", textNormaliser.orderByColumn(source, locale));
     }
 }

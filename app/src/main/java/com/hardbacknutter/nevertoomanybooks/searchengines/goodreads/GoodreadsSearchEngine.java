@@ -551,7 +551,7 @@ public class GoodreadsSearchEngine
         o = work.optJSONObject("stats");
         if (o != null) {
             final float averageRating = o.optFloat("averageRating");
-            ratingParser.normalize(averageRating).ifPresent(book::setRating);
+            ratingParser.normalise(averageRating).ifPresent(book::setRating);
         }
     }
 

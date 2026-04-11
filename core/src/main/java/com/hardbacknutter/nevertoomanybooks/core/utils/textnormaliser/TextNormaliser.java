@@ -61,7 +61,7 @@ public class TextNormaliser
         implements TextTransliterator {
 
     /** KEEP alpha/digit. KEEP SINGLE spaces. */
-    private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
+    private static final Pattern NORMALISE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
     /** KEEP alpha/digit. REMOVE ALL white-space */
     private static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
@@ -102,13 +102,13 @@ public class TextNormaliser
      *
      * @param text to normalise
      *
-     * @return normalized text
+     * @return normalised text
      */
     @NonNull
-    public String normalize(@NonNull final CharSequence text) {
+    public String normalise(@NonNull final CharSequence text) {
         String result = transliterator.transliterate(text);
         // REPLACE unwanted characters with a space; spaces are KEPT
-        result = NORMALIZE_PATTERN.matcher(result).replaceAll(SINGLE_SPACE);
+        result = NORMALISE_PATTERN.matcher(result).replaceAll(SINGLE_SPACE);
         // Condense all special or duplicate whitespace into single spaces
         result = WHITESPACE.matcher(result).replaceAll(SINGLE_SPACE);
 
@@ -140,7 +140,7 @@ public class TextNormaliser
     /**
      * Normalise the given string and apply the given pattern.
      * <p>
-     * Dev. note: The difference with {@link #normalize(CharSequence)} is that the {@code -}
+     * Dev. note: The difference with {@link #normalise(CharSequence)} is that the {@code -}
      * character is <strong>KEPT</strong> as a negation operator.
      * <p>
      * The case is preserved.

@@ -103,14 +103,14 @@ public class TocEntryDaoImpl
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<TocEntry> list,
-                             final boolean normalize,
+                             final boolean normalise,
                              @NonNull final Function<TocEntry, Locale> localeSupplier) {
         // Reminder: only abort if empty. We rely on 'fixId' being called for ALL list values.
         if (list.isEmpty()) {
             return false;
         }
 
-        if (normalize) {
+        if (normalise) {
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
             final ReorderHelper reorderHelper = new ReorderHelper(allLocales);

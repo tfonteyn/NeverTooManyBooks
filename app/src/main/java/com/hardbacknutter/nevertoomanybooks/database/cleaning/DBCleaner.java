@@ -255,15 +255,15 @@ public class DBCleaner {
                 if (matcher.find()) {
                     try {
                         final float v = Float.parseFloat(matcher.group());
-                        final Optional<Float> v2 = ratingParser.normalize(v);
+                        final Optional<Float> v2 = ratingParser.normalise(v);
                         if (v2.isPresent()) {
-                            final float normalized = v2.get();
+                            final float normalised = v2.get();
                             // If they differ with a difference equal or larger than the epsilon
                             // OR we previously substituted the decimal separator,
                             // we need to update the database with the new value
-                            if (Math.abs(v - normalized) >= FLOAT_EPSILON) {
+                            if (Math.abs(v - normalised) >= FLOAT_EPSILON) {
                                 if (modified) {
-                                    toUpdate.put(id, String.valueOf(normalized));
+                                    toUpdate.put(id, String.valueOf(normalised));
                                 }
                             }
                         } else {
