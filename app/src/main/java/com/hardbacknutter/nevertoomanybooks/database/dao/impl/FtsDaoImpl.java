@@ -126,14 +126,14 @@ public class FtsDaoImpl
             stmt.bindNull(position);
         } else {
             // Simple normalise, this is the database insert
-            final String normalised = list
+            final String text = list
                     .stream()
                     .map(textNormaliser::normalise)
                     .collect(Collectors.joining(LIST_DELIMITER));
-            if (normalised.isBlank()) {
+            if (text.isBlank()) {
                 stmt.bindNull(position);
             } else {
-                stmt.bindString(position, normalised);
+                stmt.bindString(position, text);
             }
         }
     }

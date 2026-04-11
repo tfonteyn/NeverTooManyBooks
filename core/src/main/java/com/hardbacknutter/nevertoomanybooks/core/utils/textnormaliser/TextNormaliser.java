@@ -69,9 +69,6 @@ public class TextNormaliser
     /** Replace ALL white-space characters with a single space. */
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
-    /** KEEP alpha/digit. KEEP white-space and '-' */
-    private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d\\s-]");
-
     private static final String SINGLE_SPACE = " ";
     private static final String REMOVE = "";
     @NonNull
@@ -135,29 +132,5 @@ public class TextNormaliser
         result = ORDERBY_PATTERN.matcher(result).replaceAll(REMOVE);
 
         return result.toLowerCase(locale);
-    }
-
-    /**
-     * Normalise the given string and apply the given pattern.
-     * <p>
-     * Dev. note: The difference with {@link #normalise(CharSequence)} is that the {@code -}
-     * character is <strong>KEPT</strong> as a negation operator.
-     * <p>
-     * The case is preserved.
-     * Spaces are <strong>KEPT</strong>
-     *
-     * @param text to normalise
-     *
-     * @return normalised text
-     */
-    @NonNull
-    public String ftsNormalise(@NonNull final CharSequence text) {
-        String result = transliterator.transliterate(text);
-        // REMOVE unwanted characters; whitespace and '-'  are KEPT
-        result = FTS_PATTERN.matcher(result).replaceAll(REMOVE);
-        // Condense all special or duplicate whitespace into single spaces
-        result = WHITESPACE.matcher(result).replaceAll(SINGLE_SPACE);
-
-        return result.strip();
     }
 }

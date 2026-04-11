@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -36,12 +37,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.util.logger.LoggerFactory;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * Helper methods for preparing a search.
@@ -49,6 +48,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public class FtsDaoHelper {
 
     private static final String TAG = "FtsDaoHelper";
+
+    /** Replace ALL white-space characters with a single space. */
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+
+    /** KEEP alpha/digit. KEEP white-space and '-' */
+    private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d\\s-]");
+
+    private static final String SINGLE_SPACE = " ";
 
     @NonNull
     private final TextNormaliser textNormaliser;
@@ -85,7 +92,7 @@ public class FtsDaoHelper {
 
         // Keep only alpha/digit, space and '-' characters.
         // We'll use an array to loop over it.
-        final char[] chars = textNormaliser.ftsNormalise(searchText).toCharArray();
+        final char[] chars = normalise(searchText).toCharArray();
         // Initial position
         int pos = 0;
         // 'previous' character
@@ -132,7 +139,7 @@ public class FtsDaoHelper {
 
         if (domain != null) {
             // prepend each word with the FTS column name.
-            return Arrays.stream(cleanedText.split(" "))
+            return Arrays.stream(cleanedText.split(SINGLE_SPACE))
                          .filter(word -> !word.isEmpty())
                          .map(word -> ' ' + domain + ':' + word)
                          .collect(Collectors.joining());
@@ -140,6 +147,30 @@ public class FtsDaoHelper {
             // no domain, return as-is
             return cleanedText;
         }
+    }
+
+    /**
+     * Normalise the given string and apply the given pattern.
+     * <p>
+     * Dev. note: The difference with {@link TextNormaliser#normalise(CharSequence)}
+     * is that the {@code -} character is <strong>KEPT</strong> as a negation operator.
+     * <p>
+     * The case is preserved.
+     * Spaces are <strong>KEPT</strong>
+     *
+     * @param text to normalise
+     *
+     * @return normalised text
+     */
+    @NonNull
+    private String normalise(@NonNull final CharSequence text) {
+        String result = textNormaliser.transliterate(text);
+        // REMOVE unwanted characters; whitespace and '-'  are KEPT
+        result = FTS_PATTERN.matcher(result).replaceAll("");
+        // Condense all special or duplicate whitespace into single spaces
+        result = WHITESPACE.matcher(result).replaceAll(SINGLE_SPACE);
+
+        return result.strip();
     }
 
     /**
@@ -204,7 +235,7 @@ public class FtsDaoHelper {
             }
         } else {
             // Add a where clause for: "AND books._id IN (list)".
-            filters.add(new NumberListFilter<>(TBL_BOOKS, DOM_PK_ID,
+            filters.add(new NumberListFilter<>(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_PK_ID,
                                                searchCriteria.getBookIdList()));
         }
 
