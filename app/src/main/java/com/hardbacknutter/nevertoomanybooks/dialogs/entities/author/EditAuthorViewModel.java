@@ -227,11 +227,11 @@ public class EditAuthorViewModel
      */
     public boolean isModified() {
         // We're not linked to a book here, hence no author roles.
-        return !(original.isSameName(currentEdit)
-                 && Objects.equals(original.getBirthDate(), currentEdit.getBirthDate())
-                 && Objects.equals(original.getDeathDate(), currentEdit.getDeathDate())
-                 && Objects.equals(original.getRealAuthor(), currentEdit.getRealAuthor())
-                 && original.isComplete() == currentEdit.isComplete());
+        return !original.isSameName(currentEdit)
+               || !Objects.equals(original.getBirthDate(), currentEdit.getBirthDate())
+               || !Objects.equals(original.getDeathDate(), currentEdit.getDeathDate())
+               || !Objects.equals(original.getRealAuthor(), currentEdit.getRealAuthor())
+               || original.isComplete() != currentEdit.isComplete();
     }
 
     /**
