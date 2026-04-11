@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 public interface Style {
 
     /**
-     * The (arbitrary) position for a style which is not on the user preferred style list.
+     * The (arbitrary) position for a Style which is not on the users preferred Style list.
      * i.e. it's at the very end.
      */
     int MENU_POSITION_NOT_PREFERRED = 1000;
@@ -61,9 +61,9 @@ public interface Style {
     /**
      * Get the id.
      * <ul>
-     *      <li>Positive ID's: user-defined styles</li>
-     *      <li>Negative ID's: built-in styles</li>
-     *      <li>0: a user-defined style which has not been saved yet</li>
+     *      <li>Positive ID's: user-defined Styles</li>
+     *      <li>Negative ID's: built-in Styles</li>
+     *      <li>0: a user-defined Style which has not been saved yet</li>
      * </ul>
      *
      * @return id
@@ -78,7 +78,7 @@ public interface Style {
     void setId(long id);
 
     /**
-     * Get the UUID for this style.
+     * Get the UUID for this Style.
      * <p>
      * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
      *
@@ -88,7 +88,7 @@ public interface Style {
     String getUuid();
 
     /**
-     * Get the type of this style.
+     * Get the type of this Style.
      *
      * @return type
      */
@@ -106,28 +106,28 @@ public interface Style {
     String getLabel(@NonNull Context context);
 
     /**
-     * Get the menu position of this style as sorted by the user.
+     * Get the menu position of this Style as sorted by the user.
      *
      * @return menuPosition
      */
     int getMenuPosition();
 
     /**
-     * Set the menu position of this style as sorted by the user.
+     * Set the menu position of this Style as sorted by the user.
      *
      * @param menuPosition to set
      */
     void setMenuPosition(int menuPosition);
 
     /**
-     * Check if this is a user preferred style.
+     * Check if this is a user preferred Style.
      *
      * @return flag
      */
     boolean isPreferred();
 
     /**
-     * Set this style as a user preferred style.
+     * Set this Style as a user preferred Style.
      *
      * @param preferred flag
      */
@@ -145,7 +145,7 @@ public interface Style {
     int getExpansionLevel();
 
     /**
-     * Get the layout as set on the style.
+     * Get the layout as set on the Style.
      *
      * @return layout
      */
@@ -160,7 +160,7 @@ public interface Style {
     void setLayout(@NonNull ScreenLayout layout);
 
     /**
-     * Get the layout as set on the style, potentially overriding it
+     * Get the layout as set on the Style, potentially overriding it
      * depending on the given flag.
      * <p>
      * <strong>Do not use this method for storing the layout!</strong>
@@ -208,8 +208,10 @@ public interface Style {
     /**
      * Whether the user prefers titles of books, series,... to be displayed
      * as "Title, The" or as the original "The Title". Not applicable to all languages though.
+     * <p>
+     * Note this is also used for the Publisher name.
      *
-     * @return {@code true} if the Given name should be displayed before the Family name
+     * @return {@code true} if titles should have the article/prefix (if present) moved to the end.
      */
     boolean isShowReorderedTitle();
 
@@ -221,7 +223,7 @@ public interface Style {
     boolean isSortAuthorByGivenName();
 
     /**
-     * Get the text scale <strong>identifier</strong> used by the style.
+     * Get the text scale <strong>identifier</strong> used by the Style.
      *
      * @return scale
      */
@@ -229,7 +231,7 @@ public interface Style {
     TextScale getTextScale();
 
     /**
-     * Get the cover scale <strong>identifier</strong> used by the style.
+     * Get the cover scale <strong>identifier</strong> used by the Style.
      * <p>
      * Used for user preferences and stored in the database.
      *
@@ -247,7 +249,7 @@ public interface Style {
     CitationType getCitationType();
 
     /**
-     * Check if the style wants the specified header to be displayed.
+     * Check if the Style wants the specified header to be displayed.
      *
      * @param bit to check
      *
@@ -317,7 +319,7 @@ public interface Style {
     boolean isGroupRowUsesPreferredHeight();
 
     /**
-     * Get the number of groups in this style.
+     * Get the number of groups in this Style.
      *
      * @return the number of groups
      */
@@ -372,7 +374,7 @@ public interface Style {
             throws IndexOutOfBoundsException;
 
     /**
-     * Get all groups assigned to this style.
+     * Get all groups assigned to this Style.
      *
      * @return an <strong>unmodifiable</strong> List
      */
@@ -380,9 +382,11 @@ public interface Style {
     List<BooklistGroup> getGroupList();
 
     /**
+     * Get the bitmask representing the role of author we consider the primary author.
+     * <p>
      * {@link BooklistGroup#AUTHOR} property.
      *
-     * @return bitmask representing the role of author we consider the primary author
+     * @return bitmask
      */
     @AuthorRole.Role
     int getPrimaryAuthorRole();
@@ -397,7 +401,8 @@ public interface Style {
     boolean isShowBooksUnderEachGroup(@BooklistGroup.Id int groupId);
 
     /**
-     * Should we use the extended "Read progress" settings, or the simple "Read/Unread" status?
+     * Whether we should use the extended "Read progress" settings,
+     * or the simple "Read/Unread" status.
      *
      * @return {@code true} to use the extended options,
      *         {@code false} to use the traditional "Read/Unread" status.
@@ -428,11 +433,11 @@ public interface Style {
          */
         User(0),
         /**
-         * A predefined style.
+         * A predefined Style.
          */
         Builtin(1),
         /**
-         * The global style, i.e. the defaults as set by the user.
+         * The global Style, i.e. the defaults as set by the user.
          */
         Global(2);
 
