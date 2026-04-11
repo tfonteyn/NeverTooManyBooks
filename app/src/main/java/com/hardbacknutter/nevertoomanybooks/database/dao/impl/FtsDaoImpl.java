@@ -115,7 +115,7 @@ public class FtsDaoImpl
             stmt.bindNull(position);
         } else {
             // Simple normalize, this is the database insert
-            stmt.bindString(position, textNormalizer.normalize(text));
+            stmt.bindString(position, textNormaliser.normalize(text));
         }
     }
 
@@ -128,7 +128,7 @@ public class FtsDaoImpl
             // Simple normalize, this is the database insert
             final String normalized = list
                     .stream()
-                    .map(textNormalizer::normalize)
+                    .map(textNormaliser::normalize)
                     .collect(Collectors.joining(LIST_DELIMITER));
             if (normalized.isBlank()) {
                 stmt.bindNull(position);

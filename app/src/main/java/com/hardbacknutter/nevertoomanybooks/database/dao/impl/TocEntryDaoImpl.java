@@ -332,7 +332,7 @@ public class TocEntryDaoImpl
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, author.getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
-                    stmtInsToc.bindString(3, textNormalizer.orderByColumn(obTitle, locale));
+                    stmtInsToc.bindString(3, textNormaliser.orderByColumn(obTitle, locale));
                     stmtInsToc.bindString(4, tocEntry
                             .getFirstPublicationDate().getIsoString());
 
@@ -349,7 +349,7 @@ public class TocEntryDaoImpl
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
                     stmtUpdToc.bindString(1, tocEntry.getTitle());
-                    stmtUpdToc.bindString(2, textNormalizer.orderByColumn(obTitle, locale));
+                    stmtUpdToc.bindString(2, textNormaliser.orderByColumn(obTitle, locale));
                     stmtUpdToc.bindString(3, tocEntry
                             .getFirstPublicationDate().getIsoString());
                     stmtUpdToc.bindLong(4, tocEntry.getId());
@@ -501,7 +501,7 @@ public class TocEntryDaoImpl
 
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, locale);
-                final String rObTitle = textNormalizer.orderByColumn(rTitle, locale);
+                final String rObTitle = textNormaliser.orderByColumn(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

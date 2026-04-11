@@ -20,9 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * This class (and the implementation classes) MUST be tested with "androidTest"
@@ -51,20 +54,45 @@ import java.util.Locale;
  * <p>
  * Passes "androidTest" on API 26,27,31,33
  *
- * @see TextNormalizerApi26
- * @see TextNormalizerApi29
+ * @see TransliteratorApi26
+ * @see TransliteratorApi29
  */
-public interface TextNormalizer {
+public class TextNormaliser
+        implements TextTransliterator {
+
+    /** KEEP alpha/digit. KEEP SINGLE spaces. */
+    private static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
+
+    /** KEEP alpha/digit. REMOVE ALL white-space */
+    private static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
+
+    /** Replace ALL white-space characters with a single space. */
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+
+    /** KEEP alpha/digit. KEEP white-space and '-' */
+    private static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d\\s-]");
+
+    private static final String SINGLE_SPACE = " ";
+    private static final String REMOVE = "";
+    @NonNull
+    private final TextTransliterator transliterator;
 
     /**
-     * Transliterate the given string.
-     *
-     * @param text to normalise
-     *
-     * @return normalized text
+     * Constructor.
      */
+    public TextNormaliser() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            transliterator = new TransliteratorApi29();
+        } else {
+            transliterator = new TransliteratorApi26();
+        }
+    }
+
     @NonNull
-    String transliterate(@NonNull CharSequence text);
+    @Override
+    public String transliterate(@NonNull final CharSequence text) {
+        return transliterator.transliterate(text);
+    }
 
     /**
      * Normalise the given string and remove any non-alpha/digit/space characters.
@@ -77,7 +105,15 @@ public interface TextNormalizer {
      * @return normalized text
      */
     @NonNull
-    String normalize(@NonNull CharSequence text);
+    public String normalize(@NonNull final CharSequence text) {
+        String result = transliterator.transliterate(text);
+        // REPLACE unwanted characters with a space; spaces are KEPT
+        result = NORMALIZE_PATTERN.matcher(result).replaceAll(SINGLE_SPACE);
+        // Condense all special or duplicate whitespace into single spaces
+        result = WHITESPACE.matcher(result).replaceAll(SINGLE_SPACE);
+
+        return result.strip();
+    }
 
     /**
      * Prepare a string to be inserted in the 'Order By' column.
@@ -92,8 +128,14 @@ public interface TextNormalizer {
      * @return normalised text; always lowercase
      */
     @NonNull
-    String orderByColumn(@NonNull CharSequence text,
-                         @NonNull Locale locale);
+    public String orderByColumn(@NonNull final CharSequence text,
+                                @NonNull final Locale locale) {
+        String result = transliterator.transliterate(text);
+        // remove unwanted characters; spaces are REMOVED
+        result = ORDERBY_PATTERN.matcher(result).replaceAll(REMOVE);
+
+        return result.toLowerCase(locale);
+    }
 
     /**
      * Normalise the given string and apply the given pattern.
@@ -109,5 +151,13 @@ public interface TextNormalizer {
      * @return normalised text
      */
     @NonNull
-    String ftsNormalise(@NonNull CharSequence text);
+    public String ftsNormalise(@NonNull final CharSequence text) {
+        String result = transliterator.transliterate(text);
+        // REMOVE unwanted characters; whitespace and '-'  are KEPT
+        result = FTS_PATTERN.matcher(result).replaceAll(REMOVE);
+        // Condense all special or duplicate whitespace into single spaces
+        result = WHITESPACE.matcher(result).replaceAll(SINGLE_SPACE);
+
+        return result.strip();
+    }
 }

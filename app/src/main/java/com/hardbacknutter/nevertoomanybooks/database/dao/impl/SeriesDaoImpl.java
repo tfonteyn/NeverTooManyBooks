@@ -349,7 +349,7 @@ public class SeriesDaoImpl
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, title);
-            stmt.bindString(2, textNormalizer.orderByColumn(obTitle, locale));
+            stmt.bindString(2, textNormaliser.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
             iId = stmt.executeInsert();
         }
@@ -380,7 +380,7 @@ public class SeriesDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, textNormalizer.orderByColumn(obTitle, locale));
+            stmt.bindString(2, textNormaliser.orderByColumn(obTitle, locale));
             stmt.bindBoolean(3, series.isComplete());
 
             stmt.bindLong(4, series.getId());
@@ -512,7 +512,7 @@ public class SeriesDaoImpl
 
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, locale);
-                final String rObTitle = textNormalizer.orderByColumn(rTitle, locale);
+                final String rObTitle = textNormaliser.orderByColumn(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

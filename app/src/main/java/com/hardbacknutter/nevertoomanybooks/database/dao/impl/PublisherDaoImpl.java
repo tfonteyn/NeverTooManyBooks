@@ -296,7 +296,7 @@ public class PublisherDaoImpl
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
             stmt.bindString(1, name);
-            stmt.bindString(2, textNormalizer.orderByColumn(obName, locale));
+            stmt.bindString(2, textNormaliser.orderByColumn(obName, locale));
             iId = stmt.executeInsert();
         }
 
@@ -323,7 +323,7 @@ public class PublisherDaoImpl
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, publisher.getName());
-            stmt.bindString(2, textNormalizer.orderByColumn(obName, locale));
+            stmt.bindString(2, textNormaliser.orderByColumn(obName, locale));
 
             stmt.bindLong(3, publisher.getId());
             rowsAffected = stmt.executeUpdateDelete();
@@ -452,7 +452,7 @@ public class PublisherDaoImpl
 
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, locale);
-                final String rObTitle = textNormalizer.orderByColumn(rTitle, locale);
+                final String rObTitle = textNormaliser.orderByColumn(rTitle, locale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

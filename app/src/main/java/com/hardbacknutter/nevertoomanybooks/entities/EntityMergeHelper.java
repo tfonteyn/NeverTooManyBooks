@@ -35,8 +35,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
 public class EntityMergeHelper<T extends Mergeable> {
 
@@ -44,13 +43,13 @@ public class EntityMergeHelper<T extends Mergeable> {
     private final Map<Long, T> idCodes = new HashMap<>();
     /** Keep track of base data hashCode. */
     private final Map<Integer, T> hashCodes = new HashMap<>();
-    private final TextNormalizer textNormalizer;
+    private final TextNormaliser textNormaliser;
 
     /**
      * Constructor.
      */
     public EntityMergeHelper() {
-        textNormalizer = TextNormalizerFactory.create();
+        textNormaliser = new TextNormaliser();
     }
 
     /**
@@ -114,7 +113,7 @@ public class EntityMergeHelper<T extends Mergeable> {
             // Single-spaces in the string are preserved.
             final List<String> fields = current.getNameFields()
                                                .stream()
-                                               .map(textNormalizer::normalize)
+                                               .map(textNormaliser::normalize)
                                                .map(name -> name.toLowerCase(currentLocale))
                                                .collect(Collectors.toList());
             final int hash = Objects.hash(fields);

@@ -26,8 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
 
 public interface Mergeable {
@@ -69,15 +68,15 @@ public interface Mergeable {
         if (that == null) {
             return false;
         }
-        final TextNormalizer textNormalizer = TextNormalizerFactory.create();
+        final TextNormaliser textNormaliser = new TextNormaliser();
         // Single-spaces in the string are preserved.
         return Objects.hash(getNameFields()
                                     .stream()
-                                    .map(textNormalizer::normalize)
+                                    .map(textNormaliser::normalize)
                                     .collect(Collectors.toList()))
                == Objects.hash(that.getNameFields()
                                    .stream()
-                                   .map(textNormalizer::normalize)
+                                   .map(textNormaliser::normalize)
                                    .collect(Collectors.toList()));
     }
 

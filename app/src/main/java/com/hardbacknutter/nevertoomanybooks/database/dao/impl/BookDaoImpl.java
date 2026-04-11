@@ -1001,7 +1001,7 @@ public class BookDaoImpl
                         .orElse(locale);
                 final String rTitle = reorderHelper
                         .reorderForSorting(context, title, bookLocale);
-                final String rObTitle = textNormalizer.orderByColumn(rTitle, bookLocale);
+                final String rObTitle = textNormaliser.orderByColumn(rTitle, bookLocale);
 
                 // only update the database if actually needed.
                 if (!currentObTitle.equals(rObTitle)) {

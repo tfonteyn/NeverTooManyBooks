@@ -20,21 +20,23 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
+import android.icu.text.Transliterator;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
-public final class TextNormalizerFactory {
+@RequiresApi(api = Build.VERSION_CODES.Q)
+class TransliteratorApi29
+        implements TextTransliterator {
 
-    private TextNormalizerFactory() {
-    }
+    /** Remove Unicode combining marks (accents, diacritics). */
+    private static final Transliterator TRANSLITERATOR = Transliterator.getInstance(
+            "NFD; [:Nonspacing Mark:] Remove; Latin-ASCII");
 
     @NonNull
-    public static TextNormalizer create() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return new TextNormalizerApi29();
-        } else {
-            return new TextNormalizerApi26();
-        }
+    @Override
+    public String transliterate(@NonNull final CharSequence text) {
+        return TRANSLITERATOR.transliterate(text.toString());
     }
 }

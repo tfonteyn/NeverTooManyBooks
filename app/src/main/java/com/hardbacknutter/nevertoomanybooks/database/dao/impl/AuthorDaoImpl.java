@@ -535,9 +535,9 @@ public class AuthorDaoImpl
             final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, textNormalizer.orderByColumn(author.getFamilyName(), locale));
+                stmt.bindString(2, textNormaliser.orderByColumn(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, textNormalizer.orderByColumn(author.getGivenNames(), locale));
+                stmt.bindString(4, textNormaliser.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
                 stmt.bindString(7, author.getImageUuid().orElse(null));
@@ -587,9 +587,9 @@ public class AuthorDaoImpl
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, textNormalizer.orderByColumn(author.getFamilyName(), locale));
+                stmt.bindString(2, textNormaliser.orderByColumn(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, textNormalizer.orderByColumn(author.getGivenNames(), locale));
+                stmt.bindString(4, textNormaliser.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
                 stmt.bindString(7, author.getImageUuid().orElse(null));
@@ -880,8 +880,8 @@ public class AuthorDaoImpl
                 final String givenNamesOb = cursor.getString(4);
 
                 // reordering is not applicable, we just want to re-normalise.
-                final String newFamilyOb = textNormalizer.orderByColumn(familyName, locale);
-                final String newGivenOb = textNormalizer.orderByColumn(givenNames, locale);
+                final String newFamilyOb = textNormaliser.orderByColumn(familyName, locale);
+                final String newGivenOb = textNormaliser.orderByColumn(givenNames, locale);
 
                 // only update the database if actually needed.
                 if (!Objects.equals(familyNameOb, newFamilyOb)

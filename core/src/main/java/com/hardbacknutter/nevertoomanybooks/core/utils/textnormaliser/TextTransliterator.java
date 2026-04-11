@@ -20,25 +20,18 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser;
 
-import java.util.regex.Pattern;
+import androidx.annotation.NonNull;
 
-final class TNP {
+@FunctionalInterface
+interface TextTransliterator {
 
-    /** KEEP alpha/digit. KEEP SINGLE spaces. */
-    static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
-
-    /** KEEP alpha/digit. REMOVE ALL white-space */
-    static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
-
-    /** Replace ALL white-space characters with a single space. */
-    static final Pattern WHITESPACE = Pattern.compile("\\s+");
-
-    /** KEEP alpha/digit. KEEP white-space and '-' */
-    static final Pattern FTS_PATTERN = Pattern.compile("[^\\p{Alpha}\\d\\s-]");
-
-    static final String SINGLE_SPACE = " ";
-    static final String REMOVE = "";
-
-    private TNP() {
-    }
+    /**
+     * Transliterate the given string.
+     *
+     * @param text to normalise
+     *
+     * @return normalized text
+     */
+    @NonNull
+    String transliterate(@NonNull CharSequence text);
 }

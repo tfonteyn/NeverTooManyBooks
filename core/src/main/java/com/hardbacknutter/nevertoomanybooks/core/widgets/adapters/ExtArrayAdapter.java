@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
 /**
  * A copy of the {@link android.widget.ArrayAdapter} code from Android-30, rev. 1 (2021-01-25)
@@ -763,6 +763,12 @@ public class ExtArrayAdapter<T>
     private final class DiacriticArrayFilter
             extends AbstractArrayFilter {
 
+        private final TextNormaliser textNormaliser;
+
+        private DiacriticArrayFilter() {
+            this.textNormaliser = new TextNormaliser();
+        }
+
         @Override
         @NonNull
         protected FilterResults performFiltering(@Nullable final CharSequence prefix) {
@@ -815,7 +821,8 @@ public class ExtArrayAdapter<T>
         }
 
         /**
-         * Normalize a given string to contain only lower case alpha/digit and space characters.
+         * Normalize a given string to contain only lower case alpha/digit
+         * and single space characters.
          *
          * @param text to normalise
          *
@@ -823,9 +830,7 @@ public class ExtArrayAdapter<T>
          */
         @NonNull
         private String normalizeAndLowercase(@NonNull final CharSequence text) {
-            return TextNormalizerFactory.create()
-                                        .normalize(text)
-                                        .toLowerCase(Locale.getDefault());
+            return textNormaliser.normalize(text).toLowerCase(Locale.getDefault());
         }
     }
 

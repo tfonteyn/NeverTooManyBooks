@@ -51,8 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -83,7 +82,7 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
-    private final TextNormalizer textNormalizer;
+    private final TextNormaliser textNormaliser;
     @NonNull
     private final List<Locale> userLocales;
     @NonNull
@@ -105,7 +104,7 @@ public class BookDaoHelper {
         this.tableInfo = tableInfo;
         this.userLocales = userLocales;
 
-        this.textNormalizer = TextNormalizerFactory.create();
+        this.textNormaliser = new TextNormaliser();
 
         tableDomains = DBDefinitions.TBL_BOOKS.getDomains();
         dateDomainNames = tableDomains
@@ -160,7 +159,7 @@ public class BookDaoHelper {
             final String obTitle = new ReorderHelper(locales)
                     .reorderForSorting(context, title, bookLocale);
 
-            book.putString(DBKey.TITLE_OB, textNormalizer.orderByColumn(obTitle, bookLocale));
+            book.putString(DBKey.TITLE_OB, textNormaliser.orderByColumn(obTitle, bookLocale));
         }
 
         // normalise/store only valid bits

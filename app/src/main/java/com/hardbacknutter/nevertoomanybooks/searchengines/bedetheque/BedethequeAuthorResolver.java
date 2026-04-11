@@ -35,8 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -84,7 +83,7 @@ public class BedethequeAuthorResolver
     @NonNull
     private final Locale locale;
     private final BedethequeCacheDao cacheDao;
-    private final TextNormalizer textNormalizer;
+    private final TextNormaliser textNormaliser;
 
     /**
      * Private Constructor.
@@ -98,7 +97,7 @@ public class BedethequeAuthorResolver
         locale = searchEngine.getLocale(context);
 
         cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
-        textNormalizer = TextNormalizerFactory.create();
+        textNormaliser = new TextNormaliser();
     }
 
     /**
@@ -253,7 +252,7 @@ public class BedethequeAuthorResolver
      */
     private char firstChar(@NonNull final CharSequence name) {
         // transliterate is 'enough'
-        final String normalized = textNormalizer.transliterate(String.valueOf(name.charAt(0)));
+        final String normalized = textNormaliser.transliterate(String.valueOf(name.charAt(0)));
         if (normalized.isEmpty()) {
             return '0';
         }

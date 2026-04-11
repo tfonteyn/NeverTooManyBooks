@@ -30,8 +30,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 class BaseDaoImpl {
@@ -89,7 +88,7 @@ class BaseDaoImpl {
     final SynchronizedDb db;
 
     @NonNull
-    final TextNormalizer textNormalizer;
+    final TextNormaliser textNormaliser;
 
     /**
      * Constructor.
@@ -104,7 +103,7 @@ class BaseDaoImpl {
         }
 
         this.db = db;
-        textNormalizer = TextNormalizerFactory.create();
+        textNormaliser = new TextNormaliser();
     }
 
     /**

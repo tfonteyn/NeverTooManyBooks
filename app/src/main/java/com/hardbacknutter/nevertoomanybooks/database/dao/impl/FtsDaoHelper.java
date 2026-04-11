@@ -35,8 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizer;
-import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormalizerFactory;
+import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -52,13 +51,13 @@ public class FtsDaoHelper {
     private static final String TAG = "FtsDaoHelper";
 
     @NonNull
-    private final TextNormalizer textNormalizer;
+    private final TextNormaliser textNormaliser;
 
     /**
      * Constructor.
      */
     public FtsDaoHelper() {
-        textNormalizer = TextNormalizerFactory.create();
+        textNormaliser = new TextNormaliser();
     }
 
     /**
@@ -86,7 +85,7 @@ public class FtsDaoHelper {
 
         // Keep only alpha/digit, space and '-' characters.
         // We'll use an array to loop over it.
-        final char[] chars = textNormalizer.ftsNormalise(searchText).toCharArray();
+        final char[] chars = textNormaliser.ftsNormalise(searchText).toCharArray();
         // Initial position
         int pos = 0;
         // 'previous' character
