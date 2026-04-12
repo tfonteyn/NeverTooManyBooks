@@ -907,4 +907,6 @@
     <string name="pt_fetch_hires_images">Pobieraj obrazy w wysokiej rozdzielczości</string>
     <string name="action_sync_pull">Pobierz zmiany</string>
     <string name="action_sync_push">Wyślij zmiany</string>
+    <string name="pt_deduplication_title_matching">Dopasowywanie tytułów</string>
+    <string name="pt_deduplication_title_matching_summary">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”</string>
 </resources>

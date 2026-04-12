@@ -447,7 +447,7 @@
     <string name="lbl_website_address">Web-adres (URL)</string>
     <string name="lbl_websites">Websites</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_wikidata_claim_author_id">Wikidata “claim/P” code voor de auteur id</string>
+    <string name="lbl_wikidata_claim_author_id">Wikidata „claim/P” code voor de auteur id</string>
     <string name="lbl_year">Jaar</string>
     <string name="list_and">%1$s en %2$s</string>
     <string name="brackets">(%1$s)</string>
@@ -875,7 +875,7 @@
     <string name="lbl_permission_request">Rechtenverzoek</string>
     <string name="pt_barcode_zoom_control">Zoomregeling</string>
     <string name="pt_barcode_sounds">Geluiden</string>
-    <string name="warning_delete_default_bookshelf">Dit is je standaardboekenplank. Als je deze verwijdert, wordt de nieuwe standaard: “%1$s”.\n\nGebruik “%2$s” in het hoofdmenu om een andere standaardboekenplank te kiezen.</string>
+    <string name="warning_delete_default_bookshelf">Dit is je standaardboekenplank. Als je deze verwijdert, wordt de nieuwe standaard: „%1$s”.\n\nGebruik „%2$s” in het hoofdmenu om een andere standaardboekenplank te kiezen.</string>
     <string name="action_set_as_default">Instellen als standaard</string>
     <string name="tip_bookshelf_management">De gemarkeerde regel geeft je huidige boekenplank aan.\n\nDe standaardboekenplank (gemarkeerd met *) wordt automatisch gebruikt als je huidige om wat voor reden dan ook niet beschikbaar is.</string>
     <string name="pt_search_tag_use_subject_number">Numeriek voorvoegsel in onderwerpstags behouden</string>
@@ -892,4 +892,6 @@
     <string name="pt_fetch_hires_images">Afbeeldingen in hoge resolutie ophalen</string>
     <string name="action_sync_pull">Wijzigingen ophalen</string>
     <string name="action_sync_push">Wijzigingen doorvoeren</string>
+    <string name="pt_deduplication_title_matching">Titelovereenkomst</string>
+    <string name="pt_deduplication_title_matching_summary">Voeg bij het opslaan automatisch titels samen die identiek zijn, afgezien van de opmaak (bijv. „De schat van Beersel” en „schat van Beersel, De”).</string>
 </resources>

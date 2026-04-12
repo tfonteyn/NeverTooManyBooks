@@ -243,4 +243,6 @@
     <string name="pt_fetch_hires_images">Iegūt augstas izšķirtspējas attēlus</string>
     <string name="action_sync_pull">Saņemt izmaiņas</string>
     <string name="action_sync_push">Nosūtīt izmaiņas</string>
+    <string name="pt_deduplication_title_matching">Nosaukumu salīdzināšana</string>
+    <string name="pt_deduplication_title_matching_summary">Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”</string>
 </resources>

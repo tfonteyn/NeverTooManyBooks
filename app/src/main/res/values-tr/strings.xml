@@ -895,4 +895,6 @@
     <string name="pt_fetch_hires_images">Yüksek çözünürlüklü resimleri getir</string>
     <string name="action_sync_pull">Değişiklikleri al</string>
     <string name="action_sync_push">Değişiklikleri gönder</string>
+    <string name="pt_deduplication_title_matching">Başlık eşleştirme</string>
+    <string name="pt_deduplication_title_matching_summary">Yalnızca tanımlayıcı kullanan diller için geçerlidir. İngilizce örneği: “The Lord of The Rings” ve “Lord of The Rings, The”</string>
 </resources>

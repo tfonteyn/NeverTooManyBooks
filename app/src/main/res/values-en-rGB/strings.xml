@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -18,7 +18,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><resources>
+  -->
+
+<!--suppress LongLine -->
+<resources>
     <string name="book_color_full_color">Coloured</string>
     <string name="book_color_support_color">Bicoloured</string>
     <string name="lbl_author_role_colorist">Colourist</string>
@@ -26,7 +29,7 @@
     <string name="lbl_color">Colour</string>
     <string name="pe_ui_theme_colors_blue_grey">Blue-grey</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamic Colours</string>
-    <string name="pt_search_reformat_color">Standardize “book colour” names</string>
+    <string name="pt_search_reformat_color">Standardise “book colour” names</string>
     <string name="pt_ui_theme_colors">Theme Colours</string>
 
     <string name="site_description_catalog">Catalogue</string>
@@ -34,5 +37,13 @@
     <!-- a "Hardcover" is typically known as a "Hardback" in the UK.-->
     <string name="book_format_hardcover">Hardcover</string>
     <string name="brackets">(%1$s)</string>
+
+    <string name="tip_booklist_styles_editor">Use this screen to customise the list of styles that will be displayed in your default styles menu. Use the check-box to select which styles will be shown in the list.  If no styles are selected, then all styles will be shown. You can re-order the hierarchy by dragging the icon at the extreme right of each row up or down. Long-pressing anywhere else in a row will allow you to edit or clone the details of a specific style. If you cloned a style, and changed your mind, you will need to delete it yourself.</string>
+    <string name="X_action_customize">Customise…</string>
+    <string name="action_synchronize">Synchronise</string>
+    <string name="option_book_sync_list_with_details">Synchronise/position the list</string>
+    <string name="option_info_import_books_option_new_and_updated">Import new books and synchronise existing books based on their last modification date.</string>
+    <string name="option_sync_deleted_book_records">Synchronise deleted books</string>
+    <string name="pt_search_reformat_format">Standardise “book format” names</string>
 
 </resources>

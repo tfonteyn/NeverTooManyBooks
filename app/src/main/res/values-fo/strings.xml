@@ -23,7 +23,8 @@
 <!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!--suppress LongLine --><resources>
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine -->
+<resources>
     <plurals name="n_books">
         <item quantity="one">%1$d bók</item>
         <item quantity="other">%1$d bøkur</item>
@@ -129,7 +130,7 @@
     <string name="option_level_collapse">Lat øll aftur</string>
     <string name="option_level_expand">Lat up øll</string>
     <string name="option_level_reset">Einkarstigupplating</string>
-    <string name="option_moving_covers_from_x_to_y">Flyt allar permur frá „%1$s” til „%2$s”</string>
+    <string name="option_moving_covers_from_x_to_y">Flyt allar permur frá „%1$s“ til „%2$s“</string>
     <string name="option_search_books_by_author">Bøkur av hesum rithøvundi</string>
     <string name="option_search_books_by_author_in_series">Bøkur eftir rithøvundi/rað</string>
     <string name="option_search_books_in_series">Bøkur í hesum raðið</string>
@@ -154,7 +155,7 @@
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="warning_cannot_delete_only_bookshelf">Tú hevur bara eina bókahillu, so hana ber ikki at sletta.</string>
-    <string name="warning_delete_default_bookshelf">Hetta er tín sjálvvalda bókahilla. Um tú strikar hana, verður nýggja sjálvvalda: “%1$s”.\n\nBrúk “%2$s” í høvuðsvalmyndini fyri at velja aðra sjálvvalda bókahillu.</string>
+    <string name="warning_delete_default_bookshelf">Hetta er tín sjálvvalda bókahilla. Um tú strikar hana, verður nýggja sjálvvalda: “%1$s“.\n\nBrúk “%2$s“ í høvuðsvalmyndini fyri at velja aðra sjálvvalda bókahillu.</string>
     <string name="warning_image_invalid">Ógild ella manglandi mynd.</string>
     <string name="x_of_y">%1$d av %2$d</string>
     <string name="pt_ui_screen_systembars_behavior">Ovastu valmegin</string>
@@ -163,4 +164,6 @@
     <string name="pt_fetch_hires_images">Heinta myndir í høgari góðsku</string>
     <string name="action_sync_pull">Heinta broytingar</string>
     <string name="action_sync_push">Send broytingar</string>
+    <string name="pt_deduplication_title_matching">Heitissamsvaran</string>
+    <string name="pt_deduplication_title_matching_summary">Við goyming verða heitir, ið eru eins burtursæð frá sniðgeving, lagdir saman sjálvvirkandi (t.d. „The Lord of The Rings“ og „Lord of The Rings, The“).</string>
 </resources>

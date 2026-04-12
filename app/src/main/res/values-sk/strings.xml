@@ -905,4 +905,6 @@
     <string name="pt_fetch_hires_images">Sťahovať obrázky vo vysokom rozlíšení</string>
     <string name="action_sync_pull">Prevziať zmeny</string>
     <string name="action_sync_push">Odoslať zmeny</string>
+    <string name="pt_deduplication_title_matching">Zhoda názvov</string>
+    <string name="pt_deduplication_title_matching_summary">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“</string>
 </resources>

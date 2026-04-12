@@ -166,8 +166,8 @@
     <string name="confirm_delete_publisher_from_x_books">Eliminare davvero l’editore «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati. Considera la possibilità di modificare l’editore e di cambiare il nome dell’editore con quello di un altro editore per conservare questi dati.</string>
     <string name="confirm_delete_series_from_x_books">Cancellare la serie «%1$s»?\n\nVerrà eliminata da %2$s. I libri non verranno cancellati. Valuta se modificare la serie e cambiare il nome della serie in quello di un’altra serie per preservare i dati.</string>
     <string name="confirm_delete_style">Eliminare lo stile «%1$s»?</string>
-    <string name="confirm_delete_identifier_from_x_books">Cancellare l’identificatore “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
-    <string name="confirm_delete_substitutions">Cancellare le sostituzioni per “%1$s”?</string>
+    <string name="confirm_delete_identifier_from_x_books">Cancellare l’identificatore «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
+    <string name="confirm_delete_substitutions">Cancellare le sostituzioni per «%1$s»?</string>
     <string name="confirm_delete_tag_from_x_books">Eliminare il tag «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Cancellare davvero il titolo «%1$s» (di %2$s)?\n\nVerrà eliminata da %3$s. Libri stessi non saranno cancellati.</string>
     <string name="confirm_merge_tags">Il tag che si sta modificando esiste già. Si desidera unirli?</string>
@@ -470,7 +470,7 @@
     <string name="lbl_websites">Siti web</string>
     <string name="bookshelf_my_wishlist">Lista dei desideri</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_wikidata_claim_author_id">Codice Wikidata “claim/P” per l’id dell’autore</string>
+    <string name="lbl_wikidata_claim_author_id">Codice Wikidata «claim/P» per l’id dell’autore</string>
     <string name="lbl_year">Anno</string>
     <string name="list_and">%1$s e %2$s</string>
     <string name="brackets">(%1$s)</string>
@@ -751,7 +751,7 @@
     <string name="lbl_group_1st_char_book_title">1° carattere del titolo del libro</string>
     <string name="lbl_author_is_a_pen_name_of">Questo è uno pseudonimo di:</string>
     <string name="vldt_real_author_must_be_valid">Deve essere vuoto o deve essere un autore esistente</string>
-    <string name="confirm_create_real_author">“%1$s” non esiste ancora. Devono essere creati?</string>
+    <string name="confirm_create_real_author">«%1$s» non esiste ancora. Devono essere creati?</string>
     <string name="pt_fetch_author_info_using_site_x">Recuperare le informazioni sull’autore da %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserva la denominazione del formato Bedetheque (francese)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Sostituire l’autore di tutte le voci con l’autore principale del libro «%1$s» ?</string>
@@ -761,7 +761,7 @@
     <string name="book_format_softcover_oblong">Copertina morbida - oblunga</string>
     <string name="lbl_purge_blns">Cancella lo stato del nodo</string>
     <string name="info_purge_blns_all">Cancella lo stato del nodo da tutti gli elenchi</string>
-    <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s “%2$s”\?</string>
+    <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s «%2$s»\?</string>
     <string name="error_updates_aborted">Aggiornamenti interrotti</string>
     <string name="lbl_country">Paese</string>
     <string name="pt_search_show_menu_options">Mostra i menu di ricerca</string>
@@ -882,7 +882,7 @@
     <string name="lbl_permission_request">Richiesta di autorizzazione</string>
     <string name="pt_barcode_zoom_control">Controllo zoom</string>
     <string name="pt_barcode_sounds">Suoni</string>
-    <string name="warning_delete_default_bookshelf">Questa è la tua libreria predefinita. Se la elimini, la nuova predefinita sarà: “%1$s”.\n\nUsa “%2$s” dal menu principale per scegliere un’altra libreria predefinita.</string>
+    <string name="warning_delete_default_bookshelf">Questa è la tua libreria predefinita. Se la elimini, la nuova predefinita sarà: «%1$s».\n\nUsa «%2$s» dal menu principale per scegliere un’altra libreria predefinita.</string>
     <string name="action_set_as_default">Imposta come predefinita</string>
     <string name="tip_bookshelf_management">La riga evidenziata indica la tua libreria attuale.\n\nLa libreria predefinita (contrassegnata con *) verrà usata automaticamente se quella attuale non è disponibile per qualsiasi motivo.</string>
     <string name="pt_search_tag_use_subject_number">Mantenere il prefisso numerico nelle etichette dei soggetti</string>
@@ -899,4 +899,6 @@
     <string name="pt_fetch_hires_images">Cerca immagini ad alta risoluzione</string>
     <string name="action_sync_pull">Scarica modifiche</string>
     <string name="action_sync_push">Invia modifiche</string>
+    <string name="pt_deduplication_title_matching">Corrispondenza titoli</string>
+    <string name="pt_deduplication_title_matching_summary">Al momento del salvataggio, unisce automaticamente i titoli identiche tranne che per la formattazione (es. «Il Signore degli Anelli» e «Signore degli Anelli, Il»).</string>
 </resources>

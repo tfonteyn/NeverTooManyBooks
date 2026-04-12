@@ -96,6 +96,13 @@
             android:title="@string/pt_sort_title_reordered"
             tools:summary="@string/ps_show_titles_reordered_on" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/equal_24px"
+            android:key="prune.list.reorder.series.title"
+            android:summary="@string/pt_deduplication_title_matching_summary"
+            android:title="@string/pt_deduplication_title_matching" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -219,20 +226,6 @@
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
             android:title="@string/pt_allow_editing_external_id" />
-
-        <!--        <SwitchPreference-->
-        <!--            android:defaultValue="false"-->
-        <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
-        <!--            android:key="prune.list.reorder.series.title"-->
-        <!--            android:summary="@string/pt_prune_list_reorder_series_title_summary"-->
-        <!--            android:title="@string/pt_prune_list_reorder_series_title" />-->
-
-        <!--        <SwitchPreference-->
-        <!--            android:defaultValue="false"-->
-        <!--            android:icon="@drawable/ic_baseline_auto_fix_normal_24"-->
-        <!--            android:key="prune.list.reorder.publisher.name"-->
-        <!--            android:summary="@string/pt_prune_list_reorder_publisher_name_summary"-->
-        <!--            android:title="@string/pt_prune_list_reorder_publisher_name" />-->
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment"

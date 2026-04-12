@@ -59,10 +59,19 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 public final class ReorderHelper {
 
     /**
-     * Boolean preference.
-     * {@code true} if the title/name should be SORTED by the reordered version.
+     * Preference key: if the title/name should be SORTED by the reordered version.
+     * <p>
+     * Type: {@code boolean}
      */
     public static final String PK_SORT_TITLE_REORDERED = "sort.title.reordered";
+
+    /**
+     * Preference key: whether to also try reordering during deduplication (pruning).
+     * <p>
+     * Type: {@code boolean}
+     */
+    public static final String PK_DEDUP_TRY_REORDERED = "prune.list.reorder";
+
     private static final String SUFFIX_SEPARATOR = ", ";
 
     /**
@@ -85,12 +94,29 @@ public final class ReorderHelper {
 
     /**
      * Get the global default for this preference.
+     * <p>
+     * Whether titles should be reordered for <strong>sorting</strong>.
+     * e.g. "The title" -> "title, The".
      *
-     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     * @return flag
      */
     public static boolean isSortReordered() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(PK_SORT_TITLE_REORDERED, true);
+        return ServiceLocator
+                .getInstance().getSharedPreferences()
+                .getBoolean(PK_SORT_TITLE_REORDERED, true);
+    }
+
+    /**
+     * Get the global default for this preference.
+     * <p>
+     * Whether to also try reordering during deduplication (pruning).
+     *
+     * @return flag
+     */
+    public static boolean isTryReorderingDuringDeduplication() {
+        return ServiceLocator
+                .getInstance().getSharedPreferences()
+                .getBoolean(PK_DEDUP_TRY_REORDERED, false);
     }
 
     /**
@@ -148,10 +174,11 @@ public final class ReorderHelper {
         if (language == null || language.isBlank()) {
             localeFromLang = null;
         } else {
-            localeFromLang = ServiceLocator.getInstance()
-                                           .getAppLocale()
-                                           .getLocale(language, allLocales.get(0))
-                                           .orElse(null);
+            localeFromLang = ServiceLocator
+                    .getInstance()
+                    .getAppLocale()
+                    .getLocale(language, allLocales.get(0))
+                    .orElse(null);
         }
         return reorder(context, title, localeFromLang);
     }
@@ -287,6 +314,9 @@ public final class ReorderHelper {
         if (firstLocale != null) {
             locales.add(0, firstLocale);
         }
+        // This is by no means complete, but we only use the existing constants
+        // as we really do not want to start creating Locale's just to check
+        // if they are not present.
         if (!locales.contains(Locale.ENGLISH)
             && !locales.contains(Locale.US)
             && !locales.contains(Locale.UK)

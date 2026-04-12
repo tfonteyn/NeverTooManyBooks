@@ -892,4 +892,6 @@
     <string name="pt_fetch_hires_images">Bilder in hoher Auflösung abrufen</string>
     <string name="action_sync_pull">Änderungen abrufen</string>
     <string name="action_sync_push">Änderungen übertragen</string>
+    <string name="pt_deduplication_title_matching">Titelabgleich</string>
+    <string name="pt_deduplication_title_matching_summary">Beim Speichern werden Titel, die bis auf die Formatierung identisch sind, automatisch zusammengeführt (z. B. „Der Herr der Ringe“ und „Herr der Ringe, Der“).</string>
 </resources>

@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
@@ -46,17 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 public interface TocEntryDao
         extends Purgeable, Positional {
-
-    /**
-     * Preference key: whether to reorder the title during pruning.
-     * <p>
-     * Type: {@code boolean}
-     *
-     * @see #pruneList(Context, Collection, Function)
-     * @see #pruneList(Context, Collection, boolean, Function)
-     * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
-     */
-    String PK_PRUNE_LIST_REORDER_TOC_TITLE = "prune.list.reorder.toc.title";
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
@@ -138,8 +126,7 @@ public interface TocEntryDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<TocEntry> list,
                               @NonNull final Function<TocEntry, Locale> localeSupplier) {
-        final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_PRUNE_LIST_REORDER_TOC_TITLE, false);
+        final boolean normalise = ReorderHelper.isTryReorderingDuringDeduplication();
         return pruneList(context, list, normalise, localeSupplier);
     }
 
@@ -158,8 +145,7 @@ public interface TocEntryDao
                               final boolean normalise,
                               @NonNull final Function<TocEntry, Locale> localeSupplier) {
         return pruneList(context, list, normalise, localeSupplier,
-                // Don't look up the locale a 2nd time.
-                         (current, locale) -> fixId(context, current, locale));
+                         (entry, locale) -> fixId(context, entry, locale));
     }
 
     /**

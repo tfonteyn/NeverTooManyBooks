@@ -53,7 +53,7 @@
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">Il y a %1$d code ISBN entré précédemment. Souhaitez-vous lancer une recherche pour ce code, ou doit-il être supprimé ?</item>
         <item quantity="other">Il y a %1$d codes ISBN précédemment saisis. Souhaitez-vous lancer des recherches pour ces codes ou faut-il les supprimer ?</item>
-        <item quantity="many">Il y a %1$d codes ISBN déjà saisis. Souhaitez-vous lancer des recherches pour ces codes ou faut-il les supprimer ?</item>
+        <item quantity="many">Il y a %1$d codes ISBN déjà saisis. Souhaitez-vous lancer des recherches pour ces codes ou faut-il les supprimer ?</item>
     </plurals>
     <string name="quoted">« %1$s »</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>
@@ -188,7 +188,7 @@
     <string name="confirm_leave_code_search">Il y a des recherches en cours et/ou des résultats non sauvegardés.</string>
     <string name="confirm_remove_toc_entry">Supprimer le titre « %1$s » par %2$s de ce livre ?</string>
     <string name="confirm_scope_for_change">Vous avez changé :\n « %1$s »\n en\n « %2$s »\n\nComment souhaitez-vous appliquer ce changement ?\nNote : votre choix « %3$s » sera pris en compte instantanément. Si vous choisissez « %4$s », alors un nouveau %5$s sera créé.</string>
-    <string name="confirm_scope_for_delete">Supprimer le titre « %1$s » par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
+    <string name="confirm_scope_for_delete">Supprimer le titre « %1$s » par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
     <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant, elles seront perdues.</string>
     <string name="disabled">Désactivé</string>
@@ -226,7 +226,7 @@
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu’il dispose d’un espace suffisant.</string>
     <string name="error_unexpected">Une erreur inconnue s’est produite.</string>
     <string name="error_unknown_host">Il y a eu un problème de connexion au service sur « %1$s ».</string>
-    <string name="error_unexpected_long">Une erreur inattendue s’est produite. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
+    <string name="error_unexpected_long">Une erreur inattendue s’est produite. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
     <string name="error_unsupported_version_v">Version non prise en charge : %1$d</string>
     <string name="error_upgrade_not_supported">La mise à niveau à partir de versions antérieures à %1$s n’est pas prise en charge.</string>
     <string name="option_fab_add_book_by_barcode_scan">Numériser un code-barres</string>
@@ -471,7 +471,7 @@
     <string name="lbl_websites">Sites Internet</string>
     <string name="bookshelf_my_wishlist">Liste de souhaits</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_wikidata_claim_author_id">Code « claim/P » de Wikidata pour l’identifiant de l’auteur</string>
+    <string name="lbl_wikidata_claim_author_id">Code « claim/P » de Wikidata pour l’identifiant de l’auteur</string>
     <string name="lbl_year">Année</string>
     <string name="list_and">%1$s et %2$s</string>
     <string name="brackets">(%1$s)</string>
@@ -558,7 +558,7 @@
     <string name="lbl_add_or_edit_substitution">Ajouter/modifier une règle de substitution</string>
     <string name="info_substitutions_one_per_line">Ajoute une substitution par ligne ou laisse vide pour supprimer le tag</string>
     <string name="info_download_successful">Téléchargement réussi</string>
-    <string name="info_export_report">Un fichier de %1$s appelé « %2$s » a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
+    <string name="info_export_report">Un fichier de %1$s appelé « %2$s » a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
     <string name="info_export_successful">Exportation réussie</string>
     <string name="option_info_delete_removed_books">Les livres supprimés sur l’autre appareil seront également supprimés sur cet appareil.</string>
     <string name="info_import_complete">Importation terminée</string>
@@ -672,7 +672,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Si des livres sont affichés dans toutes les séries auxquelles ils appartiennent, ils peuvent apparaître plusieurs fois dans la liste. La suppression d’un de ces livres a pour effet de supprimer tous les exemplaires de la liste.</string>
     <string name="X_tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu « Voir sur… » ne montrera également que ce qui est disponible.</string>
     <string name="tip_view_only_help">Vous pouvez glisser vers la gauche ou la droite pour passer d’un livre à l’autre.</string>
-    <string name="info_cleanup_files">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d’autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l’application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l’expérience de plantages ou d’autres erreurs, envisagez d’abord d’utiliser le bouton « %2$s ».</string>
+    <string name="info_cleanup_files">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d’autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l’application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l’expérience de plantages ou d’autres erreurs, envisagez d’abord d’utiliser le bouton « %2$s ».</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d livres, parmi %2$d entrées</string>
     <string name="info_export_books_option_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète.</string>
     <string name="option_info_import_books_option_all">Importez de nouveaux livres et écrasez les livres existants. Utilisez ceci pour restaurer une sauvegarde.</string>
@@ -755,7 +755,7 @@
     <string name="confirm_create_real_author">« %1$s » n’existe pas encore. Faut-il les créer ?</string>
     <string name="pt_fetch_author_info_using_site_x">Récupérer les informations sur l’auteur de %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>
-    <string name="confirm_toc_list_update_with_books_main_author">Remplacer l’auteur de toutes les entrées par l’auteur principal du livre « %1$s » ?</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Remplacer l’auteur de toutes les entrées par l’auteur principal du livre « %1$s » ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tous les livres en dessous de cette rangée ont des couvertures. Rechercher à nouveau à partir du haut ?</string>
     <string name="info_all_books_have_covers">Tous les livres de cette étagère ont des couvertures</string>
     <string name="book_format_hardcover_oblong">Relié - oblongue</string>
@@ -883,7 +883,7 @@
     <string name="lbl_permission_request">Demande d’autorisation</string>
     <string name="pt_barcode_zoom_control">Contrôle du zoom</string>
     <string name="pt_barcode_sounds">Sons</string>
-    <string name="warning_delete_default_bookshelf">C’est ton étagère par défaut. Si tu la supprimes, la nouvelle par défaut sera : « %1$s ».\n\nUtilise « %2$s » depuis le menu principal pour choisir une autre étagère par défaut.</string>
+    <string name="warning_delete_default_bookshelf">C’est ton étagère par défaut. Si tu la supprimes, la nouvelle par défaut sera : « %1$s ».\n\nUtilise « %2$s » depuis le menu principal pour choisir une autre étagère par défaut.</string>
     <string name="action_set_as_default">Définir par défaut</string>
     <string name="tip_bookshelf_management">La ligne surlignée indique ton étagère actuelle.\n\nL’étagère par défaut (marquée d’une *) sera utilisée automatiquement si ton étagère actuelle n’est pas disponible pour une raison quelconque.</string>
     <string name="pt_search_tag_use_subject_number">Conserver le préfixe numérique dans les étiquettes de sujet</string>
@@ -900,4 +900,6 @@
     <string name="pt_fetch_hires_images">Récupérer des images en haute résolution</string>
     <string name="action_sync_pull">Récupérer les modifications</string>
     <string name="action_sync_push">Envoyer les modifications</string>
+    <string name="pt_deduplication_title_matching">Correspondance des titres</string>
+    <string name="pt_deduplication_title_matching_summary">Lors de l’enregistrement, fusionner automatiquement les titres identiques à l’exception du formatage (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
 </resources>

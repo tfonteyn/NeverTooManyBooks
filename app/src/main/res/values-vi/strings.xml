@@ -887,4 +887,6 @@
     <string name="pt_fetch_hires_images">Tải hình ảnh độ phân giải cao</string>
     <string name="action_sync_pull">Tải các thay đổi</string>
     <string name="action_sync_push">Đẩy các thay đổi</string>
+    <string name="pt_deduplication_title_matching">Khớp tiêu đề</string>
+    <string name="pt_deduplication_title_matching_summary">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”</string>
 </resources>

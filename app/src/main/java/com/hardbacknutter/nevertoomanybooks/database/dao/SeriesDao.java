@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
@@ -44,17 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 @SuppressWarnings("UnusedReturnValue")
 public interface SeriesDao
         extends Purgeable, Positional {
-
-    /**
-     * Preference key: whether to reorder the title during pruning.
-     * <p>
-     * Type: {@code boolean}
-     *
-     * @see #pruneList(Context, Collection, Function)
-     * @see #pruneList(Context, Collection, boolean, Function)
-     * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
-     */
-    String PK_PRUNE_LIST_REORDER_SERIES_TITLE = "prune.list.reorder.series.title";
 
     /**
      * Get a unique list of all {@link Series} titles.
@@ -100,8 +88,7 @@ public interface SeriesDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Series> list,
                               @NonNull final Function<Series, Locale> localeSupplier) {
-        final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_PRUNE_LIST_REORDER_SERIES_TITLE, false);
+        final boolean normalise = ReorderHelper.isTryReorderingDuringDeduplication();
         return pruneList(context, list, normalise, localeSupplier);
     }
 
@@ -120,8 +107,7 @@ public interface SeriesDao
                               final boolean normalise,
                               @NonNull final Function<Series, Locale> localeSupplier) {
         return pruneList(context, list, normalise, localeSupplier,
-                // Don't look up the locale a 2nd time.
-                         (current, locale) -> fixId(context, current, locale));
+                         (series, locale) -> fixId(context, series, locale));
     }
 
     /**

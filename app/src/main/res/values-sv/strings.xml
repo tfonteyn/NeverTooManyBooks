@@ -875,9 +875,9 @@
     <!-- NOT APPLICABLE FOR BOOKS IN SWEDISH. -->
     <string name="pv_reformat_titles_prefixes">|</string>
     <!-- NOT APPLICABLE FOR BOOKS IN SWEDISH. -->
-    <string name="ps_show_titles_reordered_off">Visa som det står,\nt.ex. “The Lord of The Rings”</string>
+    <string name="ps_show_titles_reordered_off">Visa som det står,\nt.ex. ”Sagan om ringen”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN SWEDISH. -->
-    <string name="ps_show_titles_reordered_on">Flytta en artikel i början av en titel till slutet,\nt.ex. ”Lord of The Rings, The”</string>
+    <string name="ps_show_titles_reordered_on">Flytta en artikel i början av en titel till slutet,\nt.ex. ”Sagan om ringen, Den”</string>
     <string name="warning_delete_default_bookshelf">Detta är din standardbokhylla. Om du tar bort den blir den nya standarden: ”%1$s”.\n\nAnvänd ”%2$s” i huvudmenyn för att välja en annan standardbokhylla.</string>
     <string name="action_set_as_default">Ställ in som standard</string>
     <string name="tip_bookshelf_management">Den markerade raden visar din nuvarande bokhylla.\n\nStandardbokhyllan (markerad med *) används automatiskt om den nuvarande inte är tillgänglig av någon anledning.</string>
@@ -895,4 +895,6 @@
     <string name="pt_fetch_hires_images">Hämta högupplösta bilder</string>
     <string name="action_sync_pull">Hämta ändringar</string>
     <string name="action_sync_push">Skicka ändringar</string>
+    <string name="pt_deduplication_title_matching">Titelsmatchning</string>
+    <string name="pt_deduplication_title_matching_summary">Vid sparning, slå automatiskt samman titlar som är identiska förutom formatering (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
 </resources>

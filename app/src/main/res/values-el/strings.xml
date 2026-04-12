@@ -878,7 +878,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_permission_request">Αίτημα άδειας</string>
     <string name="pt_barcode_zoom_control">Έλεγχος μεγέθυνσης</string>
     <string name="pt_barcode_sounds">Ήχοι</string>
-    <string name="warning_delete_default_bookshelf">Αυτή είναι η προεπιλεγμένη βιβλιοθήκη σας. Αν τη διαγράψετε, η νέα προεπιλογή θα είναι η “%1$s”.\n\nΧρησιμοποιήστε το “%2$s” από το κύριο μενού για να επιλέξετε διαφορετική προεπιλεγμένη βιβλιοθήκη.</string>
+    <string name="warning_delete_default_bookshelf">Αυτή είναι η προεπιλεγμένη βιβλιοθήκη σας. Αν τη διαγράψετε, η νέα προεπιλογή θα είναι η «%1$s».\n\nΧρησιμοποιήστε το «%2$s» από το κύριο μενού για να επιλέξετε διαφορετική προεπιλεγμένη βιβλιοθήκη.</string>
     <string name="action_set_as_default">Ορισμός ως προεπιλογή</string>
     <string name="tip_bookshelf_management">Η επισημασμένη γραμμή δείχνει τη τρέχουσα βιβλιοθήκη σας.\n\nΗ προεπιλεγμένη βιβλιοθήκη (με ένδειξη *) θα χρησιμοποιηθεί αυτόματα αν η τρέχουσα δεν είναι διαθέσιμη για οποιονδήποτε λόγο.</string>
     <string name="pt_search_tag_use_subject_number">Διατήρηση του αριθμητικού προθέματος στις ετικέτες θεμάτων</string>
@@ -895,4 +895,6 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_fetch_hires_images">Λήψη εικόνων υψηλής ανάλυσης</string>
     <string name="action_sync_pull">Λήψη αλλαγών</string>
     <string name="action_sync_push">Αποστολή αλλαγών</string>
+    <string name="pt_deduplication_title_matching">Αντιστοίχιση τίτλων</string>
+    <string name="pt_deduplication_title_matching_summary">Κατά την αποθήκευση, συγχωνεύονται αυτόματα τίτλοι που είναι πανομοιότυποι εκτός από τη μορφοποίηση (π.χ. «Ο Άρχοντας των Δαχτυλιδιών» και «Άρχοντας των Δαχτυλιδιών, Ο»).</string>
 </resources>

@@ -893,4 +893,6 @@
     <string name="pt_fetch_hires_images">Nagy felbontású képek letöltése</string>
     <string name="action_sync_pull">Módosítások lekérése</string>
     <string name="action_sync_push">Módosítások feltöltése</string>
+    <string name="pt_deduplication_title_matching">Címegyeztetés</string>
+    <string name="pt_deduplication_title_matching_summary">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”</string>
 </resources>

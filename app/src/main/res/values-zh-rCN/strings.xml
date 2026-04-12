@@ -23,7 +23,8 @@
 <!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine -->
+<resources>
     <plurals name="n_stars">
         <item quantity="other">%1$s星</item>
     </plurals>
@@ -889,4 +890,6 @@
     <string name="pt_fetch_hires_images">获取高分辨率图像</string>
     <string name="action_sync_pull">拉取更改</string>
     <string name="action_sync_push">推送更改</string>
+    <string name="pt_deduplication_title_matching">标题匹配</string>
+    <string name="pt_deduplication_title_matching_summary">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”</string>
 </resources>

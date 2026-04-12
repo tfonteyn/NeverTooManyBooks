@@ -1683,6 +1683,7 @@
 
          Example of how a title is displayed, i.e. exactly as printed on the book.
 
+         Feel free to use a different example title.
          For languages with a grammar which does not use articles, use the following text:
          ==> "Only applicable to languages that use articles. English example: \"The Lord of The Rings\""
          Use the book title as given IN ENGLISH.
@@ -1693,11 +1694,24 @@
 
          Example of how a reordered title is displayed.
 
+         Feel free to use a different example title.
          For languages with a grammar which does not use articles, use the following text:
          ==> "Only applicable to languages that use articles. English example: \"Lord of The Rings, The\""
          Use the book title as given IN ENGLISH.
          -->
     <string name="ps_show_titles_reordered_on">Move an article at the start of a title to the end,\ne.g. “Lord of The Rings, The”</string>
+
+    <!-- SwitchPreference title: Titles (and publisher names) matching during the deduplication process to fold/remove duplicates. -->
+    <string name="pt_deduplication_title_matching">Title matching</string>
+    <!-- SwitchPreference summary/help: Titles (and publisher names) matching during the deduplication process to fold/remove duplicates.
+
+         TRANSLATORS:
+         Feel free to use a different example title.
+         For languages with a grammar which does not use articles, use the following text:
+         ==> "Only applicable to languages that use articles. English example: \"Lord of The Rings, The\""
+         Use the book title as given IN ENGLISH.
+         -->
+    <string name="pt_deduplication_title_matching_summary">When saving, automatically merge titles that are identical except for formatting (e.g., “The Lord of The Rings” and “Lord of The Rings, The”).</string>
 
     <!-- ListPreference title. Book titles can be capitalized automatically according to user preferences. -->
     <string name="pt_capitalize_title">Title capitalization</string>
@@ -2385,19 +2399,6 @@
     <string name="X_tip_update_fields_from_internet">External site links are only processed if the site is actually contacted. As a result the menu “View on…” will likewise only show what is available.</string>
 
     <!-- endregion -->
-
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_prune_list_reorder_series_title"
-            translatable="false">Series title matching</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_prune_list_reorder_series_title_summary"
-            translatable="false">Match titles like “The Classics” and “Classics, The”.</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_prune_list_reorder_publisher_name"
-            translatable="false">Publisher name matching</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="pt_prune_list_reorder_publisher_name_summary"
-            translatable="false">Match names like “The Library Press” and “Library Press, The”.</string>
 
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"

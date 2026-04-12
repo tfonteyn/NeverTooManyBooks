@@ -898,4 +898,6 @@
     <string name="pt_fetch_hires_images">Obter imagens de alta resolução</string>
     <string name="action_sync_pull">Receber alterações</string>
     <string name="action_sync_push">Enviar alterações</string>
+    <string name="pt_deduplication_title_matching">Correspondência de títulos</string>
+    <string name="pt_deduplication_title_matching_summary">Ao salvar, mesclar automaticamente títulos que sejam idênticos, exceto pela formatação (ex: “O Senhor dos Anéis” e “Senhor dos Anéis, O”).</string>
 </resources>

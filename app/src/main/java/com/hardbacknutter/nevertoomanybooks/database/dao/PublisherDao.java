@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.Positional;
 import com.hardbacknutter.nevertoomanybooks.database.Purgeable;
@@ -44,17 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 @SuppressWarnings("UnusedReturnValue")
 public interface PublisherDao
         extends Purgeable, Positional {
-
-    /**
-     * Preference key: whether to reorder the publisher name during pruning.
-     * <p>
-     * Type: {@code boolean}
-     *
-     * @see #pruneList(Context, Collection, Function)
-     * @see #pruneList(Context, Collection, boolean, Function)
-     * @see #pruneList(Context, Collection, boolean, Function, BiConsumer)
-     */
-    String PK_PRUNE_LIST_REORDER_PUBLISHER_NAME = "prune.list.reorder.publisher.name";
 
     /**
      * Get a unique list of all publisher names.
@@ -76,8 +64,7 @@ public interface PublisherDao
     default boolean pruneList(@NonNull final Context context,
                               @NonNull final Collection<Publisher> list,
                               @NonNull final Function<Publisher, Locale> localeSupplier) {
-        final boolean normalise = ServiceLocator.getInstance().getSharedPreferences()
-                                                .getBoolean(PK_PRUNE_LIST_REORDER_PUBLISHER_NAME, false);
+        final boolean normalise = ReorderHelper.isTryReorderingDuringDeduplication();
         return pruneList(context, list, normalise, localeSupplier);
     }
 
@@ -96,8 +83,7 @@ public interface PublisherDao
                               final boolean normalise,
                               @NonNull final Function<Publisher, Locale> localeSupplier) {
         return pruneList(context, list, normalise, localeSupplier,
-                // Don't look up the locale a 2nd time.
-                         (current, locale) -> fixId(context, current, locale));
+                         (publisher, locale) -> fixId(context, publisher, locale));
     }
 
     /**
