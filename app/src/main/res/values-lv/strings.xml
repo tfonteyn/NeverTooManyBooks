@@ -244,5 +244,6 @@
     <string name="action_sync_pull">Saņemt izmaiņas</string>
     <string name="action_sync_push">Nosūtīt izmaiņas</string>
     <string name="pt_deduplication_title_matching">Nosaukumu salīdzināšana</string>
-    <string name="pt_deduplication_title_matching_summary_on">Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”</string>
+    <string name="pt_deduplication_title_matching_summary_on">Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>
+    <string name="pt_deduplication_title_matching_summary_off">Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>
 </resources>
