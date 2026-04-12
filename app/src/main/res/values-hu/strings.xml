@@ -895,5 +895,5 @@
     <string name="action_sync_push">Módosítások feltöltése</string>
     <string name="pt_deduplication_title_matching">Címegyeztetés</string>
     <string name="pt_deduplication_title_matching_summary_on">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”.</string>
-    <string name="pt_deduplication_title_matching_summary_off">@string/pt_deduplication_title_matching_summary_on</string>
+    <string name="pt_deduplication_title_matching_summary_off">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”.</string>
 </resources>

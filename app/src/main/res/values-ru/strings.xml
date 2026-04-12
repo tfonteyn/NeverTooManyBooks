@@ -915,7 +915,6 @@
     <string name="action_sync_pull">Получить изменения</string>
     <string name="action_sync_push">Отправить изменения</string>
     <string name="pt_deduplication_title_matching">Сопоставление заголовков</string>
-    <string name="pt_deduplication_title_matching_summary_on">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The»</string>
-    <string name="pt_deduplication_title_matching_summary_off"
-            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
+    <string name="pt_deduplication_title_matching_summary_on">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The».</string>
+    <string name="pt_deduplication_title_matching_summary_off">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The».</string>
 </resources>

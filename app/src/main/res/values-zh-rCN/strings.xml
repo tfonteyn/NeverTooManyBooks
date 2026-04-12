@@ -891,7 +891,6 @@
     <string name="action_sync_pull">拉取更改</string>
     <string name="action_sync_push">推送更改</string>
     <string name="pt_deduplication_title_matching">标题匹配</string>
-    <string name="pt_deduplication_title_matching_summary_on">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”</string>
-    <string name="pt_deduplication_title_matching_summary_off"
-            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
+    <string name="pt_deduplication_title_matching_summary_on">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”。</string>
+    <string name="pt_deduplication_title_matching_summary_off">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”。</string>
 </resources>

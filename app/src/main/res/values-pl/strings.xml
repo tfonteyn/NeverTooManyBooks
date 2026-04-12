@@ -908,7 +908,6 @@
     <string name="action_sync_pull">Pobierz zmiany</string>
     <string name="action_sync_push">Wyślij zmiany</string>
     <string name="pt_deduplication_title_matching">Dopasowywanie tytułów</string>
-    <string name="pt_deduplication_title_matching_summary_on">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”</string>
-    <string name="pt_deduplication_title_matching_summary_off"
-            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
+    <string name="pt_deduplication_title_matching_summary_on">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”.</string>
+    <string name="pt_deduplication_title_matching_summary_off">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”.</string>
 </resources>
