@@ -95,8 +95,6 @@ class Formatter
     public CharSequence format(@BooklistGroup.Id final int groupId,
                                @NonNull final DataHolder rowData,
                                @NonNull final String key) {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-
         // NEWTHINGS: BooklistGroup
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
