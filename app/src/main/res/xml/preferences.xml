@@ -100,7 +100,8 @@
             android:defaultValue="false"
             android:icon="@drawable/equal_24px"
             android:key="prune.list.reorder.series.title"
-            android:summary="@string/pt_deduplication_title_matching_summary"
+            android:summaryOff="@string/pt_deduplication_title_matching_summary_off"
+            android:summaryOn="@string/pt_deduplication_title_matching_summary_on"
             android:title="@string/pt_deduplication_title_matching" />
 
     </PreferenceCategory>

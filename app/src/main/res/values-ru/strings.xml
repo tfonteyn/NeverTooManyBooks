@@ -885,7 +885,7 @@
     <string name="lbl_select_style">Выбрать стиль</string>
     <string name="lbl_book_uri">URL-адрес книги</string>
     <string name="lbl_author_uri">URL автора</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Требуется пустое значение или действительный URL-адрес \"https\" с единственным идентификатором \"%s\"</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Требуется пустое значение или действительный URL-адрес «https» с единственным идентификатором «%s»</string>
     <string name="vldt_blank_or_valid_url_required">Требуется пустое значение или действительный URL-адрес</string>
     <string name="info_identifier_editor"><![CDATA[Пожалуйста, прочитайте <a href="%1$s">документацию</a> по идентификаторам перед редактированием.]]></string>
     <string name="lbl_date_born">Род.</string>
@@ -915,5 +915,7 @@
     <string name="action_sync_pull">Получить изменения</string>
     <string name="action_sync_push">Отправить изменения</string>
     <string name="pt_deduplication_title_matching">Сопоставление заголовков</string>
-    <string name="pt_deduplication_title_matching_summary">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The»</string>
+    <string name="pt_deduplication_title_matching_summary_on">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The»</string>
+    <string name="pt_deduplication_title_matching_summary_off"
+            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
 </resources>

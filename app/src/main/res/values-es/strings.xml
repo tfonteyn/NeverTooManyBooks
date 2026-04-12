@@ -899,5 +899,6 @@
     <string name="action_sync_pull">Descargar cambios</string>
     <string name="action_sync_push">Subir cambios</string>
     <string name="pt_deduplication_title_matching">Coincidencia de títulos</string>
-    <string name="pt_deduplication_title_matching_summary">Al guardar, fusionar automáticamente los títulos que sean idénticos excepto por el formato (p. ej., «El Señor de los Anillos» y «Señor de los Anillos, El»).</string>
+    <string name="pt_deduplication_title_matching_summary_on">Al guardar, los títulos que sean idénticos excepto por el formato se fusionarán (p. ej., «El Señor de los Anillos» y «Señor de los Anillos, El»).</string>
+    <string name="pt_deduplication_title_matching_summary_off">Al guardar, los títulos que sean idénticos excepto por el formato no se fusionarán (p. ej., «El Señor de los Anillos» y «Señor de los Anillos, El»).</string>
 </resources>

@@ -888,5 +888,7 @@
     <string name="action_sync_pull">Tải các thay đổi</string>
     <string name="action_sync_push">Đẩy các thay đổi</string>
     <string name="pt_deduplication_title_matching">Khớp tiêu đề</string>
-    <string name="pt_deduplication_title_matching_summary">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”</string>
+    <string name="pt_deduplication_title_matching_summary_on">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”</string>
+    <string name="pt_deduplication_title_matching_summary_off"
+            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
 </resources>

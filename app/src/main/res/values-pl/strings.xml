@@ -880,7 +880,7 @@
     <string name="lbl_book_uri">Adres URL książki</string>
     <string name="lbl_author_uri">Adres URL autora</string>
     <string name="vldt_blank_or_valid_url_required">Wymagana pusta wartość lub prawidłowy adres URL</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Wymagana pusta wartość lub prawidłowy adres URL \"https\" z pojedynczym identyfikatorem \"%s\"</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Wymagana pusta wartość lub prawidłowy adres URL „https” z pojedynczym identyfikatorem „%s”</string>
     <string name="info_identifier_editor"><![CDATA[Przed edycją zapoznaj się z <a href="%1$s">dokumentacją</a> dotyczącą identyfikatorów]]></string>
     <string name="lbl_date_born">Ur.</string>
     <string name="pt_fetch_author_info">Pobieranie informacji o autorze</string>
@@ -908,5 +908,7 @@
     <string name="action_sync_pull">Pobierz zmiany</string>
     <string name="action_sync_push">Wyślij zmiany</string>
     <string name="pt_deduplication_title_matching">Dopasowywanie tytułów</string>
-    <string name="pt_deduplication_title_matching_summary">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”</string>
+    <string name="pt_deduplication_title_matching_summary_on">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”</string>
+    <string name="pt_deduplication_title_matching_summary_off"
+            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
 </resources>

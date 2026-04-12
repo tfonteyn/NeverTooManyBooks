@@ -360,8 +360,8 @@
     <string name="option_lend_out_book">கடன் கொடுங்கள்…</string>
     <string name="option_lend_return_book">கடன் நூல் திரும்பியது</string>
     <string name="option_goto_next_book_without_cover">கவர் இல்லாமல் அடுத்த புத்தகத்திற்குச் செல்லுங்கள்</string>
-    <string name="option_set_complete">\"முழுமையானது\"</string>
-    <string name="option_set_incomplete">\"முழுமையற்றது\"</string>
+    <string name="option_set_complete">முழுமையானது</string>
+    <string name="option_set_incomplete">முழுமையற்றது</string>
     <string name="option_author_details">இந்த ஆசிரியரின் அனைத்து படைப்புகளும்</string>
     <string name="option_view_book_at">காண்க…</string>
     <string name="option_search_books_on">தேடுங்கள்…</string>
@@ -413,7 +413,7 @@
     <string name="confirm_delete_series_from_x_books">“%1$s” தொடரை நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது. இந்தத் தரவைப் பாதுகாக்க தொடரைத் திருத்தி, தொடர் பெயரை மற்றொரு தொடருக்கு மாற்றுவதைக் கவனியுங்கள்.</string>
     <string name="confirm_delete_publisher_from_x_books">வெளியீட்டாளரை “%1$s” நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது. இந்தத் தரவைப் பாதுகாக்க வெளியீட்டாளரைத் திருத்துவதையும் வெளியீட்டாளரின் பெயரை மற்றொரு வெளியீட்டாளருக்கு மாற்றுவதையும் கவனியுங்கள்.</string>
     <string name="confirm_delete_bookshelf_from_x_books">புத்தக அலமாரியை “%1$s” நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது. அவை இன்னும் வேறு எந்த அலமாரிகளிலும் அல்லது “%3$s” அலமாரியில் இருக்கும்.</string>
-    <string name="confirm_delete_identifier_from_x_books">\"%1$s\" என்ற அடையாளங்காட்டியை நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
+    <string name="confirm_delete_identifier_from_x_books">“%1$s” என்ற அடையாளங்காட்டியை நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_delete_substitutions">“%1$s”க்கான மாற்றுகளை நீக்கவா?</string>
     <string name="confirm_delete_tag_from_x_books">“%1$s” என்ற குறிச்சொல்லை நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_delete_toc_entry_from_x_books">“ %1$s” என்ற தலைப்பை %2$s ஆல் நீக்கவா?\n\n இது %3$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
@@ -626,7 +626,7 @@
     <string name="pt_sort_title_reordered">தலைப்புகளை வரிசைப்படுத்துங்கள்</string>
     <string name="pv_reformat_titles_prefixes">|</string>
     <string name="ps_show_titles_reordered_off">கொடுக்கப்பட்டபடி காட்சி,\n எ.கா. “ரிங்க்சின் இறைவன்”</string>
-    <string name="ps_show_titles_reordered_on">ஒரு தலைப்பின் தொடக்கத்தில் ஒரு கட்டுரையை இறுதிவரை நகர்த்தவும்,\n எ.கா. \"லார்ட் ஆஃப் தி ரிங்க்ச், தி\"</string>
+    <string name="ps_show_titles_reordered_on">ஒரு தலைப்பின் தொடக்கத்தில் ஒரு கட்டுரையை இறுதிவரை நகர்த்தவும்,\n எ.கா. “லார்ட் ஆஃப் தி ரிங்க்ச், தி”</string>
     <string name="pt_capitalize_title">தலைப்பு மூலதனம்</string>
     <string name="lbl_capitalize_none">மாற்றங்கள் இல்லை</string>
     <string name="lbl_capitalize_words">சொற்களின் தொடக்க</string>
@@ -893,5 +893,7 @@
     <string name="action_sync_pull">மாற்றங்களைப் பெறுக</string>
     <string name="action_sync_push">மாற்றங்களைச் செலுத்துக</string>
     <string name="pt_deduplication_title_matching">தலைப்புப் பொருத்தம்</string>
-    <string name="pt_deduplication_title_matching_summary">கட்டுரைகளைப் பயன்படுத்தும் மொழிகளுக்கு மட்டுமே பொருந்தும். ஆங்கில உதாரணம்: “The Lord of The Rings” மற்றும் “Lord of The Rings, The”</string>
+    <string name="pt_deduplication_title_matching_summary_on">கட்டுரைகளைப் பயன்படுத்தும் மொழிகளுக்கு மட்டுமே பொருந்தும். ஆங்கில உதாரணம்: “The Lord of The Rings” மற்றும் “Lord of The Rings, The”</string>
+    <string name="pt_deduplication_title_matching_summary_off"
+            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
 </resources>

@@ -888,7 +888,7 @@
     <string name="lbl_book_uri">Adresa URL knihy</string>
     <string name="lbl_author_uri">Adresa URL autora</string>
     <string name="vldt_blank_or_valid_url_required">Vyžadována prázdná hodnota nebo platná adresa URL</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžadována prázdná hodnota nebo platná adresa URL \"https\" s jedním zástupným znakem \"%s\"</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžadována prázdná hodnota nebo platná adresa URL „https“ s jedním zástupným znakem „%s“</string>
     <string name="info_identifier_editor"><![CDATA[Před editaci si prosím přečtěte <a href="%1$s">dokumentaci</a> k identifikátorům.]]></string>
     <string name="lbl_date_born">Nar.</string>
     <string name="pt_fetch_author_info">Načítaní informací o autorovi</string>
@@ -917,5 +917,7 @@
     <string name="action_sync_pull">Stáhnout změny</string>
     <string name="action_sync_push">Odeslat změny</string>
     <string name="pt_deduplication_title_matching">Srovnávání názvů</string>
-    <string name="pt_deduplication_title_matching_summary">Pouze pro jazyky, které používají členy. Anglický příklad: „The Lord of The Rings“ a „Lord of The Rings, The“</string>
+    <string name="pt_deduplication_title_matching_summary_on">Pouze pro jazyky, které používají členy. Anglický příklad: „The Lord of The Rings“ a „Lord of The Rings, The“</string>
+    <string name="pt_deduplication_title_matching_summary_off"
+            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
 </resources>

@@ -896,5 +896,6 @@
     <string name="action_sync_pull">Hämta ändringar</string>
     <string name="action_sync_push">Skicka ändringar</string>
     <string name="pt_deduplication_title_matching">Titelsmatchning</string>
-    <string name="pt_deduplication_title_matching_summary">Vid sparning, slå automatiskt samman titlar som är identiska förutom formatering (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
+    <string name="pt_deduplication_title_matching_summary_on">Vid sparning kommer titlar som är identiska förutom formatering att slås samman (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
+    <string name="pt_deduplication_title_matching_summary_off">Vid sparning kommer titlar som är identiska förutom formatering inte att slås samman (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
 </resources>

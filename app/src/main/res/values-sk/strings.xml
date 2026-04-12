@@ -101,7 +101,7 @@
     <string name="error_record_must_contain_column">Záznam musí obsahovať pole s názvom „%1$s“.</string>
     <string name="error_export_failed">Export zlyhal.</string>
     <string name="error_type_not_supported">Typ nie je podporovaný: %1$s…</string>
-    <string name="warning_import_csv_unescaped_quote">Neuvedená úvodzovka v riadku %1$d, pozícia %2$d\"</string>
+    <string name="warning_import_csv_unescaped_quote">Neuvedená úvodzovka v riadku %1$d, pozícia %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">a ešte %1$d ďalších.</string>
     <string name="warning_export_contains_no_data">Nebolo čo exportovať.</string>
     <string name="warning_book_not_found">Nepodarilo sa nájsť zadanú knihu.</string>
@@ -524,10 +524,10 @@
     <string name="pe_bob_cover_long_click_ignore">Klepnutím na tlačidlo.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Dlhým kliknutím na obrázok obálky.</string>
     <string name="pt_bob_cover_scale">Zobrazenie obálky</string>
-    <string name="ps_sort_author_name_given_first">Zoradiť najprv podľa krstných mien,\nnapr. \"Dominik Tatarka\"</string>
-    <string name="ps_sort_author_name_family_first">Zoradiť najprv podľa priezviska,\nnapr. \"Tatarka, Dominik\"</string>
-    <string name="ps_show_author_name_given_first">Zobraziť najprv krstné mená,\nnapr. \"Dominik Tatarka\"</string>
-    <string name="ps_show_author_name_family_first">Zobraziť najprv priezvisko,\nnapr. \"Tatarka, Dominik\"</string>
+    <string name="ps_sort_author_name_given_first">Zoradiť najprv podľa krstných mien,\nnapr. „Dominik Tatarka“</string>
+    <string name="ps_sort_author_name_family_first">Zoradiť najprv podľa priezviska,\nnapr. „Tatarka, Dominik“</string>
+    <string name="ps_show_author_name_given_first">Zobraziť najprv krstné mená,\nnapr. „Dominik Tatarka“</string>
+    <string name="ps_show_author_name_family_first">Zobraziť najprv priezvisko,\nnapr. „Tatarka, Dominik“</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">iba pod ich hlavným autorom</string>
     <string name="ps_bob_books_under_multiple_authors_each">pod každým autorom</string>
     <string name="ps_bob_books_under_multiple_series_main_only">iba pod ich hlavnou sériou</string>
@@ -876,7 +876,7 @@
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="lbl_book_uri">Adresa URL knihy</string>
     <string name="lbl_author_uri">Adresa URL autora</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžaduje sa prázdna hodnota alebo platná adresa URL \"https\" s jedným zástupným symbolom \"%s\"</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžaduje sa prázdna hodnota alebo platná adresa URL „https“ s jedným zástupným symbolom „%s“</string>
     <string name="vldt_blank_or_valid_url_required">Vyžaduje sa prázdna hodnota alebo platná adresa URL</string>
     <string name="info_identifier_editor"><![CDATA[Pred úpravou si prosím prečítajte <a href="%1$s">dokumentáciu</a> k identifikátorom.]]></string>
     <string name="lbl_date_born">Nar.</string>
@@ -906,5 +906,7 @@
     <string name="action_sync_pull">Prevziať zmeny</string>
     <string name="action_sync_push">Odoslať zmeny</string>
     <string name="pt_deduplication_title_matching">Zhoda názvov</string>
-    <string name="pt_deduplication_title_matching_summary">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“</string>
+    <string name="pt_deduplication_title_matching_summary_on">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“</string>
+    <string name="pt_deduplication_title_matching_summary_off"
+            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
 </resources>

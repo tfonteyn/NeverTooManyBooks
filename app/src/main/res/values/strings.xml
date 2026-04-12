@@ -1711,7 +1711,8 @@
          ==> "Only applicable to languages that use articles. English example: \"Lord of The Rings, The\""
          Use the book title as given IN ENGLISH.
          -->
-    <string name="pt_deduplication_title_matching_summary">When saving, automatically merge titles that are identical except for formatting (e.g., “The Lord of The Rings” and “Lord of The Rings, The”).</string>
+    <string name="pt_deduplication_title_matching_summary_on">When saving, titles that are identical except for formatting will be merged (e.g., “The Lord of The Rings” and “Lord of The Rings, The”).</string>
+    <string name="pt_deduplication_title_matching_summary_off">When saving, titles that are identical except for formatting will not be merged (e.g., “The Lord of The Rings” and “Lord of The Rings, The”).</string>
 
     <!-- ListPreference title. Book titles can be capitalized automatically according to user preferences. -->
     <string name="pt_capitalize_title">Title capitalization</string>

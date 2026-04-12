@@ -743,7 +743,7 @@
     <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
     <string name="info_story_in_single_book">« %1$s » est présent dans un seul livre :\n\n%2$s</string>
-    <string name="tip_import_isbn_list">Importez un fichier texte contenant des numéros ISBN. Le fichier doit comporter un seul ISBN par ligne. Les résultats seront ajoutés à la file d\'attente.</string>
+    <string name="tip_import_isbn_list">Importez un fichier texte contenant des numéros ISBN. Le fichier doit comporter un seul ISBN par ligne. Les résultats seront ajoutés à la file d’attente.</string>
     <string name="lbl_date_added">Date ajoutée</string>
     <string name="lbl_group_1st_char_author_family_name">1er caractère du nom de famille de l’auteur</string>
     <string name="lbl_group_1st_char_series_title">1er caractère du titre de la série</string>
@@ -901,5 +901,6 @@
     <string name="action_sync_pull">Récupérer les modifications</string>
     <string name="action_sync_push">Envoyer les modifications</string>
     <string name="pt_deduplication_title_matching">Correspondance des titres</string>
-    <string name="pt_deduplication_title_matching_summary">Lors de l’enregistrement, fusionner automatiquement les titres identiques à l’exception du formatage (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
+    <string name="pt_deduplication_title_matching_summary_on">Lors de l’enregistrement, les titres identiques à l’exception du formatage seront fusionnés (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
+    <string name="pt_deduplication_title_matching_summary_off">Lors de l’enregistrement, les titres identiques à l’exception du formatage ne seront pas fusionnés (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
 </resources>

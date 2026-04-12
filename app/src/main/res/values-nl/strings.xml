@@ -893,5 +893,6 @@
     <string name="action_sync_pull">Wijzigingen ophalen</string>
     <string name="action_sync_push">Wijzigingen doorvoeren</string>
     <string name="pt_deduplication_title_matching">Titelovereenkomst</string>
-    <string name="pt_deduplication_title_matching_summary">Voeg bij het opslaan automatisch titels samen die identiek zijn, afgezien van de opmaak (bijv. „De schat van Beersel” en „schat van Beersel, De”).</string>
+    <string name="pt_deduplication_title_matching_summary_on">Bij het opslaan worden titels die identiek zijn, afgezien van de opmaak, samengevoegd (bijv. „De schat van Beersel” en „schat van Beersel, De”).</string>
+    <string name="pt_deduplication_title_matching_summary_off">Bij het opslaan worden titels die identiek zijn, afgezien van de opmaak, niet samengevoegd (bijv. „De schat van Beersel” en „schat van Beersel, De”).</string>
 </resources>

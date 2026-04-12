@@ -900,5 +900,6 @@
     <string name="action_sync_pull">Scarica modifiche</string>
     <string name="action_sync_push">Invia modifiche</string>
     <string name="pt_deduplication_title_matching">Corrispondenza titoli</string>
-    <string name="pt_deduplication_title_matching_summary">Al momento del salvataggio, unisce automaticamente i titoli identiche tranne che per la formattazione (es. «Il Signore degli Anelli» e «Signore degli Anelli, Il»).</string>
+    <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
+    <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
 </resources>
