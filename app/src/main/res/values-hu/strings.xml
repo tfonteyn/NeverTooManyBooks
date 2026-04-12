@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -894,7 +891,6 @@
     <string name="action_sync_pull">Módosítások lekérése</string>
     <string name="action_sync_push">Módosítások feltöltése</string>
     <string name="pt_deduplication_title_matching">Címegyeztetés</string>
-    <string name="pt_deduplication_title_matching_summary_on">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”</string>
-    <string name="pt_deduplication_title_matching_summary_off"
-            translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
+    <string name="pt_deduplication_title_matching_summary_on">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”.</string>
+    <string name="pt_deduplication_title_matching_summary_off" translatable="false">@string/pt_deduplication_title_matching_summary_on</string>
 </resources>
