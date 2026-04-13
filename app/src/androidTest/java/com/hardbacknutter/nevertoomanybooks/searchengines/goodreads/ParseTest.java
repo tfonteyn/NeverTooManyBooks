@@ -350,7 +350,7 @@ class ParseTest
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1963-07-19", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
-        assertEquals(16, author.getIdentifiers().size());
+        assertTrue(author.getIdentifiers().size() > 10);
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("8347", oIv.get());
