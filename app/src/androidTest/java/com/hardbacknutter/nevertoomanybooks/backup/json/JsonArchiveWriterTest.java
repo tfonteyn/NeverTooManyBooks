@@ -27,7 +27,6 @@ import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -155,11 +154,9 @@ class JsonArchiveWriterTest
         // Now modify/delete some books. We have at least 10 books to play with
         final List<Long> ids = exportResults.getBooksExported();
 
-        // lint: java.util.random.RandomGenerator is JDK 17 and not available on Android.
-        @SuppressWarnings("TypeMayBeWeakened")
-        final Random random = new Random();
-        final long deletedBookId = ids.get(random.nextInt(10) + 1);
-        final long modifiedBookId = ids.get(random.nextInt(10) + 1);
+        // Just grab 2 random ids
+        final long deletedBookId = ids.get(5);
+        final long modifiedBookId = ids.get(7);
 
         bookDao.delete(deletedBookId);
 
