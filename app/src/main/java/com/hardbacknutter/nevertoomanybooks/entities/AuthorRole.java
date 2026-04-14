@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public final class AuthorRole {
      */
     public static final int WRITER = 1;
     /**
-     * WRITER: not distinguished for now. If we do, use {@link #ORIGINAL_SCRIPT_WRITER} = 1 << 1;
+     * WRITER: not distinguished for now. If we do, use {@code #ORIGINAL_SCRIPT_WRITER = 1 << 1;}
      * <p>
      * <strong>Dev. note:</strong> do NOT set "= WRITER" or...
      * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!

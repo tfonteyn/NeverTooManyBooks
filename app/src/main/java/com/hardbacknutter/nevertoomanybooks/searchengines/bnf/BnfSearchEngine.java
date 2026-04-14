@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -759,7 +760,7 @@ public class BnfSearchEngine
             final Author author = new Author(familyName, givenNames);
             final String isniStr = fields.get('o');
             if (isniStr != null && isniStr.startsWith("ISNI")) {
-                final ISNI isni = new ISNI(isniStr.substring(4));
+                final Code isni = new ISNI(isniStr.substring(4));
                 if (isni.isValid()) {
                     author.setIdentifierValue(Identifier.SID_ISNI, isni.asText());
                 }

@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -416,7 +417,7 @@ public class AmazonSearchEngine
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final ASIN asin = new ASIN(externalId);
+        final Code asin = new ASIN(externalId);
         if (asin.isValid()) {
             final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin.asText());
             return genericSearch(context, url, fetchCovers);
@@ -662,7 +663,7 @@ public class AmazonSearchEngine
 
                     if (LABEL_ASIN.contains(lcLabel)) {
                         // Not checking validity, this is straight from Amazon after all.
-                        final ASIN asin = new ASIN(text[1]);
+                        final Code asin = new ASIN(text[1]);
                         book.setIdentifierValue(Identifier.SID_ASIN, asin.asText());
 
                         if (!book.hasIsbn()) {

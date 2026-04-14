@@ -25,7 +25,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 
 /**
- * Global location where you can switch individual DEBUG options of/off
+ * Global location where you can switch individual DEBUG options of/off.
  * <p>
  * When set to true, the global BuildConfig.DEBUG should still suppress them
  * Use something like this:

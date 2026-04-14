@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.core.tasks.MTask}
  * They use {@link androidx.lifecycle.MutableLiveData} and
- * {@link com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent}.
+ * {@link com.hardbacknutter.util.livedataevent.LiveDataEvent}.
  * <p>
  * In some other places, we use {@link java.util.concurrent.Executor} and
  * {@link android.os.Handler} directly and the above is overkill.

@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -1450,7 +1451,7 @@ public class IsfdbSearchEngine
                             // 4th column: the ISBN/Catalog ID.
                             final String catNr = tr.child(4).text();
                             if (catNr.length() > 9) {
-                                final ISBN isbn = new ISBN(catNr, true);
+                                final Code isbn = new ISBN(catNr, true);
                                 if (isbn.isValid()) {
                                     isbnStr = isbn.asText();
                                 }

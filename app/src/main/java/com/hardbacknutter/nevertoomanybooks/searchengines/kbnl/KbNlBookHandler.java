@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -434,7 +435,7 @@ class KbNlBookHandler
                     final String s = matcher.group(1);
                     if (s != null) {
                         if (s.startsWith("ISNI")) {
-                            final ISNI isni = new ISNI(s.substring(4));
+                            final Code isni = new ISNI(s.substring(4));
                             if (isni.isValid()) {
                                 author.setIdentifierValue(Identifier.SID_ISNI, isni.asText());
                             }

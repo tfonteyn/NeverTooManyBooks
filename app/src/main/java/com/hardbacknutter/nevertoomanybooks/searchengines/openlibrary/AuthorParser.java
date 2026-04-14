@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -338,7 +339,7 @@ public class AuthorParser {
                 if (Identifier.SID_ISNI.equals(key)) {
                     final String s = remoteIds.optString(Identifier.SID_ISNI);
                     if (!s.isEmpty()) {
-                        final ISNI isni = new ISNI(s);
+                        final Code isni = new ISNI(s);
                         if (isni.isValid()) {
                             author.setIdentifierValue(Identifier.SID_ISNI, isni.asText());
                         }
