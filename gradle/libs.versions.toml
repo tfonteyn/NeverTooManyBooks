@@ -8,7 +8,7 @@ compileSdk = "36"
 # JDK used by Gradle
 javaToolchain = "21"
 
-androidGradlePlugin = "9.1.0"
+androidGradlePlugin = "9.1.1"
 # https://github.com/mannodermaus/android-junit-framework
 mannodermausPlugin = "2.0.1"
 mannodermausInstrumentation = "2.0.1"
