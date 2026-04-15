@@ -1,3 +1,15 @@
+### 7.16.0
+
+NEW:
+
+- removing duplicates in authors, series, publishers and TOC is now more robust;
+  an option to also accept "The title" being equal to "title, The" was added.
+- #169: dd support for high resolution covers from DNB (Enable in the site settings to use)
+- Added support for the new Calibre "pages" and "#read_progress" fields.
+- The Websites settings list now provides direct access to individual
+  site settings using a row menu button.
+
+---
 ### 7.15.0
 
 FIXES:
