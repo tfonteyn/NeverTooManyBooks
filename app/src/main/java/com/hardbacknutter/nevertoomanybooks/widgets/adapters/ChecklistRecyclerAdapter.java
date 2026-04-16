@@ -97,15 +97,18 @@ public class ChecklistRecyclerAdapter<T>
         final boolean selected = holder.vb.btnOption.isChecked();
 
         final T item = items.get(position);
-        if (selected) {
-            selection.add(item);
-        } else {
-            selection.remove(item);
-        }
 
         if (selectionListener != null) {
+            // It's the listeners responsibility to update the Set (or not)
             // use a post allowing the UI to update view first
             holder.vb.btnOption.post(() -> selectionListener.onSelected(item, selected));
+        } else {
+            // There was no listener, we'll update it now/here
+            if (selected) {
+                selection.add(item);
+            } else {
+                selection.remove(item);
+            }
         }
     }
 
@@ -129,6 +132,8 @@ public class ChecklistRecyclerAdapter<T>
 
         /**
          * Called after the user selected an item.
+         * <p>
+         * <strong>It's the listeners responsibility to update the backing Set.</strong>
          *
          * @param item    selected
          * @param checked state of the item
