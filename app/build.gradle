@@ -27,7 +27,7 @@ plugins {
 }
 
 def buildingFromCommitHash = providers.exec {
-    commandLine 'git', 'rev-parse', '--short=10', 'HEAD'
+    commandLine 'git', 'rev-parse', '--short=12', 'HEAD'
 }.standardOutput.asText.get().strip()
 
 /*
