@@ -124,13 +124,6 @@ public class ShowBookDetailsViewModel
             bookDao = ServiceLocator.getInstance().getBookDao();
             loaneeDao = ServiceLocator.getInstance().getLoaneeDao();
 
-            bookId = args.getLong(DBKey.FK_BOOK, 0);
-            if (bookId <= 0) {
-                throw new IllegalArgumentException(DBKey.FK_BOOK);
-            }
-
-            embedded = args.getBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, false);
-
             menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
                                    new SiteSearchMenuHandler());
 
@@ -139,6 +132,13 @@ public class ShowBookDetailsViewModel
             realNumberParser = new RealNumberParser(allLocales);
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
+        }
+
+        // Always refresh these
+        embedded = args.getBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, false);
+        bookId = args.getLong(DBKey.FK_BOOK, 0);
+        if (bookId <= 0) {
+            throw new IllegalArgumentException(DBKey.FK_BOOK);
         }
     }
 
