@@ -1,3 +1,11 @@
+### 7.16.1
+
+FIXES:
+
+- Regression where you could not edit the bookshelves a book is assigned to.
+- Tablets only: switching between bookshelves would display the wrong book details once.
+
+---
 ### 7.16.0
 
 NEW:
