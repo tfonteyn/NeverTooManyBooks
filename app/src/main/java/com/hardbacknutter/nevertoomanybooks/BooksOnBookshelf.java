@@ -223,42 +223,32 @@ public class BooksOnBookshelf
     private static final String RK_SET_BOOKSHELVES = TAG + ":rk:setBookshelves";
     private static final String RK_SET_LOCATION = TAG + ":rk:setLocation";
 
+    /** The adapter used to fill the Bookshelf selector. */
+    private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
+    /** The adapter showing the list header. */
+    private HeaderAdapter headerAdapter;
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter adapter;
-
-    /** View Binding. */
-    private BooksonbookshelfBinding vb;
-
     /** Delegate which will handle all positioning/scrolling. */
     private PositioningHelper positioningHelper;
-
+    /** Delegate to handle all interaction with a Calibre server. */
+    @Nullable
+    private CalibreHandler calibreHandler;
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
     /** Encapsulates the Navigation drawer/menu. */
     private NavDrawer navDrawer;
-
-    /** Encapsulate all row menus for {@link BooklistGroup}s. */
-    private RowGroupMenuHelper rowGroupMenuHelper;
-
-    /** The adapter used to fill the Bookshelf selector. */
-    private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
-    private HeaderAdapter headerAdapter;
-
-
-    /** Bring up the synchronisation options. */
-    @Nullable
-    private ActivityResultLauncher<Void> stripInfoSyncLauncher;
-    /** Bring up the synchronisation options. */
-    @Nullable
-    private ActivityResultLauncher<Void> calibreSyncLauncher;
-
-    /** Delegate to handle all interaction with a Calibre server. */
-    @Nullable
-    private CalibreHandler calibreHandler;
+    private SearchViewHelper searchViewHelper;
+    private ToolbarMenuProvider toolbarMenuProvider;
 
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel vm;
+    /** View Binding. */
+    private BooksonbookshelfBinding vb;
+
+    /** Encapsulate all row menus for {@link BooklistGroup}s. */
+    private RowGroupMenuHelper rowGroupMenuHelper;
 
     /** Edit the app settings. */
     private ActivityResultLauncher<String> editSettingsLauncher;
@@ -286,6 +276,12 @@ public class BooksOnBookshelf
     private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
     /** The local FTS based search. */
     private ActivityResultLauncher<SearchFtsContract.Input> ftsSearchLauncher;
+    /** Bring up the synchronisation options. */
+    @Nullable
+    private ActivityResultLauncher<Void> stripInfoSyncLauncher;
+    /** Bring up the synchronisation options. */
+    @Nullable
+    private ActivityResultLauncher<Void> calibreSyncLauncher;
 
     private EditLenderLauncher editLenderLauncher;
     /** Row menu launcher displaying the menu as a BottomSheet. */
@@ -301,8 +297,6 @@ public class BooksOnBookshelf
     private OnBackPressedCallback backClosesNavDrawer;
     private OnBackPressedCallback backClosesFabMenu;
 
-    private SearchViewHelper searchViewHelper;
-    private ToolbarMenuProvider toolbarMenuProvider;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -366,9 +360,6 @@ public class BooksOnBookshelf
         createOnBackHandlers();
 
         createSearchViewHelper();
-
-        // Enable popup for the search widget when the user starts to type.
-        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         // check & get search text coming from a system search intent
         handleStandardSearchIntent(getIntent());
@@ -441,6 +432,14 @@ public class BooksOnBookshelf
         };
         dispatcher.addCallback(this, backClearsSearchCriteria);
         vm.getSearchCriteriaAreActive().observe(this, this::updateBackActionForSearchCriteria);
+    }
+
+    private void updateBackActionForSearchCriteria(final boolean enabled) {
+        // Adjust the icon depending on whether we have search-criteria active or not.
+        setNavIcon();
+
+        // update the back-handler depending on the presence of search-criteria.
+        backClearsSearchCriteria.setEnabled(enabled);
     }
 
     private void createActivityLaunchers() {
@@ -592,7 +591,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Something is TERRIBLE.
+     * Something is TERRIBLY wrong.
      * This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
      * with the Styles. i.e. the style used to build is very likely corrupt.
      * Another reason can be during development when the database structure
@@ -600,6 +599,8 @@ public class BooksOnBookshelf
      * We have seen this ONCE with a real user on 2025-02-09.
      *
      * @param e exception
+     *
+     * @throws RuntimeException trigger ACRA
      */
     private void recoverAfterFailedBuild(@Nullable final Throwable e) {
         final Throwable report =
@@ -780,6 +781,7 @@ public class BooksOnBookshelf
             final FastScroller fastScroller =
                     FastScrollerMode.create(this).attach(vb.content.list);
             fastScroller.setOnFastScrollStateChangeListener(new OnFastScrollStateChangeListener() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onFastScrollStarted() {
                     if (adapter != null) {
@@ -788,6 +790,7 @@ public class BooksOnBookshelf
                     }
                 }
 
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onFastScrollEnded() {
                     if (adapter != null) {
@@ -822,6 +825,9 @@ public class BooksOnBookshelf
                     vm.onFtsSearch(query);
                     buildBookList();
                 });
+
+        // Enable popup for the search widget when the user starts to type.
+        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
     }
 
     @Override
@@ -900,68 +906,11 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Handle the {@link NavigationView} menu.
+     * Called after coming back from {@link #editSettingsLauncher},
+     * if the user changed anything significant.
      *
-     * @param menuItemId The menu item that was invoked.
-     *
-     * @return {@code true} if the menuItem was handled.
+     * @param result changes
      */
-    private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
-        saveListPosition();
-
-        if (menuItemId == R.id.SUBMENU_SYNC) {
-            showNavigationSubMenu(R.id.SUBMENU_SYNC, R.string.action_synchronize,
-                                  menuItemId, R.menu.sync);
-            return false;
-        }
-
-        navDrawer.close();
-
-        if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
-            ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getBookshelf(),
-                                                                 vm.getSearchCriteria()));
-            return true;
-
-        } else if (menuItemId == R.id.MENU_MANAGE_LIST_STYLES) {
-            editStylesLauncher.launch(vm.getStyle().getUuid());
-            return true;
-
-        } else if (menuItemId == R.id.MENU_FILE_IMPORT) {
-            importLauncher.launch(null);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_FILE_EXPORT) {
-            exportLauncher.launch(null);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_SYNC_CALIBRE && calibreSyncLauncher != null) {
-            calibreSyncLauncher.launch(null);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_SYNC_STRIP_INFO && stripInfoSyncLauncher != null) {
-            stripInfoSyncLauncher.launch(null);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
-            manageBookshelvesLauncher.launch(vm.getBookshelf().getId());
-            return true;
-
-        } else if (menuItemId == R.id.MENU_SETTINGS) {
-            editSettingsLauncher.launch(null);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_HELP) {
-            startActivity(GithubIntentFactory.help(this));
-            return true;
-
-        } else if (menuItemId == R.id.MENU_ABOUT) {
-            startActivity(FragmentHostActivityLauncher.createIntent(this, AboutFragment.class));
-            return true;
-        }
-
-        return false;
-    }
-
     private void onSettingsChanged(@NonNull final SettingsOutput result) {
         if (result.isRecreateActivity()) {
             ActivityRestarter.recreate();
@@ -972,6 +921,11 @@ public class BooksOnBookshelf
         }
     }
 
+    /**
+     * Called after coming back from {@link #importLauncher}.
+     *
+     * @param result from the import
+     */
     private void onImportFinished(@NonNull final ImportResults result) {
         vm.onImportFinished(this, result);
 
@@ -1016,8 +970,8 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setSelection(vm.getSelectedBookshelfSpinnerPosition(this));
 
         if (vm.isForceRebuildInOnResume() || !vm.isListAvailable()) {
-            // This is only needed if the style was changed to use a different Layout.
-            // We must NOT recreate it here otherwise.
+            // Recreate the layout-manager ONLY if the style was changed
+            // to use a different Layout. Otherwise DO NOT recreate it.
             if (vm.hasLayoutChanged(hasEmbeddedDetailsFrame())) {
                 createLayoutManager();
             }
@@ -1027,14 +981,6 @@ public class BooksOnBookshelf
             // no rebuild needed/done, just let the system redisplay the list state
             displayList(vm.getTargetNodes());
         }
-    }
-
-    private void updateBackActionForSearchCriteria(final boolean enabled) {
-        // Adjust the icon depending on whether we have search-criteria active or not.
-        setNavIcon();
-
-        // update the back-handler depending on the presence of search-criteria.
-        backClearsSearchCriteria.setEnabled(enabled);
     }
 
     @Override
@@ -1137,7 +1083,6 @@ public class BooksOnBookshelf
             // the exact same (saved) position.
             displayList(null);
         }
-
     }
 
     /**
@@ -1176,9 +1121,9 @@ public class BooksOnBookshelf
                 .setIcon(R.drawable.unfold_more_24px);
         }
 
-        // If we actually have a menu, show it.
+        // If we have a menu, show it.
         if (menu.size() > 0) {
-            // we have a menu to show, set the title according to the level.
+            // Set the title according to the level.
             final CharSequence menuTitle = adapter
                     .getLevelText(rowData.getInt(DBKey.BL_NODE.LEVEL), adapterPosition);
 
@@ -1194,6 +1139,69 @@ public class BooksOnBookshelf
                 menuLauncher.launch(this, menuTitle, null, adapterPosition, menu, true);
             }
         }
+    }
+
+    /**
+     * Handle the {@link NavigationView} menu.
+     *
+     * @param menuItemId The menu item that was invoked.
+     *
+     * @return {@code true} if the menuItem was handled.
+     */
+    private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
+        saveListPosition();
+
+        if (menuItemId == R.id.SUBMENU_SYNC) {
+            showNavigationSubMenu(R.id.SUBMENU_SYNC, R.string.action_synchronize,
+                                  menuItemId, R.menu.sync);
+            return false;
+        }
+
+        navDrawer.close();
+
+        if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
+            ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getBookshelf(),
+                                                                 vm.getSearchCriteria()));
+            return true;
+
+        } else if (menuItemId == R.id.MENU_MANAGE_LIST_STYLES) {
+            editStylesLauncher.launch(vm.getStyle().getUuid());
+            return true;
+
+        } else if (menuItemId == R.id.MENU_FILE_IMPORT) {
+            importLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_FILE_EXPORT) {
+            exportLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SYNC_CALIBRE && calibreSyncLauncher != null) {
+            calibreSyncLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SYNC_STRIP_INFO && stripInfoSyncLauncher != null) {
+            stripInfoSyncLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
+            manageBookshelvesLauncher.launch(vm.getBookshelf().getId());
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SETTINGS) {
+            editSettingsLauncher.launch(null);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_HELP) {
+            startActivity(GithubIntentFactory.help(this));
+            return true;
+
+        } else if (menuItemId == R.id.MENU_ABOUT) {
+            startActivity(FragmentHostActivityLauncher.createIntent(this, AboutFragment.class));
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -1214,9 +1222,9 @@ public class BooksOnBookshelf
 
         // we're getting here for
         // - navigation menu choice, either direct or via a submenu which can
-        //   be a popup or bottomsheet menu
+        //   be a popup or bottom-sheet menu
         // - popup menu for a specific row
-        // - bottomsheet menu for a specific row
+        // - bottom-sheet menu for a specific row
         // ... so ALWAYS check for nav menu FIRST
         if (onNavigationItemSelected(menuItemId)) {
             return true;
@@ -1320,7 +1328,7 @@ public class BooksOnBookshelf
         final List<Long> bookIds = adapter.getBookIds(nodeKey, level);
         if (bookIds.isEmpty()) {
             // We should never get here... flw
-            // Theoretically this can happen as we do set the menu visibility
+            // Theoretically this can happen as we set the menu visibility
             // depending on books being under the node at the adapter position (or not).
             Snackbar.make(v, getString(R.string.warning_no_matching_book_found),
                           Snackbar.LENGTH_LONG).show();
@@ -1551,16 +1559,13 @@ public class BooksOnBookshelf
      */
     private boolean updateBooksFromInternetData(final int menuItemId,
                                                 @NonNull final DataHolder rowData) {
-        Boolean onlyThisShelf = null;
-
         if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY) {
-            onlyThisShelf = true;
-        } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES) {
-            onlyThisShelf = false;
-        }
-        if (onlyThisShelf != null) {
             updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
-                    this, rowData, onlyThisShelf));
+                    this, rowData, true));
+            return true;
+        } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES) {
+            updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
+                    this, rowData, false));
             return true;
         }
         return false;
@@ -1598,20 +1603,36 @@ public class BooksOnBookshelf
     }
 
     /**
-     * The user picked a different Bookshelf from the spinner.
+     * Called after the user closed the filters' dialog.
      *
-     * @param bookshelfId of the Bookshelf to use
+     * @param modified {@code true} when the filters were updated
      */
-    private void onBookshelfSelected(final long bookshelfId) {
-        if (bookshelfId != vm.getBookshelf().getId()) {
-            // Save for the soon-to-be previous bookshelf
-            saveListPosition();
-
-            vm.selectBookshelf(this, bookshelfId);
-            // New style, so the layout might have changed
-            createLayoutManager();
+    private void onFiltersUpdate(final boolean modified) {
+        if (modified) {
+            // After applying filters, we always start the list at the top.
+            vm.setSelectedBook(0, RecyclerView.NO_POSITION);
             buildBookList();
         }
+    }
+
+    /**
+     * The user selected a Bookshelf from the spinner.
+     *
+     * @param bookshelfId of the Bookshelf
+     */
+    private void onBookshelfSelected(final long bookshelfId) {
+        if (bookshelfId == vm.getBookshelf().getId()) {
+            // No change, do nothing
+            return;
+        }
+
+        // Save for the soon-to-be previous bookshelf
+        saveListPosition();
+
+        vm.selectBookshelf(this, bookshelfId);
+        // New style, so the layout might have changed
+        createLayoutManager();
+        buildBookList();
     }
 
     /**
@@ -1625,25 +1646,28 @@ public class BooksOnBookshelf
                                         new Throwable());
         }
 
-        if (!vm.isBuilding()) {
-            vb.progressCircle.show();
-            // Invisible... theoretically this means the page should not re-layout
-            vb.content.list.setVisibility(View.INVISIBLE);
-
-            // prevent quick users on slow devices to switch while building
-            vb.bookshelfSpinner.setEnabled(false);
-
-            // Remove the potentially embedded fragment and its children.
-            removeEmbeddedDetailsFragment();
-
-            // force the adapter to stop displaying by disabling the list.
-            // DO NOT REMOVE THE ADAPTER FROM THE VIEW;
-            // i.e. do NOT call vb.content.list.setAdapter(null)... crashes assured when doing so.
-            if (adapter != null) {
-                adapter.setBooklist(null);
-            }
-            vm.buildBookList(this);
+        // Paranoia
+        if (vm.isBuilding()) {
+            return;
         }
+
+        vb.progressCircle.show();
+        // Make invisible... theoretically this means the page should not re-layout
+        vb.content.list.setVisibility(View.INVISIBLE);
+
+        // prevent quick users on slow devices to switch while building
+        vb.bookshelfSpinner.setEnabled(false);
+
+        // Remove the potentially embedded fragment and its children.
+        removeEmbeddedDetailsFragment();
+
+        // force the adapter to stop displaying by disabling the list.
+        // DO NOT REMOVE THE ADAPTER FROM THE VIEW;
+        // i.e. do NOT call vb.content.list.setAdapter(null)... crashes assured when doing so.
+        if (adapter != null) {
+            adapter.setBooklist(null);
+        }
+        vm.buildBookList(this);
     }
 
     /**
@@ -1853,19 +1877,6 @@ public class BooksOnBookshelf
             final ShowBookDetailsViewModel childVm = new ViewModelProvider(this)
                     .get(ShowBookDetailsViewModel.class);
             childVm.displayBook(bookId);
-        }
-    }
-
-    /**
-     * Called after the user closed the filters' dialog.
-     *
-     * @param modified {@code true} when the filters were updated
-     */
-    private void onFiltersUpdate(final boolean modified) {
-        if (modified) {
-            // After applying filters, we always start the list at the top.
-            vm.setSelectedBook(0, RecyclerView.NO_POSITION);
-            buildBookList();
         }
     }
 
