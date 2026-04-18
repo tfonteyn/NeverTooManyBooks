@@ -61,8 +61,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
@@ -95,6 +96,16 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.PositioningHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMAuthor;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMBookshelf;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMColor;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMFormat;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMLanguage;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMLocation;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMPublisher;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMSeries;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMTag;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RowMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -106,39 +117,15 @@ import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters.BookshelfFiltersLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditColorBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditColorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditFormatBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditFormatDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditInLineStringLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditLanguageBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditLanguageDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditLocationBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag.EditTagBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag.EditTagDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete.AutoCompletePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
@@ -1264,11 +1251,11 @@ public class BooksOnBookshelf
             displayList(null);
             return true;
 
-        } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {
-            final Intent intent = FragmentHostActivityLauncher
-                    .createIntent(this, CalibrePreferencesFragment.class);
-            startActivity(intent);
-            return true;
+        } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
+            return onRowMenuGroupSetBookshelves(view, rowData);
+
+        } else if (menuItemId == R.id.MENU_SET_LOCATION) {
+            return onRowMenuGroupSetLocation(view, rowData);
 
         } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH) {
             // This is the 1st step in the updateBooksFromInternet process.
@@ -1279,10 +1266,11 @@ public class BooksOnBookshelf
             // We get here after the user choose one of these options from the dialog menu.
             return updateBooksFromInternetData(menuItemId, rowData);
 
-        } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
-            return onRowMenuGroupSetBookshelves(view, rowData);
-        } else if (menuItemId == R.id.MENU_SET_LOCATION) {
-            return onRowMenuGroupSetLocation(view, rowData);
+        } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {
+            final Intent intent = FragmentHostActivityLauncher
+                    .createIntent(this, CalibrePreferencesFragment.class);
+            startActivity(intent);
+            return true;
         }
 
         final Context context = view.getContext();
@@ -1880,95 +1868,34 @@ public class BooksOnBookshelf
         }
     }
 
+    /**
+     * This is a bit of a halfway/halfcooked solution to split off and encapsulate
+     * the logic to handle a popup menu on a row in the list.
+     * <p>
+     * The booklist groups have been cleanly moved to {@link RowMenu} classes
+     * which reduced the complexity quite a bit and makes their code easier to read.
+     * <p>
+     * The Book (which is group 0) has not... because it's too entangled
+     * with the BoB class itself and we keep handling it here in this helper.
+     * <p>
+     * The Date based rows menus are in fact NOT related to the groups
+     * but offer a small set of group independent options.
+     * Building those menus is handled here, but acting on the selection
+     * is done on {@link #onSomeMenuItemSelected(int, int)}.
+     */
     private final class RowGroupMenuHelper {
-
-        /** Edit an {@link Author} which appears as a {@link BooklistGroup} (node). */
-        private final EditParcelableLauncher<Author> editAuthorLauncher;
-        /** Edit a {@link Bookshelf} which appears as a {@link BooklistGroup} (node). */
-        private final EditParcelableLauncher<Bookshelf> editBookshelfLauncher;
-        /** Edit a {@link Publisher} which appears as a {@link BooklistGroup} (node). */
-        private final EditParcelableLauncher<Publisher> editPublisherLauncher;
-        /** Edit a {@link Series} which appears as a {@link BooklistGroup} (node). */
-        private final EditParcelableLauncher<Series> editSeriesLauncher;
-        /** Edit a {@link  Tag} which appears as a {@link BooklistGroup} (node). */
-        private final EditParcelableLauncher<Tag> editTagLauncher;
-
-        /** Edit a {@code Book Color} which appears as a {@link BooklistGroup} (node). */
-        private final EditInLineStringLauncher editColorLauncher;
-        /** Edit a {@code Book Format} which appears as a {@link BooklistGroup} (node). */
-        private final EditInLineStringLauncher editFormatLauncher;
-        /** Edit a {@code Book Language} which appears as a {@link BooklistGroup} (node). */
-        private final EditInLineStringLauncher editLanguageLauncher;
-        /** Edit a {@code Book Location} which appears as a {@link BooklistGroup} (node). */
-        private final EditInLineStringLauncher editLocationLauncher;
+        private final Map<Integer, RowMenu> map = new HashMap<>();
 
         RowGroupMenuHelper() {
-            editBookshelfLauncher = new EditParcelableLauncher<>(
-                    DBKey.FK_BOOKSHELF,
-                    EditBookshelfDialogFragment::new,
-                    EditBookshelfBottomSheet::new);
-            editBookshelfLauncher.setOnEditInPlaceListener(
-                    bookshelf -> vm.onRowGroupEntityUpdate(BooklistGroup.BOOKSHELF, bookshelf));
-
-            editAuthorLauncher = new EditParcelableLauncher<>(
-                    DBKey.FK_AUTHOR,
-                    EditAuthorDialogFragment::new,
-                    EditAuthorBottomSheet::new);
-            editAuthorLauncher.setOnEditInPlaceListener(
-                    author -> vm.onRowGroupEntityUpdate(BooklistGroup.AUTHOR, author));
-
-            editSeriesLauncher = new EditParcelableLauncher<>(
-                    DBKey.FK_SERIES,
-                    EditSeriesDialogFragment::new,
-                    EditSeriesBottomSheet::new);
-            editSeriesLauncher.setOnEditInPlaceListener(
-                    series -> vm.onRowGroupEntityUpdate(BooklistGroup.SERIES, series));
-
-            editPublisherLauncher = new EditParcelableLauncher<>(
-                    DBKey.FK_PUBLISHER,
-                    EditPublisherDialogFragment::new,
-                    EditPublisherBottomSheet::new);
-            editPublisherLauncher.setOnEditInPlaceListener(
-                    publisher -> vm.onRowGroupEntityUpdate(BooklistGroup.PUBLISHER, publisher));
-
-            editTagLauncher = new EditParcelableLauncher<>(
-                    DBKey.FK_TAG,
-                    EditTagDialogFragment::new,
-                    EditTagBottomSheet::new);
-            editTagLauncher.setOnEditInPlaceListener(
-                    tag -> vm.onRowGroupEntityUpdate(BooklistGroup.TAGS_GENRE, tag));
-
-            editColorLauncher = new EditInLineStringLauncher(
-                    DBKey.COLOR,
-                    EditColorDialogFragment::new,
-                    EditColorBottomSheet::new);
-            editColorLauncher.setOnEditListener(
-                    (original, modified)
-                            -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
-
-            editFormatLauncher = new EditInLineStringLauncher(
-                    DBKey.FORMAT,
-                    EditFormatDialogFragment::new,
-                    EditFormatBottomSheet::new);
-            editFormatLauncher.setOnEditListener(
-                    (original, modified)
-                            -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
-
-            editLanguageLauncher = new EditInLineStringLauncher(
-                    DBKey.LANGUAGE,
-                    EditLanguageDialogFragment::new,
-                    EditLanguageBottomSheet::new);
-            editLanguageLauncher.setOnEditListener(
-                    (original, modified)
-                            -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
-
-            editLocationLauncher = new EditInLineStringLauncher(
-                    DBKey.LOCATION,
-                    EditLocationDialogFragment::new,
-                    EditLocationBottomSheet::new);
-            editLocationLauncher.setOnEditListener(
-                    (original, modified)
-                            -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
+            map.put(BooklistGroup.AUTHOR, new RMAuthor(vm, authorWorksLauncher));
+            map.put(BooklistGroup.BOOKSHELF, new RMBookshelf(vm));
+            map.put(BooklistGroup.COLOR, new RMColor(vm));
+            map.put(BooklistGroup.FORMAT, new RMFormat(vm));
+            map.put(BooklistGroup.LANGUAGE, new RMLanguage(vm));
+            map.put(BooklistGroup.LOCATION, new RMLocation(vm));
+            map.put(BooklistGroup.PUBLISHER, new RMPublisher(vm));
+            map.put(BooklistGroup.SERIES, new RMSeries(vm));
+            map.put(BooklistGroup.TAGS_GENRE, new RMTag(vm));
         }
 
         // DO NOT MOVE THIS TO THE CONSTRUCTOR!
@@ -1976,16 +1903,7 @@ public class BooksOnBookshelf
         void registerForFragmentResult(@NonNull final FragmentManager fm,
                                        @NonNull final LifecycleOwner lifecycleOwner) {
 
-            editAuthorLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editBookshelfLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editPublisherLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editSeriesLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editTagLauncher.registerForFragmentResult(fm, lifecycleOwner);
-
-            editColorLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editFormatLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editLanguageLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editLocationLauncher.registerForFragmentResult(fm, lifecycleOwner);
+            map.values().forEach(rm -> rm.registerForFragmentResult(fm, lifecycleOwner));
         }
 
         void onCreateContextMenu(@NonNull final Context context,
@@ -1993,46 +1911,16 @@ public class BooksOnBookshelf
                                  @NonNull final Menu menu) {
             @BooklistGroup.Id
             final int rowGroupId = rowData.getInt(DBKey.BL_NODE.GROUP);
+
+            final RowMenu rowMenu = map.get(rowGroupId);
+            if (rowMenu != null) {
+                rowMenu.onCreateMenu(context, getMenuInflater(), menu, rowData);
+                return;
+            }
+
             switch (rowGroupId) {
                 case BooklistGroup.BOOK: {
                     forBook(context, rowData, menu);
-                    break;
-                }
-                case BooklistGroup.AUTHOR: {
-                    forAuthor(context, rowData, menu);
-                    break;
-                }
-                case BooklistGroup.BOOKSHELF: {
-                    forBookshelf(rowData, menu);
-                    break;
-                }
-                case BooklistGroup.PUBLISHER: {
-                    forPublisher(rowData, menu);
-                    break;
-                }
-                case BooklistGroup.SERIES: {
-                    forSeries(context, rowData, menu);
-                    break;
-                }
-                case BooklistGroup.TAGS_GENRE: {
-                    forTag(rowData, menu);
-                    break;
-                }
-
-                case BooklistGroup.COLOR: {
-                    forColor(rowData, menu);
-                    break;
-                }
-                case BooklistGroup.FORMAT: {
-                    forFormat(rowData, menu);
-                    break;
-                }
-                case BooklistGroup.LANGUAGE: {
-                    forLanguage(rowData, menu);
-                    break;
-                }
-                case BooklistGroup.LOCATION: {
-                    forLocation(rowData, menu);
                     break;
                 }
 
@@ -2077,41 +1965,14 @@ public class BooksOnBookshelf
 
             @BooklistGroup.Id
             final int rowGroupId = rowData.getInt(DBKey.BL_NODE.GROUP);
-            switch (rowGroupId) {
-                case BooklistGroup.BOOK: {
-                    return onBook(context, menuItemId, rowData, adapterPosition);
-                }
-                case BooklistGroup.AUTHOR: {
-                    return onAuthor(context, menuItemId, rowData);
-                }
-                case BooklistGroup.BOOKSHELF: {
-                    return onBookshelf(context, menuItemId, rowData);
-                }
-                case BooklistGroup.PUBLISHER: {
-                    return onPublisher(context, menuItemId, rowData);
-                }
-                case BooklistGroup.SERIES: {
-                    return onSeries(context, menuItemId, rowData);
-                }
-                case BooklistGroup.TAGS_GENRE: {
-                    return onTag(context, menuItemId, rowData);
-                }
 
-                case BooklistGroup.COLOR: {
-                    return onColor(context, menuItemId, rowData);
-                }
-                case BooklistGroup.FORMAT: {
-                    return onFormat(context, menuItemId, rowData);
-                }
-                case BooklistGroup.LANGUAGE: {
-                    return onLanguage(context, menuItemId, rowData);
-                }
-                case BooklistGroup.LOCATION: {
-                    return onLocation(context, menuItemId, rowData);
-                }
+            if (rowGroupId == BooklistGroup.BOOK) {
+                return onBook(context, menuItemId, rowData, adapterPosition);
+            }
 
-                default:
-                    break;
+            final RowMenu rowMenu = map.get(rowGroupId);
+            if (rowMenu != null) {
+                return rowMenu.onMenuItemSelected(context, menuItemId, rowData, adapterPosition);
             }
             return false;
         }
@@ -2128,8 +1989,8 @@ public class BooksOnBookshelf
         private void forBook(@NonNull final Context context,
                              @NonNull final DataHolder rowData,
                              @NonNull final Menu menu) {
-            final MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.book, menu);
+            final MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.book, menu);
 
             // Always hide this for the book-row menu.
             // It is used only when we're in embedded mode in the book-details fragment itself.
@@ -2137,9 +1998,9 @@ public class BooksOnBookshelf
             menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(false);
 
             if (calibreHandler != null) {
-                calibreHandler.onCreateMenu(menu, inflater);
+                calibreHandler.onCreateMenu(menu, menuInflater);
             }
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, menuInflater, rowData));
 
             final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
             menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
@@ -2226,509 +2087,6 @@ public class BooksOnBookshelf
             } else if (menuItemId == R.id.MENU_SHARE) {
                 final Book book = Book.from(bookId);
                 startActivity(book.getShareIntent(context, vm.getStyle()));
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for an {@link Author}.
-         *
-         * @param context Current context
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onAuthor(Context, int, DataHolder)
-         */
-        private void forAuthor(@NonNull final Context context,
-                               @NonNull final DataHolder rowData,
-                               @NonNull final Menu menu) {
-            final MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.bl_group_author, menu);
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
-
-            final boolean complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
-            menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
-            menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
-
-            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, rowData));
-        }
-
-        /**
-         * Handle the row/context menu for an {@link Author}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forAuthor(Context, DataHolder, Menu)
-         */
-        private boolean onAuthor(@NonNull final Context context,
-                                 @IdRes final int menuItemId,
-                                 @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_AUTHOR_WORKS_LIST) {
-                authorWorksLauncher.launch(new AuthorWorksContract.Input(
-                        rowData.getLong(DBKey.FK_AUTHOR),
-                        vm.getBookshelf()));
-                return true;
-
-            } else if (menuItemId == R.id.MENU_AUTHOR_SET_COMPLETE
-                       || menuItemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
-                final Author author = DataHolderUtils.requireAuthor(rowData);
-                // toggle the complete status
-                final boolean status = !rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
-                vm.setAuthorComplete(author, status);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
-                final Author author = DataHolderUtils.requireAuthor(rowData);
-                editAuthorLauncher.editInPlace(context, author);
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link Bookshelf}.
-         *
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onBookshelf(Context, int, DataHolder)
-         */
-        private void forBookshelf(@NonNull final DataHolder rowData,
-                                  @NonNull final Menu menu) {
-            if (!rowData.getString(DBKey.FK_BOOKSHELF).isEmpty()) {
-                getMenuInflater().inflate(R.menu.bl_group_bookshelf, menu);
-            }
-            // Note that a "(No Bookshelf)" does NOT exist.
-            // Books are always on a shelf.
-        }
-
-        /**
-         * Handle the row/context menu for a {@link Bookshelf}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forBookshelf(DataHolder, Menu)
-         */
-        private boolean onBookshelf(@NonNull final Context context,
-                                    @IdRes final int menuItemId,
-                                    @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_BOOKSHELF_EDIT) {
-                final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-                editBookshelfLauncher.editInPlace(context, bookshelf);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
-                final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-                // We're handling default/only bookshelf situations in the dialog method
-                StandardDialogs.deleteBookshelf(context, bookshelf, () ->
-                        vm.delete(context, bookshelf));
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link Publisher}.
-         *
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onPublisher(Context, int, DataHolder)
-         */
-        private void forPublisher(@NonNull final DataHolder rowData,
-                                  @NonNull final Menu menu) {
-            if (rowData.getLong(DBKey.FK_PUBLISHER) != 0) {
-                getMenuInflater().inflate(R.menu.bl_group_publisher, menu);
-            } else {
-                // It's a "(No Publisher)" node
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
-                         getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                         R.string.menu_update_books)
-                    .setIcon(R.drawable.cloud_download_24px);
-            }
-        }
-
-        /**
-         * Handle the row/context menu for a {@link Publisher}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forPublisher(DataHolder, Menu)
-         */
-        private boolean onPublisher(@NonNull final Context context,
-                                    @IdRes final int menuItemId,
-                                    @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
-                final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                editPublisherLauncher.editInPlace(context, publisher);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
-                final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                StandardDialogs.deletePublisher(context, publisher, vm.countBooks(publisher),
-                                                () -> vm.delete(context, publisher));
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link Series}.
-         *
-         * @param context Current context
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onSeries(Context, int, DataHolder)
-         */
-        private void forSeries(@NonNull final Context context,
-                               @NonNull final DataHolder rowData,
-                               @NonNull final Menu menu) {
-            if (rowData.getLong(DBKey.FK_SERIES) != 0) {
-                final MenuInflater inflater = getMenuInflater();
-                inflater.inflate(R.menu.bl_group_series, menu);
-                vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
-
-                final boolean complete = rowData.getBoolean(DBKey.SERIES.COMPLETE);
-                menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
-                menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
-
-                vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, rowData));
-
-            } else {
-                // It's a "(No Series)" node
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
-                         getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                         R.string.menu_update_books)
-                    .setIcon(R.drawable.cloud_download_24px);
-            }
-        }
-
-        /**
-         * Handle the row/context menu for a {@link Series}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forSeries(Context, DataHolder, Menu)
-         */
-        private boolean onSeries(@NonNull final Context context,
-                                 @IdRes final int menuItemId,
-                                 @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_SERIES_SET_COMPLETE
-                || menuItemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
-                final Series series = DataHolderUtils.requireSeries(rowData);
-                // toggle the complete status
-                final boolean status = !rowData.getBoolean(DBKey.SERIES.COMPLETE);
-                vm.setSeriesComplete(series, status);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_SERIES_EDIT) {
-                final Series series = DataHolderUtils.requireSeries(rowData);
-                editSeriesLauncher.editInPlace(context, series);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
-                final Series series = DataHolderUtils.requireSeries(rowData);
-                StandardDialogs.deleteSeries(context, series, vm.countBooks(series),
-                                             () -> vm.delete(context, series));
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link Tag}.
-         *
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onTag(Context, int, DataHolder)
-         */
-        private void forTag(@NonNull final DataHolder rowData,
-                            @NonNull final Menu menu) {
-            if (rowData.getLong(DBKey.FK_TAG) != 0) {
-                getMenuInflater().inflate(R.menu.bl_group_tag, menu);
-            } else {
-                // It's a "(Not set)" node
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
-                         getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                         R.string.menu_update_books)
-                    .setIcon(R.drawable.cloud_download_24px);
-            }
-        }
-
-        /**
-         * Handle the row/context menu for a {@link Tag}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forTag(DataHolder, Menu)
-         */
-        private boolean onTag(@NonNull final Context context,
-                              @IdRes final int menuItemId,
-                              @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_TAG_EDIT) {
-                final Tag tag = DataHolderUtils.requireTag(rowData);
-                editTagLauncher.editInPlace(context, tag);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_TAG_DELETE) {
-                final Tag tag = DataHolderUtils.requireTag(rowData);
-                StandardDialogs.deleteTag(context, tag, vm.countBooks(tag), ()
-                        -> vm.delete(context, tag));
-                return true;
-            }
-            return false;
-        }
-
-
-        /**
-         * Create the row/context menu for a {@link BooklistGroup#COLOR}.
-         *
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onColor(Context, int, DataHolder)
-         */
-        private void forColor(@NonNull final DataHolder rowData,
-                              @NonNull final Menu menu) {
-            if (!rowData.getString(DBKey.COLOR).isEmpty()) {
-                menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
-                         getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                         R.string.action_edit_ellipsis)
-                    .setIcon(R.drawable.edit_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-            }
-        }
-
-        /**
-         * Handle the row/context menu for a {@link BooklistGroup#COLOR}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forColor(DataHolder, Menu)
-         */
-        private boolean onColor(@NonNull final Context context,
-                                @IdRes final int menuItemId,
-                                @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_COLOR_EDIT) {
-                editColorLauncher.edit(context, rowData.getString(DBKey.COLOR));
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link BooklistGroup#FORMAT}.
-         *
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onFormat(Context, int, DataHolder)
-         */
-        private void forFormat(@NonNull final DataHolder rowData,
-                               @NonNull final Menu menu) {
-            if (!rowData.getString(DBKey.FORMAT).isEmpty()) {
-                menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
-                         getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                         R.string.action_edit_ellipsis)
-                    .setIcon(R.drawable.edit_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-            }
-        }
-
-        /**
-         * Handle the row/context menu for a {@link BooklistGroup#FORMAT}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forFormat(DataHolder, Menu)
-         */
-        private boolean onFormat(@NonNull final Context context,
-                                 @IdRes final int menuItemId,
-                                 @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_FORMAT_EDIT) {
-                editFormatLauncher.edit(context, rowData.getString(DBKey.FORMAT));
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link BooklistGroup#LANGUAGE}.
-         *
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onLanguage(Context, int, DataHolder)
-         */
-        private void forLanguage(@NonNull final DataHolder rowData,
-                                 @NonNull final Menu menu) {
-            if (!rowData.getString(DBKey.LANGUAGE).isEmpty()) {
-                menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
-                         getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                         R.string.action_edit_ellipsis)
-                    .setIcon(R.drawable.edit_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-            }
-        }
-
-        /**
-         * Handle the row/context menu for a {@link BooklistGroup#LANGUAGE}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forLanguage(DataHolder, Menu)
-         */
-        private boolean onLanguage(@NonNull final Context context,
-                                   @IdRes final int menuItemId,
-                                   @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_LANGUAGE_EDIT) {
-                final String text = rowData.getString(DBKey.LANGUAGE);
-                final String editLang;
-                if (text.length() > 3) {
-                    editLang = text;
-                } else {
-                    final Locale userLocale = context.getResources().getConfiguration().getLocales()
-                                                     .get(0);
-                    editLang = ServiceLocator.getInstance().getAppLocale()
-                                             .getLocale(text, userLocale)
-                                             .map(Locale::getDisplayLanguage)
-                                             .orElse(text);
-                }
-                editLanguageLauncher.edit(context, editLang);
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link BooklistGroup#LOCATION}.
-         *
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onLocation(Context, int, DataHolder)
-         */
-        private void forLocation(@NonNull final DataHolder rowData,
-                                 @NonNull final Menu menu) {
-            if (!rowData.getString(DBKey.LOCATION).isEmpty()) {
-                menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
-                         getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                         R.string.action_edit_ellipsis)
-                    .setIcon(R.drawable.edit_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-            }
-        }
-
-        /**
-         * Handle the row/context menu for a {@link BooklistGroup#LOCATION}.
-         *
-         * @param context    Current context
-         * @param menuItemId The menu item that was invoked.
-         * @param rowData    the row data
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forLocation(DataHolder, Menu)
-         */
-        private boolean onLocation(@NonNull final Context context,
-                                   @IdRes final int menuItemId,
-                                   @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_LOCATION_EDIT) {
-                editLocationLauncher.edit(context, rowData.getString(DBKey.LOCATION));
                 return true;
             }
             return false;

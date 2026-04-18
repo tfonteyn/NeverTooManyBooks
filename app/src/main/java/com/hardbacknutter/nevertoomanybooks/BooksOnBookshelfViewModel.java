@@ -460,7 +460,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    List<MenuHandler<DataHolder>> getMenuHandlers() {
+    public List<MenuHandler<DataHolder>> getMenuHandlers() {
         return menuHandlers;
     }
 
@@ -549,7 +549,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    Bookshelf getBookshelf() {
+    public Bookshelf getBookshelf() {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
         return bookshelf;
     }
@@ -1059,8 +1059,8 @@ public class BooksOnBookshelfViewModel
      * @param author   Author to update
      * @param complete new status
      */
-    void setAuthorComplete(@NonNull final Author author,
-                           final boolean complete) {
+    public void setAuthorComplete(@NonNull final Author author,
+                                  final boolean complete) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (authorDao.setComplete(author, complete)) {
                 Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
@@ -1082,8 +1082,8 @@ public class BooksOnBookshelfViewModel
      * @param series   Series to update
      * @param complete new status
      */
-    void setSeriesComplete(@NonNull final Series series,
-                           final boolean complete) {
+    public void setSeriesComplete(@NonNull final Series series,
+                                  final boolean complete) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (seriesDao.setComplete(series, complete)) {
                 Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
@@ -1276,9 +1276,9 @@ public class BooksOnBookshelfViewModel
      * @param original the original text which was passed in to be edited
      * @param modified the modified text
      */
-    void onInlineStringUpdate(@NonNull final String dbKey,
-                              @NonNull final String original,
-                              @NonNull final String modified) {
+    public void onInlineStringUpdate(@NonNull final String dbKey,
+                                     @NonNull final String original,
+                                     @NonNull final String modified) {
         // We can ONLY get here if the given dbKey is used as a BooklistGroup.
         // Books might move between groups when they (groups) are modified.
         // So we have no choice and must always rebuild.
@@ -1292,8 +1292,8 @@ public class BooksOnBookshelfViewModel
      * @param entity  the entity that potentially was updated or
      *                {@code null} for all entities of the given type (group)
      */
-    void onRowGroupEntityUpdate(@BooklistGroup.Id final int groupId,
-                                @Nullable final Entity entity) {
+    public void onRowGroupEntityUpdate(@BooklistGroup.Id final int groupId,
+                                       @Nullable final Entity entity) {
         // Books might move between groups when they (groups) are modified.
         // So we have no choice and must always rebuild.
         triggerRebuildList.setValue(LiveDataEvent.of(false));
@@ -1348,15 +1348,15 @@ public class BooksOnBookshelfViewModel
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
-    int countBooks(@NonNull final Series series) {
+    public int countBooks(@NonNull final Series series) {
         return seriesDao.countBooks(series);
     }
 
-    int countBooks(@NonNull final Publisher publisher) {
+    public int countBooks(@NonNull final Publisher publisher) {
         return publisherDao.countBooks(publisher);
     }
 
-    int countBooks(@NonNull final Tag tag) {
+    public int countBooks(@NonNull final Tag tag) {
         return tagDao.countBooks(tag);
     }
 
@@ -1366,7 +1366,7 @@ public class BooksOnBookshelfViewModel
      * @param context Current context
      * @param series  to delete
      */
-    void delete(@NonNull final Context context,
+    public void delete(@NonNull final Context context,
                 @NonNull final Series series) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (seriesDao.delete(context, series)) {
@@ -1381,7 +1381,7 @@ public class BooksOnBookshelfViewModel
      * @param context   Current context
      * @param publisher to delete
      */
-    void delete(@NonNull final Context context,
+    public void delete(@NonNull final Context context,
                 @NonNull final Publisher publisher) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (publisherDao.delete(context, publisher)) {
@@ -1396,8 +1396,8 @@ public class BooksOnBookshelfViewModel
      * @param context   Current context
      * @param bookshelf to delete
      */
-    void delete(@NonNull final Context context,
-                @NonNull final Bookshelf bookshelf) {
+    public void delete(@NonNull final Context context,
+                       @NonNull final Bookshelf bookshelf) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (bookshelfDao.delete(context, bookshelf)) {
                 triggerRebuildList.postValue(LiveDataEvent.of(false));
@@ -1411,7 +1411,7 @@ public class BooksOnBookshelfViewModel
      * @param context Current context
      * @param tag     to delete
      */
-    void delete(@NonNull final Context context,
+    public void delete(@NonNull final Context context,
                 @NonNull final Tag tag) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (tagDao.delete(tag)) {
