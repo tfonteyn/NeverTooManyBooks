@@ -145,9 +145,8 @@ public class EditBookTagsDialogFragment
                         "",
                         null));
 
-        editStringLauncher = new EditStringLauncher(RK_EDIT_TAG);
-        editStringLauncher.setResultListener((previousValue, currentValue, extras)
-                                                     -> addNewTag(currentValue));
+        editStringLauncher = new EditStringLauncher(
+                RK_EDIT_TAG, (previous, newTag, extras) -> addNewTag(newTag));
         editStringLauncher.registerForFragmentResult(getChildFragmentManager(), this);
 
         bookTags = vm.getBook().getTags();

@@ -61,20 +61,21 @@ public final class MultiChoiceLauncher<T extends Entity>
     static final String BKEY_EDIT = TAG + ":edit";
     private static final String BKEY_ORIGINAL = TAG + ":original";
 
-    private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
-
-    @Nullable
-    private ResultListener resultListener;
+    @NonNull
+    private final ResultListener resultListener;
 
     /**
      * Constructor.
      *
-     * @param requestKey FragmentResultListener request key to use for our response.
+     * @param requestKey     FragmentResultListener request key to use for our response.
+     * @param resultListener to use
      */
-    public MultiChoiceLauncher(@NonNull final String requestKey) {
+    public MultiChoiceLauncher(@NonNull final String requestKey,
+                               @NonNull final ResultListener resultListener) {
         super(requestKey,
               MultiChoiceDialogFragment::new,
               MultiChoiceBottomSheet::new);
+        this.resultListener = resultListener;
     }
 
     /**
@@ -106,15 +107,6 @@ public final class MultiChoiceLauncher<T extends Entity>
     }
 
     /**
-     * Set the results' listener.
-     *
-     * @param resultListener to use
-     */
-    public void setResultListener(@NonNull final ResultListener resultListener) {
-        this.resultListener = resultListener;
-    }
-
-    /**
      * Launch the dialog.
      *
      * @param context       preferably the {@code Activity}
@@ -131,8 +123,6 @@ public final class MultiChoiceLauncher<T extends Entity>
                        @NonNull final List<T> allItems,
                        @Nullable final List<T> edit,
                        @Nullable final Bundle extras) {
-
-        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Bundle args = new Bundle();
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
@@ -159,8 +149,6 @@ public final class MultiChoiceLauncher<T extends Entity>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-
-        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Set<Long> previousSelection =
                 Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_ORIGINAL),

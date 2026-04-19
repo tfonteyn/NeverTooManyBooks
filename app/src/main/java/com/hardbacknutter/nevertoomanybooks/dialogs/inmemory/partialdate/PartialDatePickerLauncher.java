@@ -50,20 +50,21 @@ public class PartialDatePickerLauncher
     static final String BKEY_EDIT = TAG + ":edit";
     private static final String BKEY_ORIGINAL = TAG + ":original";
 
-    private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
-
-    @Nullable
-    private ResultListener resultListener;
+    @NonNull
+    private final ResultListener resultListener;
 
     /**
      * Constructor.
      *
-     * @param requestKey FragmentResultListener request key to use for our response.
+     * @param requestKey     FragmentResultListener request key to use for our response.
+     * @param resultListener to use
      */
-    public PartialDatePickerLauncher(@NonNull final String requestKey) {
+    public PartialDatePickerLauncher(@NonNull final String requestKey,
+                                     @NonNull final ResultListener resultListener) {
         super(requestKey,
               PartialDatePickerDialogFragment::new,
               PartialDatePickerBottomSheet::new);
+        this.resultListener = resultListener;
     }
 
     /**
@@ -93,15 +94,6 @@ public class PartialDatePickerLauncher
     }
 
     /**
-     * Set the results' listener.
-     *
-     * @param resultListener to use
-     */
-    public void setResultListener(@NonNull final ResultListener resultListener) {
-        this.resultListener = resultListener;
-    }
-
-    /**
      * Launch the dialog.
      *
      * @param context       preferably the {@code Activity}
@@ -116,8 +108,6 @@ public class PartialDatePickerLauncher
                        @Nullable final String dialogMessage,
                        @Nullable final String edit,
                        @Nullable final Bundle extras) {
-
-        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Bundle args = new Bundle();
         args.putString(BKEY_DIALOG_TITLE, dialogTitle);
@@ -138,8 +128,6 @@ public class PartialDatePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
-
         resultListener.onResult(
                 Objects.requireNonNull(result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL),
                 Objects.requireNonNull(result.getParcelable(BKEY_EDIT), BKEY_EDIT),

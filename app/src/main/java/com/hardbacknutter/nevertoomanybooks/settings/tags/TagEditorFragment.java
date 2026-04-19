@@ -113,8 +113,7 @@ public class TagEditorFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = new EditStringLauncher(RK_TAG);
-        editLauncher.setResultListener(this::onEditEntryDone);
+        editLauncher = new EditStringLauncher(RK_TAG, this::onEditEntryDone);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);

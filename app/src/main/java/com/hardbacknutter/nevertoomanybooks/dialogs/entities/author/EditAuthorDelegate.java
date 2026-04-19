@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -103,8 +103,8 @@ class EditAuthorDelegate
 
         final FragmentManager fm = owner.getChildFragmentManager();
 
-        partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL);
-        partialDatePickerLauncher.setResultListener(datePickerListener);
+        partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL,
+                                                                  datePickerListener);
         partialDatePickerLauncher.registerForFragmentResult(fm, owner);
 
         dateFieldFormatter = new DateFieldFormatter(

@@ -121,8 +121,7 @@ public class TagMappingEditorFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = new EditTagMappingLauncher(RK_TAG);
-        editLauncher.setResultListener(this::onEditEntryDone);
+        editLauncher = new EditTagMappingLauncher(RK_TAG, this::onEditEntryDone);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);

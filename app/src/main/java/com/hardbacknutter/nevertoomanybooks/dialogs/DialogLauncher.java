@@ -162,7 +162,7 @@ public abstract class DialogLauncher
                 break;
             }
             default:
-                throw new IllegalArgumentException("requestKey=" + requestKey + ", mode=" + mode);
+                throw new IllegalArgumentException("mode=" + mode);
         }
 
         args.putString(BKEY_REQUEST_KEY, requestKey);

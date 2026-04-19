@@ -161,13 +161,13 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editTocEntryLauncher = new EditTocEntryLauncher();
-        editTocEntryLauncher.setResultListener(this::onEntryUpdated);
+        editTocEntryLauncher = new EditTocEntryLauncher(this::onEntryUpdated);
         editTocEntryLauncher.registerForFragmentResult(fm, this);
 
         confirmTocResultsLauncher = new ConfirmTocDialogFragment.Launcher(
                 RK_CONFIRM_TOC,
-                this::onIsfdbDataConfirmed, this::searchIsfdbNextEdition);
+                this::onIsfdbDataConfirmed,
+                this::searchIsfdbNextEdition);
         confirmTocResultsLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);

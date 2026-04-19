@@ -497,16 +497,14 @@ public class BooksOnBookshelf
         stylePickerLauncher = new StylePickerLauncher(this::onStyleSelected);
         stylePickerLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
-        bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(RK_SET_BOOKSHELVES);
-        bulkSetBookshelvesLauncher.setResultListener(
-                (previousSelection, currentSelection, extras)
-                        -> vm.setBookshelves(this, currentSelection, extras));
+        bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(RK_SET_BOOKSHELVES,
+                                                               (previous, newSelection, extras)
+                                                                       -> vm.setBookshelves(this, newSelection, extras));
         bulkSetBookshelvesLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
-        bulkSetLocationLauncher = new AutoCompletePickerLauncher(RK_SET_LOCATION);
-        bulkSetLocationLauncher.setResultListener(
-                (previousSelection, currentSelection, extras)
-                        -> vm.setLocation(currentSelection, extras));
+        bulkSetLocationLauncher = new AutoCompletePickerLauncher(RK_SET_LOCATION,
+                                                                 (previous, newSelection, extras)
+                                                                         -> vm.setLocation(newSelection, extras));
         bulkSetLocationLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
