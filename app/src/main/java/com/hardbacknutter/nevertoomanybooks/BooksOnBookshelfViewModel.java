@@ -598,7 +598,7 @@ public class BooksOnBookshelfViewModel
      * @return style
      */
     @NonNull
-    Style getStyle() {
+    public Style getStyle() {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
         return bookshelf.getStyle();
     }
@@ -782,8 +782,8 @@ public class BooksOnBookshelfViewModel
      * @param adapterPosition to highlight;
      *                        use {@code RecyclerView.NO_POSITION} to remove all highlighting
      */
-    void setSelectedBook(@IntRange(from = 0) final long bookId,
-                         @IntRange(from = RecyclerView.NO_POSITION) final int adapterPosition) {
+    public void setSelectedBook(@IntRange(from = 0) final long bookId,
+                                @IntRange(from = RecyclerView.NO_POSITION) final int adapterPosition) {
         this.selectedBookId = bookId;
 
         // Call with previous selectedAdapterPosition and new position
@@ -799,7 +799,7 @@ public class BooksOnBookshelfViewModel
      *
      * @return {@code true} if this book is available for lending.
      */
-    boolean isAvailable(@NonNull final DataHolder rowData) {
+    public boolean isAvailable(@NonNull final DataHolder rowData) {
         final String loanee;
         if (rowData.contains(DBKey.LOANEE_NAME)) {
             loanee = rowData.getString(DBKey.LOANEE_NAME);
@@ -918,7 +918,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
+    public List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
         return authorDao.getByBookId(bookId);
     }
 
@@ -1165,8 +1165,8 @@ public class BooksOnBookshelfViewModel
      * @param id   Book to update
      * @param read new status
      */
-    void setBookRead(@IntRange(from = 1) final long id,
-                     final boolean read) {
+    public void setBookRead(@IntRange(from = 1) final long id,
+                            final boolean read) {
         final Book book = Book.from(id);
         if (bookDao.setRead(book, read)) {
             onBookReadStatusChanged(book);
@@ -1209,7 +1209,7 @@ public class BooksOnBookshelfViewModel
      *
      * @param bookId Book to return
      */
-    void deleteLoan(@IntRange(from = 1) final long bookId) {
+    public void deleteLoan(@IntRange(from = 1) final long bookId) {
         if (loaneeDao.delete(bookId)) {
             onBookLoaneeChanged(bookId, null);
         }
@@ -1224,9 +1224,9 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} if a full rebuild of the list was triggered
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
-                                @SuppressWarnings("SameParameterValue")
-                                @Nullable final String loanee) {
+    public boolean onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
+                                       @SuppressWarnings("SameParameterValue")
+                                       @Nullable final String loanee) {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         if (getStyle().hasGroup(BooklistGroup.LENDING)
@@ -1425,7 +1425,7 @@ public class BooksOnBookshelfViewModel
      *
      * @param bookId to delete
      */
-    void deleteBook(@IntRange(from = 1) final long bookId) {
+    public void deleteBook(@IntRange(from = 1) final long bookId) {
         if (bookDao.delete(bookId)) {
             onBookDeleted(bookId);
         }

@@ -98,6 +98,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.PositioningHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMAuthor;
+import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMBook;
 import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMBookshelf;
 import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMColor;
 import com.hardbacknutter.nevertoomanybooks.booklist.rowmenu.RMFormat;
@@ -115,14 +116,11 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListe
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters.BookshelfFiltersLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete.AutoCompletePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceLauncher;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -271,7 +269,6 @@ public class BooksOnBookshelf
     @Nullable
     private ActivityResultLauncher<Void> calibreSyncLauncher;
 
-    private EditLenderLauncher editLenderLauncher;
     /** Row menu launcher displaying the menu as a BottomSheet. */
     private ExtMenuLauncher menuLauncher;
     private StylePickerLauncher stylePickerLauncher;
@@ -510,10 +507,6 @@ public class BooksOnBookshelf
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, lifecycleOwner);
-
-        editLenderLauncher = new EditLenderLauncher(
-                (bookId, loanee) -> vm.onBookLoaneeChanged(bookId, loanee));
-        editLenderLauncher.registerForFragmentResult(fm, lifecycleOwner);
     }
 
     private void createViewModel() {
@@ -664,7 +657,7 @@ public class BooksOnBookshelf
      * i.e. books which exist in the optional Calibre Content Server.
      */
     private void createCalibreServerHandler() {
-        if (calibreHandler == null && SyncServer.CalibreCS.isEnabled()) {
+        if (SyncServer.CalibreCS.isEnabled()) {
             try {
                 calibreHandler = new CalibreHandler(getWindow(), vb.getRoot(), this)
                         .setProgressFrame(findViewById(R.id.progress_frame))
@@ -1296,17 +1289,6 @@ public class BooksOnBookshelf
         }
 
         // other handlers.
-        if (calibreHandler != null) {
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
-            // Sanity check
-            if (bookId > 0) {
-                final Book book = Book.from(bookId);
-                if (calibreHandler.onMenuItemSelected(this, menuItemId, book)) {
-                    return true;
-                }
-            }
-        }
-
         return vm.getMenuHandlers()
                  .stream()
                  .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
@@ -1902,6 +1884,11 @@ public class BooksOnBookshelf
         private final Map<Integer, RowMenu> map = new HashMap<>();
 
         RowGroupMenuHelper() {
+            map.put(BooklistGroup.BOOK, new RMBook(vm,
+                                                   editBookLauncher,
+                                                   updateBookLauncher,
+                                                   calibreHandler));
+
             map.put(BooklistGroup.AUTHOR, new RMAuthor(vm, authorWorksLauncher));
             map.put(BooklistGroup.BOOKSHELF, new RMBookshelf(vm));
             map.put(BooklistGroup.COLOR, new RMColor(vm));
@@ -1934,11 +1921,6 @@ public class BooksOnBookshelf
             }
 
             switch (rowGroupId) {
-                case BooklistGroup.BOOK: {
-                    forBook(context, rowData, menu);
-                    break;
-                }
-
                 // year/month/day all resolve to the same date string yyyy-mm-dd
                 case BooklistGroup.DATE_ACQUIRED_YEAR:
                 case BooklistGroup.DATE_ACQUIRED_MONTH:
@@ -1981,122 +1963,9 @@ public class BooksOnBookshelf
             @BooklistGroup.Id
             final int rowGroupId = rowData.getInt(DBKey.BL_NODE.GROUP);
 
-            if (rowGroupId == BooklistGroup.BOOK) {
-                return onBook(context, menuItemId, rowData, adapterPosition);
-            }
-
             final RowMenu rowMenu = map.get(rowGroupId);
             if (rowMenu != null) {
                 return rowMenu.onMenuItemSelected(context, menuItemId, rowData, adapterPosition);
-            }
-            return false;
-        }
-
-        /**
-         * Create the row/context menu for a {@link Book}.
-         *
-         * @param context Current context
-         * @param rowData the row data
-         * @param menu    to attach to
-         *
-         * @see #onBook(Context, int, DataHolder, int)
-         */
-        private void forBook(@NonNull final Context context,
-                             @NonNull final DataHolder rowData,
-                             @NonNull final Menu menu) {
-            final MenuInflater menuInflater = getMenuInflater();
-            menuInflater.inflate(R.menu.book, menu);
-
-            // Always hide this for the book-row menu.
-            // It is used only when we're in embedded mode in the book-details fragment itself.
-            // Reason: we share the R.menu.books file
-            menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(false);
-
-            if (calibreHandler != null) {
-                calibreHandler.onCreateMenu(menu, menuInflater);
-            }
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, menuInflater, rowData));
-
-            final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
-            menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
-            menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
-
-            // specifically check LOANEE_NAME independent of the style in use.
-            final boolean useLending = ServiceLocator.getInstance()
-                                                     .isFieldEnabled(DBKey.LOANEE_NAME);
-            final boolean isAvailable = vm.isAvailable(rowData);
-            menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
-            menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
-
-            if (calibreHandler != null) {
-                final Book book = Book.from(rowData.getLong(DBKey.FK_BOOK));
-                calibreHandler.onPrepareMenu(context, menu, book);
-            }
-
-            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, rowData));
-        }
-
-        /**
-         * Handle the row/context menu for a {@link Book}.
-         *
-         * @param context         Current context
-         * @param menuItemId      The menu item that was invoked.
-         * @param rowData         the row data
-         * @param adapterPosition The {@link #adapter} position of the row menu from which
-         *                        the user made a selection.
-         *
-         * @return {@code true} if handled.
-         *
-         * @see #forBook(Context, DataHolder, Menu)
-         */
-        private boolean onBook(@NonNull final Context context,
-                               @IdRes final int menuItemId,
-                               @NonNull final DataHolder rowData,
-                               final int adapterPosition) {
-
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
-            vm.setSelectedBook(bookId, adapterPosition);
-
-            if (menuItemId == R.id.MENU_BOOK_SET_READ
-                || menuItemId == R.id.MENU_BOOK_SET_UNREAD) {
-                // toggle the read status
-                final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
-                vm.setBookRead(bookId, status);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_BOOK_EDIT) {
-                editBookLauncher.launch(new EditBookContract.Input(bookId, vm.getStyle()));
-                return true;
-
-            } else if (menuItemId == R.id.MENU_BOOK_DUPLICATE) {
-                final Book book = Book.from(bookId);
-                editBookLauncher.launch(new EditBookContract.Input(book.duplicate(context),
-                                                                   vm.getStyle()));
-                return true;
-
-            } else if (menuItemId == R.id.MENU_BOOK_DELETE) {
-                final String title = rowData.getString(DBKey.TITLE);
-                final List<Author> authors = vm.getAuthorsByBookId(bookId);
-                StandardDialogs.deleteBook(context, title, authors, () -> vm.deleteBook(bookId));
-                return true;
-
-            } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
-                final Book book = Book.from(bookId);
-                updateBookLauncher.launch(book);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_BOOK_LOAN_ADD) {
-                editLenderLauncher.launch(context, bookId, rowData.getString(DBKey.TITLE));
-                return true;
-
-            } else if (menuItemId == R.id.MENU_BOOK_LOAN_DELETE) {
-                vm.deleteLoan(bookId);
-                return true;
-
-            } else if (menuItemId == R.id.MENU_SHARE) {
-                final Book book = Book.from(bookId);
-                startActivity(book.getShareIntent(context, vm.getStyle()));
-                return true;
             }
             return false;
         }
