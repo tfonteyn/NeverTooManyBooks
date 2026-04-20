@@ -33,6 +33,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
@@ -156,8 +157,10 @@ public class CalibreHandler {
     /**
      * Host (Fragment/Activity) independent initializer.
      *
-     * @param window the hosting component window
-     * @param view   the hosting component root view
+     * @param window          the hosting component window
+     * @param view            the hosting component root view
+     * @param lifecycleOwner  typically the {@link Fragment} or the {@link AppCompatActivity}
+     * @param caller          Fragment or Activity
      */
     private void onViewCreated(@NonNull final Window window,
                                @NonNull final View view,
