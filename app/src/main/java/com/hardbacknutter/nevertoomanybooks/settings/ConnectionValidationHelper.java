@@ -140,8 +140,7 @@ public class ConnectionValidationHelper {
                                 .setOnCancelListener(v -> vm.cancelTask(
                                         R.id.TASK_ID_VALIDATE_CONNECTION));
                     }
-                    //noinspection DataFlowIssue
-                    progressDelegate.show(() -> owner.getActivity().getWindow());
+                    progressDelegate.show();
                     vm.validateConnection();
                 })
                 .create()
@@ -150,8 +149,7 @@ public class ConnectionValidationHelper {
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection DataFlowIssue
-            progressDelegate.dismiss(owner.getActivity().getWindow());
+            progressDelegate.dismiss();
             progressDelegate = null;
         }
     }
@@ -216,13 +214,12 @@ public class ConnectionValidationHelper {
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
             if (progressDelegate == null) {
-                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(progressFrame)
                         .setTitle(R.string.lbl_test_connection)
                         .setPreventSleep(false)
                         .setIndeterminate(true)
                         .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                        .show(() -> owner.getActivity().getWindow());
+                        .show();
             }
             progressDelegate.onProgress(progress);
         });

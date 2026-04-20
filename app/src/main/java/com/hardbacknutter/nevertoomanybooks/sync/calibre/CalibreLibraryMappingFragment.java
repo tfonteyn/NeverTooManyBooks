@@ -161,8 +161,7 @@ public class CalibreLibraryMappingFragment
                     .setIndeterminate(true)
                     .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));
         }
-        //noinspection DataFlowIssue
-        progressDelegate.show(() -> getActivity().getWindow());
+        progressDelegate.show();
         vm.readMetaData();
     }
 

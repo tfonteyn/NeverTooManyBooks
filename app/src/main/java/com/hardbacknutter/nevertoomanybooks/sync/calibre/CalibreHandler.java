@@ -308,7 +308,7 @@ public class CalibreHandler {
                             .setPreventSleep(true)
                             .setIndeterminate(true)
                             .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                            .show(() -> hostWindow);
+                            .show();
                 }
                 progressDelegate.onProgress(progress);
             }
@@ -317,7 +317,7 @@ public class CalibreHandler {
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            progressDelegate.dismiss(hostWindow);
+            progressDelegate.dismiss();
             progressDelegate = null;
         }
     }

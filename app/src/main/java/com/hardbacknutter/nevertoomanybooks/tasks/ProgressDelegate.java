@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,14 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogProgressBinding;
@@ -137,17 +133,15 @@ public class ProgressDelegate {
     /**
      * Make the dialog visible.
      *
-     * @param windowSupplier deferred supplier for the {@link Window} to update
-     *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ProgressDelegate show(@NonNull final Supplier<Window> windowSupplier) {
+    public ProgressDelegate show() {
         if (vb.getRoot().getVisibility() == View.VISIBLE) {
             return this;
         }
         if (preventSleep) {
-            windowSupplier.get().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            vb.getRoot().setKeepScreenOn(true);
         }
         vb.getRoot().setVisibility(View.VISIBLE);
         return this;
@@ -156,11 +150,10 @@ public class ProgressDelegate {
     /**
      * Close the dialog.
      *
-     * @param window to update
      */
-    public void dismiss(@NonNull final Window window) {
+    public void dismiss() {
         if (preventSleep) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            vb.getRoot().setKeepScreenOn(false);
         }
         vb.getRoot().setVisibility(View.GONE);
     }

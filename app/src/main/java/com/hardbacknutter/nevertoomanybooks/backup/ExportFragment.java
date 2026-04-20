@@ -402,12 +402,11 @@ public class ExportFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
             if (progressDelegate == null) {
-                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.title_backup_and_export)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                        .show(() -> getActivity().getWindow());
+                        .show();
             }
             progressDelegate.onProgress(progress);
         });

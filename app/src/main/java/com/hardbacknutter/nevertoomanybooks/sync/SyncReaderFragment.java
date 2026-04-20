@@ -243,8 +243,7 @@ public class SyncReaderFragment
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
             }
-            //noinspection DataFlowIssue
-            progressDelegate.show(() -> getActivity().getWindow());
+            progressDelegate.show();
             vm.readData();
         } else {
             //noinspection DataFlowIssue
@@ -263,8 +262,7 @@ public class SyncReaderFragment
                     .setIndeterminate(true)
                     .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));
         }
-        //noinspection DataFlowIssue
-        progressDelegate.show(() -> getActivity().getWindow());
+        progressDelegate.show();
         vm.readMetaData();
     }
 
@@ -394,12 +392,11 @@ public class SyncReaderFragment
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
             if (progressDelegate == null) {
-                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                        .show(() -> getActivity().getWindow());
+                        .show();
             }
             progressDelegate.onProgress(progress);
         });

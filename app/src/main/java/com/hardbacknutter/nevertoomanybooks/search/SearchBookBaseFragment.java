@@ -163,12 +163,11 @@ public abstract class SearchBookBaseFragment
         if (enableProgressMessages) {
             message.process(progress -> {
                 if (progressDelegate == null) {
-                    //noinspection DataFlowIssue
                     progressDelegate = new ProgressDelegate(getProgressFrame())
                             .setTitle(R.string.progress_msg_searching)
                             .setIndeterminate(true)
                             .setOnCancelListener(v -> coordinator.cancel())
-                            .show(() -> getActivity().getWindow());
+                            .show();
                 }
                 progressDelegate.onProgress(progress);
             });

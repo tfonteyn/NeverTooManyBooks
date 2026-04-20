@@ -297,14 +297,13 @@ public class AuthorWorksFragment
                         // is very fast, but connection can take a long time,
                         // so bring up the progress dialog now
                         closeProgressDialog();
-                        //noinspection DataFlowIssue
                         progressDelegate = new ProgressDelegate(getProgressFrame())
                                 .setTitle(R.string.pt_fetch_author_info)
                                 .setMessage(R.string.progress_msg_please_wait)
                                 .setPreventSleep(true)
                                 .setIndeterminate(true)
                                 .setOnCancelListener(v -> vm.cancelResolverTask())
-                                .show(() -> getActivity().getWindow());
+                                .show();
 
                         vm.resolve(context, enabledEngines.get(w));
                     }

@@ -237,14 +237,13 @@ public class ImportFragment
             // There will be no progress messages as reading the data itself is very fast, but
             // connection can take a long time, so bring up the progress dialog now
             closeProgressDialog();
-            //noinspection DataFlowIssue
             progressDelegate = new ProgressDelegate(getProgressFrame())
                     .setTitle(R.string.lbl_importing)
                     .setMessage(R.string.progress_msg_please_wait)
                     .setPreventSleep(true)
                     .setIndeterminate(true)
                     .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA))
-                    .show(() -> getActivity().getWindow());
+                    .show();
             // The screen will refresh after meta-data has been read
             vm.readMetaData();
 
@@ -420,24 +419,22 @@ public class ImportFragment
 
     private void startImport() {
         closeProgressDialog();
-        //noinspection DataFlowIssue
         progressDelegate = new ProgressDelegate(getProgressFrame())
                 .setTitle(R.string.lbl_importing)
                 .setPreventSleep(true)
                 .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT))
-                .show(() -> getActivity().getWindow());
+                .show();
         vm.readData();
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
             if (progressDelegate == null) {
-                //noinspection DataFlowIssue
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                        .show(() -> getActivity().getWindow());
+                        .show();
             }
             progressDelegate.onProgress(progress);
         });

@@ -345,13 +345,12 @@ public class TagMappingEditorFragment
         vm.startTagMapper(options);
         // The task is typically very fast, and will not report progress
         // This indeterminate-progress dialog might just flash up/away...
-        //noinspection DataFlowIssue
         progressDelegate = new ProgressDelegate(getProgressFrame())
                 .setTitle(R.string.lbl_substitutions)
                 .setPreventSleep(true)
                 .setIndeterminate(true)
                 .setOnCancelListener(v -> vm.cancelTagMapper())
-                .show(() -> getActivity().getWindow());
+                .show();
     }
 
     private void onMappingFailure(@NonNull final LiveDataEvent<Throwable> message) {
