@@ -659,7 +659,7 @@ public class BooksOnBookshelf
     private void createCalibreServerHandler() {
         if (SyncServer.CalibreCS.isEnabled()) {
             try {
-                calibreHandler = new CalibreHandler(getWindow(), vb.getRoot(), this)
+                calibreHandler = new CalibreHandler(vb.getRoot(), this)
                         .setProgressFrame(findViewById(R.id.progress_frame))
                         .registerForActivityResult(this, this);
             } catch (@NonNull final CertificateException ignore) {

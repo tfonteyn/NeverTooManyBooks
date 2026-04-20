@@ -316,9 +316,7 @@ public class ShowBookDetailsFragment
         if (SyncServer.CalibreCS.isEnabled()) {
             try {
                 //noinspection DataFlowIssue
-                calibreHandler = new CalibreHandler(getActivity().getWindow(),
-                                                    getView(),
-                                                    this)
+                calibreHandler = new CalibreHandler(getView(), this)
                         .setProgressFrame(getProgressFrame())
                         .registerForActivityResult(this, getViewLifecycleOwner());
             } catch (@NonNull final CertificateException ignore) {

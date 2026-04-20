@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.Window;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
@@ -73,9 +72,6 @@ public class CalibreHandler {
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> pickFolderLauncher;
 
-    /** The host Window. */
-    private final Window hostWindow;
-
     /** The host view; used for context, resources. */
     private final View hostView;
 
@@ -89,18 +85,15 @@ public class CalibreHandler {
     /**
      * Constructor.
      *
-     * @param window              the hosting component window
      * @param view                the hosting component root view
      * @param viewModelStoreOwner the object which will own the internal ViewModel in this class.
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
-    public CalibreHandler(@NonNull final Window window,
-                          @NonNull final View view,
+    public CalibreHandler(@NonNull final View view,
                           @NonNull final ViewModelStoreOwner viewModelStoreOwner)
             throws CertificateException {
 
-        hostWindow = window;
         hostView = view;
 
         vm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
