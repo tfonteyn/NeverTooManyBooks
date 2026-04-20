@@ -56,16 +56,16 @@ public class DisplayBookLauncher {
     @NonNull
     private final ActivityResultLauncher<ShowBookPagerContract.Input> launcher;
 
-    public DisplayBookLauncher(@NonNull final ActivityResultCaller fragment,
+    public DisplayBookLauncher(@NonNull final ActivityResultCaller caller,
                                @NonNull final ActivityResultCallback<Optional<EditBookOutput>>
-                                       optionalActivityResultCallback) {
-        this.launcher = fragment.registerForActivityResult(new ShowBookPagerContract(),
-                                                           optionalActivityResultCallback);
+                                       resultCallback) {
+        this.launcher = caller.registerForActivityResult(new ShowBookPagerContract(),
+                                                         resultCallback);
     }
 
     /**
      * ENHANCE: GitHub #151 potential replacement for {@link #launcher}
-     *  when we decided on inconsistencies between TocFragment/AuthorWorksFragment
+     *  when we decided on inconsistencies between TocFragment/AuthorWorksFragment.
      * <p>
      * Launch the Book pager screen with the list of books derived
      * from the actual books and the books from TOCEntries.
