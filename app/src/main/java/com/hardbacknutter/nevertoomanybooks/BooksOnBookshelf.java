@@ -1271,10 +1271,12 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES
                    || menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY) {
-            // We get here after the user choose one of these options from the dialog menu.
+            // We get here after the user choose one of these two options
+            // from the dialog menu.
             return updateBooksFromInternetData(menuItemId, rowData);
 
         } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {
+            // From the CalibreHandler.
             final Intent intent = FragmentHostActivityLauncher
                     .createIntent(this, CalibrePreferencesFragment.class);
             startActivity(intent);
@@ -1871,9 +1873,6 @@ public class BooksOnBookshelf
      * <p>
      * The booklist groups have been cleanly moved to {@link RowMenu} classes
      * which reduced the complexity quite a bit and makes their code easier to read.
-     * <p>
-     * The Book (which is group 0) has not... because it's too entangled
-     * with the BoB class itself and we keep handling it here in this helper.
      * <p>
      * The Date based rows menus are in fact NOT related to the groups
      * but offer a small set of group independent options.

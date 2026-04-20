@@ -252,6 +252,9 @@ public class CalibreHandler {
             return true;
 
         }
+
+        // R.id.MENU_CALIBRE_SETTINGS is not handled here.
+        // The BoB will start it as an Activity, but other places start it as a Fragment
         return false;
     }
 
