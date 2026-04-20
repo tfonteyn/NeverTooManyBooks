@@ -316,9 +316,11 @@ public class ShowBookDetailsFragment
         if (SyncServer.CalibreCS.isEnabled()) {
             try {
                 //noinspection DataFlowIssue
-                calibreHandler = new CalibreHandler(getContext(), this)
-                        .setProgressFrame(getProgressFrame());
-                calibreHandler.onViewCreated(this);
+                calibreHandler = new CalibreHandler(getActivity().getWindow(),
+                                                    getView(),
+                                                    this)
+                        .setProgressFrame(getProgressFrame())
+                        .registerForActivityResult(this, getViewLifecycleOwner());
             } catch (@NonNull final CertificateException ignore) {
                 //ignore; the user would already have been warned on the BoB screen
             }

@@ -666,9 +666,9 @@ public class BooksOnBookshelf
     private void createCalibreServerHandler() {
         if (calibreHandler == null && SyncServer.CalibreCS.isEnabled()) {
             try {
-                calibreHandler = new CalibreHandler(this, this)
-                        .setProgressFrame(findViewById(R.id.progress_frame));
-                calibreHandler.onViewCreated(this, vb.getRoot());
+                calibreHandler = new CalibreHandler(getWindow(), vb.getRoot(), this)
+                        .setProgressFrame(findViewById(R.id.progress_frame))
+                        .registerForActivityResult(this, this);
             } catch (@NonNull final CertificateException ignore) {
                 // TipManager.getInstance().display(this, R.string.tip_calibre, null);
                 // ignore

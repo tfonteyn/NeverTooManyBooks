@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -75,10 +74,10 @@ public class CalibreHandler {
     private ActivityResultLauncher<Uri> pickFolderLauncher;
 
     /** The host Window. */
-    private Window hostWindow;
+    private final Window hostWindow;
 
     /** The host view; used for context, resources. */
-    private View hostView;
+    private final View hostView;
 
     /** Optionally set during initialising. */
     @Nullable
@@ -90,17 +89,22 @@ public class CalibreHandler {
     /**
      * Constructor.
      *
-     * @param context             Current context
+     * @param window              the hosting component window
+     * @param view                the hosting component root view
      * @param viewModelStoreOwner the object which will own the internal ViewModel in this class.
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
-    public CalibreHandler(@NonNull final Context context,
+    public CalibreHandler(@NonNull final Window window,
+                          @NonNull final View view,
                           @NonNull final ViewModelStoreOwner viewModelStoreOwner)
             throws CertificateException {
 
+        hostWindow = window;
+        hostView = view;
+
         vm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
-        vm.init(context);
+        vm.init(hostView.getContext());
     }
 
     /**
@@ -127,47 +131,23 @@ public class CalibreHandler {
                && book.contains(DBKey.FK_CALIBRE_LIBRARY);
     }
 
-    /**
-     * Initializer for use from within an Activity.
-     *
-     * @param activity the hosting Activity
-     * @param view     the root view of the Activity
-     */
-    public void onViewCreated(@NonNull final FragmentActivity activity,
-                              @NonNull final View view) {
-        onViewCreated(activity.getWindow(),
-                      view,
-                      activity,
-                      activity);
-    }
-
-    /**
-     * Initializer for use from within a Fragment.
-     *
-     * @param fragment the hosting Fragment
-     */
-    public void onViewCreated(@NonNull final Fragment fragment) {
-        //noinspection DataFlowIssue
-        onViewCreated(fragment.getActivity().getWindow(),
-                      fragment.getView(),
-                      fragment.getViewLifecycleOwner(),
-                      fragment);
+    @NonNull
+    public CalibreHandler setProgressFrame(@NonNull final View progressFrame) {
+        this.progressFrame = progressFrame;
+        return this;
     }
 
     /**
      * Host (Fragment/Activity) independent initializer.
      *
-     * @param window          the hosting component window
-     * @param view            the hosting component root view
-     * @param lifecycleOwner  typically the {@link Fragment} or the {@link AppCompatActivity}
-     * @param caller          Fragment or Activity
+     * @param caller         Fragment or Activity
+     * @param lifecycleOwner typically the {@link Fragment} or the {@link AppCompatActivity}
+     *
+     * @return {@code this} (for chaining)
      */
-    private void onViewCreated(@NonNull final Window window,
-                               @NonNull final View view,
-                               @NonNull final LifecycleOwner lifecycleOwner,
-                               @NonNull final ActivityResultCaller caller) {
-        hostWindow = window;
-        hostView = view;
+    @NonNull
+    public CalibreHandler registerForActivityResult(@NonNull final ActivityResultCaller caller,
+                                                    @NonNull final LifecycleOwner lifecycleOwner) {
 
         pickFolderLauncher = caller.registerForActivityResult(
                 new GetDirectoryUriContract(), o -> o.ifPresent(uri -> {
@@ -179,6 +159,8 @@ public class CalibreHandler {
         vm.onCancelled().observe(lifecycleOwner, this::onCancelled);
         vm.onFailure().observe(lifecycleOwner, this::onFailure);
         vm.onProgress().observe(lifecycleOwner, this::onProgress);
+
+        return this;
     }
 
     /**
@@ -316,11 +298,6 @@ public class CalibreHandler {
         });
     }
 
-    @NonNull
-    public CalibreHandler setProgressFrame(@NonNull final View progressFrame) {
-        this.progressFrame = progressFrame;
-        return this;
-    }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
