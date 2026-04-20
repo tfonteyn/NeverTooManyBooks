@@ -495,14 +495,14 @@ public class BooksOnBookshelf
         stylePickerLauncher = new StylePickerLauncher(this::onStyleSelected);
         stylePickerLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
-        bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(RK_SET_BOOKSHELVES,
-                                                               (previous, newSelection, extras)
-                                                                       -> vm.setBookshelves(this, newSelection, extras));
+        bulkSetBookshelvesLauncher = new MultiChoiceLauncher<>(
+                RK_SET_BOOKSHELVES, (previous, newSelection, extras)
+                -> vm.setBookshelves(this, newSelection, extras));
         bulkSetBookshelvesLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
-        bulkSetLocationLauncher = new AutoCompletePickerLauncher(RK_SET_LOCATION,
-                                                                 (previous, newSelection, extras)
-                                                                         -> vm.setLocation(newSelection, extras));
+        bulkSetLocationLauncher = new AutoCompletePickerLauncher(
+                RK_SET_LOCATION, (previous, newSelection, extras)
+                -> vm.setLocation(newSelection, extras));
         bulkSetLocationLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);
@@ -1883,9 +1883,7 @@ public class BooksOnBookshelf
         private final Map<Integer, RowMenu> map = new HashMap<>();
 
         RowGroupMenuHelper() {
-            map.put(BooklistGroup.BOOK, new RMBook(vm,
-                                                   editBookLauncher,
-                                                   updateBookLauncher,
+            map.put(BooklistGroup.BOOK, new RMBook(vm, editBookLauncher, updateBookLauncher,
                                                    calibreHandler));
 
             map.put(BooklistGroup.AUTHOR, new RMAuthor(vm, authorWorksLauncher));
@@ -1899,8 +1897,6 @@ public class BooksOnBookshelf
             map.put(BooklistGroup.TAGS_GENRE, new RMTag(vm));
         }
 
-        // DO NOT MOVE THIS TO THE CONSTRUCTOR!
-        // the FragmentManager will activate them immediately!
         void registerForFragmentResult(@NonNull final FragmentManager fm,
                                        @NonNull final LifecycleOwner lifecycleOwner) {
 
@@ -1920,7 +1916,6 @@ public class BooksOnBookshelf
             }
 
             switch (rowGroupId) {
-                // year/month/day all resolve to the same date string yyyy-mm-dd
                 case BooklistGroup.DATE_ACQUIRED_YEAR:
                 case BooklistGroup.DATE_ACQUIRED_MONTH:
                 case BooklistGroup.DATE_ACQUIRED_DAY:
@@ -1931,7 +1926,20 @@ public class BooksOnBookshelf
                 case BooklistGroup.DATE_PUBLISHED_MONTH:
                 case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
                 case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
-                    forDate(menu);
+
+                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                             R.string.lbl_assign_bookshelves)
+                        .setIcon(R.drawable.library_books_24px);
+                    menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                             getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                             R.string.lbl_assign_location)
+                        .setIcon(R.drawable.edit_location_24px);
+
+                    menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
+                             getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                             R.string.menu_update_books)
+                        .setIcon(R.drawable.cloud_download_24px);
                     break;
                 }
                 default: {
@@ -1968,31 +1976,6 @@ public class BooksOnBookshelf
             }
             return false;
         }
-
-        /**
-         * Create the row/context menu for one of the Date based rows.
-         * <p>
-         * Note there is no equivalent "onDate" method as these are row-group independent options
-         * handled in {@link #onSomeMenuItemSelected(int, int)}
-         *
-         * @param menu to attach to
-         */
-        private void forDate(@NonNull final Menu menu) {
-            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                     R.string.lbl_assign_bookshelves)
-                .setIcon(R.drawable.library_books_24px);
-            menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                     getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                     R.string.lbl_assign_location)
-                .setIcon(R.drawable.edit_location_24px);
-
-            menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
-                     getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                     R.string.menu_update_books)
-                .setIcon(R.drawable.cloud_download_24px);
-        }
-
     }
 
     private final class GridSpanSizeLookup
