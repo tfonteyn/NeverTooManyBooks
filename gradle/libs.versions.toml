@@ -45,7 +45,7 @@ desugar = "2.1.5"
 material = '1.13.0'
 
 # jsoup HTML parser library @ https://jsoup.org/
-jsoup = "1.22.1"
+jsoup = "1.22.2"
 # jsoup uses/needs https://github.com/google/re2j
 re2j = "1.8"
 
@@ -72,7 +72,7 @@ acra = "5.13.1"
 # https://junit.org/junit5/docs/current/user-guide/#overview
 # Android/mannodermaus does not support junit 6
 #noinspection NewerVersionAvailable
-jupiter = "5.14.2"
+jupiter = "5.14.3"
 
 # https://developer.android.com/jetpack/androidx/releases/test
 androidxTestCore = '1.7.0'
