@@ -269,7 +269,7 @@ public class BooklistAdapter
      *
      * @param positions to refresh
      */
-    public void requery(@NonNull final int[] positions) {
+    public void requery(@NonNull final List<Integer> positions) {
         //noinspection DataFlowIssue
         booklistCursor.reload();
 

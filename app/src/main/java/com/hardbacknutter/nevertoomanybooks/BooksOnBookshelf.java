@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
@@ -561,6 +562,22 @@ public class BooksOnBookshelf
             // the adapter has been recreated.
             if (adapter != null) {
                 adapter.requery(positions);
+
+                if (hasEmbeddedDetailsFrame()) {
+                    // Check if the currently displayed book is affected by the updated postions
+                    final ShowBookDetailsViewModel childVm = new ViewModelProvider(this)
+                            .get(ShowBookDetailsViewModel.class);
+                    final long currentlyDisplayedBookId = childVm.getBook().getId();
+
+                    // If it was, then refresh the embedded fragment as well
+                    positions.stream()
+                             .map(p -> adapter.readDataAt(p))
+                             .filter(Objects::nonNull)
+                             .mapToLong(dataHolder -> dataHolder.getInt(DBKey.FK_BOOK))
+                             .filter(id -> id == currentlyDisplayedBookId)
+                             .findFirst()
+                             .ifPresent(this::openEmbeddedBookDetails);
+                }
             }
         });
 
@@ -2045,12 +2062,6 @@ public class BooksOnBookshelf
                 // toggle the read status
                 final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
                 vm.setBookRead(bookId, status);
-                if (hasEmbeddedDetailsFrame()) {
-                    // refresh the entire fragment.
-                    // We could send a message so only the child-fragment
-                    // with the read-status is updated, but it's complicated enough already
-                    openEmbeddedBookDetails(bookId);
-                }
                 return true;
 
             } else if (menuItemId == R.id.MENU_BOOK_EDIT) {

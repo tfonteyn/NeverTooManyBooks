@@ -197,7 +197,7 @@ public class BooksOnBookshelfViewModel
     /** Cache for all bookshelves. */
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
     private final BoBTask boBTask = new BoBTask();
-    private final MutableLiveData<int[]> positionsUpdated = new MutableLiveData<>();
+    private final MutableLiveData<List<Integer>> positionsUpdated = new MutableLiveData<>();
     private final MutableLiveData<Pair<Integer, Integer>> highlightSelection =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<Boolean>> triggerRebuildList =
@@ -313,7 +313,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    LiveData<int[]> onPositionsUpdated() {
+    LiveData<List<Integer>> onPositionsUpdated() {
         return positionsUpdated;
     }
 
@@ -1054,7 +1054,7 @@ public class BooksOnBookshelfViewModel
     /**
      * Update the 'complete' status of the given Author.
      * <p>
-     * Triggers a {@link BooklistAdapter#requery(int[])} for the changed positions.
+     * Triggers a {@link BooklistAdapter#requery(List)} for the changed positions.
      *
      * @param author   Author to update
      * @param complete new status
@@ -1064,11 +1064,11 @@ public class BooksOnBookshelfViewModel
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (authorDao.setComplete(author, complete)) {
                 Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-                final int[] positions =
+                final List<Integer> positions =
                         booklist.updateAuthorComplete(author.getId(), author.isComplete())
                                 .stream()
-                                .mapToInt(BooklistNode::getAdapterPosition)
-                                .toArray();
+                                .map(BooklistNode::getAdapterPosition)
+                                .collect(Collectors.toList());
                 positionsUpdated.postValue(positions);
             }
         });
@@ -1077,7 +1077,7 @@ public class BooksOnBookshelfViewModel
     /**
      * Update the 'complete' status of the given Series.
      * <p>
-     * Triggers a {@link BooklistAdapter#requery(int[])} for the changed positions.
+     * Triggers a {@link BooklistAdapter#requery(List)} for the changed positions.
      *
      * @param series   Series to update
      * @param complete new status
@@ -1087,11 +1087,11 @@ public class BooksOnBookshelfViewModel
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (seriesDao.setComplete(series, complete)) {
                 Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-                final int[] positions =
+                final List<Integer> positions =
                         booklist.updateSeriesComplete(series.getId(), series.isComplete())
                                 .stream()
-                                .mapToInt(BooklistNode::getAdapterPosition)
-                                .toArray();
+                                .map(BooklistNode::getAdapterPosition)
+                                .collect(Collectors.toList());
                 positionsUpdated.postValue(positions);
             }
         });
@@ -1192,13 +1192,13 @@ public class BooksOnBookshelfViewModel
             // The change will not affect the group the book is in,
             // update the <strong>book-list</strong> 'read' status of the given book.
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            final int[] positions = booklist
+            final List<Integer> positions = booklist
                     .updateBookReadStatus(book.getId(),
                                           book.isRead(),
                                           book.getString(DBKey.READ_PROGRESS))
                     .stream()
-                    .mapToInt(BooklistNode::getAdapterPosition)
-                    .toArray();
+                    .map(BooklistNode::getAdapterPosition)
+                    .collect(Collectors.toList());
             positionsUpdated.setValue(positions);
             return false;
         }
@@ -1241,10 +1241,10 @@ public class BooksOnBookshelfViewModel
             // The change will not affect the group the book is in,
             // update the <strong>book-list</strong> 'loanee' of the given book.
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            final int[] positions = booklist.updateBookLoanee(bookId, loanee)
+            final List<Integer> positions = booklist.updateBookLoanee(bookId, loanee)
                                             .stream()
-                                            .mapToInt(BooklistNode::getAdapterPosition)
-                                            .toArray();
+                                                    .map(BooklistNode::getAdapterPosition)
+                                                    .collect(Collectors.toList());
             positionsUpdated.setValue(positions);
             return false;
         }
@@ -1260,10 +1260,10 @@ public class BooksOnBookshelfViewModel
     @SuppressWarnings("UnusedReturnValue")
     private boolean onBookCoverChanged(@IntRange(from = 1) final long bookId) {
         // The change will not affect the group the book is in.
-        final int[] positions = getVisibleBookNodes(bookId)
+        final List<Integer> positions = getVisibleBookNodes(bookId)
                 .stream()
-                .mapToInt(BooklistNode::getAdapterPosition)
-                .toArray();
+                .map(BooklistNode::getAdapterPosition)
+                .collect(Collectors.toList());
         positionsUpdated.setValue(positions);
         return false;
     }
