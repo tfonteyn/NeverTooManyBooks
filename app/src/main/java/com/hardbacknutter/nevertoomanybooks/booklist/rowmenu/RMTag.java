@@ -31,6 +31,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -104,8 +105,8 @@ public class RMTag
 
         } else if (menuItemId == R.id.MENU_TAG_DELETE) {
             final Tag tag = DataHolderUtils.requireTag(rowData);
-            StandardDialogs.deleteTag(context, tag, vm.countBooks(tag), ()
-                    -> vm.delete(context, tag));
+            final int books = ServiceLocator.getInstance().getTagDao().countBooks(tag);
+            StandardDialogs.deleteTag(context, tag, books, () -> vm.delete(context, tag));
             return true;
         }
         return false;

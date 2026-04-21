@@ -31,6 +31,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -103,7 +104,8 @@ public class RMPublisher
 
         } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-            StandardDialogs.deletePublisher(context, publisher, vm.countBooks(publisher),
+            final int books = ServiceLocator.getInstance().getPublisherDao().countBooks(publisher);
+            StandardDialogs.deletePublisher(context, publisher, books,
                                             () -> vm.delete(context, publisher));
             return true;
         }

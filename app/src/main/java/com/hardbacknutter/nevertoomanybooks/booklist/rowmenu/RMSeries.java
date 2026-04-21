@@ -33,6 +33,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -128,7 +129,8 @@ public class RMSeries
 
         } else if (menuItemId == R.id.MENU_SERIES_DELETE) {
             final Series series = DataHolderUtils.requireSeries(rowData);
-            StandardDialogs.deleteSeries(context, series, vm.countBooks(series),
+            final int books = ServiceLocator.getInstance().getSeriesDao().countBooks(series);
+            StandardDialogs.deleteSeries(context, series, books,
                                          () -> vm.delete(context, series));
             return true;
         }

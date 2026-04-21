@@ -1334,18 +1334,6 @@ public class BooksOnBookshelfViewModel
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
-    public int countBooks(@NonNull final Series series) {
-        return seriesDao.countBooks(series);
-    }
-
-    public int countBooks(@NonNull final Publisher publisher) {
-        return publisherDao.countBooks(publisher);
-    }
-
-    public int countBooks(@NonNull final Tag tag) {
-        return tagDao.countBooks(tag);
-    }
-
     /**
      * Delete the given {@link Series}.
      *
