@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,8 +77,8 @@ abstract class ViewOnSiteMenuHandler<T>
 
     @Override
     public void onCreateMenu(@NonNull final Context context,
-                             @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater,
+                             @NonNull final Menu menu,
                              @NonNull final T data) {
         final MenuItem item = menu.findItem(subMenuResId);
         if (item == null) {

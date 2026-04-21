@@ -63,8 +63,8 @@ public class SiteSearchMenuHandler
 
     @Override
     public void onCreateMenu(@NonNull final Context context,
-                             @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater,
+                             @NonNull final Menu menu,
                              @NonNull final DataHolder data) {
         final MenuItem menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
         if (menuItem == null) {

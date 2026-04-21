@@ -380,7 +380,7 @@ public abstract class EditBookBaseFragment
             final Book book = vm.getBook();
             //noinspection DataFlowIssue
             vm.getMenuHandlers().forEach(
-                    h -> h.onCreateMenu(getContext(), menu, menuInflater, book));
+                    h -> h.onCreateMenu(getContext(), menuInflater, menu, book));
         }
 
         @Override

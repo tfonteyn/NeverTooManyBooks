@@ -451,7 +451,7 @@ public class AuthorWorksFragment
                                               R.id.sm_title_author_works_filter);
 
             vm.getMenuHandlers().forEach(
-                    h -> h.onCreateMenu(context, menu, inflater, vm.getPrimaryAuthor()));
+                    h -> h.onCreateMenu(context, inflater, menu, vm.getPrimaryAuthor()));
         }
 
         @Override

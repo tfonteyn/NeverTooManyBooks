@@ -694,7 +694,7 @@ public class ShowBookDetailsFragment
             final Book book = vm.getBook();
 
             //noinspection DataFlowIssue
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, book));
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, inflater, menu, book));
         }
 
         @Override

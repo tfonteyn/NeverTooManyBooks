@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,13 +33,13 @@ public interface MenuHandler<T> {
      * Inflate/create the menu.
      *
      * @param context  Current context
-     * @param menu     The Menu to inflate into
      * @param inflater to use
+     * @param menu     The Menu to inflate into
      * @param data     the data
      */
     void onCreateMenu(@NonNull Context context,
-                      @NonNull Menu menu,
                       @NonNull MenuInflater inflater,
+                      @NonNull Menu menu,
                       @NonNull T data);
 
     /**
