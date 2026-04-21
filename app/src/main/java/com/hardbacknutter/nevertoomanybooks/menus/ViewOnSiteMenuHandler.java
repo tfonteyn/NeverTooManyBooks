@@ -36,14 +36,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-// TODO: either use Function or use abstract methods.. not both
 abstract class ViewOnSiteMenuHandler<T>
         implements MenuHandler<T> {
 
@@ -53,20 +51,19 @@ abstract class ViewOnSiteMenuHandler<T>
     private final int subMenuResId;
     @IdRes
     private final int menuGroupResId;
-    @NonNull
-    private final BiFunction<Context, Identifier, Optional<String>> uriProvider;
+
     private final IdentifierDao dao;
 
-    ViewOnSiteMenuHandler(
-            @IdRes final int subMenuResId,
-            @IdRes final int menuGroupResId,
-            @NonNull final BiFunction<Context, Identifier, Optional<String>> uriProvider) {
+    ViewOnSiteMenuHandler(@IdRes final int subMenuResId,
+                          @IdRes final int menuGroupResId) {
         this.subMenuResId = subMenuResId;
         this.menuGroupResId = menuGroupResId;
-        this.uriProvider = uriProvider;
 
         dao = ServiceLocator.getInstance().getIdentifierDao();
     }
+
+    @NonNull
+    abstract Optional<String> getUri(@NonNull Identifier identifier);
 
     @NonNull
     abstract List<Identifier.Value> getSids(@NonNull T data);
@@ -116,7 +113,7 @@ abstract class ViewOnSiteMenuHandler<T>
                 .map(Identifier.Value::getKey)
                 .map(dao::findByKey)
                 .flatMap(Optional::stream)
-                .filter(identifier -> uriProvider.apply(context, identifier).isPresent())
+                .filter(identifier -> getUri(identifier).isPresent())
                 .forEach(identifier -> {
                              // generate a random id, and map it to the key
                              final int menuItemId = View.generateViewId();
@@ -128,7 +125,8 @@ abstract class ViewOnSiteMenuHandler<T>
                          }
                 );
 
-        subMenuItem.setVisible(subMenuItem.getSubMenu().size() > 0);
+        final boolean visible = subMenuItem.getSubMenu().size() > 0;
+        subMenuItem.setVisible(visible);
     }
 
     @Override
@@ -144,7 +142,7 @@ abstract class ViewOnSiteMenuHandler<T>
 
         final Optional<String> oUri = dao
                 .findByKey(key)
-                .flatMap(identifier -> uriProvider.apply(context, identifier));
+                .flatMap(this::getUri);
 
         // Sanity check, it should be there!
         if (oUri.isPresent()) {

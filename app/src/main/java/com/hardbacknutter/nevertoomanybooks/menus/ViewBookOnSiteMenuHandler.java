@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.ASIN;
 
 /**
  * Collects all {@link Identifier}s present
- * and builds/displays a menu suitable for the given {@link Book}.
+ * and builds/displays a menu suitable for a given {@link Book}.
  * <p>
  * We hide the entire submenu if there are none.
  */
@@ -47,14 +47,21 @@ public class ViewBookOnSiteMenuHandler
      * Constructor.
      */
     public ViewBookOnSiteMenuHandler() {
-        super(R.id.SUBMENU_VIEW_BOOK_ON_SITE,
-              R.id.MENU_GROUP_BOOK,
-              (context, identifier) -> identifier.getBookUri());
+        super(R.id.SUBMENU_VIEW_BOOK_ON_SITE, R.id.MENU_GROUP_BOOK);
+    }
+
+    @NonNull
+    @Override
+    Optional<String> getUri(@NonNull final Identifier identifier) {
+        return identifier.getBookUri();
     }
 
     @NonNull
     List<Identifier.Value> getSids(@NonNull final DataHolder data) {
         final List<Identifier.Value> ivs = DataHolderUtils.getSids(DBKey.FK_BOOK, data);
+
+        // The code below sole goal is to check for, or try to construct an ASIN
+        // and add it as-needed/if-possible to the list of identifier values.
 
         // If we have an ASIN, return all the Identifiers now.
         if (ivs.stream().map(Identifier.Value::getKey).anyMatch(Identifier.SID_ASIN::equals)) {

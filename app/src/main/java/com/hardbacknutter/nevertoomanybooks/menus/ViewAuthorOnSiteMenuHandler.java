@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
  * Collects all {@link Identifier}s present
- * and builds/displays a menu suitable for the given {@link Author}.
+ * and builds/displays a menu suitable for a given {@link Author}.
  * <p>
  * We hide the entire submenu if there are none.
  * <p>
@@ -48,9 +48,13 @@ public class ViewAuthorOnSiteMenuHandler
      * Constructor.
      */
     public ViewAuthorOnSiteMenuHandler() {
-        super(R.id.SUBMENU_VIEW_AUTHOR_ON_SITE,
-              0,
-              (context, identifier) -> identifier.getAuthorUri());
+        super(R.id.SUBMENU_VIEW_AUTHOR_ON_SITE, 0);
+    }
+
+    @NonNull
+    @Override
+    Optional<String> getUri(@NonNull final Identifier identifier) {
+        return identifier.getAuthorUri();
     }
 
     @NonNull
