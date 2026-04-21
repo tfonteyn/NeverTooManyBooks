@@ -27,7 +27,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.preference.SeekBarPreference;
 
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 
@@ -49,17 +48,17 @@ public class TuningFragment
         SeekBarPreference p;
         // set all values from code to avoid the XML being out-of-sync
 
-        p = findPreference(BooksOnBookshelf.PK_OFFSCREEN_CACHE_SIZE);
+        p = findPreference(Tuning.PK_OFFSCREEN_CACHE_SIZE);
         //noinspection DataFlowIssue
         p.setSummary(getString(R.string.lbl_default_x,
-                               String.valueOf(BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE)));
-        p.setDefaultValue(BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE);
-        p.setMin(BooksOnBookshelf.MIN_OFFSCREEN_CACHE_SIZE);
-        p.setMax(BooksOnBookshelf.MAX_OFFSCREEN_CACHE_SIZE);
+                               String.valueOf(Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE)));
+        p.setDefaultValue(Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE);
+        p.setMin(Tuning.MIN_OFFSCREEN_CACHE_SIZE);
+        p.setMax(Tuning.MAX_OFFSCREEN_CACHE_SIZE);
         // because androidx.preferences is [bug]'d
         //noinspection DataFlowIssue
-        p.setValue(prefs.getInt(BooksOnBookshelf.PK_OFFSCREEN_CACHE_SIZE,
-                                BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE));
+        p.setValue(prefs.getInt(Tuning.PK_OFFSCREEN_CACHE_SIZE,
+                                Tuning.DEFAULT_OFFSCREEN_CACHE_SIZE));
 
 
         p = findPreference(BooklistCursor.PK_PAGE_SIZE);

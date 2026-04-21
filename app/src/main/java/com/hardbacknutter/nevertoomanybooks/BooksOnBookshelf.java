@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +40,6 @@ import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.math.MathUtils;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -130,6 +128,7 @@ import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
+import com.hardbacknutter.nevertoomanybooks.settings.Tuning;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -190,15 +189,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class BooksOnBookshelf
         extends BaseActivity
         implements BookChangedListener {
-
-    public static final String PK_OFFSCREEN_CACHE_SIZE = "booklist.view.cache.size";
-    /**
-     * Number of views to cache offscreen arbitrarily set to 15 based on Google "advice".
-     * The default is 2.
-     */
-    public static final int MIN_OFFSCREEN_CACHE_SIZE = 2;
-    public static final int DEFAULT_OFFSCREEN_CACHE_SIZE = 15;
-    public static final int MAX_OFFSCREEN_CACHE_SIZE = 30;
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
@@ -798,7 +788,7 @@ public class BooksOnBookshelf
         // attach the FAB scroll-listener which will hide the FAB while scrolling
         fabMenu.attach(vb.content.list);
 
-        vb.content.list.setItemViewCacheSize(getOffscreenCacheSize());
+        vb.content.list.setItemViewCacheSize(Tuning.getOffscreenCacheSize());
         vb.content.list.setHasFixedSize(true);
 
         // 2025-05-23: experiment for GitHub #147; rapid scrolling.
@@ -831,13 +821,6 @@ public class BooksOnBookshelf
                             @Nullable final Bundle appSearchData,
                             final boolean globalSearch) {
         searchViewHelper.show(initialQuery);
-    }
-
-    private int getOffscreenCacheSize() {
-        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
-        // Protect against silly values
-        return MathUtils.clamp(prefs.getInt(PK_OFFSCREEN_CACHE_SIZE, DEFAULT_OFFSCREEN_CACHE_SIZE),
-                               MIN_OFFSCREEN_CACHE_SIZE, MAX_OFFSCREEN_CACHE_SIZE);
     }
 
     private void setNavIcon() {
