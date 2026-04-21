@@ -176,8 +176,7 @@ public abstract class SearchBookBaseFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection DataFlowIssue
-            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate.dismiss();
             progressDelegate = null;
         }
     }

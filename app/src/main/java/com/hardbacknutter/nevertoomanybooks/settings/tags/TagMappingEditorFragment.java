@@ -437,8 +437,7 @@ public class TagMappingEditorFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection DataFlowIssue
-            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate.dismiss();
             progressDelegate = null;
         }
     }

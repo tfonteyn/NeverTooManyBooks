@@ -73,7 +73,7 @@ public class ImportFragment
 
     /**
      * The mime types accepted for importing files SHOULD be set to this list:
-     * "application/zip", "application/x-tar", "text/csv", "application/x-sqlite3"
+     * "application/zip", "application/x-tar", "text/csv", "application/x-sqlite3".
      * <p>
      * As it turns out the mime types are not an Android feature, but support for them
      * is specific to whatever application is responding to {@link Intent#ACTION_GET_CONTENT}
@@ -539,8 +539,7 @@ public class ImportFragment
 
     private void closeProgressDialog() {
         if (progressDelegate != null) {
-            //noinspection DataFlowIssue
-            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate.dismiss();
             progressDelegate = null;
         }
     }
