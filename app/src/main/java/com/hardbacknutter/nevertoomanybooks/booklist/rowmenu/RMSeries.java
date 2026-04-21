@@ -29,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
@@ -40,6 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesDi
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.SiteSearchMenuHandler;
 
 public class RMSeries
         implements RowMenu {
@@ -48,9 +52,13 @@ public class RMSeries
     private final EditParcelableLauncher<Series> editSeriesLauncher;
     @NonNull
     private final BooksOnBookshelfViewModel vm;
+    private final List<MenuHandler<DataHolder>> menuHandlers;
 
     public RMSeries(@NonNull final BooksOnBookshelfViewModel vm) {
         this.vm = vm;
+
+        menuHandlers = List.of(new SiteSearchMenuHandler());
+
         editSeriesLauncher = new EditParcelableLauncher<>(
                 DBKey.FK_SERIES,
                 EditSeriesDialogFragment::new,
@@ -72,13 +80,13 @@ public class RMSeries
                              @NonNull final DataHolder rowData) {
         if (rowData.getLong(DBKey.FK_SERIES) != 0) {
             menuInflater.inflate(R.menu.bl_group_series, menu);
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, menuInflater, rowData));
+            menuHandlers.forEach(h -> h.onCreateMenu(context, menuInflater, menu, rowData));
 
             final boolean complete = rowData.getBoolean(DBKey.SERIES.COMPLETE);
             menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
             menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, rowData));
+            menuHandlers.forEach(h -> h.onPrepareMenu(context, menu, rowData));
 
         } else {
             final Resources res = context.getResources();
@@ -124,6 +132,7 @@ public class RMSeries
                                          () -> vm.delete(context, series));
             return true;
         }
-        return false;
+        return menuHandlers.stream().anyMatch(
+                h -> h.onMenuItemSelected(context, menuItemId, rowData));
     }
 }

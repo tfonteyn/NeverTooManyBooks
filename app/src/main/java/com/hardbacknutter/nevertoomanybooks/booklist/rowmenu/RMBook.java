@@ -42,6 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLa
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 
 public class RMBook
@@ -57,6 +60,7 @@ public class RMBook
     private final EditLenderLauncher editLenderLauncher;
     @Nullable
     private final CalibreHandler calibreHandler;
+    private final List<MenuHandler<DataHolder>> menuHandlers;
 
     public RMBook(@NonNull final BooksOnBookshelfViewModel vm,
                   @NonNull final ActivityResultLauncher<EditBookContract.Input> editBookLauncher,
@@ -66,6 +70,9 @@ public class RMBook
         this.editBookLauncher = editBookLauncher;
         this.updateBookLauncher = updateBookLauncher;
         this.calibreHandler = calibreHandler;
+
+        menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
+                               new SiteSearchMenuHandler());
 
         editLenderLauncher = new EditLenderLauncher(vm::onBookLoaneeChanged);
     }
@@ -91,7 +98,7 @@ public class RMBook
         if (calibreHandler != null) {
             calibreHandler.onCreateMenu(menu, menuInflater);
         }
-        vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, menuInflater, rowData));
+        menuHandlers.forEach(h -> h.onCreateMenu(context, menuInflater, menu, rowData));
 
         final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
         menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
@@ -109,7 +116,7 @@ public class RMBook
             calibreHandler.onPrepareMenu(context, menu, book);
         }
 
-        vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, rowData));
+        menuHandlers.forEach(h -> h.onPrepareMenu(context, menu, rowData));
     }
 
     @Override
@@ -167,6 +174,7 @@ public class RMBook
             return calibreHandler.onMenuItemSelected(context, menuItemId, book);
         }
 
-        return false;
+        return menuHandlers.stream().anyMatch(
+                h -> h.onMenuItemSelected(context, menuItemId, rowData));
     }
 }

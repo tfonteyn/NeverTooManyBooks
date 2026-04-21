@@ -29,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
@@ -40,6 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorDi
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.ViewAuthorOnSiteMenuHandler;
 
 public class RMAuthor
         implements RowMenu {
@@ -50,11 +55,16 @@ public class RMAuthor
     private final BooksOnBookshelfViewModel vm;
     @NonNull
     private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
+    private final List<MenuHandler<DataHolder>> menuHandlers;
 
     public RMAuthor(@NonNull final BooksOnBookshelfViewModel vm,
                     @NonNull final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher) {
         this.vm = vm;
         this.authorWorksLauncher = authorWorksLauncher;
+
+        menuHandlers = List.of(new ViewAuthorOnSiteMenuHandler(),
+                               new SiteSearchMenuHandler());
+
         editAuthorLauncher = new EditParcelableLauncher<>(
                 DBKey.FK_AUTHOR,
                 EditAuthorDialogFragment::new,
@@ -75,13 +85,13 @@ public class RMAuthor
                              @NonNull final Menu menu,
                              @NonNull final DataHolder rowData) {
         menuInflater.inflate(R.menu.bl_group_author, menu);
-        vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, menuInflater, rowData));
+        menuHandlers.forEach(h -> h.onCreateMenu(context, menuInflater, menu, rowData));
 
         final boolean complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
         menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
         menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-        vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(context, menu, rowData));
+        menuHandlers.forEach(h -> h.onPrepareMenu(context, menu, rowData));
 
     }
 
@@ -109,6 +119,7 @@ public class RMAuthor
             editAuthorLauncher.editInPlace(context, author);
             return true;
         }
-        return false;
+        return menuHandlers.stream().anyMatch(
+                h -> h.onMenuItemSelected(context, menuItemId, rowData));
     }
 }

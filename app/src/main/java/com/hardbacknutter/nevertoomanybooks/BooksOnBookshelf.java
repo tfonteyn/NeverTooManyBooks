@@ -1269,14 +1269,7 @@ public class BooksOnBookshelf
         final Context context = view.getContext();
 
         // Finally check for specific row-group options
-        if (rowGroupMenuHelper.onMenuItemSelected(context, menuItemId, rowData, adapterPosition)) {
-            return true;
-        }
-
-        // other handlers.
-        return vm.getMenuHandlers()
-                 .stream()
-                 .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
+        return rowGroupMenuHelper.onMenuItemSelected(context, menuItemId, rowData, adapterPosition);
     }
 
     /**

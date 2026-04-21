@@ -86,10 +86,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
-import com.hardbacknutter.nevertoomanybooks.menus.SiteSearchMenuHandler;
-import com.hardbacknutter.nevertoomanybooks.menus.ViewAuthorOnSiteMenuHandler;
-import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -254,7 +250,6 @@ public class BooksOnBookshelfViewModel
      * The currently selected (highlighted) adapter position.
      */
     private int selectedAdapterPosition = RecyclerView.NO_POSITION;
-    private List<MenuHandler<DataHolder>> menuHandlers;
 
     /**
      * Observable to receive progress.
@@ -390,10 +385,6 @@ public class BooksOnBookshelfViewModel
             rebuildMode = RebuildBooklist.FromSaved;
         }
 
-        menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
-                               new ViewAuthorOnSiteMenuHandler(),
-                               new SiteSearchMenuHandler());
-
         // create if not explicitly set above
         if (searchCriteria == null) {
             searchCriteria = new LocalSearchCriteria();
@@ -457,11 +448,6 @@ public class BooksOnBookshelfViewModel
     // we don't always call it when the style changes
     void resetPreferredListRebuildMode() {
         rebuildMode = RebuildBooklist.getPreferredMode();
-    }
-
-    @NonNull
-    public List<MenuHandler<DataHolder>> getMenuHandlers() {
-        return menuHandlers;
     }
 
     /**
