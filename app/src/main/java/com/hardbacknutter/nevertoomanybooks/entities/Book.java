@@ -1602,9 +1602,9 @@ public class Book
     }
 
     /**
-     * FIXME: 27/09/2024 unify 'isRead' with 'getReadingProgress()'
-     * <p>
      * Get the Read/Unread status.
+     * <p>
+     * FIXME: 2024-09-27 unify 'isRead' with 'getReadingProgress()'
      *
      * @return {@code true} if this book was read/finished.
      */
