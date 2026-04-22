@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -187,13 +187,13 @@ public class EditBookshelvesViewModel
     }
 
     /**
-     * User explicitly wants to purge the node states for the given {@link Bookshelf}.
+     * User explicitly wants to purge the node states for the given {@link Bookshelf} id.
      *
-     * @param bookshelf to purge
+     * @param bookshelfId id of the Bookshelf
      */
-    void purgeNodeStates(@NonNull final Bookshelf bookshelf) {
+    void purgeNodeStates(final long bookshelfId) {
         try {
-            bookshelfDao.purgeNodeStates(bookshelf);
+            bookshelfDao.purgeNodeStates(bookshelfId);
         } catch (@NonNull final DaoWriteException e) {
             // ignore, but log it.
             LoggerFactory.getLogger().e(TAG, e);

@@ -649,7 +649,7 @@ public class BookshelfDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            purgeNodeStates(bookshelf);
+            purgeNodeStates(bookshelf.getId());
 
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
@@ -739,11 +739,11 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public void purgeNodeStates(@NonNull final Bookshelf bookshelf)
+    public void purgeNodeStates(final long bookshelfId)
             throws DaoUpdateException {
         try (SynchronizedStatement stmt = db
                 .compileStatement(Sql.DELETE_NODE_STATE_BY_BOOKSHELF_ID)) {
-            stmt.bindLong(1, bookshelf.getId());
+            stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();
         }
     }

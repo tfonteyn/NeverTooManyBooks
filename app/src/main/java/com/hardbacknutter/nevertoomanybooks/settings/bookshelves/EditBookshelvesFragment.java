@@ -280,7 +280,7 @@ public class EditBookshelvesFragment
             //noinspection DataFlowIssue
             StandardDialogs.purgeNodeStates(context, R.string.lbl_bookshelf,
                                             bookshelf.getLabel(context),
-                                            () -> vm.purgeNodeStates(bookshelf));
+                                            () -> vm.purgeNodeStates(bookshelf.getId()));
             return true;
         }
 

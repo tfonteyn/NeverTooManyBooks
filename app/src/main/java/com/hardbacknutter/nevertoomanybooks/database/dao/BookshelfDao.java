@@ -162,16 +162,16 @@ public interface BookshelfDao {
                       @NonNull BiConsumer<Bookshelf, Locale> idFixer);
 
     /**
-     * Purge book list node state data for the given {@link Bookshelf}.
+     * Purge book list node state data for the given {@link Bookshelf} id.
      * <p>
      * Called when a {@link Bookshelf} is deleted or manually from the
      * {@link Bookshelf} management context menu.
      *
-     * @param bookshelf to purge
+     * @param bookshelfId id of the Bookshelf
      *
      * @throws DaoWriteException on failure
      */
-    void purgeNodeStates(@NonNull Bookshelf bookshelf)
+    void purgeNodeStates(long bookshelfId)
             throws DaoWriteException;
 
     /**
