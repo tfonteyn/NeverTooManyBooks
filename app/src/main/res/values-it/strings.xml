@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -50,7 +47,7 @@
         <item quantity="other">%1$d tag</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">C’è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
+        <item quantity="one">C\'è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
         <item quantity="many">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
         <item quantity="other">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
     </plurals>
@@ -124,7 +121,7 @@
     <string name="book_color_support_color">Bicolore</string>
     <string name="book_color_black_and_white">in bianco e nero</string>
     <string name="book_format_audiobook">Audiolibro</string>
-    <string name="book_format_comic">fumetto</string>
+    <string name="book_format_comic">Fumetto</string>
     <string name="book_format_other">Altro</string>
     <string name="book_format_digest">Piccolo</string>
     <string name="book_format_dimensions">Dimensioni</string>
@@ -211,7 +208,7 @@
     <string name="error_import_file_not_supported">Il file selezionato non può essere importato.</string>
     <string name="error_network_failed_try_again">Controlla la connessione e riprova.</string>
     <string name="error_network_please_connect">Connettiti a Internet.</string>
-    <string name="error_network_site_access_failed">Si è verificato un problema di rete durante l’accesso a %1$s. Verifica se il sito web è attivo e se il problema persiste, contatta l’assistenza.</string>
+    <string name="error_network_site_access_failed">Si è verificato un problema di rete durante l\'accesso a %1$s. Verifica se il sito web è attivo e se il problema persiste, contatta l\'assistenza.</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato.</string>
     <string name="error_book_search_failed">Ricerca del libro fallita.</string>
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo.</string>
@@ -225,9 +222,9 @@
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
     <string name="error_unexpected">Si è verificato un errore non identificato.</string>
     <string name="error_unknown_host">Si è verificato un problema di connessione al servizio attivo «%1$s».</string>
-    <string name="error_unexpected_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l’assistenza utilizzando l’opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
+    <string name="error_unexpected_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l\'assistenza utilizzando l’opzione \"%1$s\" nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_unsupported_version_v">Versione non supportata: %1$d</string>
-    <string name="error_upgrade_not_supported">L’aggiornamento da versioni precedenti alla %1$s non è supportato.</string>
+    <string name="error_upgrade_not_supported">L\'aggiornamento da versioni precedenti alla %1$s non è supportato.</string>
     <string name="option_fab_add_book_by_barcode_scan">Scansione di un codice a barre</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Scansione di codici a barre in batch</string>
     <string name="option_fab_add_book_by_external_id">ID libro del sito web</string>
@@ -470,7 +467,7 @@
     <string name="lbl_websites">Siti web</string>
     <string name="bookshelf_my_wishlist">Lista dei desideri</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_wikidata_claim_author_id">Codice Wikidata «claim/P» per l’id dell’autore</string>
+    <string name="lbl_wikidata_claim_author_id">Codice Wikidata \"claim/P\" per l\'ID dell\'autore</string>
     <string name="lbl_year">Anno</string>
     <string name="list_and">%1$s e %2$s</string>
     <string name="brackets">(%1$s)</string>
@@ -580,7 +577,7 @@
     <string name="progress_msg_x_created">%1$d creati</string>
     <string name="progress_msg_x_updated">%1$d aggiornati</string>
     <string name="progress_msg_x_skipped">%1$d saltate</string>
-    <string name="pt_allow_editing_external_id">Consenti la modifica dell’ID libro del sito Web nativo</string>
+    <string name="pt_allow_editing_external_id">Consenti la modifica dell\'ID libro del sito web nativo</string>
     <string name="lbl_capitalize_full">Tutto in maiuscolo</string>
     <string name="pt_allow_metered_network_data">Consenti l’utilizzo dei dati mobili</string>
     <string name="pt_bob_show_group_book_count">Mostrate il numero di libri di ciascun gruppo.</string>
@@ -612,7 +609,7 @@
     <string name="pt_search_prefer_isbn10">Usa ISBN-10 quando possibile</string>
     <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
     <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
-    <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «IIl Signore degli Anelli»</string>
+    <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio \"II Signore degli Anelli\"</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «ignore degli Anelli, Il»</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
@@ -769,7 +766,7 @@
     <string name="lbl_titles">Titoli</string>
     <string name="lbl_original_title">Titolo originale</string>
     <string name="lbl_original_title_long">Titolo originale se il libro è una traduzione</string>
-    <string name="error_site_access_blocked">L’accesso è stato bloccato dal sito web.</string>
+    <string name="error_site_access_blocked">L\'accesso è stato bloccato dal sito web.</string>
     <string name="pt_scan_mode">Modalità di scansione</string>
     <string name="option_sync_deleted_book_records">Sincronizzare i libri eliminati</string>
     <string name="info_site_search_field_optional">Opzionale. Non supportato da tutti i siti web.</string>
@@ -856,7 +853,7 @@
     <string name="info_bulk_set_bookshelves">Selezionare le librerie che si desidera assegnare a tutti i libri elencati nel nodo selezionato.</string>
     <string name="ok">OK</string>
     <string name="dialog_alert_title">Attenzione</string>
-    <string name="pt_capitalize_title">Capitalizzazione del titolo</string>
+    <string name="pt_capitalize_title">Maiuscole del titolo</string>
     <string name="lbl_capitalize_none">Nessuna modifica</string>
     <string name="lbl_capitalize_words">Inizio delle parole</string>
     <string name="lbl_capitalize_sentence">Inizio delle frasi</string>
@@ -900,6 +897,6 @@
     <string name="action_sync_pull">Scarica modifiche</string>
     <string name="action_sync_push">Invia modifiche</string>
     <string name="pt_deduplication_title_matching">Corrispondenza titoli</string>
-    <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
-    <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
+    <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. \"Il Signore degli Anelli\" e \"Signore degli Anelli, Il\").</string>
+    <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. \"Il Signore degli Anelli\" e \"Signore degli Anelli, Il\").</string>
 </resources>
