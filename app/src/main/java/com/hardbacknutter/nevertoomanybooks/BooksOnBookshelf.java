@@ -1000,9 +1000,9 @@ public class BooksOnBookshelf
     }
 
     @Override
-    public void onBookUpdated(@Nullable final Book book,
+    public void onBookUpdated(@NonNull final Book book,
                               @Nullable final String... keys) {
-        vm.onBookUpdated(book, keys);
+        vm.onAfterUpdate(book, keys);
     }
 
     @Override

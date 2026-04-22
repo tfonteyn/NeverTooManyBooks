@@ -1299,7 +1299,7 @@ public class BooksOnBookshelfViewModel
      * @param keys the item(s) that potentially were changed,
      *             or {@code null} to indicate ALL data was potentially changed.
      */
-    void onBookUpdated(@Nullable final Book book,
+    void onAfterUpdate(@NonNull final Book book,
                        @Nullable final String... keys) {
         // Reminder: the actual Book table and/or relations are ALREADY UPDATED.
         // The only thing we are updating here is the temporary BookList table
@@ -1312,19 +1312,16 @@ public class BooksOnBookshelfViewModel
             // hence we can 'return' when one (set of) key is present
 
             if (keyList.contains(DBKey.READ__BOOL) || keyList.contains(DBKey.READ_PROGRESS)) {
-                Objects.requireNonNull(book);
                 onBookReadStatusChanged(book);
                 return;
             }
 
             if (keyList.contains(DBKey.LOANEE_NAME)) {
-                Objects.requireNonNull(book);
                 onBookLoaneeChanged(book.getId(), book.getLoanee().orElse(null));
                 return;
             }
 
             if (keyList.contains(DBKey.COVER[0])) {
-                Objects.requireNonNull(book);
                 onBookCoverChanged(book.getId());
                 return;
             }
