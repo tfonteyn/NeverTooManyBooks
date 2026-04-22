@@ -55,7 +55,7 @@ public class RMBookshelf
                 EditBookshelfDialogFragment::new,
                 EditBookshelfBottomSheet::new);
         editBookshelfLauncher.setOnEditInPlaceListener(
-                bookshelf -> vm.onRowGroupEntityUpdate(BooklistGroup.BOOKSHELF, bookshelf));
+                bookshelf -> vm.onRowGroupUpdate(BooklistGroup.BOOKSHELF, bookshelf));
     }
 
     @Override

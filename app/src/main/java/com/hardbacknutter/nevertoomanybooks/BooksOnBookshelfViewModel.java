@@ -1244,28 +1244,26 @@ public class BooksOnBookshelfViewModel
      * Receives notifications that an inline-string column was updated.
      * This is a global update, affecting <strong>all</strong> books.
      *
-     * @param dbKey    the request-key, a {@link DBKey}, from the update event
+     * @param groupId  the group, from the update event
      * @param original the original text which was passed in to be edited
      * @param modified the modified text
      */
-    public void onInlineStringUpdate(@NonNull final String dbKey,
-                                     @NonNull final String original,
-                                     @NonNull final String modified) {
-        // We can ONLY get here if the given dbKey is used as a BooklistGroup.
+    public void onRowGroupUpdate(@BooklistGroup.Id final int groupId,
+                                 @NonNull final String original,
+                                 @NonNull final String modified) {
         // Books might move between groups when they (groups) are modified.
         // So we have no choice and must always rebuild.
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
     /**
-     * Receives notifications that a group {@link Entity} (but NOT a Book) potentially was updated.
+     * Receives notifications that a group {@link Entity} (but NOT a Book) was updated.
      *
      * @param groupId the group, from the update event
-     * @param entity  the entity that potentially was updated or
-     *                {@code null} for all entities of the given type (group)
+     * @param entity  the entity that (potentially) was updated
      */
-    public void onRowGroupEntityUpdate(@BooklistGroup.Id final int groupId,
-                                       @Nullable final Entity entity) {
+    public void onRowGroupUpdate(@BooklistGroup.Id final int groupId,
+                                 @NonNull final Entity entity) {
         // Books might move between groups when they (groups) are modified.
         // So we have no choice and must always rebuild.
         triggerRebuildList.setValue(LiveDataEvent.of(false));
@@ -1369,7 +1367,7 @@ public class BooksOnBookshelfViewModel
      * @param tag     to delete
      */
     public void delete(@NonNull final Context context,
-                @NonNull final Tag tag) {
+                       @NonNull final Tag tag) {
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
             if (tagDao.delete(tag)) {
                 triggerRebuildList.postValue(LiveDataEvent.of(false));

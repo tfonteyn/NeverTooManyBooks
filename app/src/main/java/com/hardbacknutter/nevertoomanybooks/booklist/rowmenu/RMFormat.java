@@ -52,7 +52,7 @@ public class RMFormat
                 EditFormatBottomSheet::new);
         editFormatLauncher.setOnEditListener(
                 (original, modified)
-                        -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
+                        -> vm.onRowGroupUpdate(BooklistGroup.FORMAT, original, modified));
     }
 
     @Override

@@ -51,7 +51,7 @@ public class RMColor
                 EditColorBottomSheet::new);
         editColorLauncher.setOnEditListener(
                 (original, modified)
-                        -> vm.onInlineStringUpdate(DBKey.COLOR, original, modified));
+                        -> vm.onRowGroupUpdate(BooklistGroup.COLOR, original, modified));
 
     }
 

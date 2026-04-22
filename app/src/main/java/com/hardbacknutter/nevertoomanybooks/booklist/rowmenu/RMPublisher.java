@@ -57,7 +57,7 @@ public class RMPublisher
                 EditPublisherDialogFragment::new,
                 EditPublisherBottomSheet::new);
         editPublisherLauncher.setOnEditInPlaceListener(
-                publisher -> vm.onRowGroupEntityUpdate(BooklistGroup.PUBLISHER, publisher));
+                publisher -> vm.onRowGroupUpdate(BooklistGroup.PUBLISHER, publisher));
     }
 
     @Override

@@ -57,7 +57,7 @@ public class RMTag
                 EditTagDialogFragment::new,
                 EditTagBottomSheet::new);
         editTagLauncher.setOnEditInPlaceListener(
-                tag -> vm.onRowGroupEntityUpdate(BooklistGroup.TAGS_GENRE, tag));
+                tag -> vm.onRowGroupUpdate(BooklistGroup.TAGS_GENRE, tag));
     }
 
     @Override

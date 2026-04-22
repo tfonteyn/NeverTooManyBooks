@@ -51,7 +51,7 @@ public class RMLocation
                 EditLocationBottomSheet::new);
         editLocationLauncher.setOnEditListener(
                 (original, modified)
-                        -> vm.onInlineStringUpdate(DBKey.LOCATION, original, modified));
+                        -> vm.onRowGroupUpdate(BooklistGroup.LOCATION, original, modified));
     }
 
     @Override

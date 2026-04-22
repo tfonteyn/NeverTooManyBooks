@@ -54,8 +54,7 @@ public class RMLanguage
                 EditLanguageBottomSheet::new);
         editLanguageLauncher.setOnEditListener(
                 (original, modified)
-                        -> vm.onInlineStringUpdate(DBKey.LANGUAGE, original, modified));
-
+                        -> vm.onRowGroupUpdate(BooklistGroup.LANGUAGE, original, modified));
     }
 
     @Override

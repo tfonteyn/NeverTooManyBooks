@@ -65,7 +65,7 @@ public class RMSeries
                 EditSeriesDialogFragment::new,
                 EditSeriesBottomSheet::new);
         editSeriesLauncher.setOnEditInPlaceListener(
-                series -> vm.onRowGroupEntityUpdate(BooklistGroup.SERIES, series));
+                series -> vm.onRowGroupUpdate(BooklistGroup.SERIES, series));
     }
 
     @Override
