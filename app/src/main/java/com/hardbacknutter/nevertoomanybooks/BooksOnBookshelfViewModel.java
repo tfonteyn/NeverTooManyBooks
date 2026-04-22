@@ -1163,16 +1163,11 @@ public class BooksOnBookshelfViewModel
      * Should be called when the read-status of a book was changed.
      *
      * @param book which was changed
-     *
-     * @return {@code true} if a full rebuild of the list was triggered
-     *         {@code false} if we only triggered a positional update
      */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean onBookReadStatusChanged(@NonNull final Book book) {
+    public void onBookReadStatusChanged(@NonNull final Book book) {
         if (getStyle().hasGroup(BooklistGroup.READ_STATUS)) {
             // The book might move to another group - no choice, we must rebuild
             triggerRebuildList.setValue(LiveDataEvent.of(false));
-            return true;
 
         } else {
             // The change will not affect the group the book is in,
@@ -1186,7 +1181,6 @@ public class BooksOnBookshelfViewModel
                     .map(BooklistNode::getAdapterPosition)
                     .collect(Collectors.toList());
             positionsUpdated.setValue(positions);
-            return false;
         }
     }
 
@@ -1206,33 +1200,29 @@ public class BooksOnBookshelfViewModel
      *
      * @param bookId Book to update
      * @param loanee new loanee or {@code null} for a returned book
-     *
-     * @return {@code true} if a full rebuild of the list was triggered
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
-                                       @SuppressWarnings("SameParameterValue")
-                                       @Nullable final String loanee) {
+    public void onBookLoaneeChanged(@IntRange(from = 1) final long bookId,
+                                    @Nullable final String loanee) {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         if (getStyle().hasGroup(BooklistGroup.LENDING)
-            || bookshelf.getFilters().stream()
+            || bookshelf.getFilters()
+                        .stream()
                         .anyMatch(pFilter -> DBKey.LOANEE_NAME.equals(pFilter.getDBKey()))) {
             // The lending status changed and/or
             // the book might move to another group.
             // No choice, we must rebuild
             triggerRebuildList.setValue(LiveDataEvent.of(false));
-            return true;
+
         } else {
             // The change will not affect the group the book is in,
             // update the <strong>book-list</strong> 'loanee' of the given book.
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
             final List<Integer> positions = booklist.updateBookLoanee(bookId, loanee)
-                                            .stream()
+                                                    .stream()
                                                     .map(BooklistNode::getAdapterPosition)
                                                     .collect(Collectors.toList());
             positionsUpdated.setValue(positions);
-            return false;
         }
     }
 
@@ -1240,18 +1230,14 @@ public class BooksOnBookshelfViewModel
      * Should be called when a cover of a book was changed.
      *
      * @param bookId which was changed
-     *
-     * @return {@code true} if a full rebuild of the list was triggered
      */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean onBookCoverChanged(@IntRange(from = 1) final long bookId) {
+    private void onBookCoverChanged(@IntRange(from = 1) final long bookId) {
         // The change will not affect the group the book is in.
         final List<Integer> positions = getVisibleBookNodes(bookId)
                 .stream()
                 .map(BooklistNode::getAdapterPosition)
                 .collect(Collectors.toList());
         positionsUpdated.setValue(positions);
-        return false;
     }
 
     /**
