@@ -70,7 +70,7 @@ public class RMAuthor
                 EditAuthorDialogFragment::new,
                 EditAuthorBottomSheet::new);
         editAuthorLauncher.setOnEditInPlaceListener(
-                author -> vm.onRowGroupEntityUpdate(BooklistGroup.AUTHOR, author));
+                author -> vm.onRowGroupUpdate(BooklistGroup.AUTHOR, author));
     }
 
     @Override
