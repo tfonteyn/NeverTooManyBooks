@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.rowmenu;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -69,11 +70,33 @@ public class RMBookshelf
                              @NonNull final MenuInflater menuInflater,
                              @NonNull final Menu menu,
                              @NonNull final DataHolder rowData) {
+        final Resources res = context.getResources();
+
         if (!rowData.getString(DBKey.FK_BOOKSHELF).isEmpty()) {
-            menuInflater.inflate(R.menu.bl_group_bookshelf, menu);
+            menu.add(Menu.NONE, R.id.MENU_BOOKSHELF_EDIT,
+                     res.getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.action_edit_ellipsis)
+                .setIcon(R.drawable.edit_24px);
+
+            menu.add(Menu.NONE, R.id.MENU_BOOKSHELF_DELETE,
+                     res.getInteger(R.integer.MENU_ORDER_DELETE),
+                     R.string.action_delete)
+                .setIcon(R.drawable.delete_24px);
         }
-        // Note that a "(No Bookshelf)" does NOT exist.
-        // Books are always on a shelf.
+
+        menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                 res.getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                 R.string.lbl_assign_bookshelves)
+            .setIcon(R.drawable.library_books_24px);
+        menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                 res.getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                 R.string.lbl_assign_location)
+            .setIcon(R.drawable.edit_location_24px);
+
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
+                 res.getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                 R.string.menu_update_books)
+            .setIcon(R.drawable.cloud_download_24px);
     }
 
     @Override

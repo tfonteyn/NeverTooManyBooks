@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.rowmenu;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -84,15 +85,49 @@ public class RMAuthor
                              @NonNull final MenuInflater menuInflater,
                              @NonNull final Menu menu,
                              @NonNull final DataHolder rowData) {
-        menuInflater.inflate(R.menu.bl_group_author, menu);
-        menuHandlers.forEach(h -> h.onCreateMenu(context, menuInflater, menu, rowData));
+        final Resources res = context.getResources();
+
+        menu.add(Menu.NONE, R.id.MENU_AUTHOR_WORKS_LIST,
+                 0,
+                 R.string.option_author_details)
+            .setIcon(R.drawable.person_24px);
 
         final boolean complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
-        menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
-        menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
+        menu.add(Menu.NONE, R.id.MENU_AUTHOR_SET_COMPLETE,
+                 res.getInteger(R.integer.MENU_ORDER_COMPLETE),
+                 R.string.option_set_complete)
+            .setIcon(R.drawable.check_box_24px)
+            .setVisible(!complete);
+
+        menu.add(Menu.NONE, R.id.MENU_AUTHOR_SET_INCOMPLETE,
+                 res.getInteger(R.integer.MENU_ORDER_COMPLETE),
+                 R.string.option_set_incomplete)
+            .setIcon(R.drawable.check_box_outline_blank_24px)
+            .setVisible(complete);
+
+        menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT,
+                 res.getInteger(R.integer.MENU_ORDER_EDIT),
+                 R.string.action_edit_ellipsis)
+            .setIcon(R.drawable.edit_24px);
+
+        menuHandlers.forEach(h -> h.onCreateMenu(context, menuInflater, menu, rowData));
         menuHandlers.forEach(h -> h.onPrepareMenu(context, menu, rowData));
 
+        menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                 res.getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                 R.string.lbl_assign_bookshelves)
+            .setIcon(R.drawable.library_books_24px);
+
+        menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                 res.getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                 R.string.lbl_assign_location)
+            .setIcon(R.drawable.edit_location_24px);
+
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
+                 res.getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                 R.string.menu_update_books)
+            .setIcon(R.drawable.cloud_download_24px);
     }
 
     @Override
