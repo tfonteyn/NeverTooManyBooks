@@ -1064,7 +1064,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Create a context menu based on row group.
+     * Create AND show a context menu based on row group.
      *
      * @param v               View clicked
      * @param adapterPosition The {@link #adapter} position of the row menu to show.
