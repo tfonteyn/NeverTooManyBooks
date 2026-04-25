@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
@@ -56,12 +57,13 @@ public interface RowMenu {
      * @param context         Current context
      * @param menuItemId      The menu item that was invoked.
      * @param rowData         the row data
-     * @param adapterPosition
+     * @param adapterPosition {@code -1} if not applicable, otherwise
+     *                        a valid position starting from {@code 0}
      *
      * @return {@code true} if handled.
      */
     boolean onMenuItemSelected(@NonNull Context context,
                                @IdRes int menuItemId,
                                @NonNull DataHolder rowData,
-                               int adapterPosition);
+                               @IntRange(from = -1) int adapterPosition);
 }
