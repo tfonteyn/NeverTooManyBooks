@@ -74,11 +74,9 @@ import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
 /**
@@ -117,7 +115,6 @@ public class AuthorWorksFragment
     @Nullable
     private ProgressDelegate progressDelegate;
 
-    private Menu rowMenu;
     private TextView nameView;
     private TextView birthDateView;
     private TextView bookshelfView;
@@ -225,27 +222,22 @@ public class AuthorWorksFragment
                             vm.getBookshelf(), vm.isAllBookshelves());
                 });
 
-        rowMenu = MenuUtils.create(context);
-        rowMenu.add(Menu.NONE, R.id.MENU_DELETE,
-                    getResources().getInteger(R.integer.MENU_ORDER_DELETE),
-                    R.string.action_delete)
-               .setIcon(R.drawable.delete_24px);
 
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(),
-                (anchor, position) -> {
-                    final MenuMode menuMode = MenuMode.getMode(getActivity(), rowMenu);
-                    if (menuMode.isPopup()) {
-                        new ExtMenuPopupWindow(anchor.getContext())
-                                .setListener(this::onMenuItemSelected)
-                                .setMenuOwner(position)
-                                .setMenu(rowMenu, true)
-                                .show(anchor, menuMode);
-                    } else {
-                        menuLauncher.launch(getActivity(), null, null, position, rowMenu, true);
+                (v, position) -> {
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
                     }
-                }
-        );
+
+                    final Menu rowMenu = MenuUtils.create(v.getContext());
+                    rowMenu.add(Menu.NONE, R.id.MENU_DELETE,
+                                v.getResources().getInteger(R.integer.MENU_ORDER_DELETE),
+                                R.string.action_delete)
+                           .setIcon(R.drawable.delete_24px);
+
+                    menuLauncher.launch(v, null, null, position, rowMenu);
+                });
 
         vb.authorWorks.setAdapter(adapter);
     }

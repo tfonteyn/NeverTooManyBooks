@@ -56,12 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
@@ -176,17 +174,7 @@ public class TagEditorFragment
                  R.string.lbl_add_or_edit_substitution)
             .setIcon(R.drawable.add_24px);
 
-        //noinspection DataFlowIssue
-        final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-        if (menuMode.isPopup()) {
-            new ExtMenuPopupWindow(context)
-                    .setListener(TagEditorFragment.this::onMenuItemSelected)
-                    .setMenuOwner(position)
-                    .setMenu(menu, true)
-                    .show(anchor, menuMode);
-        } else {
-            menuLauncher.launch(getActivity(), null, null, position, menu, true);
-        }
+        menuLauncher.launch(anchor, null, null, position, menu);
     }
 
     /**

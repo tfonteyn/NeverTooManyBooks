@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,8 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 
-import android.content.Context;
 import android.view.Menu;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 
@@ -31,8 +31,7 @@ public interface ExtMenuResultListener {
      * Callback handler.
      *
      * @param menuOwner  The  value which was passed into
-     *                   {@link ExtMenuLauncher#launch(Context, CharSequence,
-     *                   CharSequence, int, Menu, boolean)}
+     *                   {@link ExtMenuLauncher#launch(View, CharSequence, CharSequence, int, Menu)}
      * @param menuItemId The menu item that was invoked.
      *
      * @return Return true to consume this click and prevent others from executing.

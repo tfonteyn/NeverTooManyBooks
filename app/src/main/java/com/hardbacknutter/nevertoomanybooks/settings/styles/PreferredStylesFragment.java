@@ -61,13 +61,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
@@ -210,22 +208,15 @@ public class PreferredStylesFragment
             adapter.notifyItemChanged(position);
         });
         adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(), (anchor, position) -> {
-                    final Context context = anchor.getContext();
-
-                    final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
-                    prepareMenu(menu, position);
-
-                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-                    if (menuMode.isPopup()) {
-                        new ExtMenuPopupWindow(context)
-                                .setListener(this::onMenuItemSelected)
-                                .setMenuOwner(position)
-                                .setMenu(menu, true)
-                                .show(anchor, menuMode);
-                    } else {
-                        menuLauncher.launch(getActivity(), null, null, position, menu, true);
+                ExtMenuButton.getPreferredMode(),
+                (v, position) -> {
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
                     }
+
+                    final Menu menu = MenuUtils.create(v.getContext(), R.menu.preferred_styles);
+                    prepareMenu(menu, position);
+                    menuLauncher.launch(v, null, null, position, menu);
                 });
         adapter.registerAdapterDataObserver(adapterObserver);
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,16 +23,17 @@ package com.hardbacknutter.nevertoomanybooks.widgets.popupmenu;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 
 public class ExtMenuLauncher
         extends DialogLauncher {
@@ -50,6 +51,7 @@ public class ExtMenuLauncher
 
     @NonNull
     private final ExtMenuResultListener resultListener;
+    private boolean groupDividerEnabled = true;
 
     /**
      * Constructor.
@@ -67,10 +69,22 @@ public class ExtMenuLauncher
     }
 
     /**
+     * Change the flag to enable the group dividers.
+     * <p>
+     * The default is {@code true}.
+     *
+     * @param groupDividerEnabled flag
+     */
+    public void setGroupDividerEnabled(final boolean groupDividerEnabled) {
+        this.groupDividerEnabled = groupDividerEnabled;
+    }
+
+    /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
      * @param fragment   the calling DialogFragment
      * @param requestKey to use
+     * @param menuOwner  as was passed into {@link #launch}
      * @param menuItemId The menu item that was invoked.
      *
      * @see #onFragmentResult(String, Bundle)
@@ -87,10 +101,11 @@ public class ExtMenuLauncher
     }
 
     /**
-     * Launch the dialog.
+     * Launch the dialog/menu.
      *
-     * @param context             preferably the {@code Activity}
-     *                            but another UI {@code Context} will also do.
+     * @param anchor              the anchor for {@link MenuMode#Anchored},
+     *                            or a view from which the window token can be used
+     *                            for the other modes
      * @param menuTitle           optional menu title
      * @param message             optional message
      * @param menuOwner           Typically the adapter-position (includes {@code 0}) for
@@ -99,29 +114,40 @@ public class ExtMenuLauncher
      *                            It will be passed back as the first argument of
      *                            {@link ExtMenuResultListener#onMenuItemClick(int, int)}.
      * @param menu                to display
-     * @param groupDividerEnabled flag
      */
-    public void launch(@NonNull @UiContext final Context context,
+    public void launch(@NonNull final View anchor,
                        @Nullable final CharSequence menuTitle,
                        @Nullable final CharSequence message,
                        final int menuOwner,
-                       @NonNull final Menu menu,
-                       final boolean groupDividerEnabled) {
+                       @NonNull final Menu menu) {
+        final Context context = anchor.getContext();
 
-        final ArrayList<ExtMenuItem> items = ExtMenuItem.convert(menu, groupDividerEnabled);
+        final MenuMode menuMode = MenuMode.getMode(context, menu);
+        if (menuMode.isPopup()) {
+            new ExtMenuPopupWindow(context)
+                    .setTitle(menuTitle)
+                    .setMessage(message)
+                    .setMenuOwner(menuOwner)
+                    .setMenu(menu, groupDividerEnabled)
+                    .setListener(resultListener)
+                    .show(anchor, menuMode);
+        } else {
+            final ArrayList<ExtMenuItem> items = ExtMenuItem.convert(menu, groupDividerEnabled);
 
-        final Bundle args = new Bundle(5);
-        args.putInt(BKEY_MENU_OWNER, menuOwner);
+            final Bundle args = new Bundle(5);
 
-        if (menuTitle != null) {
-            args.putString(BKEY_TITLE, menuTitle.toString());
+            if (menuTitle != null) {
+                args.putString(BKEY_TITLE, menuTitle.toString());
+            }
+            if (message != null) {
+                args.putString(BKEY_MESSAGE, message.toString());
+            }
+
+            args.putInt(BKEY_MENU_OWNER, menuOwner);
+            args.putParcelableArrayList(BKEY_MENU, items);
+
+            showDialog(context, args);
         }
-        if (message != null) {
-            args.putString(BKEY_MESSAGE, message.toString());
-        }
-        args.putParcelableArrayList(BKEY_MENU, items);
-
-        showDialog(context, args);
     }
 
     @Override

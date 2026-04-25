@@ -66,13 +66,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.tagmapping.EditTagM
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
@@ -199,19 +197,8 @@ public class TagMappingEditorFragment
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showContextMenu(@NonNull final View anchor,
                                  final int position) {
-        final Context context = anchor.getContext();
-        final Menu menu = MenuUtils.createEditDeleteContextMenu(context);
-        //noinspection DataFlowIssue
-        final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-        if (menuMode.isPopup()) {
-            new ExtMenuPopupWindow(context)
-                    .setListener(this::onMenuItemSelected)
-                    .setMenuOwner(position)
-                    .setMenu(menu, true)
-                    .show(anchor, menuMode);
-        } else {
-            menuLauncher.launch(getActivity(), null, null, position, menu, true);
-        }
+        final Menu menu = MenuUtils.createEditDeleteContextMenu(anchor.getContext());
+        menuLauncher.launch(anchor, null, null, position, menu);
     }
 
     /**

@@ -243,8 +243,6 @@ public class ShowBookDetailsFragment
 
         editLenderLauncher = new EditLenderLauncher(
                 (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
-
-
         editLenderLauncher.registerForFragmentResult(fm, this);
     }
 

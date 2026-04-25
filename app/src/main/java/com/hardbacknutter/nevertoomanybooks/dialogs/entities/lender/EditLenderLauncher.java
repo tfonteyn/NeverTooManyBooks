@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,10 +76,11 @@ public class EditLenderLauncher
     /**
      * Launch the dialog.
      *
-     * @param context Current context
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
      * @param book    to lend
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final Book book) {
         launch(context, book.getId(), book.getTitle());
     }

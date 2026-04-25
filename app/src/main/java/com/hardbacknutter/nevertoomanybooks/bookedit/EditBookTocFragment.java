@@ -80,13 +80,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.AltEditionIsfdb;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
@@ -262,17 +260,7 @@ public class EditBookTocFragment
                         return;
                     }
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    //noinspection DataFlowIssue
-                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-                    if (menuMode.isPopup()) {
-                        new ExtMenuPopupWindow(v.getContext())
-                                .setListener(this::onMenuItemSelected)
-                                .setMenuOwner(position)
-                                .setMenu(menu, true)
-                                .show(v, menuMode);
-                    } else {
-                        menuLauncher.launch(getActivity(), null, null, position, menu, true);
-                    }
+                    menuLauncher.launch(v, null, null, position, menu);
                 });
 
         adapter.registerAdapterDataObserver(adapterDataObserver);

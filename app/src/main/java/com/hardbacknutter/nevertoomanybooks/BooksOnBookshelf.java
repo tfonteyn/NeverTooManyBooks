@@ -127,7 +127,6 @@ import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Tuning;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
@@ -137,7 +136,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragm
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 import com.hardbacknutter.util.logger.Logger;
@@ -1105,17 +1103,7 @@ public class BooksOnBookshelf
             final CharSequence menuTitle = adapter
                     .getLevelText(rowData.getInt(DBKey.BL_NODE.LEVEL), adapterPosition);
 
-            final MenuMode menuMode = MenuMode.getMode(this, menu);
-            if (menuMode.isPopup()) {
-                new ExtMenuPopupWindow(this)
-                        .setTitle(menuTitle)
-                        .setMenuOwner(adapterPosition)
-                        .setMenu(menu, true)
-                        .setListener(this::onSomeMenuItemSelected)
-                        .show(v, menuMode);
-            } else {
-                menuLauncher.launch(this, menuTitle, null, adapterPosition, menu, true);
-            }
+            menuLauncher.launch(v, menuTitle, null, adapterPosition, menu);
         }
     }
 
@@ -1379,19 +1367,7 @@ public class BooksOnBookshelf
                 final CharSequence message = getString(R.string.menu_update_books);
 
                 final Menu menu = MenuUtils.create(this, R.menu.update_books);
-                final MenuMode menuMode = MenuMode.getMode(this, menu);
-                if (menuMode.isPopup()) {
-                    new ExtMenuPopupWindow(this)
-                            .setTitle(dialogTitle)
-                            .setMessage(message)
-                            .setMenuOwner(adapterPosition)
-                            .setMenu(menu, true)
-                            .setListener((menuOwner, menuItemId) ->
-                                                 updateBooksFromInternetData(menuItemId, rowData))
-                            .show(v, menuMode);
-                } else {
-                    menuLauncher.launch(this, dialogTitle, message, adapterPosition, menu, true);
-                }
+                menuLauncher.launch(v, dialogTitle, message, adapterPosition, menu);
                 return true;
             }
             case BooklistGroup.BOOKSHELF: {
@@ -1492,19 +1468,7 @@ public class BooksOnBookshelf
                 .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
         }
 
-        final CharSequence menuTitle = getString(subMenuTitleId);
-
-        final MenuMode menuMode = MenuMode.getMode(this, menu);
-        if (menuMode.isPopup()) {
-            new ExtMenuPopupWindow(this)
-                    .setTitle(menuTitle)
-                    .setMenuOwner(0)
-                    .setMenu(menu, true)
-                    .setListener((p, mii) -> onNavigationItemSelected(mii))
-                    .show(anchor, menuMode);
-        } else {
-            menuLauncher.launch(this, menuTitle, null, 0, menu, true);
-        }
+        menuLauncher.launch(anchor, getString(subMenuTitleId), null, 0, menu);
     }
 
     /**

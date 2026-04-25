@@ -63,12 +63,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier.EditIden
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 @Keep
@@ -168,17 +166,7 @@ public class IdentifiersEditorFragment
                         return;
                     }
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-
-                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-                    if (menuMode.isPopup()) {
-                        new ExtMenuPopupWindow(v.getContext())
-                                .setListener(this::onMenuItemSelected)
-                                .setMenuOwner(position)
-                                .setMenu(menu, true)
-                                .show(v, menuMode);
-                    } else {
-                        menuLauncher.launch(getActivity(), null, null, position, menu, true);
-                    }
+                    menuLauncher.launch(v, null, null, position, menu);
                 });
 
         vb.list.setAdapter(adapter);

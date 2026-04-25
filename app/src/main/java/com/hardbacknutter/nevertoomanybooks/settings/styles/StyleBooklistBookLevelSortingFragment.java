@@ -50,12 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDrag
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleBookLevelColumnsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditStyleBookLevelColumnBinding;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
@@ -173,20 +171,16 @@ public class StyleBooklistBookLevelSortingFragment
                 vm.getBookLevelColumnList(),
                 vh -> itemTouchHelper.startDrag(vh));
 
-        listAdapter.setOnRowShowMenuListener(ExtMenuButton.Always, (anchor, position) -> {
-            final Menu menu = MenuUtils.create(context, R.menu.sorting_options);
-            final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-            if (menuMode.isPopup()) {
-                new ExtMenuPopupWindow(anchor.getContext())
-                        .setListener(this::onMenuItemClick)
-                        .setMenuOwner(position)
-                        .setMenu(menu, true)
-                        .show(anchor, menuMode);
-            } else {
-                final String label = vm.getBookLevelColumnList().get(position)
-                                       .getLabel(anchor.getContext());
-                menuLauncher.launch(getActivity(), label, null, position, menu, true);
-            }
+        listAdapter.setOnRowShowMenuListener(
+                ExtMenuButton.Always,
+                (v, position) -> {
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
+                    }
+                    final Menu menu = MenuUtils.create(v.getContext(), R.menu.sorting_options);
+                    final String label = vm.getBookLevelColumnList().get(position)
+                                           .getLabel(v.getContext());
+                    menuLauncher.launch(v, label, null, position, menu);
         });
 
         // Combine the adapters for the list header and the actual list

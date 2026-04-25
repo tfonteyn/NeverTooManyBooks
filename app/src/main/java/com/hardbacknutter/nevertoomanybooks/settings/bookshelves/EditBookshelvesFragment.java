@@ -64,12 +64,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBooks
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
@@ -220,17 +218,7 @@ public class EditBookshelvesFragment
         // - prevents deleting the last/only shelf, as that would also be the default.
         menu.findItem(R.id.MENU_DELETE).setEnabled(!isDefaultBookshelf);
 
-        //noinspection DataFlowIssue
-        final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-        if (menuMode.isPopup()) {
-            new ExtMenuPopupWindow(context)
-                    .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
-                    .setMenuOwner(position)
-                    .setMenu(menu, true)
-                    .show(anchor, menuMode);
-        } else {
-            menuLauncher.launch(getActivity(), null, null, position, menu, true);
-        }
+        menuLauncher.launch(anchor, null, null, position, menu);
     }
 
     /**

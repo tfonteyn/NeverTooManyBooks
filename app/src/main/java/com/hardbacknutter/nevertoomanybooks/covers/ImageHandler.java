@@ -69,9 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
-import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -327,16 +325,7 @@ public final class ImageHandler {
             }
         }
 
-        final MenuMode menuMode = MenuMode.getMode(context, menu);
-        if (menuMode.isPopup()) {
-            new ExtMenuPopupWindow(context)
-                    .setListener(this::onMenuItemSelected)
-                    .setMenuOwner(cIdx)
-                    .setMenu(menu, true)
-                    .show(anchor, menuMode);
-        } else {
-            menuLauncher.launch(context, null, null, cIdx, menu, true);
-        }
+        menuLauncher.launch(anchor, null, null, cIdx, menu);
 
         return true;
     }
