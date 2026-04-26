@@ -702,6 +702,9 @@ public class CropImageView
 
         /** The cropping rectangle border thickness. */
         private static final float STROKE_WIDTH = 3.0f;
+        /** The cropping rectangle: the opacity used for the area which will be removed. */
+        private static final int FOCUS_OPACITY = 175;
+
         /** in image space. */
         @NonNull
         final RectF cropRect;
@@ -765,6 +768,7 @@ public class CropImageView
             final int outlineColor = AttrUtils.getColorInt(
                     context, com.google.android.material.R.attr.colorOnSurface);
             focusPaint.setColor(focusColor);
+            focusPaint.setAlpha(FOCUS_OPACITY);
 
             outlinePaint.setStrokeWidth(STROKE_WIDTH);
             outlinePaint.setStyle(Paint.Style.STROKE);
