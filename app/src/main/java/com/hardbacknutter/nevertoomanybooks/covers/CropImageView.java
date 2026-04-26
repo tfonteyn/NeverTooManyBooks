@@ -34,6 +34,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.widget.ImageView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
@@ -67,7 +68,11 @@ public class CropImageView
      * considered significantly enough to rescale it.
      */
     private static final float TEN_PERCENT = 0.1f;
+    /**
+     * After zooming, the cropping area will occupy 60% of the screen area.
+     */
     private static final float SIXTY_PERCENT = 0.6f;
+
     /** Epsilon value to compare sizes. */
     private static final float SIZE_EPSILON = 0.01f;
 
@@ -162,13 +167,6 @@ public class CropImageView
     /** The maximum zoom scale as computed when setting the Bitmap. */
     private float maxZoom;
 
-    /**
-     * A runnable which will be executed during the {@link #onLayout} stage.
-     * It is used to run the {@link #setBitmapMatrix} at that time.
-     */
-    @Nullable
-    private Runnable onLayoutRunnable;
-
     /** Set by the activity when it is saving/quiting. */
     private boolean noTouching;
 
@@ -193,10 +191,9 @@ public class CropImageView
      */
     @UiThread
     void setInitialBitmap(@NonNull final Bitmap bitmap) {
-        setBitmapMatrix(bitmap);
-        if (isFullSize()) {
-            centerBitmap();
-        }
+        this.bitmap = bitmap;
+
+        setBitmapMatrix();
 
         highlightView = new HighlightView(this, bitmap.getWidth(), bitmap.getHeight());
         invalidate();
@@ -228,10 +225,7 @@ public class CropImageView
         // Stop responding to user touches.
         noTouching = true;
 
-        final Rect cropRect = new Rect((int) highlightView.cropRect.left,
-                                       (int) highlightView.cropRect.top,
-                                       (int) highlightView.cropRect.right,
-                                       (int) highlightView.cropRect.bottom);
+        final Rect cropRect = highlightView.getFinalCropRect();
         final int cropWidth = cropRect.width();
         final int cropHeight = cropRect.height();
 
@@ -254,15 +248,9 @@ public class CropImageView
 
         currentLayoutRect.set(left, top, right, bottom);
 
-        final Runnable r = onLayoutRunnable;
-        if (r != null) {
-            onLayoutRunnable = null;
-            r.run();
-        }
-
         if (bitmap != null) {
-            setBaseMatrix(bitmap);
-            setImageMatrix(computeImageMatrix());
+            setBaseMatrix();
+            setImageMatrix(computeDisplayMatrix());
 
             if (highlightView != null) {
                 highlightView.setMatrix(getImageMatrix());
@@ -342,12 +330,6 @@ public class CropImageView
     }
 
     @Override
-    public void setImageBitmap(@Nullable final Bitmap bitmap) {
-        super.setImageBitmap(bitmap);
-        this.bitmap = bitmap;
-    }
-
-    @Override
     protected void onDraw(@NonNull final Canvas canvas) {
         super.onDraw(canvas);
         if (highlightView != null) {
@@ -377,42 +359,42 @@ public class CropImageView
     /**
      * Update the bitmap, prepare the base matrix according to the size
      * of the bitmap, reset the supplementary matrix and calculate the maximum zoom allowed.
-     *
-     * @param bitmap to use
      */
-    private void setBitmapMatrix(@NonNull final Bitmap bitmap) {
-        // postpone to run during layout pass if the View has not been measured yet.
-        if (getWidth() <= 0) {
-            onLayoutRunnable = () -> setBitmapMatrix(bitmap);
+    private void setBitmapMatrix() {
+        // sanity check
+        if (bitmap == null || getWidth() <= 0) {
             return;
         }
 
-        setBaseMatrix(bitmap);
         setImageBitmap(bitmap);
-        suppMatrix.reset();
-        setImageMatrix(computeImageMatrix());
 
-        // Set the maximum zoom, which is relative to the base matrix.
-        maxZoom = MAX_ZOOM_FACTOR * Math.max((float) bitmap.getWidth()
-                                             / (float) currentLayoutRect.width(),
-                                         (float) bitmap.getHeight()
-                                         / (float) currentLayoutRect.height());
+        setBaseMatrix();
+        suppMatrix.reset();
+        setImageMatrix(computeDisplayMatrix());
+
+        // Calculate the maximum zoom, which is relative to the base matrix.
+        maxZoom = MAX_ZOOM_FACTOR * Math.max(
+                (float) bitmap.getWidth() / currentLayoutRect.width(),
+                (float) bitmap.getHeight() / currentLayoutRect.height());
+
+        // Postpone final centering until the next layout
+        post(this::centerBitmap);
     }
 
     /**
      * Set up the base matrix so that the image is centered and scaled properly.
-     *
-     * @param bitmap to use
      */
-    private void setBaseMatrix(@NonNull final Bitmap bitmap) {
+    private void setBaseMatrix() {
+        // sanity check
+        if (bitmap == null) {
+            return;
+        }
 
         baseMatrix.reset();
 
         // scaling
-        final float widthScale = Math.min((float) getWidth() / (float) bitmap.getWidth(),
-                                          Float.MAX_VALUE);
-        final float heightScale = Math.min((float) getHeight() / (float) bitmap.getHeight(),
-                                           Float.MAX_VALUE);
+        final float widthScale = (float) getWidth() / bitmap.getWidth();
+        final float heightScale = (float) getHeight() / bitmap.getHeight();
         final float scaleFactor = Math.min(widthScale, heightScale);
         baseMatrix.postScale(scaleFactor, scaleFactor);
 
@@ -430,7 +412,7 @@ public class CropImageView
      * @return the {@link #displayMatrix} to display
      */
     @NonNull
-    private Matrix computeImageMatrix() {
+    private Matrix computeDisplayMatrix() {
         displayMatrix.set(baseMatrix);
         displayMatrix.postConcat(suppMatrix);
         return displayMatrix;
@@ -444,7 +426,6 @@ public class CropImageView
         }
     }
 
-
     /**
      * Centre as much as possible in one or both axis. Centering is defined as follows:
      * <ul>
@@ -455,13 +436,13 @@ public class CropImageView
      * </ul>
      */
     private void centerBitmap() {
+        // sanity check
         if (bitmap == null) {
             return;
         }
 
         final RectF bitmapRect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
-
-        computeImageMatrix().mapRect(bitmapRect);
+        computeDisplayMatrix().mapRect(bitmapRect);
 
         final float dx;
         final int viewWidth = getWidth();
@@ -490,7 +471,7 @@ public class CropImageView
         }
 
         postTranslate(dx, dy);
-        setImageMatrix(computeImageMatrix());
+        setImageMatrix(computeDisplayMatrix());
     }
 
     /**
@@ -501,53 +482,22 @@ public class CropImageView
      */
     private void recenterAndScale(@NonNull final HighlightView highlightView) {
 
-        final float scaleFactor =
-                Math.max(1f,
-                         Math.min((float) getWidth() / (float) highlightView.drawRect.width(),
-                                  (float) getHeight() / (float) highlightView.drawRect.height())
-                         * SIXTY_PERCENT
-                         * getScale());
+        final Rect rect = highlightView.getDrawRect();
+        final float widthRatio = (float) getWidth() / rect.width();
+        final float heightRatio = (float) getHeight() / rect.height();
+        final float currentScale = getScale();
+
+        final float scaleFactor = Math.max(1f, Math.min(widthRatio, heightRatio)
+                                               * currentScale * SIXTY_PERCENT);
 
         // If more than TEN_PERCENT difference then recenter/scale.
-        if (Math.abs(scaleFactor - getScale()) / scaleFactor > TEN_PERCENT) {
-            final float[] coordinates = {
-                    highlightView.cropRect.centerX(),
-                    highlightView.cropRect.centerY()};
-            getImageMatrix().mapPoints(coordinates);
+        if (Math.abs(scaleFactor - currentScale) / scaleFactor > TEN_PERCENT) {
+            final float[] centeredXY = highlightView.getCropRectCenterCoordinates();
+            getImageMatrix().mapPoints(centeredXY);
 
-            // Scale increment per millisecond.
-            final float incrementPerMs = (scaleFactor - getScale()) / ZOOM_DURATION_IN_MILLIS;
-            final long startTime = System.currentTimeMillis();
-
-            getHandler().post(new Runnable() {
-                public void run() {
-                    final long now = System.currentTimeMillis();
-                    final float currentMs = Math.min(ZOOM_DURATION_IN_MILLIS, now - startTime);
-                    final float targetScale = getScale() + incrementPerMs * currentMs;
-                    zoom(targetScale, coordinates[0], coordinates[1]);
-
-                    if (currentMs < ZOOM_DURATION_IN_MILLIS) {
-                        getHandler().post(this);
-                    }
-                }
-
-                /**
-                 * Zoom to the given scale, centering on the given x/y coordinates.
-                 *
-                 * @param scale   for the zoom
-                 * @param centerX coordinate
-                 * @param centerY coordinate
-                 */
-                private void zoom(final float scale,
-                                  final float centerX,
-                                  final float centerY) {
-                    final float scaleFactor = Math.max(scale, maxZoom) / getScale();
-                    suppMatrix.postScale(scaleFactor, scaleFactor, centerX, centerY);
-                    setImageMatrix(computeImageMatrix());
-                    centerBitmap();
-                    highlightView.setMatrix(getImageMatrix());
-                }
-            });
+            final float scaleIncrementPerMs = (scaleFactor - currentScale)
+                                              / ZOOM_DURATION_IN_MILLIS;
+            getHandler().post(new Scaler(centeredXY[0], centeredXY[1], scaleIncrementPerMs));
         }
     }
 
@@ -557,7 +507,7 @@ public class CropImageView
      * @param highlightView to be forced visible
      */
     private void ensureVisible(@NonNull final HighlightView highlightView) {
-        final Rect rect = highlightView.drawRect;
+        final Rect rect = highlightView.getDrawRect();
 
         final int panDxLeft = Math.max(0, currentLayoutRect.left - rect.left);
         final int panDxRight = Math.min(0, currentLayoutRect.right - rect.right);
@@ -569,7 +519,7 @@ public class CropImageView
 
         if (panDeltaX != 0 || panDeltaY != 0) {
             postTranslate((float) panDeltaX, (float) panDeltaY);
-            setImageMatrix(computeImageMatrix());
+            setImageMatrix(computeDisplayMatrix());
         }
     }
 
@@ -705,29 +655,57 @@ public class CropImageView
         /** The cropping rectangle: the opacity used for the area which will be removed. */
         private static final int FOCUS_OPACITY = 175;
 
-        /** in image space. */
-        @NonNull
-        final RectF cropRect;
-        /** in screen space. */
-        @NonNull
-        final Rect drawRect;
-        @NonNull
-        private final Matrix matrix;
-        private final Rect imageViewDrawingRect = new Rect();
-        private final Path path = new Path();
-        /** The View displaying the image. */
-        @NonNull
-        private final CropImageView imageView;
-        /*** in image space. */
-        @NonNull
-        private final RectF imageRect;
         /** Drag handle. */
         private final Drawable resizeHorizontal;
         /** Drag handle. */
         private final Drawable resizeVertical;
+
+        /** Painted on top of the image, with a cutout for the cropping rectangle. */
         private final Paint focusPaint = new Paint();
+        /** The cropping rectangle border. */
         private final Paint outlinePaint = new Paint();
-        private final RectF drawRectF = new RectF();
+
+        @NonNull
+        private final Matrix matrix;
+        private final Path path = new Path();
+
+        /**
+         * The View displaying the image.
+         */
+        @NonNull
+        private final ImageView imageView;
+        /**
+         * The {@link #imageView} drawing rectangle.
+         * In screen space (pixels on the device).
+         */
+        private final Rect imageViewDrawingRect = new Rect();
+
+        /**
+         * The bitmap.
+         * In image space (pixels of the original bitmap).
+         */
+        @NonNull
+        private final RectF imageRect;
+
+        /**
+         * The user manipulated overlay of the bitmap.
+         * In image space (pixels of the original bitmap).
+         */
+        @NonNull
+        private final RectF cropRect;
+
+        /** Temp buffer to map {@link #cropRect} from image space to screen space. */
+        private final RectF tmpCropRectMapping = new RectF();
+
+        /**
+         * The drawing rectangle for the {@link #cropRect}.
+         * In screen space (pixels on the device).
+         */
+        @NonNull
+        private final Rect drawRect;
+
+        /** Temp buffer to do the actual drawing of the {@link #drawRect}. */
+        private final RectF tmpDrawingRect = new RectF();
 
         /**
          * Bitmask value.
@@ -745,7 +723,7 @@ public class CropImageView
          * @param height    of the image displayed
          */
         @SuppressLint("UseCompatLoadingForDrawables")
-        HighlightView(@NonNull final CropImageView imageView,
+        HighlightView(@NonNull final ImageView imageView,
                       final int width,
                       final int height) {
 
@@ -787,18 +765,51 @@ public class CropImageView
             drawRect.set(computeLayout());
         }
 
+        @NonNull
+        Rect getDrawRect() {
+            return drawRect;
+        }
+
+        /**
+         * Get the X/Y center of the cropping rectangle.
+         *
+         * @return x/y
+         */
+        @NonNull
+        float[] getCropRectCenterCoordinates() {
+            return new float[]{
+                    cropRect.centerX(),
+                    cropRect.centerY()};
+        }
+
+        /**
+         * Get the final rectangle to use for cropping the image.
+         *
+         * @return int based Rect
+         */
+        @NonNull
+        Rect getFinalCropRect() {
+            // Just round down by casting, good enough here
+            return new Rect((int) cropRect.left,
+                            (int) cropRect.top,
+                            (int) cropRect.right,
+                            (int) cropRect.bottom);
+        }
+
         void onDraw(@NonNull final Canvas canvas) {
             canvas.save();
 
             imageView.getDrawingRect(imageViewDrawingRect);
 
             path.reset();
-            drawRectF.set(drawRect);
-            path.addRect(drawRectF, Path.Direction.CW);
-
+            tmpDrawingRect.set(drawRect);
+            path.addRect(tmpDrawingRect, Path.Direction.CW);
+            // do NOT draw onto the cropping rectangle
             canvas.clipOutPath(path);
+            // draw the outer part of the image with the opacity reduced
             canvas.drawRect(imageViewDrawingRect, focusPaint);
             canvas.restore();
+            // draw the border of the cropping rectangle
             canvas.drawPath(path, outlinePaint);
 
             // If we're currently resizing, also draw the edge-grabber icon/areas.
@@ -980,6 +991,7 @@ public class CropImageView
             // all done; set the final outcome and request a redraw.
             cropRect.set(rect);
             drawRect.set(computeLayout());
+
             imageView.invalidate();
         }
 
@@ -990,10 +1002,54 @@ public class CropImageView
          */
         @NonNull
         private Rect computeLayout() {
-            final RectF rectF = new RectF(cropRect);
-            matrix.mapRect(rectF);
-            return new Rect(Math.round(rectF.left), Math.round(rectF.top),
-                            Math.round(rectF.right), Math.round(rectF.bottom));
+            tmpCropRectMapping.set(cropRect);
+            matrix.mapRect(tmpCropRectMapping);
+            return new Rect(Math.round(tmpCropRectMapping.left),
+                            Math.round(tmpCropRectMapping.top),
+                            Math.round(tmpCropRectMapping.right),
+                            Math.round(tmpCropRectMapping.bottom));
+        }
+    }
+
+    private class Scaler
+            implements Runnable {
+        private final float centerX;
+        private final float centerY;
+        private final float scaleIncrementPerMs;
+
+        private final long startTime;
+
+        Scaler(final float centerX,
+               final float centerY,
+               final float scaleIncrementPerMs) {
+            this.centerX = centerX;
+            this.centerY = centerY;
+            this.scaleIncrementPerMs = scaleIncrementPerMs;
+
+            this.startTime = System.currentTimeMillis();
+        }
+
+        @Override
+        public void run() {
+            final float currentMs = Math.min(ZOOM_DURATION_IN_MILLIS,
+                                             System.currentTimeMillis() - startTime);
+            final float currentScale = getScale();
+            final float targetScale = currentScale + scaleIncrementPerMs * currentMs;
+
+            // Zoom to the given scale, centering on the given x/y coordinates.
+            final float scaleFactor = Math.max(targetScale, maxZoom) / currentScale;
+            suppMatrix.postScale(scaleFactor, scaleFactor, centerX, centerY);
+            // First scale
+            setImageMatrix(computeDisplayMatrix());
+            // now center the newly scaled image
+            centerBitmap();
+            //noinspection DataFlowIssue
+            highlightView.setMatrix(getImageMatrix());
+
+            // Next increment
+            if (currentMs < ZOOM_DURATION_IN_MILLIS) {
+                getHandler().post(this);
+            }
         }
     }
 }
