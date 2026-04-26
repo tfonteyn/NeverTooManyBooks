@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,6 +50,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * FIXME: rotating the device will revert the image to the original
  *  A fix will require the custom view to be able to preserve state of cropping/bitmap.
+ * <p>
+ * FIXME: after the user has cropped the image below the rescaling threshold,
+ *  the display will become 'confused' drawing the full image + a white border + the cropped piece
  */
 public class CropImageFragment
         extends BaseFragment {
