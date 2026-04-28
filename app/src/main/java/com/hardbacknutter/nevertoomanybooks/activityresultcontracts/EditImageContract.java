@@ -88,9 +88,13 @@ public class EditImageContract
         options.setStatusBarLight(!isDarkMode);
         options.setNavigationBarLight(!isDarkMode);
 
-        options.setAllowedGestures(UCropActivity.ALL,
+        // Tab 1 (Crop)  : Scale only
+        // Tab 2 (Rotate): Scale + Rotate (ALL)
+        // Tab 3 (Scale) : Scale only
+        options.setAllowedGestures(UCropActivity.SCALE,
                                    UCropActivity.ALL,
-                                   UCropActivity.ALL);
+                                   UCropActivity.SCALE);
+
         options.setFreeStyleCropEnabled(true);
 
         // These are the defaults:
