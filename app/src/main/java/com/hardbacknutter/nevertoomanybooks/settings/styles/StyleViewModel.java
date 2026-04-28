@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,11 +62,11 @@ public class StyleViewModel
     /** boolean. Flag indicating we're editing the global style settings. */
     public static final String BKEY_GLOBAL_STYLE = TAG + ":global";
 
-    private final MutableLiveData<Void> onModified = new MutableLiveData<>();
+    private final MutableLiveData<Void> onDataStoreModified = new MutableLiveData<>();
     private final MutableLiveData<String> onNameNotUnique = new MutableLiveData<>();
 
     @NonNull
-    private final List<WrappedBookLevelColumn> wrappedBookLevelColumnList = new ArrayList<>();
+    private final List<WrappedBookLevelField> wrappedBookLevelFieldList = new ArrayList<>();
     private String templateUuid;
     /**
      * The style we're editing.
@@ -164,13 +164,13 @@ public class StyleViewModel
                 }
             }
 
-            styleDataStore = new StyleDataStore(style, onModified);
+            styleDataStore = new StyleDataStore(style, onDataStoreModified);
         }
     }
 
     @NonNull
     LiveData<Void> onModified() {
-        return onModified;
+        return onDataStoreModified;
     }
 
     @NonNull
@@ -259,7 +259,7 @@ public class StyleViewModel
 
     /**
      * Get the groups from the style which support sorting.
-     * They will be wrapped in a {@link WrappedBookLevelColumn}
+     * They will be wrapped in a {@link WrappedBookLevelField}
      * containing the group key and sort-setting.
      * <p>
      * These are meant to be displayed at the top of the list (a header)
@@ -271,7 +271,7 @@ public class StyleViewModel
      * @see #getBookLevelColumnList()
      */
     @NonNull
-    List<WrappedBookLevelColumn> getGroupSortingFields() {
+    List<WrappedBookLevelField> getGroupSortingFields() {
         return style.getGroupList()
                     .stream()
                     .flatMap(booklistGroup -> booklistGroup.getGroupDomainExpressions().stream())
@@ -288,7 +288,7 @@ public class StyleViewModel
                     .entrySet()
                     .stream()
                     // Now convert the map back a list
-                    .map(entry -> new StyleViewModel.WrappedBookLevelColumn(
+                    .map(entry -> new WrappedBookLevelField(
                             entry.getKey(),
                             entry.getValue()))
                     .collect(Collectors.toList());
@@ -296,7 +296,7 @@ public class StyleViewModel
 
     /**
      * Get the columns which can be displayed on the book level.
-     * They will be wrapped in a {@link WrappedBookLevelColumn}
+     * They will be wrapped in a {@link WrappedBookLevelField}
      * containing the column key and sort-setting.
      * <p>
      * These are displayed as the main list allowing the user to re-order,
@@ -305,24 +305,24 @@ public class StyleViewModel
      * @return list
      */
     @NonNull
-    List<WrappedBookLevelColumn> getBookLevelColumnList() {
-        if (wrappedBookLevelColumnList.isEmpty()) {
-            style.getBookLevelFieldsOrderBy().forEach((dbKey, sort) -> wrappedBookLevelColumnList
-                    .add(new WrappedBookLevelColumn(dbKey, sort)));
+    List<WrappedBookLevelField> getBookLevelColumnList() {
+        if (wrappedBookLevelFieldList.isEmpty()) {
+            style.getBookLevelFieldsOrderBy().forEach((dbKey, sort) -> wrappedBookLevelFieldList
+                    .add(new WrappedBookLevelField(dbKey, sort)));
         }
-        return wrappedBookLevelColumnList;
+        return wrappedBookLevelFieldList;
     }
 
     /**
      * Called when the user leaves (back-press) the screen,
      * to save the current configuration to the Style.
      */
-    void updateBookLevelColumnList() {
+    void updateBookLevelFieldsSorting() {
         style.setBookLevelFieldsOrderBy(
-                wrappedBookLevelColumnList
+                wrappedBookLevelFieldList
                         .stream()
-                        .collect(Collectors.toMap(WrappedBookLevelColumn::getDbKey,
-                                                  WrappedBookLevelColumn::getSort,
+                        .collect(Collectors.toMap(WrappedBookLevelField::getDbKey,
+                                                  WrappedBookLevelField::getSort,
                                                   (existingKey, replacement) -> {
                                                       throw new IllegalArgumentException(
                                                               "keys should already be unique");
@@ -447,7 +447,7 @@ public class StyleViewModel
     /**
      * Wraps a book-level field, a {@link DBKey}, with its {@link Sort} option.
      */
-    static class WrappedBookLevelColumn {
+    static class WrappedBookLevelField {
 
         @NonNull
         private final String dbKey;
@@ -455,8 +455,8 @@ public class StyleViewModel
         @NonNull
         private Sort sort;
 
-        WrappedBookLevelColumn(@NonNull final String dbKey,
-                               @NonNull final Sort sort) {
+        WrappedBookLevelField(@NonNull final String dbKey,
+                              @NonNull final Sort sort) {
             this.dbKey = dbKey;
             this.sort = sort;
         }

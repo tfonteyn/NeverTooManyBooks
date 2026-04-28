@@ -80,7 +80,7 @@ public class StyleBooklistBookLevelSortingFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    vm.updateBookLevelColumnList();
+                    vm.updateBookLevelFieldsSorting();
                     // just pop, we're always called from a fragment
                     getParentFragmentManager().popBackStack();
                 }
@@ -89,7 +89,7 @@ public class StyleBooklistBookLevelSortingFragment
     /** View Binding. */
     private FragmentEditStyleBookLevelColumnsBinding vb;
 
-    private BookLevelColumnWrapperListAdapter listAdapter;
+    private BookLevelColumnWrapperListAdapter adapter;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -120,7 +120,7 @@ public class StyleBooklistBookLevelSortingFragment
         }
 
         vm.getBookLevelColumnList().get(menuOwner).setSort(nextValue);
-        listAdapter.notifyItemChanged(menuOwner);
+        adapter.notifyItemChanged(menuOwner);
         return true;
     }
 
@@ -167,11 +167,11 @@ public class StyleBooklistBookLevelSortingFragment
         final HeaderAdapter headerAdapter = new HeaderAdapter(vm.getGroupSortingFields());
 
         // The adapter for the list.
-        listAdapter = new BookLevelColumnWrapperListAdapter(
+        adapter = new BookLevelColumnWrapperListAdapter(
                 vm.getBookLevelColumnList(),
                 vh -> itemTouchHelper.startDrag(vh));
 
-        listAdapter.setOnRowShowMenuListener(
+        adapter.setOnRowShowMenuListener(
                 ExtMenuButton.Always,
                 (v, position) -> {
                     if (position == RecyclerView.NO_POSITION) {
@@ -185,12 +185,12 @@ public class StyleBooklistBookLevelSortingFragment
 
         // Combine the adapters for the list header and the actual list
         final ConcatAdapter concatAdapter = new ConcatAdapter(
-                headerAdapter, listAdapter);
+                headerAdapter, adapter);
 
         vb.columnList.setAdapter(concatAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(listAdapter);
+                new SimpleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.columnList);
     }
@@ -209,7 +209,7 @@ public class StyleBooklistBookLevelSortingFragment
             showDragHandle(false);
         }
 
-        void onBind(@NonNull final StyleViewModel.WrappedBookLevelColumn wrappedColumn) {
+        void onBind(@NonNull final StyleViewModel.WrappedBookLevelField wrappedColumn) {
             final Context context = itemView.getContext();
             final String text = context.getString(R.string.a_bracket_b_bracket,
                                                   wrappedColumn.getLabel(context),
@@ -231,7 +231,7 @@ public class StyleBooklistBookLevelSortingFragment
             this.vb = vb;
         }
 
-        void onBind(@NonNull final StyleViewModel.WrappedBookLevelColumn wrappedColumn) {
+        void onBind(@NonNull final StyleViewModel.WrappedBookLevelField wrappedColumn) {
             final Context context = itemView.getContext();
             vb.columnName.setText(wrappedColumn.getLabel(context));
 
@@ -240,15 +240,15 @@ public class StyleBooklistBookLevelSortingFragment
     }
 
     private static class HeaderAdapter
-            extends BaseDragDropRecyclerViewAdapter<StyleViewModel.WrappedBookLevelColumn,
+            extends BaseDragDropRecyclerViewAdapter<StyleViewModel.WrappedBookLevelField,
             HeaderRowHolder> {
 
         /**
          * Constructor.
          *
-         * @param items List of columns (in WrappedBookLevelColumn)
+         * @param items List of columns (in WrappedBookLevelField)
          */
-        HeaderAdapter(@NonNull final List<StyleViewModel.WrappedBookLevelColumn> items) {
+        HeaderAdapter(@NonNull final List<StyleViewModel.WrappedBookLevelField> items) {
             super(items, null);
         }
 
@@ -274,16 +274,16 @@ public class StyleBooklistBookLevelSortingFragment
     }
 
     private static class BookLevelColumnWrapperListAdapter
-            extends BaseDragDropRecyclerViewAdapter<StyleViewModel.WrappedBookLevelColumn, Holder> {
+            extends BaseDragDropRecyclerViewAdapter<StyleViewModel.WrappedBookLevelField, Holder> {
 
         /**
          * Constructor.
          *
-         * @param items             List of columns (in WrappedBookLevelColumn)
+         * @param items             List of columns (in WrappedBookLevelField)
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         BookLevelColumnWrapperListAdapter(
-                @NonNull final List<StyleViewModel.WrappedBookLevelColumn> items,
+                @NonNull final List<StyleViewModel.WrappedBookLevelField> items,
                 @NonNull final StartDragListener dragStartListener) {
             super(items, dragStartListener);
         }
