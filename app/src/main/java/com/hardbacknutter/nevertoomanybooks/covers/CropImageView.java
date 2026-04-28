@@ -482,23 +482,24 @@ public class CropImageView
      */
     private void recenterAndScale(@NonNull final HighlightView highlightView) {
 
-        final Rect rect = highlightView.getDrawRect();
-        final float widthRatio = (float) getWidth() / rect.width();
-        final float heightRatio = (float) getHeight() / rect.height();
-        final float currentScale = getScale();
-
-        final float scaleFactor = Math.max(1f, Math.min(widthRatio, heightRatio)
-                                               * currentScale * SIXTY_PERCENT);
-
-        // If more than TEN_PERCENT difference then recenter/scale.
-        if (Math.abs(scaleFactor - currentScale) / scaleFactor > TEN_PERCENT) {
-            final float[] centeredXY = highlightView.getCropRectCenterCoordinates();
-            getImageMatrix().mapPoints(centeredXY);
-
-            final float scaleIncrementPerMs = (scaleFactor - currentScale)
-                                              / ZOOM_DURATION_IN_MILLIS;
-            getHandler().post(new Scaler(centeredXY[0], centeredXY[1], scaleIncrementPerMs));
-        }
+        //FIXME: 2026-04-28:  this is just too buggy to be used...
+//        final Rect rect = highlightView.getDrawRect();
+//        final float widthRatio = (float) getWidth() / rect.width();
+//        final float heightRatio = (float) getHeight() / rect.height();
+//        final float currentScale = getScale();
+//
+//        final float scaleFactor = Math.max(1f, Math.min(widthRatio, heightRatio)
+//                                               * currentScale * SIXTY_PERCENT);
+//
+//        // If more than TEN_PERCENT difference then recenter/scale.
+//        if (Math.abs(scaleFactor - currentScale) / scaleFactor > TEN_PERCENT) {
+//            final float[] centeredXY = highlightView.getCropRectCenterCoordinates();
+//            getImageMatrix().mapPoints(centeredXY);
+//
+//            final float scaleIncrementPerMs = (scaleFactor - currentScale)
+//                                              / ZOOM_DURATION_IN_MILLIS;
+//            getHandler().post(new Scaler(centeredXY[0], centeredXY[1], scaleIncrementPerMs));
+//        }
     }
 
     /**
@@ -1011,45 +1012,45 @@ public class CropImageView
         }
     }
 
-    private class Scaler
-            implements Runnable {
-        private final float centerX;
-        private final float centerY;
-        private final float scaleIncrementPerMs;
-
-        private final long startTime;
-
-        Scaler(final float centerX,
-               final float centerY,
-               final float scaleIncrementPerMs) {
-            this.centerX = centerX;
-            this.centerY = centerY;
-            this.scaleIncrementPerMs = scaleIncrementPerMs;
-
-            this.startTime = System.currentTimeMillis();
-        }
-
-        @Override
-        public void run() {
-            final float currentMs = Math.min(ZOOM_DURATION_IN_MILLIS,
-                                             System.currentTimeMillis() - startTime);
-            final float currentScale = getScale();
-            final float targetScale = currentScale + scaleIncrementPerMs * currentMs;
-
-            // Zoom to the given scale, centering on the given x/y coordinates.
-            final float scaleFactor = Math.max(targetScale, maxZoom) / currentScale;
-            suppMatrix.postScale(scaleFactor, scaleFactor, centerX, centerY);
-            // First scale
-            setImageMatrix(computeDisplayMatrix());
-            // now center the newly scaled image
-            centerBitmap();
-            //noinspection DataFlowIssue
-            highlightView.setMatrix(getImageMatrix());
-
-            // Next increment
-            if (currentMs < ZOOM_DURATION_IN_MILLIS) {
-                getHandler().post(this);
-            }
-        }
-    }
+//    private class Scaler
+//            implements Runnable {
+//        private final float centerX;
+//        private final float centerY;
+//        private final float scaleIncrementPerMs;
+//
+//        private final long startTime;
+//
+//        Scaler(final float centerX,
+//               final float centerY,
+//               final float scaleIncrementPerMs) {
+//            this.centerX = centerX;
+//            this.centerY = centerY;
+//            this.scaleIncrementPerMs = scaleIncrementPerMs;
+//
+//            this.startTime = System.currentTimeMillis();
+//        }
+//
+//        @Override
+//        public void run() {
+//            final float currentMs = Math.min(ZOOM_DURATION_IN_MILLIS,
+//                                             System.currentTimeMillis() - startTime);
+//            final float currentScale = getScale();
+//            final float targetScale = currentScale + scaleIncrementPerMs * currentMs;
+//
+//            // Zoom to the given scale, centering on the given x/y coordinates.
+//            final float scaleFactor = Math.max(targetScale, maxZoom) / currentScale;
+//            suppMatrix.postScale(scaleFactor, scaleFactor, centerX, centerY);
+//            // First scale
+//            setImageMatrix(computeDisplayMatrix());
+//            // now center the newly scaled image
+//            centerBitmap();
+//            //noinspection DataFlowIssue
+//            highlightView.setMatrix(getImageMatrix());
+//
+//            // Next increment
+//            if (currentMs < ZOOM_DURATION_IN_MILLIS) {
+//                getHandler().post(this);
+//            }
+//        }
+//    }
 }
