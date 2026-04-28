@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -325,6 +325,10 @@
     <item name="MENU_THUMB_ROTATE_CCW"
           type="id" />
     <item name="MENU_THUMB_ROTATE_180"
+          type="id" />
+    <item name="MENU_THUMB_FLIP_HORI"
+          type="id" />
+    <item name="MENU_THUMB_FLIP_VERT"
           type="id" />
     <item name="MENU_THUMB_CROP"
           type="id" />
