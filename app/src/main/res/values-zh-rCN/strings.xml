@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine -->
-<resources>
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
     <plurals name="n_stars">
         <item quantity="other">%1$s星</item>
     </plurals>
@@ -857,7 +853,7 @@
     <string name="lbl_author_uri">作者 URL</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">需为空值、或有单个“%s” ID 占位符的有效 “https” URL</string>
     <string name="vldt_blank_or_valid_url_required">需要空值或有效 URL</string>
-    <string name="info_identifier_editor"><![CDATA[编辑前请阅读关于标识符的 <a href="%1$s">文档</a>]]></string>
+    <string name="info_identifier_editor"><![CDATA[编辑前请阅读关于标识符的 <a href="%1$s">文档</a>。]]></string>
     <string name="lbl_date_born">出生</string>
     <string name="pt_fetch_author_info">获取作者信息</string>
     <string name="pt_fetch_author_info_using_site_x">从 %1$s 获取作者信息</string>
