@@ -139,9 +139,7 @@ public class CropImageView
                 @Override
                 public boolean onScale(@NonNull final ScaleGestureDetector detector) {
                     inScaleGestureStep = InScaleGestureStep.InProgress;
-                    final float dx = detector.getCurrentSpanX() - detector.getPreviousSpanX();
-                    final float dy = detector.getCurrentSpanY() - detector.getPreviousSpanY();
-                    motionHighlightView.resizeBy(dx, dy);
+                    motionHighlightView.scale(detector.getScaleFactor());
                     return true;
                 }
 
@@ -933,6 +931,22 @@ public class CropImageView
             rect.inset(-10, -10);
 
             imageView.invalidate();
+        }
+
+        /**
+         * Resize the cropping rectangle by the given scale factor in image space.
+         *
+         * @param scaleFactor to apply
+         */
+        void scale(final float scaleFactor) {
+            // Apply a "Dampening Power" to slow the gesture down
+            final float dampenedFactor = (float) Math.pow(scaleFactor, 0.2);
+
+            final float currentWidth = drawRect.width();
+            final float currentHeight = drawRect.height();
+            final float dx = (currentWidth * dampenedFactor) - currentWidth;
+            final float dy = (currentHeight * dampenedFactor) - currentHeight;
+            resizeBy(dx, dy);
         }
 
         /**
