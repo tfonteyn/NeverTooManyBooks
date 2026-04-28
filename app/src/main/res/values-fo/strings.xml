@@ -167,4 +167,5 @@
     <string name="pt_deduplication_title_matching">Heitissamsvaran</string>
     <string name="pt_deduplication_title_matching_summary_on">Við goyming verða heitir, ið eru eins burtursæð frá sniðgeving, lagdir saman sjálvvirkandi (t.d. „The Lord of The Rings“ og „Lord of The Rings, The“).</string>
     <string name="pt_deduplication_title_matching_summary_off">Við goyming verða heitir, ið eru eins burtursæð frá sniðgeving, ikki lagdir saman (t.d. „The Lord of The Rings“ og „Lord of The Rings, The“).</string>
+    <string name="action_edit_with_ellipsis">Rætta við…</string>
 </resources>

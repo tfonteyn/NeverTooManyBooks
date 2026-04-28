@@ -896,4 +896,5 @@
     <string name="pt_deduplication_title_matching">Coincidencia de títulos</string>
     <string name="pt_deduplication_title_matching_summary_on">Ao gardar, os títulos que sexan idénticos agás polo formato fusionaranse (p. ex., «O Señor dos Aneis» e «Señor dos Aneis, O»).</string>
     <string name="pt_deduplication_title_matching_summary_off">Ao gardar, os títulos que sexan idénticos agás polo formato non se fusionarán (p. ex., «O Señor dos Aneis» e «Señor dos Aneis, O»).</string>
+    <string name="action_edit_with_ellipsis">Editar con…</string>
 </resources>

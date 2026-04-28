@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,10 +43,10 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-public class EditPictureContract
-        extends ActivityResultContract<EditPictureContract.Input, Optional<File>> {
+public class ExternalEditImageContract
+        extends ActivityResultContract<ExternalEditImageContract.Input, Optional<File>> {
 
-    private static final String TAG = "EditPictureContract";
+    private static final String TAG = "ExternalEditImageContra";
 
     private static final String IMAGE_MIME_TYPE = "image/*";
 

@@ -898,4 +898,5 @@
     <string name="pt_deduplication_title_matching">Başlık eşleştirme</string>
     <string name="pt_deduplication_title_matching_summary_on">Yalnızca tanımlayıcı kullanan diller için geçerlidir. İngilizce örneği: “The Lord of The Rings” ve “Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Yalnızca tanımlayıcı kullanan diller için geçerlidir. İngilizce örneği: “The Lord of The Rings” ve “Lord of The Rings, The”.</string>
+    <string name="action_edit_with_ellipsis">Birlikte düzenle…</string>
 </resources>

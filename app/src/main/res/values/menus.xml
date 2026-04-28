@@ -92,6 +92,9 @@
     <item name="MENU_APPLY"
           type="id" />
 
+    <item name="MENU_EDIT_WITH"
+          type="id" />
+
     <!-- A SINGLE item (book, author,...) - NOT applicable on nodes of the BoB. -->
     <item name="MENU_UPDATE_ITEM_BY_SEARCH"
           type="id" />
@@ -325,12 +328,6 @@
     <item name="MENU_THUMB_ROTATE_CCW"
           type="id" />
     <item name="MENU_THUMB_ROTATE_180"
-          type="id" />
-    <item name="MENU_THUMB_FLIP_HORI"
-          type="id" />
-    <item name="MENU_THUMB_FLIP_VERT"
-          type="id" />
-    <item name="MENU_THUMB_CROP"
           type="id" />
     <item name="MENU_GROUP_UNDO"
           type="id" />

@@ -898,4 +898,5 @@
     <string name="pt_deduplication_title_matching">Titelsmatchning</string>
     <string name="pt_deduplication_title_matching_summary_on">Vid sparning kommer titlar som är identiska förutom formatering att slås samman (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Vid sparning kommer titlar som är identiska förutom formatering inte att slås samman (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
+    <string name="action_edit_with_ellipsis">Redigera med…</string>
 </resources>

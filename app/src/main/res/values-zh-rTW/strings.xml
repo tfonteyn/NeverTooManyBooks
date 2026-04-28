@@ -894,4 +894,5 @@
     <string name="pt_deduplication_title_matching">標題比對</string>
     <string name="pt_deduplication_title_matching_summary_on">僅適用於使用冠詞的語言。英語範例：「The Lord of The Rings」和「Lord of The Rings, The」。</string>
     <string name="pt_deduplication_title_matching_summary_off">僅適用於使用冠詞的語言。英語範例：「The Lord of The Rings」和「Lord of The Rings, The」。</string>
+    <string name="action_edit_with_ellipsis">編輯於…</string>
 </resources>

@@ -893,4 +893,5 @@
     <string name="pt_deduplication_title_matching">标题匹配</string>
     <string name="pt_deduplication_title_matching_summary_on">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”。</string>
     <string name="pt_deduplication_title_matching_summary_off">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”。</string>
+    <string name="action_edit_with_ellipsis">编辑于…</string>
 </resources>

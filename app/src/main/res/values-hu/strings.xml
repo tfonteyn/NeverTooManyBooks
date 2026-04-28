@@ -896,4 +896,5 @@
     <string name="pt_deduplication_title_matching">Címegyeztetés</string>
     <string name="pt_deduplication_title_matching_summary_on">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”.</string>
+    <string name="action_edit_with_ellipsis">Szerkesztés ezzel…</string>
 </resources>

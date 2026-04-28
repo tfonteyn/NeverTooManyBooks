@@ -898,4 +898,5 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_deduplication_title_matching">Αντιστοίχιση τίτλων</string>
     <string name="pt_deduplication_title_matching_summary_on">Κατά την αποθήκευση, οι τίτλοι που είναι πανομοιότυποι εκτός από τη μορφοποίηση θα συγχωνεύονται (π.χ. «Ο Άρχοντας των Δαχτυλιδιών» και «Άρχοντας των Δαχτυλιδιών, Ο»).</string>
     <string name="pt_deduplication_title_matching_summary_off">Κατά την αποθήκευση, οι τίτλοι που είναι πανομοιότυποι εκτός από τη μορφοποίηση δεν θα συγχωνεύονται (π.χ. «Ο Άρχοντας των Δαχτυλιδιών» και «Άρχοντας των Δαχτυλιδιών, Ο»).</string>
+    <string name="action_edit_with_ellipsis">Επεξεργασία με…</string>
 </resources>

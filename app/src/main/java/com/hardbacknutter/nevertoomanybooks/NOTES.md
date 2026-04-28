@@ -77,9 +77,6 @@ and helper/handlers (e.g. CoverHandler) and similar constructs
 
 TODO: TEST migrate to JUnit5 for on-device tests as well.
 
-ENHANCE: add rotating functions to the cropper activity. This would allow
-multi-rotate-undo by simply quiting the cropper.
-
 <hr style="border:1px solid black;">
 
 ENHANCE: add a UUID to bookshelves

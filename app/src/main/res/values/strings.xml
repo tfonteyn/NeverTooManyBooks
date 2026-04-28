@@ -1120,6 +1120,9 @@
     <!-- [VERIFIED] -->
     <string name="action_edit_ellipsis">Edit…</string>
 
+    <!-- Menu option; used to invoke an external app. Example: starting an image editor app. -->
+    <string name="action_edit_with_ellipsis">Edit with…</string>
+
     <string name="action_edit_defaults">Edit default settings</string>
 
     <!-- [VERIFIED] -->

@@ -312,6 +312,7 @@ dependencies {
     }
 
     implementation(libs.zxing.core)
+    implementation(libs.ucrop)
 
     implementation(libs.acra.core)
     implementation(libs.acra.dialog)

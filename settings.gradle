@@ -31,6 +31,11 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
 
+        // Added for uCrop
+        maven {
+            url = "https://jitpack.io"
+        }
+
         ivy {
             url = "https://github.com/tfonteyn/"
             metadataSources {

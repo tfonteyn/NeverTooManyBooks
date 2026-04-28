@@ -910,4 +910,5 @@
     <string name="pt_deduplication_title_matching">Dopasowywanie tytułów</string>
     <string name="pt_deduplication_title_matching_summary_on">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”.</string>
+    <string name="action_edit_with_ellipsis">Edytuj za pomocą…</string>
 </resources>

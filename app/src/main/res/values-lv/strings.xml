@@ -246,4 +246,5 @@
     <string name="pt_deduplication_title_matching">Nosaukumu salīdzināšana</string>
     <string name="pt_deduplication_title_matching_summary_on">Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>
+    <string name="action_edit_with_ellipsis">Rediģēt ar…</string>
 </resources>

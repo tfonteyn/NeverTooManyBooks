@@ -30,10 +30,10 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 enum NextAction {
     /** Do nothing. */
     Done(0),
-    /** Start the cropper fragment. */
-    Crop(1),
-    /** Start an editor. */
-    Edit(2);
+    /** Start the internal editor. */
+    Edit(1),
+    /** Start an external editor. */
+    EditWith(2);
 
     private static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
 
@@ -54,9 +54,9 @@ enum NextAction {
                                         .getIntFromString(PK_CAMERA_IMAGE_ACTION, Done.value);
         switch (value) {
             case 2:
-                return Edit;
+                return EditWith;
             case 1:
-                return Crop;
+                return Edit;
             case 0:
             default:
                 return Done;

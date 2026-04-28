@@ -56,8 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExternalEditImageContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
@@ -149,8 +149,8 @@ public final class ImageHandler {
     private CircularProgressIndicator progressIndicator;
     private PermissionRequester permissionRequester;
     private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
-    private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
-    private ActivityResultLauncher<CropImageContract.Input> cropImageLauncher;
+    private ActivityResultLauncher<ExternalEditImageContract.Input> externalEditImageLauncher;
+    private ActivityResultLauncher<EditImageContract.Input> editImageLauncher;
     private ActivityResultLauncher<String> getFromFileLauncher;
 
     private ImageHandler(@NonNull final Builder builder) {
@@ -221,11 +221,11 @@ public final class ImageHandler {
         getFromFileLauncher = fragment.registerForActivityResult(
                 new PickVisualMediaContract(), o -> o.ifPresent(this::onPictureResult));
 
-        editPictureLauncher = fragment.registerForActivityResult(
-                new EditPictureContract(), o -> o.ifPresent(this::onPictureResult));
+        externalEditImageLauncher = fragment.registerForActivityResult(
+                new ExternalEditImageContract(), o -> o.ifPresent(this::onPictureResult));
 
-        cropImageLauncher = fragment.registerForActivityResult(
-                new CropImageContract(), o -> o.ifPresent(this::onPictureResult));
+        editImageLauncher = fragment.registerForActivityResult(
+                new EditImageContract(), o -> o.ifPresent(this::onPictureResult));
 
 
         final LifecycleOwner viewLifecycleOwner = fragment.getViewLifecycleOwner();
@@ -252,10 +252,11 @@ public final class ImageHandler {
             hideProgress();
             message.process(this::onAfterTransform);
         });
-        vm.onStartEdit().observe(viewLifecycleOwner, message
-                -> message.process(this::editPicture));
-        vm.onStartCropper().observe(viewLifecycleOwner, message
-                -> message.process(input -> cropImageLauncher.launch(input)));
+        vm.onStartEditor().observe(viewLifecycleOwner, message
+                -> message.process(input -> editImageLauncher.launch(input)));
+        vm.onStartExternalEditor().observe(viewLifecycleOwner, message
+                -> message.process(this::externalEditPicture));
+
         vm.onStartTakePicture().observe(viewLifecycleOwner, message
                 -> message.process(this::takePicture));
         vm.onRestore().observe(viewLifecycleOwner, message
@@ -363,12 +364,12 @@ public final class ImageHandler {
                                           () -> startRotation(FLIP));
             return true;
 
-        } else if (menuItemId == R.id.MENU_THUMB_CROP) {
-            vm.prepareCropper(imageOwner, cIdx);
+        } else if (menuItemId == R.id.MENU_EDIT) {
+            vm.prepareInternalEditor(imageOwner, cIdx);
             return true;
 
-        } else if (menuItemId == R.id.MENU_EDIT) {
-            vm.prepareEditor(imageOwner, cIdx);
+        } else if (menuItemId == R.id.MENU_EDIT_WITH) {
+            vm.prepareExternalEditor(imageOwner, cIdx);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
@@ -437,9 +438,9 @@ public final class ImageHandler {
      *
      * @param input for the launcher
      */
-    private void editPicture(@NonNull final EditPictureContract.Input input) {
+    private void externalEditPicture(@NonNull final ExternalEditImageContract.Input input) {
         try {
-            editPictureLauncher.launch(input);
+            externalEditImageLauncher.launch(input);
         } catch (@NonNull final ActivityNotFoundException e) {
             //noinspection DataFlowIssue
             Snackbar.make(fragment.getView(), R.string.error_no_image_editor,
@@ -510,12 +511,12 @@ public final class ImageHandler {
         final File file = result.getFile();
         if (file != null) {
             switch (result.getNextAction()) {
-                case Crop: {
-                    vm.prepareCropper(file);
+                case Edit: {
+                    vm.prepareInternalEditor(file);
                     return;
                 }
-                case Edit: {
-                    vm.prepareEditor(file);
+                case EditWith: {
+                    vm.prepareExternalEditor(file);
                     return;
                 }
                 case Done: {

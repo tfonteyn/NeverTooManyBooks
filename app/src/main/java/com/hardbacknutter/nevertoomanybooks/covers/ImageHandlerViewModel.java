@@ -42,8 +42,8 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExternalEditImageContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -65,9 +65,9 @@ public class ImageHandlerViewModel
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<Throwable>> onError =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<EditPictureContract.Input>> onStartEdit =
-            new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<CropImageContract.Input>> onStartCropper =
+    private final MutableLiveData<LiveDataEvent<ExternalEditImageContract.Input>>
+            onStartExternalEditor = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<EditImageContract.Input>> onStartEditor =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TakePictureContract.Input>> onStartTakePicture =
             new MutableLiveData<>();
@@ -92,13 +92,13 @@ public class ImageHandlerViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<EditPictureContract.Input>> onStartEdit() {
-        return onStartEdit;
+    LiveData<LiveDataEvent<ExternalEditImageContract.Input>> onStartExternalEditor() {
+        return onStartExternalEditor;
     }
 
     @NonNull
-    LiveData<LiveDataEvent<CropImageContract.Input>> onStartCropper() {
-        return onStartCropper;
+    LiveData<LiveDataEvent<EditImageContract.Input>> onStartEditor() {
+        return onStartEditor;
     }
 
     @NonNull
@@ -129,14 +129,14 @@ public class ImageHandlerViewModel
     /**
      * Prepare to start the external editor.
      * <p>
-     * When completed, triggers {@link #onStartEdit()}.
+     * When completed, triggers {@link #onStartExternalEditor()}.
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
      * @param cIdx       0..n image index
      */
-    void prepareEditor(@NonNull final ImageOwner imageOwner,
-                       @IntRange(from = 0, to = 3) final int cIdx) {
+    void prepareExternalEditor(@NonNull final ImageOwner imageOwner,
+                               @IntRange(from = 0, to = 3) final int cIdx) {
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
@@ -145,7 +145,7 @@ public class ImageHandlerViewModel
                         final File srcFile = createTempImageFile(context, imageOwner, cIdx);
                         final File dstFile = ServiceLocator.getInstance().getCoverStorage()
                                                            .getTempFile();
-                        return EditPictureContract.Input.create(srcFile, dstFile);
+                        return ExternalEditImageContract.Input.create(srcFile, dstFile);
 
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
@@ -153,38 +153,38 @@ public class ImageHandlerViewModel
                         throw new UncheckedIOException(e);
                     }
                 },
-                input -> onStartEdit.setValue(LiveDataEvent.of(input)),
+                input -> onStartExternalEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
     }
 
-    void prepareEditor(@NonNull final File srcFile) {
+    void prepareExternalEditor(@NonNull final File srcFile) {
         STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
                         final File dstFile = ServiceLocator.getInstance().getCoverStorage()
                                                            .getTempFile();
-                        return EditPictureContract.Input.create(srcFile, dstFile);
+                        return ExternalEditImageContract.Input.create(srcFile, dstFile);
 
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
                     }
                 },
-                input -> onStartEdit.setValue(LiveDataEvent.of(input)),
+                input -> onStartExternalEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
     }
 
     /**
-     * Prepare to start the internal cropper editor.
+     * Prepare to start the internal editor.
      * <p>
-     * When completed, triggers {@link #onStartEdit()}.
+     * When completed, triggers {@link #onStartExternalEditor()}.
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
      * @param cIdx       0..n image index
      */
-    void prepareCropper(@NonNull final ImageOwner imageOwner,
-                        @IntRange(from = 0, to = 3) final int cIdx) {
+    void prepareInternalEditor(@NonNull final ImageOwner imageOwner,
+                               @IntRange(from = 0, to = 3) final int cIdx) {
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
@@ -193,30 +193,30 @@ public class ImageHandlerViewModel
                         final File srcFile = createTempImageFile(context, imageOwner, cIdx);
                         final File dstFile = ServiceLocator.getInstance().getCoverStorage()
                                                            .getTempFile();
-                        return new CropImageContract.Input(srcFile, dstFile);
+                        return new EditImageContract.Input(srcFile, dstFile);
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
                     }
                 },
-                input -> onStartCropper.setValue(LiveDataEvent.of(input)),
+                input -> onStartEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
     }
 
-    void prepareCropper(@NonNull final File srcFile) {
+    void prepareInternalEditor(@NonNull final File srcFile) {
         STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
                         final File dstFile = ServiceLocator.getInstance().getCoverStorage()
                                                            .getTempFile();
-                        return new CropImageContract.Input(srcFile, dstFile);
+                        return new EditImageContract.Input(srcFile, dstFile);
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
                     }
                 },
-                input -> onStartCropper.setValue(LiveDataEvent.of(input)),
+                input -> onStartEditor.setValue(LiveDataEvent.of(input)),
                 this::setInvalidImage);
     }
 
