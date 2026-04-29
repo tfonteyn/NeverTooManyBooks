@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -156,10 +155,7 @@ public class StripInfoReader
 
         searchEngine.setCaller(progressListener);
 
-        // We MUST bootstrap it here to ensure it's active before the first http request send
-        final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
-
-        final SiteAuthModule siteAuthModule = new StripInfoAuth(cookieManager);
+        final SiteAuthModule siteAuthModule = new StripInfoAuth();
         final String userId = siteAuthModule.login(context);
 
         searchEngine.setAuthModule(siteAuthModule);

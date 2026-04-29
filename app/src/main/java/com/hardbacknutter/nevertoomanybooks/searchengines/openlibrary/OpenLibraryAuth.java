@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -88,18 +87,13 @@ public class OpenLibraryAuth
      * </pre>
      */
     private static final String COOKIE_USERDATA = "session";
-    @NonNull
-    private final CookieManager cookieManager;
     @Nullable
     private FutureHttp<Void> httpPost;
 
     /**
      * Constructor.
-     *
-     * @param cookieManager previously initialised cookie manager
      */
-    public OpenLibraryAuth(@NonNull final CookieManager cookieManager) {
-        this.cookieManager = cookieManager;
+    public OpenLibraryAuth() {
     }
 
     /**
@@ -130,12 +124,14 @@ public class OpenLibraryAuth
     @NonNull
     public Optional<String> getUserId() {
         final Optional<HttpCookie> oCookie =
-                cookieManager.getCookieStore()
-                             .getCookies()
-                             .stream()
-                             .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
-                                          && COOKIE_USERDATA.equals(c.getName()))
-                             .findFirst();
+                ServiceLocator.getInstance()
+                              .getCookieManager()
+                              .getCookieStore()
+                              .getCookies()
+                              .stream()
+                              .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
+                                           && COOKIE_USERDATA.equals(c.getName()))
+                              .findFirst();
 
         if (oCookie.isPresent()) {
             final HttpCookie cookie = oCookie.get();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,10 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 
@@ -45,8 +43,6 @@ import org.jsoup.nodes.Node;
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
 
-    @NonNull
-    protected final CookieManager cookieManager;
     @Nullable
     private final String charSetName;
     /** Responsible for loading and parsing the web page. */
@@ -77,9 +73,6 @@ public abstract class JsoupSearchEngineBase
                                     @Nullable final String charSetName) {
         super(appContext, config);
         this.charSetName = charSetName;
-
-        // We MUST bootstrap it here to ensure it's active before the first http request send
-        cookieManager = ServiceLocator.getInstance().getCookieManager();
     }
 
     /**

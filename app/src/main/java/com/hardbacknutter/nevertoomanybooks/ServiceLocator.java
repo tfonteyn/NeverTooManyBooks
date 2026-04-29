@@ -27,7 +27,6 @@ import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.net.CookieHandler;
@@ -111,7 +110,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 
-public class ServiceLocator {
+public final class ServiceLocator {
 
     /**
      * Subdirectory of {@link Context#getFilesDir()}.
@@ -119,11 +118,6 @@ public class ServiceLocator {
      */
     private static final String DIR_UPGRADES = "upgrades";
 
-    /**
-     * Singleton.
-     *
-     * @see #create
-     */
     @SuppressWarnings("StaticVariableMayNotBeInitialized")
     private static ServiceLocator sInstance;
 
@@ -226,8 +220,7 @@ public class ServiceLocator {
      *
      * @param context Current context
      */
-    @VisibleForTesting
-    ServiceLocator(@NonNull final Context context) {
+    private ServiceLocator(@NonNull final Context context) {
         appContext = context.getApplicationContext();
     }
 
@@ -240,19 +233,10 @@ public class ServiceLocator {
         synchronized (ServiceLocator.class) {
             if (sInstance == null) {
                 sInstance = new ServiceLocator(context);
+                // We MUST bootstrap it here to ensure it's active
+                // before the first http request is sent.
+                sInstance.getCookieManager();
             }
-        }
-    }
-
-    /**
-     * Test constructor.
-     *
-     * @param serviceLocator mock instance
-     */
-    @VisibleForTesting
-    public static void create(@NonNull final ServiceLocator serviceLocator) {
-        synchronized (ServiceLocator.class) {
-            sInstance = serviceLocator;
         }
     }
 
@@ -452,9 +436,9 @@ public class ServiceLocator {
     }
 
     /**
-     * Client must call this <strong>before</strong> doing its first request (lazy init).
+     * Get the global Cookie manager.
      *
-     * @return the global cookie manager.
+     * @return manager
      */
     @NonNull
     public CookieManager getCookieManager() {

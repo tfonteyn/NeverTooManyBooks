@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URLDecoder;
@@ -81,63 +80,62 @@ public class IsfdbAuth
      */
     private static final String COOKIE_USERDATA = "isfdbUserID";
 
-    @NonNull
-    private final CookieManager cookieManager;
     @Nullable
     private FutureHttp<Void> httpPost;
 
     /**
      * Constructor.
-     *
-     * @param cookieManager previously initialised cookie manager
      */
-    public IsfdbAuth(@NonNull final CookieManager cookieManager) {
-        this.cookieManager = cookieManager;
+    public IsfdbAuth() {
     }
 
 
-    // ISFDB CODE:   common\login.py
-    //
-    //Set-Cookie: isfdbUserID=1246525; path=/; domain=www.isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
-    //Set-Cookie: isfdbUserName=HardbackNut; path=/; domain=www.isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
-    //Set-Cookie: isfdbToken=2a9f019e4a0bf3c6b3d8760c3f4b72ef; path=/; domain=www.isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
-    //Set-Cookie: isfdbUserID=1246525; path=/; domain=isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
-    //Set-Cookie: isfdbUserName=HardbackNut; path=/; domain=isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
-    //Set-Cookie: isfdbToken=2a9f019e4a0bf3c6b3d8760c3f4b72ef; path=/; domain=isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
-    //
-    // C:\d\sdk\sources\android-34\java\net\HttpCookie.java
-    // line +- 1000:
-    //         assignors.put("expires", new CookieAttributeAssignor(){ // Netscape only
-    //                public void assign(HttpCookie cookie,
-    //                                   String attrName,
-    //                                   String attrValue) {
-    //                    if (cookie.getMaxAge() == MAX_AGE_UNSPECIFIED) {
-    //                        // BEGIN Android-changed: Use HttpDate for date parsing.
-    //                        // it accepts broader set of date formats.
-    //                        // cookie.setMaxAge(cookie.expiryDate2DeltaSeconds(attrValue));
-    //                        // Android-changed: Altered max age calculation to avoid setting.
-    //                        // it to MAX_AGE_UNSPECIFIED (-1) if "expires" is one second in past.
-    //                        Date date = HttpDate.parse(attrValue);
-    //
-    // expires="Fri, 08-Sep-2037 15:00:00"
-    // ===> Date is NULL DUE TO MISSING TIMEZONE
-    // defaults is: "EEE, dd MMM yyyy HH:mm:ss zzz"
-    // closest compat is:   "EEE, dd-MMM-yyyy HH:mm:ss z"   but misses 'z'
-    //
-    // https://android.googlesource.com/platform/libcore/+/refs/heads/main/luni/src/main/java/libcore/net/http/HttpDate.java
-    //
-    // in short: due to the missing timezone, we get a 'null' date...
-    // which leads to max-age being set to zero... which means the cookie
-    // is immediately seen as expired, and it gets deleted before we have a chance
-    // to access it.
-    //
-    // Note that we cannot modify the BiscuitStore to update/correct the max-age
-    // as we cannot access the date from the expires header...
+    /*
+     ISFDB CODE:   common\login.py
+
+    Set-Cookie: isfdbUserID=1246525; path=/; domain=www.isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
+    Set-Cookie: isfdbUserName=HardbackNut; path=/; domain=www.isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
+    Set-Cookie: isfdbToken=2a9f019e4a0bf3c6b3d8760c3f4b72ef; path=/; domain=www.isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
+    Set-Cookie: isfdbUserID=1246525; path=/; domain=isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
+    Set-Cookie: isfdbUserName=HardbackNut; path=/; domain=isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
+    Set-Cookie: isfdbToken=2a9f019e4a0bf3c6b3d8760c3f4b72ef; path=/; domain=isfdb.org; expires="Fri, 08-Sep-2037 15:00:00"
+
+     C:\d\sdk\sources\android-34\java\net\HttpCookie.java
+     line +- 1000:
+             assignors.put("expires", new CookieAttributeAssignor(){ // Netscape only
+                    public void assign(HttpCookie cookie,
+                                       String attrName,
+                                       String attrValue) {
+                        if (cookie.getMaxAge() == MAX_AGE_UNSPECIFIED) {
+                            // BEGIN Android-changed: Use HttpDate for date parsing.
+                            // it accepts broader set of date formats.
+                            // cookie.setMaxAge(cookie.expiryDate2DeltaSeconds(attrValue));
+                            // Android-changed: Altered max age calculation to avoid setting.
+                            // it to MAX_AGE_UNSPECIFIED (-1) if "expires" is one second in past.
+                            Date date = HttpDate.parse(attrValue);
+
+     expires="Fri, 08-Sep-2037 15:00:00"
+     ===> Date is NULL DUE TO MISSING TIMEZONE
+     defaults is: "EEE, dd MMM yyyy HH:mm:ss zzz"
+     closest compat is:   "EEE, dd-MMM-yyyy HH:mm:ss z"   but misses 'z'
+
+     https://android.googlesource.com/platform/libcore/+/refs/heads/main/luni/src/main/java/libcore/net/http/HttpDate.java
+
+     in short: due to the missing timezone, we get a 'null' date...
+     which leads to max-age being set to zero... which means the cookie
+     is immediately seen as expired, and it gets deleted before we have a chance
+     to access it.
+
+     Note that we cannot modify the BiscuitStore to update/correct the max-age
+     as we cannot access the date from the expires header...
+    */
     @NonNull
     @Override
     public Optional<String> getUserId() {
         final List<HttpCookie> cookies;
-        final CookieStore cookieStore = cookieManager.getCookieStore();
+        final CookieStore cookieStore = ServiceLocator.getInstance()
+                                                      .getCookieManager()
+                                                      .getCookieStore();
         if (cookieStore instanceof BiscuitStore) {
             cookies = ((BiscuitStore) cookieStore).getRawCookieList();
         } else {

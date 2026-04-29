@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,11 +25,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.net.CookieManager;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuth;
@@ -59,20 +57,17 @@ public final class ConnectionValidatorFactory {
             return new CalibreContentServer.Builder(context).build();
         }
 
-        // We MUST bootstrap it here to ensure it's active before the first http request send
-        final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
-
         if (siteResId == R.string.site_isfdb) {
             // The auth module login IS the validation
-            return new IsfdbAuth(cookieManager);
+            return new IsfdbAuth();
 
         } else if (siteResId == R.string.site_open_library) {
             // The auth module login IS the validation
-            return new OpenLibraryAuth(cookieManager);
+            return new OpenLibraryAuth();
 
         } else if (siteResId == R.string.site_stripinfo_be) {
             // The auth module login IS the validation
-            return new StripInfoAuth(cookieManager);
+            return new StripInfoAuth();
         }
 
         // The error message is slightly misleading but will have to do.

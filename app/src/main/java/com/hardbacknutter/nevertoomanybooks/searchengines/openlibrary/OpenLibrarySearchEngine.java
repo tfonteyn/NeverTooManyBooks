@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -110,7 +109,7 @@ public class OpenLibrarySearchEngine
     private static final String SEARCH_BY_EXTERNAL_ID = "/books/%1$s.json";
 
     /**
-     * The covers are available in 3 sizes:
+     * The covers are available in 3 sizes.
      * <p>
      * S: Small, suitable for use as a thumbnail on a results page on Open Library,
      * M: Medium, suitable for display on a details page on Open Library and,
@@ -165,8 +164,6 @@ public class OpenLibrarySearchEngine
     private static final String TYPE_TEXT = "/type/text";
 
     private final AuthorRoleMapper authorRoleMapper = new AuthorRoleMapper();
-    @NonNull
-    private final CookieManager cookieManager;
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
     private FutureHttp<String> httpGet;
@@ -188,9 +185,6 @@ public class OpenLibrarySearchEngine
     public OpenLibrarySearchEngine(@NonNull final Context appContext,
                                    @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-
-        // We MUST bootstrap it here to ensure it's active before the first http request send
-        cookieManager = ServiceLocator.getInstance().getCookieManager();
     }
 
     /**
@@ -239,7 +233,7 @@ public class OpenLibrarySearchEngine
         // Depending on if we get here from a search or from a sync,
         // the module MIGHT already exist so don't login twice!
         if (siteAuthModule == null) {
-            siteAuthModule = new OpenLibraryAuth(cookieManager);
+            siteAuthModule = new OpenLibraryAuth();
             try {
                 siteAuthModule.login(context);
             } catch (@NonNull final IOException | StorageException e) {
@@ -842,7 +836,7 @@ public class OpenLibrarySearchEngine
     }
 
     /**
-     * A single Author element:
+     * A single Author element.
      * <p>
      * === "book" ===
      * <pre>

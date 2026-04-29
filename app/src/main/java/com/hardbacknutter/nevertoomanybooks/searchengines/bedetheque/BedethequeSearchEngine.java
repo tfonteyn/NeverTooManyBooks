@@ -226,13 +226,14 @@ public class BedethequeSearchEngine
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
                 sessionCookie = httpHead.head(getHostUrl() + SEARCH_URL, response ->
-                        cookieManager.getCookieStore()
-                                     .getCookies()
-                                     .stream()
-                                     .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
-                                                  && COOKIE_NAME.equals(c.getName()))
-                                     .findFirst()
-                                     .orElse(new HttpCookie(COOKIE_NAME, "")));
+                        ServiceLocator.getInstance().getCookieManager()
+                                      .getCookieStore()
+                                      .getCookies()
+                                      .stream()
+                                      .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
+                                                   && COOKIE_NAME.equals(c.getName()))
+                                      .findFirst()
+                                      .orElse(new HttpCookie(COOKIE_NAME, "")));
             } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
                 throw new SearchException(getEngineId(), e);
             }
