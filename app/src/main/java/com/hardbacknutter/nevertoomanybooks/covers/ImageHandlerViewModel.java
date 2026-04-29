@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExternalEditImageContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageExternalContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -65,7 +65,7 @@ public class ImageHandlerViewModel
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<Throwable>> onError =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<ExternalEditImageContract.Input>>
+    private final MutableLiveData<LiveDataEvent<EditImageExternalContract.Input>>
             onStartExternalEditor = new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<EditImageContract.Input>> onStartEditor =
             new MutableLiveData<>();
@@ -92,7 +92,7 @@ public class ImageHandlerViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<ExternalEditImageContract.Input>> onStartExternalEditor() {
+    LiveData<LiveDataEvent<EditImageExternalContract.Input>> onStartExternalEditor() {
         return onStartExternalEditor;
     }
 
@@ -145,7 +145,7 @@ public class ImageHandlerViewModel
                         final File srcFile = createTempImageFile(context, imageOwner, cIdx);
                         final File dstFile = ServiceLocator.getInstance().getCoverStorage()
                                                            .getTempFile();
-                        return ExternalEditImageContract.Input.create(srcFile, dstFile);
+                        return EditImageExternalContract.Input.create(srcFile, dstFile);
 
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
@@ -157,6 +157,14 @@ public class ImageHandlerViewModel
                 this::setInvalidImage);
     }
 
+    /**
+     * Prepare to start the external editor.
+     * <p>
+     * When completed, triggers {@link #onStartExternalEditor()}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param srcFile to edit
+     */
     void prepareExternalEditor(@NonNull final File srcFile) {
         STask.execute(
                 ASyncExecutor.PARALLEL,
@@ -164,7 +172,7 @@ public class ImageHandlerViewModel
                     try {
                         final File dstFile = ServiceLocator.getInstance().getCoverStorage()
                                                            .getTempFile();
-                        return ExternalEditImageContract.Input.create(srcFile, dstFile);
+                        return EditImageExternalContract.Input.create(srcFile, dstFile);
 
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
@@ -204,6 +212,14 @@ public class ImageHandlerViewModel
                 this::setInvalidImage);
     }
 
+    /**
+     * Prepare to start the internal editor.
+     * <p>
+     * When completed, triggers {@link #onStartExternalEditor()}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param srcFile to edit
+     */
     void prepareInternalEditor(@NonNull final File srcFile) {
         STask.execute(
                 ASyncExecutor.PARALLEL,
@@ -399,18 +415,20 @@ public class ImageHandlerViewModel
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
-                    // 2025-11-05: bug report #197:
-                    // java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
-                    //  at android.database.DatabaseUtils.readExceptionWithFileNotFoundExceptionFromParcel(DatabaseUtils.java:162)
-                    //  at android.content.ContentProviderProxy.openTypedAssetFile(ContentProviderProxy.java:814)
-                    //  at android.content.ContentResolver.openTypedAssetFileDescriptor(ContentResolver.java:2045)
-                    //  at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1860)
-                    //  at android.content.ContentResolver.openInputStream(ContentResolver.java:1530)
-                    //  at com.hardbacknutter.nevertoomanybooks.covers.ImageHandler.onPictureResult(ImageHandler.java:577)
-                    //
-                    // So the user picked a file from storage, and we get the Uri.
-                    // When we open the Uri, the systems tells us
-                    // the file does not exist ¯\_(ツ)_/¯
+                    /*
+                     2025-11-05: bug report #197:
+                     java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
+                      at android.database.DatabaseUtils.readExceptionWithFileNotFoundExceptionFromParcel(DatabaseUtils.java:162)
+                      at android.content.ContentProviderProxy.openTypedAssetFile(ContentProviderProxy.java:814)
+                      at android.content.ContentResolver.openTypedAssetFileDescriptor(ContentResolver.java:2045)
+                      at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1860)
+                      at android.content.ContentResolver.openInputStream(ContentResolver.java:1530)
+                      at com.hardbacknutter.nevertoomanybooks.covers.ImageHandler.onPictureResult(ImageHandler.java:577)
+
+                     So the user picked a file from storage, and we get the Uri.
+                     When we open the Uri, the systems tells us
+                     the file does not exist ¯\_(ツ)_/¯
+                    */
 
                     final ServiceLocator serviceLocator = ServiceLocator.getInstance();
                     try (InputStream is = serviceLocator.getAppContext()

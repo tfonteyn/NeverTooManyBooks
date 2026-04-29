@@ -43,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-public class ExternalEditImageContract
-        extends ActivityResultContract<ExternalEditImageContract.Input, Optional<File>> {
+public class EditImageExternalContract
+        extends ActivityResultContract<EditImageExternalContract.Input, Optional<File>> {
 
     private static final String TAG = "ExternalEditImageContra";
 

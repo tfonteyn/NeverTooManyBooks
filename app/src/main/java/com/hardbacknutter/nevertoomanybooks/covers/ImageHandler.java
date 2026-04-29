@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExternalEditImageContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditImageExternalContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
@@ -149,7 +149,7 @@ public final class ImageHandler {
     private CircularProgressIndicator progressIndicator;
     private PermissionRequester permissionRequester;
     private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
-    private ActivityResultLauncher<ExternalEditImageContract.Input> externalEditImageLauncher;
+    private ActivityResultLauncher<EditImageExternalContract.Input> editImageExternalLauncher;
     private ActivityResultLauncher<EditImageContract.Input> editImageLauncher;
     private ActivityResultLauncher<String> getFromFileLauncher;
 
@@ -221,8 +221,8 @@ public final class ImageHandler {
         getFromFileLauncher = fragment.registerForActivityResult(
                 new PickVisualMediaContract(), o -> o.ifPresent(this::onPictureResult));
 
-        externalEditImageLauncher = fragment.registerForActivityResult(
-                new ExternalEditImageContract(), o -> o.ifPresent(this::onPictureResult));
+        editImageExternalLauncher = fragment.registerForActivityResult(
+                new EditImageExternalContract(), o -> o.ifPresent(this::onPictureResult));
 
         editImageLauncher = fragment.registerForActivityResult(
                 new EditImageContract(), o -> o.ifPresent(this::onPictureResult));
@@ -438,9 +438,9 @@ public final class ImageHandler {
      *
      * @param input for the launcher
      */
-    private void externalEditPicture(@NonNull final ExternalEditImageContract.Input input) {
+    private void externalEditPicture(@NonNull final EditImageExternalContract.Input input) {
         try {
-            externalEditImageLauncher.launch(input);
+            editImageExternalLauncher.launch(input);
         } catch (@NonNull final ActivityNotFoundException e) {
             //noinspection DataFlowIssue
             Snackbar.make(fragment.getView(), R.string.error_no_image_editor,
