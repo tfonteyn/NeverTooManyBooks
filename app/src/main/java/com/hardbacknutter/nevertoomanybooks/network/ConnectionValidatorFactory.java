@@ -40,6 +40,9 @@ public final class ConnectionValidatorFactory {
 
     /**
      * Factory constructor.
+     * <p>
+     * Dev. note: we use the siteResId instead of EngineId because this class
+     * needs to support non-searchengines as well, e.g. Calibre.
      *
      * @param context   Current context
      * @param siteResId string resource for the site name
