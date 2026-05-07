@@ -8,7 +8,7 @@ compileSdk = "36"
 # JDK used by Gradle
 javaToolchain = "21"
 
-androidGradlePlugin = "9.2.0"
+androidGradlePlugin = "9.2.1"
 # https://github.com/mannodermaus/android-junit-framework
 mannodermausPlugin = "2.0.1"
 mannodermausInstrumentation = "2.0.1"
@@ -18,7 +18,7 @@ mannodermausInstrumentation = "2.0.1"
 androidxActivity = "1.13.0"
 androidxAnnotation = "1.10.0"
 androidxAppcompat = "1.7.1"
-androidxCamerax = "1.6.0"
+androidxCamerax = "1.6.1"
 androidxCardview = "1.0.0"
 androidxCollection = "1.6.0"
 androidxConstraintlayoutCore = "1.1.1"
