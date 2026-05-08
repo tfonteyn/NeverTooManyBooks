@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,8 @@ public class UserStyle
      */
     private UserStyle(@NonNull final DataHolder rowData) {
         super(rowData);
-        name = rowData.getString(DBKey.STYLE.NAME);
+        // strip: we used to have a bug where the name in the database was not stripped
+        name = rowData.getString(DBKey.STYLE.NAME).strip();
     }
 
     /**

@@ -240,7 +240,8 @@ public class StyleCoder
             case User: {
                 style = UserStyle.createForImport(uuid, stylesHelper.getGlobalStyle());
                 if (data.has(DBKey.STYLE.NAME)) {
-                    ((UserStyle) style).setName(data.getString(DBKey.STYLE.NAME));
+                    // strip: we used to have a bug where the name in the database was not stripped
+                    ((UserStyle) style).setName(data.getString(DBKey.STYLE.NAME).strip());
                 }
                 break;
             }
