@@ -71,10 +71,11 @@ public class MultiChoiceViewModel
 
     void setSelection(@NonNull final Long value,
                       final boolean checked) {
+        // duh... FIRST add/remove, THEN 'or'...
         if (checked) {
-            this.preferenceChanged = this.preferenceChanged || currentSelection.add(value);
+            this.preferenceChanged = currentSelection.add(value) || this.preferenceChanged;
         } else {
-            this.preferenceChanged = this.preferenceChanged || currentSelection.remove(value);
+            this.preferenceChanged = currentSelection.remove(value) || this.preferenceChanged;
         }
     }
 
