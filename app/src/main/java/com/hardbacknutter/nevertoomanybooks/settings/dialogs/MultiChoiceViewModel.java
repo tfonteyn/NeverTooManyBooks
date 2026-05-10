@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.prefslib.MultiChoiceSetting;
@@ -32,6 +33,8 @@ import com.hardbacknutter.prefslib.MultiChoiceSetting;
 @SuppressWarnings("WeakerAccess")
 public class MultiChoiceViewModel
         extends ViewModel {
+
+    private static final String ERROR_INIT_NOT_CALLED = "init not called?";
 
     @Nullable
     private Set<CharSequence> newValue;
@@ -47,18 +50,28 @@ public class MultiChoiceViewModel
         }
     }
 
-    void add(@NonNull final CharSequence value) {
-        //noinspection DataFlowIssue
-        newValue.add(value);
+    void setSelection(@NonNull final CharSequence value,
+                      final boolean checked) {
+        Objects.requireNonNull(newValue, ERROR_INIT_NOT_CALLED);
+        if (checked) {
+            newValue.add(value);
+        } else {
+            newValue.remove(value);
+        }
     }
 
-    void remove(@NonNull final CharSequence value) {
-        //noinspection DataFlowIssue
-        newValue.remove(value);
+    void setSelection(@NonNull final Set<CharSequence> selection) {
+        Objects.requireNonNull(newValue, ERROR_INIT_NOT_CALLED);
+        if (selection.equals(newValue)) {
+            return;
+        }
+        newValue.clear();
+        newValue.addAll(selection);
     }
 
-    @Nullable
+    @NonNull
     Set<CharSequence> getNewValue() {
+        Objects.requireNonNull(newValue, ERROR_INIT_NOT_CALLED);
         return newValue;
     }
 }

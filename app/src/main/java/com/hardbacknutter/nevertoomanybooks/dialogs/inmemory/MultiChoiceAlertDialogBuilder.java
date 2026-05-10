@@ -273,11 +273,21 @@ public class MultiChoiceAlertDialogBuilder<T> {
 
         final ChecklistRecyclerAdapter<T> adapter = new ChecklistRecyclerAdapter<>(
                 items, position -> itemLabels.get(position), selectedItems,
-                (id, checked) -> {
-                    if (checked) {
-                        selectedItems.add(id);
-                    } else {
-                        selectedItems.remove(id);
+                new ChecklistRecyclerAdapter.SelectionListener<>() {
+                    @Override
+                    public void onSelected(@NonNull final T item,
+                                           final boolean checked) {
+                        if (checked) {
+                            selectedItems.add(item);
+                        } else {
+                            selectedItems.remove(item);
+                        }
+                    }
+
+                    @Override
+                    public void setSelection(@NonNull final Set<T> selection) {
+                        selectedItems.clear();
+                        selectedItems.addAll(selection);
                     }
                 });
         vb.itemList.setAdapter(adapter);

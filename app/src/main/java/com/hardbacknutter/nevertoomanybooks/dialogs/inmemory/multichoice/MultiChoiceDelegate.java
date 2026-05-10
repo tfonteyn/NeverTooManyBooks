@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -140,11 +141,16 @@ class MultiChoiceDelegate
 
         final ChecklistRecyclerAdapter<Long> adapter = new ChecklistRecyclerAdapter<>(
                 itemIds, items::get, vm.getCurrentSelection(),
-                (id, checked) -> {
-                    if (checked) {
-                        vm.add(id);
-                    } else {
-                        vm.remove(id);
+                new ChecklistRecyclerAdapter.SelectionListener<>() {
+                    @Override
+                    public void onSelected(@NonNull final Long id,
+                                           final boolean checked) {
+                        vm.setSelection(id, checked);
+                    }
+
+                    @Override
+                    public void setSelection(@NonNull final Set<Long> selection) {
+                        vm.setSelection(selection);
                     }
                 });
         vb.itemList.setAdapter(adapter);

@@ -60,6 +60,8 @@ class MultiChoiceDelegate
     private final SettingsManagerViewModel svm;
     private final MultiChoiceSetting setting;
 
+    private ChecklistRecyclerAdapter<CharSequence> adapter;
+
     private DialogSelectMultipleContentBinding vb;
     @Nullable
     private Toolbar toolbar;
@@ -121,16 +123,21 @@ class MultiChoiceDelegate
             vb.message.setVisibility(View.GONE);
         }
 
-        @SuppressWarnings("DataFlowIssue")
-        final ChecklistRecyclerAdapter<CharSequence> adapter = new ChecklistRecyclerAdapter<>(
+        //noinspection DataFlowIssue
+        adapter = new ChecklistRecyclerAdapter<>(
                 Arrays.asList(setting.getEntryValues()),
                 i -> setting.getEntries()[i],
                 vm.getNewValue(),
-                (item, checked) -> {
-                    if (checked) {
-                        vm.add(item);
-                    } else {
-                        vm.remove(item);
+                new ChecklistRecyclerAdapter.SelectionListener<>() {
+                    @Override
+                    public void onSelected(@NonNull final CharSequence item,
+                                           final boolean checked) {
+                        vm.setSelection(item, checked);
+                    }
+
+                    @Override
+                    public void setSelection(@NonNull final Set<CharSequence> selection) {
+                        vm.setSelection(selection);
                     }
                 }
         );
@@ -164,7 +171,6 @@ class MultiChoiceDelegate
     private boolean saveChanges() {
         // the model is already updated by the adapters selection listener.
 
-        @Nullable
         final Set<CharSequence> newValue = vm.getNewValue();
 
         // anything actually changed ? If not, we're done.

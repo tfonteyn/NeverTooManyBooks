@@ -69,12 +69,22 @@ public class MultiChoiceViewModel
         }
     }
 
-    void add(@NonNull final Long value) {
-        this.preferenceChanged = this.preferenceChanged || currentSelection.add(value);
+    void setSelection(@NonNull final Long value,
+                      final boolean checked) {
+        if (checked) {
+            this.preferenceChanged = this.preferenceChanged || currentSelection.add(value);
+        } else {
+            this.preferenceChanged = this.preferenceChanged || currentSelection.remove(value);
+        }
     }
 
-    void remove(@NonNull final Long value) {
-        this.preferenceChanged = this.preferenceChanged || currentSelection.remove(value);
+    void setSelection(@NonNull final Set<Long> selection) {
+        if (selection.equals(currentSelection)) {
+            return;
+        }
+        currentSelection.clear();
+        currentSelection.addAll(selection);
+        this.preferenceChanged = true;
     }
 
     boolean isModified() {

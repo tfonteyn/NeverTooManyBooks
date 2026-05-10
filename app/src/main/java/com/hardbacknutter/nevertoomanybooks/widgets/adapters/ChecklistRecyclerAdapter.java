@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -26,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -58,17 +58,18 @@ public class ChecklistRecyclerAdapter<T>
      *
      * @param items         List of items
      * @param labelSupplier given the position in the list, supply a label for the item
-     * @param selection     (optional) the pre-selected item ids
-     * @param listener      (optional) to send a selection to as the user changes them;
-     *                      alternatively use {@link #getSelection()} when done.
+     * @param selection     the selected item ids
+     * @param listener      (optional) to send a selection to as the user changes them
+     *                      If defined, the listener <strong>must</strong> update
+     *                      the selection; if not defined, this adapter will.
      */
     public ChecklistRecyclerAdapter(@NonNull final List<T> items,
                                     @NonNull final Function<Integer, CharSequence> labelSupplier,
-                                    @Nullable final Set<T> selection,
+                                    @NonNull final Set<T> selection,
                                     @Nullable final SelectionListener<T> listener) {
         this.items = items;
         this.labelSupplier = labelSupplier;
-        this.selection = selection != null ? selection : new HashSet<>();
+        this.selection = selection;
         selectionListener = listener;
     }
 
@@ -113,13 +114,20 @@ public class ChecklistRecyclerAdapter<T>
     }
 
     /**
-     * Get the set with the selected items.
+     * Set the selection.
      *
-     * @return set of selected items, can be empty if none selected.
+     *
+     * @param selection to use
      */
-    @NonNull
-    public Set<T> getSelection() {
-        return selection;
+    @SuppressLint("NotifyDataSetChanged")
+    public void setSelection(@NonNull final Set<T> selection) {
+        if (selectionListener != null) {
+            selectionListener.setSelection(selection);
+        } else {
+            this.selection.clear();
+            this.selection.addAll(selection);
+        }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -127,7 +135,6 @@ public class ChecklistRecyclerAdapter<T>
         return items.size();
     }
 
-    @FunctionalInterface
     public interface SelectionListener<T> {
 
         /**
@@ -140,6 +147,16 @@ public class ChecklistRecyclerAdapter<T>
          */
         void onSelected(@NonNull T item,
                         boolean checked);
+
+
+        /**
+         * Set a new selection.
+         * <p>
+         * Typically used by the {@code clear} button to deselect all options.
+         *
+         * @param selection to set
+         */
+        void setSelection(@NonNull Set<T> selection);
     }
 
     /**
