@@ -110,7 +110,7 @@ class MultiChoiceDelegate
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
-                toolbar.inflateMenu(R.menu.toolbar_action_save);
+                toolbar.inflateMenu(R.menu.toolbar_action_clear_and_save);
             }
             initToolbar(owner, dialogType, toolbar);
             toolbar.setTitle(setting.getTitle());
@@ -158,7 +158,13 @@ class MultiChoiceDelegate
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
-            if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
+
+            if (id == R.id.toolbar_btn_clear || id == R.id.btn_neutral) {
+                // clear all. The adapter will inform any listeners.
+                adapter.setSelection(Set.of());
+                return true;
+
+            } else if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
                 if (saveChanges()) {
                     owner.dismiss();
                 }
