@@ -92,18 +92,39 @@ public class MultiChoiceAlertDialogBuilder<T> {
         this.context = context;
     }
 
+    /**
+     * Optional. Set an icon to display.
+     *
+     * @param iconId resource id
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setIcon(@DrawableRes final int iconId) {
         this.iconId = iconId;
         return this;
     }
 
+    /**
+     * Optional. Set a dialog title to display.
+     *
+     * @param titleId string id
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setTitle(@StringRes final int titleId) {
         this.dialogTitle = context.getString(titleId);
         return this;
     }
 
+    /**
+     * Optional. Set a dialog title to display.
+     *
+     * @param title string
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setTitle(@Nullable final CharSequence title) {
         this.dialogTitle = title;
@@ -212,6 +233,13 @@ public class MultiChoiceAlertDialogBuilder<T> {
         return this;
     }
 
+    /**
+     * Set a callback for when the dialog is dismissed.
+     *
+     * @param onDismiss callback
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public MultiChoiceAlertDialogBuilder<T> setOnDismiss(@Nullable final Runnable onDismiss) {
         this.onDismiss = onDismiss;

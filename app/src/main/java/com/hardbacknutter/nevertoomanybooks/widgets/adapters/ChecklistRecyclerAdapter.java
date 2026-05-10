@@ -99,8 +99,8 @@ public class ChecklistRecyclerAdapter<T>
         final T item = items.get(position);
 
         if (selectionListener != null) {
-            // It's the listeners responsibility to update the Set (or not)
-            // use a post allowing the UI to update view first
+            // It's the listeners responsibility to update the Set!
+            // Note we're a post allowing the UI to update view first
             holder.vb.btnOption.post(() -> selectionListener.onSelected(item, selected));
         } else {
             // There was no listener, we'll update it now/here
@@ -115,7 +115,7 @@ public class ChecklistRecyclerAdapter<T>
     /**
      * Get the set with the selected items.
      *
-     * @return set of selected items, can be empty of none selected.
+     * @return set of selected items, can be empty if none selected.
      */
     @NonNull
     public Set<T> getSelection() {
@@ -133,7 +133,7 @@ public class ChecklistRecyclerAdapter<T>
         /**
          * Called after the user selected an item.
          * <p>
-         * <strong>It's the listeners responsibility to update the backing Set.</strong>
+         * <strong>The listener must update the backing Set.</strong>
          *
          * @param item    selected
          * @param checked state of the item

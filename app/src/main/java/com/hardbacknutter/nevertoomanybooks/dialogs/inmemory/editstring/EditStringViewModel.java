@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,6 +79,11 @@ public class EditStringViewModel
         this.currentValue = currentValue;
     }
 
+    /**
+     * Get the optional/additional payload.
+     *
+     * @return extras Bundle
+     */
     @Nullable
     Bundle getExtras() {
         return extras;

@@ -91,6 +91,11 @@ public class MultiChoiceViewModel
         return currentSelection;
     }
 
+    /**
+     * Get the optional/additional payload.
+     *
+     * @return extras Bundle
+     */
     @Nullable
     Bundle getExtras() {
         return extras;
