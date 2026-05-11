@@ -79,14 +79,18 @@ public class DBSDialogFactory
                 break;
             }
             case BottomSheet: {
-                if (type == Setting.Type.String) {
-                    fragment = new EditStringBottomSheet();
-                } else if (type == Setting.Type.SingleChoice) {
-                    fragment = new SingleChoiceDialogFragment();
-                } else if (type == Setting.Type.MultiChoice) {
-                    fragment = new MultiChoiceBottomSheet();
-                } else {
-                    throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE + type);
+                switch (type) {
+                    case String:
+                        fragment = new EditStringBottomSheet();
+                        break;
+                    case SingleChoice:
+                        fragment = new SingleChoiceBottomSheet();
+                        break;
+                    case MultiChoice:
+                        fragment = new MultiChoiceBottomSheet();
+                        break;
+                    default:
+                        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE + type);
                 }
                 break;
             }
