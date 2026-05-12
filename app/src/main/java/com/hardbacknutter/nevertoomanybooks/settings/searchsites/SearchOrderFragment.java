@@ -169,7 +169,6 @@ public class SearchOrderFragment
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.siteList);
 
-        //noinspection DataFlowIssue
         vm.onSiteListUpdated().observe(getActivity(), updatedType -> {
             // is it ours?
             if (updatedType == type) {
