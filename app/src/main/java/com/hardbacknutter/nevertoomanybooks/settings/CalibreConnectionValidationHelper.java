@@ -20,18 +20,20 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.Manifest;
+import android.os.Build;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 
 public class CalibreConnectionValidationHelper
@@ -41,6 +43,9 @@ public class CalibreConnectionValidationHelper
     private final HostUrlValidator hostUrlValidator;
     @NonNull
     private final Supplier<String> urlSupplier;
+
+    @Nullable
+    private PermissionRequester permissionRequester;
 
     @SuppressWarnings("FieldCanBeLocal")
     private final OnBackPressedCallback backPressedCallback =
@@ -84,21 +89,32 @@ public class CalibreConnectionValidationHelper
         //noinspection DataFlowIssue
         owner.getActivity().getOnBackPressedDispatcher()
              .addCallback(owner.getViewLifecycleOwner(), backPressedCallback);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            permissionRequester = new PermissionRequester(owner.getActivity(), owner);
+            final String calibre = owner.getString(R.string.site_calibre);
+            permissionRequester.addPermission(
+                    Manifest.permission.ACCESS_LOCAL_NETWORK, true,
+                    owner.getString(R.string.warning_local_network_permission_required, calibre),
+                    owner.getString(R.string.warning_local_network_permission_denied, calibre)
+            );
+        }
+
+        init();
     }
 
-    private void showInvalidUrlDialog(@NonNull final CharSequence url) {
-        //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(owner.getContext())
-                .setIcon(R.drawable.info_24px)
-                .setTitle(R.string.error_invalid_url)
-                .setMessage(url)
-                .setPositiveButton(R.string.action_edit, (d, w) -> {
-                    // no action, just stay on the screen
-                })
-                .setNegativeButton(R.string.action_not_now, (d, w) -> {
-                    finish.run();
-                })
-                .create()
-                .show();
+    void validate() {
+        // just checking on null is enough.
+        // Leaving the unneeded SDK check as a reminder
+        if (permissionRequester != null
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            permissionRequester.request(Manifest.permission.ACCESS_LOCAL_NETWORK, isGranted -> {
+                if (isGranted) {
+                    super.validate();
+                }
+            });
+        } else {
+            super.validate();
+        }
     }
 }

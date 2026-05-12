@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+import android.Manifest;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +39,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncCalibreBinding;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -57,6 +60,24 @@ public class CalibreSyncFragment
 
     /** View Binding. */
     private FragmentSyncCalibreBinding vb;
+
+    private PermissionRequester permissionRequester;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            //noinspection DataFlowIssue
+            permissionRequester = new PermissionRequester(getActivity(), this);
+            final String calibre = getString(R.string.site_calibre);
+            permissionRequester.addPermission(
+                    Manifest.permission.ACCESS_LOCAL_NETWORK, true,
+                    getString(R.string.warning_local_network_permission_required, calibre),
+                    getString(R.string.warning_local_network_permission_denied, calibre)
+            );
+        }
+    }
 
     @Nullable
     @Override
@@ -84,26 +105,38 @@ public class CalibreSyncFragment
             if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
-                replaceFragment(CalibreLibraryMappingFragment.create(),
-                                CalibreLibraryMappingFragment.TAG);
+                onClick(() -> replaceFragment(CalibreLibraryMappingFragment.create(),
+                                              CalibreLibraryMappingFragment.TAG));
             }
         });
         vb.btnImport.setOnClickListener(v -> {
             if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
-                replaceFragment(SyncReaderFragment.create(SyncServer.CalibreCS),
-                                SyncReaderFragment.TAG);
+                onClick(() -> replaceFragment(SyncReaderFragment.create(SyncServer.CalibreCS),
+                                              SyncReaderFragment.TAG));
             }
         });
         vb.btnExport.setOnClickListener(v -> {
             if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
-                replaceFragment(SyncWriterFragment.create(SyncServer.CalibreCS),
-                                SyncWriterFragment.TAG);
+                onClick(() -> replaceFragment(SyncWriterFragment.create(SyncServer.CalibreCS),
+                                              SyncWriterFragment.TAG));
             }
         });
+    }
+
+    private void onClick(@NonNull final Runnable action) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            permissionRequester.request(Manifest.permission.ACCESS_LOCAL_NETWORK, isGranted -> {
+                if (isGranted) {
+                    action.run();
+                }
+            });
+        } else {
+            action.run();
+        }
     }
 
     private void openSettings() {

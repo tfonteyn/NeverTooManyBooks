@@ -48,7 +48,10 @@
         android:name="android.hardware.camera.flash"
         android:required="false" />
 
+    <!-- Up to API 36, this implied access to the local network. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- new for API 37. Required for accessing a local Calibre Content server. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />

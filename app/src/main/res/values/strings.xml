@@ -369,11 +369,26 @@
     <string name="warning_requires_android_x">Requires Android %1$d or higher</string>
     <!-- endregion -->
     <!-- region ========== Permission related messages. -->
+    <!-- [VERIFIED] - dialog title when asking for permissions. -->
+    <string name="lbl_permission_request">Permission request</string>
+    <!-- An explanation on why the app requests access to the users Contacts. See also the wiki docs. -->
+    <string name="info_read_contacts_permission">Access to your contacts is optional, but allows you to easily select who you’re lending a book to.</string>
+
     <!-- The "rationale" message shown to tell the user we need permission to access their camera. -->
     <string name="warning_camera_permission_required">Scanning barcodes or taking pictures requires camera access.</string>
     <!-- The "denied" message shown to tell the user we need permission to access their camera.
          The first part of this message is a copy of the "rationale". -->
     <string name="warning_camera_permission_denied">Scanning barcodes or taking pictures requires camera access. Open the application settings, select “Permissions”, and enable “Camera”</string>
+    <!-- The "rationale" message shown to tell the user we need permission to access their local network.
+         Param 1: the name of the local server/service (e.g. Calibre). -->
+    <string name="warning_local_network_permission_required">Accessing %1$s on your local network requires permission.</string>
+    <!-- The "denied" message shown to tell the user we need permission to access their local network.
+         The first part of this message is a copy of the "rationale".
+         Translators: "Nearby devices" is what android calls it. If in doubt, please check your own device for the correct name.
+
+         Param 1: the name of the local server/service (e.g. Calibre).
+         -->
+    <string name="warning_local_network_permission_denied">Accessing %1$s on your local network requires permission. Open the application settings, select “Permissions”, and enable “Nearby devices”</string>
     <!-- endregion -->
     <!-- region ========== ValidatorException error messages. -->
     <!-- Dialog title for validation messages. -->
@@ -448,14 +463,10 @@
     <string name="progress_msg_cleaning_up">Cleaning up…</string>
     <!-- endregion -->
     <!-- region ========== Informational/Explanatory messages. -->
-    <!-- [VERIFIED] - dialog title when asking for permissions. -->
-    <string name="lbl_permission_request">Permission request</string>
     <!-- Shown after a successful connection or login to a remote service. -->
     <string name="info_authorized">Authorized</string>
     <!-- Shown after a requested action when there was nothing to do. -->
     <string name="info_nothing_to_do">Nothing to do.</string>
-    <!-- An explanation on why the app requests access to the users Contacts. See also the wiki docs. -->
-    <string name="info_read_contacts_permission">Access to your contacts is optional, but allows you to easily select who you’re lending a book to.</string>
 
     <!-- Param 1: story title -->
     <string name="info_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
