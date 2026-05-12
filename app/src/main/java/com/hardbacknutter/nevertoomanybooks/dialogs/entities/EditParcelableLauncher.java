@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -160,6 +160,8 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
      * @param item    to edit
+     *
+     * @throws NullPointerException if there is no {@link OnAddListener} set
      */
     public void add(@NonNull @UiContext final Context context,
                     @NonNull final T item) {
@@ -178,6 +180,8 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
      * @param item    to edit
+     *
+     * @throws NullPointerException if there is no {@link OnEditListener} set
      */
     public void edit(@NonNull @UiContext final Context context,
                      @NonNull final T item) {
@@ -196,6 +200,8 @@ public final class EditParcelableLauncher<T extends Parcelable>
      * @param context preferably the {@code Activity}
      *                but another UI {@code Context} will also do.
      * @param item    to edit
+     *
+     * @throws NullPointerException if there is no {@link OnEditInPlaceListener} set
      */
     public void editInPlace(@NonNull @UiContext final Context context,
                             @NonNull final T item) {
