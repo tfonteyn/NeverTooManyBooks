@@ -54,9 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
  * <p>
  * Note the special treatment of the Book's current/original loanee.
  * This is done to minimise trips to the database.
- * <p>
- * TODO: we cannot use the PermissionRequester (yet) as it will keep displaying a dialog
- *  after the delegate owner (BottomSheet/FlexDialog) is already gone.
  */
 class EditLenderDelegate
         implements FlexDialogDelegate {
@@ -82,6 +79,8 @@ class EditLenderDelegate
         vm = new ViewModelProvider(owner).get(EditLenderViewModel.class);
         vm.init(args);
 
+        // TODO: we cannot use the PermissionRequester (yet) as it will keep displaying a dialog
+        //  after the delegate owner (BottomSheet/FlexDialog) is already gone.
         requestPermissionLauncher = owner.registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(), isGranted -> {
                     if (isGranted) {
