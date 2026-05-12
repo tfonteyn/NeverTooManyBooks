@@ -75,6 +75,8 @@ public class HttpCall {
     private static final String POST = "POST";
     private static final String HEAD = "HEAD";
 
+    private static final int MAX_REDIRECTS = 50;
+
     private static final int HTTP_TEMPORARY_REDIRECT = 307;
     private static final int HTTP_PERMANENT_REDIRECT = 308;
 
@@ -428,7 +430,6 @@ public class HttpCall {
 
         Response response = getResponse(request);
 
-        final int MAX_REDIRECTS = 50;
         final Set<String> visited = new HashSet<>();
         int redirectCount = 0;
         Request redirectedRequest;
