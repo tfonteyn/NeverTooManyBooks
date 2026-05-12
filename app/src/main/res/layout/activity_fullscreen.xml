@@ -29,5 +29,4 @@
     android:windowFullscreen="true"
     android:windowIsFloating="false"
     tools:context=".FragmentHostActivity"
-    tools:layout="@layout/fragment_image_editor"
     />
