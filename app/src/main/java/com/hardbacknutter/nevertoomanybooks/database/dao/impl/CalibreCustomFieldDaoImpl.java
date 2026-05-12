@@ -236,5 +236,8 @@ public class CalibreCustomFieldDaoImpl
          */
         static final String FIND_BY_NAME =
                 BASE_SELECT + _WHERE_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + "=?";
+
+        private Sql() {
+        }
     }
 }
