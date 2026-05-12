@@ -904,7 +904,7 @@ NEW:
 - Author pseudonym support:
     - The user can manage/display pseudonyms.
     - Automatic resolving is available for comics with stripinfo/lastdodo which use Bedetheque,
-      and of course Bedetheque itself. This means the majority of european non-english comics
+      and of course Bedetheque itself. This means the majority of European non-english comics
       (and a fairly large amount of English) are supported.
 - Easier access to context menu's on the book list (button and/or long-click configurable).
 - Booklist groups for author and publisher provide grouping/sorting on 1st character of the name.
