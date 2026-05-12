@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -101,7 +101,7 @@ public class EditBookshelvesFragment
     /** The adapter for the list. */
     private BookshelfAdapter adapter;
     /** Accept the result from the dialog. */
-    private EditParcelableLauncher<Bookshelf> editLauncher;
+    private EditInPlaceParcelableLauncher<Bookshelf> editLauncher;
     private ExtMenuLauncher menuLauncher;
     private final PositionHandler positionHandler = new PositionHandler() {
 
@@ -139,10 +139,10 @@ public class EditBookshelvesFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = new EditParcelableLauncher<>(DBKey.FK_BOOKSHELF,
-                                                    EditBookshelfDialogFragment::new,
-                                                    EditBookshelfBottomSheet::new);
-        editLauncher.setOnEditInPlaceListener(this::onModified);
+        editLauncher = new EditInPlaceParcelableLauncher<>(DBKey.FK_BOOKSHELF,
+                                                           EditBookshelfDialogFragment::new,
+                                                           EditBookshelfBottomSheet::new);
+        editLauncher.setListener(this::onModified);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
@@ -201,7 +201,7 @@ public class EditBookshelvesFragment
         // Do not use {@code EditParcelableLauncher#add} as we DO want this
         // new shelf stored in the database when edited.
         //noinspection DataFlowIssue
-        editLauncher.editInPlace(getActivity(), new Bookshelf("", style));
+        editLauncher.edit(getActivity(), new Bookshelf("", style));
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
@@ -242,7 +242,7 @@ public class EditBookshelvesFragment
 
         if (menuItemId == R.id.MENU_EDIT) {
             //noinspection DataFlowIssue
-            editLauncher.editInPlace(getActivity(), bookshelf);
+            editLauncher.edit(getActivity(), bookshelf);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {

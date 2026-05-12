@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditIdentifiersB
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditIdentifierBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier.EditIdentifierBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier.EditIdentifierDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -98,7 +98,7 @@ public class IdentifiersEditorFragment
     private FragmentEditIdentifiersBinding vb;
     private IdentifierAdapter adapter;
     private ExtMenuLauncher menuLauncher;
-    private EditParcelableLauncher<Identifier> editLauncher;
+    private EditInPlaceParcelableLauncher<Identifier> editLauncher;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -109,11 +109,11 @@ public class IdentifiersEditorFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = new EditParcelableLauncher<>(
+        editLauncher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_IDENTIFIER,
                 EditIdentifierDialogFragment::new,
                 EditIdentifierBottomSheet::new);
-        editLauncher.setOnEditInPlaceListener(this::onEditEntryDone);
+        editLauncher.setListener(this::onEditEntryDone);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
@@ -207,7 +207,7 @@ public class IdentifiersEditorFragment
             identifier = vm.getIdentifiers().get(position);
         }
         //noinspection DataFlowIssue
-        editLauncher.editInPlace(getContext(), identifier);
+        editLauncher.edit(getContext(), identifier);
     }
 
     @SuppressLint("NotifyDataSetChanged")

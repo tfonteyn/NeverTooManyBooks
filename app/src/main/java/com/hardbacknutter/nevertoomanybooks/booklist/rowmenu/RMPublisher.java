@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -46,24 +46,23 @@ public class RMPublisher
         implements RowMenu {
 
     /** Edit a {@link Publisher} which appears as a {@link BooklistGroup} (node). */
-    private final EditParcelableLauncher<Publisher> editPublisherLauncher;
+    private final EditInPlaceParcelableLauncher<Publisher> launcher;
     @NonNull
     private final BooksOnBookshelfViewModel vm;
 
     public RMPublisher(@NonNull final BooksOnBookshelfViewModel vm) {
         this.vm = vm;
-        editPublisherLauncher = new EditParcelableLauncher<>(
+        launcher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_PUBLISHER,
                 EditPublisherDialogFragment::new,
                 EditPublisherBottomSheet::new);
-        editPublisherLauncher.setOnEditInPlaceListener(
-                publisher -> vm.onRowGroupUpdate(BooklistGroup.PUBLISHER, publisher));
+        launcher.setListener(publisher -> vm.onRowGroupUpdate(BooklistGroup.PUBLISHER, publisher));
     }
 
     @Override
     public void registerForFragmentResult(@NonNull final FragmentManager fm,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
-        editPublisherLauncher.registerForFragmentResult(fm, lifecycleOwner);
+        launcher.registerForFragmentResult(fm, lifecycleOwner);
     }
 
     @Override
@@ -107,7 +106,7 @@ public class RMPublisher
                                       final int adapterPosition) {
         if (menuItemId == R.id.MENU_PUBLISHER_EDIT) {
             final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-            editPublisherLauncher.editInPlace(context, publisher);
+            launcher.edit(context, publisher);
             return true;
 
         } else if (menuItemId == R.id.MENU_PUBLISHER_DELETE) {

@@ -50,8 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate.PartialDatePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
@@ -64,7 +63,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * For now this class is not in fact called to create a new entry.
  * We do however keep the code flexible enough to allow it for future usage.
  * <ul>
- * <li>{@link EditAction#EditInPlace}</li>
+ * <li>{@link EditInPlaceParcelableLauncher}</li>
  * <li>Modifications <strong>ARE STORED</strong> in the database</li>
  * <li>Returns the modified item.</li>
  * <li>Supports merging.</li>
@@ -287,7 +286,7 @@ class EditAuthorDelegate
             final Optional<Author> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());
+                EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
                 return true;
             }
 
@@ -298,8 +297,8 @@ class EditAuthorDelegate
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
-                            EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
-                                                                        vm.getOriginal());
+                            EditInPlaceParcelableLauncher.setResult(owner, requestKey,
+                                                                    vm.getOriginal());
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
                             LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());

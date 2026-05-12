@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag.EditTagBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag.EditTagDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -46,24 +46,23 @@ public class RMTag
         implements RowMenu {
 
     /** Edit a {@link  Tag} which appears as a {@link BooklistGroup} (node). */
-    private final EditParcelableLauncher<Tag> editTagLauncher;
+    private final EditInPlaceParcelableLauncher<Tag> launcher;
     @NonNull
     private final BooksOnBookshelfViewModel vm;
 
     public RMTag(@NonNull final BooksOnBookshelfViewModel vm) {
         this.vm = vm;
-        editTagLauncher = new EditParcelableLauncher<>(
+        launcher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_TAG,
                 EditTagDialogFragment::new,
                 EditTagBottomSheet::new);
-        editTagLauncher.setOnEditInPlaceListener(
-                tag -> vm.onRowGroupUpdate(BooklistGroup.TAGS_GENRE, tag));
+        launcher.setListener(tag -> vm.onRowGroupUpdate(BooklistGroup.TAGS_GENRE, tag));
     }
 
     @Override
     public void registerForFragmentResult(@NonNull final FragmentManager fm,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
-        editTagLauncher.registerForFragmentResult(fm, lifecycleOwner);
+        launcher.registerForFragmentResult(fm, lifecycleOwner);
     }
 
     @Override
@@ -108,7 +107,7 @@ public class RMTag
                                       final int adapterPosition) {
         if (menuItemId == R.id.MENU_TAG_EDIT) {
             final Tag tag = DataHolderUtils.requireTag(rowData);
-            editTagLauncher.editInPlace(context, tag);
+            launcher.edit(context, tag);
             return true;
 
         } else if (menuItemId == R.id.MENU_TAG_DELETE) {

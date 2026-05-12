@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -51,7 +51,7 @@ public class RMAuthor
         implements RowMenu {
 
     /** Edit an {@link Author} which appears as a {@link BooklistGroup} (node). */
-    private final EditParcelableLauncher<Author> editAuthorLauncher;
+    private final EditInPlaceParcelableLauncher<Author> launcher;
     @NonNull
     private final BooksOnBookshelfViewModel vm;
     @NonNull
@@ -59,25 +59,25 @@ public class RMAuthor
     private final List<MenuHandler<DataHolder>> menuHandlers;
 
     public RMAuthor(@NonNull final BooksOnBookshelfViewModel vm,
-                    @NonNull final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher) {
+                    @NonNull final ActivityResultLauncher<AuthorWorksContract.Input>
+                            authorWorksLauncher) {
         this.vm = vm;
         this.authorWorksLauncher = authorWorksLauncher;
 
         menuHandlers = List.of(new ViewAuthorOnSiteMenuHandler(),
                                new SiteSearchMenuHandler());
 
-        editAuthorLauncher = new EditParcelableLauncher<>(
+        launcher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_AUTHOR,
                 EditAuthorDialogFragment::new,
                 EditAuthorBottomSheet::new);
-        editAuthorLauncher.setOnEditInPlaceListener(
-                author -> vm.onRowGroupUpdate(BooklistGroup.AUTHOR, author));
+        launcher.setListener(author -> vm.onRowGroupUpdate(BooklistGroup.AUTHOR, author));
     }
 
     @Override
     public void registerForFragmentResult(@NonNull final FragmentManager fm,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
-        editAuthorLauncher.registerForFragmentResult(fm, lifecycleOwner);
+        launcher.registerForFragmentResult(fm, lifecycleOwner);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class RMAuthor
 
         } else if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
             final Author author = DataHolderUtils.requireAuthor(rowData);
-            editAuthorLauncher.editInPlace(context, author);
+            launcher.edit(context, author);
             return true;
         }
         return menuHandlers.stream().anyMatch(

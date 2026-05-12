@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -50,7 +50,7 @@ public class RMSeries
         implements RowMenu {
 
     /** Edit a {@link Series} which appears as a {@link BooklistGroup} (node). */
-    private final EditParcelableLauncher<Series> editSeriesLauncher;
+    private final EditInPlaceParcelableLauncher<Series> launcher;
     @NonNull
     private final BooksOnBookshelfViewModel vm;
     private final List<MenuHandler<DataHolder>> menuHandlers;
@@ -60,18 +60,17 @@ public class RMSeries
 
         menuHandlers = List.of(new SiteSearchMenuHandler());
 
-        editSeriesLauncher = new EditParcelableLauncher<>(
+        launcher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_SERIES,
                 EditSeriesDialogFragment::new,
                 EditSeriesBottomSheet::new);
-        editSeriesLauncher.setOnEditInPlaceListener(
-                series -> vm.onRowGroupUpdate(BooklistGroup.SERIES, series));
+        launcher.setListener(series -> vm.onRowGroupUpdate(BooklistGroup.SERIES, series));
     }
 
     @Override
     public void registerForFragmentResult(@NonNull final FragmentManager fm,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
-        editSeriesLauncher.registerForFragmentResult(fm, lifecycleOwner);
+        launcher.registerForFragmentResult(fm, lifecycleOwner);
     }
 
     @Override
@@ -142,7 +141,7 @@ public class RMSeries
 
         } else if (menuItemId == R.id.MENU_SERIES_EDIT) {
             final Series series = DataHolderUtils.requireSeries(rowData);
-            editSeriesLauncher.editInPlace(context, series);
+            launcher.edit(context, series);
             return true;
 
         } else if (menuItemId == R.id.MENU_SERIES_DELETE) {

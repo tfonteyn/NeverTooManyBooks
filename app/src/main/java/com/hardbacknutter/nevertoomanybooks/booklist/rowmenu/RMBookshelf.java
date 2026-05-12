@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -45,24 +45,23 @@ public class RMBookshelf
         implements RowMenu {
 
     /** Edit a {@link Bookshelf} which appears as a {@link BooklistGroup} (node). */
-    private final EditParcelableLauncher<Bookshelf> editBookshelfLauncher;
+    private final EditInPlaceParcelableLauncher<Bookshelf> launcher;
     @NonNull
     private final BooksOnBookshelfViewModel vm;
 
     public RMBookshelf(@NonNull final BooksOnBookshelfViewModel vm) {
         this.vm = vm;
-        editBookshelfLauncher = new EditParcelableLauncher<>(
+        launcher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_BOOKSHELF,
                 EditBookshelfDialogFragment::new,
                 EditBookshelfBottomSheet::new);
-        editBookshelfLauncher.setOnEditInPlaceListener(
-                bookshelf -> vm.onRowGroupUpdate(BooklistGroup.BOOKSHELF, bookshelf));
+        launcher.setListener(bookshelf -> vm.onRowGroupUpdate(BooklistGroup.BOOKSHELF, bookshelf));
     }
 
     @Override
     public void registerForFragmentResult(@NonNull final FragmentManager fm,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
-        editBookshelfLauncher.registerForFragmentResult(fm, lifecycleOwner);
+        launcher.registerForFragmentResult(fm, lifecycleOwner);
     }
 
     @Override
@@ -106,7 +105,7 @@ public class RMBookshelf
                                       final int adapterPosition) {
         if (menuItemId == R.id.MENU_BOOKSHELF_EDIT) {
             final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-            editBookshelfLauncher.editInPlace(context, bookshelf);
+            launcher.edit(context, bookshelf);
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {

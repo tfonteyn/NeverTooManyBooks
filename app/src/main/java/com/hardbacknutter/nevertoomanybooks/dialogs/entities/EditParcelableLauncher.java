@@ -37,14 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 /**
- * Launcher to edit a Parcelable object.
- * <p>
- * Normally the {@link EditAction#Add} and {@link EditAction#Edit}
- * actions are implemented together, while the {@link EditAction#EditInPlace} is separate.
- * <p>
- * This class might be better replaced by dedicated launcher classes
+ * Launcher to add or edit a Parcelable object.
  *
  * @param <T> type of editable object
+ *
+ * @see EditInPlaceParcelableLauncher
  */
 public final class EditParcelableLauncher<T extends Parcelable>
         extends DialogLauncher {
@@ -53,19 +50,16 @@ public final class EditParcelableLauncher<T extends Parcelable>
 
     /** Input value: the item we're going to edit. */
     public static final String BKEY_ITEM = TAG + ":item";
-
+    /** Output value: the item with the edits. */
     private static final String MODIFIED = TAG + ":m";
 
     private static final String ERROR_NULL_ON_ADD_LISTENER = "onAddListener";
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
-    private static final String ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER = "onEditInPlaceListener";
 
     @Nullable
     private OnAddListener<T> onAddListener;
     @Nullable
     private OnEditListener<T> onEditListener;
-    @Nullable
-    private OnEditInPlaceListener<T> onEditInPlaceListener;
 
     /**
      * Constructor.
@@ -81,24 +75,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
     }
 
     /**
-     * Set the result for {@link EditAction#EditInPlace}.
-     *
-     * @param <T>        type of the item
-     * @param fragment   the fragment returning a result
-     * @param requestKey as received in the constructor
-     * @param modified   the modified item
-     */
-    public static <T extends Parcelable> void setEditInPlaceResult(@NonNull final Fragment fragment,
-                                                                   @NonNull final String requestKey,
-                                                                   @NonNull final T modified) {
-        final Bundle result = new Bundle(3);
-        result.putParcelable(EditAction.BKEY, EditAction.EditInPlace);
-        result.putParcelable(MODIFIED, modified);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-    }
-
-    /**
-     * Set the result for {@link EditAction#Add} or {@link EditAction#Edit}.
+     * Set the result.
      *
      * @param <T>        type of the item
      * @param fragment   the fragment returning a result
@@ -146,15 +123,6 @@ public final class EditParcelableLauncher<T extends Parcelable>
     }
 
     /**
-     * Set the listener which will be used by {@link #editInPlace(Context, Parcelable)}.
-     *
-     * @param listener to use
-     */
-    public void setOnEditInPlaceListener(@NonNull final OnEditInPlaceListener<T> listener) {
-        this.onEditInPlaceListener = listener;
-    }
-
-    /**
      * Launch the dialog for an add-operation.
      *
      * @param context preferably the {@code Activity}
@@ -194,26 +162,6 @@ public final class EditParcelableLauncher<T extends Parcelable>
         showDialog(context, args);
     }
 
-    /**
-     * Launch the dialog for an edit-in-place-operation.
-     *
-     * @param context preferably the {@code Activity}
-     *                but another UI {@code Context} will also do.
-     * @param item    to edit
-     *
-     * @throws NullPointerException if there is no {@link OnEditInPlaceListener} set
-     */
-    public void editInPlace(@NonNull @UiContext final Context context,
-                            @NonNull final T item) {
-        Objects.requireNonNull(onEditInPlaceListener, ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER);
-
-        final Bundle args = new Bundle(3);
-        args.putParcelable(EditAction.BKEY, EditAction.EditInPlace);
-        args.putParcelable(BKEY_ITEM, item);
-
-        showDialog(context, args);
-    }
-
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
@@ -231,11 +179,9 @@ public final class EditParcelableLauncher<T extends Parcelable>
                         Objects.requireNonNull(result.getParcelable(BKEY_ITEM), BKEY_ITEM),
                         Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
                 break;
-            case EditInPlace:
-                Objects.requireNonNull(onEditInPlaceListener, ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER);
-                onEditInPlaceListener.onEdit(
-                        Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
-                break;
+            default:
+                throw new IllegalStateException(
+                        "EditInPlace must use EditInPlaceParcelableLauncher");
         }
     }
 }

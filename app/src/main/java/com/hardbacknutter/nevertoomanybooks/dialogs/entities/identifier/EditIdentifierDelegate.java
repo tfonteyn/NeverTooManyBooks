@@ -46,8 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditIdentifierCont
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
@@ -58,7 +57,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Can also be used for a BoB row-menu of an Identifier grouping if needed/implemented.
  *
  * <ul>
- * <li>{@link EditAction#EditInPlace}</li>
+ * <li>{@link EditInPlaceParcelableLauncher}</li>
  * <li>Modifications <strong>ARE STORED</strong> in the database</li>
  * <li>Returns the modified item.</li>
  * <li>Merging is NOT supported.</li>
@@ -213,7 +212,7 @@ class EditIdentifierDelegate
             final Optional<Identifier> existingEntity = vm.saveIfUnique();
             if (existingEntity.isEmpty()) {
                 // Success
-                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());
+                EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
                 return true;
             }
 

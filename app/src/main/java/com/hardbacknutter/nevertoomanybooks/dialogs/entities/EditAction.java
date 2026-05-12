@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,12 +35,7 @@ public enum EditAction
      * Edit an item. Modifications <strong>are NOT</strong> stored in the database.
      * Return the original item + a separate copied/modified item.
      */
-    Edit,
-    /**
-     * Edit an item in-place. Modifications <strong>ARE</strong> stored in the database.
-     * Returns the modified item.
-     */
-    EditInPlace;
+    Edit;
 
     /** Bundle key to pass this object around. */
     public static final String BKEY = "EditAction";

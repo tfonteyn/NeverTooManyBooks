@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -119,7 +119,7 @@ public class AuthorWorksFragment
     private TextView birthDateView;
     private TextView bookshelfView;
     private TextView deathDateView;
-    private EditParcelableLauncher<Author> editAuthorLauncher;
+    private EditInPlaceParcelableLauncher<Author> editAuthorLauncher;
 
     /**
      * Delegate to handle cover replacement, rotation, etc.
@@ -147,7 +147,7 @@ public class AuthorWorksFragment
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
         menuLauncher.registerForFragmentResult(fm, this);
 
-        editAuthorLauncher = new EditParcelableLauncher<>(
+        editAuthorLauncher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_AUTHOR,
                 EditAuthorDialogFragment::new,
                 EditAuthorBottomSheet::new);
@@ -155,8 +155,7 @@ public class AuthorWorksFragment
         // We're editing the Author fields only.
         // The works list is presumed not to have changed, and NOT reloaded!
         //noinspection DataFlowIssue
-        editAuthorLauncher.setOnEditInPlaceListener(
-                author -> vm.setAuthor(getContext(), author, false));
+        editAuthorLauncher.setListener(author -> vm.setAuthor(getContext(), author, false));
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         dff = new DateFieldFormatter(userLocale, false);
@@ -488,7 +487,7 @@ public class AuthorWorksFragment
 
             if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
                 //noinspection DataFlowIssue
-                editAuthorLauncher.editInPlace(getContext(), vm.getPrimaryAuthor());
+                editAuthorLauncher.edit(getContext(), vm.getPrimaryAuthor());
                 return true;
 
             } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
