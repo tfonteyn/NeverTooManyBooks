@@ -212,8 +212,11 @@ public final class ImageHandler {
     private void onFragmentViewCreated() {
         //noinspection DataFlowIssue
         permissionRequester = new PermissionRequester(fragment.getActivity(), fragment);
-        permissionRequester.addPermission(Manifest.permission.CAMERA, fragment.getString(
-                R.string.warning_camera_permission_required), true);
+        permissionRequester.addPermission(
+                Manifest.permission.CAMERA, true,
+                fragment.getString(R.string.warning_camera_permission_required),
+                fragment.getString(R.string.warning_camera_permission_denied)
+        );
 
         takePictureLauncher = fragment.registerForActivityResult(
                 new TakePictureContract(), o -> o.ifPresent(this::onTakePictureResult));

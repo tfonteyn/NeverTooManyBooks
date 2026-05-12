@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,6 @@ public class PermissionRequester {
 
     private static final String ERROR_MISSING_MESSAGE = "No message registered for :";
     private static final String ERROR_MISSING_LAUNCHER = "No launcher registered for :";
-    private static final String ERROR_MISSING_CALLBACK = "No callback registered for :";
 
     @NonNull
     private final FragmentActivity fragmentActivity;
@@ -80,6 +79,7 @@ public class PermissionRequester {
     private final Map<String, ActivityResultLauncher<String>> launchers = new HashMap<>();
     private final Map<String, Consumer<Boolean>> callbacks = new HashMap<>();
     private final Map<String, CharSequence> rationaleMessages = new HashMap<>();
+    private final Map<String, CharSequence> deniedMessages = new HashMap<>();
     private final Map<String, Boolean> requiredPermissions = new HashMap<>();
 
     /**
@@ -100,26 +100,35 @@ public class PermissionRequester {
      * {@link #request(String, Consumer)}.
      *
      * @param permission       to request
-     * @param rationaleMessage Message to show in rationale/denied dialog
      * @param required         whether the permission is required;
      *                         as opposed to optional / nice-to-have
+     * @param rationaleMessage Message to show in "rationale" dialog
+     * @param deniedMessage    Message to show in the "denied" dialog
      */
     public void addPermission(@NonNull final String permission,
+                              final boolean required,
                               @NonNull final CharSequence rationaleMessage,
-                              final boolean required) {
+                              @NonNull final CharSequence deniedMessage) {
         // Sanity check
         if (launchers.containsKey(permission)) {
             return;
         }
 
         rationaleMessages.put(permission, rationaleMessage);
+        deniedMessages.put(permission, deniedMessage);
         requiredPermissions.put(permission, required);
 
         final ActivityResultLauncher<String> launcher = caller.registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
                     final Consumer<Boolean> onResult = callbacks.remove(permission);
-                    Objects.requireNonNull(onResult, ERROR_MISSING_CALLBACK + permission);
+                    if (onResult == null) {
+                        // We've been restarted. Perhaps the user rotated their device,
+                        // or Android decided to [bleep] us.
+                        // Simply quit. The user will need to re-engange the action
+                        // which triggered the permission request.
+                        return;
+                    }
 
                     if (isGranted) {
                         onResult.accept(true);
@@ -182,7 +191,7 @@ public class PermissionRequester {
 
     private void showDeniedDialog(@NonNull final String permission,
                                   @NonNull final Consumer<Boolean> onResult) {
-        final CharSequence message = rationaleMessages.get(permission);
+        final CharSequence message = deniedMessages.get(permission);
         Objects.requireNonNull(message, ERROR_MISSING_MESSAGE + permission);
 
         new MaterialAlertDialogBuilder(fragmentActivity)
@@ -197,6 +206,8 @@ public class PermissionRequester {
     }
 
     private void openAppSettings() {
+        // Reminder: there is no public api to go straight to the permission
+        // page itself; nor is there a public method to have "permissions" flash.
         final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         final Uri uri = Uri.fromParts("package", fragmentActivity.getPackageName(), null);
         intent.setData(uri);

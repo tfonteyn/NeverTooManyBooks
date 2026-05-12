@@ -280,9 +280,11 @@ public class SearchBookByIsbnFragment
     private void createActivityLaunchers() {
         //noinspection DataFlowIssue
         permissionRequester = new PermissionRequester(getActivity(), this);
-        permissionRequester.addPermission(Manifest.permission.CAMERA,
-                                          getString(R.string.warning_camera_permission_required),
-                                          true);
+        permissionRequester.addPermission(
+                Manifest.permission.CAMERA, true,
+                getString(R.string.warning_camera_permission_required),
+                getString(R.string.warning_camera_permission_denied)
+        );
 
         scannerActivityLauncher = registerForActivityResult(new ScannerContract(), o -> {
             if (o.isPresent()) {
