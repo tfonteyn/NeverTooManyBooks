@@ -270,18 +270,17 @@ public class TagMappingEditorFragment
         // check by NAME it's not already in the list.
         final int existingPos = vm.findTagMappingPosition(tagMapping.getTagName());
 
-        if (existingPos >= 0) {
-            // Trying to add a NEW one already there.
-            // TODO: propose merge/overwrite
-            // For now, reject it!
-            Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
-                          Snackbar.LENGTH_LONG).show();
-            vb.tagList.scrollToPosition(existingPos);
-        } else {
+        if (existingPos == -1) {
             // It's a new entry, add it
             final int position = vm.insert(tagMapping);
             adapter.notifyItemInserted(position);
             vb.tagList.scrollToPosition(position);
+        } else {
+            // Trying to add a NEW one already there, reject
+            // TODO: propose merge/overwrite
+            Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
+                          Snackbar.LENGTH_LONG).show();
+            vb.tagList.scrollToPosition(existingPos);
         }
     }
 
@@ -293,8 +292,8 @@ public class TagMappingEditorFragment
         // check by NAME it's not already in the list.
         final int existingPos = vm.findTagMappingPosition(tagMapping.getTagName());
 
-        // == when the name was NOT modified and we found ourselves.
-        // -1 when the name WAS modified and there is no other match
+        // '==' when the name was NOT modified and we found ourselves.
+        // '-1' when the name WAS modified and there is no other match
         if (existingPos == position || existingPos == -1) {
             //  Update with the new data.
             original.copyFrom(tagMapping);
@@ -302,11 +301,9 @@ public class TagMappingEditorFragment
             vm.update(original);
             adapter.notifyItemChanged(position);
             vb.tagList.scrollToPosition(position);
-
         } else {
-            // We found another entry with the same external tag-name.
-            // TODO: propose overwrite/merge
-            // For now, reject the edit!
+            // We found another entry with the same external tag-name, reject.
+            // TODO: propose merge/overwrite
             Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
                           Snackbar.LENGTH_LONG).show();
             vb.tagList.scrollToPosition(existingPos);
