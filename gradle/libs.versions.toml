@@ -1,9 +1,9 @@
 [versions]
 # Android 8.0
 minSdk = "26"
-# Android 16
-targetSdk = "36"
-compileSdk = "36"
+# Android 17
+targetSdk = "37"
+compileSdk = "37"
 
 # JDK used by Gradle
 javaToolchain = "21"
