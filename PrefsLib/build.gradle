@@ -29,7 +29,7 @@ java {
 }
 
 android {
-    namespace 'com.hardbacknutter.prefslib'
+    namespace = 'com.hardbacknutter.prefslib'
 
     compileSdk = libs.versions.compileSdk.get().toInteger()
 
@@ -59,7 +59,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
 
     compileOptions {
