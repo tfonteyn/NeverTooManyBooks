@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 
+// FIXME: There is a bit of paranoia here whether init is called or not... this is silly...
 public class ConnectionValidatorViewModel
         extends ViewModel {
 

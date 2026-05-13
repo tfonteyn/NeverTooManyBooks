@@ -100,10 +100,11 @@ public class IsfdbPreferencesFragment
 
         enableCredentials(pLoginToSearch.isChecked());
 
-        new ConnectionValidationHelper(
+        final ConnectionValidationHelper cvh = new ConnectionValidationHelper(
                 R.string.site_isfdb, this, getProgressFrame(),
                 () -> pLoginToSearch.isChecked(),
                 this::popBackStackOrFinish);
+        cvh.init();
     }
 
     private boolean onChangeLoginToSearch(@NonNull final Setting setting,

@@ -119,7 +119,7 @@ public class StripInfoBePreferencesFragment
             enableCredentials(pLoginToSearch.isChecked() || pSyncEnabled.isChecked());
         }
 
-        new ConnectionValidationHelper(
+        final ConnectionValidationHelper cvh = new ConnectionValidationHelper(
                 R.string.site_stripinfo_be, this, getProgressFrame(), () -> {
             if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
                 return pLoginToSearch.isChecked() || pSyncEnabled.isChecked();
@@ -127,6 +127,7 @@ public class StripInfoBePreferencesFragment
                 return false;
             }
         }, this::popBackStackOrFinish);
+        cvh.init();
     }
 
     private boolean onChangeEnableSync(@NonNull final Setting setting,

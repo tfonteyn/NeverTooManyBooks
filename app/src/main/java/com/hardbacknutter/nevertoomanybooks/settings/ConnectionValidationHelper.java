@@ -23,6 +23,7 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -54,6 +55,8 @@ public class ConnectionValidationHelper {
 
     private static final String TAG = "ConnectionValidationHel";
 
+    @StringRes
+    private final int siteResId;
     @NonNull
     protected final Fragment owner;
     @NonNull
@@ -83,8 +86,10 @@ public class ConnectionValidationHelper {
 
     /**
      * Constructor. Should be called from {@code Fragment#onViewCreated}.
+     * <p>
+     * Don't forget to call {@link #init()}.
      *
-     * @param siteResId         for the site we're validating
+     * @param siteResId         for the site/service we're validating
      * @param owner             of this helper
      * @param progressFrame     to use
      * @param proposeValidation callback to check if when finishing,
@@ -96,21 +101,32 @@ public class ConnectionValidationHelper {
                                       @NonNull final View progressFrame,
                                       @NonNull final BooleanSupplier proposeValidation,
                                       @NonNull final Runnable finish) {
+        this.siteResId = siteResId;
         this.owner = owner;
         this.progressFrame = progressFrame;
         this.shouldProposeValidation = proposeValidation;
         this.finish = finish;
 
         vm = new ViewModelProvider(owner).get(ConnectionValidatorViewModel.class);
-        vm.init(siteResId);
 
-        final LifecycleOwner viewLifecycleOwner = owner.getViewLifecycleOwner();
-
+        // Setup here to allow child classes to add their own with higher priority
         //noinspection DataFlowIssue
         owner.getActivity().getOnBackPressedDispatcher()
-             .addCallback(viewLifecycleOwner, backPressedCallback);
+             .addCallback(owner.getViewLifecycleOwner(), backPressedCallback);
+
+    }
+
+    /**
+     * Initialise the internal connection task.
+     * This allows a client class to setup permissions before the connection task related
+     * objects are setup.
+     */
+    public void init() {
+        vm.init(siteResId);
 
         if (vm.isEnabled()) {
+            final LifecycleOwner viewLifecycleOwner = owner.getViewLifecycleOwner();
+
             vm.onConnectionSuccessful().observe(viewLifecycleOwner, this::onSuccess);
             vm.onConnectionCancelled().observe(viewLifecycleOwner, this::onCancelled);
             vm.onConnectionFailed().observe(viewLifecycleOwner, this::onFailure);
@@ -118,6 +134,11 @@ public class ConnectionValidationHelper {
         }
     }
 
+    /**
+     * Should be called before attempting to call {@link #proposeValidation()}.
+     *
+     * @return flag
+     */
     boolean shouldProposeValidation() {
         return vm.isEnabled() && shouldProposeValidation.getAsBoolean();
     }
@@ -127,8 +148,8 @@ public class ConnectionValidationHelper {
      * <p>
      * Prompt the user to either start a connection test, or continue with the "back" action.
      * <p>
-     * Dev. note: 'final' as a reminder we should NOT override this,
-     * use a customized {@link OnBackPressedCallback} instead.
+     * Dev. note: 'final' as a reminder we should NOT override this.
+     * Use a customized {@link OnBackPressedCallback} and/or override {@link #validate()} instead.
      */
     final void proposeValidation() {
         //noinspection DataFlowIssue
@@ -137,21 +158,32 @@ public class ConnectionValidationHelper {
                 .setTitle(R.string.lbl_test_connection)
                 .setMessage(R.string.confirm_test_connection)
                 .setNegativeButton(R.string.action_not_now, (d, w) -> finish.run())
-                .setPositiveButton(R.string.ok, (d, w) -> {
-                    d.dismiss();
-                    if (progressDelegate == null) {
-                        progressDelegate = new ProgressDelegate(progressFrame)
-                                .setTitle(R.string.progress_msg_connecting)
-                                .setPreventSleep(true)
-                                .setIndeterminate(true)
-                                .setOnCancelListener(v -> vm.cancelTask(
-                                        R.id.TASK_ID_VALIDATE_CONNECTION));
-                    }
-                    progressDelegate.show();
-                    vm.validateConnection();
-                })
+                .setPositiveButton(R.string.ok, (d, w) -> validate())
                 .create()
                 .show();
+    }
+
+    /**
+     * This is where the actual validation is run after bringing up the progress dialog.
+     * <p>
+     * Overridable to allow wrapping in a permissions request.
+     */
+    @CallSuper
+    void validate() {
+        showProgressDialog();
+        vm.validateConnection();
+    }
+
+    private void showProgressDialog() {
+        if (progressDelegate == null) {
+            progressDelegate = new ProgressDelegate(progressFrame)
+                    .setTitle(R.string.progress_msg_connecting)
+                    .setPreventSleep(true)
+                    .setIndeterminate(true)
+                    .setOnCancelListener(v -> vm.cancelTask(
+                            R.id.TASK_ID_VALIDATE_CONNECTION));
+        }
+        progressDelegate.show();
     }
 
     private void closeProgressDialog() {
@@ -159,6 +191,31 @@ public class ConnectionValidationHelper {
             progressDelegate.dismiss();
             progressDelegate = null;
         }
+    }
+
+    /**
+     * An optional helper to show a dialog stating the URL used is (somehow) invalid.
+     * <p>
+     * Allows the user to:
+     * <ul>
+     *     <li>"edit", i.e. simply close this dialog and stay on the same screen</li>
+     *     <li>"not now", which runs the {@link #finish} operation</li>
+     * </ul>
+     *
+     * @param url which is invalid
+     */
+    void showInvalidUrlDialog(@NonNull final CharSequence url) {
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(owner.getContext())
+                .setIcon(R.drawable.info_24px)
+                .setTitle(R.string.error_invalid_url)
+                .setMessage(url)
+                .setPositiveButton(R.string.action_edit, (d, w) -> {
+                    // no action, just stay on the screen
+                })
+                .setNegativeButton(R.string.action_not_now, (d, w) -> finish.run())
+                .create()
+                .show();
     }
 
     private void onSuccess(@NonNull final LiveDataEvent<Boolean> message) {

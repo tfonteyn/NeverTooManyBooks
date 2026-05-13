@@ -100,7 +100,7 @@ public class OpenLibraryPreferencesFragment
             enableCredentials(pLoginToSearch.isChecked());
         }
 
-        new ConnectionValidationHelper(
+        final ConnectionValidationHelper cvh = new ConnectionValidationHelper(
                 R.string.site_open_library, this, getProgressFrame(), () -> {
             if (BuildConfig.ENABLE_OPEN_LIBRARY_LOGIN) {
                 return pLoginToSearch.isChecked();
@@ -108,6 +108,7 @@ public class OpenLibraryPreferencesFragment
                 return false;
             }
         }, this::popBackStackOrFinish);
+        cvh.init();
     }
 
     private boolean onChangeLoginToSearch(@NonNull final Setting setting,
