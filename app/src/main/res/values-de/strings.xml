@@ -686,7 +686,10 @@
     <string name="vldt_blank_required_for_x">„%1$s“ muss leer sein</string>
     <string name="vldt_boolean_expected_for_x">Es wird ein boolescher Wert (0,1,t,f,true,false) für „%1$s“ erwartet</string>
     <string name="vldt_date_expected_for_x">Es wird ein Datum für „%1$s“ erwartet</string>
-    <string name="warning_camera_permission_required">Zum Scannen von Barcodes oder Aufnehmen von Fotos ist Kamerazugriff erforderlich.</string>
+    <string name="warning_camera_permission_required">Das Scannen von Barcodes oder das Aufnehmen von Fotos erfordert den Zugriff auf die Kamera.</string>
+    <string name="warning_camera_permission_denied">Das Scannen von Barcodes oder das Aufnehmen von Fotos erfordert den Zugriff auf die Kamera. Öffnen Sie die App-Einstellungen, wählen Sie „Berechtigungen“ und aktivieren Sie „Kamera“.</string>
+    <string name="warning_local_network_permission_required">Der Zugriff auf %1$s in Ihrem lokalen Netzwerk erfordert eine Berechtigung.</string>
+    <string name="warning_local_network_permission_denied">Der Zugriff auf %1$s in Ihrem lokalen Netzwerk erfordert eine Berechtigung. Öffnen Sie die App-Einstellungen, wählen Sie „Berechtigungen“ und aktivieren Sie „Geräte in der Nähe“.</string>
     <string name="vldt_failure">Validierungsfehler</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Es wird ein Integer-Wert für „%1$s“ erwartet</string>

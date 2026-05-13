@@ -803,7 +803,10 @@
     <string name="vldt_blank_required_for_x">Cần có giá trị trống cho “%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Cần một giá trị boolean (0,1,t,f,true,false) cho “%1$s”</string>
     <string name="vldt_date_expected_for_x">Cần một ngày cho “%1$s”</string>
-    <string name="warning_camera_permission_required">Quét mã vạch hoặc chụp ảnh yêu cầu quyền truy cập camera.</string>
+    <string name="warning_camera_permission_required">Quét mã vạch hoặc chụp ảnh cần có quyền truy cập máy ảnh.</string>
+    <string name="warning_camera_permission_denied">Quét mã vạch hoặc chụp ảnh cần có quyền truy cập máy ảnh. Mở cài đặt ứng dụng, chọn “Quyền” và bật “Máy ảnh”.</string>
+    <string name="warning_local_network_permission_required">Truy cập %1$s trên mạng nội bộ của bạn cần có quyền.</string>
+    <string name="warning_local_network_permission_denied">Truy cập %1$s trên mạng nội bộ của bạn cần có quyền. Mở cài đặt ứng dụng, chọn “Quyền” và bật “Thiết bị ở gần”.</string>
     <string name="vldt_failure">Thẩm định thất bại</string>
     <string name="vldt_integer_expected_for_x">Cần một giá trị số nguyên cho “%1$s”</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>

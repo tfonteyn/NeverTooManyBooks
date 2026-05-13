@@ -773,7 +773,10 @@
     <string name="vldt_blank_required_for_x">「%1$s」需要空值</string>
     <string name="vldt_boolean_expected_for_x">「%1$s」 應為布林值（0、1、t、f、true、false）</string>
     <string name="vldt_date_expected_for_x">需要「%1$s」的日期</string>
-    <string name="warning_camera_permission_required">掃描條碼或拍照需要相機權限。</string>
+    <string name="warning_camera_permission_required">掃描條碼或拍攝相片需要存取相機。</string>
+    <string name="warning_camera_permission_denied">掃描條碼或拍攝相片需要存取相機。請開啟應用程式設定，選擇「權限」，然後啟用「相機」。</string>
+    <string name="warning_local_network_permission_required">存取區域網路上的 %1$s 需要權限。</string>
+    <string name="warning_local_network_permission_denied">存取區域網路上的 %1$s 需要權限。請開啟應用程式設定，選擇「權限」，然後啟用「附近的裝置」。</string>
     <string name="vldt_failure">驗證失敗</string>
     <string name="vldt_integer_expected_for_x">應為「%1$s」的整數值</string>
     <string name="vldt_list_message">（%1$d） %2$s</string>

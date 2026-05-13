@@ -233,7 +233,10 @@
     <string name="warning_backup_request">Queres facer una copia da base de datos á tarxeta SD?</string>
     <string name="warning_restart_required">A aplicación precisa reiniciar</string>
     <string name="warning_requires_android_x">Require Android %1$d ou superior</string>
-    <string name="warning_camera_permission_required">Para escanear códigos de barras ou facer fotos é necesario permitir o acceso á cámara.</string>
+    <string name="warning_camera_permission_required">Escanear códigos de barras ou sacar fotos require acceso á cámara.</string>
+    <string name="warning_camera_permission_denied">Escanear códigos de barras ou sacar fotos require acceso á cámara. Abre os axustes da aplicación, selecciona “Permisos” e activa “Cámara”.</string>
+    <string name="warning_local_network_permission_required">Acceder a %1$s na túa rede local require permiso.</string>
+    <string name="warning_local_network_permission_denied">Acceder a %1$s na túa rede local require permiso. Abre os axustes da aplicación, selecciona “Permisos” e activa “Dispositivos próximos”.</string>
     <string name="vldt_failure">Fallo de validación</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">«%1$s» debe ser un enteiro</string>

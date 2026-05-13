@@ -703,7 +703,10 @@
     <string name="vldt_blank_required_for_x">Prázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_boolean_expected_for_x">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro „%1$s“</string>
     <string name="vldt_date_expected_for_x">Očekáváno datum pro „%1$s“</string>
-    <string name="warning_camera_permission_required">Pro skenování čárových kódů nebo pořizování fotografií je nutný přístup k fotoaparátu.</string>
+    <string name="warning_camera_permission_required">Skenování čárových kódů nebo pořizování snímků vyžaduje přístup k fotoaparátu.</string>
+    <string name="warning_camera_permission_denied">Skenování čárových kódů nebo pořizování snímků vyžaduje přístup k fotoaparátu. Otevřete nastavení aplikace, vyberte „Oprávnění“ a povolte „Fotoaparát“.</string>
+    <string name="warning_local_network_permission_required">Přístup k %1$s ve vaší místní síti vyžaduje povolení.</string>
+    <string name="warning_local_network_permission_denied">Přístup k %1$s ve vaší místní síti vyžaduje povolení. Otevřete nastavení aplikace, vyberte „Oprávnění“ a povolte „Zařízení v okolí“.</string>
     <string name="vldt_failure">Selhání ověření</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Očekávána celočíselná hodnota pro „%1$s“</string>

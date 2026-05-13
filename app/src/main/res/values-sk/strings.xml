@@ -125,7 +125,10 @@
     <string name="warning_backup_request">Chcete zálohovať databázu na SD kartu?</string>
     <string name="warning_restart_required">Je potrebný reštart aplikácie</string>
     <string name="warning_requires_android_x">Vyžaduje Android %1$d alebo vyšší</string>
-    <string name="warning_camera_permission_required">Na skenovanie čiarových kódov alebo fotografovanie je potrebný prístup k fotoaparátu.</string>
+    <string name="warning_camera_permission_required">Skenovanie čiarových kódov alebo snímanie fotografií vyžaduje prístup k fotoaparátu.</string>
+    <string name="warning_camera_permission_denied">Skenovanie čiarových kódov alebo snímanie fotografií vyžaduje prístup k fotoaparátu. Otvorte nastavenia aplikácie, vyberte „Povolenia“ a povoľte „Fotoaparát“.</string>
+    <string name="warning_local_network_permission_required">Prístup k %1$s vo vašej miestnej sieti vyžaduje povolenie.</string>
+    <string name="warning_local_network_permission_denied">Prístup k %1$s vo vašej miestnej sieti vyžaduje povolenie. Otvorte nastavenia aplikácie, vyberte „Povolenia“ a povoľte „Zariadenia v okolí“.</string>
     <string name="vldt_failure">Overenie zlyhalo</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_date_expected_for_x">Očakáva sa dátum pre „%1$s“</string>

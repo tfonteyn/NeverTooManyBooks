@@ -217,7 +217,10 @@
     <string name="and_others">%1$s…</string>
     <string name="notification_channel_info">Informācija</string>
     <string name="lbl_permission_request">Atļaujas pieprasījums</string>
-    <string name="warning_camera_permission_required">Lai skenētu svītrkodus vai uzņemtu fotoattēlus, nepieciešama piekļuve kamerai.</string>
+    <string name="warning_camera_permission_required">Svītrkodu skenēšanai vai attēlu uzņemšanai ir nepieciešama piekļuve kamerai.</string>
+    <string name="warning_camera_permission_denied">Svītrkodu skenēšanai vai attēlu uzņemšanai ir nepieciešama piekļuve kamerai. Atveriet lietotnes iestatījumus, izvēlieties “Atļaujas” un iespējojiet “Kamera”.</string>
+    <string name="warning_local_network_permission_required">Lai piekļūtu %1$s jūsu vietējā tīklā, ir nepieciešama atļauja.</string>
+    <string name="warning_local_network_permission_denied">Lai piekļūtu %1$s jūsu vietējā tīklā, ir nepieciešama atļauja. Atveriet lietotnes iestatījumus, izvēlieties “Atļaujas” un iespējojiet “Tuvumā esošas ierīces”.</string>
     <string name="info_read_contacts_permission">Piekļuve jūsu kontaktpersonām ir pēc izvēles, taču ļauj viegli izvēlēties, kam aizdod grāmatu.</string>
     <string name="pt_barcode_zoom_control">Tālummaiņas vadība</string>
     <string name="pt_barcode_sounds">Skaņas</string>

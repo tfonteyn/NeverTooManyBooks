@@ -690,7 +690,10 @@
     <string name="vldt_blank_required_for_x">«%1$s» debe estar en blanco</string>
     <string name="vldt_boolean_expected_for_x">«%1$s» debe ser (0,1,t,f,true,false)</string>
     <string name="vldt_date_expected_for_x">«%1$s» debe ser una fecha</string>
-    <string name="warning_camera_permission_required">Para escanear códigos de barras o tomar fotos se requiere acceso a la cámara.</string>
+    <string name="warning_camera_permission_required">Escanear códigos de barras o tomar fotos requiere acceso a la cámara.</string>
+    <string name="warning_camera_permission_denied">Escanear códigos de barras o tomar fotos requiere acceso a la cámara. Abre los ajustes de la aplicación, selecciona “Permisos” y activa “Cámara”.</string>
+    <string name="warning_local_network_permission_required">Acceder a %1$s en tu red local requiere permiso.</string>
+    <string name="warning_local_network_permission_denied">Acceder a %1$s en tu red local requiere permiso. Abre los ajustes de la aplicación, selecciona “Permisos” y activa “Dispositivos cercanos”.</string>
     <string name="vldt_failure">Fallo de validación</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">«%1$s» debe ser un entero</string>

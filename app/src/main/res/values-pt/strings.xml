@@ -255,7 +255,10 @@
     <string name="warning_if_month_set_year_must_be">Se um mês é especificado, então um ano também deve ser especificado.</string>
     <string name="warning_toc_confirm">Por favor, confirme que estes títulos estão (maioritariamente) corretos.</string>
     <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD?</string>
-    <string name="warning_camera_permission_required">Para ler códigos de barras ou tirar fotos, é necessário permitir o acesso à câmara.</string>
+    <string name="warning_camera_permission_required">A leitura de códigos de barras ou a captação de fotografias requer o acesso à câmara.</string>
+    <string name="warning_camera_permission_denied">A leitura de códigos de barras ou a captação de fotografias requer o acesso à câmara. Abra as definições da aplicação, selecione “Permissões” e ative “Câmara”.</string>
+    <string name="warning_local_network_permission_required">O acesso a %1$s na sua rede local requer permissão.</string>
+    <string name="warning_local_network_permission_denied">O acesso a %1$s na sua rede local requer permissão. Abra as definições da aplicação, selecione “Permissões” e ative “Dispositivos próximos”.</string>
     <string name="vldt_failure">Falha de validação</string>
     <string name="vldt_boolean_expected_for_x">Esperado um valor booleano (0,1,t,f,true,false) para “%1$s”</string>
     <string name="vldt_blank_required_for_x">Valor vazio necessário para “%1$s”</string>

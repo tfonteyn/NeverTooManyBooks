@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
@@ -780,7 +783,10 @@
     <string name="vldt_blank_required_for_x">“%1$s”需要空值</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” 应为布尔值（0、1、t、f、true、false）</string>
     <string name="vldt_date_expected_for_x">需要“%1$s”的日期</string>
-    <string name="warning_camera_permission_required">扫描条形码或拍照需要摄像头权限。</string>
+    <string name="warning_camera_permission_required">扫描条形码或拍摄照片需要访问摄像头。</string>
+    <string name="warning_camera_permission_denied">扫描条形码或拍摄照片需要访问摄像头。请打开应用设置，选择“权限”，然后启用“摄像头”。</string>
+    <string name="warning_local_network_permission_required">访问本地网络上的 %1$s 需要权限。</string>
+    <string name="warning_local_network_permission_denied">访问本地网络上的 %1$s 需要权限。请打开应用设置，选择“权限”，然后启用“附近设备”。</string>
     <string name="vldt_failure">验证失败</string>
     <string name="vldt_integer_expected_for_x">应为“%1$s”的整数值</string>
     <string name="vldt_list_message">（%1$d） %2$s</string>

@@ -89,7 +89,10 @@
     <string name="warning_backup_request">Gostaria de fazer backup do seu banco de dados no seu cartão SD?</string>
     <string name="warning_restart_required">É necessário reiniciar o app</string>
     <string name="warning_requires_android_x">Requer Android %1$d ou superior</string>
-    <string name="warning_camera_permission_required">Para escanear códigos de barras ou tirar fotos, é necessário permitir o acesso à câmera.</string>
+    <string name="warning_camera_permission_required">Escanear códigos de barras ou tirar fotos requer acesso à câmera.</string>
+    <string name="warning_camera_permission_denied">Escanear códigos de barras ou tirar fotos requer acesso à câmera. Abra as configurações do aplicativo, selecione “Permissões” e ative “Câmera”.</string>
+    <string name="warning_local_network_permission_required">O acesso a %1$s na sua rede local requer permissão.</string>
+    <string name="warning_local_network_permission_denied">O acesso a %1$s na sua rede local requer permissão. Abra as configurações do aplicativo, selecione “Permissões” e ative “Dispositivos próximos”.</string>
     <string name="vldt_failure">Falha de validação</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Esperava-se um valor inteiro para “%1$s”</string>

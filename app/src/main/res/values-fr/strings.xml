@@ -148,7 +148,7 @@
     <string name="action_more_ellipsis">Plus…</string>
     <string name="action_show_options">Options</string>
     <string name="action_show_toc_long">Afficher la table des matières</string>
-    <string name="action_stop_scanning">Arrêter la numérisation</string>
+    <string name="action_stop_scanning">Arrêter le scan</string>
     <string name="action_stop_searching">Cessez de chercher</string>
     <string name="btn_this_book">Ce livre</string>
     <string name="size_bytes">%1$.0fB</string>
@@ -695,7 +695,10 @@
     <string name="vldt_blank_required_for_x">Le champ « %1$s » doit être vide</string>
     <string name="vldt_boolean_expected_for_x">Valeur booléenne (0,1,t,f,true,false) attendue pour « %1$s »</string>
     <string name="vldt_date_expected_for_x">Date attendue pour « %1$s »</string>
-    <string name="warning_camera_permission_required">La numérisation des codes-barres ou la prise de photos nécessite l’accès à la caméra.</string>
+    <string name="warning_camera_permission_required">Scanner des codes-barres ou prendre des photos nécessite l’accès à l’appareil photo.</string>
+    <string name="warning_camera_permission_denied">Scanner des codes-barres ou prendre des photos nécessite l’accès à l’appareil photo. Ouvrez les paramètres de l’application, sélectionnez « Autorisations » et activez « Appareil photo ».</string>
+    <string name="warning_local_network_permission_required">L’accès à %1$s sur votre réseau local nécessite une autorisation.</string>
+    <string name="warning_local_network_permission_denied">L’accès à %1$s sur votre réseau local nécessite une autorisation. Ouvrez les paramètres de l’application, sélectionnez « Autorisations » et activez « Appareils à proximité ».</string>
     <string name="vldt_failure">Échec de validation</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Valeur entière attendue pour « %1$s »</string>
@@ -771,7 +774,7 @@
     <string name="lbl_original_title">Titre original</string>
     <string name="lbl_original_title_long">Titre original si ce livre est une traduction</string>
     <string name="error_site_access_blocked">L’accès a été bloqué par le site web.</string>
-    <string name="pt_scan_mode">Mode de numérisation</string>
+    <string name="pt_scan_mode">Mode de scan</string>
     <string name="option_sync_deleted_book_records">Synchroniser les livres supprimés</string>
     <string name="info_site_search_field_optional">Optionnel. N’est pas pris en charge par tous les sites web.</string>
     <string name="site_description_catalog">Catalogue</string>
