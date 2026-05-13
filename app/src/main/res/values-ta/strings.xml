@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -183,9 +180,9 @@
     <string name="warning_no_site_supports_this_method">எச்சரிக்கை: தற்போது தேர்ந்தெடுக்கப்பட்ட தளங்கள் எதுவும் %1$s தேடலை ஆதரிக்கவில்லை. மாற்று தளங்களை இயக்க தள மெனுவைப் பயன்படுத்தவும் அல்லது வேறு தேடல் முறையைப் பயன்படுத்தவும்.</string>
     <string name="warning_requires_android_x">ஆண்ட்ராய்டு %1$d அல்லது அதற்கு மேற்பட்டது தேவை</string>
     <string name="warning_camera_permission_required">பார்கோடுகளை ஸ்கேன் செய்ய அல்லது படம் எடுக்க கேமரா அணுகல் தேவை.</string>
-    <string name="warning_camera_permission_denied">பார்கோடுகளை ஸ்கேன் செய்ய அல்லது படம் எடுக்க கேமரா அணுகல் தேவை. பயன்பாட்டு அமைப்புகளைத் திறந்து, "அனுமதிகள்" என்பதைத் தேர்ந்தெடுத்து, "கேமரா" என்பதை இயக்கவும்.</string>
+    <string name="warning_camera_permission_denied">பார்கோடுகளை ஸ்கேன் செய்ய அல்லது படம் எடுக்க கேமரா அணுகல் தேவை. பயன்பாட்டு அமைப்புகளைத் திறந்து, அனுமதிகள் என்பதைத் தேர்ந்தெடுத்து, கேமரா என்பதை இயக்கவும்.</string>
     <string name="warning_local_network_permission_required">உங்கள் உள்ளூர் நெட்வொர்க்கில் %1$s ஐ அணுக அனுமதி தேவை.</string>
-    <string name="warning_local_network_permission_denied">உங்கள் உள்ளூர் நெட்வொர்க்கில் %1$s ஐ அணுக அனுமதி தேவை. பயன்பாட்டு அமைப்புகளைத் திறந்து, "அனுமதிகள்" என்பதைத் தேர்ந்தெடுத்து, "அருகிலுள்ள சாதனங்கள்" என்பதை இயக்கவும்.</string>
+    <string name="warning_local_network_permission_denied">உங்கள் உள்ளூர் நெட்வொர்க்கில் %1$s ஐ அணுக அனுமதி தேவை. பயன்பாட்டு அமைப்புகளைத் திறந்து, அனுமதிகள் என்பதைத் தேர்ந்தெடுத்து, அருகிலுள்ள சாதனங்கள் என்பதை இயக்கவும்.</string>
     <string name="vldt_failure">சரிபார்ப்பு தோல்வி</string>
     <string name="vldt_list_message">( %1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">“%1$s” க்கு ஒரு முழு மதிப்பை எதிர்பார்க்கலாம்</string>
