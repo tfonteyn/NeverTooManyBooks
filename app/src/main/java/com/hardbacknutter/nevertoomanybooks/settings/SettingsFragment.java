@@ -555,11 +555,11 @@ public class SettingsFragment
         }
 
         void initObservers(@NonNull final SettingsViewModel vm,
-                           @NonNull final LifecycleOwner viewLifecycleOwner) {
-            vm.onProgress().observe(viewLifecycleOwner, this::onProgress);
-            vm.onMoveCancelled().observe(viewLifecycleOwner, this::onMoveCancelled);
-            vm.onMoveFailure().observe(viewLifecycleOwner, this::onMoveFailure);
-            vm.onMoveFinished().observe(viewLifecycleOwner, this::onMoveFinished);
+                           @NonNull final LifecycleOwner lifecycleOwner) {
+            vm.onProgress().observe(lifecycleOwner, this::onProgress);
+            vm.onMoveCancelled().observe(lifecycleOwner, this::onMoveCancelled);
+            vm.onMoveFailure().observe(lifecycleOwner, this::onMoveFailure);
+            vm.onMoveFinished().observe(lifecycleOwner, this::onMoveFinished);
         }
 
         boolean onStorageVolumeChange(final int newVolumeIndex) {

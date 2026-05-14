@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -155,9 +155,9 @@ public final class WrappedMaterialDatePicker<S>
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+        public void registerForFragmentResult(@NonNull final FragmentManager fm,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
+            this.fragmentManager = fm;
             this.fragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);
         }
 

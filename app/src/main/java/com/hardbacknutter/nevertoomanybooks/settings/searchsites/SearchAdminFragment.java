@@ -190,12 +190,12 @@ public class SearchAdminFragment
         /**
          * Constructor.
          *
-         * @param container hosting activity
-         * @param types     the list of tabs (types) to be shown
+         * @param activity the hosting Activity
+         * @param types    the list of tabs (types) to be shown
          */
-        TabAdapter(@NonNull final FragmentActivity container,
+        TabAdapter(@NonNull final FragmentActivity activity,
                    @NonNull final List<Site.Type> types) {
-            super(container);
+            super(activity);
             siteTypeList = types;
         }
 

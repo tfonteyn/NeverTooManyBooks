@@ -26,6 +26,7 @@ import android.os.Parcelable;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -56,11 +57,17 @@ public class DisplayBookLauncher {
     @NonNull
     private final ActivityResultLauncher<ShowBookPagerContract.Input> launcher;
 
-    public DisplayBookLauncher(@NonNull final ActivityResultCaller caller,
+    /**
+     * Constructor.
+     *
+     * @param contractOwner  the component which handles the {@link ActivityResultContract}
+     * @param resultCallback
+     */
+    public DisplayBookLauncher(@NonNull final ActivityResultCaller contractOwner,
                                @NonNull final ActivityResultCallback<Optional<EditBookOutput>>
                                        resultCallback) {
-        this.launcher = caller.registerForActivityResult(new ShowBookPagerContract(),
-                                                         resultCallback);
+        this.launcher = contractOwner.registerForActivityResult(new ShowBookPagerContract(),
+                                                                resultCallback);
     }
 
     /**

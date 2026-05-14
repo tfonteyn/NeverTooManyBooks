@@ -28,12 +28,11 @@ import android.view.View;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -133,16 +132,17 @@ public class CalibreHandler {
     /**
      * Host (Fragment/Activity) independent initializer.
      *
-     * @param caller         Fragment or Activity
-     * @param lifecycleOwner typically the {@link Fragment} or the {@link AppCompatActivity}
+     * @param contractOwner  the component which handles the {@link ActivityResultContract}
+     * @param lifecycleOwner the component, whose state was changed
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public CalibreHandler registerForActivityResult(@NonNull final ActivityResultCaller caller,
-                                                    @NonNull final LifecycleOwner lifecycleOwner) {
+    public CalibreHandler registerForActivityResult(
+            @NonNull final ActivityResultCaller contractOwner,
+            @NonNull final LifecycleOwner lifecycleOwner) {
 
-        pickFolderLauncher = caller.registerForActivityResult(
+        pickFolderLauncher = contractOwner.registerForActivityResult(
                 new GetDirectoryUriContract(), o -> o.ifPresent(uri -> {
                     CalibreContentServer.setFolderUri(hostView.getContext(), uri);
                     vm.startDownload(vm.getAndResetTempBook(), uri);

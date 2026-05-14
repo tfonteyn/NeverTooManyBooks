@@ -35,6 +35,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public interface RowMenu {
 
+    /**
+     * Register.
+     *
+     * @param fm             The FragmentManager this fragment will be added to.
+     * @param lifecycleOwner the component, whose state was changed
+     */
     void registerForFragmentResult(@NonNull FragmentManager fm,
                                    @NonNull LifecycleOwner lifecycleOwner);
 

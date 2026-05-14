@@ -326,10 +326,10 @@ public class EditBookFragment
         /**
          * Constructor.
          *
-         * @param container hosting activity
+         * @param activity the hosting Activity
          */
-        TabAdapter(@NonNull final FragmentActivity container) {
-            super(container);
+        TabAdapter(@NonNull final FragmentActivity activity) {
+            super(activity);
 
             // Build the tab class/title list.
             tabList.add(new TabInfo(EditBookFieldsFragment::new,
@@ -341,7 +341,7 @@ public class EditBookFragment
 
             // On tablets the notes fields are incorporated in the publication fragment
             // On small screens (i.e. phones) they get their own tab
-            if (!container.getResources().getBoolean(R.bool.combine_book_edit_tabs)) {
+            if (!activity.getResources().getBoolean(R.bool.combine_book_edit_tabs)) {
                 tabList.add(new TabInfo(EditBookNotesFragment::new,
                                         R.string.lbl_tab_notes,
                                         R.string.lbl_personal_notes));

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,14 +66,14 @@ abstract class DatePickerBase<S>
     /**
      * Constructor.
      *
-     * @param fragmentManager The FragmentManager this fragment dialog be added to.
-     * @param titleResId      for the dialog screen
-     * @param fieldIds        field this dialog is bound to
+     * @param fm         The FragmentManager this fragment dialog be added to.
+     * @param titleResId for the dialog screen
+     * @param fieldIds   field this dialog is bound to
      */
-    DatePickerBase(@NonNull final FragmentManager fragmentManager,
+    DatePickerBase(@NonNull final FragmentManager fm,
                    @StringRes final int titleResId,
                    @IdRes @NonNull final int... fieldIds) {
-        this.fragmentManager = fragmentManager;
+        this.fragmentManager = fm;
         this.titleResId = titleResId;
         this.fieldIds = fieldIds;
 

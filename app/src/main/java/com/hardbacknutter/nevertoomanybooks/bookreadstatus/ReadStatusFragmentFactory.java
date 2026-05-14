@@ -49,7 +49,7 @@ public final class ReadStatusFragmentFactory {
     /**
      * To be called from the hosting {@link Fragment#onViewCreated(View, Bundle)}.
      *
-     * @param fm                      FragmentManager to use
+     * @param fm                      The FragmentManager this fragment will be added to.
      * @param fragmentContainerViewId where to add the new fragment
      * @param style                   to use
      * @param embedded                flag, whether we're running in tablet-landscape (embedded)
@@ -64,7 +64,7 @@ public final class ReadStatusFragmentFactory {
     /**
      * To be called from the hosting {@link Fragment#onViewCreated(View, Bundle)}.
      *
-     * @param fm                      FragmentManager to use
+     * @param fm                      The FragmentManager this fragment will be added to.
      * @param fragmentContainerViewId where to add the new fragment
      * @param style                   to use
      */
@@ -77,7 +77,7 @@ public final class ReadStatusFragmentFactory {
     /**
      * Constructor.
      *
-     * @param fm                      FragmentManager to use
+     * @param fm                      The FragmentManager this fragment will be added to.
      * @param fragmentContainerViewId where to add the new fragment
      * @param style                   to use
      * @param mode                    the required ViewModel mode

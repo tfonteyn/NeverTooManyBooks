@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -159,10 +159,10 @@ public class TagAdminFragment
         /**
          * Constructor.
          *
-         * @param container hosting activity
+         * @param activity the hosting activity
          */
-        TabAdapter(@NonNull final FragmentActivity container) {
-            super(container);
+        TabAdapter(@NonNull final FragmentActivity activity) {
+            super(activity);
         }
 
         @Override

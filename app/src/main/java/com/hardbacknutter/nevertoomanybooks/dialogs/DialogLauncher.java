@@ -26,9 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiContext;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
@@ -125,13 +123,12 @@ public abstract class DialogLauncher
     /**
      * Register this object for receiving Fragment results.
      *
-     * @param fragmentManager typically the {@link Fragment#getChildFragmentManager()}
-     *                        or the {@link AppCompatActivity#getSupportFragmentManager()}
-     * @param lifecycleOwner  typically the {@link Fragment} or the {@link AppCompatActivity}
+     * @param fm              The FragmentManager this fragment will be added to.
+     * @param lifecycleOwner  the component, whose state was changed
      */
-    public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+    public void registerForFragmentResult(@NonNull final FragmentManager fm,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
-        this.fragmentManager = fragmentManager;
+        this.fragmentManager = fm;
         // DO NOT MOVE THIS TO THE CONSTRUCTOR!
         // the FragmentManager will use 'this' immediately!
         this.fragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);

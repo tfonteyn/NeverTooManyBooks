@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class LifecycleAwareExecutor
+public final class LifecycleAwareExecutor
         implements DefaultLifecycleObserver {
 
     private final ThreadPoolExecutor executor;
@@ -36,17 +36,17 @@ public class LifecycleAwareExecutor
     }
 
     @NonNull
-    public static LifecycleAwareExecutor attach(@NonNull final LifecycleOwner owner,
+    public static LifecycleAwareExecutor attach(@NonNull final LifecycleOwner lifecycleOwner,
                                                 @NonNull final ThreadPoolExecutor executor) {
         final LifecycleAwareExecutor wrapper = new LifecycleAwareExecutor(executor);
-        owner.getLifecycle().addObserver(wrapper);
+        lifecycleOwner.getLifecycle().addObserver(wrapper);
         return wrapper;
     }
 
     @Override
-    public void onDestroy(@NonNull final LifecycleOwner owner) {
+    public void onDestroy(@NonNull final LifecycleOwner lifecycleOwner) {
         executor.shutdownNow();
-        owner.getLifecycle().removeObserver(this);
+        lifecycleOwner.getLifecycle().removeObserver(this);
     }
 
     public void execute(@NonNull final Runnable task) {
