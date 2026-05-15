@@ -20,12 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -48,33 +50,40 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * in {@link Fragment#onViewCreated}:
  * <pre>
  * {@code
- *      permissionRequester = new PermissionRequester(fragmentActivity, this);
- *      permissionRequester.addPermission(Manifest.permission.CAMERA, "dialog msg", true);
- *      permissionRequester.addPermission(Manifest.permission.READ_CONTACTS, "dialog msg", false);
+ *      pr = new PermissionRequester(fragmentActivity, this);
+ *      pr.addPermission(Manifest.permission.CAMERA, true,
+ *                       "request msg", "denied msg");
+ *      pr.addPermission(Manifest.permission.READ_CONTACTS, false,
+ *                       "request msg", "denied msg");
  *      ...
  * }
  * </pre>
- * <p>
  * Call when needed:
  * <pre>
  * {@code
- *      permissionRequester.request(Manifest.permission.CAMERA, isGranted -> {
+ *      pr.request(Manifest.permission.CAMERA, isGranted -> {
  *             if (isGranted) {
  *                 takePicture();
  *             }
  *         });
  * }
  * </pre>
+ *
+ * This class uses a private preference file to track permission requests.
  */
 public class PermissionRequester {
 
     private static final String ERROR_MISSING_MESSAGE = "No message registered for :";
     private static final String ERROR_MISSING_LAUNCHER = "No launcher registered for :";
+    /** Use a private preference file. */
+    private static final String PERM_PREFS = "permissions.prefs";
+    /** Preference prefix. */
+    private static final String PERMISSION_REQUESTED = "permission.requested.";
 
     @NonNull
-    private final FragmentActivity fragmentActivity;
+    private final FragmentActivity activity;
     @NonNull
-    private final ActivityResultCaller caller;
+    private final ActivityResultCaller contractOwner;
 
     private final Map<String, ActivityResultLauncher<String>> launchers = new HashMap<>();
     private final Map<String, Consumer<Boolean>> callbacks = new HashMap<>();
@@ -85,13 +94,13 @@ public class PermissionRequester {
     /**
      * Constructor.
      *
-     * @param fragmentActivity current context
-     * @param caller           Fragment or Activity
+     * @param activity      the hosting Activity
+     * @param contractOwner the component which handles the {@link ActivityResultContract}
      */
-    public PermissionRequester(@NonNull final FragmentActivity fragmentActivity,
-                               @NonNull final ActivityResultCaller caller) {
-        this.fragmentActivity = fragmentActivity;
-        this.caller = caller;
+    public PermissionRequester(@NonNull final FragmentActivity activity,
+                               @NonNull final ActivityResultCaller contractOwner) {
+        this.activity = activity;
+        this.contractOwner = contractOwner;
     }
 
     /**
@@ -118,7 +127,7 @@ public class PermissionRequester {
         deniedMessages.put(permission, deniedMessage);
         requiredPermissions.put(permission, required);
 
-        final ActivityResultLauncher<String> launcher = caller.registerForActivityResult(
+        final ActivityResultLauncher<String> launcher = contractOwner.registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
                     final Consumer<Boolean> onResult = callbacks.remove(permission);
@@ -130,17 +139,16 @@ public class PermissionRequester {
                         return;
                     }
 
+                    // remember we asked!
+                    setPermissionWasRequested(permission);
+
                     if (isGranted) {
+                        // ok, all we need, we're done.
                         onResult.accept(true);
-                    } else {
-                        //noinspection DataFlowIssue
-                        if (requiredPermissions.getOrDefault(permission, false)) {
-                            showDeniedDialog(permission, onResult);
-                        } else {
-                            // Silent for non-required
-                            onResult.accept(false);
-                        }
+                        return;
                     }
+
+                    userDenied(permission, onResult);
                 });
         launchers.put(permission, launcher);
     }
@@ -155,46 +163,84 @@ public class PermissionRequester {
      */
     public void request(@NonNull final String permission,
                         @NonNull final Consumer<Boolean> onResult) {
-        if (ContextCompat.checkSelfPermission(fragmentActivity, permission)
+        if (ContextCompat.checkSelfPermission(activity, permission)
             == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             onResult.accept(true);
             return;
         }
 
+        // Check if we should show the rationale why we need/want the permission.
+        // If the user denied once, they can be asked again.
+        // If they ticked "Don't ask again" or denied it previously this will fail.
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+            // Show the message, and start the permission launcher if the user taps "OK"
+            showRationaleDialog(permission, onResult);
+            return;
+        }
+
+        // The very first request was done, and the user denied us.
+        // Is it the FIRST time we're asking again?
+        if (isFirstTimeRequesting(permission)) {
+            // then repeat the request
+            launchRequest(permission, onResult);
+            return;
+        }
+
+        // User has ticked "Don't ask again" or denied it previously.
+        userDenied(permission, onResult);
+    }
+
+
+    private void launchRequest(@NonNull final String permission,
+                               @NonNull final Consumer<Boolean> onResult) {
+
         final ActivityResultLauncher<String> launcher = launchers.get(permission);
         Objects.requireNonNull(launcher, ERROR_MISSING_LAUNCHER + permission);
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(fragmentActivity, permission)) {
-            showRationaleDialog(permission, launcher, onResult);
-        } else {
-            callbacks.put(permission, onResult);
-            launcher.launch(permission);
-        }
+        callbacks.put(permission, onResult);
+        launcher.launch(permission);
     }
 
     private void showRationaleDialog(@NonNull final String permission,
-                                     @NonNull final ActivityResultLauncher<String> launcher,
                                      @NonNull final Consumer<Boolean> onResult) {
         final CharSequence message = rationaleMessages.get(permission);
         Objects.requireNonNull(message, ERROR_MISSING_MESSAGE + permission);
 
-        new MaterialAlertDialogBuilder(fragmentActivity)
+        new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.lbl_permission_request)
                 .setMessage(message)
                 .setNegativeButton(R.string.cancel, (dialog, which) -> onResult.accept(false))
-                .setPositiveButton(R.string.ok, (dialog, which) -> {
-                    callbacks.put(permission, onResult);
-                    launcher.launch(permission);
-                })
+                .setPositiveButton(R.string.ok, (dialog, which)
+                        -> launchRequest(permission, onResult))
                 .show();
     }
 
-    private void showDeniedDialog(@NonNull final String permission,
-                                  @NonNull final Consumer<Boolean> onResult) {
+    /**
+     * If the permission was optional, this method simply passes
+     * {@code not granted} to the callback.
+     * <p>
+     * Otherwise explain to the user they denied a permission we need.
+     * Offer an option to be redirected to the app settings.
+     * Regardless of option chosen, we'll pass {@code not granted} to the callback.
+     *
+     * @param permission requested
+     * @param onResult   callback
+     */
+    private void userDenied(@NonNull final String permission,
+                            @NonNull final Consumer<Boolean> onResult) {
+        // If this was an optional permission...
+        //noinspection DataFlowIssue
+        if (!requiredPermissions.getOrDefault(permission, false)) {
+            // user denied, we're done
+            onResult.accept(false);
+            return;
+        }
+
+        // remind the user that without this permission we're blocked.
         final CharSequence message = deniedMessages.get(permission);
         Objects.requireNonNull(message, ERROR_MISSING_MESSAGE + permission);
 
-        new MaterialAlertDialogBuilder(fragmentActivity)
+        new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.lbl_permission_request)
                 .setMessage(message)
                 .setNegativeButton(R.string.cancel, (dialog, which) -> onResult.accept(false))
@@ -205,12 +251,22 @@ public class PermissionRequester {
                 .show();
     }
 
+    private boolean isFirstTimeRequesting(@NonNull final String permission) {
+        return activity.getSharedPreferences(PERM_PREFS, Context.MODE_PRIVATE)
+                       .getBoolean(PERMISSION_REQUESTED + permission, true);
+    }
+
+    private void setPermissionWasRequested(@NonNull final String permission) {
+        activity.getSharedPreferences(PERM_PREFS, Context.MODE_PRIVATE)
+                .edit().putBoolean(PERMISSION_REQUESTED + permission, false).apply();
+    }
+
     private void openAppSettings() {
         // Reminder: there is no public api to go straight to the permission
         // page itself; nor is there a public method to have "permissions" flash.
         final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        final Uri uri = Uri.fromParts("package", fragmentActivity.getPackageName(), null);
+        final Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
         intent.setData(uri);
-        fragmentActivity.startActivity(intent);
+        activity.startActivity(intent);
     }
 }
