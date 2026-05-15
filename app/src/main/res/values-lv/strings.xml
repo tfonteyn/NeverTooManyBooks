@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -39,7 +36,6 @@
         <item quantity="one">%1$d birka</item>
         <item quantity="other">%1$d birkas</item>
     </plurals>
-
     <string name="action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">%1$s un %2$s</string>
@@ -50,7 +46,6 @@
     <string name="notification_channel_error">Kļūda</string>
     <string name="list_semicolon">"; "</string>
     <string name="list_element">• %s</string>
-
     <string name="action_remove">Noņemt</string>
     <string name="action_remove_all">Noņemt visu</string>
     <string name="action_save">Saglabāt</string>

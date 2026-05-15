@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -695,9 +692,9 @@
     <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">È prevista una data per «%1$s»</string>
     <string name="warning_camera_permission_required">La scansione dei codici a barre o l’acquisizione di foto richiede l’accesso alla fotocamera.</string>
-    <string name="warning_camera_permission_denied">La scansione dei codici a barre o l’acquisizione di foto richiede l’accesso alla fotocamera. Apri le impostazioni dell’applicazione, seleziona "Autorizzazioni" e abilita "Fotocamera".</string>
+    <string name="warning_camera_permission_denied">La scansione dei codici a barre o l’acquisizione di foto richiede l’accesso alla fotocamera. Apri le impostazioni dell’applicazione, seleziona Autorizzazioni e abilita Fotocamera.</string>
     <string name="warning_local_network_permission_required">L’accesso a %1$s sulla rete locale richiede l’autorizzazione.</string>
-    <string name="warning_local_network_permission_denied">L’accesso a %1$s sulla rete locale richiede l’autorizzazione. Apri le impostazioni dell’applicazione, seleziona "Autorizzazioni" e abilita "Dispositivi nelle vicinanze".</string>
+    <string name="warning_local_network_permission_denied">L’accesso a %1$s sulla rete locale richiede l’autorizzazione. Apri le impostazioni dell’applicazione, seleziona Autorizzazioni e abilita Dispositivi nelle vicinanze.</string>
     <string name="vldt_failure">Errore di convalida</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">È previsto un valore intero per «%1$s»</string>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -695,9 +692,9 @@ A question mark is written as the character semicolon: ';'
     <string name="vldt_boolean_expected_for_x">Αναμένεται τιμή boolean (0,1,t,f,true,false) για «%1$s»</string>
     <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για «%1$s»</string>
     <string name="warning_camera_permission_required">Η σάρωση barcode ή η λήψη φωτογραφιών απαιτεί πρόσβαση στην κάμερα.</string>
-    <string name="warning_camera_permission_denied">Η σάρωση barcode ή η λήψη φωτογραφιών απαιτεί πρόσβαση στην κάμερα. Ανοίξτε τις ρυθμίσεις της εφαρμογής, επιλέξτε "Άδειες" και ενεργοποιήστε την "Κάμερα".</string>
+    <string name="warning_camera_permission_denied">Η σάρωση barcode ή η λήψη φωτογραφιών απαιτεί πρόσβαση στην κάμερα. Ανοίξτε τις ρυθμίσεις της εφαρμογής, επιλέξτε Άδειες και ενεργοποιήστε την Κάμερα.</string>
     <string name="warning_local_network_permission_required">Η πρόσβαση στο %1$s στο τοπικό σας δίκτυο απαιτεί άδεια.</string>
-    <string name="warning_local_network_permission_denied">Η πρόσβαση στο %1$s στο τοπικό σας δίκτυο απαιτεί άδεια. Ανοίξτε τις ρυθμίσεις της εφαρμογής, επιλέξτε "Άδειες" και ενεργοποιήστε την επιλογή "Κοντινές συσκευές".</string>
+    <string name="warning_local_network_permission_denied">Η πρόσβαση στο %1$s στο τοπικό σας δίκτυο απαιτεί άδεια. Ανοίξτε τις ρυθμίσεις της εφαρμογής, επιλέξτε Άδειες και ενεργοποιήστε την επιλογή Κοντινές συσκευές.</string>
     <string name="vldt_failure">Αποτυχία επικύρωσης</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για «%1$s»</string>

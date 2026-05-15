@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine -->
-<resources>
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="n_books">
         <item quantity="one">%1$d bók</item>
         <item quantity="other">%1$d bøkur</item>
@@ -41,7 +37,6 @@
         <item quantity="one">%1$s stjørna</item>
         <item quantity="other">%1$s stjørnur</item>
     </plurals>
-
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_space_b">%1$s %2$s</string>
@@ -169,7 +164,7 @@
     <string name="pt_deduplication_title_matching_summary_off">Við goyming verða heitir, ið eru eins burtursæð frá sniðgeving, ikki lagdir saman (t.d. „The Lord of The Rings“ og „Lord of The Rings, The“).</string>
     <string name="action_edit_with_ellipsis">Rætta við…</string>
     <string name="warning_camera_permission_required">Skanning av strikukodum ella myndatøka krevur atgongd til myndatól.</string>
-    <string name="warning_camera_permission_denied">Skanning av strikukodum ella myndatøka krevur atgongd til myndatól. Lat upp app-stillingarnar, vel "Heimildir" og virkja "Myndatól".</string>
+    <string name="warning_camera_permission_denied">Skanning av strikukodum ella myndatøka krevur atgongd til myndatól. Lat upp app-stillingarnar, vel Heimildir og virkja Myndatól.</string>
     <string name="warning_local_network_permission_required">Atgongd til %1$s á tínum lokala neti krevur loyvi.</string>
-    <string name="warning_local_network_permission_denied">Atgongd til %1$s á tínum lokala neti krevur loyvi. Lat upp app-stillingarnar, vel "Heimildir" og virkja "Eindir tætt við".</string>
+    <string name="warning_local_network_permission_denied">Atgongd til %1$s á tínum lokala neti krevur loyvi. Lat upp app-stillingarnar, vel Heimildir og virkja Eindir tætt við.</string>
 </resources>
