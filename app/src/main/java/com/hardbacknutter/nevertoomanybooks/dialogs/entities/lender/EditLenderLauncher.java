@@ -20,16 +20,22 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultCaller;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -40,16 +46,27 @@ public class EditLenderLauncher
     @NonNull
     private final ResultListener resultListener;
 
+    @NonNull
+    private final PermissionRequester permissionRequester;
+
     /**
      * Constructor.
      *
-     * @param resultListener listener
+     * @param activity       the hosting Activity
+     * @param contractOwner  the component which handles the {@link ActivityResultContract}
+     * @param resultListener to use
      */
-    public EditLenderLauncher(@NonNull final ResultListener resultListener) {
+    public EditLenderLauncher(@NonNull final FragmentActivity activity,
+                              @NonNull final ActivityResultCaller contractOwner,
+                              @NonNull final ResultListener resultListener) {
         super(DBKey.LOANEE_NAME,
               EditLenderDialogFragment::new,
               EditLenderBottomSheet::new);
         this.resultListener = resultListener;
+
+        permissionRequester = new PermissionRequester(activity, contractOwner);
+        final String msg = activity.getString(R.string.info_read_contacts_permission);
+        permissionRequester.addPermission(Manifest.permission.READ_CONTACTS, false, msg, msg);
     }
 
     /**
@@ -96,12 +113,16 @@ public class EditLenderLauncher
     public void launch(@NonNull @UiContext final Context context,
                        @IntRange(from = 1) final long bookId,
                        @NonNull final String bookTitle) {
+        permissionRequester.request(Manifest.permission.READ_CONTACTS, dontCare -> {
+            // The permission was optional - so regardless of the result, continue.
+            // The delegate will simply check if the permission was granted when it
+            // wants to get the contacts... or ignore it.
+            final Bundle args = new Bundle(3);
+            args.putLong(DBKey.FK_BOOK, bookId);
+            args.putString(DBKey.TITLE, bookTitle);
 
-        final Bundle args = new Bundle(3);
-        args.putLong(DBKey.FK_BOOK, bookId);
-        args.putString(DBKey.TITLE, bookTitle);
-
-        showDialog(context, args);
+            showDialog(context, args);
+        });
     }
 
     @Override

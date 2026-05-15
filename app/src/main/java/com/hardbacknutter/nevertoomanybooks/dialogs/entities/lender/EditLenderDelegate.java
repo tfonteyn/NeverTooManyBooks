@@ -29,8 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
@@ -58,13 +56,13 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 class EditLenderDelegate
         implements FlexDialogDelegate {
 
+    @NonNull
     private final EditLenderViewModel vm;
     @NonNull
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher;
     private ExtArrayAdapter<String> adapter;
     private DialogEditLoanContentBinding vb;
     @Nullable
@@ -78,15 +76,6 @@ class EditLenderDelegate
                                             DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(EditLenderViewModel.class);
         vm.init(args);
-
-        // TODO: we cannot use the PermissionRequester (yet) as it will keep displaying a dialog
-        //  after the delegate owner (BottomSheet/FlexDialog) is already gone.
-        requestPermissionLauncher = owner.registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(), isGranted -> {
-                    if (isGranted) {
-                        addContacts();
-                    }
-                });
     }
 
     @NonNull
@@ -134,12 +123,10 @@ class EditLenderDelegate
         vb.lendTo.setAdapter(adapter);
         vb.lendTo.setText(vm.getCurrentEdit());
 
+        // Only check if we have the permission. Requesting it is handled in the launcher.
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
             == PackageManager.PERMISSION_GRANTED) {
             addContacts();
-            // FIXME: implement shouldShowRequestPermissionRationale by using PermissionRequester
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
         }
 
         vb.lendTo.requestFocus();

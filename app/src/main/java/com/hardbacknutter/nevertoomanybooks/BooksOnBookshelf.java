@@ -1823,7 +1823,9 @@ public class BooksOnBookshelf
         private final Map<Integer, RowMenu> map = new HashMap<>();
 
         RowGroupMenuHelper() {
-            map.put(BooklistGroup.BOOK, new RMBook(vm, editBookLauncher, updateBookLauncher,
+            map.put(BooklistGroup.BOOK, new RMBook(BooksOnBookshelf.this,
+                                                   BooksOnBookshelf.this,
+                                                   vm, editBookLauncher, updateBookLauncher,
                                                    calibreHandler));
 
             map.put(BooklistGroup.AUTHOR, new RMAuthor(vm, authorWorksLauncher));

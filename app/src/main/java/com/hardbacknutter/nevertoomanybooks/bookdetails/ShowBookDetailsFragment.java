@@ -241,7 +241,9 @@ public class ShowBookDetailsFragment
     private void createFragmentLaunchers() {
         final FragmentManager fm = getChildFragmentManager();
 
+        //noinspection DataFlowIssue
         editLenderLauncher = new EditLenderLauncher(
+                getActivity(), this,
                 (bookId, loanee) -> onBookEditFinished(DBKey.LOANEE_NAME));
         editLenderLauncher.registerForFragmentResult(fm, this);
     }

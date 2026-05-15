@@ -24,9 +24,11 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -62,7 +64,9 @@ public class RMBook
     private final CalibreHandler calibreHandler;
     private final List<MenuHandler<DataHolder>> menuHandlers;
 
-    public RMBook(@NonNull final BooksOnBookshelfViewModel vm,
+    public RMBook(@NonNull final FragmentActivity activity,
+                  @NonNull final ActivityResultCaller contractOwner,
+                  @NonNull final BooksOnBookshelfViewModel vm,
                   @NonNull final ActivityResultLauncher<EditBookContract.Input> editBookLauncher,
                   @NonNull final ActivityResultLauncher<Book> updateBookLauncher,
                   @Nullable final CalibreHandler calibreHandler) {
@@ -74,7 +78,8 @@ public class RMBook
         menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
                                new SiteSearchMenuHandler());
 
-        editLenderLauncher = new EditLenderLauncher(vm::onBookLoaneeChanged);
+        editLenderLauncher = new EditLenderLauncher(activity, contractOwner,
+                                                    vm::onBookLoaneeChanged);
     }
 
     @Override
