@@ -99,6 +99,7 @@
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+        <item name="sliderStyle">@style/Widget.App.Slider</item>
 
         <item name="recyclerViewStyle">@style/Widget.App.RecyclerView</item>
         <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb</item>

@@ -88,6 +88,11 @@
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
     </style>
 
+    <style name="Widget.App.Slider"
+           parent="Widget.Material3.Slider">
+
+    </style>
+
     <style name="Widget.App.LinearProgressIndicator"
            parent="Widget.Material3.LinearProgressIndicator">
         <item name="android:padding">@dimen/progress_padding</item>
