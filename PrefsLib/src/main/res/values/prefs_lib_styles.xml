@@ -108,16 +108,16 @@
     </style>
 
     <style name="PrefsLib.Slider"
-           parent="Widget.Material3.Slider">
+           parent="Widget.Material3Expressive.Slider.Xsmall">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:valueFrom">0</item>
         <item name="android:valueTo">100</item>
         <item name="labelBehavior">gone</item>
-        <item name="thumbColor">?attr/colorPrimary</item>
-        <item name="trackColorInactive">?attr/colorSurfaceVariant</item>
-        <item name="tickColorActive">@android:color/transparent</item>
-        <item name="tickColorInactive">@android:color/transparent</item>
+        <!--        <item name="thumbColor">?attr/colorPrimary</item>-->
+        <!--        <item name="trackColorInactive">?attr/colorSurfaceVariant</item>-->
+        <!--        <item name="tickColorActive">@android:color/transparent</item>-->
+        <!--        <item name="tickColorInactive">@android:color/transparent</item>-->
     </style>
 
     <style name="PrefsLib.Slider.Value"
