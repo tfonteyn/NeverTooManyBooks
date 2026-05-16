@@ -23,6 +23,9 @@
     <!-- Main FAB; contains an icon, no text-->
     <style name="Widget.App.FloatingActionButton"
            parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3Expressive.FloatingActionButton.Primary
+        </item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
@@ -33,6 +36,9 @@
     These contain a text + an icon -->
     <style name="Widget.App.ExtendedFloatingActionButton"
            parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3Expressive.FloatingActionButton.Primary
+        </item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/fab_margin</item>
@@ -91,17 +97,17 @@
     </style>
 
     <style name="Widget.App.Slider"
-           parent="Widget.Material3.Slider">
+           parent="Widget.Material3Expressive.Slider.Xsmall">
 
     </style>
 
     <style name="Widget.App.LinearProgressIndicator"
-           parent="Widget.Material3.LinearProgressIndicator">
+           parent="Widget.Material3Expressive.LinearProgressIndicator">
         <item name="android:padding">@dimen/progress_padding</item>
     </style>
 
     <style name="Widget.App.CircularProgressIndicator"
-           parent="Widget.Material3.CircularProgressIndicator">
+           parent="Widget.Material3Expressive.CircularProgressIndicator">
         <item name="android:clickable">true</item>
         <item name="android:alpha">0.8</item>
         <item name="android:elevation">@dimen/progress_z</item>
@@ -124,12 +130,12 @@
 
     <!-- used by the "buttonBarButtonStyle" attributes -->
     <style name="Widget.App.DialogButtonBarButtons"
-           parent="Widget.Material3.Button.TextButton.Dialog">
+           parent="Widget.Material3Expressive.Button.TextButton.Dialog">
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
     <style name="Widget.App.DialogButtonBarButtons.Flush"
-           parent="Widget.Material3.Button.TextButton.Dialog.Flush">
+           parent="Widget.Material3Expressive.Button.TextButton.Dialog.Flush">
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
