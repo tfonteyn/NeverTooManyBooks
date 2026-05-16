@@ -37,7 +37,7 @@
          as we use a text+icon; but that looks awful.
     -->
     <style name="Button.Menu"
-           parent="Widget.Material3.Button.TextButton">
+           parent="Widget.Material3Expressive.Button.TextButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">?attr/listPreferredItemHeight</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -81,14 +81,14 @@
 
     <!-- duplication due to the android style system... -->
     <style name="Widget.CustomDialog.DialogButtonBarButtons"
-           parent="Widget.Material3.Button.TextButton.Dialog">
+           parent="Widget.Material3Expressive.Button.TextButton.Dialog">
         <item name="android:textColor">?attr/colorSecondary</item>
         <item name="android:background">?attr/colorSurface</item>
     </style>
 
     <!-- yes, even more duplication due to the android style system... -->
     <style name="Widget.CustomDialog.DialogButtonBarButtons.Flush"
-           parent="Widget.Material3.Button.TextButton.Dialog.Flush">
+           parent="Widget.Material3Expressive.Button.TextButton.Dialog.Flush">
         <item name="android:textColor">?attr/colorSecondary</item>
         <item name="android:background">?attr/colorSurface</item>
     </style>
