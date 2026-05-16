@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,7 +31,11 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <!-- A button in a list of action-options. -->
+    <!-- A button in a list of action-options.
+
+         In theory the parent should be one of the Widget.Material3.Button.Icon'd
+         as we use a text+icon; but that looks awful.
+    -->
     <style name="Button.Menu"
            parent="Widget.Material3.Button.TextButton">
         <item name="android:layout_width">0dp</item>
