@@ -32,6 +32,18 @@
 
     Note that the "buttonBar*Style" attributes must be added at several places,
      as they don't seem to be inherited from the main Theme.
+
+    =====================================================================================
+     2026-05-17: the migration to Material3Expressive
+     In the Views system, the only components that actually got dedicated
+     Widget.Material3Expressive.* parent styles are:
+
+    - Buttons (Widget.Material3Expressive.Button.*)
+    - Icon Buttons (Widget.Material3Expressive.IconButton.*)
+    - Floating Action Buttons (Widget.Material3Expressive.ExtendedFloatingActionButton.*)
+    - Sliders
+    - Progress Indicators (Circular/Linear) ..and the Circular is deprecated,
+      to be replaced with com.google.android.material.loadingindicator.LoadingIndicator.
 -->
 <!--suppress LongLine -->
 <resources>
@@ -87,8 +99,7 @@
 
     <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App"
-           parent="Theme.Material3.DayNight.NoActionBar">
-
+           parent="Theme.Material3Expressive.DayNight.NoActionBar">
         <!-- Material3 style attributes -->
         <item name="bottomSheetDragHandleStyle">@style/Widget.App.BottomSheetDragHandle</item>
         <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
