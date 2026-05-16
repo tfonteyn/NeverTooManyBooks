@@ -88,28 +88,28 @@
     <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App"
            parent="Theme.Material3.DayNight.NoActionBar">
+
         <!-- Material3 style attributes -->
-        <item name="tabStyle">@style/Widget.App.TabLayout</item>
-        <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator
-        </item>
-        <item name="linearProgressIndicatorStyle">@style/Widget.App.LinearProgressIndicator</item>
-        <item name="chipGroupStyle">@style/Widget.App.ChipGroup</item>
-        <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
         <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
-        <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
-        <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
-        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
-        <item name="sliderStyle">@style/Widget.App.Slider</item>
-
-        <item name="recyclerViewStyle">@style/Widget.App.RecyclerView</item>
-        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb</item>
-        <item name="android:fastScrollTrackDrawable">@drawable/fastscroll_track</item>
-
-        <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
+        <item name="chipGroupStyle">@style/Widget.App.ChipGroup</item>
+        <item name="circularProgressIndicatorStyle">
+            @style/Widget.App.CircularProgressIndicator
+        </item>
         <item name="extendedFloatingActionButtonStyle">
             @style/Widget.App.ExtendedFloatingActionButton
         </item>
+        <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
+        <item name="linearProgressIndicatorStyle">@style/Widget.App.LinearProgressIndicator</item>
+        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+        <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
+        <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="recyclerViewStyle">@style/Widget.App.RecyclerView</item>
+        <item name="sliderStyle">@style/Widget.App.Slider</item>
+        <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
+        <item name="tabStyle">@style/Widget.App.TabLayout</item>
 
+        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb</item>
+        <item name="android:fastScrollTrackDrawable">@drawable/fastscroll_track</item>
 
         <!-- We MUST set these separately! Just setting the common buttonBarButtonStyle is NOT enough -->
         <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
@@ -122,13 +122,15 @@
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
 
         <!-- Date(range) picker - Dialog styling. -->
-        <item name="materialCalendarTheme">@style/ThemeOverlay.App.MaterialCalendarTheme</item>
+        <item name="materialCalendarTheme">
+            @style/ThemeOverlay.App.MaterialCalendarTheme
+        </item>
         <!-- Date(range) picker - Fullscreen styling. -->
         <item name="materialCalendarFullscreenTheme">
             @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme
         </item>
 
-        <!-- Chip styles as attributes makes it easy to add chips from code -->
+        <!-- Chip styles as attributes makes it easier to add chips from code -->
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
         <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
     </style>
