@@ -25,7 +25,7 @@
 
     <!-- 0..9 and X -->
     <style name="IsbnKeyPad.NumberButton"
-           parent="Widget.Material3.Button.OutlinedButton">
+           parent="Widget.Material3Expressive.Button.OutlinedButton">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -61,7 +61,7 @@
     </style>
 
     <style name="IsbnKeyPad.ClearQueueButton"
-           parent="Widget.Material3.Button.OutlinedButton">
+           parent="Widget.Material3Expressive.Button.OutlinedButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -72,7 +72,7 @@
     </style>
 
     <style name="IsbnKeyPad.StopScanButton"
-           parent="Widget.Material3.Button.OutlinedButton">
+           parent="Widget.Material3Expressive.Button.OutlinedButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/camera_preview_stop_button_margin</item>
