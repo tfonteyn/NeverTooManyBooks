@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,6 +22,9 @@
 <resources>
 
     <!-- Chip components created from code use these style attr values. -->
+    <!-- note that com.google.android.material.R.attr.chipStandaloneStyle does exist,
+         but there is no equivalent one for a Filter. Hence, we#re sticking to both of our
+         private ones for consistency. -->
     <attr name="appChipFilterStyle" format="reference" />
     <attr name="appChipInputStyle" format="reference" />
 
