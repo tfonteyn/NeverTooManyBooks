@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -111,29 +111,6 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-        <!--            android:id="@+id/lbl_loanee"-->
-        <!--            style="@style/TIL.Text.FtsInput"-->
-        <!--            android:hint="@string/lbl_lend_out"-->
-        <!--            >-->
-
-        <!--            <com.google.android.material.textfield.TextInputEditText-->
-        <!--                android:id="@+id/loanee"-->
-        <!--                style="@style/TIE.Generic"-->
-        <!--                android:imeOptions="actionDone"-->
-        <!--                android:inputType="textMultiLine"-->
-        <!--                tools:ignore="Autofill"-->
-        <!--                />-->
-
-        <!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-        <!--        <com.google.android.material.button.MaterialButton-->
-        <!--            android:id="@+id/btn_more_loanee"-->
-        <!--            style="@style/Button.Fts.More"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@id/lbl_loanee"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/lbl_loanee"-->
-        <!--            />-->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_keywords"
