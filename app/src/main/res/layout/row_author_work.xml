@@ -51,10 +51,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_type"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@android:color/transparent"
+                    style="@style/Base.RoundIconButton"
                     tools:icon="@drawable/menu_book_24px"
                     tools:ignore="ContentDescription" />
 

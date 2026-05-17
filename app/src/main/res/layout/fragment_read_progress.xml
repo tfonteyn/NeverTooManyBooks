@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -48,9 +48,8 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_read_progress"
-        style="@style/Widget.Material3.Button.IconButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/Base.RoundIconButton"
+        android:layout_marginStart="4dp"
         android:contentDescription="@string/action_edit"
         app:icon="@drawable/edit_24px"
         app:layout_constraintEnd_toEndOf="parent"

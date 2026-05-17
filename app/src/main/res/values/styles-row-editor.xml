@@ -60,15 +60,11 @@
 
     <!-- Action button. -->
     <style name="RowEditor.Button.Delete"
-           parent="Widget.Material3.Button.IconButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:padding">8dp</item>
+           parent="Base.RoundIconButton">
         <item name="icon">@drawable/delete_24px</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:clickable">true</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:contentDescription">@string/action_delete</item>
     </style>
 
@@ -84,17 +80,7 @@
 
     <!-- MaterialButton - Drop down menu. -->
     <style name="RowEditor.Button.Sorting"
-           parent="Widget.Material3.Button.IconButton.Outlined">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <!-- The default for an IconButton.Outlined seems to be "colorPrimary"
-             which is fine in "light" but not visible in "dark" mode.
-             This problem does not occur for an IconButton.Filled
-             as Android uses a ThemeOverlay where they correct the iconTint
-             But Outlined does not have such a ThemeOverlay set (bug?)
-             Overriding with colorOnSurfaceVariant is a workaround.
-        -->
-        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+           parent="Base.RoundIconButton">
         <item name="icon">@drawable/sort_unsorted</item>
         <item name="android:contentDescription">@string/lbl_sorting</item>
     </style>

@@ -98,13 +98,11 @@
           dynamic-colors and classic theme.
         - but, we need to explicitly set it in code for Dialog/BottomSheet
           ==> see com/hardbacknutter/nevertoomanybooks/dialogs/FlexToolbar.java
+              in the initToolbarButton method.
           -->
     <style name="Toolbar.Button"
-           parent="Widget.Material3.Button.IconButton.Filled">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+           parent="Base.RoundIconButton">
         <item name="android:layout_marginStart">@dimen/toolbar_button_margin</item>
-        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="backgroundTint">?attr/colorSecondaryContainer</item>
     </style>
 

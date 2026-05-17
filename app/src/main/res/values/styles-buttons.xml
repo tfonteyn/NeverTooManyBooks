@@ -24,6 +24,21 @@
     <!-- Generic buttons -->
     <!-- *************************************************************************************** -->
 
+    <!-- a base style as a fix for the blob-like size of a Material3Expressive IconButton -->
+    <style name="Base.RoundIconButton"
+           parent="Widget.Material3Expressive.Button.IconButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- Make the button round. -->
+        <item name="android:paddingVertical">0dp</item>
+        <item name="android:paddingHorizontal">0dp</item>
+        <!-- This is not a text button...
+              but we need to use this to override yet another google [bleep] -->
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
+    </style>
+
     <!-- The TextInputLayout view as the equivalent of a Spinner for menu selections. -->
     <style name="Button.DropdownMenu"
            parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
@@ -95,7 +110,8 @@
 
     <!-- A small 'help' button next to an option. -->
     <style name="Button.InfoPopup"
-           parent="Widget.Material3.Button.IconButton">
+           parent="Base.RoundIconButton">
+        <item name="android:backgroundTint">@android:color/transparent</item>
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_marginTop">4dp</item>
@@ -106,36 +122,16 @@
 
     <!-- Generic Context menu button with the 3-dot vertical line icon. -->
     <style name="Button.MenuPopup.More"
-           parent="Widget.Material3.Button.IconButton.Outlined">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <!-- The default for an IconButton.Outlined seems to be "colorPrimary"
-             which is fine in "light" but not visible in "dark" mode.
-             This problem does not occur for an IconButton.Filled
-             as Android uses a ThemeOverlay where they correct the iconTint
-             But Outlined does not have such a ThemeOverlay set (bug?)
-             Overriding with colorOnSurfaceVariant is a workaround.
-        -->
-        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+           parent="Base.RoundIconButton">
         <item name="icon">@drawable/more_vert_24px</item>
         <item name="android:contentDescription">@string/action_show_options</item>
     </style>
 
     <style name="Base.Button.Grid"
-           parent="Widget.Material3Expressive.Button.IconButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <!-- default is 48dp; we just want the minimal icon height. -->
-        <item name="android:minHeight">0dp</item>
-        <!-- default is 20dp; we just want the minimal icon width. -->
-        <item name="android:minWidth">0dp</item>
-        <!-- insets reduce the width/height of the container -->
-        <item name="android:insetLeft">0dp</item>
-        <item name="android:insetRight">0dp</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
-        <item name="android:backgroundTint">?attr/colorSurfaceContainer</item>
-        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+           parent="Base.RoundIconButton">
+        <!-- full size buttons are too heavy in grid.
+             These are a little harder to tap, but until we receive an actual user complaint...
+             The assumption is that most users will disable these buttons anyhow. -->
         <item name="android:scaleX">@dimen/context_menu_button_scale</item>
         <item name="android:scaleY">@dimen/context_menu_button_scale</item>
     </style>
