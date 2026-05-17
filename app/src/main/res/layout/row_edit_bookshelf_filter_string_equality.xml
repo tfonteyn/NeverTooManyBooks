@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,11 +25,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/RowEditor.Container.Filter">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_del"
         style="@style/RowEditor.Button.Delete"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2"
         tools:ignore="ContentDescription"
         />
 
