@@ -95,10 +95,14 @@
         <item name="labelBehavior">gone</item>
     </style>
     <style name="Scanner.TorchButton"
-           parent="Widget.Material3.Button.IconButton.Filled">
+           parent="Widget.Material3Expressive.Button.IconButton.Outlined">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/camera_button_top_margin</item>
+
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="icon">@drawable/tzw_ic_baseline_flashlight_on_24</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="iconGravity">textStart</item>
     </style>
 </resources>
