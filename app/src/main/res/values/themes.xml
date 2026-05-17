@@ -181,7 +181,7 @@
     </style>
 
     <style name="ThemeOverlay.App.MaterialCalendarTheme"
-           parent="@style/ThemeOverlay.Material3.MaterialCalendar">
+           parent="ThemeOverlay.Material3.MaterialCalendar">
         <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
