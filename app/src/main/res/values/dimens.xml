@@ -62,7 +62,7 @@
 
 <resources>
     <!-- use a double redirect;
-         e.g.  <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
+         e.g.  <dimen name="example">@dimen/wrap_content</dimen>
     -->
     <item name="match_parent"
           format="integer"
@@ -153,9 +153,6 @@
 
     <!-- Editing an Author; the check boxes with the author roles -->
     <dimen name="cbx_fixed_width_author_role">132dp</dimen>
-
-    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
-    <dimen name="btn_open_toc_height">40dp</dimen>
 
     <!--  ?attr/textAppearanceLabelLarge ->  textSide: 14sp -> this is the normal size
           ?attr/textAppearanceLabelMedium -> textSide: 12sp   -->

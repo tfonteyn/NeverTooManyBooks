@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -46,10 +46,6 @@
     <dimen name="column_margin_end">32dp</dimen>
 
     <dimen name="cbx_fixed_width_author_role">140dp</dimen>
-
-    <!--    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>-->
-    <!--    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>-->
-    <!--    <dimen name="btn_open_toc_text_size">14sp</dimen>-->
 
     <dimen name="startup_splash_border">32dp</dimen>
     <dimen name="startup_splash_min_width">300dp</dimen>
