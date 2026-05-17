@@ -28,7 +28,6 @@ androidxCoreSplashscreen = '1.2.0'
 androidxCore = "1.18.0"
 androidxCustomview = "1.2.0"
 androidxDocumentfile = "1.1.0"
-androidxDrawerlayout = "1.2.0"
 androidxExifinterface = "1.4.2"
 androidxFragment = "1.8.9"
 androidxInterpolator = "1.0.0"
@@ -102,7 +101,6 @@ androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "and
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 androidx-customview = { group = "androidx.customview", name = "customview", version.ref = "androidxCustomview" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "androidxDocumentfile" }
-androidx-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "androidxDrawerlayout" }
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "androidxExifinterface" }
 androidx-fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragment" }
 androidx-interpolator = { group = "androidx.interpolator", name = "interpolator", version.ref = "androidxInterpolator" }

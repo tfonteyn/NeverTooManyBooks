@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -58,18 +57,13 @@ public final class InsetsListenerBuilder {
     /**
      * Convenience constructor to use from an {@code Activity#onCreate}.
      *
-     * @param drawerLayout      optional
      * @param coordinatorLayout optional
      * @param toolbar           optional
      * @param fab               optional
      */
-    public static void apply(@Nullable final DrawerLayout drawerLayout,
-                             @Nullable final CoordinatorLayout coordinatorLayout,
+    public static void apply(@Nullable final CoordinatorLayout coordinatorLayout,
                              @Nullable final Toolbar toolbar,
                              @Nullable final FloatingActionButton fab) {
-        if (drawerLayout != null) {
-            apply(drawerLayout);
-        }
         if (coordinatorLayout != null) {
             apply(coordinatorLayout);
         }
@@ -79,18 +73,6 @@ public final class InsetsListenerBuilder {
         if (fab != null) {
             apply(fab);
         }
-    }
-
-    /**
-     * Apply a predefined listener.
-     *
-     * @param view to apply to
-     */
-    public static void apply(@NonNull final DrawerLayout view) {
-        // No action on the view itself, but dispatch incoming insets to all children.
-        new InsetsListenerBuilder(view)
-                .dispatchToChildren(true)
-                .apply();
     }
 
     /**

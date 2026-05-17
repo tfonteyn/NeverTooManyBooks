@@ -275,7 +275,6 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.customview)
     implementation(libs.androidx.documentfile)
-    implementation(libs.androidx.drawerlayout)
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.livedata)

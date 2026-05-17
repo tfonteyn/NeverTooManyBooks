@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -51,6 +51,18 @@
         android:id="@id/SUBMENU_SYNC"
         android:icon="@drawable/sync_alt_24px"
         android:title="@string/action_synchronize" />
+
+    <!-- submenu item , displayed on demand. -->
+    <item
+        android:id="@id/MENU_SYNC_CALIBRE"
+        android:title="@string/site_calibre"
+        android:visible="false" />
+
+    <!-- submenu item , displayed on demand. -->
+    <item
+        android:id="@id/MENU_SYNC_STRIP_INFO"
+        android:title="@string/site_stripinfo_be"
+        android:visible="false" />
 
     <item
         android:id="@id/MENU_SETTINGS"

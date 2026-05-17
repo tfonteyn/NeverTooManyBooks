@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -18,184 +18,170 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
 
-<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/coordinator_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BooksOnBookshelf"
-    >
+    tools:context=".BooksOnBookshelf">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinator_container"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         >
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Toolbar.Activity"
             >
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                style="@style/Toolbar.Activity"
-                >
-
-                <Spinner
-                    android:id="@+id/bookshelf_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:entries="@array/tools_spinner_title"
-                    />
-
-            </com.google.android.material.appbar.MaterialToolbar>
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <!-- elevation must be higher than the FAB which is 6dp -->
-        <com.google.android.material.search.SearchView
-            android:id="@+id/search_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="20dp"
-            app:useDrawerArrowDrawable="true"
-            android:hint="@string/lbl_search_for_books">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/search_results"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            <Spinner
+                android:id="@+id/bookshelf_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:entries="@array/tools_spinner_title"
                 />
-        </com.google.android.material.search.SearchView>
 
-        <FrameLayout
-            android:id="@+id/content_frame"
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- elevation must be higher than the FAB which is 6dp -->
+    <com.google.android.material.search.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="20dp"
+        android:hint="@string/lbl_search_for_books"
+        app:useDrawerArrowDrawable="true">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_results"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/container_margin"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            >
-
-            <include
-                android:id="@+id/content"
-                layout="@layout/booksonbookshelf_content"
-                />
-        </FrameLayout>
-
-        <!-- used to intercept click events when the FAB menu is showing. -->
-        <View
-            android:id="@+id/fab_overlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="visible"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             />
+    </com.google.android.material.search.SearchView>
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progress_circle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible"
-            />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab4_search_external_id"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/option_fab_add_book_by_external_id"
-            app:icon="@drawable/find_in_page_24px"
-            app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_5"
-            tools:translationY="@dimen/fab_menu_translationY_5"
-            tools:visibility="visible"
-            />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab3_add_manually"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/option_fab_add_book_manually"
-            app:icon="@drawable/keyboard_24px"
-            app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_4"
-            tools:translationY="@dimen/fab_menu_translationY_4"
-            tools:visibility="visible"
-            />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab2_search_text"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/option_fab_add_book_by_internet_search"
-            app:icon="@drawable/search_24px"
-            app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_3"
-            tools:translationY="@dimen/fab_menu_translationY_3"
-            tools:visibility="visible"
-            />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab1_search_isbn"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/option_fab_add_book_by_isbn"
-            app:icon="@drawable/dialpad_24px"
-            app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_2"
-            tools:translationY="@dimen/fab_menu_translationY_2"
-            tools:visibility="visible"
-            />
-
-        <!-- reminder: this is an MaterialButton, and NOT an ImageButton
-            Note the location on screen is NOT set, i.e. it's (0,0) relative to the 'fab'
-            button itself. We'll animate them to their proper (translationX,translationY) in code.
-        -->
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab0_scan_barcode_batch"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/option_fab_add_book_by_barcode_scan_batch"
-            app:icon="@drawable/add_a_photo_24px"
-            app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_1"
-            tools:translationY="@dimen/fab_menu_translationY_1"
-            tools:visibility="visible"
-            />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab0_scan_barcode"
-            style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/option_fab_add_book_by_barcode_scan"
-            app:icon="@drawable/photo_camera_24px"
-            app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_0"
-            tools:translationY="@dimen/fab_menu_translationY_0"
-            tools:visibility="visible"
-            />
-
-        <com.hardbacknutter.nevertoomanybooks.core.widgets.MovableFloatingActionButton
-            android:id="@+id/fab"
-            style="@style/Widget.App.FloatingActionButton"
-            android:contentDescription="@string/lbl_add_book"
-            android:src="@drawable/add_24px"
-            app:layout_anchor="@id/list"
-            app:layout_anchorGravity="bottom|end"
-            />
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/container_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
         <include
-            android:id="@+id/progress_frame"
-            layout="@layout/dialog_progress"
-            android:visibility="gone"
+            android:id="@+id/content"
+            layout="@layout/booksonbookshelf_content"
             />
+    </FrameLayout>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- used to intercept click events when the FAB menu is showing. -->
+    <View
+        android:id="@+id/fab_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
 
-    <!-- Container for contents of main menu drawer -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        style="@style/NavigationView"
-        app:menu="@menu/bob_nav_view" />
-</androidx.drawerlayout.widget.DrawerLayout>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab4_search_external_id"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:text="@string/option_fab_add_book_by_external_id"
+        app:icon="@drawable/find_in_page_24px"
+        app:layout_anchor="@id/fab"
+        tools:translationX="@dimen/fab_menu_translationX_5"
+        tools:translationY="@dimen/fab_menu_translationY_5"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab3_add_manually"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:text="@string/option_fab_add_book_manually"
+        app:icon="@drawable/keyboard_24px"
+        app:layout_anchor="@id/fab"
+        tools:translationX="@dimen/fab_menu_translationX_4"
+        tools:translationY="@dimen/fab_menu_translationY_4"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab2_search_text"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:text="@string/option_fab_add_book_by_internet_search"
+        app:icon="@drawable/search_24px"
+        app:layout_anchor="@id/fab"
+        tools:translationX="@dimen/fab_menu_translationX_3"
+        tools:translationY="@dimen/fab_menu_translationY_3"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab1_search_isbn"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:text="@string/option_fab_add_book_by_isbn"
+        app:icon="@drawable/dialpad_24px"
+        app:layout_anchor="@id/fab"
+        tools:translationX="@dimen/fab_menu_translationX_2"
+        tools:translationY="@dimen/fab_menu_translationY_2"
+        tools:visibility="visible"
+        />
+
+    <!-- reminder: this is an MaterialButton, and NOT an ImageButton
+        Note the location on screen is NOT set, i.e. it's (0,0) relative to the 'fab'
+        button itself. We'll animate them to their proper (translationX,translationY) in code.
+    -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab0_scan_barcode_batch"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:text="@string/option_fab_add_book_by_barcode_scan_batch"
+        app:icon="@drawable/add_a_photo_24px"
+        app:layout_anchor="@id/fab"
+        tools:translationX="@dimen/fab_menu_translationX_1"
+        tools:translationY="@dimen/fab_menu_translationY_1"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab0_scan_barcode"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:text="@string/option_fab_add_book_by_barcode_scan"
+        app:icon="@drawable/photo_camera_24px"
+        app:layout_anchor="@id/fab"
+        tools:translationX="@dimen/fab_menu_translationX_0"
+        tools:translationY="@dimen/fab_menu_translationY_0"
+        tools:visibility="visible"
+        />
+
+    <com.hardbacknutter.nevertoomanybooks.core.widgets.MovableFloatingActionButton
+        android:id="@+id/fab"
+        style="@style/Widget.App.FloatingActionButton"
+        android:contentDescription="@string/lbl_add_book"
+        android:src="@drawable/add_24px"
+        app:layout_anchor="@id/list"
+        app:layout_anchorGravity="bottom|end"
+        />
+
+    <include
+        android:id="@+id/progress_frame"
+        layout="@layout/dialog_progress"
+        android:visibility="gone"
+        />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

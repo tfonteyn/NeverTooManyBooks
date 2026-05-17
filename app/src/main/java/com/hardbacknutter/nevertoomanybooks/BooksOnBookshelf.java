@@ -36,13 +36,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
-import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -53,6 +50,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -134,7 +132,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
@@ -212,8 +209,6 @@ public class BooksOnBookshelf
     private CalibreHandler calibreHandler;
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
-    /** Encapsulates the Navigation drawer/menu. */
-    private NavDrawer navDrawer;
     private SearchViewHelper searchViewHelper;
     private ToolbarMenuProvider toolbarMenuProvider;
 
@@ -268,9 +263,9 @@ public class BooksOnBookshelf
     private AutoCompletePickerLauncher bulkSetLocationLauncher;
 
     private OnBackPressedCallback backClearsSearchCriteria;
-    private OnBackPressedCallback backClosesNavDrawer;
     private OnBackPressedCallback backClosesFabMenu;
 
+    private boolean isSyncMenuExpanded;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -280,15 +275,12 @@ public class BooksOnBookshelf
         setContentView(vb.getRoot());
 
         // fitsSystemWindows is not used:
-        // If we have it on the DrawerLayout or on the CoordinatorLayout
+        // If we have it on the CoordinatorLayout
         // we end up with the status bar being transparent as expected,
         // but the background of it set to the same as the vb.content.list,
         // which then of course does NOT match the toolbar.
         //
         // The solution applied here:
-        // - The DrawerLayout is told to simply dispatch the insets to all its children.
-        //   It will NOT apply any insets to itself.
-        // - The NavigationView is handled in the NavDrawer class.
         // - The CoordinatorLayout will NOT adjust for the status bar, but only
         //   for cutouts (and ime, N/A for this screen but no harm done)
         // - adjust toolbar/fab as needed
@@ -296,7 +288,7 @@ public class BooksOnBookshelf
         //
         // The status bar will still be transparent, but the background will be the same
         // as the toolbar.
-        InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
+        InsetsListenerBuilder.apply(vb.coordinatorContainer, vb.toolbar, vb.fab);
         // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
 
         if (useFixedHeaderAndFooter()) {
@@ -312,9 +304,6 @@ public class BooksOnBookshelf
 
         createSyncDelegates();
         createCalibreServerHandler();
-
-        navDrawer = new NavDrawer(vb.drawerLayout, menuItem ->
-                onNavigationItemSelected(menuItem.getItemId()));
 
         initToolbar();
 
@@ -363,27 +352,6 @@ public class BooksOnBookshelf
      */
     private void createOnBackHandlers() {
         final OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
-
-        backClosesNavDrawer = new OnBackPressedCallback(false) {
-            @Override
-            public void handleOnBackPressed() {
-                // Paranoia... the drawer listener should/will disable us.
-                backClosesNavDrawer.setEnabled(false);
-                navDrawer.close();
-            }
-        };
-        dispatcher.addCallback(this, backClosesNavDrawer);
-        vb.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerOpened(@NonNull final View drawerView) {
-                backClosesNavDrawer.setEnabled(true);
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull final View drawerView) {
-                backClosesNavDrawer.setEnabled(false);
-            }
-        });
 
         backClosesFabMenu = new OnBackPressedCallback(false) {
             @Override
@@ -661,25 +629,7 @@ public class BooksOnBookshelf
     private void initToolbar() {
         applyScrollFlags(vb.toolbar);
         setNavIcon();
-        vb.toolbar.setNavigationOnClickListener(v -> {
-            if (isRootActivity()) {
-                // Show or hide the synchronisation menu.
-                // Note this is only effective for the actual sync switches.
-                // The launchers MUST have been created at Activity startup,
-                // due to how "registerForActivityResult" works.
-                final boolean enable =
-                        SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
-                        ||
-                        SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
-
-                //noinspection DataFlowIssue
-                navDrawer.getMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
-                navDrawer.open();
-            } else {
-                // Simulate the user pressing the 'back' key.
-                getOnBackPressedDispatcher().onBackPressed();
-            }
-        });
+        vb.toolbar.setNavigationOnClickListener(v -> onNavButton());
 
         toolbarMenuProvider = new ToolbarMenuProvider();
         vb.toolbar.addMenuProvider(toolbarMenuProvider, this);
@@ -980,12 +930,42 @@ public class BooksOnBookshelf
      * Examples:
      * {@link #onRowClicked(View, int)},
      * {@link #onSomeMenuItemSelected(int, int)}
-     * {@link #onNavigationItemSelected(int)}
+     * {@link #onNavigationItemSelected(BottomSheetDialog, NavigationView, MenuItem)}
      */
     private void saveListPosition() {
         if (!isDestroyed() && !vm.isBuilding()) {
             vm.saveBookshelfTopRowPosition(this, positioningHelper.getTopRowPosition());
         }
+    }
+
+    private void onNavButton() {
+        if (!isRootActivity()) {
+            // Simulate the user pressing the 'back' key.
+            getOnBackPressedDispatcher().onBackPressed();
+            return;
+        }
+
+        final BottomSheetDialog dialog = new BottomSheetDialog(this);
+        dialog.setContentView(R.layout.booksonbookshelf_nav_view);
+        final NavigationView navigationView = dialog.findViewById(R.id.nav_view);
+
+        // Show or hide the synchronisation menu.
+        // Note this is only effective for the actual sync switches.
+        // The launchers MUST have been created at Activity startup,
+        // due to how "registerForActivityResult" works.
+        final boolean enableSync =
+                SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
+                ||
+                SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
+        //noinspection DataFlowIssue
+        navigationView.getMenu().findItem(R.id.SUBMENU_SYNC).setVisible(enableSync);
+        navigationView.invalidate();
+        // make sure the flag is initially false
+        isSyncMenuExpanded = false;
+
+        navigationView.setNavigationItemSelectedListener(
+                menuItem -> onNavigationItemSelected(dialog, navigationView, menuItem));
+        dialog.show();
     }
 
     /**
@@ -1111,20 +1091,24 @@ public class BooksOnBookshelf
     /**
      * Handle the {@link NavigationView} menu.
      *
-     * @param menuItemId The menu item that was invoked.
+     * @param dialog         hosting dialog
+     * @param navigationView hosting view
+     * @param menuItem       The menu item that was invoked.
      *
      * @return {@code true} if the menuItem was handled.
      */
-    private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
+    private boolean onNavigationItemSelected(@NonNull final BottomSheetDialog dialog,
+                                             @NonNull final NavigationView navigationView,
+                                             @NonNull final MenuItem menuItem) {
         saveListPosition();
 
+        final int menuItemId = menuItem.getItemId();
         if (menuItemId == R.id.SUBMENU_SYNC) {
-            showNavigationSubMenu(R.id.SUBMENU_SYNC, R.string.action_synchronize,
-                                  menuItemId, R.menu.sync);
-            return false;
+            showNavigationSyncSubMenu(navigationView);
+            return true;
         }
 
-        navDrawer.close();
+        dialog.dismiss();
 
         if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
             ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getBookshelf(),
@@ -1171,8 +1155,39 @@ public class BooksOnBookshelf
         return false;
     }
 
+    private void showNavigationSyncSubMenu(@NonNull final NavigationView navigationView) {
+        isSyncMenuExpanded = !isSyncMenuExpanded;
+
+        final Menu menu = navigationView.getMenu();
+
+        // Wipe the navigation view clean and re-inflate the menu from scratch
+        // This is needed because the view only takes changes
+        // into account at first use
+        menu.clear();
+        navigationView.inflateMenu(R.menu.bob_nav_view);
+
+        final MenuItem calibre = menu.findItem(R.id.MENU_SYNC_CALIBRE);
+        calibre.setTitle(getString(R.string.submenu_title,
+                                   getString(R.string.site_calibre)));
+        calibre.setVisible(isSyncMenuExpanded
+                           && SyncServer.CalibreCS.isEnabled()
+                           && calibreSyncLauncher != null);
+
+        final MenuItem stripInfo = menu.findItem(R.id.MENU_SYNC_STRIP_INFO);
+        stripInfo.setTitle(getString(R.string.submenu_title,
+                                     getString(R.string.site_stripinfo_be)));
+        stripInfo.setVisible(isSyncMenuExpanded
+                             && SyncServer.StripInfo.isEnabled()
+                             && stripInfoSyncLauncher != null);
+
+        navigationView.requestLayout();
+    }
+
     /**
      * Handle the row/context menus.
+     * We're getting here for
+     * - popup menu for a specific row
+     * - bottom-sheet menu for a specific row
      * <p>
      * <strong>Dev. note:</strong> this used to be simply "onMenuItemSelected",
      * but due to an R8 bug confusing it with "onMenuItemSelected(int, android.view.MenuItem)"
@@ -1186,16 +1201,6 @@ public class BooksOnBookshelf
      */
     private boolean onSomeMenuItemSelected(final int adapterPosition,
                                            @IdRes final int menuItemId) {
-
-        // we're getting here for
-        // - navigation menu choice, either direct or via a submenu which can
-        //   be a popup or bottom-sheet menu
-        // - popup menu for a specific row
-        // - bottom-sheet menu for a specific row
-        // ... so ALWAYS check for nav menu FIRST
-        if (onNavigationItemSelected(menuItemId)) {
-            return true;
-        }
 
         View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
         // Paranoia check to protect from the adapterPosition having
@@ -1449,27 +1454,6 @@ public class BooksOnBookshelf
         } else {
             throw new IllegalArgumentException(String.valueOf(menuItemId));
         }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void showNavigationSubMenu(@IdRes final int subMenuId,
-                                       @StringRes final int subMenuTitleId,
-                                       @IdRes final int menuItemId,
-                                       @MenuRes final int menuRes) {
-
-        final View anchor = navDrawer.getMenuItemView(subMenuId);
-
-        final Menu menu = MenuUtils.create(this, menuRes);
-
-        if (menuItemId == R.id.SUBMENU_SYNC) {
-            menu.findItem(R.id.MENU_SYNC_CALIBRE)
-                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
-
-            menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
-                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
-        }
-
-        menuLauncher.launch(anchor, getString(subMenuTitleId), null, 0, menu);
     }
 
     /**

@@ -119,8 +119,14 @@
      -->
     <string name="list_semicolon">"; "</string>
 
+    <!-- A prefix to a submenu title.
+         The 3 spaces (use quotes around the whole text) give it some indentation
+         and the arrow indicates there is a parent menu item above this one.
+         Support for RTL languages-->
+    <string name="submenu_title">"   ➥ %1$s"</string>
+
     <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern.
-         Support for RTL languages;-->
+         Support for RTL languages -->
     <string name="list_element">• %s</string>
     <!-- "name #nr" where the # is a potential language dependent symbol for 'number'.-->
     <string name="name_hash_nr">%1$s #%2$d</string>
