@@ -86,7 +86,7 @@
 
     <!-- The "show toc" button. -->
     <style name="Button.Action.OpenToc"
-           parent="Widget.Material3.Button.TonalButton">
+           parent="Widget.Material3Expressive.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/btn_open_toc_text_size</item>
@@ -156,7 +156,7 @@
 
     <!-- A button which will take the user to an external website. -->
     <style name="Button.Url"
-           parent="Widget.Material3.Button.TonalButton">
+           parent="Widget.Material3Expressive.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="icon">@drawable/link_24px</item>
