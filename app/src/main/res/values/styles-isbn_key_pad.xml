@@ -36,7 +36,7 @@
     </style>
 
     <style name="IsbnKeyPad.SearchButton"
-           parent="Widget.Material3.Button.IconButton.Outlined">
+           parent="Widget.Material3Expressive.Button.IconButton.Tonal">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -44,6 +44,7 @@
 
         <item name="backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="strokeWidth">@dimen/isbn_keypad_search_stroke_width</item>
+        <item name="strokeColor">?attr/colorPrimary</item>
         <item name="icon">@drawable/search_24px</item>
         <item name="iconSize">@dimen/isbn_keypad_search_icon_size</item>
         <item name="iconGravity">textTop</item>
