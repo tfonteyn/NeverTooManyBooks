@@ -119,8 +119,6 @@
         <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="icon">@drawable/more_vert_24px</item>
         <item name="android:contentDescription">@string/action_show_options</item>
-        <item name="android:scaleX">@dimen/context_menu_button_scale</item>
-        <item name="android:scaleY">@dimen/context_menu_button_scale</item>
     </style>
 
     <style name="Base.Button.Grid"
