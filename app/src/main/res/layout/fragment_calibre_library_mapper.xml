@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -87,10 +87,9 @@
 
         <!-- If there is no Bookshelf with an identical name to the above Library name,
              the user can click 'create' to simply create a Bookshelf with the same name. -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_create"
-            style="@style/Button.Action.Submit"
-            android:text="@string/action_create"
+            style="@style/Button.Action.Create"
             app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/lbl_library_name"

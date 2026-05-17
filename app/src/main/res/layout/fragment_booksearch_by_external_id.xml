@@ -218,11 +218,9 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_search"
-            style="@style/Button.Action.Submit"
-            android:text="@string/action_search"
-            app:icon="@drawable/search_24px"
+            style="@style/Button.Action.Search"
             app:layout_constraintBottom_toBottomOf="@id/lbl_external_id"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/lbl_external_id"

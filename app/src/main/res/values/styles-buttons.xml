@@ -55,9 +55,10 @@
            parent="TextAppearance.Material3.TitleMedium">
     </style>
 
-    <!-- A button to save/submit some form.
-         Meant to be placed on the 'end' & 'bottom' of the form. -->
-    <style name="Button.Action.Submit"
+    <!-- A button to create something.
+         Meant to be placed on the 'end' & 'bottom' of a form.
+    -->
+    <style name="Button.Action.Create"
            parent="Widget.Material3.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -65,6 +66,22 @@
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:text">@string/action_create</item>
+    </style>
+
+    <!-- A button to start a search.
+         Meant to be placed on the 'end' & 'bottom' of a form.
+    -->
+    <style name="Button.Action.Search"
+           parent="Widget.Material3.Button.Icon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:text">@string/action_search</item>
+        <item name="icon">@drawable/search_24px</item>
     </style>
 
     <!-- The "show toc" button. -->
