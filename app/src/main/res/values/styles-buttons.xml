@@ -59,7 +59,7 @@
          Meant to be placed on the 'end' & 'bottom' of a form.
     -->
     <style name="Button.Action.Create"
-           parent="Widget.Material3.Button">
+           parent="Widget.Material3Expressive.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
@@ -73,7 +73,7 @@
          Meant to be placed on the 'end' & 'bottom' of a form.
     -->
     <style name="Button.Action.Search"
-           parent="Widget.Material3.Button.Icon">
+           parent="Widget.Material3Expressive.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
