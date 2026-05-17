@@ -173,7 +173,7 @@
         app:layout_constraintTop_toBottomOf="@id/toc_entry_count"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_sourcecode_url"
         style="@style/Button.Url.GitHub"
         android:layout_marginStart="@dimen/field_margin_start"

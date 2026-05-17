@@ -37,7 +37,7 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_lib_map"
         style="@style/Button.Menu"
         android:text="@string/lbl_bookshelves"
@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@id/header"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_import"
         style="@style/Button.Menu"
         android:text="@string/action_sync_pull"
@@ -57,7 +57,7 @@
         app:layout_constraintTop_toBottomOf="@id/btn_lib_map"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_export"
         style="@style/Button.Menu"
         android:text="@string/action_sync_push"

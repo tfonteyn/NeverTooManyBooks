@@ -47,7 +47,7 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_reset_tips"
             style="@style/Button.Menu"
             android:text="@string/option_reset_all_tips"
@@ -57,7 +57,7 @@
             app:layout_constraintTop_toBottomOf="@+id/header"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_purge_files"
             style="@style/Button.Menu"
             android:text="@string/option_purge_files"
@@ -67,7 +67,7 @@
             app:layout_constraintTop_toBottomOf="@id/btn_reset_tips"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_purge_blns"
             style="@style/Button.Menu"
             android:text="@string/lbl_purge_blns"
@@ -86,7 +86,7 @@
             app:layout_constraintTop_toBottomOf="@id/btn_purge_blns"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sync_deleted_books"
             style="@style/Button.Menu"
             android:text="@string/option_sync_deleted_book_records"
@@ -96,7 +96,7 @@
             app:layout_constraintTop_toBottomOf="@id/btn_purge_blns"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_clear_deleted_books"
             style="@style/Button.Menu"
             android:text="@string/option_clear_deleted_book_records"
@@ -107,7 +107,7 @@
             />
 
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_rebuild_fts"
             style="@style/Button.Menu"
             android:text="@string/option_rebuild_fts"
@@ -117,7 +117,7 @@
             app:layout_constraintTop_toBottomOf="@id/header"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_rebuild_index"
             style="@style/Button.Menu"
             android:text="@string/option_rebuild_index"
@@ -135,7 +135,7 @@
             app:layout_constraintTop_toBottomOf="@id/btn_rebuild_index"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_create_bug_report"
             style="@style/Button.Menu"
             android:text="@string/option_bug_report"
@@ -145,7 +145,7 @@
             app:layout_constraintTop_toBottomOf="@id/btn_debug"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_tuning"
             style="@style/Button.Menu"
             android:text="@string/option_tuning"
@@ -157,7 +157,7 @@
             tools:visibility="visible"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_debug_sq_shell"
             style="@style/Button.Menu"
             android:text="@string/debug_sq_shell"

@@ -272,7 +272,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/author_role_group">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_negative"
                 style="?attr/buttonBarNegativeButtonStyle"
                 android:layout_width="wrap_content"
@@ -282,7 +282,7 @@
                 app:layout_constraintEnd_toStartOf="@id/btn_positive"
                 />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_positive"
                 style="?attr/buttonBarPositiveButtonStyle"
                 android:layout_width="wrap_content"
