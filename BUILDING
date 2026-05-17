@@ -1,5 +1,4 @@
 * Use whichever latest or non-broken version of Android Studio that works at all...
-  Be aware of this bug: https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
 
 * Coding is in Java 11 with desugaring as per Android needs.
 
