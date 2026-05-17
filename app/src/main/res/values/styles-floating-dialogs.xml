@@ -61,7 +61,7 @@
         <!-- needed to get the correct day/night background.
             See MaterialAlertDialogBuilder(Context) where the surface color is explicitly set
             as the shape 'fill' color. -->
-        <item name="android:backgroundTint">?attr/colorSurface</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
 
         <!-- needed to get the background of the buttons to use colorSurface -->
         <item name="buttonBarButtonStyle">

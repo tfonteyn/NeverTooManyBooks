@@ -30,10 +30,9 @@
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
-
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
         <item name="android:textSize">@dimen/isbn_keypad_number_text_size</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
     </style>
 
     <style name="IsbnKeyPad.SearchButton"
@@ -43,7 +42,7 @@
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
 
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="strokeWidth">@dimen/isbn_keypad_search_stroke_width</item>
         <item name="icon">@drawable/search_24px</item>
         <item name="iconSize">@dimen/isbn_keypad_search_icon_size</item>
@@ -55,7 +54,7 @@
         <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
         <item name="android:layout_height">wrap_content</item>
 
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="icon">@drawable/backspace_24px</item>
         <item name="iconGravity">textStart</item>
         <item name="android:contentDescription">@string/action_delete</item>
@@ -67,10 +66,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
-
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
         <item name="android:textAllCaps">false</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
     </style>
 
     <style name="IsbnKeyPad.StopScanButton"
@@ -80,8 +78,8 @@
         <item name="android:layout_marginStart">@dimen/camera_preview_stop_button_margin</item>
         <item name="android:layout_marginEnd">@dimen/camera_preview_stop_button_margin</item>
         <item name="android:layout_marginTop">@dimen/camera_button_top_margin</item>
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
     </style>
 
     <style name="Scanner.ZoomSlider"
