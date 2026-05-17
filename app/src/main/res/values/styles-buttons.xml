@@ -122,7 +122,7 @@
     </style>
 
     <style name="Base.Button.Grid"
-           parent="Widget.Material3.Button.IconButton.Filled">
+           parent="Widget.Material3Expressive.Button.IconButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- default is 48dp; we just want the minimal icon height. -->
