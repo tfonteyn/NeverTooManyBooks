@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
@@ -71,16 +73,13 @@ public class MaintenanceFragment
     /** Log tag. */
     private static final String TAG = "MaintenanceFragment";
 
-    /** The length of a UUID string. */
-    private static final int UUID_LEN = 32;
-
     private SettingsViewModel settingsViewModel;
     private MaintenanceViewModel vm;
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
             createDocumentLauncher = registerForActivityResult(
-            new GetContentUriForWritingContract(),
-            o -> o.ifPresent(uri -> vm.writeDebugFile(uri)));
+            new GetContentUriForWritingContract(), o -> o.ifPresent(this::writeDebugFile));
+
     private SettingsViewModel settingsVm;
     /** View Binding. */
     private FragmentMaintenanceBinding vb;
@@ -126,16 +125,19 @@ public class MaintenanceFragment
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_settings);
 
-        vm.onAllowPurgeFiles().observe(getViewLifecycleOwner(),
-                                       m -> vb.btnPurgeFiles.setEnabled(m));
+        final LifecycleOwner vlo = getViewLifecycleOwner();
+        vm.onAllowPurgeFiles().observe(vlo, m -> vb.btnPurgeFiles.setEnabled(m));
 
-        //vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        vm.onWriteDebugCancelled().observe(getViewLifecycleOwner(), this::onWriteDebugCancelled);
-        vm.onWriteDebugFailure().observe(getViewLifecycleOwner(), this::onWriteDebugFailure);
-        vm.onWriteDebugFinished().observe(getViewLifecycleOwner(), this::onWriteDebugFinished);
+        vm.onCalculateUsedSpaceTaskCancelled().observe(vlo, this::onCalculateUsedSpaceCancelled);
+        vm.onCalculateUsedSpaceTaskFailure().observe(vlo, this::onCalculateUsedSpaceFailure);
+        vm.onCalculateUsedSpaceTaskFinished().observe(vlo, this::onCalculateUsedSpaceFinished);
+
+        vm.onWriteDebugCancelled().observe(vlo, this::onWriteDebugCancelled);
+        vm.onWriteDebugFailure().observe(vlo, this::onWriteDebugFailure);
+        vm.onWriteDebugFinished().observe(vlo, this::onWriteDebugFinished);
 
         vb.btnResetTips.setOnClickListener(this::onResetTips);
-        vb.btnPurgeFiles.setOnClickListener(this::onPurgeFiles);
+        vb.btnPurgeFiles.setOnClickListener(v -> onPurgeFiles());
         vb.btnPurgeBlns.setOnClickListener(this::onPurgeNodeStates);
 
         vb.btnSyncDeletedBooks.setOnClickListener(this::onSyncDeletedBooks);
@@ -148,26 +150,7 @@ public class MaintenanceFragment
         vb.btnDebugSqShell.setOnClickListener(this::onDebugSqShell);
         vb.btnTuning.setOnClickListener(this::onTuning);
 
-        vb.btnDebug.setOnClickListener(v -> {
-            vm.incDebugClicks();
-
-            if (vm.isShowDbgOptions()) {
-                vb.btnTuning.setVisibility(View.VISIBLE);
-                vb.btnDebugSqShell.setVisibility(View.VISIBLE);
-            }
-
-            if (vm.isDebugSqLiteAllowsUpdates()) {
-                // Sanity check
-                if (vb.btnDebugSqShell instanceof MaterialButton) {
-                    ((MaterialButton) (vb.btnDebugSqShell))
-                            .setIconResource(R.drawable.warning_24px);
-                } else {
-                    // This SHOULD have worked, but doesn't on a MaterialButton
-                    vb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.warning_24px, 0, 0, 0);
-                }
-            }
-        });
+        vb.btnDebug.setOnClickListener(v -> handleDebugLabelClicks());
     }
 
     @Override
@@ -187,109 +170,14 @@ public class MaintenanceFragment
         Snackbar.make(getView(), R.string.info_tip_reset_done, Snackbar.LENGTH_LONG).show();
     }
 
-    private void onPurgeFiles(@NonNull final View v) {
-        final Context context = v.getContext();
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
-
-        final FileFilter coverFilter = createCoverFilter();
-
-        final long bytes;
-        try {
-            bytes = FileUtils.getUsedSpace(serviceLocator.getLogDir(), null)
-                    + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
-                    + FileUtils.getUsedSpace(coverStorage.getTempDir(), null)
-                    + FileUtils.getUsedSpace(coverStorage.getDir(), coverFilter);
-
-        } catch (@NonNull final CoverStorageException e) {
-            ErrorDialog.show(context, TAG, e);
-            return;
-        } catch (@NonNull final SecurityException e) {
-            // SecurityException is never thrown as the
-            // System.getSecurityManager() always return null
-            LoggerFactory.getLogger().e(TAG, e);
-            return;
-        }
-
-        if (bytes > 0) {
-            final String msg = getString(R.string.info_cleanup_files,
-                                         FileSize.format(context, bytes),
-                                         getString(R.string.option_bug_report));
-
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.warning_24px)
-                    .setTitle(R.string.option_purge_files)
-                    .setMessage(msg)
-                    .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.ok, (d, w) ->
-                            doPurgeFiles(serviceLocator, coverStorage, coverFilter))
-                    .create()
-                    .show();
-        } else {
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_SHORT).show();
-        }
-    }
-
-    private void doPurgeFiles(@NonNull final ServiceLocator serviceLocator,
-                              @NonNull final CoverStorage coverStorage,
-                              @NonNull final FileFilter coverFilter) {
-        ASyncExecutor.STORAGE_WRITES.execute(() -> {
-            try {
-                FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
-                FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
-                FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
-                FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
-
-            } catch (@NonNull final CoverStorageException | SecurityException e) {
-                // CoverStorageException will not be thrown as we
-                // already did the same 'gets' to read the used-space above.
-                // SecurityException is never thrown as the
-                // System.getSecurityManager() always return null
-                LoggerFactory.getLogger().e(TAG, e);
-            }
-        });
-    }
-
-    @NonNull
-    private FileFilter createCoverFilter() {
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final List<String> bookUuidList = serviceLocator.getBookDao().getBookUuidList();
-        final List<String> authroUuidList = serviceLocator.getAuthorDao().getImageUuidList();
-
-        // Filter to check for orphaned cover files
-        // Book cover files:
-        // 000092d32d7eb79c959821d26ab3efed.jpg
-        // 000092d32d7eb79c959821d26ab3efed_1.jpg
-        // Other images:
-        // 27a69be8-8a85-4c1a-a019-f2825cc98d7c.jpg
-        // 27a69be8-8a85-4c1a-a019-f2825cc98d7c_1.jpg
-        // not in the list? then we can purge it; i.e. return 'true'
-        // not a uuid base filename ? be careful and leave it; i.e. return 'false'
-        // Also see the docs in the DBCleaner
-        return file -> {
-            final int flen = file.getName().length();
-            // 4: ".jpg"; 2: "_1"
-            if (flen == (UUID_LEN + 4) || flen == (UUID_LEN + 4 + 2)) {
-                // not in the list? then we can purge it
-                return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
-            }
-            // extra 4: "-" in between
-            if (flen == (UUID_LEN + 4 + 4) || flen == (UUID_LEN + 4 + 4 + 2)) {
-                return !authroUuidList.contains(file.getName().substring(0, UUID_LEN + 4));
-            }
-            // not a uuid base filename ? be careful and leave it.
-            return false;
-        };
-    }
-
+    // This is very fast.. no need for a task
     private void onSyncDeletedBooks(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_sync_deleted_book_records)
                 .setMessage(getString(R.string.info_maintenance_sync_deleted_book_records)
                             + "\n\n" + getString(R.string.confirm_continue))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.ok, (d, w) -> {
                     final int count = ServiceLocator.getInstance().getDeletedBooksDao().sync();
                     if (count > 0) {
@@ -311,7 +199,7 @@ public class MaintenanceFragment
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_clear_deleted_book_records)
                 .setMessage(R.string.info_maintenance_clear_deleted_book_records)
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.ok, (d, w) -> {
                     ASyncExecutor.STORAGE_WRITES.execute(
                             () -> ServiceLocator.getInstance().getDeletedBooksDao().purge());
@@ -322,14 +210,20 @@ public class MaintenanceFragment
                 .show();
     }
 
+    private void onPurgeFiles() {
+        vb.progressCircle.setVisibility(View.VISIBLE);
+        vm.calculateUsedSpace();
+    }
+
     private void onPurgeNodeStates(@NonNull final View v) {
         new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.ok, (d, w) -> {
-                    BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb());
+                    ASyncExecutor.STORAGE_WRITES.execute(
+                            () -> BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb()));
                     //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();
                     settingsVm.setForceRebuildBooklist();
@@ -409,7 +303,81 @@ public class MaintenanceFragment
                 .show();
     }
 
+    private void onCalculateUsedSpaceFinished(
+            @NonNull final LiveDataEvent<MaintenanceViewModel.UsedSpaceResult> message) {
+        vb.progressCircle.setVisibility(View.GONE);
+
+        message.process(usedSpaceResult -> {
+            if (usedSpaceResult.getBytes() > 0) {
+                final Context context = getContext();
+                final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+                final CoverStorage coverStorage = serviceLocator.getCoverStorage();
+
+                //noinspection DataFlowIssue
+                final String msg = getString(R.string.info_cleanup_files,
+                                             FileSize.format(context, usedSpaceResult.getBytes()),
+                                             getString(R.string.option_bug_report));
+
+                new MaterialAlertDialogBuilder(context)
+                        .setIcon(R.drawable.warning_24px)
+                        .setTitle(R.string.option_purge_files)
+                        .setMessage(msg)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.ok, (d, w) ->
+                                doPurgeFiles(serviceLocator, coverStorage,
+                                             usedSpaceResult.getCoverFilter()))
+                        .create()
+                        .show();
+            } else {
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void doPurgeFiles(@NonNull final ServiceLocator serviceLocator,
+                              @NonNull final CoverStorage coverStorage,
+                              @NonNull final FileFilter coverFilter) {
+        ASyncExecutor.STORAGE_WRITES.execute(() -> {
+            try {
+                FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
+                FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
+                FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
+                FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
+
+            } catch (@NonNull final CoverStorageException | SecurityException e) {
+                // CoverStorageException will not be thrown as we
+                // already did the same 'gets' to read the used-space above.
+                // SecurityException is never thrown as the
+                // System.getSecurityManager() always return null
+                LoggerFactory.getLogger().e(TAG, e);
+            }
+        });
+    }
+
+    private void onCalculateUsedSpaceCancelled(
+            @NonNull final LiveDataEvent<MaintenanceViewModel.UsedSpaceResult> message) {
+        vb.progressCircle.setVisibility(View.GONE);
+        //noinspection DataFlowIssue
+        message.process(ignored -> Snackbar.make(getView(), R.string.cancelled,
+                                                 Snackbar.LENGTH_LONG).show());
+    }
+
+    private void onCalculateUsedSpaceFailure(@NonNull final LiveDataEvent<Throwable> message) {
+        vb.progressCircle.setVisibility(View.GONE);
+        message.process(e -> {
+            //noinspection DataFlowIssue
+            ErrorDialog.show(getContext(), TAG, e);
+        });
+    }
+
+    private void writeDebugFile(@NonNull final Uri uri) {
+        vb.progressCircle.setVisibility(View.VISIBLE);
+        vm.writeDebugFile(uri);
+    }
+
     private void onWriteDebugFinished(@NonNull final LiveDataEvent<Boolean> message) {
+        vb.progressCircle.setVisibility(View.GONE);
         message.process(ignored -> {
             if (vm.isCatastrophe() == MaintenanceViewModel.Catastrophe.Dialog) {
                 vm.setCatastrophe(MaintenanceViewModel.Catastrophe.Finished);
@@ -420,18 +388,44 @@ public class MaintenanceFragment
     }
 
     private void onWriteDebugCancelled(@NonNull final LiveDataEvent<Boolean> message) {
+        vb.progressCircle.setVisibility(View.GONE);
         //noinspection DataFlowIssue
         message.process(ignored -> Snackbar.make(getView(), R.string.cancelled,
                                                  Snackbar.LENGTH_LONG).show());
     }
 
     private void onWriteDebugFailure(@NonNull final LiveDataEvent<Throwable> message) {
+        vb.progressCircle.setVisibility(View.GONE);
         message.process(e -> {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), TAG, e,
                              getString(R.string.option_bug_report),
                              getString(R.string.error_export_failed));
         });
+    }
+
+    /**
+     * Clicking a number of times on the "Debug" label will reveal some debug options.
+     */
+    private void handleDebugLabelClicks() {
+        vm.incDebugClicks();
+
+        if (vm.isShowDbgOptions()) {
+            vb.btnTuning.setVisibility(View.VISIBLE);
+            vb.btnDebugSqShell.setVisibility(View.VISIBLE);
+        }
+
+        if (vm.isDebugSqLiteAllowsUpdates()) {
+            // Sanity check
+            if (vb.btnDebugSqShell instanceof MaterialButton) {
+                ((MaterialButton) (vb.btnDebugSqShell))
+                        .setIconResource(R.drawable.warning_24px);
+            } else {
+                // This SHOULD have worked, but doesn't on a MaterialButton
+                vb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.warning_24px, 0, 0, 0);
+            }
+        }
     }
 
     private void onTuning(@NonNull final View v) {

@@ -30,15 +30,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -78,6 +82,8 @@ public class MaintenanceViewModel
     private static final int DEBUG_CLICKS_ALLOW_SQL_UPDATES = 6;
 
     @NonNull
+    private final CalculateUsedSpaceTask calculateUsedSpaceTask = new CalculateUsedSpaceTask();
+    @NonNull
     private final DebugFileWriterTask debugWriterTask = new DebugFileWriterTask();
 
     private final MutableLiveData<Boolean> allowPurgeFiles = new MutableLiveData<>();
@@ -91,13 +97,24 @@ public class MaintenanceViewModel
 
     @Override
     protected void onCleared() {
+        calculateUsedSpaceTask.cancel();
         debugWriterTask.cancel();
         super.onCleared();
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return debugWriterTask.onProgress();
+    LiveData<LiveDataEvent<Throwable>> onCalculateUsedSpaceTaskFailure() {
+        return calculateUsedSpaceTask.onFailure();
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<UsedSpaceResult>> onCalculateUsedSpaceTaskCancelled() {
+        return calculateUsedSpaceTask.onCancelled();
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<UsedSpaceResult>> onCalculateUsedSpaceTaskFinished() {
+        return calculateUsedSpaceTask.onFinished();
     }
 
     @NonNull
@@ -182,7 +199,14 @@ public class MaintenanceViewModel
     }
 
     /**
-     * Start the task.
+     * Start the task to calculate the used space.
+     */
+    void calculateUsedSpace() {
+        calculateUsedSpaceTask.start();
+    }
+
+    /**
+     * Start the debug report task.
      *
      * @param uri to write to
      */
@@ -204,6 +228,95 @@ public class MaintenanceViewModel
 
         boolean isOver() {
             return this == Finished || this == Ignored;
+        }
+    }
+
+    private static class CalculateUsedSpaceTask
+            extends MTask<UsedSpaceResult> {
+
+        private static final String TAG = "CalculateUsedSpaceTask";
+
+        /** The length of a UUID string. */
+        private static final int UUID_LEN = 32;
+
+        CalculateUsedSpaceTask() {
+            super(R.id.TASK_ID_USED_SPACE, TAG);
+        }
+
+        void start() {
+            execute();
+        }
+
+        @NonNull
+        @Override
+        protected UsedSpaceResult doWork()
+                throws CancellationException, CoverStorageException {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            final CoverStorage coverStorage = serviceLocator.getCoverStorage();
+
+            final FileFilter coverFilter = createCoverFilter();
+
+            final long bytes = FileUtils.getUsedSpace(serviceLocator.getLogDir(), null)
+                               + FileUtils.getUsedSpace(serviceLocator.getUpgradesDir(), null)
+                               + FileUtils.getUsedSpace(coverStorage.getTempDir(), null)
+                               + FileUtils.getUsedSpace(coverStorage.getDir(), coverFilter);
+            return new UsedSpaceResult(coverFilter, bytes);
+        }
+
+        @NonNull
+        private FileFilter createCoverFilter() {
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            final List<String> bookUuidList = serviceLocator.getBookDao().getBookUuidList();
+            final List<String> authorUuidList = serviceLocator.getAuthorDao().getImageUuidList();
+
+            // Filter to check for orphaned cover files
+            // Book cover files:
+            // 000092d32d7eb79c959821d26ab3efed.jpg
+            // 000092d32d7eb79c959821d26ab3efed_1.jpg
+            // Other images:
+            // 27a69be8-8a85-4c1a-a019-f2825cc98d7c.jpg
+            // 27a69be8-8a85-4c1a-a019-f2825cc98d7c_1.jpg
+            // not in the list? then we can purge it; i.e. return 'true'
+            // not a uuid base filename ? be careful and leave it; i.e. return 'false'
+            // Also see the docs in the DBCleaner
+            return file -> {
+                final int flen = file.getName().length();
+                // 4: ".jpg"; 2: "_1"
+                if (flen == (UUID_LEN + 4) || flen == (UUID_LEN + 4 + 2)) {
+                    // not in the list? then we can purge it
+                    return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
+                }
+                // extra 4: "-" in between
+                if (flen == (UUID_LEN + 4 + 4) || flen == (UUID_LEN + 4 + 4 + 2)) {
+                    return !authorUuidList.contains(file.getName().substring(0, UUID_LEN + 4));
+                }
+                // not a uuid base filename ? be careful and leave it.
+                return false;
+            };
+        }
+    }
+
+    /**
+     * Value class with the reusable cover filter, and the number of bytes used by purgeable files.
+     */
+    static class UsedSpaceResult {
+        @NonNull
+        private final FileFilter coverFilter;
+        private final long bytes;
+
+        UsedSpaceResult(@NonNull final FileFilter coverFilter,
+                        final long bytes) {
+            this.coverFilter = coverFilter;
+            this.bytes = bytes;
+        }
+
+        @NonNull
+        public FileFilter getCoverFilter() {
+            return coverFilter;
+        }
+
+        public long getBytes() {
+            return bytes;
         }
     }
 
