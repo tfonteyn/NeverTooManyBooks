@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
@@ -111,13 +112,25 @@ public final class ScreenSize {
         final List<Value> list = Arrays.asList(Value.values());
         Collections.reverse(list);
 
+        final Predicate<Value> heightPredicate;
+        final Predicate<Value> widthPredicate;
+        if (widthDp > heightDp) {
+            // landscape
+            heightPredicate = value -> widthDp > value.widthLowerBound;
+            widthPredicate = value -> widthDp > value.heightLowerBound;
+        } else {
+            // portrait
+            widthPredicate = value -> widthDp > value.widthLowerBound;
+            heightPredicate = value -> widthDp > value.heightLowerBound;
+        }
+
         final Value width = list.stream()
-                                .filter(value -> widthDp > value.widthLowerBound)
+                                .filter(widthPredicate)
                                 .findFirst()
                                 .orElse(Value.Compact);
 
         final Value height = list.stream()
-                                 .filter(v -> heightDp > v.heightLowerBound)
+                                 .filter(heightPredicate)
                                  .findFirst()
                                  .orElse(Value.Compact);
 
@@ -187,12 +200,7 @@ public final class ScreenSize {
 
     /**
      * Large screen definition.
-     * The WIDTH/HEIGHT is:
-     * <ul>
-     *     <li>Expanded/Expanded</li>
-     *     <li>Expanded/Medium</li>
-     *     <li>Medium/Expanded</li>
-     * </ul>
+     * BOTH width and height must be at least {@link Value#Medium}.
      *
      * @return {@code true} when large
      */
@@ -202,17 +210,12 @@ public final class ScreenSize {
 
     /**
      * Small screen definition.
-     * The WIDTH/HEIGHT is:
-     * <ul>
-     *     <li>Medium/Compact</li>
-     *     <li>Compact/Medium</li>
-     *     <li>Compact/Compact</li>
-     * </ul>
+     * EITHER of the width and height is NOT at least {@link Value#Expanded}.
      *
      * @return {@code true} when small
      */
     public boolean isSmallScreen() {
-        return !(width.isAtLeast(Value.Expanded) && height.isAtLeast(Value.Expanded));
+        return !width.isAtLeast(Value.Expanded) || !height.isAtLeast(Value.Expanded);
     }
 
     @Override
