@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
@@ -51,6 +52,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
@@ -966,6 +968,14 @@ public class BooksOnBookshelf
 
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> onNavigationItemSelected(dialog, navigationView, menuItem));
+
+        dialog.setOnShowListener(dialogInterface -> {
+            final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
+            // Open fully when started.
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            // Close fully when the user is dragging us down
+            behavior.setSkipCollapsed(true);
+        });
         dialog.show();
     }
 
