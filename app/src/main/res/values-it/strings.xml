@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -613,9 +610,9 @@
     <string name="pt_search_prefer_isbn10">Usa ISBN-10 quando possibile</string>
     <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
     <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
-    <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «IIl Signore degli Anelli»</string>
+    <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «Il Signore degli Anelli»</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s…</string>
-    <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «ignore degli Anelli, Il»</string>
+    <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «Signore degli Anelli, Il»</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>
     <string name="ps_cover_undo_disabled">Una modifica/sostituzione della copertina non può essere annullata (utilizza meno memoria)</string>
