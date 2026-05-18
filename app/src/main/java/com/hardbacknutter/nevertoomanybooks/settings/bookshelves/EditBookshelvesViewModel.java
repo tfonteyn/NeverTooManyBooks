@@ -129,6 +129,7 @@ public class EditBookshelvesViewModel
      *
      * @return id, can be {@code 0}.
      */
+    @IntRange(from = 0)
     long getSelectedBookshelfId() {
         return selectedBookshelfId;
     }
@@ -179,7 +180,7 @@ public class EditBookshelvesViewModel
             initialBookshelfId = getDefaultBookshelf().getId();
         }
 
-        if (deletedId == getSelectedBookshelfId()) {
+        if (deletedId == selectedBookshelfId) {
             // we've deleted the currently selected shelf,
             // reselect the initial shelf.
             selectedBookshelfId = initialBookshelfId;

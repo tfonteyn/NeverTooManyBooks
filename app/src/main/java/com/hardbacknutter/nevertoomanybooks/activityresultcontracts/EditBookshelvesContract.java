@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@ public class EditBookshelvesContract
             return Optional.empty();
         }
 
-        // the selected shelf, ALWAYS > 0
-        return Optional.of(intent.getLongExtra(DBKey.FK_BOOKSHELF, -1));
+        // the selected shelf, can be 0 for none
+        return Optional.of(intent.getLongExtra(DBKey.FK_BOOKSHELF, 0));
     }
 }

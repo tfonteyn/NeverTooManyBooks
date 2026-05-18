@@ -435,8 +435,8 @@ public class BooksOnBookshelf
                 new EditStyleContract(), o -> o.ifPresent(
                         data -> vm.onEditStyleFinished(this, data)));
 
-        // The return value will in fact always be present
-        // and guaranteed to be a valid/existing bookshelf id
+        // The return value is the selected bookshelf id
+        // and will always be present but can be 0 for none.
         manageBookshelvesLauncher = registerForActivityResult(
                 new EditBookshelvesContract(), o -> o.ifPresent(
                         id -> vm.onManageBookshelvesFinished(this, id)));

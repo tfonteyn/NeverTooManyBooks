@@ -547,15 +547,19 @@ public class BooksOnBookshelfViewModel
      * @param bookshelfId of the {@link Bookshelf}
      */
     void selectBookshelf(@NonNull final Context context,
-                         final long bookshelfId) {
+                         @IntRange(from = 0) final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
-        // Note the fallback is to the Bookshelf.ALL_BOOKS and not the default one.
-        bookshelf = bookshelfDao
-                .findById(bookshelfId)
-                .or(() -> bookshelfDao.getCurrent())
-                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
-                .orElseThrow();
+        if (bookshelfId == 0) {
+            bookshelf = bookshelfDao.getDefault();
+        } else {
+            // Note the fallback is to the Bookshelf.ALL_BOOKS and not the default one.
+            bookshelf = bookshelfDao
+                    .findById(bookshelfId)
+                    .or(() -> bookshelfDao.getCurrent())
+                    .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
+                    .orElseThrow();
+        }
         bookshelfDao.setCurrent(bookshelf);
 
         if (previousBookshelfId != bookshelf.getId()) {
@@ -1460,7 +1464,7 @@ public class BooksOnBookshelfViewModel
     }
 
     void onManageBookshelvesFinished(@NonNull final Context context,
-                                     final long bookshelfId) {
+                                     @IntRange(from = 0) final long bookshelfId) {
         // Always update the list of bookshelves
         reloadBookshelfList(context);
 

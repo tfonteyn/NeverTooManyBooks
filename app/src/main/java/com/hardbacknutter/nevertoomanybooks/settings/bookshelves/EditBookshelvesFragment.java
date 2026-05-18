@@ -86,18 +86,15 @@ public class EditBookshelvesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    // can be 0; but the contract requires
-                    // us to ALWAYS return a valid shelf.
-                    long id = vm.getSelectedBookshelfId();
-                    if (id == 0) {
-                        id = vm.getDefaultBookshelf().getId();
-                    }
+                    @IntRange(from = 0)
+                    final long id = vm.getSelectedBookshelfId();
                     final Intent resultIntent = EditBookshelvesContract.createResult(id);
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };
+
     /** The adapter for the list. */
     private BookshelfAdapter adapter;
     /** Accept the result from the dialog. */
