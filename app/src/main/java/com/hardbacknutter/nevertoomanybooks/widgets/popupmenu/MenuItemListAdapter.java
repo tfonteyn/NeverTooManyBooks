@@ -99,7 +99,7 @@ class MenuItemListAdapter
         final ExtMenuItem item = list.get(holder.getBindingAdapterPosition());
         if (item.isEnabled()) {
             if (item.hasSubMenu()) {
-                if (menuCallback.onSubMenuClick(item)) {
+                if (menuCallback.onSubMenuClick(holder.itemView, item)) {
                     //noinspection DataFlowIssue
                     setMenu(item.getSubMenu());
                     notifyDataSetChanged();
@@ -126,12 +126,14 @@ class MenuItemListAdapter
         /**
          * The user clicked a menu item which represents a sub-menu.
          *
+         * @param itemView the view which was clicked; i.e. the ViewHolder#itemView of the item
          * @param menuItem The menu item that was invoked.
          *
          * @return {@code true} if the sub-menu should be shown.
          *         {@code false} to ignore the click
          */
-        boolean onSubMenuClick(@NonNull ExtMenuItem menuItem);
+        boolean onSubMenuClick(@NonNull View itemView,
+                               @NonNull ExtMenuItem menuItem);
 
         /**
          * The user clicked a menu item.

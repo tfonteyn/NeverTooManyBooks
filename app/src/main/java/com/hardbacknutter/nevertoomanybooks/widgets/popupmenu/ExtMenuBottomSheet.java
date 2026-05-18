@@ -58,7 +58,8 @@ public class ExtMenuBottomSheet
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
-                public boolean onSubMenuClick(@NonNull final ExtMenuItem menuItem) {
+                public boolean onSubMenuClick(@NonNull final View itemView,
+                                              @NonNull final ExtMenuItem menuItem) {
                     vb.title.setText(menuItem.getTitle());
                     vb.title.setVisibility(View.VISIBLE);
                     return true;

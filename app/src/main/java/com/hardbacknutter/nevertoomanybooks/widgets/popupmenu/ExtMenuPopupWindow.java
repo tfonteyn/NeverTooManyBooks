@@ -51,6 +51,10 @@ public class ExtMenuPopupWindow {
 
     @NonNull
     private final PopupWindow popupWindow;
+    /** Only valid after calling {@link #show(View, MenuMode)}. */
+    @Nullable
+    private View anchor;
+
     @NonNull
     private final MenuItemListAdapter adapter;
 
@@ -61,11 +65,27 @@ public class ExtMenuPopupWindow {
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
-                public boolean onSubMenuClick(@NonNull final ExtMenuItem menuItem) {
+                public boolean onSubMenuClick(@NonNull final View itemView,
+                                              @NonNull final ExtMenuItem menuItem) {
+                    final int[] rowScreenPos = new int[2];
+                    itemView.getLocationOnScreen(rowScreenPos);
+                    // The y position of the users finger, i.e. where they tapped the submenu.
+                    final int fingerY = rowScreenPos[1];
+
                     vb.title.setText(menuItem.getTitle());
                     vb.title.setVisibility(View.VISIBLE);
-                    // final int[] wh = calculatePopupWindowWidthAndHeight();
-                    // popupWindow.update(wh[0], wh[1]);
+
+                    popupWindow.getContentView().post(() -> {
+                        final int[] wh = calculatePopupWindowWidthAndHeight();
+
+                        final int[] anchorScreenPos = new int[2];
+                        anchor.getLocationOnScreen(anchorScreenPos);
+                        final int x = anchorScreenPos[0];
+                        // move it so the new first item is again/exactly under the users finger
+                        final int y = fingerY - vb.itemList.getTop();
+
+                        popupWindow.update(x, y, wh[0], wh[1]);
+                    });
                     return true;
                 }
 
@@ -234,6 +254,7 @@ public class ExtMenuPopupWindow {
      */
     public void show(@NonNull final View view,
                      @NonNull final MenuMode menuMode) {
+        this.anchor = view;
         switch (menuMode) {
             case Start:
                 // 2024-07-12: 'Start' is not in use; this may be used in the future
