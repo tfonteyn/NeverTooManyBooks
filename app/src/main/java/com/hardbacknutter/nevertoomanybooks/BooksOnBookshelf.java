@@ -29,7 +29,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
@@ -52,10 +51,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.security.cert.CertificateException;
@@ -632,7 +628,7 @@ public class BooksOnBookshelf
     private void initToolbar() {
         applyScrollFlags(vb.toolbar);
         setNavIcon();
-        vb.toolbar.setNavigationOnClickListener(v -> onNavButton());
+        vb.toolbar.setNavigationOnClickListener(this::onNavButton);
 
         toolbarMenuProvider = new ToolbarMenuProvider();
         vb.toolbar.addMenuProvider(toolbarMenuProvider, this);
@@ -933,7 +929,7 @@ public class BooksOnBookshelf
      * Examples:
      * {@link #onRowClicked(View, int)},
      * {@link #onSomeMenuItemSelected(int, int)}
-     * {@link #onNavigationItemSelected(BottomSheetDialog, NavigationView, MenuItem)}
+     * {@link #onNavigationItemSelected(int)}
      */
     private void saveListPosition() {
         if (!isDestroyed() && !vm.isBuilding()) {
@@ -941,17 +937,14 @@ public class BooksOnBookshelf
         }
     }
 
-    private void onNavButton() {
+    private void onNavButton(@NonNull final View anchor) {
         if (!isRootActivity()) {
             // Simulate the user pressing the 'back' key.
             getOnBackPressedDispatcher().onBackPressed();
             return;
         }
 
-        final BottomSheetDialog dialog = new BottomSheetDialog(this);
-        dialog.setContentView(R.layout.booksonbookshelf_nav_view);
-        final NavigationView navigationView = dialog.findViewById(R.id.nav_view);
-
+        final Menu menu = MenuUtils.create(this, R.menu.bob_nav_view);
         // Show or hide the synchronisation menu.
         // Note this is only effective for the actual sync switches.
         // The launchers MUST have been created at Activity startup,
@@ -960,23 +953,17 @@ public class BooksOnBookshelf
                 SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
                 ||
                 SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
-        //noinspection DataFlowIssue
-        navigationView.getMenu().findItem(R.id.SUBMENU_SYNC).setVisible(enableSync);
-        navigationView.invalidate();
-        // make sure the flag is initially false
-        isSyncMenuExpanded = false;
+        menu.findItem(R.id.SUBMENU_SYNC).setVisible(enableSync);
+        if (enableSync) {
+            menu.findItem(R.id.MENU_SYNC_CALIBRE)
+                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
 
-        navigationView.setNavigationItemSelectedListener(
-                menuItem -> onNavigationItemSelected(dialog, navigationView, menuItem));
+            menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
+                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
 
-        dialog.setOnShowListener(dialogInterface -> {
-            final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
-            // Open fully when started.
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            // Close fully when the user is dragging us down
-            behavior.setSkipCollapsed(true);
-        });
-        dialog.show();
+        }
+
+        menuLauncher.launch(anchor, null, null, R.menu.bob_nav_view, menu);
     }
 
     /**
@@ -1100,26 +1087,14 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Handle the {@link NavigationView} menu.
+     * Handle the Navigation menu.
      *
-     * @param dialog         hosting dialog
-     * @param navigationView hosting view
-     * @param menuItem       The menu item that was invoked.
+     * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if the menuItem was handled.
      */
-    private boolean onNavigationItemSelected(@NonNull final BottomSheetDialog dialog,
-                                             @NonNull final NavigationView navigationView,
-                                             @NonNull final MenuItem menuItem) {
+    private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
         saveListPosition();
-
-        final int menuItemId = menuItem.getItemId();
-        if (menuItemId == R.id.SUBMENU_SYNC) {
-            showNavigationSyncSubMenu(navigationView);
-            return true;
-        }
-
-        dialog.dismiss();
 
         if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
             ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getBookshelf(),
@@ -1166,34 +1141,6 @@ public class BooksOnBookshelf
         return false;
     }
 
-    private void showNavigationSyncSubMenu(@NonNull final NavigationView navigationView) {
-        isSyncMenuExpanded = !isSyncMenuExpanded;
-
-        final Menu menu = navigationView.getMenu();
-
-        // Wipe the navigation view clean and re-inflate the menu from scratch
-        // This is needed because the view only takes changes
-        // into account at first use
-        menu.clear();
-        navigationView.inflateMenu(R.menu.bob_nav_view);
-
-        final MenuItem calibre = menu.findItem(R.id.MENU_SYNC_CALIBRE);
-        calibre.setTitle(getString(R.string.submenu_title,
-                                   getString(R.string.site_calibre)));
-        calibre.setVisible(isSyncMenuExpanded
-                           && SyncServer.CalibreCS.isEnabled()
-                           && calibreSyncLauncher != null);
-
-        final MenuItem stripInfo = menu.findItem(R.id.MENU_SYNC_STRIP_INFO);
-        stripInfo.setTitle(getString(R.string.submenu_title,
-                                     getString(R.string.site_stripinfo_be)));
-        stripInfo.setVisible(isSyncMenuExpanded
-                             && SyncServer.StripInfo.isEnabled()
-                             && stripInfoSyncLauncher != null);
-
-        navigationView.requestLayout();
-    }
-
     /**
      * Handle the row/context menus.
      * We're getting here for
@@ -1212,6 +1159,11 @@ public class BooksOnBookshelf
      */
     private boolean onSomeMenuItemSelected(final int adapterPosition,
                                            @IdRes final int menuItemId) {
+
+        // check for nav menu FIRST
+        if (onNavigationItemSelected(menuItemId)) {
+            return true;
+        }
 
         View view = positioningHelper.findViewByAdapterPosition(adapterPosition);
         // Paranoia check to protect from the adapterPosition having

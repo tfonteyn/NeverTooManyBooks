@@ -32,7 +32,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,20 +72,6 @@ public final class InsetsListenerBuilder {
         if (fab != null) {
             apply(fab);
         }
-    }
-
-    /**
-     * Apply a predefined listener.
-     *
-     * @param view to apply to
-     *
-     * @see NavigationViewWindowInsetsListener
-     */
-    public static void apply(@NonNull final NavigationView view) {
-        // Custom listener, reacts tot system-bars and display cutouts.
-        final OnApplyWindowInsetsListener listener =
-                new NavigationViewWindowInsetsListener(view);
-        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
     }
 
     /**
