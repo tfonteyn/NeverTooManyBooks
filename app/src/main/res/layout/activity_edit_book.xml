@@ -51,13 +51,11 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- The code will read the tag, and set up a NavigationView -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:tag="has_nav_view"
         tools:layout="@layout/fragment_edit_book"
         />
 

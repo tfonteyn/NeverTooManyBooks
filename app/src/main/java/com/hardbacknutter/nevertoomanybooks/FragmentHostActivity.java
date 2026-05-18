@@ -20,10 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -34,36 +32,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
 /**
  * Hosting activity for generic fragments.
- * <p>
- * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
- * Each time we format the code, methods and variables jump around.
- * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
- * => fixed in IDEA 2026.2 EAP 1
  */
 public class FragmentHostActivity
         extends BaseActivity {
-
-    @Nullable
-    private ActivityResultLauncher<String> editSettingsLauncher;
-    @Nullable
-    private ActivityResultLauncher<Long> manageBookshelvesLauncher;
-
-    private boolean hasNavView;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -82,20 +63,11 @@ public class FragmentHostActivity
 
         @Nullable
         final View contentFrame = findViewById(R.id.content_frame);
-        if (contentFrame != null) {
-            if (useFixedHeaderAndFooter()) {
-                InsetsListenerBuilder.create(contentFrame)
-                                     .systemBars()
-                                     .margins(Side.Bottom)
-                                     .apply();
-            }
-
-            final Object tag = contentFrame.getTag();
-            hasNavView = tag != null && "has_nav_view".equals(String.valueOf(tag));
-        }
-
-        if (hasNavView) {
-            initNavView();
+        if (contentFrame != null && useFixedHeaderAndFooter()) {
+            InsetsListenerBuilder.create(contentFrame)
+                                 .systemBars()
+                                 .margins(Side.Bottom)
+                                 .apply();
         }
 
         initToolbar(toolbar);
@@ -115,19 +87,6 @@ public class FragmentHostActivity
         addFirstFragment(R.id.content_frame, fragmentClass, classname);
     }
 
-    private void initNavView() {
-        manageBookshelvesLauncher = registerForActivityResult(
-                new EditBookshelvesContract(), ignored -> {
-                });
-
-        editSettingsLauncher = registerForActivityResult(
-                new SettingsContract(), o -> o.ifPresent(result -> {
-                    if (result.isRecreateActivity()) {
-                        ActivityRestarter.recreate();
-                    }
-                }));
-    }
-
     private void initToolbar(@Nullable final Toolbar toolbar) {
         if (toolbar != null) {
             applyScrollFlags(toolbar);
@@ -138,25 +97,12 @@ public class FragmentHostActivity
                 toolbar.setNavigationIcon(R.drawable.arrow_back_24px);
             }
 
-            toolbar.setNavigationOnClickListener(v -> onNavButton());
-        }
-    }
-
-    private void onNavButton() {
-        if (!isTaskRoot()) {
-            // Simulate the user pressing the 'back' key.
-            getOnBackPressedDispatcher().onBackPressed();
-            return;
-        }
-
-        if (hasNavView) {
-            final BottomSheetDialog dialog = new BottomSheetDialog(this);
-            dialog.setContentView(R.layout.nav_view);
-            final NavigationView navigationView = dialog.findViewById(R.id.nav_view);
-            //noinspection DataFlowIssue
-            navigationView.setNavigationItemSelectedListener(
-                    menuItem -> onNavigationItemSelected(dialog, menuItem));
-            dialog.show();
+            toolbar.setNavigationOnClickListener(v -> {
+                if (!isTaskRoot()) {
+                    // Simulate the user pressing the 'back' key.
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            });
         }
     }
 
@@ -193,43 +139,5 @@ public class FragmentHostActivity
               .add(containerViewId, fragment, fragmentTag)
               .commit();
         }
-    }
-
-    /**
-     * Handle the {@link NavigationView} menu.
-     *
-     * @param dialog   hosting dialog
-     * @param menuItem The menu item that was invoked.
-     *
-     * @return {@code true} if the menuItem was handled.
-     */
-    private boolean onNavigationItemSelected(@NonNull final BottomSheetDialog dialog,
-                                             @NonNull final MenuItem menuItem) {
-        dialog.dismiss();
-
-        final int menuItemId = menuItem.getItemId();
-
-        if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
-            // child classes which have a 'current bookshelf' should
-            // override and pass the current bookshelf id instead of 0L
-            //noinspection DataFlowIssue
-            manageBookshelvesLauncher.launch(0L);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_SETTINGS) {
-            //noinspection DataFlowIssue
-            editSettingsLauncher.launch(null);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_HELP) {
-            startActivity(GithubIntentFactory.help(this));
-            return true;
-
-        } else if (menuItemId == R.id.MENU_ABOUT) {
-            startActivity(FragmentHostActivityLauncher.createIntent(this, AboutFragment.class));
-            return true;
-        }
-
-        return false;
     }
 }
