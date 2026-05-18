@@ -19,24 +19,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:viewBindingIgnore="true"
-    >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@id/MENU_GROUP_SETTINGS">
+        <item
+            android:id="@id/MENU_MANAGE_BOOKSHELVES"
+            android:icon="@drawable/library_books_24px"
+            android:orderInCategory="@integer/MENU_ORDER_MANAGE_BOOKSHELVES"
+            android:title="@string/lbl_bookshelves" />
 
-    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
-        android:id="@+id/drag_handle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:menu="@menu/nav_view" />
-</LinearLayout>
+        <item
+            android:id="@id/MENU_SETTINGS"
+            android:icon="@drawable/settings_24px"
+            android:orderInCategory="@integer/MENU_ORDER_SETTINGS"
+            android:title="@string/lbl_settings" />
+    </group>
+</menu>

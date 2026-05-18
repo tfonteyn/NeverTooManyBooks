@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.ActivityRestarter;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -63,6 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
@@ -142,6 +145,9 @@ public class ShowBookDetailsFragment
      */
     @Nullable
     private BookChangedListener bookChangedListener;
+
+    private ActivityResultLauncher<String> editSettingsLauncher;
+    private ActivityResultLauncher<Long> manageBookshelvesLauncher;
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
     /** User edits a book. */
@@ -234,6 +240,17 @@ public class ShowBookDetailsFragment
                 new AuthorWorksContract(), o -> o.ifPresent(data -> {
                     if (data.isModified()) {
                         onBookEditFinished((String) null);
+                    }
+                }));
+
+        manageBookshelvesLauncher = registerForActivityResult(
+                new EditBookshelvesContract(), ignored -> {
+                });
+
+        editSettingsLauncher = registerForActivityResult(
+                new SettingsContract(), o -> o.ifPresent(result -> {
+                    if (result.isRecreateActivity()) {
+                        ActivityRestarter.recreate();
                     }
                 }));
     }
@@ -676,15 +693,13 @@ public class ShowBookDetailsFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater inflater) {
             inflater.inflate(R.menu.book, menu);
+            inflater.inflate(R.menu.settings, menu);
+            MenuCompat.setGroupDividerEnabled(menu, true);
+
             // duplicating is not supported from inside this fragment
             menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
 
             menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(vm.isEmbedded());
-
-            if (vm.isEmbedded()) {
-                // divide BoB and Book menus
-                MenuCompat.setGroupDividerEnabled(menu, true);
-            }
 
             if (calibreHandler != null) {
                 calibreHandler.onCreateMenu(menu, inflater);
@@ -760,6 +775,15 @@ public class ShowBookDetailsFragment
             } else if (menuItemId == R.id.MENU_SHARE) {
                 //noinspection DataFlowIssue
                 startActivity(book.getShareIntent(context, aVm.getStyle()));
+                return true;
+
+            } else if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
+                // ENHANCE: if we ever have a primary-bookshelf, we should pass it here
+                manageBookshelvesLauncher.launch(0L);
+                return true;
+
+            } else if (menuItemId == R.id.MENU_SETTINGS) {
+                editSettingsLauncher.launch(null);
                 return true;
 
             } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {

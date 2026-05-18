@@ -52,6 +52,8 @@
 
     <integer name="MENU_ORDER_ISBN_VALIDITY">550</integer>
 
+    <integer name="MENU_ORDER_BARCODE_SETTINGS">560</integer>
+
     <integer name="MENU_ORDER_SET_BOOKSHELVES">600</integer>
     <integer name="MENU_ORDER_SET_LOCATION">601</integer>
 
@@ -70,10 +72,10 @@
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
-    <integer name="MENU_ORDER_SEARCH_SITES">9900</integer>
+    <integer name="MENU_ORDER_SEARCH_SITES">9000</integer>
 
-    <integer name="MENU_ORDER_BARCODE_SETTINGS">9995</integer>
-    <integer name="MENU_ORDER_SETTINGS">9997</integer>
+    <integer name="MENU_ORDER_MANAGE_BOOKSHELVES">9998</integer>
+    <integer name="MENU_ORDER_SETTINGS">9999</integer>
 
     <!-- Used by the ExtMenuItem. -->
     <item name="MENU_DIVIDER"
@@ -282,10 +284,7 @@
     <item name="MENU_STRIP_INFO_SETTING"
           type="id" />
 
-    <!-- Navigation drawer menu -->
     <item name="MENU_ADVANCED_SEARCH"
-          type="id" />
-    <item name="MENU_MANAGE_BOOKSHELVES"
           type="id" />
     <item name="MENU_MANAGE_LIST_STYLES"
           type="id" />
@@ -293,18 +292,23 @@
           type="id" />
     <item name="MENU_FILE_IMPORT"
           type="id" />
-    <item name="MENU_SETTINGS"
-          type="id" />
-    <item name="MENU_HELP"
-          type="id" />
-    <item name="MENU_ABOUT"
-          type="id" />
 
     <item name="SUBMENU_SYNC"
           type="id" />
     <item name="MENU_SYNC_CALIBRE"
           type="id" />
     <item name="MENU_SYNC_STRIP_INFO"
+          type="id" />
+
+    <item name="MENU_GROUP_SETTINGS"
+          type="id" />
+    <item name="MENU_MANAGE_BOOKSHELVES"
+          type="id" />
+    <item name="MENU_SETTINGS"
+          type="id" />
+    <item name="MENU_HELP"
+          type="id" />
+    <item name="MENU_ABOUT"
           type="id" />
 
     <item name="MENU_GROUP_EDIT_DEFAULT"

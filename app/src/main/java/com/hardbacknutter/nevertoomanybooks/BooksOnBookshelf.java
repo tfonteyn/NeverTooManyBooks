@@ -43,6 +43,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
@@ -1774,6 +1775,14 @@ public class BooksOnBookshelf
      * @param bookId of the book to open
      */
     private void openEmbeddedBookDetails(final long bookId) {
+        // details/edit.. screens which allow access to the global Settings
+        // can trigger an Activity recreation and we could get here
+        // during such recreation... which would crash the fragment transaction.
+        if (!(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))) {
+            // hence, we bail out if we're not in the 'started' state
+            return;
+        }
+
         final FragmentManager fm = getSupportFragmentManager();
 
         Fragment fragment = fm.findFragmentByTag(ShowBookDetailsFragment.TAG);

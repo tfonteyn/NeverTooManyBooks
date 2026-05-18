@@ -27,12 +27,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
@@ -40,9 +42,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.ActivityRestarter;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
@@ -64,6 +69,9 @@ public abstract class EditBookBaseFragment
     private static final String TAG = "EditBookBaseFragment";
     private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
     private static final String BKEY_DATE_PICKER_FIELD_ID = TAG + ":pd:fieldId";
+
+    private ActivityResultLauncher<String> editSettingsLauncher;
+    private ActivityResultLauncher<Long> manageBookshelvesLauncher;
 
     /** The view model. */
     EditBookViewModel vm;
@@ -106,6 +114,17 @@ public abstract class EditBookBaseFragment
                                      Lifecycle.State.RESUMED);
 
         final FragmentManager fm = getChildFragmentManager();
+
+        manageBookshelvesLauncher = registerForActivityResult(
+                new EditBookshelvesContract(), ignored -> {
+                });
+
+        editSettingsLauncher = registerForActivityResult(
+                new SettingsContract(), o -> o.ifPresent(result -> {
+                    if (result.isRecreateActivity()) {
+                        ActivityRestarter.recreate();
+                    }
+                }));
 
         partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL,
                                                                   partialDatePickerListener);
@@ -376,11 +395,14 @@ public abstract class EditBookBaseFragment
 
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
+                                 @NonNull final MenuInflater inflater) {
+            inflater.inflate(R.menu.settings, menu);
+            MenuCompat.setGroupDividerEnabled(menu, true);
+
             final Book book = vm.getBook();
             //noinspection DataFlowIssue
             vm.getMenuHandlers().forEach(
-                    h -> h.onCreateMenu(getContext(), menuInflater, menu, book));
+                    h -> h.onCreateMenu(getContext(), inflater, menu, book));
         }
 
         @Override
@@ -396,6 +418,19 @@ public abstract class EditBookBaseFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final Context context = getContext();
             final Book book = vm.getBook();
+
+            final int menuItemId = menuItem.getItemId();
+
+            if (menuItemId == R.id.MENU_MANAGE_BOOKSHELVES) {
+                // ENHANCE: if we ever have a primary-bookshelf, we should pass it here
+                manageBookshelvesLauncher.launch(0L);
+                return true;
+
+            } else if (menuItemId == R.id.MENU_SETTINGS) {
+                editSettingsLauncher.launch(null);
+                return true;
+
+            }
 
             //noinspection DataFlowIssue
             return vm.getMenuHandlers().stream()
