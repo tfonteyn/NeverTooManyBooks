@@ -24,6 +24,8 @@
     <!-- Toolbars -->
     <!-- *************************************************************************************** -->
 
+    <!-- Note we're not making ?attr/toolbarSurfaceStyle point here.
+         Our toolbars all use a dedicate style. -->
     <style name="Base.Toolbar"
            parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
