@@ -93,7 +93,8 @@
         <item name="colorOnErrorContainer">@color/m3red_10</item>
 
         <!-- Optionally enabled by a user preference setting. -->
-        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.Material3.DynamicColors.Light
+        <item name="dynamicColorThemeOverlay">
+            @style/ThemeOverlay.Material3Expressive.DynamicColors.Light
         </item>
     </style>
 
