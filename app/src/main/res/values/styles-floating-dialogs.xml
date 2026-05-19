@@ -55,7 +55,7 @@
         used from code; do a text-search for "ThemeOverlay_App_CustomDialog"
     -->
     <style name="ThemeOverlay.App.CustomDialog"
-           parent="ThemeOverlay.Material3.MaterialAlertDialog">
+           parent="ThemeOverlay.Material3Expressive.MaterialAlertDialog">
         <item name="dialogCornerRadius">@dimen/floating_dialog_corner_radius</item>
 
         <!-- needed to get the correct day/night background.

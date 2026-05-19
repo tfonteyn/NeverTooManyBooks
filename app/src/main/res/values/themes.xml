@@ -183,7 +183,7 @@
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog"
-           parent="ThemeOverlay.Material3.MaterialAlertDialog">
+           parent="ThemeOverlay.Material3Expressive.MaterialAlertDialog">
         <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
