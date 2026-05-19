@@ -106,6 +106,8 @@
         <item name="android:padding">@dimen/progress_padding</item>
     </style>
 
+    <!-- We're not switching to the LoadingIndicator. Other than that it warps... no benefit and
+         the "Contained" version cannot be styles using an attribute. -->
     <style name="Widget.App.CircularProgressIndicator"
            parent="Widget.Material3Expressive.CircularProgressIndicator">
         <item name="android:clickable">true</item>
