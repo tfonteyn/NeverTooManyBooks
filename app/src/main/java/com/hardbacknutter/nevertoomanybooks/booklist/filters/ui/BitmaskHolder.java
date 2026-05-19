@@ -58,9 +58,7 @@ public class BitmaskHolder
         vb.lblFilter.setText(filter.getLabel(context));
         vb.filter.setText(filter.getValueText(context));
 
-        // same predefined id, but not extending "RowViewHolder"
-        // so we must set the listener directly.
-        vb.ROWCLICKTARGET.setOnClickListener(v -> {
+        vb.getRoot().setOnClickListener(v -> {
             final Map<Integer, String> bitsAndLabels = filter.getBitsAndLabels(context);
             final List<Integer> ids = new ArrayList<>(bitsAndLabels.keySet());
             final List<String> labels = new ArrayList<>(bitsAndLabels.values());

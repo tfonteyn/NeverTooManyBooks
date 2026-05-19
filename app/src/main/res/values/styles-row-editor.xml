@@ -115,8 +115,13 @@
         <item name="android:minHeight">?attr/listPreferredItemHeightSmall</item>
     </style>
 
-    <style name="RowEditor.Container.Filter">
-        <item name="android:layout_marginBottom">@dimen/section_margin_top</item>
+    <!-- FrameLayout root View for a generic row. -->
+    <style name="RowEditor.Container"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
     </style>
 
 </resources>

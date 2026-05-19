@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/RowEditor.Container.Filter">
+    style="@style/RowEditor.FilterContainer">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_del"
@@ -37,8 +37,8 @@
 
     <TextView
         android:id="@+id/lbl_filter"
-        style="@style/Label"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
+        style="@style/RowEditor.Text.Primary"
+        android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toEndOf="@id/btn_del"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"

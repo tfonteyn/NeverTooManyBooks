@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/RowEditor.Container.Filter">
+    style="@style/RowEditor.FilterContainer">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_del"
@@ -35,29 +35,23 @@
         tools:ignore="ContentDescription"
         />
 
-    <LinearLayout
-        android:id="@id/ROW_CLICK_TARGET"
-        style="@style/RowEditor.TextSection"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <TextView
+        android:id="@+id/lbl_filter"
+        style="@style/RowEditor.Text.Primary"
+        android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toEndOf="@id/btn_del"
         app:layout_constraintTop_toTopOf="parent"
-        >
+        tools:ignore="SelectableText"
+        tools:text="@string/action_select"
+        />
 
-        <TextView
-            android:id="@+id/lbl_filter"
-            style="@style/RowEditor.Text.Primary"
-            tools:ignore="SelectableText"
-            tools:text="@string/action_select"
-            />
-
-        <TextView
-            android:id="@+id/filter"
-            style="@style/RowEditor.Text.Secondary"
-            android:layout_width="match_parent"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:hint="@string/bob_empty_field"
-            tools:ignore="SelectableText"
-            />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/filter"
+        style="@style/RowEditor.Text.Secondary"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:hint="@string/bob_empty_field"
+        app:layout_constraintStart_toStartOf="@id/lbl_filter"
+        app:layout_constraintTop_toBottomOf="@id/lbl_filter"
+        tools:ignore="SelectableText"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
