@@ -104,7 +104,9 @@
         <item name="android:alpha">0.8</item>
         <item name="android:elevation">@dimen/progress_z</item>
         <item name="android:indeterminate">true</item>
-        <item name="indicatorSize">96dp</item>
+        <item name="indicatorSize">44dp</item>
+        <item name="trackCornerRadius">4dp</item>
+        <item name="trackThickness">8dp</item>
     </style>
 
     <!-- used by the "buttonBarButtonStyle" attributes -->
