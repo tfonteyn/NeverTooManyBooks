@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
-import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -92,13 +91,18 @@ public class RadioGroupRecyclerAdapter<T>
         holder.vb.btnOption.setText(labelSupplier.apply(position));
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void onItemCheckChanged(@NonNull final Holder holder) {
         final int position = holder.getAbsoluteAdapterPosition();
+        if (position == RecyclerView.NO_POSITION) {
+            return;
+        }
 
+        final int oldPosition = items.indexOf(selection);
         selection = items.get(position);
-        // this triggers a bind call for all rows, which in turn (un)sets the checked row.
-        notifyDataSetChanged();
+
+        if (oldPosition != RecyclerView.NO_POSITION && oldPosition != position) {
+            notifyItemChanged(oldPosition);
+        }
 
         if (selectionListener != null) {
             // use a post allowing the UI to update the view first
