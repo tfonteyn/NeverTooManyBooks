@@ -90,6 +90,7 @@
            parent="Theme.Material3.DayNight.NoActionBar">
 
         <!-- Material3 style attributes -->
+        <item name="bottomSheetDragHandleStyle">@style/Widget.App.BottomSheetDragHandle</item>
         <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
         <item name="chipGroupStyle">@style/Widget.App.ChipGroup</item>
         <item name="circularProgressIndicatorStyle">

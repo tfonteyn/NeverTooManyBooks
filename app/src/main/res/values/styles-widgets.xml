@@ -109,6 +109,17 @@
         <item name="trackThickness">8dp</item>
     </style>
 
+    <style name="Widget.App.BottomSheetDragHandle"
+           parent="Widget.Material3.BottomSheet.DragHandle">
+        <!-- Original values are paddingBottom=20, and minHeight=48
+             which makes it huge.
+             Setting paddingBottom=0 did not solve anything.
+             For our use these new values are acceptable.
+        -->
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:minHeight">32dp</item>
+    </style>
+
     <!-- used by the "buttonBarButtonStyle" attributes -->
     <style name="Widget.App.DialogButtonBarButtons"
            parent="Widget.Material3.Button.TextButton.Dialog">
