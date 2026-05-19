@@ -127,11 +127,6 @@
 
     <!-- layout_margin for top level layouts. -->
     <dimen name="container_margin">2dp</dimen>
-    <!-- layout_marginBottom for top level layouts when used above a BottomAppBar.
-         The "Widget.Material3.BottomAppBar" minHeight is fixed at 80dp.
-         Hence this value should be 80dp + 'container_margin' to have a consistent look.
-    -->
-    <dimen name="container_above_bottom_appbar_margin_bottom">84dp</dimen>
 
     <!-- The margin on top of a generic section/group of data on a screen. -->
     <dimen name="section_margin_top">4dp</dimen>
