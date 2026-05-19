@@ -75,11 +75,13 @@
 
     <style name="Widget.App.CheckBox"
            parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.CheckBox</item>
     </style>
 
     <style name="Widget.App.RadioButton"
            parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.RadioButton</item>
     </style>
 
