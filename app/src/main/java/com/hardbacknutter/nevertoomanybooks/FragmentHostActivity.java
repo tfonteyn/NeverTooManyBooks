@@ -64,10 +64,10 @@ public class FragmentHostActivity
         @Nullable
         final View contentFrame = findViewById(R.id.content_frame);
         if (contentFrame != null && useFixedHeaderAndFooter()) {
-            InsetsListenerBuilder.create(contentFrame)
-                                 .systemBars()
-                                 .margins(Side.Bottom)
-                                 .apply();
+            new InsetsListenerBuilder(contentFrame)
+                    .systemBars()
+                    .margins(Side.Bottom)
+                    .apply();
         }
 
         initToolbar(toolbar);

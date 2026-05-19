@@ -123,11 +123,11 @@ public class SearchAdminFragment
         super.onViewCreated(view, savedInstanceState);
         // Effectively disable edge-to-edge for the pager
         // Do NOT include systemGestures as this will cause the content to be squeezed.
-        InsetsListenerBuilder.create(view)
-                             .padding(Side.Start, Side.End, Side.Bottom)
-                             .systemBars()
-                             .displayCutout()
-                             .apply();
+        new InsetsListenerBuilder(view)
+                .padding(Side.Start, Side.End, Side.Bottom)
+                .systemBars()
+                .displayCutout()
+                .apply();
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()

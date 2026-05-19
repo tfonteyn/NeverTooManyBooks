@@ -107,12 +107,12 @@ public class TagAdminFragment
         final Toolbar toolbar = getToolbar();
         InsetsListenerBuilder.apply(toolbar);
         // Effectively disable edge-to-edge for the pager and include system gestures.
-        InsetsListenerBuilder.create(view)
-                             .padding(Side.Start, Side.End, Side.Bottom)
-                             .systemBars()
-                             .displayCutout()
-                             .systemGestures()
-                             .apply();
+        new InsetsListenerBuilder(view)
+                .padding(Side.Start, Side.End, Side.Bottom)
+                .systemBars()
+                .displayCutout()
+                .systemGestures()
+                .apply();
 
         toolbar.setTitle(R.string.lbl_tags);
         toolbar.setSubtitle("");

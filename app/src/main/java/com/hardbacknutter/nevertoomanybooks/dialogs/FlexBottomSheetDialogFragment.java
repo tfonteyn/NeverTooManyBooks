@@ -67,9 +67,9 @@ public class FlexBottomSheetDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        InsetsListenerBuilder.create(view)
-                             .ime()
-                             .apply();
+        new InsetsListenerBuilder(view)
+                .ime()
+                .apply();
 
         final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 

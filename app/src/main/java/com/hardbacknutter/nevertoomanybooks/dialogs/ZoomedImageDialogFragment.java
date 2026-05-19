@@ -96,12 +96,12 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        InsetsListenerBuilder.create(view)
-                             .margins(Side.Start, Side.Top, Side.End, Side.Bottom)
-                             .systemBars()
-                             .displayCutout()
-                             .systemGestures()
-                             .apply();
+        new InsetsListenerBuilder(view)
+                .margins(Side.Start, Side.Top, Side.End, Side.Bottom)
+                .systemBars()
+                .displayCutout()
+                .systemGestures()
+                .apply();
 
         imageView = view.findViewById(R.id.cover_image_0);
         imageView.setOnClickListener(v -> dismiss());

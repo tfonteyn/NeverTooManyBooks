@@ -103,9 +103,9 @@ public class ExtMenuBottomSheet
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        InsetsListenerBuilder.create(view)
-                             .ime()
-                             .apply();
+        new InsetsListenerBuilder(view)
+                .ime()
+                .apply();
 
         if (title != null) {
             vb.title.setText(title);

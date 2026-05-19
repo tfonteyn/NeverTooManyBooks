@@ -125,13 +125,13 @@ public class EditBookTagsDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        InsetsListenerBuilder.create(vb.dialogContent.getRootView())
-                             .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
-                             .systemBars()
-                             .displayCutout()
-                             .ime()
-                             .systemGestures()
-                             .apply();
+        new InsetsListenerBuilder(vb.dialogContent.getRootView())
+                .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
+                .systemBars()
+                .displayCutout()
+                .ime()
+                .systemGestures()
+                .apply();
 
         initToolbar(this, DialogType.Fullscreen, vb.toolbar);
         vb.toolbar.setSubtitle(vm.getBook().getTitle());

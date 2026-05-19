@@ -49,7 +49,12 @@ public final class InsetsListenerBuilder {
     private int insetsTypeMask;
     private boolean dispatchToChildren;
 
-    private InsetsListenerBuilder(@NonNull final View view) {
+    /**
+     * Constructor.
+     *
+     * @param view to apply to
+     */
+    public InsetsListenerBuilder(@NonNull final View view) {
         this.view = view;
     }
 
@@ -121,8 +126,6 @@ public final class InsetsListenerBuilder {
 
     /**
      * Convenience method for code-readability.
-     * This makes it easier to maintain code which needs specific listeners.
-     * i.e. search for usage of the {@link #create(View)} method.
      * <p>
      * Effectively disables edge-to-edge for the root view.
      *
@@ -150,17 +153,6 @@ public final class InsetsListenerBuilder {
                 .apply();
     }
 
-    /**
-     * Constructor.
-     *
-     * @param view to apply to
-     *
-     * @return builder
-     */
-    @NonNull
-    public static InsetsListenerBuilder create(@NonNull final View view) {
-        return new InsetsListenerBuilder(view);
-    }
 
     /**
      * Enable {@link WindowInsetsCompat.Type#systemBars()}.

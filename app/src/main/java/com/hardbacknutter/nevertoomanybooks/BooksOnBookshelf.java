@@ -291,10 +291,10 @@ public class BooksOnBookshelf
         // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
 
         if (useFixedHeaderAndFooter()) {
-            InsetsListenerBuilder.create(vb.contentFrame)
-                                 .systemBars()
-                                 .margins(Side.Bottom)
-                                 .apply();
+            new InsetsListenerBuilder(vb.contentFrame)
+                    .systemBars()
+                    .margins(Side.Bottom)
+                    .apply();
         }
 
         createActivityLaunchers();

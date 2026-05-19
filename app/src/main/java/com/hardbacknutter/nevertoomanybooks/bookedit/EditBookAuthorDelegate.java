@@ -163,13 +163,13 @@ class EditBookAuthorDelegate
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
 
-        InsetsListenerBuilder.create(vb.dialogContent.getRootView())
-                             .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
-                             .systemBars()
-                             .displayCutout()
-                             .ime()
-                             .systemGestures()
-                             .apply();
+        new InsetsListenerBuilder(vb.dialogContent.getRootView())
+                .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
+                .systemBars()
+                .displayCutout()
+                .ime()
+                .systemGestures()
+                .apply();
 
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
