@@ -24,7 +24,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/PrefsLib.Dialog.Container"
     android:orientation="vertical"
-    tools:theme="@style/Theme.Material3.DayNight.Dialog.Alert">
+    tools:theme="@style/Theme.Material3Expressive.DayNight.Dialog.Alert">
 
     <TextView
         android:id="@+id/message"

@@ -24,7 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/PrefsLib.Holder"
-    tools:theme="@style/Theme.Material3.DayNight">
+    tools:theme="@style/Theme.Material3Expressive.DayNight">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"

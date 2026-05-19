@@ -24,7 +24,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true"
-    tools:theme="@style/Theme.Material3.DayNight.Dialog.Alert">
+    tools:theme="@style/Theme.Material3Expressive.DayNight.Dialog.Alert">
 
     <LinearLayout
         style="@style/PrefsLib.Dialog.Container"
