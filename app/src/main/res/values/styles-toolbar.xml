@@ -27,7 +27,7 @@
     <!-- Note we're not making ?attr/toolbarSurfaceStyle point here.
          Our toolbars all use a dedicate style. -->
     <style name="Base.Toolbar"
-           parent="Widget.Material3.Toolbar.Surface">
+           parent="Widget.Material3Expressive.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?attr/actionBarSize</item>

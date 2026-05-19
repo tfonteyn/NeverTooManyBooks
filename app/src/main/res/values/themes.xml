@@ -150,7 +150,7 @@
     <!-- *************************************************************************************** -->
 
     <style name="ThemeOverlay.App.Toolbar"
-           parent="ThemeOverlay.Material3.Toolbar.Surface">
+           parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <!-- Force the icons to be visible... as by default Android seems to
              give them such a bad contrast you can barely see them. -->
         <item name="colorControlNormal">?attr/colorOnSurface</item>
