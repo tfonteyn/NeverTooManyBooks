@@ -45,6 +45,8 @@ import java.util.function.IntFunction;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.Side;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -161,10 +163,13 @@ public abstract class FlexClassicDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Reminder: do not apply insets to the root view.
-        // This will not work, and in fact stop the toolbar from getting the insets
-        // See {@link FlexToolbar#initToolbar}.
-
+        if (fullscreen) {
+            new InsetsListenerBuilder(view)
+                    .padding(Side.Start, Side.End, Side.Top, Side.Bottom)
+                    .systemBars()
+                    .displayCutout()
+                    .apply();
+        }
         initDragHandle(view);
         initToolbar(view);
         initButtonBar(view);
