@@ -85,7 +85,7 @@
     </style>
 
     <style name="PrefsLib.Icon"
-           parent="Widget.MaterialComponents.ShapeableImageView">
+           parent="Widget.Material3.ShapeableImageView.ListItem.LeadingImage">
         <item name="android:layout_width">56dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:maxWidth">48dp</item>
