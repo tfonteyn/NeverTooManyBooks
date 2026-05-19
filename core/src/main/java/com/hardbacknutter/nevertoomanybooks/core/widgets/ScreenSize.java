@@ -115,13 +115,13 @@ public final class ScreenSize {
         final Predicate<Value> heightPredicate;
         final Predicate<Value> widthPredicate;
         if (widthDp > heightDp) {
-            // landscape
-            heightPredicate = value -> widthDp > value.widthLowerBound;
+            // landscape, use the opposite lowerBound values
             widthPredicate = value -> widthDp > value.heightLowerBound;
+            heightPredicate = value -> heightDp > value.widthLowerBound;
         } else {
             // portrait
             widthPredicate = value -> widthDp > value.widthLowerBound;
-            heightPredicate = value -> widthDp > value.heightLowerBound;
+            heightPredicate = value -> heightDp > value.heightLowerBound;
         }
 
         final Value width = list.stream()
@@ -206,16 +206,6 @@ public final class ScreenSize {
      */
     public boolean isLargeScreen() {
         return width.isAtLeast(Value.Medium) && height.isAtLeast(Value.Medium);
-    }
-
-    /**
-     * Small screen definition.
-     * EITHER of the width and height is NOT at least {@link Value#Expanded}.
-     *
-     * @return {@code true} when small
-     */
-    public boolean isSmallScreen() {
-        return !width.isAtLeast(Value.Expanded) || !height.isAtLeast(Value.Expanded);
     }
 
     @Override

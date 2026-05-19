@@ -95,7 +95,7 @@ public abstract class FlexClassicDialogFragment
         final ScreenSize screenSize = ScreenSize.compute(requireActivity());
 
         // Use fullscreen mode if the device screen is (too) small.
-        fullscreen = screenSize.isSmallScreen();
+        fullscreen = !screenSize.isLargeScreen();
 
         if (BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger().d(getClass().getSimpleName(), "onCreate",
