@@ -22,7 +22,7 @@
 <resources>
     <!-- Main FAB; contains an icon, no text-->
     <style name="Widget.App.FloatingActionButton"
-           parent="Widget.Material3.FloatingActionButton.Primary">
+           parent="Widget.Material3Expressive.FloatingActionButton">
         <item name="materialThemeOverlay">
             @style/ThemeOverlay.Material3Expressive.FloatingActionButton.Primary
         </item>
@@ -35,7 +35,7 @@
     <!-- FAB buttons that appear as a menu above the actual FAB button.
     These contain a text + an icon -->
     <style name="Widget.App.ExtendedFloatingActionButton"
-           parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+           parent="Widget.Material3Expressive.ExtendedFloatingActionButton.Small">
         <item name="materialThemeOverlay">
             @style/ThemeOverlay.Material3Expressive.FloatingActionButton.Primary
         </item>
