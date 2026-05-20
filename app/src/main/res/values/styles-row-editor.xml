@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,7 +22,43 @@
 <!-- An editable list with buttons on each row, and a text section in the middle of the row. -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- 'delete this row' -->
+    <!-- Root View for a Bookshelf Filter.
+     Combines the Container and Container.Content, as it does not need the FrameLayout. .-->
+    <style name="RowEditor.FilterContainer"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/listPreferredItemHeightSmall</item>
+        <item name="android:layout_marginBottom">@dimen/section_margin_top</item>
+    </style>
+
+    <!-- FrameLayout root View for a generic row. -->
+    <style name="RowEditor.Container"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- Content (single child of the FrameLayout) for a generic row. -->
+    <style name="RowEditor.Container.Content"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/listPreferredItemHeightSmall</item>
+        <!-- Using foreground for the ripple, as some screens
+             use the background to show a row is selected.
+             See: "RowEditor.Container.Content.Selectable" -->
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:duplicateParentState">true</item>
+    </style>
+
+    <style name="RowEditor.Container.Content.Selectable">
+        <item name="android:background">@drawable/bg_highlight_when_selected</item>
+    </style>
+
+    <!-- Action button. -->
     <style name="RowEditor.Button.Delete"
            parent="Widget.Material3.Button.IconButton">
         <item name="android:layout_width">wrap_content</item>
@@ -46,7 +82,7 @@
         <item name="android:contentDescription">@string/cd_btn_drag_handle</item>
     </style>
 
-    <!-- MaterialButton -->
+    <!-- MaterialButton - Drop down menu. -->
     <style name="RowEditor.Button.Sorting"
            parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">wrap_content</item>
@@ -106,22 +142,6 @@
            parent="Base.RowEditor.Text">
         <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
         <item name="android:layout_marginStart">8dp</item>
-    </style>
-
-    <style name="RowEditor.Container"
-           parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">?attr/listPreferredItemHeightSmall</item>
-    </style>
-
-    <!-- FrameLayout root View for a generic row. -->
-    <style name="RowEditor.Container"
-           parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
     </style>
 
 </resources>

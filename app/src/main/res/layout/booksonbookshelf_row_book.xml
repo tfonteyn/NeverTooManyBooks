@@ -19,15 +19,24 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<!-- Note how we are using
+     - RowEditor.Container
+     - RowEditor.Container.Content.Selectable
+     while this is obviously NOT a RowEditor...
+     Maybe "RowEditor" is just not a good name.
+-->
+
+<!-- UselessParent: Android studio is wrong... we need this for the ripple. -->
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_highlight_when_selected"
-    android:gravity="top"
-    android:orientation="horizontal">
+    style="@style/RowEditor.Container"
+    tools:ignore="UselessParent">
+
+    <LinearLayout
+        android:id="@+id/content"
+        style="@style/RowEditor.Container.Content.Selectable"
+        android:gravity="top">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
@@ -36,284 +45,285 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/card_frame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@id/cover_image_0"
-                style="@style/CoverImage.List"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                tools:ignore="ContentDescription"
-                tools:layout_height="@dimen/tools_cover_height"
-                tools:layout_width="@dimen/tools_cover_width"
-                tools:src="@sample/covers" />
-
             <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/card_frame"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/field_margin_start"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/series_num_long"
-                    style="@style/BoB.Group.Book.SeriesNum"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@id/cover_image_0"
+                    style="@style/CoverImage.List"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/series/title_nr"
-                    tools:visibility="visible" />
+                    android:adjustViewBounds="true"
+                    tools:ignore="ContentDescription"
+                    tools:layout_height="@dimen/tools_cover_height"
+                    tools:layout_width="@dimen/tools_cover_width"
+                    tools:src="@sample/covers" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginStart="@dimen/field_margin_start"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/series_num"
-                        style="@style/BoB.Group.Book.SeriesNum.Inline"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/series_num_long"
+                        style="@style/BoB.Group.Book.SeriesNum"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
-                        tools:text="@sample/data.json/series/nr"
+                        tools:text="@sample/data.json/series/title_nr"
+                        tools:visibility="visible" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/series_num"
+                            style="@style/BoB.Group.Book.SeriesNum.Inline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:text="@sample/data.json/series/nr"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/title"
+                            style="@style/BoB.Group.Book.Title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:text="@sample/data.json/book/title" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/original_title"
+                        style="@style/BoB.Group.Book.OriginalTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/book/title"
                         tools:visibility="visible" />
 
                     <TextView
-                        android:id="@+id/title"
-                        style="@style/BoB.Group.Book.Title"
+                        android:id="@+id/original_language"
+                        style="@style/BoB.Group.Book.OriginalTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="@sample/data.json/book/title" />
+                        android:gravity="end"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/language/name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/series_title"
+                        style="@style/BoB.Group.Book.SeriesTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/series/title"
+                        tools:visibility="visible" />
+
+                    <com.hardbacknutter.zratingbar.MaterialRatingBar
+                        android:id="@+id/rating"
+                        style="@style/BoB.Group.Book.RatingBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/section_margin_top"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/read_progress"
+                        style="@style/BoB.Group.Book.ReadingProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/reading_progress/name"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/read_progress_bar"
+                        style="@style/ReadProgressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:progress="67"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/author"
+                        style="@style/BoB.Group.Book.Author"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/section_margin_top"
+                        android:layout_marginBottom="@dimen/section_margin_top"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/author/full_name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/date_first_publication"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="\u0031\ufe0f\u20e3 1-apr-1950"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/isbn"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/isbn/d13"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/publisher"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/publisher/name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/language"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/language/name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/format"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/format/name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/pages"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/pages/nr"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/condition"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/condition/name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/location"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/location/name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/shelves"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="@sample/data.json/shelves/name"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/date_added_and_last_updated"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/bob_book_date_field_top_margin"
+                        android:visibility="gone"
+                        tools:text="\u2795 1-apr-1970 \ud83d\udd04 23-jun-2024"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/date_acquired"
+                        style="@style/BoB.Group.Book.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="\ud83c\udfe0 1-apr-1970"
+                        tools:visibility="visible" />
+
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/original_title"
-                    style="@style/BoB.Group.Book.OriginalTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/book/title"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/original_language"
-                    style="@style/BoB.Group.Book.OriginalTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/language/name"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/series_title"
-                    style="@style/BoB.Group.Book.SeriesTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/series/title"
-                    tools:visibility="visible" />
-
-                <com.hardbacknutter.zratingbar.MaterialRatingBar
-                    android:id="@+id/rating"
-                    style="@style/BoB.Group.Book.RatingBar"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/section_margin_top"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                    android:layout_marginStart="@dimen/field_margin_end"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/read_progress"
-                    style="@style/BoB.Group.Book.ReadingProgress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/reading_progress/name"
-                    tools:visibility="visible" />
+                    <ImageView
+                        android:id="@+id/icon_read"
+                        style="@style/Flag.Read"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:ignore="ContentDescription"
+                        tools:visibility="visible" />
 
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/read_progress_bar"
-                    style="@style/ReadProgressBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:progress="67"
-                    tools:visibility="visible" />
+                    <ImageView
+                        android:id="@+id/icon_first_edition"
+                        style="@style/Flag.FirstEdition"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:ignore="ContentDescription"
+                        tools:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/author"
-                    style="@style/BoB.Group.Book.Author"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/section_margin_top"
-                    android:layout_marginBottom="@dimen/section_margin_top"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/author/full_name"
-                    tools:visibility="visible" />
+                    <ImageView
+                        android:id="@+id/icon_signed"
+                        style="@style/Flag.Signed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:ignore="ContentDescription"
+                        tools:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/date_first_publication"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="\u0031\ufe0f\u20e3 1-apr-1950"
-                    tools:visibility="visible" />
+                    <ImageView
+                        android:id="@+id/icon_lend_out"
+                        style="@style/Flag.LendOut"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:ignore="ContentDescription"
+                        tools:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/isbn"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/isbn/d13"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/publisher"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/publisher/name"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/language"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/language/name"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/format"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/format/name"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/pages"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/pages/nr"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/condition"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/condition/name"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/location"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/location/name"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/shelves"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="@sample/data.json/shelves/name"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/date_added_and_last_updated"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/bob_book_date_field_top_margin"
-                    android:visibility="gone"
-                    tools:text="\u2795 1-apr-1970 \ud83d\udd04 23-jun-2024"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/date_acquired"
-                    style="@style/BoB.Group.Book.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:text="\ud83c\udfe0 1-apr-1970"
-                    tools:visibility="visible" />
+                </LinearLayout>
 
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/field_margin_end"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
+        <com.google.android.material.button.MaterialButton
+            android:id="@id/ROW_MENU_BTN"
+            style="@style/Button.MenuPopup.More"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-                <ImageView
-                    android:id="@+id/icon_read"
-                    style="@style/Flag.Read"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:ignore="ContentDescription"
-                    tools:visibility="visible" />
-
-                <ImageView
-                    android:id="@+id/icon_first_edition"
-                    style="@style/Flag.FirstEdition"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:ignore="ContentDescription"
-                    tools:visibility="visible" />
-
-                <ImageView
-                    android:id="@+id/icon_signed"
-                    style="@style/Flag.Signed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:ignore="ContentDescription"
-                    tools:visibility="visible" />
-
-                <ImageView
-                    android:id="@+id/icon_lend_out"
-                    style="@style/Flag.LendOut"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:ignore="ContentDescription"
-                    tools:visibility="visible" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@id/ROW_MENU_BTN"
-        style="@style/Button.MenuPopup.More"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
-</LinearLayout>
+    </LinearLayout>
+</FrameLayout>

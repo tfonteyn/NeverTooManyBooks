@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,53 +19,55 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    tools:viewBindingIgnore="true">
+    style="@style/RowEditor.Container">
 
-    <com.hardbacknutter.zratingbar.MaterialRatingBar
-        android:id="@+id/rating"
-        style="@style/Field.ZRatingBar.Indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/field_margin_top" />
+    <LinearLayout
+        android:id="@+id/content"
+        style="@style/RowEditor.Container.Content"
+        android:gravity="center_vertical"
+        tools:viewBindingIgnore="true">
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
+            android:id="@+id/rating"
+            style="@style/Field.ZRatingBar.Indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/field_margin_top" />
 
-    <TextView
-        android:id="@+id/level_book_count"
-        style="@style/BoB.Group.Label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginEnd="@dimen/field_margin_start"
-        tools:ignore="SelectableText"
-        tools:text="#34" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-    <!-- uses visibility="invisible" to preserve the space,
-         even when it's not used by the row. -->
-    <View
-        android:id="@+id/cbx_is_complete"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:visibility="invisible"
-        tools:visibility="visible" />
+        <TextView
+            android:id="@+id/level_book_count"
+            style="@style/BoB.Group.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_start"
+            tools:ignore="SelectableText"
+            tools:text="#34" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@id/ROW_MENU_BTN"
-        style="@style/Button.MenuPopup.More"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        <!-- uses visibility="invisible" to preserve the space,
+             even when it's not used by the row. -->
+        <View
+            android:id="@+id/cbx_is_complete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="invisible"
+            tools:visibility="visible" />
 
-</LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@id/ROW_MENU_BTN"
+            style="@style/Button.MenuPopup.More"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+</FrameLayout>

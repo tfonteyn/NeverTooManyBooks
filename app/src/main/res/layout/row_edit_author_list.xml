@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,52 +19,55 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/RowEditor.Container"
     tools:viewBindingIgnore="true">
 
-    <LinearLayout
-        android:id="@id/ROW_CLICK_TARGET"
-        style="@style/RowEditor.TextSection"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_DRAG_HANDLE"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/RowEditor.Container.Content">
 
-        <TextView
-            android:id="@+id/row_author"
-            style="@style/RowEditor.Text.Primary"
-            android:drawablePadding="@dimen/field_margin_inline"
-            app:drawableTint="?attr/colorSecondary"
-            tools:drawableEnd="@drawable/done_all_24px"
-            tools:ignore="SelectableText"
-            tools:text="@tools:sample/full_names"
+        <LinearLayout
+            android:id="@+id/main"
+            style="@style/RowEditor.TextSection"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ROW_DRAG_HANDLE"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/row_author"
+                style="@style/RowEditor.Text.Primary"
+                android:drawablePadding="@dimen/field_margin_inline"
+                app:drawableTint="?attr/colorSecondary"
+                tools:drawableEnd="@drawable/done_all_24px"
+                tools:ignore="SelectableText"
+                tools:text="@tools:sample/full_names"
+                />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@id/ROW_DRAG_HANDLE"
+            style="@style/RowEditor.Button.DragHandle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
+            app:layout_constraintStart_toEndOf="@id/main"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
             />
 
-    </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@id/ROW_MENU_BTN"
+            style="@style/Button.MenuPopup.More"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"
+            />
 
-    <ImageView
-        android:id="@id/ROW_DRAG_HANDLE"
-        style="@style/RowEditor.Button.DragHandle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
-        app:layout_constraintStart_toEndOf="@id/ROW_CLICK_TARGET"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
-        />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@id/ROW_MENU_BTN"
-        style="@style/Button.MenuPopup.More"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

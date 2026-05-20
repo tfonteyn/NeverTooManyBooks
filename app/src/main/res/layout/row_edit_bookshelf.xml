@@ -23,24 +23,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="true">
+    style="@style/RowEditor.Container">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/RowEditor.Container"
-        android:background="@drawable/bg_highlight_when_selected"
-        android:duplicateParentState="true"
-        android:foreground="?attr/selectableItemBackground">
+        style="@style/RowEditor.Container.Content.Selectable">
 
         <LinearLayout
             style="@style/RowEditor.TextSection"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            >
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/bookshelf_name"

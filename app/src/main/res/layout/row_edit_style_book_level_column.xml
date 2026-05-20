@@ -19,53 +19,53 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/RowEditor.Container">
 
-    <!-- mimic preference screen layout: use a margin-start -->
-    <LinearLayout
-        android:id="@id/ROW_CLICK_TARGET"
-        style="@style/RowEditor.TextSection"
-        android:layout_marginStart="@dimen/preference_header_margin_start"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/RowEditor.Container.Content">
 
-        <TextView
-            android:id="@+id/column_name"
-            style="@style/RowEditor.Text.Primary"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/field/name"
+        <LinearLayout
+            android:id="@+id/main"
+            style="@style/RowEditor.TextSection"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/column_name"
+                style="@style/RowEditor.Text.Primary"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/field/name"
+                />
+
+        </LinearLayout>
+
+        <!-- Put between the content and the drag-handle
+             because it's NOT an action context button,
+             but a row config button menu. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@id/ROW_MENU_BTN"
+            style="@style/RowEditor.Button.Sorting"
+            android:layout_marginEnd="@dimen/field_margin_end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ROW_DRAG_HANDLE"
+            app:layout_constraintStart_toEndOf="@id/main"
+            app:layout_constraintTop_toTopOf="parent"
             />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@id/ROW_DRAG_HANDLE"
+            style="@style/RowEditor.Button.DragHandle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            />
 
-    <!-- on purpose between the content and the drag-handle
-        because it's NOT an action context button,
-        but a row config button menu. -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@id/ROW_MENU_BTN"
-        style="@style/RowEditor.Button.Sorting"
-        android:layout_marginEnd="@dimen/field_margin_end"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_DRAG_HANDLE"
-        app:layout_constraintStart_toEndOf="@id/ROW_CLICK_TARGET"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <ImageView
-        android:id="@id/ROW_DRAG_HANDLE"
-        style="@style/RowEditor.Button.DragHandle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
-        />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
