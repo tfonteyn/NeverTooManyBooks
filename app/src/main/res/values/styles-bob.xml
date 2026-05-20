@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -68,9 +68,10 @@
     <!-- The content container/row for a book in the booklist. -->
     <style name="BoB.Group.Book"
            parent="Widget.App.CardView">
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/bob_book_card_margin</item>
+        <item name="android:layout_weight">1</item>
         <item name="contentPadding">@dimen/bob_book_card_content_padding</item>
     </style>
 
@@ -78,14 +79,15 @@
         The content container/row for an AuthorWork in a list.
         (yes, this is not one for the BookList... should be in another style-x.xml file) -->
     -->
-
     <style name="AuthorWorkCard"
            parent="Widget.App.CardView">
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/authorwork_card_margin</item>
+        <item name="android:layout_weight">1</item>
         <item name="contentPadding">@dimen/authorwork_card_content_padding</item>
     </style>
+
     <!-- *************************************************************************************** -->
     <!-- Elements in a BookGroup
          textIsSelectable=false as the user must be able to click on the whole row.

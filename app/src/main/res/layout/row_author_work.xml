@@ -30,10 +30,7 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
-        style="@style/AuthorWorkCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+        style="@style/AuthorWorkCard">
 
         <LinearLayout
             android:id="@+id/card_frame"

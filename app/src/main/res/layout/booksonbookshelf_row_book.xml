@@ -38,12 +38,9 @@
         style="@style/RowEditor.Container.Content.Selectable"
         android:gravity="top">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card"
-        style="@style/BoB.Group.Book"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card"
+            style="@style/BoB.Group.Book">
 
             <LinearLayout
                 android:id="@+id/card_frame"
