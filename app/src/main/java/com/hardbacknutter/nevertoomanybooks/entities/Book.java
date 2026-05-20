@@ -174,12 +174,6 @@ public class Book
     public static final String BKEY_TAG_LIST = "tag_list";
 
     /**
-     * Bundle key for {@code ArrayList<Identifier.Value>}.
-     * <strong>Used in export/import, NEVER change the string</strong>
-     */
-    public static final String BKEY_IDENTIFIER_LIST = "identifier_list";
-
-    /**
      * Bundle key for {@code CalibreLibrary (Parcelable)}.
      * <strong>Used in export/import, NEVER change the string</strong>
      */
@@ -1275,12 +1269,12 @@ public class Book
     @Override
     @NonNull
     public List<Identifier.Value> getIdentifiers() {
-        return getParcelableArrayList(BKEY_IDENTIFIER_LIST);
+        return getParcelableArrayList(Identifier.Value.BKEY_LIST);
     }
 
     @Override
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
-        putParcelableCollection(BKEY_IDENTIFIER_LIST, ivs);
+        putParcelableCollection(Identifier.Value.BKEY_LIST, ivs);
     }
 
     /**

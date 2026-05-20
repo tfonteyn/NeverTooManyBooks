@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -34,9 +33,6 @@ import com.hardbacknutter.org.json.JSONObject;
 public class AuthorCoder
         implements JsonCoder<Author> {
 
-    // Re-use the one from Book. We should move that one to a better class,
-    // as it is not "just" for books.
-    private static final String IDENTIFIER_LIST = Book.BKEY_IDENTIFIER_LIST;
     private final JsonCoder<Identifier.Value> identifierValueCoder = new IdentifierValueCoder();
 
     AuthorCoder() {
@@ -71,7 +67,7 @@ public class AuthorCoder
 
         final List<Identifier.Value> identifiers = author.getIdentifiers();
         if (!identifiers.isEmpty()) {
-            out.put(IDENTIFIER_LIST, identifierValueCoder.encode(identifiers));
+            out.put(Identifier.Value.BKEY_LIST, identifierValueCoder.encode(identifiers));
         }
         return out;
     }
@@ -112,8 +108,8 @@ public class AuthorCoder
             author.setRealAuthor(decode(data.getJSONObject(DBKey.FK_AUTHOR_REAL_AUTHOR)));
         }
 
-        if (data.has(IDENTIFIER_LIST)) {
-            author.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(IDENTIFIER_LIST)));
+        if (data.has(Identifier.Value.BKEY_LIST)) {
+            author.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(Identifier.Value.BKEY_LIST)));
         }
         return author;
     }

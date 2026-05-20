@@ -153,7 +153,7 @@ public class BookCoder
                 }
                 return;
             }
-            case Book.BKEY_IDENTIFIER_LIST: {
+            case Identifier.Value.BKEY_LIST: {
                 final List<Identifier.Value> list = book.getIdentifiers();
                 if (!list.isEmpty()) {
                     out.put(key, identifierValueCoder.encode(list));
@@ -223,7 +223,7 @@ public class BookCoder
                     book.setBookshelves(bookshelfCoder.decodeReference(data.getJSONArray(key)));
                     break;
                 }
-                case Book.BKEY_IDENTIFIER_LIST: {
+                case Identifier.Value.BKEY_LIST: {
                     book.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(key)));
                     break;
                 }

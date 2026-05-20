@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
@@ -61,7 +62,7 @@ class ResultsAccumulator {
     private static final Set<String> LIST_KEYS = Set.of(
             Book.BKEY_AUTHOR_LIST,
             Book.BKEY_BOOKSHELF_LIST,
-            Book.BKEY_IDENTIFIER_LIST,
+            Identifier.Value.BKEY_LIST,
             Book.BKEY_PUBLISHER_LIST,
             Book.BKEY_SERIES_LIST,
             Book.BKEY_TAG_LIST,

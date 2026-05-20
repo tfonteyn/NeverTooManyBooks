@@ -160,7 +160,7 @@ public enum SyncServer
                     new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
                                      DBKey.FK_AUTHOR));
             map.put(context.getString(R.string.lbl_identifiers),
-                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_IDENTIFIER_LIST,
+                    new SyncFieldDef(SyncField.Type.LIST, Identifier.Value.BKEY_LIST,
                                      DBKey.FK_IDENTIFIER));
             map.put(context.getString(R.string.lbl_publishers),
                     new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_PUBLISHER_LIST,

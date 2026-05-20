@@ -771,6 +771,12 @@ public class Identifier
             }
         };
 
+        /**
+         * Bundle key for {@code ArrayList<Identifier.Value>}.
+         * <strong>Used in export/import, NEVER change the string</strong>
+         */
+        public static final String BKEY_LIST = "identifier_list";
+
         @NonNull
         private final String key;
         @NonNull

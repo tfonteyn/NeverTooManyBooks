@@ -114,7 +114,7 @@ class BookCoderTest
 
         final JSONObject encodedBook = bookCoder.encode(book);
 
-        final JSONArray identifiers = encodedBook.optJSONArray(Book.BKEY_IDENTIFIER_LIST);
+        final JSONArray identifiers = encodedBook.optJSONArray(Identifier.Value.BKEY_LIST);
         assertNotNull(identifiers);
 
         final Collection<Identifier.Value> list = identifierValueCoder.decode(identifiers);
@@ -132,7 +132,7 @@ class BookCoderTest
 
         final JSONObject encodedBook = bookCoder.encode(book);
 
-        final JSONArray identifiers = encodedBook.optJSONArray(Book.BKEY_IDENTIFIER_LIST);
+        final JSONArray identifiers = encodedBook.optJSONArray(Identifier.Value.BKEY_LIST);
         assertNull(identifiers);
 
         final Book decodedBook = bookCoder.decode(encodedBook);

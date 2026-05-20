@@ -182,7 +182,7 @@ public class BookDaoHelper {
         processDates(book);
 
         // make sure there are only valid external id's present
-        if (book.contains(Book.BKEY_IDENTIFIER_LIST)) {
+        if (book.contains(Identifier.Value.BKEY_LIST)) {
             processExternalIds(book);
         }
 

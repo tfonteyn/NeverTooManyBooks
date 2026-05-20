@@ -83,7 +83,7 @@ class SearchBookUpdatesViewModelTest
         final Collection<SyncField> syncFields = vm.getSyncFields();
 
         syncFields.stream()
-                  .filter(syncField -> Book.BKEY_IDENTIFIER_LIST.equals(syncField.getKey()))
+                  .filter(syncField -> Identifier.Value.BKEY_LIST.equals(syncField.getKey()))
                   .forEach(f -> f.setAction(SyncAction.CopyIfBlank));
 
         final SyncReaderProcessor processor = vm.getSyncProcessorBuilder().build(context);
@@ -140,7 +140,7 @@ class SearchBookUpdatesViewModelTest
                   .forEach(f -> f.setAction(SyncAction.Overwrite));
 
         syncFields.stream()
-                  .filter(syncField -> Book.BKEY_IDENTIFIER_LIST.equals(syncField.getKey()))
+                  .filter(syncField -> Identifier.Value.BKEY_LIST.equals(syncField.getKey()))
                   .forEach(f -> f.setAction(SyncAction.CopyIfBlank));
 
         final SyncReaderProcessor processor = vm.getSyncProcessorBuilder().build(context);
@@ -177,6 +177,6 @@ class SearchBookUpdatesViewModelTest
         assertEquals("remote publisher", publishers.get(0).getName());
 
         // CopyIfBlank and local not-blank; the key must be removed from the delta
-        assertFalse(delta.contains(Book.BKEY_IDENTIFIER_LIST));
+        assertFalse(delta.contains(Identifier.Value.BKEY_LIST));
     }
 }

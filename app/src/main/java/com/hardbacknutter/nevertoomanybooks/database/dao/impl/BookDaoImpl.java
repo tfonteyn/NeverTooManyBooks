@@ -496,7 +496,7 @@ public class BookDaoImpl
                                                       tag -> bookLocale);
         }
 
-        if (book.contains(Book.BKEY_IDENTIFIER_LIST)) {
+        if (book.contains(Identifier.Value.BKEY_LIST)) {
             // These are two steps away; they can exist in other books.
             // However, we in fact do NOT use id's except for the internal database references.
             // Instead, we always work with the String key.

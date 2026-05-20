@@ -437,7 +437,7 @@ public class SyncReaderProcessor {
                 }
                 break;
             }
-            case Book.BKEY_IDENTIFIER_LIST: {
+            case Identifier.Value.BKEY_LIST: {
                 final List<Identifier.Value> list = remoteBook.getIdentifiers();
                 if (!list.isEmpty()) {
                     list.addAll(0, localBook.getIdentifiers());

@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
@@ -245,7 +246,7 @@ public class SearchBookUpdatesViewModel
                 new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
                                  DBKey.FK_AUTHOR));
         map.put(context.getString(R.string.lbl_identifiers),
-                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_IDENTIFIER_LIST,
+                new SyncFieldDef(SyncField.Type.LIST, Identifier.Value.BKEY_LIST,
                                  DBKey.FK_IDENTIFIER));
         map.put(context.getString(R.string.lbl_publishers),
                 new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_PUBLISHER_LIST,
