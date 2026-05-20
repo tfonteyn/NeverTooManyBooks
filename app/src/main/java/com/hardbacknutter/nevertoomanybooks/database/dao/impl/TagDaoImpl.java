@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
@@ -612,7 +611,7 @@ public class TagDaoImpl
                 + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK) + "=?"
                 + _ORDER_BY_ + DBKey.TAGS.TAG;
 
-        /** Insert the link between a {@link Book} and a {@link Identifier}. */
+        /** Insert the link between a {@link Book} and a {@link Tag}. */
         static final String INSERT_BOOK_LINK =
                 INSERT_INTO_ + TBL_BOOK_TAG.getName()
                 + '(' + DBKey.FK_BOOK
@@ -630,7 +629,7 @@ public class TagDaoImpl
                 + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_TAG) + "=?";
 
         /**
-         * Delete the link between a {@link Book} and a {@link Identifier}.
+         * Delete the link between a {@link Book} and a {@link Tag}.
          * <p>
          * This is done when a book is updated; first delete all links, then re-create them.
          */
