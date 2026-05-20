@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,7 +67,7 @@ public class StyleDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public StyleDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
@@ -76,7 +76,7 @@ public class StyleDaoImpl
     /**
      * Run at <strong>installation</strong> time to add the built-in style ID's to the database.
      *
-     * @param db Database Access
+     * @param db Underlying database
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         insertGlobalDefaults(db, GlobalStyle.createDefault());
@@ -112,7 +112,7 @@ public class StyleDaoImpl
      * Create and insert the single global/defaults style.
      * Used during app installation (and upgrade).
      *
-     * @param db    Database Access
+     * @param db    DUnderlying database
      * @param style the defaults
      */
     public static void insertGlobalDefaults(@NonNull final SQLiteDatabase db,

@@ -64,7 +64,7 @@ public class CalibreLibraryDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public CalibreLibraryDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

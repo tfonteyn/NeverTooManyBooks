@@ -282,7 +282,7 @@ public class DBHelper
      * Disable the Foreign Key Constraints, run the given commands,
      * and enable the constraint again.
      *
-     * @param db        Database Access
+     * @param db        Underlying database
      * @param runInside to run
      */
     static void runWithoutConstraints(@NonNull final SQLiteDatabase db,

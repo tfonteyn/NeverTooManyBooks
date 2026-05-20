@@ -104,7 +104,7 @@ public class TableDefinition {
      * This method is only called during
      * {@link android.database.sqlite.SQLiteOpenHelper#onCreate(SQLiteDatabase)}
      *
-     * @param db                     SQLiteDatabase
+     * @param db                     Underlying database
      * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      * @param tables                 Table list
      */
@@ -123,7 +123,7 @@ public class TableDefinition {
      * <p>
      * Will only create the table if it's not already present.
      *
-     * @param db                    Database Access
+     * @param db                    Underlying database
      * @param withDomainConstraints Indicates if fields should have constraints applied
      *
      * @return {@code true} if the table was created; {@code false} if it already existed.
@@ -148,7 +148,7 @@ public class TableDefinition {
     /**
      * Create all registered indexes for this table.
      *
-     * @param db                     Database Access
+     * @param db                     Underlying database
      * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
      */
     public void createIndices(@NonNull final SQLiteDatabase db,
@@ -224,7 +224,7 @@ public class TableDefinition {
     }
 
     /**
-     * toString() <strong>NOT DEBUG, must only ever return the table name</strong>
+     * toString() <strong>NOT DEBUG, must only ever return the table name</strong>.
      * <p>
      * useful for using the TableDefinition in place of a table name.
      *
@@ -533,7 +533,7 @@ public class TableDefinition {
     /**
      * Get a description/info structure for this table describing the columns etc.
      *
-     * @param db Database Access
+     * @param db Underlying database
      *
      * @return info object; its details might be empty if the table does not exist.
      */
@@ -557,12 +557,13 @@ public class TableDefinition {
      * Will only add a domain if it's not already present.
      * Otherwise, it is silently skipped.
      *
-     * @param db      Database Access
+     * @param db      Underlying database
      * @param domains to add
      */
     public void alterTableAddColumns(@NonNull final SQLiteDatabase db,
                                      @NonNull final Domain... domains) {
         final TableInfo ti = getTableInfo(db);
+        // SQLite can only add one column at a time, hence, we just loop.
         for (final Domain domain : domains) {
             if (ti.getColumn(domain.getName()) == null) {
                 db.execSQL(ALTER_TABLE_ + name + _ADD_ + domain.def(true));
@@ -576,7 +577,7 @@ public class TableDefinition {
      * Convenience method to use when table columns have changed definitions,
      * but no removals or renames.
      *
-     * @param db Database Access
+     * @param db Underlying database
      *
      * @see #recreate(SQLiteDatabase, Map)
      */
@@ -618,7 +619,7 @@ public class TableDefinition {
      *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
      * </ol>
      *
-     * @param db       Database Access
+     * @param db       Underlying database
      * @param toRename (optional) Map of fields to be renamed
      */
     public void recreate(@NonNull final SQLiteDatabase db,

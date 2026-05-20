@@ -93,7 +93,7 @@ class BaseDaoImpl {
     /**
      * Constructor.
      *
-     * @param db     Underlying database
+     * @param db     Database Access
      * @param logTag of this DAO for logging.
      */
     BaseDaoImpl(@NonNull final SynchronizedDb db,

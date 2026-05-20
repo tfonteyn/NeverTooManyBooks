@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public final class DbDebugUtils {
     /**
      * Dump the content of the given table to the debug output.
      *
-     * @param db        Underlying database
+     * @param db        Database Access
      * @param tableName to dump
      * @param limit     LIMIT limit
      * @param orderBy   ORDER BY orderBy

@@ -97,7 +97,7 @@ public class AuthorDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public AuthorDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

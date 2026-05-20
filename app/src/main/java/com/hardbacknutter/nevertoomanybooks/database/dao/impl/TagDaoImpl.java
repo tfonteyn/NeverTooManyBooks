@@ -79,7 +79,7 @@ public class TagDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public TagDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

@@ -70,7 +70,7 @@ public class SeriesDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public SeriesDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

@@ -98,7 +98,7 @@ public class BookshelfDaoImpl
     /**
      * Constructor.
      *
-     * @param db                   Underlying database
+     * @param db                   Database Access
      * @param stylesHelperSupplier deferred supplier for the {@link StylesHelper}
      */
     public BookshelfDaoImpl(@NonNull final SynchronizedDb db,
@@ -111,7 +111,7 @@ public class BookshelfDaoImpl
      * Run at installation time to add the 'all' and default shelves to the database.
      *
      * @param context Current context
-     * @param db      Database Access
+     * @param db      Underlying database
      */
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {

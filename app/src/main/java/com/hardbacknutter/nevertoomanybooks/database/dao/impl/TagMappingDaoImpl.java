@@ -61,7 +61,7 @@ public class TagMappingDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public TagMappingDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
@@ -85,7 +85,7 @@ public class TagMappingDaoImpl
     /**
      * Run at <strong>installation</strong> time to add the predefined mappings to the database.
      *
-     * @param db Database Access
+     * @param db Underlying database
      *
      * @throws SQLException on failure
      */

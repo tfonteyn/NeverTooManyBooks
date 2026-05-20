@@ -514,7 +514,7 @@ class BooklistBuilder {
      * the resulting flat list table and build the SQL that does the initial table load.
      *
      * @param context        Current context
-     * @param db             Underlying database
+     * @param db             Database Access
      * @param rebuildMode    the mode to use for restoring the saved state.
      * @param searchCriteria filters to add
      *

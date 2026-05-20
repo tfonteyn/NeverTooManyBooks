@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@ public class InlineStringDaoImpl
     /**
      * Constructor.
      *
-     * @param db         Underlying database
+     * @param db         Database Access
      * @param logTag     of this DAO for logging
      * @param columnName the name of the inline column
      */

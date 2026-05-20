@@ -55,7 +55,7 @@ public class CalibreCustomFieldDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public CalibreCustomFieldDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
@@ -64,7 +64,7 @@ public class CalibreCustomFieldDaoImpl
     /**
      * Run at installation time a set of default fields.
      *
-     * @param db Database Access
+     * @param db Underlying database
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         //noinspection CheckStyle

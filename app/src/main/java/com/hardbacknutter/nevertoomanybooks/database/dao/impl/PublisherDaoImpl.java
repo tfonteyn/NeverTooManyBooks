@@ -68,7 +68,7 @@ public class PublisherDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public PublisherDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

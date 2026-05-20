@@ -65,7 +65,7 @@ public class IdentifierDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public IdentifierDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
@@ -74,7 +74,7 @@ public class IdentifierDaoImpl
     /**
      * Constructor.
      *
-     * @param db     Underlying database
+     * @param db     Database Access
      * @param logTag of this DAO for logging.
      */
     IdentifierDaoImpl(@NonNull final SynchronizedDb db,
@@ -88,7 +88,7 @@ public class IdentifierDaoImpl
      * KEEP IN SYNC WITH restore.
      *
      * @param context Current context
-     * @param db      Database Access
+     * @param db      Underlying database
      *
      * @throws SQLException on failure
      * @see #restore(Context)

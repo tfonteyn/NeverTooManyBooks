@@ -86,7 +86,7 @@ public class FtsDaoImpl
     /**
      * Constructor.
      *
-     * @param db                   Underlying database
+     * @param db                   Database Access
      * @param ftsDaoHelperSupplier deferred supplier for the {@link FtsDaoHelper}
      * @param stylesHelperSupplier deferred supplier for the {@link StylesHelper}
      */

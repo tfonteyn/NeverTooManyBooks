@@ -83,7 +83,7 @@ public class TocEntryDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public TocEntryDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

@@ -54,7 +54,7 @@ public class LanguageDaoImpl
     /**
      * Constructor.
      *
-     * @param db                Underlying database
+     * @param db                Database Access
      * @param languagesSupplier deferred supplier for the {@link Languages}
      */
     public LanguageDaoImpl(@NonNull final SynchronizedDb db,

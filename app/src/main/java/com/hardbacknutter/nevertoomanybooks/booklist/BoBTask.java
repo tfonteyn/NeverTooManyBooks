@@ -143,7 +143,7 @@ public class BoBTask
      * Build the temporary list of books.
      *
      * @param context         Current context
-     * @param db              db
+     * @param db              Database Access
      * @param bookshelf       the shelf for which we're building the list
      * @param style           to use
      * @param rebuildMode     see {@link RebuildBooklist}

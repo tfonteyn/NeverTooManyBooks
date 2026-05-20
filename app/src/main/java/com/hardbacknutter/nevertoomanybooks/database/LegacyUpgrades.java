@@ -107,7 +107,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  */
 public final class LegacyUpgrades {
 
-    /** Archive ..7 import. */
+    /**
+     * Archive format v7 and older used individual Identifier/Bundle keys on the book itself.
+     * This maps the old name to the new name.
+     */
     public static final Map<String, String> IDENTIFIERS = Map.of(
             "goodreads_book_id", Identifier.SID_GOODREADS,
             "isfdb_book_id", Identifier.SID_ISFDB,
@@ -214,7 +217,7 @@ public final class LegacyUpgrades {
      * AS USED FOR THE UPGRADE FROM V33 TO V34 ONLY.
      * This creates/expects all columns to be identical except for the sqlite datatype.
      *
-     * @param db Database Access
+     * @param db Underlying database
      * @param td table
      */
     private static void v34RecreateTable(@NonNull final SQLiteDatabase db,
@@ -257,7 +260,7 @@ public final class LegacyUpgrades {
 
     private static void v35AddCitationType(@NonNull final SQLiteDatabase db) {
         // depending on the installation/upgrade path, we might already have
-        // added the CITATION_TYPE column
+        // added the column
         final ColumnInfo citationType = TBL_BOOKLIST_STYLES
                 .getTableInfo(db).getColumn(DBKey.STYLE.CITATION_TYPE);
         if (citationType == null) {
@@ -612,7 +615,6 @@ public final class LegacyUpgrades {
         StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
         // and rebuild both OB columns and the indexes
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_INDEXES, true);
-
     }
 
     static void v49onUpgrade(@NonNull final SQLiteDatabase db) {
@@ -650,7 +652,7 @@ public final class LegacyUpgrades {
      * Called at the end of {@link DBHelper#onUpgrade(SQLiteDatabase, int, int)}.
      * Adds {@link CalibreCustomField}s which were added after the initial app release.
      *
-     * @param db Database Access
+     * @param db Underlying database
      */
     static void addCalibreCustomFields(@NonNull final SQLiteDatabase db) {
         final CalibreCustomField field = new CalibreCustomField("#read_progress",
@@ -790,7 +792,7 @@ public final class LegacyUpgrades {
     /**
      * Check if there is already a row (table/column) with the given value.
      *
-     * @param db              Database Access
+     * @param db              Underlying database
      * @param tableDefinition table to evaluate
      * @param column          to evaluate
      * @param value           to look for
@@ -816,7 +818,7 @@ public final class LegacyUpgrades {
      * Depending on the upgrade path of some users... add the global style
      * if it does not already exist.
      *
-     * @param db Database Access
+     * @param db Underlying database
      */
     static void insertGlobalStyleIfNotYetDone(@NonNull final SQLiteDatabase db) {
         final boolean isPresent;

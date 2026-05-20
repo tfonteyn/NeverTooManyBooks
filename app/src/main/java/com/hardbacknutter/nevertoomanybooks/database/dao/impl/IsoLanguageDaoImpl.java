@@ -47,7 +47,7 @@ public class IsoLanguageDaoImpl
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db Database Access
      */
     public IsoLanguageDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);

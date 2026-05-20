@@ -114,7 +114,7 @@ public class BookDaoImpl
     /**
      * Constructor.
      *
-     * @param db           Underlying database
+     * @param db           Database Access
      * @param systemLocale the system Locale
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,

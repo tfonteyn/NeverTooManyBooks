@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ public class TableInfo {
     /**
      * Constructor.
      *
-     * @param db        Database Access
+     * @param db        Underlying database
      * @param tableName name of table
      */
     TableInfo(@NonNull final SQLiteDatabase db,
@@ -92,7 +92,7 @@ public class TableInfo {
     /**
      * Get the column details for the given table.
      *
-     * @param db        Database Access
+     * @param db        Underlying database
      * @param tableName Name of the database table to lookup
      *
      * @return A collection of ColumnInfo objects.

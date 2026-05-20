@@ -57,7 +57,7 @@ public class IdentifierValueDaoImpl
     /**
      * Constructor.
      *
-     * @param db        Underlying database
+     * @param db        Database Access
      * @param linkTable either the Author or the Book link table
      * @param fk        either the Author or the Book {@code DBKey.FK_*}
      */
