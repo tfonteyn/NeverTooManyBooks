@@ -55,6 +55,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  * The patterns defined are certainly not foolproof.
  * The extraction of numbers and the meaning of brackets works well enough for books,
  * but a particular pain is the titles/series for comics.
+ * <p>
+ * Not actively used yet, but these are some wikidata claims:
+ * <a href="https://www.wikidata.org/wiki/Property:P179">P179: Series</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P478">P478: volume nr</a>
+ * <p>
+ * <a href="https://www.wikidata.org/wiki/Property:P1235">P1235: ISFDB</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P3589">P3589: Grand Comics Database (GCD) id</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P5792">P5792: NooSFere</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P5905">P5905: Comic Vine</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P6947">P6947: Goodreads</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P7648">P7648: Overdrive</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P8619">P8619: BDGest / Bedetheque?</a>
+ * <a href="https://www.wikidata.org/wiki/Property:P10318">P10318: Douban</a>
  */
 public class Series
         implements Parcelable, Entity, Mergeable {
