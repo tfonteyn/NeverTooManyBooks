@@ -39,6 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -161,11 +162,15 @@ public interface SearchEngine
         ExternalId(ByExternalId.class),
         /**
          * Search with a <strong>VALID</strong> ISBN.
+         *
+         * @see ISBN.Type
          */
         Isbn(ByIsbn.class),
         /**
          * Search with an <strong>INVALID</strong> ISBN or actual barcode.
          * i.e. a code which is specifically supported by the site.
+         *
+         * @see ISBN.Type
          */
         Barcode(ByBarcode.class),
         /**
@@ -261,6 +266,7 @@ public interface SearchEngine
      * Optional. But every engine should really implement this.
      *
      * @see SearchBy#Isbn
+     * @see ISBN.Type
      */
     interface ByIsbn
             extends SearchEngine {
@@ -276,6 +282,8 @@ public interface SearchEngine
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @see ISBN.Type
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
@@ -303,6 +311,7 @@ public interface SearchEngine
      * be properly implemented.
      *
      * @see SearchBy#Barcode
+     * @see ISBN.Type
      */
     interface ByBarcode
             extends ByIsbn {
@@ -321,6 +330,8 @@ public interface SearchEngine
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @see ISBN.Type
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
