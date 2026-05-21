@@ -30,6 +30,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.updates.GenreMigration;
+import com.hardbacknutter.nevertoomanybooks.database.updates.IdentifierMigration;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -304,7 +305,7 @@ public class BookCoder
             }
             default: {
                 // Archive v7 and older used individual Identifier keys
-                final String identifierKey = LegacyUpgrades.IDENTIFIERS.get(key);
+                final String identifierKey = IdentifierMigration.MAPPINGS.get(key);
                 if (identifierKey != null) {
                     final String sid = data.optString(key, null);
                     book.setIdentifierValue(identifierKey, sid);

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
 
@@ -66,13 +65,13 @@ import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteExcep
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
+import com.hardbacknutter.nevertoomanybooks.database.updates.IdentifierMigration;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -322,9 +321,7 @@ public class JsonRecordReader
                     // Backup files could contain the toString representation
                     // of the wikidata author claim id, instead of the id itself.
                     // Repair all builtin Identifiers:
-                    final SQLiteDatabase db = ServiceLocator
-                            .getInstance().getDb().getSQLiteDatabase();
-                    LegacyUpgrades.updateIdentifierWikidataAuthorIdClaims(context, db);
+                    new IdentifierMigration(context).initWikidataAuthorIdClaim(Set.of());
                 }
             } catch (@NonNull final JSONException | UncheckedDaoWriteException e) {
                 // Unpack if possible

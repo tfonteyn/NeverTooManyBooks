@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
+import com.hardbacknutter.nevertoomanybooks.database.updates.IdentifierMigration;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -134,7 +134,7 @@ public enum CsvFormat
     BC(R.string.lbl_book_catalogue) {
         @NonNull
         public String mapColumnName(@NonNull final String name) {
-            final String mapped = LegacyUpgrades.IDENTIFIERS.get(name);
+            final String mapped = IdentifierMigration.MAPPINGS.get(name);
             return mapped == null ? name : mapped;
         }
 

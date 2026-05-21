@@ -31,30 +31,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
+import com.hardbacknutter.nevertoomanybooks.database.updates.Upgrade;
 import com.hardbacknutter.util.logger.LoggerFactory;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -155,35 +147,6 @@ public class DBHelper
     }
 
     /**
-     * Get the physical path of the database file.
-     *
-     * @param context Current context
-     *
-     * @return path
-     */
-    @NonNull
-    public static File getDatabasePath(@NonNull final Context context) {
-        return context.getDatabasePath(DATABASE_NAME);
-    }
-
-    /**
-     * Wrapper to allow
-     * {@link RebuildIndexesTask}.
-     * safe access to the database.
-     */
-    public static void recreateIndices() {
-        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
-        final Synchronizer.SyncLock txLock = db.beginTransaction(true);
-        try {
-            // It IS safe here to get the underlying database, as we're in a SyncLock.
-            recreateIndices(db.getSQLiteDatabase());
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction(txLock);
-        }
-    }
-
-    /**
      * This method should only be called at the *END* of {@link #onUpgrade}.
      * <p>
      * (re)Creates the indexes as defined on the tables.
@@ -279,31 +242,6 @@ public class DBHelper
     }
 
     /**
-     * Disable the Foreign Key Constraints, run the given commands,
-     * and enable the constraint again.
-     *
-     * @param db        Underlying database
-     * @param runInside to run
-     */
-    static void runWithoutConstraints(@NonNull final SQLiteDatabase db,
-                                      @NonNull final Runnable runInside) {
-        // THIS WILL COMMIT ALL PREVIOUS UPDATES
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(false);
-        db.beginTransaction();
-
-        runInside.run();
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(true);
-        db.beginTransaction();
-    }
-
-    /**
      * Get the main database.
      *
      * @return database connection
@@ -330,6 +268,23 @@ public class DBHelper
             synchronizedDb.close();
         }
         super.close();
+    }
+
+    /**
+     * Wrapper to allow
+     * {@link RebuildIndexesTask}.
+     * safe access to the database.
+     */
+    public void recreateIndices() {
+        final SynchronizedDb db = getDb();
+        final Synchronizer.SyncLock txLock = db.beginTransaction(true);
+        try {
+            // It IS safe here to get the underlying database, as we're in a SyncLock.
+            recreateIndices(db.getSQLiteDatabase());
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction(txLock);
+        }
     }
 
     @Override
@@ -364,7 +319,7 @@ public class DBHelper
         TagMappingDaoImpl.onPostCreate(db);
 
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
-        TBL_FTS_BOOKS.create(db, false);
+        DBDefinitions.TBL_FTS_BOOKS.create(db, false);
 
         Triggers.create(db);
     }
@@ -383,138 +338,25 @@ public class DBHelper
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final Context context = serviceLocator.getLocalizedAppContext();
 
+        if (oldVersion < 23) {
+            throw new UpgradeFailedException(
+                    context.getString(R.string.error_upgrade_not_supported, "4.0.0"));
+        }
+
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
             startup.onProgress(context.getString(R.string.progress_msg_upgrading));
         }
 
+        final Upgrade upgrade = new Upgrade(context, db);
+
         // take a backup before modifying the database
         if (oldVersion != newVersion) {
-            final String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
-            try {
-                final File destFile = new File(serviceLocator.getUpgradesDir(), backup);
-                // rename the existing file if there is one
-                if (destFile.exists()) {
-                    final File destination = new File(destFile.getPath() + ".bak");
-                    try {
-                        FileUtils.rename(destFile, destination);
-                    } catch (@NonNull final IOException e) {
-                        LoggerFactory.getLogger()
-                                     .e(TAG, e, "failed to rename source=" + destFile
-                                                + " TO destination=" + destination, e);
-                    }
-                }
-                // and create a new copy
-                FileUtils.copy(new File(db.getPath()), destFile);
-            } catch (@NonNull final IOException e) {
-                LoggerFactory.getLogger().e(TAG, e);
-            }
+            upgrade.backup(serviceLocator.getUpgradesDir(),
+                           DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion);
         }
 
-        if (oldVersion < 23) {
-            throw new UpgradeFailedException(
-                    context.getString(R.string.error_upgrade_not_supported, "4.0.0"));
-        }
-        if (oldVersion < 24) {
-            LegacyUpgrades.v24onUpgrade(db);
-        }
-        if (oldVersion < 25) {
-            LegacyUpgrades.v25onUpgrade(context, db);
-        }
-        if (oldVersion < 26) {
-            LegacyUpgrades.v26onUpgrade(db);
-        }
-        if (oldVersion < 28) {
-            LegacyUpgrades.v28onUpgrade(db);
-        }
-        if (oldVersion < 29) {
-            LegacyUpgrades.v29onUpgrade(db);
-        }
-        if (oldVersion < 31) {
-            LegacyUpgrades.v31onUpgrade(db);
-        }
-        if (oldVersion < 32) {
-            LegacyUpgrades.v32onUpgrade(db);
-        }
-        if (oldVersion < 34) {
-            // end/begin Transaction
-            LegacyUpgrades.v34onUpgrade(db);
-        }
-        if (oldVersion < 35) {
-            LegacyUpgrades.v35oUpgrade(context, db);
-        }
-        if (oldVersion < 36) {
-            LegacyUpgrades.v36onUpgrade(db);
-        }
-        if (oldVersion < 37) {
-            // end/begin Transaction
-            LegacyUpgrades.v37onUpgrade(db);
-        }
-        if (oldVersion < 38) {
-            LegacyUpgrades.v38onUpgrade(db);
-        }
-        if (oldVersion < 39) {
-            LegacyUpgrades.v39onUpgrade(db);
-        }
-        if (oldVersion < 40) {
-            LegacyUpgrades.v40onUpgrade(context, db);
-        }
-        if (oldVersion < 41) {
-            LegacyUpgrades.v41onUpgrade(db);
-        }
-        if (oldVersion < 42) {
-            LegacyUpgrades.v42onUpgrade(db, context);
-        }
-        if (oldVersion < 43) {
-            LegacyUpgrades.v43onUpgrade(db);
-        }
-        if (oldVersion < 44) {
-            LegacyUpgrades.v44onUpgrade(context);
-        }
-        if (oldVersion < 45) {
-            LegacyUpgrades.v45onUpgrade(context);
-        }
-        if (oldVersion < 46) {
-            LegacyUpgrades.v46onUpgrade(db, context);
-        }
-        if (oldVersion < 47) {
-            // GitHub #216 fix/improvements
-            CleanOptions.setOptions(Set.of(CleanOptions.ResolveAuthors));
-            StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, true);
-        }
-        if (oldVersion < 48) {
-            // Nothing, but we needed to trigger recreating the indexes
-        }
-        if (oldVersion < 49) {
-            LegacyUpgrades.v49onUpgrade(db);
-        }
-        if (oldVersion < 50) {
-            // GitHub #231: bug in backup/json/coders/IdentifierCoder
-            // Backup files could contain the toString representation
-            // of the wikidata author claim id, instead of the id itself.
-            // Repair all builtin Identifiers:
-            LegacyUpgrades.updateIdentifierWikidataAuthorIdClaims(context, db);
-        }
-        if (oldVersion < 51) {
-            // Nothing, but we needed to trigger the below call to addCalibreCustomFields
-        }
-
-        // We have to do this here as we're always inserting all columns,
-        // which may be created at various points in the updates.
-        // Any identifier already existing will simply be skipped.
-        // See GitHub #185
-        LegacyUpgrades.addIdentifiersIfNotYetDone(context, db);
-
-        // Same as above, but for Calibre.
-        LegacyUpgrades.addCalibreCustomFields(db);
-
-        // We have to do this here due to some users skipping updates (see GitHub #30)
-        // The issue is that this only works OK if the TBL_BOOKLIST_STYLES contains
-        // ALL columns at the time we're executing it.
-        LegacyUpgrades.insertGlobalStyleIfNotYetDone(db);
-
-        // Migrate any FieldVisibility keys + remove all obsolete keys
-        LegacyUpgrades.migratePreferenceKeys(context);
+        upgrade.upgrade(oldVersion);
 
         // Rebuild all indices
         recreateIndices(db);
