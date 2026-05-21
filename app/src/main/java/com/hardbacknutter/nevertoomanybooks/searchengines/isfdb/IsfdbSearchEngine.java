@@ -665,8 +665,7 @@ public class IsfdbSearchEngine
 
                     } else if (author == null && href.contains(CGI_EA)) {
                         author = Author.from(cleanName(a));
-                        final String url = a.attr("href");
-                        final Matcher matcher = AUTHOR_ID.matcher(url);
+                        final Matcher matcher = AUTHOR_ID.matcher(href);
                         if (matcher.find()) {
                             final String siId = matcher.group(1);
                             if (siId != null) {
