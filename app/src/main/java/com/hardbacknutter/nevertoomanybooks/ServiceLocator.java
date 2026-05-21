@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -95,6 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.updates.PreferenceKeyMigration;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -358,7 +358,7 @@ public final class ServiceLocator {
         fieldVisibility = null;
 
         // Migrate/remove any obsolete keys
-        LegacyUpgrades.migratePreferenceKeys(appContext);
+        PreferenceKeyMigration.migrate(appContext);
     }
 
     /**
