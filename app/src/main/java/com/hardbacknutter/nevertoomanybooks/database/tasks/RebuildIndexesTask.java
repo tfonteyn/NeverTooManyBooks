@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 
 /**
  * Rebuild all indexes. Can take several seconds.
@@ -62,12 +61,13 @@ public class RebuildIndexesTask
     @WorkerThread
     @NonNull
     protected Boolean doWork() {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Context context = serviceLocator.getLocalizedAppContext();
 
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
         try {
-            DBHelper.recreateIndices();
+            serviceLocator.getDbHelper().recreateIndices();
             return true;
 
         } finally {

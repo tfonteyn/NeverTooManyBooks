@@ -504,11 +504,22 @@ public final class ServiceLocator {
         return notifier;
     }
 
+    @NonNull
+    public DBHelper getDbHelper() {
+        synchronized (this) {
+            if (dbHelper == null) {
+                dbHelper = new DBHelper(appContext);
+            }
+        }
+        return dbHelper;
+    }
+
     /**
      * Main entry point for clients to get the main database.
      * <p>
      * <strong>Dev. note:</strong> This method always returns the same object for
-     * the duration of the apps' life. Our DBHelper caches a single SynchronizedDb,
+     * the duration of the apps' life.
+     * Our {@link DBHelper} caches a single {@link SynchronizedDb},
      * which in turn caches the database from the underlying SQLiteOpenHelper
      * which in turn caches the actual database.
      * Or in short: it's safe to use this as a singleton.
@@ -517,12 +528,7 @@ public final class ServiceLocator {
      */
     @NonNull
     public SynchronizedDb getDb() {
-        synchronized (this) {
-            if (dbHelper == null) {
-                dbHelper = new DBHelper(appContext);
-            }
-        }
-        return dbHelper.getDb();
+        return getDbHelper().getDb();
     }
 
     /**
