@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
+import com.hardbacknutter.nevertoomanybooks.database.updates.GenreMigration;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -298,7 +298,7 @@ public class BookCoder
             case "genre": {
                 // Archive v7 and older used a single string for the genre
                 final String genre = data.getString(key);
-                book.getTags().addAll(LegacyUpgrades.migrateGenre(genre));
+                book.getTags().addAll(GenreMigration.convert(genre));
                 tagMapper.map(context, book);
                 return true;
             }
