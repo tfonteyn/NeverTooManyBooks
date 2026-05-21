@@ -129,7 +129,7 @@ public class DebugReport {
         file.deleteOnExit();
         // Copy the database from the internal protected area to the cache dir
         // so we can create a valid Uri for it.
-        FileUtils.copy(DBHelper.getDatabasePath(context), file);
+        FileUtils.copy(context.getDatabasePath(DBHelper.DATABASE_NAME), file);
         files.add(file);
 
     }

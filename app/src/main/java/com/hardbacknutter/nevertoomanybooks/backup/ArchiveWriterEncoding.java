@@ -153,7 +153,8 @@ public enum ArchiveWriterEncoding
                 return new ZipArchiveWriter(recordTypes, sinceDateTime, destFile);
             }
             case SqLiteDb: {
-                return new DbArchiveWriter(DBHelper.getDatabasePath(context), destFile);
+                final File databasePath = context.getDatabasePath(DBHelper.DATABASE_NAME);
+                return new DbArchiveWriter(databasePath, destFile);
             }
             case Json: {
                 return new JsonArchiveWriter(recordTypes, sinceDateTime, destFile);

@@ -104,7 +104,7 @@ public class DBHelper
     public static final int DATABASE_VERSION = 51;
 
     /** NEVER change this name. */
-    private static final String DATABASE_NAME = "nevertoomanybooks.db";
+    public static final String DATABASE_NAME = "nevertoomanybooks.db";
 
     /** Log tag. */
     private static final String TAG = "DBHelper";
