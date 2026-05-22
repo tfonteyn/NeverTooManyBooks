@@ -31,9 +31,11 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,9 +92,9 @@ public class DoubanSearchEngine
                    SearchEngine.AlternativeEditions<AltEditionDouban> {
 
     /** Main site, but NOT the search site. */
-    public static final String SITE_URL = "https://book.douban.com";
-    public static final String BOOK_URL = "https://book.douban.com/subject/%s";
-    public static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
+    private static final String SITE_URL = "https://book.douban.com";
+    private static final String BOOK_URL = "https://book.douban.com/subject/%s";
+    private static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
 
     private static final Locale SITE_LOCALE = Locale.CHINA;
 
@@ -159,6 +161,26 @@ public class DoubanSearchEngine
                                     SITE_LOCALE)
                 .setIdentifierKey(Identifier.SID_DOUBAN)
                 .setPreferenceFragmentClazz(DoubanPreferencesFragment.class);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.Douban.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_DOUBAN,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_DOUBAN,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P6441")
+        );
     }
 
     @NonNull

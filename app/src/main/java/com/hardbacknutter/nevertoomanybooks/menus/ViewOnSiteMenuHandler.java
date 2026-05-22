@@ -47,6 +47,8 @@ abstract class ViewOnSiteMenuHandler<T>
 
     private final Map<Integer, String> menuIds = new HashMap<>();
 
+    @NonNull
+    private final Identifier.EntityType entityType;
     @IdRes
     private final int subMenuResId;
     @IdRes
@@ -54,16 +56,15 @@ abstract class ViewOnSiteMenuHandler<T>
 
     private final IdentifierDao dao;
 
-    ViewOnSiteMenuHandler(@IdRes final int subMenuResId,
+    ViewOnSiteMenuHandler(@NonNull final Identifier.EntityType entityType,
+                          @IdRes final int subMenuResId,
                           @IdRes final int menuGroupResId) {
+        this.entityType = entityType;
         this.subMenuResId = subMenuResId;
         this.menuGroupResId = menuGroupResId;
 
         dao = ServiceLocator.getInstance().getIdentifierDao();
     }
-
-    @NonNull
-    abstract Optional<String> getUri(@NonNull Identifier identifier);
 
     @NonNull
     abstract List<Identifier.Value> getSids(@NonNull T data);
@@ -111,9 +112,9 @@ abstract class ViewOnSiteMenuHandler<T>
         getSids(data)
                 .stream()
                 .map(Identifier.Value::getKey)
-                .map(dao::findByKey)
+                .map((String key) -> dao.findByKey(key, entityType))
                 .flatMap(Optional::stream)
-                .filter(identifier -> getUri(identifier).isPresent())
+                .filter(identifier -> identifier.getUri().isPresent())
                 .forEach(identifier -> {
                              // generate a random id, and map it to the key
                              final int menuItemId = View.generateViewId();
@@ -141,8 +142,8 @@ abstract class ViewOnSiteMenuHandler<T>
         }
 
         final Optional<String> oUri = dao
-                .findByKey(key)
-                .flatMap(this::getUri);
+                .findByKey(key, entityType)
+                .flatMap(Identifier::getUri);
 
         // Sanity check, it should be there!
         if (oUri.isPresent()) {

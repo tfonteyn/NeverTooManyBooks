@@ -58,8 +58,8 @@ public class IdentifierValueDaoImpl
      * Constructor.
      *
      * @param db        Database Access
-     * @param linkTable either the Author or the Book link table
-     * @param fk        either the Author or the Book {@code DBKey.FK_*}
+     * @param linkTable the link table between entity and Identifiers
+     * @param fk        the foreign key {@code DBKey.FK_*} between the tables
      */
     public IdentifierValueDaoImpl(@NonNull final SynchronizedDb db,
                                   @NonNull final TableDefinition linkTable,
@@ -69,7 +69,8 @@ public class IdentifierValueDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@IntRange(from = 1) final long fkId,
+    public void insertOrUpdate(@NonNull final Identifier.EntityType entityType,
+                               @IntRange(from = 1) final long fkId,
                                @NonNull final Collection<Identifier.Value> list)
             throws DaoInsertException, DaoUpdateException {
 
@@ -95,9 +96,9 @@ public class IdentifierValueDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(sql.INSERT_LINK)) {
             for (final Identifier.Value iv : list) {
 
-                Identifier identifier = findByKey(iv.getKey()).orElse(null);
+                Identifier identifier = findByKey(iv.getKey(), entityType).orElse(null);
                 if (identifier == null) {
-                    identifier = new Identifier(iv.getKey());
+                    identifier = new Identifier(iv.getKey(), entityType);
                     insert(identifier);
                 }
                 stmt.bindLong(1, fkId);

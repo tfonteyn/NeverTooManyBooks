@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,16 +20,46 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 /**
  * Italian, defunct but complete until 2011.
  * Likely of little use.
  */
 public final class FantaScienza {
 
-    public static final String SITE_URL = "https://www.fantascienza.com/catalogo/";
-    public static final String BOOK_URL = "https://www.fantascienza.com/catalogo/volumi/NILF%s";
-    public static final String AUTHOR_URL = "https://www.fantascienza.com/catalogo/autori/NILF%s";
+    private static final String SITE_URL = "https://www.fantascienza.com/catalogo/";
+    private static final String BOOK_URL = "https://www.fantascienza.com/catalogo/volumi/NILF%s";
+    private static final String AUTHOR_URL = "https://www.fantascienza.com/catalogo/autori/NILF%s";
 
     private FantaScienza() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_nilf);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_NILF,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_NILF,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P2191")
+        );
     }
 }

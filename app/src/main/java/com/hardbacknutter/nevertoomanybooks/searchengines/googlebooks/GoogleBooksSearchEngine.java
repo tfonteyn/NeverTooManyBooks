@@ -34,11 +34,13 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -95,10 +97,10 @@ public class GoogleBooksSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.CoverByEdition {
 
-    public static final String SITE_URL = "https://books.google.com";
+    private static final String SITE_URL = "https://books.google.com";
     // TODO: 2024-12-30: google has a new link as beta:
     //  "https://www.google.com/books/edition/_/" + externalId;
-    public static final String BOOK_URL = "https://books.google.co.uk/books?id=%s";
+    private static final String BOOK_URL = "https://books.google.co.uk/books?id=%s";
 
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
     private static final String SEARCH = "/books/v1/volumes?q=";
@@ -143,6 +145,19 @@ public class GoogleBooksSearchEngine
                 .setIdentifierKey(Identifier.SID_GOOGLE)
                 .setMultipleCoverSizes(true)
                 .setPreferenceFragmentClazz(GoogleBooksPreferencesFragment.class);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.GoogleBooks.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_GOOGLE,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL)
+        );
     }
 
     @NonNull

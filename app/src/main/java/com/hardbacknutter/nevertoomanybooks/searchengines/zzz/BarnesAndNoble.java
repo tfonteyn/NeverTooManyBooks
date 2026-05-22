@@ -20,11 +20,35 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 public final class BarnesAndNoble {
 
-    public static final String SITE_URL = "https://www.barnesandnoble.com";
-    public static final String BOOK_URL = "https://www.barnesandnoble.com/w/%s";
+    private static final String SITE_URL = "https://www.barnesandnoble.com";
+    private static final String BOOK_URL = "https://www.barnesandnoble.com/w/%s";
 
     private BarnesAndNoble() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_barnesandnoble);
+        return Set.of(
+                // 2025-12-15: no wikidata author claim found
+                Identifier.createBook(
+                        Identifier.SID_BARNES_AND_NOBLE,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL)
+        );
     }
 }

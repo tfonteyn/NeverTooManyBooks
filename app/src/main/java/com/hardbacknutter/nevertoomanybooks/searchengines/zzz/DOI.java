@@ -20,15 +20,38 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 /**
  * @see <a href="https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation">
  *         doi-resolution-documentation</a>
  */
 public final class DOI {
 
-    public static final String SITE_URL = "https://www.doi.org";
-    public static final String BOOK_URL = "https://doi.org/%s";
+    private static final String SITE_URL = "https://www.doi.org";
+    private static final String BOOK_URL = "https://doi.org/%s";
 
     private DOI() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_doi);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_DOI,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL)
+        );
     }
 }

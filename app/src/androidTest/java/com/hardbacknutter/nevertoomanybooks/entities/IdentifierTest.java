@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IdentifierTest
         extends BaseDBTest {
 
-    private static final Pattern PATTERN = Pattern.compile("%s");
+    /** A Uri MUST have this placeholder. */
+    private static final Pattern PLACEHOLDER = Pattern.compile("%s");
 
     @BeforeEach
     void setup()
@@ -47,6 +48,12 @@ class IdentifierTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 
+    /**
+     * Test key duplication and uri containing a placeholder.
+     * Use the pattern from THIS class.
+     *
+     * @see #validateUri()
+     */
     @Test
     void createInitialList() {
         final Set<String> keys = new HashSet<>();
@@ -55,13 +62,14 @@ class IdentifierTest
             assertFalse(keys.contains(key), "Duplicate key: " + key);
             keys.add(key);
 
-            i.getBookUri().ifPresent(bookUri -> assertEquals(
+            i.getUri().ifPresent(uri -> assertEquals(
                     1,
-                    PATTERN.split(bookUri, -1).length - 1,
-                    "Invalid bookUri key: " + key));
+                    PLACEHOLDER.split(uri, -1).length - 1,
+                    "Invalid uri key: " + key));
         });
     }
 
+    /** Test the site Uri, using the utility class. */
     @Test
     void validateSiteUrl() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
@@ -70,18 +78,11 @@ class IdentifierTest
         }
     }
 
+    /** Test the Uri, but using the utility class and NOT the local pattern. */
     @Test
-    void validateBookUri() {
+    void validateUri() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
-            final String uri = identifier.getBookUri().orElse("");
-            assertTrue(UrlPatterns.isBlankOrValidUriWith1s(uri), uri);
-        }
-    }
-
-    @Test
-    void validateAuthorUri() {
-        for (final Identifier identifier : Identifier.createInitialList(context)) {
-            final String uri = identifier.getAuthorUri().orElse("");
+            final String uri = identifier.getUri().orElse("");
             assertTrue(UrlPatterns.isBlankOrValidUriWith1s(uri), uri);
         }
     }

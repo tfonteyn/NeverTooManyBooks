@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -73,8 +74,8 @@ public class BibliotecePlSearchEngine
 
     // The site has no author ids - they use a pure text search when searching
     // all books for a specific author.
-    public static final String SITE_URL = "https://w.bibliotece.pl";
-    public static final String BOOK_URL = "https://w.bibliotece.pl/%s";
+    private static final String SITE_URL = "https://w.bibliotece.pl";
+    private static final String BOOK_URL = "https://w.bibliotece.pl/%s";
 
     private static final Locale SITE_LOCALE = new Locale("pl", "PL");
     // also used as the identifier value
@@ -184,6 +185,18 @@ public class BibliotecePlSearchEngine
                         .build(SearchEngineConfig::new));
     }
 
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.BibliotecePl.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_BIBLIOTECE_PL,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL)
+        );
+    }
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,

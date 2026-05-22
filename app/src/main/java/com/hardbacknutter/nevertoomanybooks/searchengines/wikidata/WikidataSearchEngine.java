@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,8 +25,10 @@ import android.content.Context;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -38,9 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 public class WikidataSearchEngine
         extends SearchEngineBase {
 
-    public static final String SITE_URL = "https://www.wikidata.org";
-    public static final String BOOK_URL = "https://www.wikidata.org/wiki/%s";
-    public static final String AUTHOR_URL = "https://www.wikidata.org/wiki/%s";
+    private static final String SITE_URL = "https://www.wikidata.org";
+    private static final String BOOK_URL = "https://www.wikidata.org/wiki/%s";
+    private static final String AUTHOR_URL = "https://www.wikidata.org/wiki/%s";
 
     private static final String PREFERENCE_KEY = "wikidata";
 
@@ -101,5 +103,25 @@ public class WikidataSearchEngine
                                     "https://www.wikidata.org",
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_WIKIDATA);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.Wikidata.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_WIKIDATA,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_WIKIDATA,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        null)
+        );
     }
 }

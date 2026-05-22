@@ -20,11 +20,41 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 public final class Lccn {
 
-    public static final String SITE_URL = "https://catalog.loc.gov";
-    public static final String BOOK_URL = "https://lccn.loc.gov/%s";
+    private static final String SITE_URL = "https://catalog.loc.gov";
+    private static final String BOOK_URL = "https://lccn.loc.gov/%s";
 
     private Lccn() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_lccn);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_LCCN,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_LCCN,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        null,
+                        "P244")
+        );
     }
 }

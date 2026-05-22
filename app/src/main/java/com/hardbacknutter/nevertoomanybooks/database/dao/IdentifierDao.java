@@ -65,14 +65,16 @@ public interface IdentifierDao {
     Optional<Identifier> findById(@IntRange(from = 1) long id);
 
     /**
-     * Find the {@link Identifier} for the given name.
+     * Find the {@link Identifier} for the given key/EntityType.
      *
-     * @param key of the {@link Identifier}
+     * @param key        of the {@link Identifier}
+     * @param entityType of the {@link Identifier}
      *
      * @return {@link Identifier}
      */
     @NonNull
-    Optional<Identifier> findByKey(@NonNull String key);
+    Optional<Identifier> findByKey(@NonNull String key,
+                                   @NonNull Identifier.EntityType entityType);
 
     /**
      * Convenience method, fetch all {@link Identifier}s, and return them as a List
@@ -82,6 +84,17 @@ public interface IdentifierDao {
      */
     @NonNull
     List<Identifier> getAll();
+
+    /**
+     * Convenience method, fetch all {@link Identifier}s, and return them as a List
+     * ordered by {@link Identifier} name.
+     *
+     * @param entityType to get
+     *
+     * @return a list of all {@link Identifier}s in the database.
+     */
+    @NonNull
+    List<Identifier> getAll(@NonNull Identifier.EntityType entityType);
 
     /**
      * Insert a new {@link Identifier}.

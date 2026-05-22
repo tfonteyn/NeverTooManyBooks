@@ -32,8 +32,10 @@ import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -57,7 +59,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * <a href="https://www.librarything.com/developer/documentation/thingapis">
- * LibraryThing Lightweight APIs</a>
+ * LibraryThing Lightweight APIs</a>.
  * <p>
  * 2025-04-04: the alternative editions api is back but requires registration.
  */
@@ -66,8 +68,8 @@ public class LibraryThingSearchEngine
         implements SearchEngine.AlternativeEditions<AltEditionIsbn>,
                    SearchEngine.UserRegistration {
 
-    public static final String SITE_URL = "https://www.librarything.com";
-    public static final String BOOK_URL = "https://www.librarything.com/work/%s";
+    private static final String SITE_URL = "https://www.librarything.com";
+    private static final String BOOK_URL = "https://www.librarything.com/work/%s";
 
     private static final String TAG = "LibraryThingSearchEngin";
 
@@ -113,6 +115,26 @@ public class LibraryThingSearchEngine
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_LIBRARY_THING)
                 .setPreferenceFragmentClazz(LibraryThingPreferencesFragment.class);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.LibraryThing.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_LIBRARY_THING,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_LIBRARY_THING,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        null,
+                        "P7400")
+        );
     }
 
     @Override

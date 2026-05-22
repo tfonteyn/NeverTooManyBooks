@@ -31,10 +31,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,9 +84,9 @@ public class BnfSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ByText {
 
-    public static final String SITE_URL = "https://www.bnf.fr";
-    public static final String BOOK_URL = "https://catalogue.bnf.fr/ark:/12148/%s";
-    public static final String AUTHOR_URL = "https://catalogue.bnf.fr/ark:/12148/%s";
+    private static final String SITE_URL = "https://www.bnf.fr";
+    private static final String BOOK_URL = "https://catalogue.bnf.fr/ark:/12148/%s";
+    private static final String AUTHOR_URL = "https://catalogue.bnf.fr/ark:/12148/%s";
 
     // also used as the identifier value
     private static final String PREFERENCE_KEY = "bnf";
@@ -175,6 +177,26 @@ public class BnfSearchEngine
                 .setPreferenceFragmentClazz(BnfPreferencesFragment.class)
                 .setConfig(cb -> cb
                         .build(SearchEngineConfig::new));
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.Bnf.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_BNF,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_BNF,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P268")
+        );
     }
 
     @NonNull

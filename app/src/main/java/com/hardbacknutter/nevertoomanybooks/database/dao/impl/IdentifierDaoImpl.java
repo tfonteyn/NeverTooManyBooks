@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -96,7 +96,7 @@ public class IdentifierDaoImpl
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {
         final Collection<Identifier> identifierList = Identifier.createInitialList(context);
-        // This method must run on API 26: Use simple INSERT, and not the UPSERT!
+        // This method must run on API 26: Use a simple INSERT, and not the UPSERT!
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
                 doInsert(identifier, stmt);
@@ -122,16 +122,19 @@ public class IdentifierDaoImpl
      *
      * @throws DaoInsertException on failure
      */
-    private static long doInsert(@NonNull final Identifier identifier,
+    public static long doInsert(@NonNull final Identifier identifier,
                                  @NonNull final ExtSQLiteStatement stmt)
             throws DaoInsertException {
-        stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
-        stmt.bindString(2, String.valueOf(identifier.getType()));
-        stmt.bindString(3, identifier.getName());
-        stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
-        stmt.bindString(5, identifier.getSiteUrl());
-        stmt.bindString(6, identifier.getBookUri().orElse(null));
-        stmt.bindString(7, identifier.getAuthorUri().orElse(null));
+        int c = 0;
+        stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
+        stmt.bindLong(++c, identifier.getEntityType().getId());
+
+        stmt.bindString(++c, String.valueOf(identifier.getType()));
+        stmt.bindString(++c, identifier.getName());
+
+        stmt.bindString(++c, identifier.getWikidataClaim().orElse(null));
+        stmt.bindString(++c, identifier.getSiteUrl());
+        stmt.bindString(++c, identifier.getUri().orElse(null));
         final long iId = stmt.executeInsert();
 
         if (iId != -1) {
@@ -154,15 +157,18 @@ public class IdentifierDaoImpl
     private static void doUpdate(@NonNull final Identifier identifier,
                                  @NonNull final SynchronizedStatement stmt)
             throws DaoUpdateException {
-        stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
-        stmt.bindString(2, String.valueOf(identifier.getType()));
-        stmt.bindString(3, identifier.getName());
-        stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
-        stmt.bindString(5, identifier.getSiteUrl());
-        stmt.bindString(6, identifier.getBookUri().orElse(null));
-        stmt.bindString(7, identifier.getAuthorUri().orElse(null));
+        int c = 0;
+        stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
+        stmt.bindLong(++c, identifier.getEntityType().getId());
 
-        stmt.bindLong(8, identifier.getId());
+        stmt.bindString(++c, String.valueOf(identifier.getType()));
+        stmt.bindString(++c, identifier.getName());
+
+        stmt.bindString(++c, identifier.getWikidataClaim().orElse(null));
+        stmt.bindString(++c, identifier.getSiteUrl());
+        stmt.bindString(++c, identifier.getUri().orElse(null));
+
+        stmt.bindLong(++c, identifier.getId());
         final int rowsAffected = stmt.executeUpdateDelete();
 
         if (rowsAffected > 0) {
@@ -228,13 +234,14 @@ public class IdentifierDaoImpl
         }
 
         long iId;
-        try (SynchronizedStatement stmtFindByKey = db.compileStatement(Sql.FIND_ID_BY_KEY);
+        try (SynchronizedStatement stmtFindByKey = db.compileStatement(Sql.FIND_ID_BY_KEY_AND_ENTITY_TYPE);
              SynchronizedStatement stmtInsert = db.compileStatement(Sql.INSERT);
              SynchronizedStatement stmtUpdate = db.compileStatement(Sql.UPDATE)) {
 
             for (final Identifier identifier : identifierList) {
-                // do we have this key?
+                // do we have this Key/EntityType?
                 stmtFindByKey.bindString(1, identifier.getKey());
+                stmtFindByKey.bindLong(2, identifier.getEntityType().getId());
                 iId = stmtFindByKey.simpleQueryForLongOrZero();
                 if (iId == 0) {
                     // no, add it
@@ -262,8 +269,10 @@ public class IdentifierDaoImpl
 
     @Override
     @NonNull
-    public Optional<Identifier> findByKey(@NonNull final String key) {
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_KEY, new String[]{key})) {
+    public Optional<Identifier> findByKey(@NonNull final String key,
+                                          @NonNull final Identifier.EntityType entityType) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_KEY_AND_ENTITY_TYPE,
+                                         new String[]{key, String.valueOf(entityType.getId())})) {
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Identifier(rowData.getLong(DBKey.PK_ID), rowData));
@@ -278,6 +287,20 @@ public class IdentifierDaoImpl
     public List<Identifier> getAll() {
         final List<Identifier> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL_ORDERED_BY_KEY, null)) {
+            final CursorRow rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new Identifier(rowData.getLong(DBKey.PK_ID), rowData));
+            }
+        }
+        return list;
+    }
+
+    @Override
+    @NonNull
+    public List<Identifier> getAll(@NonNull final Identifier.EntityType entityType) {
+        final List<Identifier> list = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_ALL_BY_ENTITY_ORDERED_BY_KEY,
+                                         new String[]{String.valueOf(entityType.getId())})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Identifier(rowData.getLong(DBKey.PK_ID), rowData));
@@ -315,7 +338,7 @@ public class IdentifierDaoImpl
 
     @Override
     public void fixId(@NonNull final Identifier identifier) {
-        final long found = findByKey(identifier.getKey())
+        final long found = findByKey(identifier.getKey(), identifier.getEntityType())
                 .map(Identifier::getId).orElse(0L);
         identifier.setId(found);
     }
@@ -353,29 +376,33 @@ public class IdentifierDaoImpl
         return false;
     }
 
-    static final class Sql {
+    public static final class Sql {
         /** Insert an {@link Identifier}. */
-        static final String INSERT =
+        public static final String INSERT =
                 INSERT_INTO_ + TBL_IDENTIFIERS.getName()
                 + '(' + DBKey.IDENTIFIERS.KEY
+                + ',' + DBKey.IDENTIFIERS.ENTITY
+
                 + ',' + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME
-                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
+
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM
                 + ',' + DBKey.IDENTIFIERS.SITE_URL
-                + ',' + DBKey.IDENTIFIERS.BOOK_URI
-                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
+                + ',' + DBKey.IDENTIFIERS.URI
                 + ") VALUES(?,?,?,?,?,?,?)";
 
         /** Update an {@link Identifier}. */
         static final String UPDATE =
                 UPDATE_ + TBL_IDENTIFIERS.getName()
                 + _SET_ + DBKey.IDENTIFIERS.KEY + "=?"
+                + ',' + DBKey.IDENTIFIERS.ENTITY + "=?"
+
                 + ',' + DBKey.IDENTIFIERS.TYPE + "=?"
                 + ',' + DBKey.IDENTIFIERS.NAME + "=?"
-                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID + "=?"
+
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM + "=?"
                 + ',' + DBKey.IDENTIFIERS.SITE_URL + "=?"
-                + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=?"
-                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
+                + ',' + DBKey.IDENTIFIERS.URI + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Identifier}. */
@@ -390,40 +417,55 @@ public class IdentifierDaoImpl
         static final String INSERT_BUILTIN =
                 INSERT + "ON CONFLICT(" + DBKey.IDENTIFIERS.KEY + ") DO UPDATE SET "
                 + DBKey.IDENTIFIERS.KEY + "=excluded." + DBKey.IDENTIFIERS.KEY
+                + ',' + DBKey.IDENTIFIERS.ENTITY + "=excluded." + DBKey.IDENTIFIERS.ENTITY
+
                 + ',' + DBKey.IDENTIFIERS.TYPE + "=excluded." + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME + "=excluded." + DBKey.IDENTIFIERS.NAME
-                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
-                + "=excluded." + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
+
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM
+                + "=excluded." + DBKey.IDENTIFIERS.WIKIDATA_CLAIM
                 + ',' + DBKey.IDENTIFIERS.SITE_URL + "=excluded." + DBKey.IDENTIFIERS.SITE_URL
-                + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=excluded." + DBKey.IDENTIFIERS.BOOK_URI
-                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI + "=excluded." + DBKey.IDENTIFIERS.AUTHOR_URI;
+                + ',' + DBKey.IDENTIFIERS.URI + "=excluded." + DBKey.IDENTIFIERS.URI;
 
         static final String SELECT_ALL =
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID,
                                                 DBKey.IDENTIFIERS.KEY,
+                                                DBKey.IDENTIFIERS.ENTITY,
                                                 DBKey.IDENTIFIERS.TYPE,
                                                 DBKey.IDENTIFIERS.NAME,
-                                                DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID,
+                                                DBKey.IDENTIFIERS.WIKIDATA_CLAIM,
                                                 DBKey.IDENTIFIERS.SITE_URL,
-                                                DBKey.IDENTIFIERS.BOOK_URI,
-                                                DBKey.IDENTIFIERS.AUTHOR_URI);
+                                                DBKey.IDENTIFIERS.URI);
 
+        /**
+         * ALL rows.
+         */
         static final String SELECT_ALL_ORDERED_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
-                + _ORDER_BY_ + DBKey.IDENTIFIERS.KEY;
+                + _ORDER_BY_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY);
+
+        /**
+         * All rows for a given {@link Identifier.EntityType}.
+         */
+        static final String SELECT_ALL_BY_ENTITY_ORDERED_BY_KEY =
+                SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.ENTITY) + "=?"
+                + _ORDER_BY_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY);
 
         static final String FIND_BY_ID =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.PK_ID) + "=?";
 
-        static final String FIND_BY_KEY =
+        static final String FIND_BY_KEY_AND_ENTITY_TYPE =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
-                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
+                + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.ENTITY) + "=?";
 
-        static final String FIND_ID_BY_KEY =
+        static final String FIND_ID_BY_KEY_AND_ENTITY_TYPE =
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID)
                 + _FROM_ + TBL_IDENTIFIERS.ref()
-                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
+                + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.ENTITY) + "=?";
 
         private Sql() {
         }

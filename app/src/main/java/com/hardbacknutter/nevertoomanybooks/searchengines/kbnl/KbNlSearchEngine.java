@@ -30,9 +30,11 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -71,9 +73,9 @@ public class KbNlSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.CoverByEdition {
 
-    public static final String SITE_URL = "https://www.kb.nl";
-    public static final String BOOK_URL = "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
-    public static final String AUTHOR_URL = "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s";
+    private static final String SITE_URL = "https://www.kb.nl";
+    private static final String BOOK_URL = "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
+    private static final String AUTHOR_URL = "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -163,6 +165,26 @@ public class KbNlSearchEngine
                 .setIdentifierKey(Identifier.SID_KBNL)
                 .setMultipleCoverSizes(true)
                 .setPreferenceFragmentClazz(KbNlPreferencesFragment.class);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.KbNl.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_KBNL,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_KBNL,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P1006")
+        );
     }
 
     @Override

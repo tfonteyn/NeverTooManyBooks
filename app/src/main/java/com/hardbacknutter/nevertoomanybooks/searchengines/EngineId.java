@@ -660,6 +660,13 @@ public enum EngineId
             this.defaultLocale = defaultLocale;
         }
 
+        /**
+         * Set the class which will allow the user to see/edit the Settings.
+         *
+         * @param clazz a Fragment
+         *
+         * @return {@code this} (for chaining)
+         */
         public Builder setPreferenceFragmentClazz(@NonNull final Class<? extends Fragment> clazz) {
             preferenceFragmentClazz = clazz;
             return this;
@@ -667,6 +674,8 @@ public enum EngineId
 
         /**
          * Set the {@link Identifier} for the website specific identifier for a book.
+         * <p>
+         * FIXME: we're relying on book and author identifiers have the same key.
          *
          * @param identifierKey key
          *
@@ -678,12 +687,27 @@ public enum EngineId
             return this;
         }
 
+        /**
+         * Does the site support multiple cover sizes.
+         *
+         * @param supports flag
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         public Builder setMultipleCoverSizes(final boolean supports) {
             this.multipleCoverSizes = supports;
             return this;
         }
 
+        /**
+         * Finish building. The consumer can be used to add configuration tuning,
+         * and must end with calling {@link SearchEngineConfig.Builder#build}
+         *
+         * @param configConsumer to finish off
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         public Builder setConfig(
                 @NonNull final Function<SearchEngineConfig.Builder, SearchEngineConfig>

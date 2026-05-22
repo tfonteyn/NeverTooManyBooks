@@ -30,26 +30,31 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-// FIXME: BL links disabled for now due to https://www.bl.uk/cyber-incident/
-// There is also the British National Bibliography ??
-public final class BL {
+/**
+ * The ISNI site.
+ *
+ * @see com.hardbacknutter.nevertoomanybooks.core.utils.ISNI
+ */
+public final class ISNI {
 
-    private static final String SITE_URL = "https://www.bl.uk";
+    private static final String SITE_URL = "https://isni.org/";
+    /** Leading {@code 0}'s <strong>MUST</strong> be present. */
+    private static final String AUTHOR_URL = "https://isni.org/isni/%s";
 
-    private BL() {
+    private ISNI() {
     }
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = context.getString(R.string.identifier_british_library);
+        final String name = context.getString(R.string.identifier_isni);
         return Set.of(
-                // 2025-12-15: no wikidata author claim found
-                Identifier.createBook(
-                        Identifier.SID_BRITISH_LIBRARY,
+                Identifier.createAuthor(
+                        Identifier.SID_ISNI,
                         Identifier.Type.Text,
                         name,
                         SITE_URL,
-                        null)
+                        AUTHOR_URL,
+                        "P213")
         );
     }
 }

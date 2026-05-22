@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,12 +20,42 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 public final class StoryGraph {
 
-    public static final String SITE_URL = "https://www.thestorygraph.com/";
-    public static final String BOOK_URL = "https://app.thestorygraph.com/books/%s";
-    public static final String AUTHOR_URL = "https://app.thestorygraph.com/authors/%s";
+    private static final String SITE_URL = "https://www.thestorygraph.com/";
+    private static final String BOOK_URL = "https://app.thestorygraph.com/books/%s";
+    private static final String AUTHOR_URL = "https://app.thestorygraph.com/authors/%s";
 
     private StoryGraph() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_storygraph);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_STORYGRAPH,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_STORYGRAPH,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P12430")
+        );
     }
 }

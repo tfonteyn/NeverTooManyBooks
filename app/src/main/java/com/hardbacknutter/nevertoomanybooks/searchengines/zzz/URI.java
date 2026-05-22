@@ -30,25 +30,28 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-// FIXME: BL links disabled for now due to https://www.bl.uk/cyber-incident/
-// There is also the British National Bibliography ??
-public final class BL {
+public final class URI {
 
-    private static final String SITE_URL = "https://www.bl.uk";
-
-    private BL() {
+    private URI() {
     }
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = context.getString(R.string.identifier_british_library);
+        final String name = context.getString(R.string.identifier_uri);
         return Set.of(
-                // 2025-12-15: no wikidata author claim found
+                // the bookUrl/authorUrl IS the sid
                 Identifier.createBook(
-                        Identifier.SID_BRITISH_LIBRARY,
+                        Identifier.SID_URI,
                         Identifier.Type.Text,
                         name,
-                        SITE_URL,
+                        null,
+                        "%s"),
+                Identifier.createAuthor(
+                        Identifier.SID_URI,
+                        Identifier.Type.Text,
+                        name,
+                        null,
+                        "%s",
                         null)
         );
     }

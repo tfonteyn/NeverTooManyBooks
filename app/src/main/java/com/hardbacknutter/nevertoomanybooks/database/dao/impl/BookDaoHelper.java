@@ -339,7 +339,7 @@ public class BookDaoHelper {
         // We need to recollect these here, as they can be updated
         // by a previous book processing.
         final Map<String, Identifier.Type> map = identifierDao
-                .getAll()
+                .getAll(Identifier.EntityType.Book)
                 .stream()
                 .collect(Collectors.toMap(Identifier::getKey, Identifier::getType));
 

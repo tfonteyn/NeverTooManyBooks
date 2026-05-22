@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -548,7 +549,8 @@ public class AuthorDaoImpl
             if (iId != -1) {
                 author.setId(iId);
 
-                authorIdentifierDao.insertOrUpdate(author.getId(), author.getIdentifiers());
+                authorIdentifierDao.insertOrUpdate(Identifier.EntityType.Author,
+                                                   author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {
@@ -600,7 +602,8 @@ public class AuthorDaoImpl
             }
 
             if (rowsAffected > 0) {
-                authorIdentifierDao.insertOrUpdate(author.getId(), author.getIdentifiers());
+                authorIdentifierDao.insertOrUpdate(Identifier.EntityType.Author,
+                                                   author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {

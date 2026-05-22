@@ -30,25 +30,21 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-// FIXME: BL links disabled for now due to https://www.bl.uk/cyber-incident/
-// There is also the British National Bibliography ??
-public final class BL {
+public final class URN {
 
-    private static final String SITE_URL = "https://www.bl.uk";
-
-    private BL() {
+    private URN() {
     }
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = context.getString(R.string.identifier_british_library);
+        final String name = context.getString(R.string.identifier_urn);
         return Set.of(
-                // 2025-12-15: no wikidata author claim found
+                // A URN site does not exist of course, lets point the user to wikipedia
                 Identifier.createBook(
-                        Identifier.SID_BRITISH_LIBRARY,
+                        Identifier.SID_URN,
                         Identifier.Type.Text,
                         name,
-                        SITE_URL,
+                        "https://en.wikipedia.org/wiki/Uniform_Resource_Name",
                         null)
         );
     }

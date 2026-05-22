@@ -38,13 +38,14 @@ public class IdentifierCoder
         final JSONObject out = new JSONObject();
         out.put(DBKey.PK_ID, identifier.getId());
         out.put(DBKey.IDENTIFIERS.KEY, identifier.getKey());
+        out.put(DBKey.IDENTIFIERS.ENTITY, identifier.getEntityType().getId());
+
         out.put(DBKey.IDENTIFIERS.TYPE, identifier.getType().getId());
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
-        identifier.getWikidataClaimAuthorId().ifPresent(
-                s -> out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, s));
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl());
-        identifier.getBookUri().ifPresent(s -> out.put(DBKey.IDENTIFIERS.BOOK_URI, s));
-        identifier.getAuthorUri().ifPresent(s -> out.put(DBKey.IDENTIFIERS.AUTHOR_URI, s));
+
+        identifier.getUri().ifPresent(s -> out.put(DBKey.IDENTIFIERS.URI, s));
+        identifier.getWikidataClaim().ifPresent(s -> out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM, s));
         return out;
     }
 
@@ -53,12 +54,16 @@ public class IdentifierCoder
     public Identifier decode(@NonNull final JSONObject data)
             throws JSONException {
         final String key = data.getString(DBKey.IDENTIFIERS.KEY);
+        final Identifier.EntityType entityType = Identifier.EntityType.byId(
+                data.getInt(DBKey.IDENTIFIERS.ENTITY));
+
         final Identifier.Type type = Identifier.Type.byId(
                 data.getString(DBKey.IDENTIFIERS.TYPE).charAt(0));
         final String name = data.getString(DBKey.IDENTIFIERS.NAME);
+
         @Nullable
-        final String wikidataClaimAuthorId =
-                data.optString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, null);
+        final String wikidataClaim =
+                data.optString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM, null);
         @Nullable
         final String siteUrl = data.optString(DBKey.IDENTIFIERS.SITE_URL, null);
         @Nullable
@@ -66,8 +71,10 @@ public class IdentifierCoder
         @Nullable
         final String authorUrl = data.optString(DBKey.IDENTIFIERS.AUTHOR_URI, null);
 
-        final Identifier identifier = new Identifier(key, type, name, wikidataClaimAuthorId,
-                                                     siteUrl, bookUrl, authorUrl);
+        final Identifier identifier = new Identifier(key, entityType, type, name,
+                                                     siteUrl,
+                                                     bookUrl,
+                                                     authorUrl, wikidataClaim);
         identifier.setId(data.getLong(DBKey.PK_ID));
         return identifier;
     }

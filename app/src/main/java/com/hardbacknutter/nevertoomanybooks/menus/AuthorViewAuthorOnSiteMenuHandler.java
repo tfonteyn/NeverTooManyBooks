@@ -45,13 +45,7 @@ public class AuthorViewAuthorOnSiteMenuHandler
      * Constructor.
      */
     public AuthorViewAuthorOnSiteMenuHandler() {
-        super(R.id.SUBMENU_VIEW_AUTHOR_ON_SITE, 0);
-    }
-
-    @NonNull
-    @Override
-    Optional<String> getUri(@NonNull final Identifier identifier) {
-        return identifier.getAuthorUri();
+        super(Identifier.EntityType.Author, R.id.SUBMENU_VIEW_AUTHOR_ON_SITE, 0);
     }
 
     @NonNull

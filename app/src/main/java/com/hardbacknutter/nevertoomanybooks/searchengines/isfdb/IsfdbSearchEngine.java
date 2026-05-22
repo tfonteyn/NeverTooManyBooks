@@ -42,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,9 +108,9 @@ public class IsfdbSearchEngine
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionIsfdb> {
 
-    public static final String SITE_URL = "https://www.isfdb.org";
-    public static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
-    public static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
+    private static final String SITE_URL = "https://www.isfdb.org";
+    private static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
+    static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
 
     private static final Locale SITE_LOCALE = Locale.US;
 
@@ -336,6 +337,26 @@ public class IsfdbSearchEngine
                         .setConnectTimeoutMs(20_000)
                         .setReadTimeoutMs(60_000)
                         .build(SearchEngineConfig::new));
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.Isfdb.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_ISFDB,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_ISFDB,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P1233")
+        );
     }
 
     @Override

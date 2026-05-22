@@ -30,11 +30,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -110,9 +112,9 @@ public class DnbSearchEngine
                    SearchEngine.ByText {
 
     /** Main site, but NOT the search site. */
-    public static final String SITE_URL = "https://www.dnb.de";
-    public static final String BOOK_URL = "https://d-nb.info/%s";
-    public static final String AUTHOR_URL = "https://d-nb.info/gnd/%s";
+    private static final String SITE_URL = "https://www.dnb.de";
+    private static final String BOOK_URL = "https://d-nb.info/%s";
+    private static final String AUTHOR_URL = "https://d-nb.info/gnd/%s";
 
     private static final String TAG = "DnbSearchEngine";
 
@@ -238,6 +240,26 @@ public class DnbSearchEngine
                 .setConfig(cb -> cb
                         .setThrottlerDelayInMs(THROTTLER_DELAY_IN_MS)
                         .build(SearchEngineConfig::new));
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.Dnb.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_DNB,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_DNB,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P7902")
+        );
     }
 
     @NonNull

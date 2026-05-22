@@ -22,7 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -75,6 +77,8 @@ public class IdentifiersEditorFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "IdentifiersEditorFrag";
+    static final String BKEY_ENTITY_TYPE = TAG + ":et";
+
     private static final String RK_MENU = TAG + ":rk:menu";
     private static final int POS_NEW_ENTRY = -1;
 
@@ -100,12 +104,29 @@ public class IdentifiersEditorFragment
     private ExtMenuLauncher menuLauncher;
     private EditInPlaceParcelableLauncher<Identifier> editLauncher;
 
+    /**
+     * Constructor.
+     *
+     * @param entityType of the list to edit
+     *
+     * @return instance
+     */
+    @NonNull
+    public static IdentifiersEditorFragment create(@NonNull final
+                                                   Identifier.EntityType entityType) {
+        final IdentifiersEditorFragment fragment = new IdentifiersEditorFragment();
+        final Bundle args = new Bundle(1);
+        args.putParcelable(BKEY_ENTITY_TYPE, entityType);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(IdentifiersEditorViewModel.class);
-        vm.init();
+        vm.init(requireArguments());
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -129,6 +150,7 @@ public class IdentifiersEditorFragment
         return vb.getRoot();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -170,6 +192,9 @@ public class IdentifiersEditorFragment
                 });
 
         vb.list.setAdapter(adapter);
+
+        // refresh/restore
+        vm.onUpdate().observe(getViewLifecycleOwner(), aVoid -> adapter.notifyDataSetChanged());
     }
 
     /**
@@ -202,7 +227,7 @@ public class IdentifiersEditorFragment
     private void editEntry(final int position) {
         final Identifier identifier;
         if (position == POS_NEW_ENTRY) {
-            identifier = new Identifier("");
+            identifier = new Identifier("", vm.getEntityType());
         } else {
             identifier = vm.getIdentifiers().get(position);
         }
@@ -212,25 +237,57 @@ public class IdentifiersEditorFragment
 
     @SuppressLint("NotifyDataSetChanged")
     private void onEditEntryDone(@NonNull final Identifier identifier) {
+        // we're lazy...
         vm.refreshList();
-        adapter.notifyDataSetChanged();
     }
 
     /**
      * Prompt the user to delete the given item.
      *
      * @param position the position of the item
+     *
+     * @throws IllegalArgumentException (debug)
      */
     private void deleteEntry(final int position) {
         final Identifier identifier = vm.getIdentifiers().get(position);
-        //noinspection DataFlowIssue
-        StandardDialogs.deleteIdentifier(getContext(), identifier,
-                                         vm.countBooks(identifier),
-                                         vm.countAuthors(identifier),
-                                         () -> {
-                                             vm.delete(identifier);
-                                             adapter.notifyItemRemoved(position);
-                                         });
+
+        final Context context = getContext();
+        @SuppressWarnings("DataFlowIssue")
+        final Resources res = context.getResources();
+
+        final int count = vm.count(identifier);
+        final String msg;
+        switch (identifier.getEntityType()) {
+            case Book: {
+                msg = context.getString(
+                        R.string.confirm_delete_identifier_from_x_books,
+                        identifier.getName(),
+                        res.getQuantityString(R.plurals.n_books, count, count));
+                break;
+            }
+            case Author: {
+                msg = context.getString(
+                        R.string.confirm_delete_identifier_from_x_authors,
+                        identifier.getName(),
+                        res.getQuantityString(R.plurals.n_author, count, count));
+                break;
+            }
+            case Series:
+            case PubSeries: {
+                msg = context.getString(
+                        R.string.confirm_delete_identifier_from_x_series,
+                        identifier.getName(),
+                        res.getQuantityString(R.plurals.n_series, count, count));
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(identifier.getEntityType().toString());
+        }
+
+        StandardDialogs.delete(context, () -> {
+            vm.delete(identifier);
+            adapter.notifyItemRemoved(position);
+        }, msg);
     }
 
     private static class Holder
@@ -341,7 +398,6 @@ public class IdentifiersEditorFragment
             menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_restore_default_identifiers);
         }
 
-        @SuppressLint("NotifyDataSetChanged")
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final int itemId = menuItem.getItemId();
@@ -351,10 +407,14 @@ public class IdentifiersEditorFragment
                 return true;
 
             } else if (itemId == R.id.MENU_RESET) {
+                // we should move this to IdentifiersAdminFragment
+                // but oh well...
+                // we should also warn the user that this is ALL entity-types
+                // but oh well...
+                // In reality, there will be a miniscule number of users using this editor.
                 try {
                     //noinspection DataFlowIssue
                     vm.restoreBuiltin(getContext());
-                    adapter.notifyDataSetChanged();
                 } catch (@NonNull final DaoWriteException e) {
                     ErrorDialog.show(getContext(), TAG, e);
                 }

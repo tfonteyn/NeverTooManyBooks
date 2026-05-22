@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,8 +100,8 @@ public class RISCitation
 
         book.getIdentifiers()
             .forEach(iv -> identifierDao
-                    .findByKey(iv.getKey())
-                    .flatMap(Identifier::getBookUri)
+                    .findByKey(iv.getKey(), Identifier.EntityType.Book)
+                    .flatMap(Identifier::getUri)
                     .ifPresent(bookUri -> sj.add(
                             "UR  - " + String.format(bookUri, iv.getSid()))));
 

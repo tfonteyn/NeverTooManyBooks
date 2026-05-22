@@ -110,8 +110,9 @@ public class EditIdentifierViewModel
             return Optional.empty();
         }
 
-        // Check if there is another one with the same new name.
-        final Optional<Identifier> existingEntity = dao.findByKey(original.getKey());
+        // Check if there is another one with the same new key and entity type.
+        final Optional<Identifier> existingEntity = dao.findByKey(original.getKey(),
+                                                                  original.getEntityType());
         if (existingEntity.isPresent()) {
             return existingEntity;
         }

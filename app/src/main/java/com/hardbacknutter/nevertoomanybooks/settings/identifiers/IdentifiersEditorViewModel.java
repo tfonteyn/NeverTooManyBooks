@@ -21,11 +21,15 @@
 package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -37,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 public class IdentifiersEditorViewModel
         extends ViewModel {
 
+    private final MutableLiveData<Void> onReload = new MutableLiveData<>();
+
     /** Flag set when anything is changed. */
     private boolean modified;
 
@@ -44,19 +50,35 @@ public class IdentifiersEditorViewModel
     private List<Identifier> identifiers;
     private IdentifierValueDao bookIdentifierDao;
     private IdentifierValueDao authorIdentifierDao;
+    private Identifier.EntityType entityType;
+
+    @NonNull
+    LiveData<Void> onUpdate() {
+        return onReload;
+    }
 
     /**
      * Pseudo constructor.
+     *
+     * @param args Bundle with arguments
      */
-    void init() {
-        if (identifierDao == null) {
+    void init(@NonNull final Bundle args) {
+        if (entityType == null) {
+            entityType = Objects.requireNonNull(args.getParcelable(
+                    IdentifiersEditorFragment.BKEY_ENTITY_TYPE));
+
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             identifierDao = serviceLocator.getIdentifierDao();
             bookIdentifierDao = serviceLocator.getBookIdentifierDao();
             authorIdentifierDao = serviceLocator.getAuthorIdentifierDao();
         }
 
-        identifiers = identifierDao.getAll();
+        identifiers = identifierDao.getAll(entityType);
+    }
+
+    @NonNull
+    Identifier.EntityType getEntityType() {
+        return entityType;
     }
 
     /**
@@ -74,7 +96,8 @@ public class IdentifiersEditorViewModel
 
     void refreshList() {
         identifiers.clear();
-        identifiers.addAll(identifierDao.getAll());
+        identifiers.addAll(identifierDao.getAll(entityType));
+        onReload.setValue(null);
     }
 
     @NonNull
@@ -86,8 +109,9 @@ public class IdentifiersEditorViewModel
             throws DaoWriteException {
         identifierDao.restore(context);
         identifiers.clear();
-        identifiers.addAll(identifierDao.getAll());
+        identifiers.addAll(identifierDao.getAll(entityType));
         setModified();
+        onReload.setValue(null);
     }
 
     void delete(@NonNull final Identifier identifier) {
@@ -97,11 +121,14 @@ public class IdentifiersEditorViewModel
         setModified();
     }
 
-    public int countBooks(@NonNull final Identifier identifier) {
-        return bookIdentifierDao.countLinks(identifier);
-    }
-
-    public int countAuthors(@NonNull final Identifier identifier) {
-        return authorIdentifierDao.countLinks(identifier);
+    int count(@NonNull final Identifier identifier) {
+        switch (identifier.getEntityType()) {
+            case Book:
+                return bookIdentifierDao.countLinks(identifier);
+            case Author:
+                return authorIdentifierDao.countLinks(identifier);
+            default:
+                throw new IllegalArgumentException("TODO");
+        }
     }
 }

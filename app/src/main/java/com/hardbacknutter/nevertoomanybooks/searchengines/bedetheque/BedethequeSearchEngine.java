@@ -32,10 +32,12 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.HttpCookie;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -71,7 +73,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
- * <a href="https://www.bedetheque.com/">bedetheque</a>
+ * <a href="https://www.bedetheque.com/">bedetheque</a>.
  * <p>
  * French language (and to some extent other languages) comics.
  * <p>
@@ -86,9 +88,9 @@ public class BedethequeSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId {
 
-    public static final String SITE_URL = "https://www.bedetheque.com";
-    public static final String BOOK_URL = "https://www.bedetheque.com/BD-x-%s.html";
-    public static final String AUTHOR_URL = "https://www.bedetheque.com/auteur-%s-BD-x.html";
+    private static final String SITE_URL = "https://www.bedetheque.com";
+    private static final String BOOK_URL = "https://www.bedetheque.com/BD-x-%s.html";
+    private static final String AUTHOR_URL = "https://www.bedetheque.com/auteur-%s-BD-x.html";
 
     private static final String PREFERENCE_KEY = "bedetheque";
 
@@ -206,6 +208,26 @@ public class BedethequeSearchEngine
                         .setConnectTimeoutMs(15_000)
                         .setReadTimeoutMs(60_000)
                         .build(SearchEngineConfig::new));
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.Bedetheque.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_BEDETHEQUE,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_BEDETHEQUE,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P5491")
+        );
     }
 
     /**

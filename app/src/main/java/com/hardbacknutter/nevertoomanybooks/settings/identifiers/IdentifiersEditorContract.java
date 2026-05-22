@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -50,7 +51,8 @@ public class IdentifiersEditorContract
     public Intent createIntent(@NonNull final Context context,
                                final Void unused) {
         return FragmentHostActivityLauncher
-                .createIntent(context, IdentifiersEditorFragment.class);
+                .createIntent(context, IdentifiersAdminFragment.class,
+                              R.layout.activity_main_tabbar);
     }
 
     @Override

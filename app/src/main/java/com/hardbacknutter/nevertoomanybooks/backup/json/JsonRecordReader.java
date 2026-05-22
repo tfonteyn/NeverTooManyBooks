@@ -321,7 +321,7 @@ public class JsonRecordReader
                     // Backup files could contain the toString representation
                     // of the wikidata author claim id, instead of the id itself.
                     // Repair all builtin Identifiers:
-                    new IdentifierMigration(context).initWikidataAuthorIdClaim(Set.of());
+                    new IdentifierMigration(context).initWikidataClaim(Set.of());
                 }
             } catch (@NonNull final JSONException | UncheckedDaoWriteException e) {
                 // Unpack if possible

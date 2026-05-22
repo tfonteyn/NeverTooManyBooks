@@ -20,10 +20,40 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 public final class KBR {
-    public static final String SITE_URL = "https://opac.kbr.be";
-    public static final String BOOK_URL = "https://opac.kbr.be/Library/doc/SYRACUSE/%s";
+    private static final String SITE_URL = "https://opac.kbr.be";
+    private static final String BOOK_URL = "https://opac.kbr.be/Library/doc/SYRACUSE/%s";
 
     private KBR() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_kbr);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_KBR,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_KBR,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        null,
+                        "P11249")
+        );
     }
 }

@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.updates;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
@@ -28,18 +29,21 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
@@ -47,6 +51,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_ID
  * App 7.0.0 / db 35 introduced the Identifier table.
  */
 public class IdentifierMigration {
+
+    private static final String TAG = "IdentifierMigration";
 
     /**
      * Archive format v7 and older used individual Identifier/Bundle keys on the book itself.
@@ -62,7 +68,6 @@ public class IdentifierMigration {
             "bdt_book_id", Identifier.SID_BEDETHEQUE
     );
 
-    private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
     private static final String UPDATE_ = "UPDATE ";
     private static final String _SET_ = " SET ";
@@ -112,6 +117,7 @@ public class IdentifierMigration {
      * Silently skip if it already exists.
      *
      * @param identifier to add
+     * @throws SQLException on failure
      */
     private void add(@NonNull final Identifier identifier) {
         // key must be unique
@@ -119,47 +125,19 @@ public class IdentifierMigration {
             return;
         }
 
-        try (SQLiteStatement stmt = db.compileStatement(
-                INSERT_INTO_ + TBL_IDENTIFIERS.getName()
-                + '(' + DBKey.IDENTIFIERS.KEY
-                + ',' + DBKey.IDENTIFIERS.TYPE
-                + ',' + DBKey.IDENTIFIERS.NAME
-                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
-                + ',' + DBKey.IDENTIFIERS.SITE_URL
-                + ',' + DBKey.IDENTIFIERS.BOOK_URI
-                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
-                + ") VALUES(?,?,?,?,?,?,?)")) {
-            int c = 0;
-            stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
-            stmt.bindString(++c, String.valueOf(identifier.getType()));
-            stmt.bindString(++c, identifier.getName());
-
-            final String wdc = identifier.getWikidataClaimAuthorId().orElse(null);
-            if (wdc == null) {
-                stmt.bindNull(++c);
-            } else {
-                stmt.bindString(++c, wdc);
-            }
-            final String siteUrl = identifier.getSiteUrl();
-            if (siteUrl == null) {
-                stmt.bindNull(++c);
-            } else {
-                stmt.bindString(++c, siteUrl);
-            }
-            final String bookUrl = identifier.getBookUri().orElse(null);
-            if (bookUrl == null) {
-                stmt.bindNull(++c);
-            } else {
-                stmt.bindString(++c, bookUrl);
-            }
-            final String authorUrl = identifier.getAuthorUri().orElse(null);
-            if (authorUrl == null) {
-                stmt.bindNull(++c);
-            } else {
-                stmt.bindString(++c, authorUrl);
-            }
-
-            stmt.executeInsert();
+        // IdentifierDaoImpl#doInsert(@NonNull final Identifier identifier,
+        //                 .               @NonNull final ExtSQLiteStatement stmt)
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(
+                IdentifierDaoImpl.Sql.INSERT))) {
+            IdentifierDaoImpl.doInsert(identifier, stmt);
+        } catch (@NonNull final SQLException e) {
+            // log... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw e;
+        } catch (@NonNull final DaoInsertException e) {
+            // log, but just rethrow insert errors... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw new SQLException("onPostCreate", e);
         }
     }
 
@@ -207,13 +185,12 @@ public class IdentifierMigration {
     }
 
     /**
-     * Add the column {@link DBKey.IDENTIFIERS#WIKIDATA_CLAIM_AUTHOR_ID} if not yet there.
+     * Add the column {@link DBKey.IDENTIFIERS#WIKIDATA_CLAIM} if not yet there.
      *
      * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
      */
-    public void initWikidataAuthorIdClaim(@NonNull final Set<String> keys) {
-        init(DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID, keys,
-             Identifier::getWikidataClaimAuthorId);
+    public void initWikidataClaim(@NonNull final Set<String> keys) {
+        init(DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM, keys, Identifier::getWikidataClaim);
     }
 
     /**

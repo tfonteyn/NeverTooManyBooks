@@ -30,11 +30,13 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -74,7 +76,7 @@ import com.hardbacknutter.org.json.JSONObject;
 import okhttp3.Request;
 
 /**
- * <a href="https://openlibrary.org/dev/docs/api/search">Open Library Search API</a>
+ * <a href="https://openlibrary.org/dev/docs/api/search">Open Library Search API</a>.
  * <p>
  * 2024-12-02: fetching covers using the
  * "covers": [
@@ -95,9 +97,9 @@ public class OpenLibrarySearchEngine
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
-    public static final String SITE_URL = "https://openlibrary.org";
-    public static final String BOOK_URL = "https://openlibrary.org/books/%s";
-    public static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
+    private static final String SITE_URL = "https://openlibrary.org";
+    private static final String BOOK_URL = "https://openlibrary.org/books/%s";
+    static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
 
     private static final String PREFERENCE_KEY = "openlibrary";
 
@@ -208,6 +210,26 @@ public class OpenLibrarySearchEngine
                 .setIdentifierKey(Identifier.SID_OPEN_LIBRARY)
                 .setMultipleCoverSizes(true)
                 .setPreferenceFragmentClazz(OpenLibraryPreferencesFragment.class);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.OpenLibrary.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_OPEN_LIBRARY,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_OPEN_LIBRARY,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        "P648")
+        );
     }
 
     @Override

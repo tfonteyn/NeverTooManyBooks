@@ -20,11 +20,41 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 public final class Porbase {
 
-    public static final String SITE_URL = "https://porbase.bnportugal.gov.pt";
-    public static final String BOOK_URL = "https://id.bnportugal.gov.pt/bib/porbase/%s";
+    private static final String SITE_URL = "https://porbase.bnportugal.gov.pt";
+    private static final String BOOK_URL = "https://id.bnportugal.gov.pt/bib/porbase/%s";
 
     private Porbase() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_porbase);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_PORBASE,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_PORBASE,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        null,
+                        "P1005")
+        );
     }
 }

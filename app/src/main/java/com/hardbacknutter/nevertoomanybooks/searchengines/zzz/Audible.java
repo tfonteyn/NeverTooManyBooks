@@ -20,14 +20,44 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 // the site redirects to the local country... losing the
 // book/author part... the user will need to update the url's manually
 public final class Audible {
 
-    public static final String SITE_URL = "https://www.audible.com";
-    public static final String BOOK_URL = "https://www.audible.com/pd/%s";
-    public static final String AUTHOR_URL = "https://www.audible.com/author/%s";
+    private static final String SITE_URL = "https://www.audible.com";
+    private static final String BOOK_URL = "https://www.audible.com/pd/%s";
+    private static final String AUTHOR_URL = "https://www.audible.com/author/%s";
 
     private Audible() {
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = context.getString(R.string.identifier_audible);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_AUDIBLE,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_AUDIBLE,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        null)
+        );
     }
 }

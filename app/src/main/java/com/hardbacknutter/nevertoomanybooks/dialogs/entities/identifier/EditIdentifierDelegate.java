@@ -129,9 +129,13 @@ class EditIdentifierDelegate
         TilUtil.autoRemoveError(vb.identifierName, vb.lblIdentifierName);
         TilUtil.autoRemoveError(vb.identifierKey, vb.lblIdentifierKey);
         TilUtil.autoRemoveError(vb.identifierSiteUrl, vb.lblIdentifierSiteUrl);
-        TilUtil.autoRemoveError(vb.identifierBookUri, vb.lblIdentifierBookUri);
-        TilUtil.autoRemoveError(vb.identifierAuthorUri, vb.lblIdentifierAuthorUri);
+        TilUtil.autoRemoveError(vb.identifierBookUri, vb.lblIdentifierUri);
 
+        if (vm.getOriginal().getEntityType() == Identifier.EntityType.Author) {
+            vb.identifierWikidataClaim.setVisibility(View.VISIBLE);
+        } else {
+            vb.identifierWikidataClaim.setVisibility(View.GONE);
+        }
         modelToView();
 
         // Force lower-case a-z and digits only
@@ -176,30 +180,28 @@ class EditIdentifierDelegate
         viewToModel();
 
         final Context context = vb.getRoot().getContext();
-
+        boolean hasError = false;
         final Identifier currentEdit = vm.getCurrentEdit();
         if (currentEdit.getName().isEmpty()) {
             vb.lblIdentifierName.setError(context.getString(R.string.vldt_non_blank_required));
-            return false;
+            hasError = true;
         }
         if (currentEdit.getKey().isEmpty()) {
             vb.lblIdentifierKey.setError(context.getString(R.string.vldt_non_blank_required));
-            return false;
+            hasError = true;
         }
-
         if (!UrlPatterns.isBlankOrValidUrl(currentEdit.getSiteUrl())) {
             vb.lblIdentifierSiteUrl.setError(
                     context.getString(R.string.vldt_blank_or_valid_url_required));
-            return false;
+            hasError = true;
         }
-        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getBookUri().orElse(null))) {
-            vb.lblIdentifierBookUri.setError(
+        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getUri().orElse(null))) {
+            vb.lblIdentifierUri.setError(
                     context.getString(R.string.vldt_blank_or_valid_uri_with_1s_param_required));
-            return false;
+            hasError = true;
         }
-        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getAuthorUri().orElse(null))) {
-            vb.lblIdentifierAuthorUri.setError(
-                    context.getString(R.string.vldt_blank_or_valid_uri_with_1s_param_required));
+
+        if (hasError) {
             return false;
         }
 
@@ -215,6 +217,8 @@ class EditIdentifierDelegate
                 EditInPlaceParcelableLauncher.setResult(owner, requestKey, vm.getOriginal());
                 return true;
             }
+            // Note that the EntityType of the existingEntity will
+            // always be the same as the currentEdit.
 
             // REJECT an already existing Identifier with the same name.
             if (existingEntity.get().getName().equalsIgnoreCase(currentEdit.getName())) {
@@ -247,15 +251,14 @@ class EditIdentifierDelegate
         vb.identifierName.setText(currentEdit.getName());
         vb.identifierKey.setText(currentEdit.getKey());
         vb.identifierSiteUrl.setText(currentEdit.getSiteUrl());
-        vb.identifierBookUri.setText(currentEdit.getBookUri().orElse(""));
-        vb.identifierAuthorUri.setText(currentEdit.getAuthorUri().orElse(""));
+        vb.identifierBookUri.setText(currentEdit.getUri().orElse(""));
 
         // Remove the "P" prefix for easier editing
-        String wdp = currentEdit.getWikidataClaimAuthorId().orElse("");
+        String wdp = currentEdit.getWikidataClaim().orElse("");
         if (wdp.startsWith("P")) {
             wdp = wdp.substring(1);
         }
-        vb.identifierWikidataClaimAuthorId.setText(wdp);
+        vb.identifierWikidataClaim.setText(wdp);
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -264,11 +267,9 @@ class EditIdentifierDelegate
         currentEdit.setName(vb.identifierName.getText().toString().strip());
         currentEdit.setKey(vb.identifierKey.getText().toString().strip());
         currentEdit.setSiteUrl(vb.identifierSiteUrl.getText().toString().strip());
-        currentEdit.setBookUri(vb.identifierBookUri.getText().toString().strip());
-        currentEdit.setAuthorUri(vb.identifierAuthorUri.getText().toString().strip());
+        currentEdit.setUri(vb.identifierBookUri.getText().toString().strip());
 
         // "P" prefix will be added internally
-        currentEdit.setWikidataClaimAuthorId(
-                vb.identifierWikidataClaimAuthorId.getText().toString().strip());
+        currentEdit.setWikidataClaim(vb.identifierWikidataClaim.getText().toString().strip());
     }
 }

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -174,9 +172,9 @@ public final class StandardDialogs {
         delete(context, onConfirm, msg);
     }
 
-    private static void delete(@NonNull final Context context,
-                               @NonNull final Runnable onConfirm,
-                               @NonNull final CharSequence msg) {
+    public static void delete(@NonNull final Context context,
+                              @NonNull final Runnable onConfirm,
+                              @NonNull final CharSequence msg) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
@@ -225,15 +223,31 @@ public final class StandardDialogs {
                                                        .map(a -> a.getLabel(context))
                                                        .collect(Collectors.toList());
 
-            // Format the list of authors as "a1 and a2" or "a1, a2,... and aN"
-            final int lastIndex = authorList.size() - 1;
-            final String csv = String.join(", ", authorNames.subList(0, lastIndex));
-            final String last = authorNames.get(lastIndex);
-            s = context.getString(R.string.list_and, csv, last);
+            s = formatList(context, authorNames);
         }
 
         final String msg = context.getString(R.string.confirm_delete_book, title, s);
         delete(context, onConfirm, msg);
+    }
+
+    /**
+     * Format the list as "a1 and a2" or "a1, a2,... and aN".
+     *
+     * @param context Current context
+     * @param items   to format
+     *
+     * @return formatted string
+     */
+    @NonNull
+    private static String formatList(@NonNull final Context context,
+                                     @NonNull final List<String> items) {
+        final String s;
+        //
+        final int lastIndex = items.size() - 1;
+        final String csv = String.join(", ", items.subList(0, lastIndex));
+        final String last = items.get(lastIndex);
+        s = context.getString(R.string.list_and, csv, last);
+        return s;
     }
 
 
@@ -391,30 +405,4 @@ public final class StandardDialogs {
         delete(context, onConfirm, msg);
     }
 
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context     Current context
-     * @param identifier  we're about to delete
-     * @param bookCount   for the Identifier
-     * @param authorCount for the Identifier
-     * @param onConfirm   Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteIdentifier(@NonNull final Context context,
-                                        @NonNull final Identifier identifier,
-                                        final int bookCount,
-                                        final int authorCount,
-                                        @NonNull final Runnable onConfirm) {
-        final Resources res = context.getResources();
-
-        final String nrOfBooks = res.getQuantityString(R.plurals.n_books,
-                                                       bookCount, bookCount);
-        final String nrOfAuthors = res.getQuantityString(R.plurals.n_author,
-                                                         authorCount, authorCount);
-        final String msg = context.getString(
-                R.string.confirm_delete_identifier_from_x_books,
-                identifier.getName(),
-                res.getString(R.string.list_and, nrOfBooks, nrOfAuthors));
-        delete(context, onConfirm, msg);
-    }
 }

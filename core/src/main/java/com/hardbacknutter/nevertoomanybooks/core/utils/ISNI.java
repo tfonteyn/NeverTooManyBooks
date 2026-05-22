@@ -40,9 +40,6 @@ import java.util.regex.Pattern;
 public class ISNI
         implements Code {
 
-    public static final String SITE_URL = "https://isni.org/";
-    /** Leading {@code 0}'s <strong>MUST</strong> be present. */
-    public static final String AUTHOR_URL = "https://isni.org/isni/%s";
     /** Remove the '-' character and all whitespace. */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[-\\s+]");
     /** 16 zeros for normalizing shorter strings. */

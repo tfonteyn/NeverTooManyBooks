@@ -28,16 +28,14 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
  * <strong>External-id</strong> or <strong>sid</strong>:
- * a book-id/author-id as defined by an external (to this app) source,
+ * a book-id, author-id, ... as defined by an external (to this app) source,
  * usually a website. Hence, <strong>sid</strong>: site-id.
  * <p>
- * <strong>{@link Identifier}</strong>: a NAME for an external/site book-id/author-id.
+ * <strong>{@link Identifier}</strong>: a NAME for an external/site-id.
  * <p>
  * <strong>Note:</strong>'ISBN' has dedicated handling and is NOT included here.
  */
@@ -50,19 +48,21 @@ public interface IdentifierValueDao {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param fkId    foreign-key id: the {@link Book} or {@link Author} id.
-     * @param list    the list of {@link Identifier.Value}s
+     * @param entityType type of the foreign key entity
+     * @param fkId       foreign-key id
+     * @param list       the list of {@link Identifier.Value}s
      *
      * @throws DaoWriteException on failure
      */
-    void insertOrUpdate(@IntRange(from = 1) long fkId,
+    void insertOrUpdate(@NonNull Identifier.EntityType entityType,
+                        @IntRange(from = 1) long fkId,
                         @NonNull Collection<Identifier.Value> list)
             throws DaoWriteException;
 
     /**
      * Get a list of all {@link Identifier.Value}s for the given foreign-key id.
      *
-     * @param fkId foreign-key id: the {@link Book} or {@link Author} id.
+     * @param fkId foreign-key id
      *
      * @return list
      */
@@ -82,7 +82,7 @@ public interface IdentifierValueDao {
      * Get the SID value for the given {@link Identifier} of the given foreign-key id.
      *
      * @param key  to get
-     * @param fkId foreign-key id: the {@link Book} or {@link Author} id.
+     * @param fkId foreign-key id
      *
      * @return sid value
      */

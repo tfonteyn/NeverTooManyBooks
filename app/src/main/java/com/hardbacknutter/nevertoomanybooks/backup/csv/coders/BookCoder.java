@@ -667,7 +667,7 @@ public class BookCoder {
      * @param book the book
      */
     private void processExternalIds(@NonNull final Book book) {
-        final Set<String> known = identifierDao.getAll()
+        final Set<String> known = identifierDao.getAll(Identifier.EntityType.Book)
                                                .stream()
                                                .map(Identifier::getKey)
                                                .collect(Collectors.toSet());

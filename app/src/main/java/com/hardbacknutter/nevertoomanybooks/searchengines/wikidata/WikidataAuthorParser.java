@@ -142,11 +142,11 @@ class WikidataAuthorParser {
         parseDate(claims, P_DEATH_DATE).map(PartialDate::getIsoString)
                                        .ifPresent(author::setDeathDate);
 
-        identifierDao.getAll()
+        identifierDao.getAll(Identifier.EntityType.Author)
                      .stream()
-                     .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
+                     .filter(identifier -> identifier.getWikidataClaim().isPresent())
                      .map(identifier -> parseSid(claims,
-                                                 identifier.getWikidataClaimAuthorId().get(),
+                                                 identifier.getWikidataClaim().get(),
                                                  identifier.getKey()))
                      .flatMap(Optional::stream)
                      .forEach(v -> author.setIdentifierValue(v.getKey(), v.getSid()));

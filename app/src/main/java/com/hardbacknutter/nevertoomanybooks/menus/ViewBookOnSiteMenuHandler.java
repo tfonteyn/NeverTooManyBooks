@@ -47,13 +47,7 @@ public class ViewBookOnSiteMenuHandler
      * Constructor.
      */
     public ViewBookOnSiteMenuHandler() {
-        super(R.id.SUBMENU_VIEW_BOOK_ON_SITE, R.id.MENU_GROUP_BOOK);
-    }
-
-    @NonNull
-    @Override
-    Optional<String> getUri(@NonNull final Identifier identifier) {
-        return identifier.getBookUri();
+        super(Identifier.EntityType.Book, R.id.SUBMENU_VIEW_BOOK_ON_SITE, R.id.MENU_GROUP_BOOK);
     }
 
     @NonNull

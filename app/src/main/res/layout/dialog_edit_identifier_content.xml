@@ -106,7 +106,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_identifier_book_uri"
+            android:id="@+id/lbl_identifier_uri"
             style="@style/TIL.Text"
             android:hint="@string/lbl_book_uri"
             app:layout_constraintEnd_toEndOf="parent"
@@ -125,35 +125,16 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_identifier_author_uri"
-            style="@style/TIL.Text"
-            android:hint="@string/lbl_author_uri"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_identifier_book_uri"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/identifier_author_uri"
-                style="@style/TIE.Generic"
-                android:imeOptions="actionDone"
-                android:inputType="textUri"
-                tools:ignore="LabelFor"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_identifier_wikidata_claim_author_id"
             style="@style/TIL.Text"
             android:hint="@string/lbl_wikidata_claim_author_id"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_identifier_author_uri"
+            app:layout_constraintTop_toBottomOf="@id/lbl_identifier_uri"
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/identifier_wikidata_claim_author_id"
+                android:id="@+id/identifier_wikidata_claim"
                 style="@style/TIE.Number"
                 android:maxLength="6"
                 android:imeOptions="actionDone"

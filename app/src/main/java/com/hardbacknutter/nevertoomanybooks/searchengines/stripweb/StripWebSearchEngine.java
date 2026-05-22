@@ -34,6 +34,7 @@ import androidx.annotation.WorkerThread;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -74,7 +75,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * <a href="https://www.stripweb.be">StripWeb</a>
+ * <a href="https://www.stripweb.be">StripWeb</a>.
  * <p>
  * Dutch language (and to some extent other languages) comics.
  * <p>
@@ -96,7 +97,7 @@ public class StripWebSearchEngine
                    SearchEngine.SearchOnSite {
 
     // Linking to books etc is not possible due to the site tech
-    public static final String SITE_URL = "https://www.stripweb.be";
+    private static final String SITE_URL = "https://www.stripweb.be";
 
     private static final String PREFERENCE_KEY = "stripweb";
 
@@ -171,6 +172,18 @@ public class StripWebSearchEngine
                 .setPreferenceFragmentClazz(StripWebPreferencesFragment.class);
     }
 
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.StripWebBe.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_STRIPWEB,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        null)
+        );
+    }
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,

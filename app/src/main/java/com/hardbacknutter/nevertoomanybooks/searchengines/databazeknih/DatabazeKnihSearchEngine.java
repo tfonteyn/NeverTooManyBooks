@@ -31,11 +31,13 @@ import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -87,10 +89,10 @@ public class DatabazeKnihSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode {
 
-    public static final String SITE_URL = "https://www.databazeknih.cz";
-    public static final String BOOK_URL = "https://www.databazeknih.cz/prehled-knihy/x-%s";
+    private static final String SITE_URL = "https://www.databazeknih.cz";
+    private static final String BOOK_URL = "https://www.databazeknih.cz/prehled-knihy/x-%s";
     // see class docs!
-    public static final String AUTHOR_URL = "https://www.databazeknih.cz/autori/x-%s";
+    static final String AUTHOR_URL = "https://www.databazeknih.cz/autori/x-%s";
 
     private static final String TAG = "DatabazeKnihSearchEngin";
 
@@ -183,6 +185,25 @@ public class DatabazeKnihSearchEngine
                                     new Locale("cs", "CZ"))
                 .setIdentifierKey(Identifier.SID_DATABAZE_KNIH)
                 .setPreferenceFragmentClazz(DatabazeKnihPreferencesFragment.class);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.DatabazeKnih.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_DATABAZE_KNIH,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_DATABAZE_KNIH,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL, "P10387")
+        );
     }
 
     @NonNull

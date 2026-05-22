@@ -379,7 +379,7 @@ class V7 {
     }
 
     private void db42() {
-        identifierMigration.initWikidataAuthorIdClaim(Set.of());
+        identifierMigration.initWikidataClaim(Set.of());
     }
 
     private void db43() {
@@ -447,6 +447,6 @@ class V7 {
         // Backup files could contain the toString representation
         // of the wikidata author claim id, instead of the id itself.
         // Repair ALL builtin Identifiers:
-        identifierMigration.initWikidataAuthorIdClaim(Set.of());
+        identifierMigration.initWikidataClaim(Set.of());
     }
 }

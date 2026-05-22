@@ -2069,7 +2069,7 @@ public class Book
     public void copyExternalIdsFrom(@NonNull final Book bookData) {
         ServiceLocator.getInstance()
                       .getIdentifierDao()
-                      .getAll()
+                      .getAll(Identifier.EntityType.Book)
                       .stream()
                       .map(Identifier::getKey)
                       .filter(bookData::contains)

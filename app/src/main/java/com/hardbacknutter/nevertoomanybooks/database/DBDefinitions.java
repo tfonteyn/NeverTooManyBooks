@@ -251,10 +251,10 @@ public final class DBDefinitions {
     public static final Domain DOM_IDENTIFIER_KEY;
     public static final Domain DOM_IDENTIFIER_TYPE;
     public static final Domain DOM_IDENTIFIER_NAME;
-    public static final Domain DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID;
+    public static final Domain DOM_IDENTIFIER_ENTITY;
+    public static final Domain DOM_IDENTIFIER_WIKIDATA_CLAIM;
     public static final Domain DOM_IDENTIFIER_SITE_URL;
-    public static final Domain DOM_IDENTIFIER_BOOK_URI;
-    public static final Domain DOM_IDENTIFIER_AUTHOR_URI;
+    public static final Domain DOM_IDENTIFIER_URI;
 
     /** {@link #TBL_BOOK_IDENTIFIER}, {@link #TBL_AUTHOR_IDENTIFIER}. */
     public static final Domain DOM_IDENTIFIER_SID;
@@ -1107,6 +1107,12 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.IDENTIFIERS.KEY, SqLiteDataType.Text)
                         .notNull()
                         .build();
+        DOM_IDENTIFIER_ENTITY =
+                new Domain.Builder(DBKey.IDENTIFIERS.ENTITY, SqLiteDataType.Integer)
+                        .notNull()
+                        .withDefault(Identifier.EntityType.Book.getId())
+                        .build();
+
         DOM_IDENTIFIER_TYPE =
                 new Domain.Builder(DBKey.IDENTIFIERS.TYPE, SqLiteDataType.Text)
                         .notNull()
@@ -1117,18 +1123,15 @@ public final class DBDefinitions {
                         .notNull()
                         .localized()
                         .build();
-        DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID =
-                new Domain.Builder(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, SqLiteDataType.Text)
+
+        DOM_IDENTIFIER_WIKIDATA_CLAIM =
+                new Domain.Builder(DBKey.IDENTIFIERS.WIKIDATA_CLAIM, SqLiteDataType.Text)
                         .build();
         DOM_IDENTIFIER_SITE_URL =
                 new Domain.Builder(DBKey.IDENTIFIERS.SITE_URL, SqLiteDataType.Text)
                         .build();
-
-        DOM_IDENTIFIER_BOOK_URI =
-                new Domain.Builder(DBKey.IDENTIFIERS.BOOK_URI, SqLiteDataType.Text)
-                        .build();
-        DOM_IDENTIFIER_AUTHOR_URI =
-                new Domain.Builder(DBKey.IDENTIFIERS.AUTHOR_URI, SqLiteDataType.Text)
+        DOM_IDENTIFIER_URI =
+                new Domain.Builder(DBKey.IDENTIFIERS.URI, SqLiteDataType.Text)
                         .build();
 
         DOM_IDENTIFIER_SID =
@@ -1549,15 +1552,16 @@ public final class DBDefinitions {
         TBL_IDENTIFIERS
                 .addDomains(DOM_PK_ID,
                             DOM_IDENTIFIER_KEY,
+                            DOM_IDENTIFIER_ENTITY,
                             DOM_IDENTIFIER_TYPE,
                             DOM_IDENTIFIER_NAME,
-                            DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID,
+                            DOM_IDENTIFIER_WIKIDATA_CLAIM,
                             DOM_IDENTIFIER_SITE_URL,
-                            DOM_IDENTIFIER_BOOK_URI,
-                            DOM_IDENTIFIER_AUTHOR_URI)
+                            DOM_IDENTIFIER_URI)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.IDENTIFIERS.KEY, true,
-                          DOM_IDENTIFIER_KEY)
+                          DOM_IDENTIFIER_KEY,
+                          DOM_IDENTIFIER_ENTITY)
                 .addIndex(DBKey.IDENTIFIERS.NAME, false,
                           DOM_IDENTIFIER_NAME,
                           DOM_IDENTIFIER_KEY,

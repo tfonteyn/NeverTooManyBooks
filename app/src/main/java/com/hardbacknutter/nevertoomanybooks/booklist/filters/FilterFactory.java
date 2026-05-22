@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 
@@ -147,7 +148,8 @@ public final class FilterFactory {
             case DBKey.FK_IDENTIFIER: {
                 return new PEntityListFilter<>(
                         dbKey, DBDefinitions.TBL_BOOK_IDENTIFIER, DBDefinitions.DOM_FK_IDENTIFIER,
-                        () -> ServiceLocator.getInstance().getIdentifierDao().getAll());
+                        () -> ServiceLocator.getInstance().getIdentifierDao()
+                                            .getAll(Identifier.EntityType.Book));
             }
             case DBKey.FK_TAG: {
                 return new PEntityListFilter<>(

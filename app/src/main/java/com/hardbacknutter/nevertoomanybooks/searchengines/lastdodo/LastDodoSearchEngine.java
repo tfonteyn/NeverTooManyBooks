@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,9 +88,9 @@ public class LastDodoSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.ByExternalId {
 
-    public static final String SITE_URL = "https://www.lastdodo.nl";
-    public static final String BOOK_URL = "https://www.lastdodo.nl/nl/items/%s";
-    public static final String AUTHOR_URL = "https://www.lastdodo.nl/nl/areas/%s";
+    private static final String SITE_URL = "https://www.lastdodo.nl";
+    private static final String BOOK_URL = "https://www.lastdodo.nl/nl/items/%s";
+    private static final String AUTHOR_URL = "https://www.lastdodo.nl/nl/areas/%s";
 
     /**
      * Param 1: external book ID; really a 'long'.
@@ -152,6 +153,26 @@ public class LastDodoSearchEngine
                 .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class)
                 .setConfig(cb -> cb
                         .build(SearchEngineConfig::new));
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        final String name = EngineId.LastDodoNl.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_LAST_DODO_NL,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        BOOK_URL),
+                Identifier.createAuthor(
+                        Identifier.SID_LAST_DODO_NL,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        AUTHOR_URL,
+                        null)
+        );
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -135,8 +135,8 @@ class BibTeXCitation
             });
 
         book.getIdentifiers().forEach(iv -> identifierDao
-                .findByKey(iv.getKey())
-                .flatMap(Identifier::getBookUri)
+                .findByKey(iv.getKey(), Identifier.EntityType.Book)
+                .flatMap(Identifier::getUri)
                 .ifPresent(bookUri -> sj.add(
                         String.format(NAME_VALUE, URL, String.format(bookUri, iv.getSid())))));
 

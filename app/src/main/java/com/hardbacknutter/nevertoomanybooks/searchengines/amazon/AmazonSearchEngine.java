@@ -34,9 +34,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -354,6 +356,27 @@ public class AmazonSearchEngine
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_ASIN)
                 .setPreferenceFragmentClazz(AmazonPreferencesFragment.class);
+    }
+
+    @NonNull
+    public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
+        // links empty on purpose; created dynamically
+        final String name = EngineId.Amazon.getName(context);
+        return Set.of(
+                Identifier.createBook(
+                        Identifier.SID_ASIN,
+                        Identifier.Type.Text,
+                        name,
+                        null,
+                        null),
+                Identifier.createAuthor(
+                        Identifier.SID_ASIN,
+                        Identifier.Type.Text,
+                        name,
+                        null,
+                        null,
+                        "P4862")
+        );
     }
 
     @NonNull

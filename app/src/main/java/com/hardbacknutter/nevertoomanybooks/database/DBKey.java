@@ -551,6 +551,13 @@ public final class DBKey {
         /** The keyword. Not localised. */
         public static final String KEY = "key";
         /**
+         * The (sub)entity this Identifier is valid for.
+         *
+         * @see Identifier.EntityType
+         */
+        public static final String ENTITY = "entity";
+
+        /**
          * Type: a char: S==String or L==Long.
          *
          * @see Identifier.Type
@@ -558,20 +565,16 @@ public final class DBKey {
         public static final String TYPE = "type";
         /** A short name; i.e. website name. Not Localized. */
         public static final String NAME = "name";
-        /** The claim, i.e. "P" number for an Author id. */
-        public static final String WIKIDATA_CLAIM_AUTHOR_ID = "wd_p_author_id";
+
+        /** The WikiData claim, i.e. "P" number. */
+        public static final String WIKIDATA_CLAIM = "wd_p_author_id";
         /** URL to the main page of the site. */
         public static final String SITE_URL = "site_url";
         /**
          * <strong>URI</strong> with an "%s" taking a sid.
          * Typically, a url, but we allow/use all uri style values.
          */
-        public static final String BOOK_URI = "book_uri";
-        /**
-         * <strong>URI</strong> with an "%s" taking a sid.
-         * Typically, a url, but we allow/use all uri style values.
-         */
-        public static final String AUTHOR_URI = "author_uri";
+        public static final String URI = "uri";
         /**
          * {@link DBDefinitions#TBL_BOOK_IDENTIFIER},
          * {@link DBDefinitions#TBL_AUTHOR_IDENTIFIER}.

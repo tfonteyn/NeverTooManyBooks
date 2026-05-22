@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -83,7 +83,7 @@ public class SearchBookByExternalIdViewModel
     Optional<Identifier> getIdentifier(@NonNull final EngineId engineId) {
         final String identifierKey = engineId.getIdentifierKey();
         if (identifierKey != null) {
-            return identifierDao.findByKey(identifierKey);
+            return identifierDao.findByKey(identifierKey, Identifier.EntityType.Book);
         } else {
             return Optional.empty();
         }
