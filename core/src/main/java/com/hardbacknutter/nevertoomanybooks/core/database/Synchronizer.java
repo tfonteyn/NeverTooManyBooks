@@ -78,11 +78,7 @@ public class Synchronizer {
             throw new LockException("Can not cleanup old locks if not locked");
         }
 
-        for (final Thread thread : sharedLockOwners.keySet()) {
-            if (!thread.isAlive()) {
-                sharedLockOwners.remove(thread);
-            }
-        }
+        sharedLockOwners.keySet().removeIf(thread -> !thread.isAlive());
     }
 
     /**
