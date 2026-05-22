@@ -1110,7 +1110,7 @@ public final class DBDefinitions {
         DOM_IDENTIFIER_TYPE =
                 new Domain.Builder(DBKey.IDENTIFIERS.TYPE, SqLiteDataType.Text)
                         .notNull()
-                        .withDefault("'" + Identifier.TYPE_STRING + "'")
+                        .withDefault("'" + Identifier.Type.Text.getId() + "'")
                         .build();
         DOM_IDENTIFIER_NAME =
                 new Domain.Builder(DBKey.IDENTIFIERS.NAME, SqLiteDataType.Text)

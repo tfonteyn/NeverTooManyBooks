@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -74,30 +75,31 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
  * External website id's (site-id, sid).
  * <ul>
  * <li>key: a unique keyword; never to be changed; used as bundle keys and import/export</li>
- * <li>type: {@code 'L'} or {@code 'S'}, see below.</li>
+ * <li>type: {@code 'L'} or {@code 'S'}, see {@link Type}.</li>
  * <li>name: a non-localised short name to show to the user.
  *           Can be empty for user created key.</li>
  * <li>sid: the actual value of the identifier field</li>
  * </ul>
  * The type is used in two situations only.
  * <ol>
- *     <li>When storing a book, {@code TYPE_LONG} identifiers are checked for
+ *     <li>When storing a book, {@link Type#Number} identifiers are checked for
  *         being a valid {@code long}. If they fail, they are removed.
- *         {@code TYPE_STRING} is always stored unless it's empty.
+ *         {@link Type#Text} is always stored unless it's empty.
  *     </li>
  *     <li>The screen where the user can directly edit identifier values will
  *         show a numeric or full keyboard depending on the type just for convenience.
  *     </li>
  * </ol>
- * i.o.w. the type {@code TYPE_LONG} is only used in the predefined Identifiers,
- * and an unknown identifier is always assumed to be a {@code TYPE_STRING}.
+ * i.o.w. the type {@link Type#Number} is only used in the predefined Identifiers,
+ * and an unknown identifier is always assumed to be a {@link Type#Text}.
  * <p>
  * There are an endless amount of Identifiers, we cannot predefine them all.
  * For reference, here are some more wikidata claim numbers:
  * <ul>
  *     <li>P12435   Shamela author ID</li>
  *     <li>P2687    JPNO=Japanese National Bibliography Number of the National Diet Library</li>
- *     <li>P3184    Czech National Bibliography ID  identifier for a book or periodical at the Czech National Library</li>
+ *     <li>P3184    Czech National Bibliography ID  identifier for a book or periodical
+ *                  at the Czech National Library</li>
  *     <li>P7865    CoBiS author ID</li>
  *     <li>P8287    Worlds Without End author ID</li>
  * </ul>
@@ -149,9 +151,6 @@ public class Identifier
     /** <a href="https://viaf.org">viaf</a>. */
     public static final String SID_VIAF = "viaf";
 
-    public static final char TYPE_LONG = 'L';
-    public static final char TYPE_STRING = 'S';
-
     public static final int MAX_KEY_LEN = 15;
 
     /** {@link Parcelable}. */
@@ -175,13 +174,16 @@ public class Identifier
     private String key;
     @NonNull
     private String name;
+    @NonNull
+    private Type type;
+
     @Nullable
     private String siteUrl;
     @Nullable
     private String bookUri;
     @Nullable
     private String authorUri;
-    private char type;
+
     private long id;
     @Nullable
     private String wikidataClaimAuthorId;
@@ -193,7 +195,7 @@ public class Identifier
      */
     public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key) {
         this.key = key;
-        this.type = TYPE_STRING;
+        this.type = Type.Text;
         this.name = key;
         this.wikidataClaimAuthorId = null;
         this.siteUrl = null;
@@ -219,7 +221,7 @@ public class Identifier
      *                              a website, but should be {@link #MAX_KEY_LEN} characters
      *                              max, preferably less.
      *                              The UI editor does enforce length and lowercase.
-     * @param type                  {@link #TYPE_STRING} or {@link #TYPE_LONG}
+     * @param type                  Text/Number
      * @param name                  a short name
      * @param wikidataClaimAuthorId the "Pxxx" Wikidata claim number for the Author id
      * @param siteUrl               url to the main website page
@@ -229,7 +231,7 @@ public class Identifier
      *                              to view an {@code Author} on the site
      */
     public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
-                      final char type,
+                      @NonNull final Type type,
                       @NonNull final String name,
                       @Nullable final String wikidataClaimAuthorId,
                       @Nullable final String siteUrl,
@@ -254,7 +256,7 @@ public class Identifier
                       @NonNull final DataHolder rowData) {
         this.id = id;
         key = rowData.getString(DBKey.IDENTIFIERS.KEY);
-        type = rowData.getString(DBKey.IDENTIFIERS.TYPE).charAt(0);
+        type = Type.byId(rowData.getString(DBKey.IDENTIFIERS.TYPE).charAt(0));
         name = rowData.getString(DBKey.IDENTIFIERS.NAME);
         wikidataClaimAuthorId = rowData.getString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID);
         siteUrl = rowData.getString(DBKey.IDENTIFIERS.SITE_URL, null);
@@ -266,7 +268,8 @@ public class Identifier
         id = in.readLong();
         //noinspection DataFlowIssue
         key = in.readString();
-        type = (char) in.readInt();
+        //noinspection DataFlowIssue
+        type = in.readParcelable(EntityStage.Stage.class.getClassLoader());
         //noinspection DataFlowIssue
         name = in.readString();
         wikidataClaimAuthorId = in.readString();
@@ -290,202 +293,202 @@ public class Identifier
     public static Collection<Identifier> createInitialList(@NonNull final Context context) {
         return List.of(
                 // links empty on purpose; created dynamically
-                new Identifier(SID_ASIN, TYPE_STRING,
+                new Identifier(SID_ASIN, Type.Text,
                                context.getString(R.string.identifier_amazon),
                                "P4862",
                                null,
                                null,
                                null),
-                new Identifier(SID_AUDIBLE, TYPE_STRING,
+                new Identifier(SID_AUDIBLE, Type.Text,
                                context.getString(R.string.identifier_audible),
                                null,
                                Audible.SITE_URL,
                                Audible.BOOK_URL,
                                Audible.AUTHOR_URL),
-                new Identifier(SID_BARNES_AND_NOBLE, TYPE_LONG,
+                new Identifier(SID_BARNES_AND_NOBLE, Type.Number,
                                context.getString(R.string.identifier_barnesandnoble),
                                // 2025-12-15: none found
                                null,
                                BarnesAndNoble.SITE_URL,
                                BarnesAndNoble.BOOK_URL,
                                null),
-                new Identifier(SID_BEDETHEQUE, TYPE_LONG,
+                new Identifier(SID_BEDETHEQUE, Type.Number,
                                context.getString(R.string.identifier_bedetheque),
                                "P5491",
                                BedethequeSearchEngine.SITE_URL,
                                BedethequeSearchEngine.BOOK_URL,
                                BedethequeSearchEngine.AUTHOR_URL),
-                new Identifier(SID_BIBLIOTECE_PL, TYPE_LONG,
+                new Identifier(SID_BIBLIOTECE_PL, Type.Number,
                                context.getString(R.string.identifier_bibliotece_pl),
                                // 2025-12-15: none found
                                null,
                                BibliotecePlSearchEngine.SITE_URL,
                                BibliotecePlSearchEngine.BOOK_URL,
                                null),
-                new Identifier(SID_BNF, TYPE_STRING,
+                new Identifier(SID_BNF, Type.Text,
                                context.getString(R.string.identifier_bnf),
                                "P268",
                                BnfSearchEngine.SITE_URL,
                                BnfSearchEngine.BOOK_URL,
                                BnfSearchEngine.AUTHOR_URL),
-                new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
+                new Identifier(SID_BRITISH_LIBRARY, Type.Text,
                                context.getString(R.string.identifier_british_library),
                                // 2025-12-15: none found
                                null,
                                BL.SITE_URL,
                                null,
                                null),
-                new Identifier(SID_DATABAZE_KNIH, TYPE_LONG,
+                new Identifier(SID_DATABAZE_KNIH, Type.Number,
                                context.getString(R.string.identifier_databaze_knih),
                                "P10387",
                                DatabazeKnihSearchEngine.SITE_URL,
                                DatabazeKnihSearchEngine.BOOK_URL,
                                DatabazeKnihSearchEngine.AUTHOR_URL),
-                new Identifier(SID_DNB, TYPE_STRING,
+                new Identifier(SID_DNB, Type.Text,
                                context.getString(R.string.identifier_dnb),
                                "P7902",
                                DnbSearchEngine.SITE_URL,
                                DnbSearchEngine.BOOK_URL,
                                DnbSearchEngine.AUTHOR_URL),
-                new Identifier(SID_DOI, TYPE_STRING,
+                new Identifier(SID_DOI, Type.Text,
                                context.getString(R.string.identifier_doi),
                                null,
                                DOI.SITE_URL,
                                DOI.BOOK_URL,
                                null),
-                new Identifier(SID_DOUBAN, TYPE_LONG,
+                new Identifier(SID_DOUBAN, Type.Number,
                                context.getString(R.string.identifier_douban),
                                "P6441",
                                DoubanSearchEngine.SITE_URL,
                                DoubanSearchEngine.BOOK_URL,
                                DoubanSearchEngine.AUTHOR_URL),
-                new Identifier(SID_FANTLAB, TYPE_LONG,
+                new Identifier(SID_FANTLAB, Type.Number,
                                context.getString(R.string.identifier_fantlab),
                                "P7433",
                                FantLab.SITE_URL,
                                FantLab.BOOK_URL,
                                FantLab.AUTHOR_URL),
-                new Identifier(SID_GOODREADS, TYPE_LONG,
+                new Identifier(SID_GOODREADS, Type.Number,
                                context.getString(R.string.identifier_goodreads),
                                "P2963",
                                GoodreadsSearchEngine.SITE_URL,
                                GoodreadsSearchEngine.BOOK_URL,
                                GoodreadsSearchEngine.AUTHOR_URL),
-                new Identifier(SID_GOOGLE, TYPE_STRING,
+                new Identifier(SID_GOOGLE, Type.Text,
                                context.getString(R.string.identifier_google_books),
                                // 2025-12-15: none found
                                null,
                                GoogleBooksSearchEngine.SITE_URL,
                                GoogleBooksSearchEngine.BOOK_URL,
                                null),
-                new Identifier(SID_ISFDB, TYPE_LONG,
+                new Identifier(SID_ISFDB, Type.Number,
                                context.getString(R.string.identifier_isfdb),
                                "P1233",
                                IsfdbSearchEngine.SITE_URL,
                                IsfdbSearchEngine.BOOK_URL,
                                IsfdbSearchEngine.AUTHOR_URL),
-                new Identifier(SID_ISNI, TYPE_STRING,
+                new Identifier(SID_ISNI, Type.Text,
                                context.getString(R.string.identifier_isni),
                                "P213",
                                ISNI.SITE_URL,
                                null,
                                ISNI.AUTHOR_URL),
-                new Identifier(SID_KBNL, TYPE_LONG,
+                new Identifier(SID_KBNL, Type.Number,
                                context.getString(R.string.identifier_kb_nl),
                                "P1006",
                                KbNlSearchEngine.SITE_URL,
                                KbNlSearchEngine.BOOK_URL,
                                KbNlSearchEngine.AUTHOR_URL),
-                new Identifier(SID_KBR, TYPE_LONG,
+                new Identifier(SID_KBR, Type.Number,
                                context.getString(R.string.identifier_kbr),
                                "P11249",
                                KBR.SITE_URL,
                                KBR.BOOK_URL,
                                null),
-                new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
+                new Identifier(SID_LAST_DODO_NL, Type.Number,
                                context.getString(R.string.identifier_lastdodo_nl),
                                // 2025-12-15: none found
                                null,
                                LastDodoSearchEngine.SITE_URL,
                                LastDodoSearchEngine.BOOK_URL,
                                LastDodoSearchEngine.AUTHOR_URL),
-                new Identifier(SID_LCCN, TYPE_STRING,
+                new Identifier(SID_LCCN, Type.Text,
                                context.getString(R.string.identifier_lccn),
                                "P244",
                                Lccn.SITE_URL,
                                Lccn.BOOK_URL,
                                null),
-                new Identifier(SID_LIBRARY_THING, TYPE_LONG,
+                new Identifier(SID_LIBRARY_THING, Type.Number,
                                context.getString(R.string.identifier_library_thing),
                                "P7400",
                                LibraryThingSearchEngine.SITE_URL,
                                LibraryThingSearchEngine.BOOK_URL,
                                null),
-                new Identifier(SID_LIBRIS, TYPE_LONG,
+                new Identifier(SID_LIBRIS, Type.Number,
                                context.getString(R.string.identifier_libris),
                                // 2025-12-15: none found
                                null,
                                LibrisSE.SITE_URL,
                                LibrisSE.BOOK_URL,
                                null),
-                new Identifier(SID_LIBRIS_XL, TYPE_STRING,
+                new Identifier(SID_LIBRIS_XL, Type.Text,
                                context.getString(R.string.identifier_libris),
                                // 2025-12-15: none found
                                null,
                                LibrisSE.XL_SITE_URL,
                                LibrisSE.XL_BOOK_URL,
                                null),
-                new Identifier(SID_NILF, TYPE_LONG,
+                new Identifier(SID_NILF, Type.Number,
                                context.getString(R.string.identifier_nilf),
                                "P2191",
                                FantaScienza.SITE_URL,
                                FantaScienza.BOOK_URL,
                                FantaScienza.AUTHOR_URL),
-                new Identifier(SID_NOOSFERE, TYPE_LONG,
+                new Identifier(SID_NOOSFERE, Type.Number,
                                context.getString(R.string.identifier_noosfere),
                                "P5570",
                                NooSFere.SITE_URL,
                                NooSFere.BOOK_URL,
                                NooSFere.AUTHOR_URL),
-                new Identifier(SID_OCLC, TYPE_LONG,
+                new Identifier(SID_OCLC, Type.Number,
                                context.getString(R.string.identifier_worldcat),
                                "P10832",
                                WorldCat.SITE_URL,
                                WorldCat.BOOK_URL,
                                WorldCat.AUTHOR_URL),
-                new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
+                new Identifier(SID_OPEN_LIBRARY, Type.Text,
                                context.getString(R.string.identifier_open_library),
                                "P648",
                                OpenLibrarySearchEngine.SITE_URL,
                                OpenLibrarySearchEngine.BOOK_URL,
                                OpenLibrarySearchEngine.AUTHOR_URL),
-                new Identifier(SID_PORBASE, TYPE_LONG,
+                new Identifier(SID_PORBASE, Type.Number,
                                context.getString(R.string.identifier_porbase),
                                "P1005",
                                Porbase.SITE_URL,
                                Porbase.BOOK_URL,
                                null),
-                new Identifier(SID_STORYGRAPH, TYPE_STRING,
+                new Identifier(SID_STORYGRAPH, Type.Text,
                                context.getString(R.string.identifier_storygraph),
                                "P12430",
                                StoryGraph.SITE_URL,
                                StoryGraph.BOOK_URL,
                                StoryGraph.AUTHOR_URL),
-                new Identifier(SID_STRIP_INFO, TYPE_LONG,
+                new Identifier(SID_STRIP_INFO, Type.Number,
                                context.getString(R.string.identifier_stripinfo_be),
                                // 2025-12-15: none found
                                null,
                                StripInfoSearchEngine.SITE_URL,
                                StripInfoSearchEngine.BOOK_URL,
                                StripInfoSearchEngine.AUTHOR_URL),
-                new Identifier(SID_STRIPWEB, TYPE_LONG,
+                new Identifier(SID_STRIPWEB, Type.Number,
                                context.getString(R.string.identifier_stripweb_be),
                                // 2025-12-15: none found
                                null,
                                StripWebSearchEngine.SITE_URL,
                                null,
                                null),
-                new Identifier(SID_TERCERA_FUNDACION, TYPE_LONG,
+                new Identifier(SID_TERCERA_FUNDACION, Type.Number,
                                context.getString(R.string.identifier_tercerafundacion),
                                // 2025-12-15: none found
                                null,
@@ -493,26 +496,26 @@ public class Identifier
                                TerceraFundacion.BOOK_URL,
                                TerceraFundacion.AUTHOR_URL),
                 // the bookUrl/authorUrl IS the sid
-                new Identifier(SID_URI, TYPE_STRING,
+                new Identifier(SID_URI, Type.Text,
                                context.getString(R.string.identifier_uri),
                                null,
                                null,
                                "%s",
                                "%s"),
                 //https://en.wikipedia.org/wiki/Uniform_Resource_Name
-                new Identifier(SID_URN, TYPE_STRING,
+                new Identifier(SID_URN, Type.Text,
                                context.getString(R.string.identifier_urn),
                                null,
                                null,
                                null,
                                null),
-                new Identifier(SID_VIAF, TYPE_LONG,
+                new Identifier(SID_VIAF, Type.Number,
                                context.getString(R.string.identifier_viaf),
                                "P214",
                                VIAF.SITE_URL,
                                null,
                                VIAF.AUTHOR_URL),
-                new Identifier(SID_WIKIDATA, TYPE_STRING,
+                new Identifier(SID_WIKIDATA, Type.Text,
                                context.getString(R.string.identifier_wikidata),
                                null,
                                WikidataSearchEngine.SITE_URL,
@@ -526,7 +529,7 @@ public class Identifier
                               final int flags) {
         dest.writeLong(id);
         dest.writeString(key);
-        dest.writeInt(type);
+        dest.writeParcelable(type, flags);
         dest.writeString(name);
         dest.writeString(wikidataClaimAuthorId);
         dest.writeString(siteUrl);
@@ -562,7 +565,8 @@ public class Identifier
      *
      * @return {@code L} for a {@code long}, {@code S} for a {@code String}
      */
-    public char getType() {
+    @NonNull
+    public Type getType() {
         return type;
     }
 
@@ -751,6 +755,79 @@ public class Identifier
                && Objects.equals(siteUrl, that.siteUrl)
                && Objects.equals(bookUri, that.bookUri)
                && Objects.equals(authorUri, that.authorUri);
+    }
+
+
+    /**
+     * The user will get an alphanumeric or numeric-only keyboard.
+     * The storage of the {@link Identifier.Value} is always a {@code String}!
+     */
+    public enum Type
+            implements Parcelable {
+        /** Site defined string id. */
+        Text('S'),
+        /** A pure number. */
+        Number('L');
+
+        /** {@link Parcelable}. */
+        public static final Creator<Type> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public Type createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public Type[] newArray(final int size) {
+                return new Type[size];
+            }
+        };
+
+        private final char id;
+
+        Type(final char id) {
+            this.id = id;
+        }
+
+        /**
+         * Lookup by id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @param id to lookup
+         *
+         * @return type; or {@link #Text} for any invalid id.
+         */
+        @NonNull
+        public static Type byId(final char id) {
+            return Arrays.stream(values())
+                         .filter(v -> v.id == id)
+                         .findFirst()
+                         .orElse(Type.Text);
+        }
+
+        /**
+         * Get the internal id.
+         * <p>
+         * Import/Export and database usage only.
+         *
+         * @return id
+         */
+        public char getId() {
+            return id;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(ordinal());
+        }
     }
 
     public static class Value

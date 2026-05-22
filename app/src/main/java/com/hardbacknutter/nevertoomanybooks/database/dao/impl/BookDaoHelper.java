@@ -338,7 +338,7 @@ public class BookDaoHelper {
         final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         // We need to recollect these here, as they can be updated
         // by a previous book processing.
-        final Map<String, Character> map = identifierDao
+        final Map<String, Identifier.Type> map = identifierDao
                 .getAll()
                 .stream()
                 .collect(Collectors.toMap(Identifier::getKey, Identifier::getType));
@@ -351,9 +351,9 @@ public class BookDaoHelper {
 
         ivsIn.stream()
              .filter(iv -> {
-                 final Character type = map.get(iv.getKey());
-                 // TYPE_LONG identifiers MUST exist
-                 return type != null && type == Identifier.TYPE_LONG;
+                 final Identifier.Type type = map.get(iv.getKey());
+                 // Identifier.Type.Number identifiers MUST exist
+                 return type == Identifier.Type.Number;
              })
              .forEach(iv -> {
                  try {
@@ -371,9 +371,9 @@ public class BookDaoHelper {
 
         ivsIn.stream()
              .filter(iv -> {
-                 final Character type = map.get(iv.getKey());
-                 // TYPE_STRING identifiers are optionally existing
-                 return type == null || type == Identifier.TYPE_STRING;
+                 final Identifier.Type type = map.get(iv.getKey());
+                 // Identifier.Type.Text identifiers are optional
+                 return type == null || type == Identifier.Type.Text;
              })
              .forEach(ivsOut::add);
 

@@ -27,6 +27,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
  * Keys used as domain names / Bundle keys.
@@ -549,7 +550,11 @@ public final class DBKey {
 
         /** The keyword. Not localised. */
         public static final String KEY = "key";
-        /** Type: a char: S or L. */
+        /**
+         * Type: a char: S==String or L==Long.
+         *
+         * @see Identifier.Type
+         */
         public static final String TYPE = "type";
         /** A short name; i.e. website name. Not Localized. */
         public static final String NAME = "name";

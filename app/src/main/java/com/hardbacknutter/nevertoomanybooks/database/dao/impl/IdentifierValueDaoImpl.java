@@ -97,8 +97,6 @@ public class IdentifierValueDaoImpl
 
                 Identifier identifier = findByKey(iv.getKey()).orElse(null);
                 if (identifier == null) {
-                    // We do NOT want to speculate it might be TYPE_LONG!
-                    // See docs on the Identifier class for usage.
                     identifier = new Identifier(iv.getKey());
                     insert(identifier);
                 }

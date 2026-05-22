@@ -38,7 +38,7 @@ public class IdentifierCoder
         final JSONObject out = new JSONObject();
         out.put(DBKey.PK_ID, identifier.getId());
         out.put(DBKey.IDENTIFIERS.KEY, identifier.getKey());
-        out.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(identifier.getType()));
+        out.put(DBKey.IDENTIFIERS.TYPE, identifier.getType().getId());
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
         identifier.getWikidataClaimAuthorId().ifPresent(
                 s -> out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, s));
@@ -53,7 +53,8 @@ public class IdentifierCoder
     public Identifier decode(@NonNull final JSONObject data)
             throws JSONException {
         final String key = data.getString(DBKey.IDENTIFIERS.KEY);
-        final char type = data.getString(DBKey.IDENTIFIERS.TYPE).charAt(0);
+        final Identifier.Type type = Identifier.Type.byId(
+                data.getString(DBKey.IDENTIFIERS.TYPE).charAt(0));
         final String name = data.getString(DBKey.IDENTIFIERS.NAME);
         @Nullable
         final String wikidataClaimAuthorId =

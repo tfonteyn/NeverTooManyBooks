@@ -1381,8 +1381,8 @@ public class EditBookViewModel
 
         // We're no longer using the LongNumberFormatter as we don't
         // need the extraction to a 'long'. Identifiers are now all 'String' values.
-        // Instead, use a custom {@link Identifier#TYPE_LONG} formatter
-        // to keep the field empty instead of displaying any "0" values.
+        // Instead, use a custom formatter to keep the field empty
+        // instead of displaying any "0" values.
         final FieldFormatter<String> sidLongFormatter =
                 (context, value) -> value != null && !"0".equals(value) ? value : "";
 
