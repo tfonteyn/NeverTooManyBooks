@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,13 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
-// FIXME: BL link disabled for now due to https://www.bl.uk/cyber-incident/
+// FIXME: BL links disabled for now due to https://www.bl.uk/cyber-incident/
 // There is also the British National Bibliography ??
 public final class BL {
 
     public static final String SITE_URL = "https://www.bl.uk";
-    public static final String BOOK_URL = null;
-    public static final String AUTHOR_URL = null;
 
     private BL() {
     }

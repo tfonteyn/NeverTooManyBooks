@@ -68,7 +68,6 @@ public class LibraryThingSearchEngine
 
     public static final String SITE_URL = "https://www.librarything.com";
     public static final String BOOK_URL = "https://www.librarything.com/work/%s";
-    public static final String AUTHOR_URL = null;
 
     private static final String TAG = "LibraryThingSearchEngin";
 

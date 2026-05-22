@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,6 @@ public final class BarnesAndNoble {
 
     public static final String SITE_URL = "https://www.barnesandnoble.com";
     public static final String BOOK_URL = "https://www.barnesandnoble.com/w/%s";
-    public static final String AUTHOR_URL = null;
 
     private BarnesAndNoble() {
     }

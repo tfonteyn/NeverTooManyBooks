@@ -99,7 +99,7 @@ public class GoogleBooksSearchEngine
     // TODO: 2024-12-30: google has a new link as beta:
     //  "https://www.google.com/books/edition/_/" + externalId;
     public static final String BOOK_URL = "https://books.google.co.uk/books?id=%s";
-    public static final String AUTHOR_URL = null;
+
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
     private static final String SEARCH = "/books/v1/volumes?q=";
     private final RatingParser ratingParser;

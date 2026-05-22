@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,11 +24,9 @@ public final class LibrisSE {
 
     public static final String SITE_URL = "https://libris.kb.se";
     public static final String BOOK_URL = "https://libris.kb.se/bib/%s";
-    public static final String AUTHOR_URL = null;
 
     public static final String XL_SITE_URL = "https://libris.kb.se/katalogisering";
     public static final String XL_BOOK_URL = "https://libris.kb.se/%s";
-    public static final String XL_AUTHOR_URL = null;
 
     private LibrisSE() {
     }

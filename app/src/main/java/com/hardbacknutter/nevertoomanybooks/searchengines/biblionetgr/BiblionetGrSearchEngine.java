@@ -73,15 +73,13 @@ import org.jsoup.select.Elements;
  * <p>
  * Identifiers: wikidata lists identifiers and url templates for both books and authors,
  * but <strong>these are invalid since the biblionet 2024 rebuild</strong>.
- * Currently (2025-12) neither the BOOK_URL nor the AUTHOR_URL is supported.
+ * Currently (2025-12) no identifiers are supported.
  */
 public class BiblionetGrSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
     public static final String SITE_URL = "https://biblionet.gr";
-    public static final String BOOK_URL = null;
-    public static final String AUTHOR_URL = null;
 
     private static final String TAG = "BiblionetGrSearchEngine";
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ public final class DOI {
 
     public static final String SITE_URL = "https://www.doi.org";
     public static final String BOOK_URL = "https://doi.org/%s";
-    public static final String AUTHOR_URL = null;
 
     private DOI() {
     }

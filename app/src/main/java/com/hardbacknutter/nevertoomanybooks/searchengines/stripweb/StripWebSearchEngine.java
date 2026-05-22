@@ -95,10 +95,8 @@ public class StripWebSearchEngine
                    SearchEngine.ByBarcode,
                    SearchEngine.SearchOnSite {
 
+    // Linking to books etc is not possible due to the site tech
     public static final String SITE_URL = "https://www.stripweb.be";
-    // A permalink to the product nr is not possible
-    public static final String BOOK_URL = null;
-    public static final String AUTHOR_URL = null;
 
     private static final String PREFERENCE_KEY = "stripweb";
 

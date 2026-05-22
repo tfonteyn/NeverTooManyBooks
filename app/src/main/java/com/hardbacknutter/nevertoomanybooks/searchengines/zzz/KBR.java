@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 public final class KBR {
     public static final String SITE_URL = "https://opac.kbr.be";
     public static final String BOOK_URL = "https://opac.kbr.be/Library/doc/SYRACUSE/%s";
-    public static final String AUTHOR_URL = null;
 
     private KBR() {
     }

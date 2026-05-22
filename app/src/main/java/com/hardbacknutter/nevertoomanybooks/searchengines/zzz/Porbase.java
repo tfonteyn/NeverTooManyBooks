@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,6 @@ public final class Porbase {
 
     public static final String SITE_URL = "https://porbase.bnportugal.gov.pt";
     public static final String BOOK_URL = "https://id.bnportugal.gov.pt/bib/porbase/%s";
-    public static final String AUTHOR_URL = null;
 
     private Porbase() {
     }

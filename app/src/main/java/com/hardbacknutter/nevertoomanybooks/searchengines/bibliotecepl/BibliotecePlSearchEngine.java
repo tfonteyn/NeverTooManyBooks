@@ -71,11 +71,10 @@ public class BibliotecePlSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ByText {
 
-    public static final String SITE_URL = "https://w.bibliotece.pl";
-    public static final String BOOK_URL = "https://w.bibliotece.pl/%s";
     // The site has no author ids - they use a pure text search when searching
     // all books for a specific author.
-    public static final String AUTHOR_URL = null;
+    public static final String SITE_URL = "https://w.bibliotece.pl";
+    public static final String BOOK_URL = "https://w.bibliotece.pl/%s";
 
     private static final Locale SITE_LOCALE = new Locale("pl", "PL");
     // also used as the identifier value
