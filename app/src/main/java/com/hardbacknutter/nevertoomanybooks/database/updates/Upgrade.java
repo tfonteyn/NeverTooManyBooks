@@ -128,6 +128,10 @@ public class Upgrade {
             new V7(context, db).update(oldVersion);
         }
 
+        if (oldVersion < 52) {
+            new V8(context, db, identifierMigration).update(oldVersion);
+        }
+
         cleanup();
     }
 

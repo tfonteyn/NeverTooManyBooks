@@ -21,20 +21,24 @@
 package com.hardbacknutter.nevertoomanybooks.database.updates;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -51,10 +55,22 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_ID
 
 /**
  * App 7.0.0 / db 35 introduced the Identifier table.
+ * <p>
+ * This is a bit of a garbage bin where we handle all things specific to migration.
+ * This class should only be used during upgrades or imports (public methods).
  */
 public class IdentifierMigration {
 
+    public static final String BOOK_URI_OBSOLETE = "book_uri";
+    public static final String AUTHOR_URI_OBSOLETE = "author_uri";
+
     private static final String TAG = "IdentifierMigration";
+
+    private static final String DELETE_FROM_ = "DELETE FROM ";
+    private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
+    private static final String UPDATE_ = "UPDATE ";
+    private static final String _SET_ = " SET ";
+    private static final String _WHERE_ = " WHERE ";
 
     /**
      * Archive format v7 and older used individual Identifier/Bundle keys on the book itself.
@@ -69,11 +85,6 @@ public class IdentifierMigration {
             "ld_book_id", Identifier.SID_LAST_DODO_NL,
             "bdt_book_id", Identifier.SID_BEDETHEQUE
     );
-
-    private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
-    private static final String UPDATE_ = "UPDATE ";
-    private static final String _SET_ = " SET ";
-    private static final String _WHERE_ = " WHERE ";
 
     @NonNull
     private final SQLiteDatabase db;
@@ -154,41 +165,17 @@ public class IdentifierMigration {
 
     /**
      * Add the given Identifiers using their keys.
-     * Silently skips the ones already existing.
+     * Silently skips the ones already predefined/existing.
      *
      * @param keys of the {@link Identifier}s to add
      */
     void add(@NonNull final Set<String> keys) {
-        keys.stream().map(this::get).flatMap(Optional::stream).forEach(this::add);
-    }
-
-    /**
-     * Add the given {@link Identifier}.
-     * Silently skip if it already exists.
-     *
-     * @param identifier to add
-     * @throws SQLException on failure
-     */
-    private void add(@NonNull final Identifier identifier) {
-        // key must be unique
-        if (isPresent(identifier.getKey())) {
-            return;
-        }
-
-        // IdentifierDaoImpl#doInsert(@NonNull final Identifier identifier,
-        //                 .               @NonNull final ExtSQLiteStatement stmt)
-        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(
-                IdentifierDaoImpl.Sql.INSERT))) {
-            IdentifierDaoImpl.doInsert(identifier, stmt);
-        } catch (@NonNull final SQLException e) {
-            // log... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw e;
-        } catch (@NonNull final DaoInsertException e) {
-            // log, but just rethrow insert errors... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new SQLException("onPostCreate", e);
-        }
+        keys.stream()
+            .map(this::getPredefined)
+            .flatMap(Optional::stream)
+            // key must be unique
+            .filter(identifier -> !isPresent(identifier.getKey()))
+            .forEach(identifier -> insert(List.of(identifier)));
     }
 
     private boolean isPresent(@NonNull final String key) {
@@ -204,10 +191,78 @@ public class IdentifierMigration {
     }
 
     @NonNull
-    private Optional<Identifier> get(@NonNull final String key) {
+    private Optional<Identifier> getPredefined(@NonNull final String key) {
         return predefined.stream()
                          .filter(identifier -> identifier.getKey().equals(key))
                          .findFirst();
+    }
+
+
+    void deleteAllPredefined() {
+        final List<String> keys = predefined.stream().map(Identifier::getKey)
+                                            .collect(Collectors.toList());
+
+        try (SQLiteStatement stmt = db.compileStatement(
+                DELETE_FROM_ + TBL_IDENTIFIERS.getName()
+                + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
+            for (final String key : keys) {
+                stmt.bindString(1, key);
+                stmt.executeUpdateDelete();
+            }
+        }
+    }
+
+    /**
+     * Assuming all predefined are previously deleted,
+     * insert them using the correct up-to-date schema.
+     */
+    void reinsertPredefined() {
+        insert(predefined);
+    }
+
+    void insert(@NonNull final Collection<Identifier> list) {
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(
+                IdentifierDaoImpl.Sql.INSERT))) {
+            for (final Identifier identifier : list) {
+                IdentifierDaoImpl.doInsert(identifier, stmt);
+            }
+        } catch (@NonNull final SQLException e) {
+            // log... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw e;
+        } catch (@NonNull final DaoInsertException e) {
+            // log, but just rethrow insert errors... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw new SQLException("db52", e);
+        }
+    }
+
+    /**
+     * Get all rows from the Identifier table as a collection of Bundles.
+     * The "_id" column will be available as a {@code long},
+     * all other columns are {@code String}.
+     *
+     * @return all rows
+     */
+    @NonNull
+    Collection<Bundle> getCurrentList() {
+        final List<Bundle> result = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery("SELECT * FROM " + TBL_IDENTIFIERS, null)) {
+            while (cursor.moveToNext()) {
+                final String[] columnNames = cursor.getColumnNames();
+                final Bundle row = new Bundle();
+                for (int c = 0; c < columnNames.length; c++) {
+                    // yes, very inefficient... oh well.
+                    if (DBKey.PK_ID.equals(columnNames[c])) {
+                        row.putLong(columnNames[c], cursor.getLong(c));
+                    } else {
+                        row.putString(columnNames[c], cursor.getString(c));
+                    }
+                }
+                result.add(row);
+            }
+        }
+        return result;
     }
 
     /**
@@ -216,7 +271,7 @@ public class IdentifierMigration {
      * @param key to update
      */
     void fixName(@NonNull final String key) {
-        get(key).ifPresent(identifier -> db
+        getPredefined(key).ifPresent(identifier -> db
                 .execSQL(UPDATE_ + TBL_IDENTIFIERS.getName()
                          + _SET_ + DBKey.IDENTIFIERS.NAME + "='" + identifier.getName() + '\''
                          + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + identifier.getKey() + '\''));
@@ -228,7 +283,7 @@ public class IdentifierMigration {
      * @param key to update
      */
     void fixType(@NonNull final String key) {
-        get(key).ifPresent(identifier -> db
+        getPredefined(key).ifPresent(identifier -> db
                 .execSQL(UPDATE_ + TBL_IDENTIFIERS.getName()
                          + _SET_ + DBKey.IDENTIFIERS.TYPE + "='" + identifier.getType() + '\''
                          + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + identifier.getKey() + '\''));
