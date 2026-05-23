@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -62,6 +61,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
+/**
+ * IMPORTANT: all previous Identity migration calls have been removed in this class.
+ * {@link V8} db52 does a major update.
+ * <p>
+ * TODO: remove comments about Identity migration AFTER db52+ is released
+ */
 class V7 {
 
     private static final String DELETE_FROM_ = "DELETE FROM ";
@@ -78,22 +83,16 @@ class V7 {
     @NonNull
     private final SQLiteDatabase db;
 
-    @NonNull
-    private final IdentifierMigration identifierMigration;
-
     /**
      * Constructor.
      *
      * @param context             Current context
      * @param db                  Underlying database
-     * @param identifierMigration helper
      */
     V7(@NonNull final Context context,
-       @NonNull final SQLiteDatabase db,
-       @NonNull final IdentifierMigration identifierMigration) {
+       @NonNull final SQLiteDatabase db) {
         this.context = context;
         this.db = db;
-        this.identifierMigration = identifierMigration;
     }
 
     /**
@@ -273,7 +272,6 @@ class V7 {
     }
 
     private void db35MigrateGenres() {
-
         // all books with a genre set
         final String sqlSelect = SELECT_ + DBKey.PK_ID + ',' + "genre"
                                  + _FROM_ + TBL_BOOKS.getName()
@@ -336,7 +334,8 @@ class V7 {
     }
 
     private void db36() {
-        identifierMigration.fixType(Identifier.SID_DNB);
+        // db52 update REMOVED
+        // identifierMigration.fixType(Identifier.SID_DNB);
     }
 
     private void db37() {
@@ -360,15 +359,16 @@ class V7 {
     }
 
     private void db39() {
-        identifierMigration.initAuthorUrl(Set.of());
+        // db52 update REMOVED
+        // identifierMigration.initAuthorUrl(Set.of());
+
         TBL_AUTHOR_IDENTIFIER.create(db, true);
     }
 
     private void db40() {
-
-        identifierMigration.fixName(Identifier.SID_DNB);
-        identifierMigration.initBookUrl(Set.of(Identifier.SID_BNF,
-                                               Identifier.SID_PORBASE));
+        // db52 update REMOVED
+        // identifierMigration.fixName(Identifier.SID_DNB);
+        // identifierMigration.initBookUrl(Set.of(Identifier.SID_BNF, Identifier.SID_PORBASE));
     }
 
     private void db41() {
@@ -379,7 +379,8 @@ class V7 {
     }
 
     private void db42() {
-        identifierMigration.initWikidataClaim(Set.of());
+        // db52 update REMOVED
+        // identifierMigration.initWikidataClaim(Set.of());
     }
 
     private void db43() {
@@ -447,6 +448,8 @@ class V7 {
         // Backup files could contain the toString representation
         // of the wikidata author claim id, instead of the id itself.
         // Repair ALL builtin Identifiers:
-        identifierMigration.initWikidataClaim(Set.of());
+
+        // db52 update REMOVED
+        // identifierMigration.initWikidataClaim(Set.of());
     }
 }

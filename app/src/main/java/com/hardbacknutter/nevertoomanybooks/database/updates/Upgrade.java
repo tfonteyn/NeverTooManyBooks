@@ -29,14 +29,12 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -127,7 +125,7 @@ public class Upgrade {
         }
 
         if (oldVersion < 51) {
-            new V7(context, db, identifierMigration).update(oldVersion);
+            new V7(context, db).update(oldVersion);
         }
 
         cleanup();
@@ -138,7 +136,8 @@ public class Upgrade {
         // which may be created at various points in the updates.
         // Any identifier already existing will simply be skipped.
         // See GitHub #185
-        addNewIdentifiers();
+        // db52 update REMOVED
+        // addNewIdentifiers();
 
         // Same as above, but for Calibre.
         addNewCalibreCustomFields();
@@ -152,18 +151,19 @@ public class Upgrade {
         PreferenceKeyMigration.migrate(context);
     }
 
-    /**
-     * Add a set of {@link Identifier}s which were added after the initial app release.
-     */
-    private void addNewIdentifiers() {
-        identifierMigration.add(Set.of(
-                Identifier.SID_DATABAZE_KNIH,
-                Identifier.SID_ISNI,
-                Identifier.SID_STORYGRAPH,
-                Identifier.SID_URN,
-                Identifier.SID_VIAF,
-                Identifier.SID_BIBLIOTECE_PL));
-    }
+    // db52 update REMOVED
+    //    /**
+    //     * Add a set of {@link Identifier}s which were added after the initial app release.
+    //     */
+    //    private void addNewIdentifiers() {
+    //        identifierMigration.add(Set.of(
+    //                Identifier.SID_DATABAZE_KNIH,
+    //                Identifier.SID_ISNI,
+    //                Identifier.SID_STORYGRAPH,
+    //                Identifier.SID_URN,
+    //                Identifier.SID_VIAF,
+    //                Identifier.SID_BIBLIOTECE_PL));
+    //    }
 
     /**
      * Adds {@link CalibreCustomField}s which were added after the initial app release.

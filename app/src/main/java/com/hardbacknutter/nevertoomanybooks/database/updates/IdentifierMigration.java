@@ -186,6 +186,9 @@ public class IdentifierMigration {
 
     /**
      * Add the column {@link DBKey.IDENTIFIERS#WIKIDATA_CLAIM} if not yet there.
+     * <p>
+     * This call is still needed even after db52 update to allow importing
+     * backup archives created with older versions.
      *
      * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
      */
@@ -193,23 +196,25 @@ public class IdentifierMigration {
         init(DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM, keys, Identifier::getWikidataClaim);
     }
 
-    /**
-     * Add the column {@link DBKey.IDENTIFIERS#BOOK_URI} if not yet there.
-     *
-     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
-     */
-    void initBookUrl(@NonNull final Set<String> keys) {
-        init(DBDefinitions.DOM_IDENTIFIER_BOOK_URI, keys, Identifier::getBookUri);
-    }
+    // db52 update REMOVED
+    //    /**
+    //     * Add the column {@link IdentifierMigration#BOOK_URI_OBSOLETE} if not yet there.
+    //     *
+    //     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
+    //     */
+    //    void initBookUrl(@NonNull final Set<String> keys) {
+    //        init(DOM_IDENTIFIER_BOOK_URI_OBSOLETE, keys, Identifier::getUri);
+    //    }
 
-    /**
-     * Add the column {@link DBKey.IDENTIFIERS#AUTHOR_URI} if not yet there.
-     *
-     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
-     */
-    void initAuthorUrl(@NonNull final Set<String> keys) {
-        init(DBDefinitions.DOM_IDENTIFIER_AUTHOR_URI, keys, Identifier::getAuthorUri);
-    }
+    // db52 update REMOVED
+    //    /**
+    //     * Add the column {@link IdentifierMigration#AUTHOR_URI_OBSOLETE} if not yet there.
+    //     *
+    //     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
+    //     */
+    //    void initAuthorUrl(@NonNull final Set<String> keys) {
+    //        init(DOM_IDENTIFIER_AUTHOR_URI_OBSOLETE, keys, Identifier::getAuthorUri);
+    //    }
 
     /**
      * Update the given domain for the given keys.
