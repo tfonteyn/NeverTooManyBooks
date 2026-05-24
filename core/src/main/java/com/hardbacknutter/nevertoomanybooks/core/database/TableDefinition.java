@@ -76,9 +76,6 @@ public class TableDefinition {
     private final DebugHelper debugHelper;
     @NonNull
     private TableType type = TableType.Standard;
-    /** Cached table structure info. */
-    @Nullable
-    private TableInfo tableInfo;
 
     /**
      * Constructor.
@@ -556,15 +553,7 @@ public class TableDefinition {
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public TableInfo getTableInfo(@NonNull final SQLiteDatabase db) {
-        synchronized (this) {
-            // When called before the table exists, tableInfo IS instantiated,
-            // but exists()==false.
-            // Second call, if exists()==false, load the table-info for real.
-            if (tableInfo == null || !tableInfo.exists()) {
-                tableInfo = new TableInfo(db, name);
-            }
-        }
-        return tableInfo;
+        return new TableInfo(db, name);
     }
 
     /**
@@ -678,6 +667,10 @@ public class TableDefinition {
                            + " (" + String.join(",", dstColumns) + ')'
                            + " SELECT " + String.join(",", srcColumns)
                            + " FROM " + name;
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().w(TAG, "recreate table sql: " + sql);
+        }
+
         db.execSQL(sql);
 
         db.execSQL("DROP TABLE " + name);
