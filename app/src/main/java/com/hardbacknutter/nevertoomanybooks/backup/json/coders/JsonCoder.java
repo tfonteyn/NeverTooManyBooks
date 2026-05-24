@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -124,6 +125,12 @@ public interface JsonCoder<T> {
     T decode(@NonNull JSONObject data)
             throws JSONException;
 
+    @NonNull
+    default Collection<T> decodeList(@NonNull final JSONObject data)
+            throws JSONException {
+        return List.of(decode(data));
+    }
+
     /**
      * Decode a list of elements.
      * Actual work is done in {@link #decode(JSONObject)}.
@@ -139,7 +146,7 @@ public interface JsonCoder<T> {
             throws JSONException {
         final Collection<T> list = new ArrayList<>();
         for (int i = 0; i < elements.length(); i++) {
-            list.add(decode((JSONObject) elements.get(i)));
+            list.addAll(decodeList((JSONObject) elements.get(i)));
         }
         return list;
     }
