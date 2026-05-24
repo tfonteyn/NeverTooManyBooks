@@ -62,6 +62,11 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  * Currently supported formats.
  * <ul>
  *     <li>
+ *         v9: app version 8.0.0
+ *              Identify uri fields have changed
+ *              Adds Identifiers to Series
+ *     </li>
+ *     <li>
  *         v8: app version 7.0.0
  *              Adds {@link RecordType#Identifiers}.
  *              Adds {@link RecordType#Tags} which contains

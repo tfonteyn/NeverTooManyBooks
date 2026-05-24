@@ -30,12 +30,19 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+/**
+ * NooSFere.org is a bibliographical database and encyclopedic platform
+ * dedicated entirely to speculative fiction, science fiction, fantasy, and horror
+ * published in the French language.
+ */
 public final class NooSFere {
 
     private static final String SITE_URL = "https://www.noosfere.org";
     private static final String BOOK_URL = "https://www.noosfere.org/livres/niourf.asp?numlivre=%s";
     private static final String AUTHOR_URL =
             "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s";
+    private static final String SERIES_URL =
+            "https://www.noosfere.org/livres/serie.asp?numserie=%s";
 
     private NooSFere() {
     }
@@ -56,7 +63,13 @@ public final class NooSFere {
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P5570")
+                        "P5570"),
+                Identifier.createSeries(
+                        Identifier.SID_NOOSFERE,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 }

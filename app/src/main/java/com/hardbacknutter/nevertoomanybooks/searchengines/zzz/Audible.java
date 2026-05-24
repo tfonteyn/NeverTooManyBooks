@@ -30,13 +30,17 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-// the site redirects to the local country... losing the
-// book/author part... the user will need to update the url's manually
+/**
+ * The site redirects to the local country but in doing so,
+ * it looses the book/author part... the user will need to edit the url's.
+ * We should document this...
+ */
 public final class Audible {
 
     private static final String SITE_URL = "https://www.audible.com";
     private static final String BOOK_URL = "https://www.audible.com/pd/%s";
     private static final String AUTHOR_URL = "https://www.audible.com/author/%s";
+    private static final String SERIES_URL = "https://www.audible.com/series/%s";
 
     private Audible() {
     }
@@ -57,7 +61,13 @@ public final class Audible {
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        null)
+                        null),
+                Identifier.createSeries(
+                        Identifier.SID_AUDIBLE,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 }

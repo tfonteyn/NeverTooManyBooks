@@ -43,6 +43,7 @@ public class WikidataSearchEngine
     private static final String SITE_URL = "https://www.wikidata.org";
     private static final String BOOK_URL = "https://www.wikidata.org/wiki/%s";
     private static final String AUTHOR_URL = "https://www.wikidata.org/wiki/%s";
+    private static final String SERIES_URL = "https://www.wikidata.org/wiki/%s";
 
     private static final String PREFERENCE_KEY = "wikidata";
 
@@ -121,7 +122,13 @@ public class WikidataSearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        null)
+                        null),
+                Identifier.createSeries(
+                        Identifier.SID_WIKIDATA,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 }

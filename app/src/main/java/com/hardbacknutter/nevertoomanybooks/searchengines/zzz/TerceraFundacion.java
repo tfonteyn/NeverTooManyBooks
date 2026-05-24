@@ -30,6 +30,10 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+/**
+ * Spanish-language database, library, and community forum dedicated to speculative fiction,
+ * including science fiction, fantasy, horror, and mystery literature.
+ */
 public final class TerceraFundacion {
 
     private static final String SITE_URL = "https://tercerafundacion.net";
@@ -37,6 +41,10 @@ public final class TerceraFundacion {
             "https://tercerafundacion.net/biblioteca/ver/libro/%s";
     private static final String AUTHOR_URL =
             "https://tercerafundacion.net/biblioteca/ver/persona/%s";
+    // Not 100% sure "termino" is correct... we'll have to wait on a user complaint or not.
+    private static final String SERIES_URL =
+            "https://tercerafundacion.net/biblioteca/ver/termino/%s";
+
 
     private TerceraFundacion() {
     }
@@ -57,7 +65,13 @@ public final class TerceraFundacion {
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        null)
+                        null),
+                Identifier.createSeries(
+                        Identifier.SID_TERCERA_FUNDACION,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 }

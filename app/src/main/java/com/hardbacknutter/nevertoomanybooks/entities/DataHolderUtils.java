@@ -331,6 +331,14 @@ public final class DataHolderUtils {
                 return ServiceLocator.getInstance().getAuthorIdentifierDao()
                                      .findSid(identifierKey, fkId);
             }
+        } else if (DBKey.FK_SERIES.equals(fk)
+                   && dataHolder.contains(DBKey.FK_SERIES)
+                   && dataHolder.getLong(DBKey.BL_NODE.GROUP) == BooklistGroup.SERIES) {
+            final long fkId = dataHolder.getLong(DBKey.FK_SERIES);
+            if (fkId > 0) {
+                return ServiceLocator.getInstance().getSeriesIdentifierDao()
+                                     .findSid(identifierKey, fkId);
+            }
         }
 
         // If the row IS an object holding identifiers
@@ -373,6 +381,13 @@ public final class DataHolderUtils {
             final long fkId = dataHolder.getLong(DBKey.FK_AUTHOR);
             if (fkId > 0) {
                 return ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(fkId);
+            }
+        } else if (DBKey.FK_SERIES.equals(fk)
+                   && dataHolder.contains(DBKey.FK_SERIES)
+                   && dataHolder.getLong(DBKey.BL_NODE.GROUP) == BooklistGroup.SERIES) {
+            final long fkId = dataHolder.getLong(DBKey.FK_SERIES);
+            if (fkId > 0) {
+                return ServiceLocator.getInstance().getSeriesIdentifierDao().getByFkId(fkId);
             }
         }
 

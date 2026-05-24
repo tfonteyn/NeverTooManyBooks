@@ -95,6 +95,7 @@ public class DoubanSearchEngine
     private static final String SITE_URL = "https://book.douban.com";
     private static final String BOOK_URL = "https://book.douban.com/subject/%s";
     private static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
+    private static final String SERIES_URL = "https://book.douban.com/series/%s";
 
     private static final Locale SITE_LOCALE = Locale.CHINA;
 
@@ -179,7 +180,13 @@ public class DoubanSearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P6441")
+                        "P6441"),
+                Identifier.createSeries(
+                        Identifier.SID_DOUBAN,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 

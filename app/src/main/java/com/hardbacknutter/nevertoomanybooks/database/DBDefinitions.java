@@ -104,9 +104,11 @@ public final class DBDefinitions {
      * {@link #TBL_BOOK_TOC_ENTRIES},
      * {@link #TBL_BOOK_LOANEE},
      * <p>
+     * {@link #TBL_BOOK_TAG}
+     * <p>
      * {@link #TBL_BOOK_IDENTIFIER}
      * {@link #TBL_AUTHOR_IDENTIFIER}
-     * {@link #TBL_BOOK_TAG}
+     * {@link #TBL_SERIES_IDENTIFIER}
      * <p>
      * {@link #TBL_CALIBRE_BOOKS},
      * {@link #TBL_CALIBRE_LIBRARIES},
@@ -167,6 +169,8 @@ public final class DBDefinitions {
 
     /** link table. */
     public static final TableDefinition TBL_AUTHOR_IDENTIFIER;
+    /** link table. */
+    public static final TableDefinition TBL_SERIES_IDENTIFIER;
 
     /** Map alternative names for Authors. */
     public static final TableDefinition TBL_PSEUDONYM_AUTHOR;
@@ -256,7 +260,11 @@ public final class DBDefinitions {
     public static final Domain DOM_IDENTIFIER_SITE_URL;
     public static final Domain DOM_IDENTIFIER_URI;
 
-    /** {@link #TBL_BOOK_IDENTIFIER}, {@link #TBL_AUTHOR_IDENTIFIER}. */
+    /**
+     * {@link #TBL_BOOK_IDENTIFIER},
+     * {@link #TBL_AUTHOR_IDENTIFIER},
+     * {@link #TBL_SERIES_IDENTIFIER}.
+     */
     public static final Domain DOM_IDENTIFIER_SID;
 
     /** {@link #TBL_TAGS}. */
@@ -618,9 +626,11 @@ public final class DBDefinitions {
         TBL_BOOK_PUBLISHER = new TableDefinition("book_publisher", "bp");
         TBL_BOOK_LOANEE = new TableDefinition("loan", "l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology", "bat");
-        TBL_BOOK_IDENTIFIER = new TableDefinition("book_identifiers", "bid");
-        TBL_AUTHOR_IDENTIFIER = new TableDefinition("author_identifiers", "aid");
         TBL_BOOK_TAG = new TableDefinition("book_tags", "btgs");
+
+        TBL_BOOK_IDENTIFIER = new TableDefinition("book_identifiers", "b_ids");
+        TBL_AUTHOR_IDENTIFIER = new TableDefinition("author_identifiers", "a_ids");
+        TBL_SERIES_IDENTIFIER = new TableDefinition("series_identifiers", "s_ids");
 
         TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib", "clb_l");
         TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib", "clb_vl");
@@ -1931,16 +1941,39 @@ public final class DBDefinitions {
                 .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
                 .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
                 // Forward
-                .addIndex(DBKey.FK_BOOK, true,
+                // 2026-05-20: previously we mistakenly used DBKey.FK_BOOK as the name
+                // As indexes are dropped and recreated, correcting the name should be fine.
+                .addIndex(DBKey.FK_AUTHOR, true,
                           DOM_FK_AUTHOR,
                           DOM_FK_IDENTIFIER,
                           DOM_IDENTIFIER_SID)
                 // Reverse lookup
+                // not unique to allow for "bad data" during imports
                 .addIndex(DBKey.FK_IDENTIFIER, false,
                           DOM_FK_IDENTIFIER,
                           DOM_IDENTIFIER_SID,
                           DOM_FK_AUTHOR);
         ALL_TABLES.put(TBL_AUTHOR_IDENTIFIER.getName(), TBL_AUTHOR_IDENTIFIER);
+
+        TBL_SERIES_IDENTIFIER
+                .addDomains(DOM_FK_SERIES,
+                            DOM_FK_IDENTIFIER,
+                            DOM_IDENTIFIER_SID)
+                .setPrimaryKey(DOM_FK_SERIES, DOM_FK_IDENTIFIER)
+                .addReference(TBL_SERIES, DOM_FK_SERIES)
+                .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
+                // Forward
+                .addIndex(DBKey.FK_SERIES, true,
+                          DOM_FK_SERIES,
+                          DOM_FK_IDENTIFIER,
+                          DOM_IDENTIFIER_SID)
+                // Reverse lookup
+                // not unique to allow for "bad data" during imports
+                .addIndex(DBKey.FK_IDENTIFIER, false,
+                          DOM_FK_IDENTIFIER,
+                          DOM_IDENTIFIER_SID,
+                          DOM_FK_SERIES);
+        ALL_TABLES.put(TBL_SERIES_IDENTIFIER.getName(), TBL_SERIES_IDENTIFIER);
 
         TBL_CALIBRE_BOOKS
                 .addDomains(DOM_FK_BOOK,

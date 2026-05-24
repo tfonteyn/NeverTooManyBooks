@@ -1336,10 +1336,6 @@
     <string name="lbl_series">Series</string>
     <!-- Multiple Series. -->
     <string name="lbl_series_multiple">Series</string>
-    <!-- A single Publisher Series. -->
-    <string name="lbl_pub_series">Pub. Series</string>
-    <!-- Multiple Publisher Series. -->
-    <string name="lbl_pub_series_multiple">Pub. Series</string>
     <!-- The book's number in a series. Either a symbol (e.g. '#') or a very short label (e.g. 'Nr') -->
     <string name="lbl_series_num">#</string>
     <!-- Series. Whether the user considers his collection of this Series to be complete. -->
@@ -1493,6 +1489,8 @@
     <string name="lbl_book_uri">Book URL</string>
     <!-- Identifier editor label. The field for the template of an author url. See also the wiki docs. -->
     <string name="lbl_author_uri">Author URL</string>
+    <!-- Identifier editor label. The field for the template of a series url. See also the wiki docs. -->
+    <string name="lbl_series_uri">Series URL</string>
     <!--
         The "claim" or "P" number which Wikidata uses for an author-id as
          defined by a given website.

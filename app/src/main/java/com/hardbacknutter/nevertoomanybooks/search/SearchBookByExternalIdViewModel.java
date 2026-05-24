@@ -83,7 +83,7 @@ public class SearchBookByExternalIdViewModel
     Optional<Identifier> getIdentifier(@NonNull final EngineId engineId) {
         final String identifierKey = engineId.getIdentifierKey();
         if (identifierKey != null) {
-            return identifierDao.findByKey(identifierKey, Identifier.EntityType.Book);
+            return identifierDao.find(identifierKey, Identifier.EntityType.Book);
         } else {
             return Optional.empty();
         }

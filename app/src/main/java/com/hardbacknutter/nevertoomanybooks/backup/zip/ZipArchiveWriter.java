@@ -102,7 +102,7 @@ public class ZipArchiveWriter
      * RELEASE: set correct archiver version
      * Make sure to update {@link ZipArchiveReader#read(Context, ProgressListener)}
      */
-    public static final int VERSION = 8;
+    public static final int VERSION = 9;
 
     /**
      * Arbitrary number of steps added to the progress max value.

@@ -91,6 +91,7 @@ public class BedethequeSearchEngine
     private static final String SITE_URL = "https://www.bedetheque.com";
     private static final String BOOK_URL = "https://www.bedetheque.com/BD-x-%s.html";
     private static final String AUTHOR_URL = "https://www.bedetheque.com/auteur-%s-BD-x.html";
+    private static final String SERIES_URL = "https://www.bedetheque.com/serie-%s-BD-x.html";
 
     private static final String PREFERENCE_KEY = "bedetheque";
 
@@ -226,7 +227,13 @@ public class BedethequeSearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P5491")
+                        "P5491"),
+                Identifier.createSeries(
+                        Identifier.SID_BEDETHEQUE,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 

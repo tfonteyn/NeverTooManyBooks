@@ -36,6 +36,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -46,9 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -67,6 +70,8 @@ public class SeriesDaoImpl
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
 
+    private final IdentifierValueDao seriesIdentifierDao;
+
     /**
      * Constructor.
      *
@@ -74,6 +79,7 @@ public class SeriesDaoImpl
      */
     public SeriesDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
+        seriesIdentifierDao = ServiceLocator.getInstance().getSeriesIdentifierDao();
     }
 
     @NonNull
@@ -269,7 +275,7 @@ public class SeriesDaoImpl
                                final boolean doUpdates,
                                @NonNull final Collection<Series> list,
                                @NonNull final Function<Series, Locale> localeSupplier)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
@@ -336,29 +342,49 @@ public class SeriesDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,
                        @NonNull final Locale locale)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
-        // REMINDER: do NOT resolve the locale using series.getLocale!
-        // It's explicitly set as a parameter!
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
 
-        final String title = series.getTitle();
-        final String obTitle = new ReorderHelper(LocaleListUtils.asList(
-                context.getResources().getConfiguration().getLocales()))
-                .reorderForSorting(context, title, locale);
+            // REMINDER: do NOT resolve the locale using series.getLocale!
+            // It's explicitly set as a parameter!
 
-        final long iId;
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            stmt.bindString(1, title);
-            stmt.bindString(2, textNormaliser.strict(obTitle, locale));
-            stmt.bindBoolean(3, series.isComplete());
-            iId = stmt.executeInsert();
+            final String title = series.getTitle();
+            final String obTitle = new ReorderHelper(LocaleListUtils.asList(
+                    context.getResources().getConfiguration().getLocales()))
+                    .reorderForSorting(context, title, locale);
+
+            final long iId;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
+                stmt.bindString(1, title);
+                stmt.bindString(2, textNormaliser.strict(obTitle, locale));
+                stmt.bindBoolean(3, series.isComplete());
+                iId = stmt.executeInsert();
+            }
+
+            if (iId != -1) {
+                series.setId(iId);
+
+                seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
+                                                   series.getId(), series.getIdentifiers());
+
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+                return iId;
+            }
+        } catch (@NonNull final DaoWriteException e) {
+            series.setId(0);
+            throw e;
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
-
-        if (iId != -1) {
-            series.setId(iId);
-            return iId;
-        }
-
         // The insert failed with -1
         throw new DaoInsertException(ERROR_INSERT_FROM + series);
     }
@@ -367,7 +393,7 @@ public class SeriesDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Series series,
                        @NonNull final Locale locale)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         // REMINDER: do NOT resolve the locale using series.getLocale!
         // It's explicitly set as a parameter!
@@ -377,21 +403,37 @@ public class SeriesDaoImpl
                 context.getResources().getConfiguration().getLocales()))
                 .reorderForSorting(context, text, locale);
 
-        final int rowsAffected;
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, textNormaliser.strict(obTitle, locale));
-            stmt.bindBoolean(3, series.isComplete());
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
 
-            stmt.bindLong(4, series.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            final int rowsAffected;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+                stmt.bindString(1, series.getTitle());
+                stmt.bindString(2, textNormaliser.strict(obTitle, locale));
+                stmt.bindBoolean(3, series.isComplete());
+
+                stmt.bindLong(4, series.getId());
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+
+            if (rowsAffected > 0) {
+                seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
+                                                   series.getId(), series.getIdentifiers());
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+                return;
+            }
+
+            throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
-
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + series);
     }
 
     @Override
@@ -431,7 +473,7 @@ public class SeriesDaoImpl
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Series source,
                          @NonNull final Series target)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         int booksMoved;
@@ -528,7 +570,7 @@ public class SeriesDaoImpl
 
     @Override
     public int fixPositions(@NonNull final Context context)
-            throws DaoInsertException, DaoUpdateException {
+            throws DaoWriteException {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);

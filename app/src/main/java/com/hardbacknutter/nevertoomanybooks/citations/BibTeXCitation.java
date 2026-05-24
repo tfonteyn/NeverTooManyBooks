@@ -135,7 +135,7 @@ class BibTeXCitation
             });
 
         book.getIdentifiers().forEach(iv -> identifierDao
-                .findByKey(iv.getKey(), Identifier.EntityType.Book)
+                .find(iv.getKey(), Identifier.EntityType.Book)
                 .flatMap(Identifier::getUri)
                 .ifPresent(bookUri -> sj.add(
                         String.format(NAME_VALUE, URL, String.format(bookUri, iv.getSid())))));

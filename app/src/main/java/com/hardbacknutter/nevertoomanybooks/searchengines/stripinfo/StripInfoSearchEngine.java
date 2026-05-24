@@ -113,6 +113,7 @@ public class StripInfoSearchEngine
     private static final String SITE_URL = "https://stripinfo.be";
     private static final String BOOK_URL = "https://stripinfo.be/reeks/strip/%s";
     private static final String AUTHOR_URL = "https://stripinfo.be/auteur/index/%s";
+    private static final String SERIES_URL = "https://stripinfo.be/reeks/index/%s";
 
     private static final String PREFERENCE_KEY = "stripinfo";
 
@@ -234,7 +235,13 @@ public class StripInfoSearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        null)
+                        null),
+                Identifier.createSeries(
+                        Identifier.SID_STRIP_INFO,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 

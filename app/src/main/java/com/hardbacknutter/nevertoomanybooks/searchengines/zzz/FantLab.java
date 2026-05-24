@@ -30,11 +30,18 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+/**
+ * FantLab.ru (Laboratoria Fantastiki / "Laboratory of Sci-Fi and Fantasy")
+ * is a Russian-language database and social networking site dedicated
+ * entirely to speculative fiction, science fiction,
+ * fantasy, cyberpunk, horror, and magical realism.
+ */
 public final class FantLab {
 
     private static final String SITE_URL = "https://fantlab.ru";
     private static final String BOOK_URL = "https://fantlab.ru/edition%s";
     private static final String AUTHOR_URL = "https://fantlab.ru/autor%s";
+    private static final String SERIES_URL = "https://fantlab.ru/work%s";
 
     private FantLab() {
     }
@@ -55,7 +62,13 @@ public final class FantLab {
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P7433")
+                        "P7433"),
+                Identifier.createSeries(
+                        Identifier.SID_FANTLAB,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 }

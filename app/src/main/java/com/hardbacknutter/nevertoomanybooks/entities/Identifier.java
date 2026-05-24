@@ -133,6 +133,7 @@ public class Identifier
     public static final String SID_GOODREADS = "goodreads";
     public static final String SID_GOOGLE = "google";
     public static final String SID_ISFDB = "isfdb";
+    public static final String SID_ISFDB_PUB_SERIES = "isfdb-pubseries";
     public static final String SID_KBNL = "ppn";
     public static final String SID_KBR = "kbr";
     public static final String SID_LAST_DODO_NL = "lastdodo";
@@ -319,6 +320,15 @@ public class Identifier
                                           @Nullable final String uri,
                                           @Nullable final String wikidataClaim) {
         return new Identifier(key, EntityType.Author, type, name, siteUrl, uri, wikidataClaim);
+    }
+
+    @NonNull
+    public static Identifier createSeries(@Size(max = MAX_KEY_LEN) @NonNull final String key,
+                                          @NonNull final Type type,
+                                          @NonNull final String name,
+                                          @Nullable final String siteUrl,
+                                          @Nullable final String uri) {
+        return new Identifier(key, EntityType.Series, type, name, siteUrl, uri, null);
     }
 
     /**
@@ -606,15 +616,12 @@ public class Identifier
 
     /**
      * Defines for which entity this identifier is valid.
-     * Includes variations which need different Urls.
      */
     public enum EntityType
             implements Parcelable {
         Book(0, R.string.lbl_books),
         Author(1, R.string.lbl_authors),
-        Series(2, R.string.lbl_series_multiple),
-        PubSeries(3, R.string.lbl_pub_series_multiple);
-
+        Series(2, R.string.lbl_series_multiple);
 
         /** {@link Parcelable}. */
         public static final Creator<EntityType> CREATOR = new Creator<>() {
@@ -790,6 +797,12 @@ public class Identifier
         @NonNull
         private final String sid;
 
+        /**
+         * Constructor.
+         *
+         * @param key Identifier
+         * @param sid value
+         */
         public Value(@NonNull final String key,
                      @NonNull final String sid) {
             this.key = key;

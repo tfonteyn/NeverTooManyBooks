@@ -193,6 +193,8 @@ public final class ServiceLocator {
     @Nullable
     private IdentifierValueDao bookIdentifierDao;
     @Nullable
+    private IdentifierValueDao seriesIdentifierDao;
+    @Nullable
     private IsoLanguageDao isoLanguageDao;
     @Nullable
     private LanguageDao languageDao;
@@ -685,6 +687,17 @@ public final class ServiceLocator {
     }
 
     @NonNull
+    public IdentifierValueDao getBookIdentifierDao() {
+        synchronized (this) {
+            if (bookIdentifierDao == null) {
+                bookIdentifierDao = new IdentifierValueDaoImpl(
+                        getDb(), DBDefinitions.TBL_BOOK_IDENTIFIER, DBKey.FK_BOOK);
+            }
+        }
+        return bookIdentifierDao;
+    }
+
+    @NonNull
     public IdentifierValueDao getAuthorIdentifierDao() {
         synchronized (this) {
             if (authorIdentifierDao == null) {
@@ -696,14 +709,14 @@ public final class ServiceLocator {
     }
 
     @NonNull
-    public IdentifierValueDao getBookIdentifierDao() {
+    public IdentifierValueDao getSeriesIdentifierDao() {
         synchronized (this) {
-            if (bookIdentifierDao == null) {
-                bookIdentifierDao = new IdentifierValueDaoImpl(
-                        getDb(), DBDefinitions.TBL_BOOK_IDENTIFIER, DBKey.FK_BOOK);
+            if (seriesIdentifierDao == null) {
+                seriesIdentifierDao = new IdentifierValueDaoImpl(
+                        getDb(), DBDefinitions.TBL_SERIES_IDENTIFIER, DBKey.FK_SERIES);
             }
         }
-        return bookIdentifierDao;
+        return seriesIdentifierDao;
     }
 
     @NonNull

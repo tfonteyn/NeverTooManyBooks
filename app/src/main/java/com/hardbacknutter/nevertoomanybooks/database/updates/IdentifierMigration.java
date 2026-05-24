@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.updates;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
@@ -41,15 +40,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
-import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
@@ -221,20 +217,7 @@ public class IdentifierMigration {
     }
 
     void insert(@NonNull final Collection<Identifier> list) {
-        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(
-                IdentifierDaoImpl.Sql.INSERT))) {
-            for (final Identifier identifier : list) {
-                IdentifierDaoImpl.doInsert(identifier, stmt);
-            }
-        } catch (@NonNull final SQLException e) {
-            // log... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw e;
-        } catch (@NonNull final DaoInsertException e) {
-            // log, but just rethrow insert errors... we're in a real mess now
-            LoggerFactory.getLogger().e(TAG, e);
-            throw new SQLException("db52", e);
-        }
+        IdentifierDaoImpl.doInsert(db, list);
     }
 
     /**

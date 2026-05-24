@@ -100,6 +100,7 @@ public class OpenLibrarySearchEngine
     private static final String SITE_URL = "https://openlibrary.org";
     private static final String BOOK_URL = "https://openlibrary.org/books/%s";
     static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
+    private static final String SERIES_URL = "https://openlibrary.org/series/%s";
 
     private static final String PREFERENCE_KEY = "openlibrary";
 
@@ -228,7 +229,13 @@ public class OpenLibrarySearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P648")
+                        "P648"),
+                Identifier.createSeries(
+                        Identifier.SID_OPEN_LIBRARY,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 

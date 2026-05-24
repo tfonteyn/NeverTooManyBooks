@@ -272,8 +272,7 @@ public class IdentifiersEditorFragment
                         res.getQuantityString(R.plurals.n_author, count, count));
                 break;
             }
-            case Series:
-            case PubSeries: {
+            case Series: {
                 msg = context.getString(
                         R.string.confirm_delete_identifier_from_x_series,
                         identifier.getName(),

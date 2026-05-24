@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,13 +21,18 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 public class SeriesCoder
         implements JsonCoder<Series> {
+
+    private final JsonCoder<Identifier.Value> identifierValueCoder = new IdentifierValueCoder();
 
     SeriesCoder() {
     }
@@ -46,6 +51,11 @@ public class SeriesCoder
         }
         if (series.isComplete()) {
             out.put(DBKey.SERIES.COMPLETE, true);
+        }
+
+        final List<Identifier.Value> identifiers = series.getIdentifiers();
+        if (!identifiers.isEmpty()) {
+            out.put(Identifier.Value.BKEY_LIST, identifierValueCoder.encode(identifiers));
         }
         return out;
     }
@@ -67,6 +77,9 @@ public class SeriesCoder
             series.setComplete(data.getBoolean("complete"));
         }
 
+        if (data.has(Identifier.Value.BKEY_LIST)) {
+            series.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(Identifier.Value.BKEY_LIST)));
+        }
         return series;
     }
 }

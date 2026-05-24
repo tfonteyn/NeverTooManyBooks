@@ -96,7 +96,7 @@ public class IdentifierValueDaoImpl
         try (SynchronizedStatement stmt = db.compileStatement(sql.INSERT_LINK)) {
             for (final Identifier.Value iv : list) {
 
-                Identifier identifier = findByKey(iv.getKey(), entityType).orElse(null);
+                Identifier identifier = find(iv.getKey(), entityType).orElse(null);
                 if (identifier == null) {
                     identifier = new Identifier(iv.getKey(), entityType);
                     insert(identifier);
@@ -208,7 +208,7 @@ public class IdentifierValueDaoImpl
                     + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
 
             FIND_BY_LINK_ID =
-                    IdentifierDaoImpl.Sql.SELECT_ALL
+                    SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.IDENTIFIERS.KEY)
                     + ',' + linkTable.dotAs(DBKey.IDENTIFIERS.SID)
                     + _FROM_ + linkTable.startJoin(TBL_IDENTIFIERS)
                     + _WHERE_ + linkTable.dot(fk) + "=?";

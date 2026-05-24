@@ -112,7 +112,7 @@ abstract class ViewOnSiteMenuHandler<T>
         getSids(data)
                 .stream()
                 .map(Identifier.Value::getKey)
-                .map((String key) -> dao.findByKey(key, entityType))
+                .map((String key) -> dao.find(key, entityType))
                 .flatMap(Optional::stream)
                 .filter(identifier -> identifier.getUri().isPresent())
                 .forEach(identifier -> {
@@ -142,7 +142,7 @@ abstract class ViewOnSiteMenuHandler<T>
         }
 
         final Optional<String> oUri = dao
-                .findByKey(key, entityType)
+                .find(key, entityType)
                 .flatMap(Identifier::getUri);
 
         // Sanity check, it should be there!

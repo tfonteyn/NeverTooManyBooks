@@ -70,6 +70,8 @@ public class LibraryThingSearchEngine
 
     private static final String SITE_URL = "https://www.librarything.com";
     private static final String BOOK_URL = "https://www.librarything.com/work/%s";
+    private static final String AUTHOR_URL = "https://www.librarything.com/a/%s";
+    private static final String SERIES_URL = "https://www.librarything.com/nseries/%s";
 
     private static final String TAG = "LibraryThingSearchEngin";
 
@@ -132,8 +134,14 @@ public class LibraryThingSearchEngine
                         Identifier.Type.Number,
                         name,
                         SITE_URL,
-                        null,
-                        "P7400")
+                        AUTHOR_URL,
+                        "P7400"),
+                Identifier.createSeries(
+                        Identifier.SID_LIBRARY_THING,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 

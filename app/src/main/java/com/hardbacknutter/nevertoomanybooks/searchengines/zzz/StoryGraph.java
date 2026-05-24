@@ -35,6 +35,7 @@ public final class StoryGraph {
     private static final String SITE_URL = "https://www.thestorygraph.com/";
     private static final String BOOK_URL = "https://app.thestorygraph.com/books/%s";
     private static final String AUTHOR_URL = "https://app.thestorygraph.com/authors/%s";
+    private static final String SERIES_URL = "https://app.thestorygraph.com/series/%s";
 
     private StoryGraph() {
     }
@@ -55,7 +56,13 @@ public final class StoryGraph {
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P12430")
+                        "P12430"),
+                Identifier.createSeries(
+                        Identifier.SID_STORYGRAPH,
+                        Identifier.Type.Text,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 }

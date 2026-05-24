@@ -265,6 +265,9 @@
     <!-- View an Author using an Identifier on an external site. -->
     <item name="SUBMENU_VIEW_AUTHOR_ON_SITE"
           type="id" />
+    <!-- View a Series using an Identifier on an external site. -->
+    <item name="SUBMENU_VIEW_SERIES_ON_SITE"
+          type="id" />
 
     <!-- Search books on an external site using a limited set of search-criteria -->
     <item name="SUBMENU_SEARCH_BOOKS_ON_SITE"

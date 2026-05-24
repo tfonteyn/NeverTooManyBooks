@@ -83,7 +83,6 @@ public class IdentifierCoder
         @Nullable
         final String uri = data.optString(DBKey.IDENTIFIERS.URI, null);
         if (uri != null) {
-            // Archive v8 or up
             final Identifier identifier = new Identifier(key, entityType, type, name,
                                                          siteUrl, uri, wikidataClaim);
 
@@ -91,7 +90,7 @@ public class IdentifierCoder
             return List.of(identifier);
         }
 
-        // Check for v7 legacy fields
+        // Check for potential legacy fields and try migrating them
         return decodeV7(id, key, type, name, siteUrl, wikidataClaim, data);
     }
 

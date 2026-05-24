@@ -96,6 +96,11 @@ public class IdentifierDaoImpl
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {
         final Collection<Identifier> identifierList = Identifier.createInitialList(context);
+        doInsert(db, identifierList);
+    }
+
+    public static void doInsert(@NonNull final SQLiteDatabase db,
+                                @NonNull final Collection<Identifier> identifierList) {
         // This method must run on API 26: Use a simple INSERT, and not the UPSERT!
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
@@ -108,7 +113,7 @@ public class IdentifierDaoImpl
         } catch (@NonNull final DaoInsertException e) {
             // log, but just rethrow insert errors... we're in a real mess now
             LoggerFactory.getLogger().e(TAG, e);
-            throw new SQLException("onPostCreate", e);
+            throw new SQLException("doInsert", e);
         }
     }
 
@@ -122,7 +127,7 @@ public class IdentifierDaoImpl
      *
      * @throws DaoInsertException on failure
      */
-    public static long doInsert(@NonNull final Identifier identifier,
+    private static long doInsert(@NonNull final Identifier identifier,
                                  @NonNull final ExtSQLiteStatement stmt)
             throws DaoInsertException {
         int c = 0;
@@ -269,8 +274,8 @@ public class IdentifierDaoImpl
 
     @Override
     @NonNull
-    public Optional<Identifier> findByKey(@NonNull final String key,
-                                          @NonNull final Identifier.EntityType entityType) {
+    public Optional<Identifier> find(@NonNull final String key,
+                                     @NonNull final Identifier.EntityType entityType) {
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_KEY_AND_ENTITY_TYPE,
                                          new String[]{key, String.valueOf(entityType.getId())})) {
             if (cursor.moveToFirst()) {
@@ -338,7 +343,7 @@ public class IdentifierDaoImpl
 
     @Override
     public void fixId(@NonNull final Identifier identifier) {
-        final long found = findByKey(identifier.getKey(), identifier.getEntityType())
+        final long found = find(identifier.getKey(), identifier.getEntityType())
                 .map(Identifier::getId).orElse(0L);
         identifier.setId(found);
     }
@@ -376,9 +381,9 @@ public class IdentifierDaoImpl
         return false;
     }
 
-    public static final class Sql {
+    private static final class Sql {
         /** Insert an {@link Identifier}. */
-        public static final String INSERT =
+        static final String INSERT =
                 INSERT_INTO_ + TBL_IDENTIFIERS.getName()
                 + '(' + DBKey.IDENTIFIERS.KEY
                 + ',' + DBKey.IDENTIFIERS.ENTITY

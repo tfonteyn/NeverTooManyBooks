@@ -111,6 +111,8 @@ public class IsfdbSearchEngine
     private static final String SITE_URL = "https://www.isfdb.org";
     private static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
     static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
+    private static final String SERIES_URL = "https://www.isfdb.org/cgi-bin/pe.cgi?%s";
+    private static final String PUB_SERIES_URL = "https://www.isfdb.org/cgi-bin/pubseries.cgi?%s";
 
     private static final Locale SITE_LOCALE = Locale.US;
 
@@ -204,7 +206,11 @@ public class IsfdbSearchEngine
     /** A CSS select query. */
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
 
+    // Paranoia...  the code will check for the correct page before parsing the id.
+    // So we could just use ".*\\.cgi\\?(\\d+)" for these.
     private static final Pattern AUTHOR_ID = Pattern.compile(".*ea\\.cgi\\?(\\d+)");
+    private static final Pattern SERIES_ID = Pattern.compile(".*pe\\.cgi\\?(\\d+)");
+    private static final Pattern PUB_SERIES_ID = Pattern.compile(".*pubseries\\.cgi\\?(\\d+)");
 
     /**
      * We TRY to get the books language, but this is not always possible.
@@ -355,7 +361,20 @@ public class IsfdbSearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P1233")
+                        "P1233"),
+                Identifier.createSeries(
+                        Identifier.SID_ISFDB,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL),
+                new Identifier(Identifier.SID_ISFDB_PUB_SERIES,
+                               Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               name,
+                               SITE_URL,
+                               PUB_SERIES_URL,
+                               null)
         );
     }
 
@@ -696,6 +715,13 @@ public class IsfdbSearchEngine
 
                     } else if (addSeriesFromToc && href.contains(CGI_PE)) {
                         final Series series = Series.from(cleanName(a));
+                        final Matcher matcher = SERIES_ID.matcher(href);
+                        if (matcher.find()) {
+                            final String siId = matcher.group(1);
+                            if (siId != null) {
+                                series.setIdentifierValue(Identifier.SID_ISFDB, siId);
+                            }
+                        }
 
                         //  • 4] • (1987) • novel by
                         final Node nextSibling = a.nextSibling();
@@ -1160,12 +1186,21 @@ public class IsfdbSearchEngine
 
     private void parsePublicationSeries(@NonNull final Element li,
                                         @NonNull final Book book) {
-        li.select("a")
-          .stream()
-          .map(this::cleanName)
-          .filter(name -> !name.isBlank())
-          .map(Series::from)
-          .forEach(book::add);
+        li.select("a").forEach(a -> {
+            final String href = a.attr("href");
+            final String name = cleanName(a);
+            if (!name.isBlank()) {
+                final Series series = Series.from(name);
+                final Matcher matcher = PUB_SERIES_ID.matcher(href);
+                if (matcher.find()) {
+                    final String siId = matcher.group(1);
+                    if (siId != null) {
+                        series.setIdentifierValue(Identifier.SID_ISFDB_PUB_SERIES, siId);
+                    }
+                }
+                book.add(series);
+            }
+        });
     }
 
     private void parsePublicationSeriesNumber(@NonNull final Element labelElement,

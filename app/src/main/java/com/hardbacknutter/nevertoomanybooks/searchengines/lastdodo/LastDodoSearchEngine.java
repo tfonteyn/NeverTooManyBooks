@@ -91,6 +91,7 @@ public class LastDodoSearchEngine
     private static final String SITE_URL = "https://www.lastdodo.nl";
     private static final String BOOK_URL = "https://www.lastdodo.nl/nl/items/%s";
     private static final String AUTHOR_URL = "https://www.lastdodo.nl/nl/areas/%s";
+    private static final String SERIES_URL = "https://www.lastdodo.nl/nl/areas/%s";
 
     /**
      * Param 1: external book ID; really a 'long'.
@@ -171,7 +172,13 @@ public class LastDodoSearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        null)
+                        null),
+                Identifier.createSeries(
+                        Identifier.SID_LAST_DODO_NL,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 

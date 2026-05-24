@@ -72,7 +72,7 @@ public class BibliotecePlSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ByText {
 
-    // The site has no author ids - they use a pure text search when searching
+    // The site has no author/series ids - they use a pure text search when searching
     // all books for a specific author.
     private static final String SITE_URL = "https://w.bibliotece.pl";
     private static final String BOOK_URL = "https://w.bibliotece.pl/%s";

@@ -100,7 +100,7 @@ public class RISCitation
 
         book.getIdentifiers()
             .forEach(iv -> identifierDao
-                    .findByKey(iv.getKey(), Identifier.EntityType.Book)
+                    .find(iv.getKey(), Identifier.EntityType.Book)
                     .flatMap(Identifier::getUri)
                     .ifPresent(bookUri -> sj.add(
                             "UR  - " + String.format(bookUri, iv.getSid()))));

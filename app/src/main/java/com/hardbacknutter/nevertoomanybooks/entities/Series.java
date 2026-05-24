@@ -26,6 +26,8 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -70,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  * <a href="https://www.wikidata.org/wiki/Property:P10318">P10318: Douban</a>
  */
 public class Series
-        implements Parcelable, Entity, Mergeable {
+        implements Parcelable, Entity, Mergeable, IdentifierOwner {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<>() {
@@ -228,6 +231,9 @@ public class Series
             "I", "1.", "II", "2.", "III", "3", "IV", "4.", "V", "5."
     );
 
+    @NonNull
+    private final List<Identifier.Value> identifiers = new ArrayList<>();
+
     /** Row ID. */
     private long id;
     /** Series title. */
@@ -271,6 +277,9 @@ public class Series
         this.id = id;
         title = rowData.getString(DBKey.SERIES.TITLE);
         complete = rowData.getBoolean(DBKey.SERIES.COMPLETE);
+
+        setIdentifiers(ServiceLocator.getInstance().getSeriesIdentifierDao().getByFkId(this.id));
+
         // optional domain, not always used.
         if (rowData.contains(DBKey.SERIES.BOOK_SERIES_NUMBER)) {
             number = rowData.getString(DBKey.SERIES.BOOK_SERIES_NUMBER);
@@ -291,6 +300,8 @@ public class Series
         complete = in.readByte() != 0;
         //noinspection DataFlowIssue
         number = in.readString();
+
+        ParcelUtils.readParcelableList(in, identifiers, getClass().getClassLoader());
     }
 
     /**
@@ -489,6 +500,7 @@ public class Series
         dest.writeString(title);
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeString(number);
+        ParcelUtils.writeParcelableList(dest, identifiers, flags);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -513,6 +525,22 @@ public class Series
      */
     public void setComplete(final boolean isComplete) {
         complete = isComplete;
+    }
+
+    @NonNull
+    @Override
+    public List<Identifier.Value> getIdentifiers() {
+        return identifiers;
+    }
+
+    @Override
+    public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
+        // The incoming list might be physically OUR list
+        // ONLY clear/update if it's not; otherwise no action needed
+        if (ivs != identifiers) {
+            identifiers.clear();
+            identifiers.addAll(ivs);
+        }
     }
 
     @Override
@@ -603,6 +631,10 @@ public class Series
                          final boolean includeBookFields) {
         title = source.title;
         complete = source.complete;
+
+        identifiers.clear();
+        identifiers.addAll(source.identifiers);
+
         if (includeBookFields) {
             number = source.number;
         }
@@ -637,6 +669,9 @@ public class Series
         if (source.getId() > 0) {
             this.id = source.getId();
         }
+
+        identifiers.addAll(source.getIdentifiers());
+        ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
 
         return true;
     }
@@ -687,7 +722,8 @@ public class Series
      */
     public boolean isIdentical(@Nullable final Series that) {
         return equals(that)
-               && complete == that.complete;
+               && complete == that.complete
+               && identifiers.equals(that.identifiers);
     }
 
     /**
@@ -695,6 +731,7 @@ public class Series
      * <ul>
      *   <li>'complete' is a user setting and is ignored here.</li>
      *   <li>'number' is a book field and is ignored here.</li>
+     *   <li>'identifiers' is ignored here.</li>
      * </ul>
      *
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
@@ -728,6 +765,7 @@ public class Series
                + ", title=`" + title + '`'
                + ", complete=" + complete
                + ", number=`" + number + '`'
+               + ", identifiers=" + identifiers
                + '}';
     }
 }

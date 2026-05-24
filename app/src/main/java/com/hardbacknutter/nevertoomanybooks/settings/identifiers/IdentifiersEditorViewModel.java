@@ -50,6 +50,8 @@ public class IdentifiersEditorViewModel
     private List<Identifier> identifiers;
     private IdentifierValueDao bookIdentifierDao;
     private IdentifierValueDao authorIdentifierDao;
+    private IdentifierValueDao seriesIdentifierDao;
+
     private Identifier.EntityType entityType;
 
     @NonNull
@@ -71,6 +73,7 @@ public class IdentifiersEditorViewModel
             identifierDao = serviceLocator.getIdentifierDao();
             bookIdentifierDao = serviceLocator.getBookIdentifierDao();
             authorIdentifierDao = serviceLocator.getAuthorIdentifierDao();
+            seriesIdentifierDao = serviceLocator.getSeriesIdentifierDao();
         }
 
         identifiers = identifierDao.getAll(entityType);
@@ -127,6 +130,8 @@ public class IdentifiersEditorViewModel
                 return bookIdentifierDao.countLinks(identifier);
             case Author:
                 return authorIdentifierDao.countLinks(identifier);
+            case Series:
+                return seriesIdentifierDao.countLinks(identifier);
             default:
                 throw new IllegalArgumentException("TODO");
         }

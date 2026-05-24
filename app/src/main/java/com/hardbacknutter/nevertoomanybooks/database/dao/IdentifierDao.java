@@ -73,8 +73,8 @@ public interface IdentifierDao {
      * @return {@link Identifier}
      */
     @NonNull
-    Optional<Identifier> findByKey(@NonNull String key,
-                                   @NonNull Identifier.EntityType entityType);
+    Optional<Identifier> find(@NonNull String key,
+                              @NonNull Identifier.EntityType entityType);
 
     /**
      * Convenience method, fetch all {@link Identifier}s, and return them as a List

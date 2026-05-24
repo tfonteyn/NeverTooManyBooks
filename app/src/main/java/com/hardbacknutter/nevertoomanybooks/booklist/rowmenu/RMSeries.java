@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.menus.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.ViewSeriesOnSiteMenuHandler;
 
 public class RMSeries
         implements RowMenu {
@@ -58,7 +59,8 @@ public class RMSeries
     public RMSeries(@NonNull final BooksOnBookshelfViewModel vm) {
         this.vm = vm;
 
-        menuHandlers = List.of(new SiteSearchMenuHandler());
+        menuHandlers = List.of(new ViewSeriesOnSiteMenuHandler(),
+                               new SiteSearchMenuHandler());
 
         launcher = new EditInPlaceParcelableLauncher<>(
                 DBKey.FK_SERIES,

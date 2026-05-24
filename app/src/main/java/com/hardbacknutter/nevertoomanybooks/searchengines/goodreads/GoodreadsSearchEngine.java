@@ -86,6 +86,7 @@ public class GoodreadsSearchEngine
     private static final String SITE_URL = "https://www.goodreads.com";
     private static final String BOOK_URL = "https://www.goodreads.com/book/show/%s";
     static final String AUTHOR_URL = "https://www.goodreads.com/author/show/%s";
+    private static final String SERIES_URL = "https://www.goodreads.com/series/%s";
 
     /**
      * Fetch the Goodreads id.
@@ -194,7 +195,13 @@ public class GoodreadsSearchEngine
                         name,
                         SITE_URL,
                         AUTHOR_URL,
-                        "P2963")
+                        "P2963"),
+                Identifier.createSeries(
+                        Identifier.SID_GOODREADS,
+                        Identifier.Type.Number,
+                        name,
+                        SITE_URL,
+                        SERIES_URL)
         );
     }
 
