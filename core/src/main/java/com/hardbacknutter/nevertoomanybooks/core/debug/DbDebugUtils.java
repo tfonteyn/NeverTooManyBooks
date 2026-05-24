@@ -21,13 +21,13 @@
 package com.hardbacknutter.nevertoomanybooks.core.debug;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -39,7 +39,7 @@ public final class DbDebugUtils {
     private DbDebugUtils() {
     }
 
-    private static void debugDumpInfo(@NonNull final SynchronizedDb db) {
+    private static void debugDumpInfo(@NonNull final SQLiteDatabase db) {
         final Logger logger = LoggerFactory.getLogger();
         final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
                 "PRAGMA encoding",
@@ -66,7 +66,7 @@ public final class DbDebugUtils {
      * @param tag       log tag to use
      * @param header    a header which will be logged first
      */
-    public static void dumpTable(@NonNull final SynchronizedDb db,
+    public static void dumpTable(@NonNull final SQLiteDatabase db,
                                  @NonNull final String tableName,
                                  final int limit,
                                  @NonNull final String orderBy,

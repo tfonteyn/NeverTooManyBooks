@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -414,7 +414,7 @@ class DuplicateRowCleaner {
         );
 
         if (BuildConfig.DEBUG /* always */) {
-            DbDebugUtils.dumpTable(db, tblRemove, DUMP_TABLE_ROW_LIMIT,
+            DbDebugUtils.dumpTable(db.getSQLiteDatabase(), tblRemove, DUMP_TABLE_ROW_LIMIT,
                                    tblRemove + '.' + KEEP_ID,
                                    TAG, "createRemovalTable (limit=" + DUMP_TABLE_ROW_LIMIT
                                         + ") from: " + table.getName());
