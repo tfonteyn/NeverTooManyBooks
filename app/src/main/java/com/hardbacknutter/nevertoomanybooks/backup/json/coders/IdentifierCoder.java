@@ -23,7 +23,11 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collection;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.updates.IdentifierMigration;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -53,29 +57,58 @@ public class IdentifierCoder
     @Override
     public Identifier decode(@NonNull final JSONObject data)
             throws JSONException {
+        throw new IllegalStateException("Use decodeList instead");
+    }
+
+    @NonNull
+    @Override
+    public Collection<Identifier> decodeList(@NonNull final JSONObject data)
+            throws JSONException {
+        final long id = data.getLong(DBKey.PK_ID);
         final String key = data.getString(DBKey.IDENTIFIERS.KEY);
+        // For legacy archives missing this field, we default to a Book
         final Identifier.EntityType entityType = Identifier.EntityType.byId(
                 data.getInt(DBKey.IDENTIFIERS.ENTITY));
 
         final Identifier.Type type = Identifier.Type.byId(
                 data.getString(DBKey.IDENTIFIERS.TYPE).charAt(0));
         final String name = data.getString(DBKey.IDENTIFIERS.NAME);
+        @Nullable
+        final String siteUrl = data.optString(DBKey.IDENTIFIERS.SITE_URL, null);
 
         @Nullable
         final String wikidataClaim =
                 data.optString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM, null);
-        @Nullable
-        final String siteUrl = data.optString(DBKey.IDENTIFIERS.SITE_URL, null);
-        @Nullable
-        final String bookUrl = data.optString(DBKey.IDENTIFIERS.BOOK_URI, null);
-        @Nullable
-        final String authorUrl = data.optString(DBKey.IDENTIFIERS.AUTHOR_URI, null);
 
-        final Identifier identifier = new Identifier(key, entityType, type, name,
-                                                     siteUrl,
-                                                     bookUrl,
-                                                     authorUrl, wikidataClaim);
-        identifier.setId(data.getLong(DBKey.PK_ID));
-        return identifier;
+        @Nullable
+        final String uri = data.optString(DBKey.IDENTIFIERS.URI, null);
+        if (uri != null) {
+            // Archive v8 or up
+            final Identifier identifier = new Identifier(key, entityType, type, name,
+                                                         siteUrl, uri, wikidataClaim);
+
+            identifier.setId(id);
+            return List.of(identifier);
+        }
+
+        // Check for v7 legacy fields
+        return decodeV7(id, key, type, name, siteUrl, wikidataClaim, data);
+    }
+
+    @NonNull
+    private Collection<Identifier> decodeV7(final long id,
+                                            @NonNull final String key,
+                                            @NonNull final Identifier.Type type,
+                                            @NonNull final String name,
+                                            @Nullable final String siteUrl,
+                                            @Nullable final String wikidataClaim,
+                                            @NonNull final JSONObject data) {
+        @Nullable
+        final String bookUrl = data.optString(IdentifierMigration.BOOK_URI_OBSOLETE, null);
+        @Nullable
+        final String authorUrl = data.optString(IdentifierMigration.AUTHOR_URI_OBSOLETE, null);
+
+        return IdentifierMigration.mapV7Identifier(
+                id, key, type, name, siteUrl, bookUrl, authorUrl, wikidataClaim);
     }
 }

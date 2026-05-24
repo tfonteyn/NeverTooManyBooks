@@ -27,8 +27,10 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -101,6 +103,54 @@ public class IdentifierMigration {
         tableInfo = DBDefinitions.TBL_IDENTIFIERS.getTableInfo(db);
     }
 
+    @NonNull
+    public static Collection<Identifier> mapV7Identifier(final long id,
+                                                         @NonNull final String key,
+                                                         @NonNull final Identifier.Type type,
+                                                         @NonNull final String name,
+                                                         @Nullable final String siteUrl,
+                                                         @Nullable final String bookUri,
+                                                         @Nullable final String authorUri,
+                                                         @Nullable final String wikidataClaim) {
+        if (bookUri == null && authorUri == null
+            || bookUri != null && authorUri != null) {
+            // no urls at all or both present; create Book AND Author
+            final Identifier iBook = new Identifier(
+                    key, Identifier.EntityType.Book, type, name, siteUrl,
+                    null,
+                    null);
+            // reuse the id
+            iBook.setId(id);
+
+            // new entry, no id
+            final Identifier iAuthor = new Identifier(
+                    key, Identifier.EntityType.Author, type, name, siteUrl,
+                    null,
+                    wikidataClaim);
+
+            return List.of(iBook, iAuthor);
+
+        } else if (bookUri != null) {
+            // We only a book uri, and no author uri
+            final Identifier iBook = new Identifier(
+                    key, Identifier.EntityType.Book, type, name, siteUrl,
+                    bookUri,
+                    null);
+            // reuse the id
+            iBook.setId(id);
+            return List.of(iBook);
+
+        } else {
+            // we have an author uri and no book uri
+            final Identifier iAuthor = new Identifier(
+                    key, Identifier.EntityType.Author, type, name, siteUrl,
+                    authorUri,
+                    wikidataClaim);
+            // reuse the id
+            iAuthor.setId(id);
+            return List.of(iAuthor);
+        }
+    }
 
     /**
      * Add the given Identifiers using their keys.
