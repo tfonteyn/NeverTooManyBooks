@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -154,6 +155,21 @@ public class TableDefinition {
     public void createIndices(@NonNull final SQLiteDatabase db,
                               final boolean collationCaseSensitive) {
         indexes.forEach(index -> index.create(db, collationCaseSensitive));
+    }
+
+    /**
+     * Get the index with the given name <strong>suffix</strong>.
+     * This is the suffix used during construction and NOT the full constructed name.
+     *
+     * @param nameSuffix to find
+     *
+     * @return index
+     */
+    @NonNull
+    public Optional<IndexDefinition> getIndex(@NonNull final String nameSuffix) {
+        return indexes.stream()
+                      .filter(def -> def.getNameSuffix().equals(nameSuffix))
+                      .findFirst();
     }
 
     /**
@@ -370,7 +386,7 @@ public class TableDefinition {
             debugHelper.addIndex(nameSuffix);
         }
 
-        indexes.add(new IndexDefinition(this, nameSuffix + "_" + (indexes.size() + 1),
+        indexes.add(new IndexDefinition(this, nameSuffix, indexes.size() + 1,
                                         unique, Arrays.asList(domains)));
         return this;
     }

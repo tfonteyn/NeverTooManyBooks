@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
@@ -34,7 +35,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Class to store an index using a table name and a list of domain definitions.
  */
-class IndexDefinition {
+public class IndexDefinition {
 
     private static final String TAG = "IndexDefinition";
 
@@ -44,6 +45,8 @@ class IndexDefinition {
     /** suffix to add to the table name. */
     @NonNull
     private final String nameSuffix;
+    /** Constructed index name. */
+    private final String name;
     /** Flag indicating index is unique. */
     private final boolean unique;
 
@@ -51,30 +54,61 @@ class IndexDefinition {
     @NonNull
     private final List<Domain> domains;
 
+
     /**
      * Constructor.
+     * <p>
+     * The full name of the index will be constructed as
+     * {@code table.getName() + "_IDX_" + nameSuffix + "_" + indexNumber}.
+     * The table name is read <strong>at index creation time</strong>
      *
-     * @param table      Table to which index applies
-     * @param nameSuffix suffix to add to the table name; together this will become the full name.
-     *                   The table name is read <strong>at index creation time</strong>
-     * @param unique     Flag indicating index is unique
-     * @param domains    Domains in index
+     * @param table       Table to which index applies
+     * @param nameSuffix  suffix for the index name
+     * @param indexNumber secondary suffix for the index name
+     * @param unique      Flag indicating index is unique
+     * @param domains     Domains in index
      */
     IndexDefinition(@NonNull final TableDefinition table,
                     @NonNull final String nameSuffix,
+                    final int indexNumber,
                     final boolean unique,
                     @NonNull final List<Domain> domains) {
         this.table = table;
         this.nameSuffix = nameSuffix;
+        this.name = table.getName() + "_IDX_" + nameSuffix + "_" + indexNumber;
+
         this.unique = unique;
         // take a COPY of the list; but the domains themselves are references only.
         this.domains = new ArrayList<>(domains);
     }
 
     /**
+     * Get the name as set in the constructor.
+     *
+     * @return name
+     */
+    @NonNull
+    public String getNameSuffix() {
+        return nameSuffix;
+    }
+
+    /**
+     * Get the full/constructed name.
+     *
+     * @return name
+     */
+    @NonNull
+    public String getName() {
+        return name;
+    }
+
+    /**
      * Create the index.
-     *Underlying databaseDatabase Access
+     *
+     * @param db                     Underlying database
      * @param collationCaseSensitive flag; whether the database uses case-sensitive collation
+     *
+     * @throws SQLException on failure
      */
     public void create(@NonNull final SQLiteDatabase db,
                        final boolean collationCaseSensitive) {
@@ -84,6 +118,17 @@ class IndexDefinition {
                          .d(TAG, "execute", createStatement);
         }
         db.execSQL(createStatement);
+    }
+
+    /**
+     * Delete the index.
+     *
+     * @param db Underlying database
+     *
+     * @throws SQLException on failure
+     */
+    public void delete(@NonNull final SQLiteDatabase db) {
+        db.execSQL("DROP INDEX IF EXISTS " + name);
     }
 
     /**
@@ -99,8 +144,7 @@ class IndexDefinition {
         if (unique) {
             sql.append(" UNIQUE");
         }
-        sql.append(" INDEX ").append(table.getName()).append("_IDX_").append(nameSuffix)
-           .append(" ON ").append(table.getName())
+        sql.append(" INDEX ").append(name).append(" ON ").append(table.getName())
            .append(domains.stream()
                           .map(domain -> domain.getOrderByString(domain.getIndexSortingOrder(),
                                                                  collationCaseSensitive))
@@ -114,7 +158,7 @@ class IndexDefinition {
     public String toString() {
         return "IndexDefinition{"
                + "table=" + table
-               + ", nameSuffix=`" + nameSuffix + '`'
+               + ", name=`" + name + '`'
                + ", unique=" + unique
                + ", domains=" + domains
                + "}";
