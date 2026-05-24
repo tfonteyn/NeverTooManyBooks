@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,22 +29,37 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.textnormaliser.TextNormaliser;
 
-
+//FIXME: the use of 'name' is misleading and the isIdenticalName which is always
+// combined with isSameName should be simplified
 public interface Mergeable {
 
+    /**
+     * Get the database row id of the Entity.
+     *
+     * @return id; can be {@code 0} if the entity is considered 'new' and not stored yet
+     */
+    @IntRange(from = 0)
     long getId();
 
+    /**
+     * Set the id of the entity.
+     *
+     * @param id to set
+     */
     void setId(long id);
 
     /**
-     * Get a list of names which represent this object.
+     * Get a list of 'name' fields which represent this object.
+     * <p>
+     * Dev note: the fields don't have to be actual names, just fields that
+     * are used to check basic equality.
      * <p>
      * Examples:
      * <ul>
-     *     <li>{@link Bookshelf}: the name</li>
      *     <li>{@link Author}: the family AND given-names</li>
-     *     <li>{@link Series}: the title</li>
+     *     <li>{@link Bookshelf}: the name</li>
      *     <li>{@link Publisher}: the name</li>
+     *     <li>{@link Series}: the title</li>
      *     <li>{@link TocEntry}: the title, the {@link Author} name-fields</li>
      * </ul>
      *
@@ -62,7 +78,9 @@ public interface Mergeable {
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if it's the same name
+     * @return {@code true} if it's the same
+     *
+     * @see #getNameFields()
      */
     default boolean isSameName(@Nullable final Mergeable that) {
         if (that == null) {
@@ -87,7 +105,9 @@ public interface Mergeable {
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if it's the same name (including all diacritics)
+     * @return {@code true} if it's the same, including all diacritics
+     *
+     * @see #getNameFields()
      */
     default boolean isIdenticalName(@NonNull final Mergeable that) {
         return Objects.hash(getNameFields())
