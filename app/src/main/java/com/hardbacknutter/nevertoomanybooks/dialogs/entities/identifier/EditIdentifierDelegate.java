@@ -140,7 +140,6 @@ class EditIdentifierDelegate
 
         // Force lower-case a-z and digits only
         final InputFilter[] filterArray = {
-                new InputFilter.LengthFilter(Identifier.MAX_KEY_LEN),
                 (source, start, end, dest, dstart, dend) -> {
                     if (source != null && !KEY_PATTERN.matcher(source.toString()).matches()) {
                         // Remove invalid character

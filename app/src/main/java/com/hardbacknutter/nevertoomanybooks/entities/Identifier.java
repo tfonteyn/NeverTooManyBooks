@@ -26,7 +26,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Size;
 import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
@@ -159,8 +158,6 @@ public class Identifier
     /** <a href="https://viaf.org">viaf</a>. */
     public static final String SID_VIAF = "viaf";
 
-    public static final int MAX_KEY_LEN = 15;
-
     /** {@link Parcelable}. */
     public static final Creator<Identifier> CREATOR = new Creator<>() {
         @Override
@@ -208,7 +205,7 @@ public class Identifier
      * @param key        a key(word) for this Identifier
      * @param entityType to set
      */
-    public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
+    public Identifier(@NonNull final String key,
                       @NonNull final EntityType entityType) {
         this.key = key;
         this.entityType = entityType;
@@ -236,9 +233,6 @@ public class Identifier
      * Will be used when updated app versions bring new and TESTED urls.
      *
      * @param key           a key(word) for this Identifier. e.g. "oclc"
-     *                      The size is not enforced when importing or coming from
-     *                      a website, but should be {@link #MAX_KEY_LEN} characters
-     *                      max, preferably less.
      *                      The UI editor does enforce length and lowercase.
      * @param entityType    to set
      * @param type          Text/Number
@@ -248,7 +242,7 @@ public class Identifier
      *                      to view a {@code Book} on the site
      * @param wikidataClaim (optional) "Pxxx" Wikidata claim number
      */
-    public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
+    public Identifier(@NonNull final String key,
                       @NonNull final EntityType entityType,
                       @NonNull final Type type,
                       @NonNull final String name,
@@ -304,7 +298,7 @@ public class Identifier
     }
 
     @NonNull
-    public static Identifier createBook(@Size(max = MAX_KEY_LEN) @NonNull final String key,
+    public static Identifier createBook(@NonNull final String key,
                                         @NonNull final Type type,
                                         @NonNull final String name,
                                         @Nullable final String siteUrl,
@@ -313,7 +307,7 @@ public class Identifier
     }
 
     @NonNull
-    public static Identifier createAuthor(@Size(max = MAX_KEY_LEN) @NonNull final String key,
+    public static Identifier createAuthor(@NonNull final String key,
                                           @NonNull final Type type,
                                           @NonNull final String name,
                                           @Nullable final String siteUrl,
@@ -323,7 +317,7 @@ public class Identifier
     }
 
     @NonNull
-    public static Identifier createSeries(@Size(max = MAX_KEY_LEN) @NonNull final String key,
+    public static Identifier createSeries(@NonNull final String key,
                                           @NonNull final Type type,
                                           @NonNull final String name,
                                           @Nullable final String siteUrl,
