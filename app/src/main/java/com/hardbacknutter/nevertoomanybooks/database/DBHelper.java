@@ -25,7 +25,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -145,13 +144,6 @@ public class DBHelper
                                                DEFAULT_MINIMUM_STMT_CACHE_SIZE);
         stmtCacheSize = MathUtils.clamp(size, DEFAULT_MINIMUM_STMT_CACHE_SIZE,
                                         SQLiteDatabase.MAX_SQL_CACHE_SIZE);
-
-        // For Android 9+, set open flags. For Android 8, see onConfigure
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            final SQLiteDatabase.OpenParams.Builder sob = new SQLiteDatabase.OpenParams.Builder();
-            sob.addOpenFlags(SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING);
-            setOpenParams(sob.build());
-        }
     }
 
     /**
@@ -297,13 +289,7 @@ public class DBHelper
 
     @Override
     public void onConfigure(@NonNull final SQLiteDatabase db) {
-        // Android 8.x; see constructor for 9+
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            db.enableWriteAheadLogging();
-        }
-        // "go faster"
-        db.execSQL("PRAGMA synchronous=NORMAL;");
-        // crucial for how we use triggers
+        // Turn OFF recursive triggers;
         db.execSQL("PRAGMA recursive_triggers = OFF");
 
         // DO NOT ENABLE FOREIGN KEY CONSTRAINTS HERE. Enable them in onOpen instead.
