@@ -95,6 +95,11 @@ public class BedethequeSearchEngine
 
     private static final String PREFERENCE_KEY = "bedetheque";
 
+    /** Get the id from an Author url. */
+    private static final Pattern AUTHOR_ID = Pattern.compile(".*/auteur-(\\d+)-");
+    /** Get the id from a Series url. */
+    private static final Pattern SERIES_ID = Pattern.compile(".*/serie-(\\d+)-");
+
     /** Later editions; heading format. */
     private static final Pattern NR_TITLE_PATTERN = Pattern.compile(
             "(\\d*)\\s*<span.*/span>\\s?\\.\\s?(.*)");
@@ -380,10 +385,17 @@ public class BedethequeSearchEngine
 
         // The main book.
         // If we searched by SID, this will be the exact edition we wanted.
+        // This section is the panel on the right "Informations sur l'album".
         final Element mainSection = document.selectFirst(
                 "div.tab_content_liste_albums > ul.infos-albums");
         if (mainSection == null) {
             return;
+        }
+
+        // Get the series from the top of the page.
+        final Element a = document.selectFirst("a[href^='https://www.bedetheque.com/serie-']");
+        if (a != null) {
+            parseSeries(a, book);
         }
 
         boolean isMainEdition = true;
@@ -405,8 +417,8 @@ public class BedethequeSearchEngine
                     if (albumMain != null) {
                         final Element infos = albumMain.selectFirst("div.album-main > ul.infos");
                         if (infos != null && matches(infos, searchedIsbn)) {
-                            parseOtherEdition(context, mainSection, albumMain, infos, book);
-                            parseOtherEditionCovers(context, edition, fetchCovers, book);
+                            parseEditionDetails(context, mainSection, albumMain, infos, book);
+                            parseEditionCovers(context, edition, fetchCovers, book);
                             // quit the for-loop
                             isMainEdition = false;
                             break;
@@ -444,19 +456,11 @@ public class BedethequeSearchEngine
         }
     }
 
-    private void parseOtherEdition(@NonNull final Context context,
+    private void parseEditionDetails(@NonNull final Context context,
                                    @NonNull final Element mainSection,
                                    @NonNull final Element albumMain,
                                    @NonNull final Element infos,
                                    @NonNull final Book book) {
-        // "infos" lacks title and series
-        parseLabels(context, book, infos);
-
-        // The series is only listed in the main edition
-        final Element seriesLabel = mainSection.selectFirst("li > label:contains(Série :)");
-        if (seriesLabel != null) {
-            parseSeries(seriesLabel, book);
-        }
 
         // The title and series nr is a heading
         final Element titleElement = albumMain.selectFirst("h3.titre");
@@ -472,7 +476,7 @@ public class BedethequeSearchEngine
                     if (!title.isBlank()) {
                         book.setTitle(title);
                         final String nrInSeries = matcher.group(1);
-                        // gamble...
+                        // educated gamble, add the nr to the first/only series we parsed earlier
                         final List<Series> series = book.getSeries();
                         if (!series.isEmpty()) {
                             series.get(0).setNumber(nrInSeries);
@@ -481,12 +485,14 @@ public class BedethequeSearchEngine
                 }
             }
         }
+
+        parseLabels(context, book, infos);
     }
 
-    private void parseOtherEditionCovers(@NonNull final Context context,
-                                         @NonNull final Element edition,
-                                         @NonNull final boolean[] fetchCovers,
-                                         @NonNull final Book book)
+    private void parseEditionCovers(@NonNull final Context context,
+                                    @NonNull final Element edition,
+                                    @NonNull final boolean[] fetchCovers,
+                                    @NonNull final Book book)
             throws StorageException {
 
         // contains "front-cover" + "extra-images" + "back-cover"
@@ -628,9 +634,9 @@ public class BedethequeSearchEngine
             final String label = labelElement.text();
             // check for multiple author entries of the same role
             if (label.isBlank() && lastAuthorRole != -1) {
-                final Element span = labelElement.nextElementSibling();
-                if (span != null) {
-                    parseAuthor(context, span.text(), lastAuthorRole, book);
+                final Element a = labelElement.nextElementSibling();
+                if (a != null) {
+                    parseAuthor(context, a, lastAuthorRole, book);
                 }
                 // skip to next label
                 continue;
@@ -640,7 +646,8 @@ public class BedethequeSearchEngine
             //noinspection SwitchStatementWithoutDefaultBranch
             switch (label) {
                 case "Série :": {
-                    parseSeries(labelElement, book);
+                    // We had to parse the Series title earlier from the main page
+                    // as in this labelled-section, the series has NO link
                     break;
                 }
                 case "Titre :": {
@@ -684,7 +691,7 @@ public class BedethequeSearchEngine
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.WRITER;
-                        parseAuthor(context, a.text(), AuthorRole.WRITER, book);
+                        parseAuthor(context, a, AuthorRole.WRITER, book);
                     }
                     break;
                 }
@@ -692,7 +699,7 @@ public class BedethequeSearchEngine
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.ARTIST;
-                        parseAuthor(context, a.text(), AuthorRole.ARTIST, book);
+                        parseAuthor(context, a, AuthorRole.ARTIST, book);
                     }
                     break;
                 }
@@ -700,7 +707,7 @@ public class BedethequeSearchEngine
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.INKING;
-                        parseAuthor(context, a.text(), AuthorRole.INKING, book);
+                        parseAuthor(context, a, AuthorRole.INKING, book);
                     }
                     break;
                 }
@@ -716,7 +723,7 @@ public class BedethequeSearchEngine
                                     colorOrColorist.substring(1, colorOrColorist.length() - 1));
                         } else {
                             // it's a real name
-                            parseAuthor(context, colorOrColorist, AuthorRole.COLORIST, book);
+                            parseAuthor(context, a, AuthorRole.COLORIST, book);
                         }
                     }
                     break;
@@ -725,7 +732,7 @@ public class BedethequeSearchEngine
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.COVER_ARTIST;
-                        parseAuthor(context, a.text(), AuthorRole.COVER_ARTIST, book);
+                        parseAuthor(context, a, AuthorRole.COVER_ARTIST, book);
                     }
                     break;
                 }
@@ -733,7 +740,7 @@ public class BedethequeSearchEngine
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.FOREWORD;
-                        parseAuthor(context, a.text(), AuthorRole.FOREWORD, book);
+                        parseAuthor(context, a, AuthorRole.FOREWORD, book);
                     }
                     break;
                 }
@@ -741,7 +748,7 @@ public class BedethequeSearchEngine
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.TRANSLATOR;
-                        parseAuthor(context, a.text(), AuthorRole.TRANSLATOR, book);
+                        parseAuthor(context, a, AuthorRole.TRANSLATOR, book);
                     }
                     break;
                 }
@@ -749,7 +756,7 @@ public class BedethequeSearchEngine
                     final Element a = labelElement.nextElementSibling();
                     if (a != null) {
                         lastAuthorRole = AuthorRole.CONTRIBUTOR;
-                        parseAuthor(context, a.text(), AuthorRole.CONTRIBUTOR, book);
+                        parseAuthor(context, a, AuthorRole.CONTRIBUTOR, book);
                     }
                     break;
                 }
@@ -843,17 +850,21 @@ public class BedethequeSearchEngine
      * Parse an Author. Handles Bedetheque specific hardcoded pseudo-names.
      *
      * @param context Current context
-     * @param text    to parse
+     * @param a       link element to parse
      * @param role    of the Author
      * @param book    Bundle to update
      */
     private void parseAuthor(@NonNull final Context context,
-                             @NonNull final String text,
+                             @NonNull final Element a,
                              @AuthorRole.Role final int role,
                              @NonNull final Book book) {
 
+        final String url = a.attr("href");
+        final Matcher matcher = AUTHOR_ID.matcher(url);
+        final String sid = matcher.find() ? matcher.group(1) : null;
+
         // REMOVE potential "<>" as we really don't want fake HTML tags
-        String names = text;
+        String names = a.text();
         if (names.startsWith("<")) {
             names = names.substring(1);
         }
@@ -861,7 +872,7 @@ public class BedethequeSearchEngine
             names = names.substring(0, names.length() - 1);
         }
 
-        // Colours - handled by "Couleurs"
+        // Colours - is handled by the "Couleurs" label.
         //"<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>"
         // scenario author for an art-book; ignore
         // "<Art Book>"
@@ -869,12 +880,13 @@ public class BedethequeSearchEngine
         // "<Texte non illustré>"
         switch (names) {
             case "Indéterminé": {
-                addAuthor(Author.createUnknownAuthor(context), role, book);
+                final Author author = Author.createUnknownAuthor(context);
+                addAuthor(author, role, book);
                 break;
             }
             case "Anonyme": {
-                addAuthor(new Author(context.getString(R.string.anonymous_author), ""),
-                          role, book);
+                final Author author = new Author(context.getString(R.string.anonymous_author), "");
+                addAuthor(author, role, book);
                 break;
             }
             case "Art Book":
@@ -886,33 +898,50 @@ public class BedethequeSearchEngine
             default: {
                 final String s = cleanName(names);
                 if (!s.isBlank()) {
-                    addAuthor(Author.from(s), role, book);
+                    final Author author = Author.from(s);
+                    if (sid != null) {
+                        author.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
+                    }
+                    addAuthor(author, role, book);
                 }
                 break;
             }
         }
     }
 
-    private void parseSeries(@NonNull final Element labelElement,
+    private void parseSeries(@NonNull final Element a,
                              @NonNull final Book book) {
-        final Node textNode = labelElement.nextSibling();
-        if (textNode != null) {
-            book.add(processSeries(textNode.toString(), book));
+        final String url = a.attr("href");
+        final Matcher matcher = SERIES_ID.matcher(url);
+        final String sid = matcher.find() ? matcher.group(1) : null;
+
+        final String title = a.text();
+        if (!title.isEmpty()) {
+            final Series series = parseSeries(title, book);
+            if (sid != null) {
+                series.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
+            }
+            book.add(series);
         }
     }
 
     /**
-     * Parsing the series title is done <strong>locally</strong> to this search-engine.
+     * Parse the text from a series field.
+     * If it contains a language part, that language is is set on the given book.
+     * The text itself and simple prefixes are cleaned.
+     * <p>
+     * Dev note: this method only exists to ease testing. It should
+     * only be interpreted as used by {@link #parseSeries(Element, Book)}.
      *
      * @param text to parse
-     * @param book Bundle to update
+     * @param book for adding the potential language to
      *
-     * @return the Series found
+     * @return a new Series instance, <strong>NOT added to the book</strong>
      */
     @VisibleForTesting
     @NonNull
-    Series processSeries(@NonNull final String text,
-                         @NonNull final Book book) {
+    Series parseSeries(@NonNull final String text,
+                       @NonNull final Book book) {
         // Series names can be formatted in a LOT of ways.
         // We're not going to try and capture each and every special format
         // but stick to the most common ones.

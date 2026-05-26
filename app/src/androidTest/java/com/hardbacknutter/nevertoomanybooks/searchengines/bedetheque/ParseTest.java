@@ -103,8 +103,9 @@ class ParseTest
         assertEquals(1, allSeries.size());
 
         final Series series = allSeries.get(0);
-        assertEquals("Le Fond du monde", series.getTitle());
+        assertEquals("Le fond du monde", series.getTitle());
         assertEquals("6", series.getNumber());
+        assertEquals("1699", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -114,21 +115,25 @@ class ParseTest
         assertEquals("Corbeyran", author.getFamilyName());
         assertEquals("Éric", author.getGivenNames());
         assertEquals(AuthorRole.WRITER, author.getRole());
+        assertEquals("1494", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         author = authors.get(1);
         assertEquals("Falque", author.getFamilyName());
         assertEquals("Denis", author.getGivenNames());
         assertEquals(AuthorRole.ARTIST, author.getRole());
+        assertEquals("301", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         author = authors.get(2);
         assertEquals("Araldi", author.getFamilyName());
         assertEquals("Christophe", author.getGivenNames());
         assertEquals(AuthorRole.COLORIST, author.getRole());
+        assertEquals("1346", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         author = authors.get(3);
         assertEquals("Frémion", author.getFamilyName());
         assertEquals("Yves", author.getGivenNames());
         assertEquals(AuthorRole.FOREWORD, author.getRole());
+        assertEquals("4828", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         List<String> covers;
@@ -189,6 +194,7 @@ class ParseTest
         final Series series = allSeries.get(0);
         assertEquals("Blondin et Cirage", series.getTitle());
         assertEquals("9", series.getNumber());
+        assertEquals("2445", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -232,6 +238,10 @@ class ParseTest
         assertEquals(0, covers.size());
     }
 
+    /**
+     * Uses the same page/raw res file as {@link #isbnExactEdition01()}
+     * but adds a specific later edition isbn to the parser.
+     */
     @Test
     void isbnLaterEdition01()
             throws SearchException, CredentialsException, StorageException, IOException {
@@ -270,6 +280,7 @@ class ParseTest
         final Series series = allSeries.get(0);
         assertEquals("Blondin et Cirage", series.getTitle());
         assertEquals("9", series.getNumber());
+        assertEquals("2445", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -295,6 +306,7 @@ class ParseTest
         author = authors.get(1);
         assertEquals("Roque", author.getFamilyName());
         assertEquals("Carlos", author.getGivenNames());
+        assertEquals("367", author.getIdentifiers().get(0).getSid());
         assertEquals("1936-04-12", author.getBirthDate().orElse(null));
         assertEquals("2006-07-27", author.getDeathDate().orElse(null));
         assertEquals(AuthorRole.CONTRIBUTOR, author.getRole());
