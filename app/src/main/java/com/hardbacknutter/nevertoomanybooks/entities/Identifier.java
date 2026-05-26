@@ -148,6 +148,7 @@ public class Identifier
     public static final String SID_STORYGRAPH = "storygraph";
     public static final String SID_STRIPWEB = "stripweb";
     public static final String SID_STRIP_INFO = "stripinfo";
+    public static final String SID_STRIP_INFO_COLLECTION = "stripinfo-collection";
     public static final String SID_TERCERA_FUNDACION = "ltf";
     public static final String SID_URI = "uri";
     public static final String SID_URN = "urn";

@@ -114,6 +114,7 @@ public class StripInfoSearchEngine
     private static final String BOOK_URL = "https://stripinfo.be/reeks/strip/%s";
     private static final String AUTHOR_URL = "https://stripinfo.be/auteur/index/%s";
     private static final String SERIES_URL = "https://stripinfo.be/reeks/index/%s";
+    private static final String COLLECTION_URL = "https://stripinfo.be/lijst.php?collectie=%s";
 
     private static final String PREFERENCE_KEY = "stripinfo";
 
@@ -135,9 +136,10 @@ public class StripInfoSearchEngine
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("\\s*</h4>");
 
-    /** The hostname MIGHT be with or without the 'www' part. */
-    private static final Pattern AUTHOR_ID = Pattern.compile(
-            "https://.*/auteur/index/(\\d+)_.*");
+    private static final Pattern AUTHOR_ID = Pattern.compile(".*/auteur/index/(\\d+)_.*");
+    private static final Pattern SERIES_ID = Pattern.compile(".*/reeks/index/(\\d+)_.*");
+    private static final Pattern COLLECTION_ID = Pattern.compile(".*/lijst.php\\?collectie=(\\d+)");
+
     /**
      * When a multi-result page is returned, its title will start with this text.
      * (Dutch for: Searching for...)
@@ -241,7 +243,14 @@ public class StripInfoSearchEngine
                         Identifier.Type.Number,
                         name,
                         SITE_URL,
-                        SERIES_URL)
+                        SERIES_URL),
+                new Identifier(Identifier.SID_STRIP_INFO_COLLECTION,
+                               Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               name,
+                               SITE_URL,
+                               COLLECTION_URL,
+                               null)
         );
     }
 
@@ -434,15 +443,10 @@ public class StripInfoSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // extracted from the page header.
+        // Title is extracted from the page header.
+        // Number will be extracted from the book title section.
         @Nullable
-        String primarySeriesTitle = parsePrimarySeriesTitle(document);
-        if (primarySeriesTitle != null) {
-            primarySeriesTitle = cleanText(primarySeriesTitle);
-        }
-
-        // extracted from the title section.
-        String primarySeriesBookNr = null;
+        final Series primarySeries = parsePrimarySeries(document, book);
 
         long externalId = 0;
         final Elements rows = document.select("div.row");
@@ -458,8 +462,8 @@ public class StripInfoSearchEngine
                 if (titleHeader != null) {
                     final Element issueNumber = titleHeader
                             .selectFirst("span[itemprop=\"issueNumber\"]");
-                    if (issueNumber != null) {
-                        primarySeriesBookNr = issueNumber.text().strip();
+                    if (issueNumber != null && primarySeries != null) {
+                        primarySeries.setNumber(issueNumber.text().strip());
                     }
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
@@ -632,13 +636,6 @@ public class StripInfoSearchEngine
 
         // post-process all found data.
 
-        if (primarySeriesTitle != null && !primarySeriesTitle.isEmpty()) {
-            final Series series = Series.from3(primarySeriesTitle);
-            series.setNumber(primarySeriesBookNr);
-            // add to the top as this is the primary series.
-            book.add(0, series);
-        }
-
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         final List<TocEntry> toc = parseToc(context, document, book);
         if (!toc.isEmpty()) {
@@ -688,7 +685,7 @@ public class StripInfoSearchEngine
      * while the barcode field will (usually) contain the correct ISBN.
      *
      * @param searchIsbnText the ISBN which we searched for
-     * @param book           Bundle to update
+     * @param book           to update
      */
     @VisibleForTesting
     public void processBarcode(@NonNull final String searchIsbnText,
@@ -821,7 +818,7 @@ public class StripInfoSearchEngine
      *
      * @param context  Current context
      * @param document to parse
-     * @param book     Bundle to update
+     * @param book     to update
      *
      * @return the toc list with either {@code 0} or {@code 2} or more entries
      */
@@ -885,7 +882,7 @@ public class StripInfoSearchEngine
      * Extract the site book id from the url.
      *
      * @param titleUrlElement element containing the book url
-     * @param book            Bundle to update
+     * @param book            to update
      *
      * @return the website book id, or {@code 0} if not found.
      *         The latter should never happen unless the website structure was changed.
@@ -935,7 +932,7 @@ public class StripInfoSearchEngine
      * - the colour scheme of the comic.
      *
      * @param td   label td
-     * @param book Bundle to update
+     * @param book to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -959,7 +956,7 @@ public class StripInfoSearchEngine
      *
      * @param td   label td
      * @param type of this Author entry
-     * @param book Bundle to update
+     * @param book to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -989,16 +986,19 @@ public class StripInfoSearchEngine
     }
 
     /**
-     * Extract the series title from the header.
+     * Extract the series from the header.
      *
      * @param document to parse
+     * @param book to update
      *
-     * @return title, or {@code null} for none
+     * @return series, or {@code null} for none
      */
     @Nullable
-    private String parsePrimarySeriesTitle(@NonNull final Element document) {
+    private Series parsePrimarySeries(@NonNull final Element document,
+                                      @NonNull final Book book) {
         final Element seriesElement = document.selectFirst("h1.c12");
-        // Two possibilities:
+        // The title is displayed either as pure text or an image.
+
         // <h1 class="c12">
         // <a href="https://www.stripinfo.be/reeks/index/831_Capricornus">
         // <img src="https://www.stripinfo.be/images/images/380000/381645.gif"
@@ -1014,23 +1014,47 @@ public class StripInfoSearchEngine
         if (seriesElement == null) {
             return null;
         }
-        final Element img = seriesElement.selectFirst("img");
-        if (img != null) {
-            return img.attr("alt");
-        }
+
+        String title = null;
+        String sid = null;
         final Element a = seriesElement.selectFirst("a");
         if (a != null) {
-            return a.text();
+            final Element img = a.selectFirst("img");
+            if (img != null) {
+                title = img.attr("alt");
+            } else {
+                title = a.text();
+            }
+
+            final String url = a.attr("href");
+            final Matcher matcher = SERIES_ID.matcher(url);
+            if (matcher.find()) {
+                sid = matcher.group(1);
+            }
         }
 
-        return null;
+        if (title == null) {
+            return null;
+        }
+
+        title = cleanText(title);
+        if (title.isEmpty()) {
+            return null;
+        }
+
+        final Series series = Series.from3(title);
+        if (sid != null) {
+            series.setIdentifierValue(Identifier.SID_STRIP_INFO, sid);
+        }
+        book.add(series);
+        return series;
     }
 
     /**
      * Found a Series/Collection. The latter being a publisher-named collection.
      *
      * @param td   label td
-     * @param book Bundle to update
+     * @param book to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -1042,8 +1066,17 @@ public class StripInfoSearchEngine
         }
         final Elements as = dataElement.select("a");
         for (int i = 0; i < as.size(); i++) {
-            final String text = cleanText(as.get(i));
+            final Element a = as.get(i);
+            final String text = cleanText(a);
             final Series currentSeries = Series.from3(text);
+            final String url = a.attr("href");
+            final Matcher matcher = COLLECTION_ID.matcher(url);
+            if (matcher.find()) {
+                final String sid = matcher.group(1);
+                if (sid != null) {
+                    currentSeries.setIdentifierValue(Identifier.SID_STRIP_INFO_COLLECTION, sid);
+                }
+            }
             // check if already present
             if (book.getSeries().stream()
                     .anyMatch(series -> series.equals(currentSeries))) {
@@ -1059,7 +1092,7 @@ public class StripInfoSearchEngine
      * Found a Publisher.
      *
      * @param td   label td
-     * @param book Bundle to update
+     * @param book to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -1091,7 +1124,7 @@ public class StripInfoSearchEngine
      * capture it.
      *
      * @param item description element, containing 1+ sections
-     * @param book Bundle to update
+     * @param book to update
      */
     private void parseDescription(@NonNull final Element item,
                                   @NonNull final Book book) {
@@ -1125,7 +1158,7 @@ public class StripInfoSearchEngine
      * Parse the userdata.
      *
      * @param document   root element
-     * @param book       Bundle to update
+     * @param book       to update
      * @param externalId StripInfo id for the book
      */
     private void parseUserdata(@NonNull final Element document,
