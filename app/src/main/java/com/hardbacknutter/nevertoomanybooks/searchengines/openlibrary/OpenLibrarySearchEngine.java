@@ -637,6 +637,7 @@ public class OpenLibrarySearchEngine
                @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
+        // ALWAYS FIRST parse the work; it typically contains more detailed information.
         if (workDocument != null) {
             parseWork(context, workDocument, book);
         }
@@ -648,7 +649,10 @@ public class OpenLibrarySearchEngine
         // "/books/OL22853304M"
         s = document.optString("key", null);
         if (s != null && !s.isEmpty()) {
-            book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, s.substring("/books/".length()));
+            if (s.startsWith("/books/")) {
+                final String sid = s.substring("/books/".length());
+                book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, sid);
+            }
         }
 
         s = document.optString("title", null);
@@ -662,6 +666,8 @@ public class OpenLibrarySearchEngine
 
         // Reparse for fields which should have been in the "work"
         // This is OL... better parse twice to be sure
+        // Some of the parsing WILL fail - that's expected/as-designed
+        // Maybe even all of it... TODO: review parseBookOrWork now and then
         parseBookOrWork(context, document, book);
 
         // There is also a key "pagination" which for example
@@ -688,9 +694,12 @@ public class OpenLibrarySearchEngine
 
         parseIdentifiers(document, book);
 
-        a = document.optJSONArray("series");
-        if (a != null && !a.isEmpty()) {
-            parseSeries(a, book);
+        // ONLY try to get series from the book data if we did not find any on the work data.
+        if (book.getSeries().isEmpty()) {
+            a = document.optJSONArray("series");
+            if (a != null && !a.isEmpty()) {
+                parseSeriesFromBook(a, book);
+            }
         }
 
         a = document.optJSONArray("publishers");
@@ -792,9 +801,16 @@ public class OpenLibrarySearchEngine
      * Shared parsing for "book" and "work".
      * <p>
      * We don't parse the "covers" here, only in the "book".
+     *
+     * @param context  Current context
+     * @param work     document from the download
+     * @param book     destination
+     *
+     * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
      */
     private void parseBookOrWork(@NonNull final Context context,
-                                 @NonNull final JSONObject document,
+                                 @NonNull final JSONObject work,
                                  @NonNull final Book book)
             throws SearchException, StorageException {
 
@@ -802,9 +818,15 @@ public class OpenLibrarySearchEngine
         String s;
 
         // "authors" contains structured Author data
-        a = document.optJSONArray("authors");
+        a = work.optJSONArray("authors");
         if (a != null && !a.isEmpty()) {
-            parseAuthors(context, a, book);
+            parseAuthorsFromWork(context, a, book);
+        }
+
+        // "series" contains structured Series data
+        a = work.optJSONArray("series");
+        if (a != null && !a.isEmpty()) {
+            parseSeriesFromWork(context, a, book);
         }
 
         // "by_statement" contains NON-structured author data:
@@ -814,7 +836,7 @@ public class OpenLibrarySearchEngine
         // We'll try and catch some of the inconsistencies, but can't catch them all,
         // so we leave those to the user.
         // Note we also will not try and resolve these names on purpose.
-        s = document.optString("by_statement", null);
+        s = work.optString("by_statement", null);
         if (s != null && !s.isEmpty()) {
             // drop trailing '.'
             if (s.endsWith(".")) {
@@ -834,12 +856,12 @@ public class OpenLibrarySearchEngine
             }
         }
 
-        a = document.optJSONArray("contributors");
+        a = work.optJSONArray("contributors");
         if (a != null && !a.isEmpty()) {
-            parseContributors(context, a, book);
+            parseContributorsFromWork(context, a, book);
         }
 
-        parseDescriptionAndNotes(document, book);
+        parseDescriptionAndNotesFromWork(work, book);
 
         // ENHANCE: "subjects" could be used for tags...
         //  but the subject list for a single book can be very large
@@ -921,9 +943,9 @@ public class OpenLibrarySearchEngine
      * @throws StorageException on storage related failures
      * @throws SearchException  on generic exceptions (wrapped) during search
      */
-    private void parseAuthors(@NonNull final Context context,
-                              @NonNull final JSONArray a,
-                              @NonNull final Book book)
+    private void parseAuthorsFromWork(@NonNull final Context context,
+                                      @NonNull final JSONArray a,
+                                      @NonNull final Book book)
             throws StorageException, SearchException {
 
         JSONObject element;
@@ -950,24 +972,26 @@ public class OpenLibrarySearchEngine
                                      @Nullable final String key,
                                      @NonNull final Book book)
             throws StorageException, SearchException {
-        if (key != null && !key.isEmpty()) {
-            if (authorParser == null) {
-                authorParser = new AuthorParser(context, this);
-            }
+        if (key == null || key.isEmpty()) {
+            return;
+        }
 
-            final String authorUrl = getHostUrl() + key + ".json";
-            final String response = loadDocument(context, authorUrl);
-            final JSONObject document = new JSONObject(response);
-            final Author author = authorParser.parse(context, document);
-            if (author != null) {
-                addAuthor(author, AuthorRole.UNKNOWN, book);
-            }
+        if (authorParser == null) {
+            authorParser = new AuthorParser(context, this);
+        }
+
+        final String authorUrl = getHostUrl() + key + ".json";
+        final String response = loadDocument(context, authorUrl);
+        final JSONObject document = new JSONObject(response);
+        final Author author = authorParser.parse(context, document);
+        if (author != null) {
+            addAuthor(author, AuthorRole.UNKNOWN, book);
         }
     }
 
-    private void parseContributors(@NonNull final Context context,
-                                   @NonNull final JSONArray a,
-                                   @NonNull final Book book) {
+    private void parseContributorsFromWork(@NonNull final Context context,
+                                           @NonNull final JSONArray a,
+                                           @NonNull final Book book) {
         for (int ai = 0; ai < a.length(); ai++) {
             final JSONObject c = a.optJSONObject(ai);
             if (c != null) {
@@ -987,31 +1011,8 @@ public class OpenLibrarySearchEngine
         }
     }
 
-    /**
-     * The series object is rather unstructured.
-     * It's an array, but my (limited) tests have only ever found 1 entry.
-     * However, a single entry can apparently have data for 2 series (oh boy...).
-     * We are NOT even going to attempt to parse the latter case....
-     *
-     * <pre>
-     * "series": [
-     *     "Nevermoor"
-     * ]
-     *
-     * "series": [
-     *     "The Dark Tower, 5"
-     * ]
-     *
-     * "series": [
-     *     "NUMA Files, 1; Dirk Pitt Adventures, 1"
-     *  ],
-     * </pre>
-     *
-     * @param a    array with series elements
-     * @param book destination
-     */
-    private void parseSeries(@NonNull final JSONArray a,
-                             @NonNull final Book book) {
+    private void parseSeriesFromBook(@NonNull final JSONArray a,
+                                     @NonNull final Book book) {
         String name;
         for (int ai = 0; ai < a.length(); ai++) {
             name = a.optString(ai, null);
@@ -1019,6 +1020,107 @@ public class OpenLibrarySearchEngine
                 book.add(Series.from(name));
             }
         }
+    }
+
+    /**
+     * In the work data.
+     *
+     * <pre>
+     * "series": [
+     *     {
+     *       "series": {
+     *         "key": "/series/OL329813L"
+     *       },
+     *       "position": "1"
+     *     }
+     *   ]
+     * </pre>
+     *
+     * @param context Current context
+     * @param a       array with series elements
+     * @param book    destination
+     *
+     * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
+     */
+    private void parseSeriesFromWork(@NonNull final Context context,
+                                     @NonNull final JSONArray a,
+                                     @NonNull final Book book)
+            throws StorageException, SearchException {
+        JSONObject element;
+        for (int ai = 0; ai < a.length(); ai++) {
+            element = a.optJSONObject(ai);
+            if (element != null) {
+                final JSONObject series = element.optJSONObject("series");
+                final int position = element.optInt("position", Integer.MIN_VALUE);
+                if (series != null) {
+                    final String nr = position == Integer.MIN_VALUE ? null
+                                                                    : String.valueOf(position);
+                    final String key = series.optString("key", null);
+                    fetchAndParseSeries(context, key, nr, book);
+                }
+            }
+        }
+    }
+
+    /**
+     * Fetch the series json and parse it.
+     *
+     * <pre>
+     * {
+     *   "links": {
+     *     "self": "/series/OL329813L",
+     *     "seeds": "/series/OL329813L/seeds"
+     *   },
+     *   "name": "Foundation Trilogy",
+     *   "type": {
+     *     "key": "/series/OL329813L"
+     *   },
+     *   "description": null,
+     *   "seed_count": 4,
+     *   "meta": {
+     *     "revision": 1,
+     *     "created": "2026-03-27T20:02:04.462751",
+     *     "last_modified": "2026-03-27T20:02:04.462751"
+     *   }
+     * }
+     * </pre>
+     *
+     * @param context Current context
+     * @param key     to fetch
+     * @param nr      in the series; {@code null} for none
+     * @param book    destination
+     *
+     * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
+     */
+    private void fetchAndParseSeries(@NonNull final Context context,
+                                     @Nullable final String key,
+                                     @Nullable final String nr,
+                                     @NonNull final Book book)
+            throws StorageException, SearchException {
+        if (key == null || key.isEmpty()) {
+            return;
+        }
+
+        final String url = getHostUrl() + key + ".json";
+        final String response = loadDocument(context, url);
+        final JSONObject document = new JSONObject(response);
+
+        final String title = document.optString("name");
+        if (title.isBlank()) {
+            return;
+        }
+        final Series series = Series.from(title);
+        series.setNumber(nr);
+
+        // Paranoia...
+        if (key.startsWith("/series/")) {
+            final String sid = key.substring("/series/".length());
+            series.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, sid);
+        }
+
+        book.add(series);
     }
 
     private void parsePublishers(@NonNull final JSONArray a,
@@ -1086,8 +1188,8 @@ public class OpenLibrarySearchEngine
      * @param document to parse
      * @param book     to update
      */
-    private void parseDescriptionAndNotes(@NonNull final JSONObject document,
-                                          @NonNull final Book book) {
+    private void parseDescriptionAndNotesFromWork(@NonNull final JSONObject document,
+                                                  @NonNull final Book book) {
         JSONObject element;
         String s;
 

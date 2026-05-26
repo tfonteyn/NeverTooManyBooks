@@ -30,10 +30,10 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONArray;
@@ -326,8 +326,8 @@ public class AuthorParser {
         if (!sid.isEmpty()) {
             if (sid.startsWith("/authors/")) {
                 sid = sid.substring(9);
+                author.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, sid);
             }
-            author.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, sid);
         }
 
         // #search : absent
@@ -364,7 +364,7 @@ public class AuthorParser {
         try {
             searchEngine.fetchImageByKey(context, 'a', "OLID", sid, 0, null)
                         .ifPresent(author::setTmpPictureFileSpec);
-        } catch (@NonNull final StorageException ignore) {
+        } catch (@NonNull final CoverStorageException ignore) {
             // ignore; keep in mind that OpenLibrary often fails to return images even
             // when they exist
         }

@@ -224,10 +224,11 @@ class ParseTest
         assertNotNull(authors);
         assertEquals(0, authors.size());
 
-        final List<Series> allSeries = book.getSeries();
-        assertNotNull(allSeries);
-        assertEquals(1, allSeries.size());
-        assertEquals("Nevermoor", allSeries.get(0).getTitle());
+        final List<Series> seriesList = book.getSeries();
+        assertNotNull(seriesList);
+        assertEquals(1, seriesList.size());
+        final Series series = seriesList.get(0);
+        assertEquals("Nevermoor", series.getTitle());
 
         final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
         // "covers": [13769253]
