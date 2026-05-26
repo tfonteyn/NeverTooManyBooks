@@ -121,6 +121,9 @@ public class DoubanSearchEngine
      */
     private static final Pattern PATTERN_FOREIGN_AUTHOR = Pattern.compile("\\[(.+)] (.+)");
 
+    /** Parsing a Series url. example: "https://book.douban.com/series/38". */
+    private static final Pattern SERIES_ID = Pattern.compile(".*/series/(\\d+)");
+
     @NonNull
     private final RatingParser ratingParser;
 
@@ -623,7 +626,15 @@ public class DoubanSearchEngine
                     if (a != null && "a".equals(a.tagName())) {
                         final String s = cleanName(a);
                         if (!s.isBlank()) {
-                            book.add(Series.from(s));
+                            final String url = a.attr("href");
+                            final Matcher matcher = SERIES_ID.matcher(url);
+                            final String sid = matcher.find() ? matcher.group(1) : null;
+
+                            final Series series = Series.from(s);
+                            if (sid != null) {
+                                series.setIdentifierValue(Identifier.SID_DOUBAN, sid);
+                            }
+                            book.add(series);
                         }
                     }
                     break;

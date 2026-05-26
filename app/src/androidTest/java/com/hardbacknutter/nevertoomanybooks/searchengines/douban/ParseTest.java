@@ -294,12 +294,13 @@ class ParseTest
         //assertTrue(oIv.isPresent());
         //assertEquals("4561353", oIv.get());
 
-        final List<Series> series = book.getSeries();
-        assertNotNull(series);
-        assertEquals(1, series.size());
-        final Series expectedSeries;
-        expectedSeries = new Series("科幻世界·中国科幻基石丛书");
-        assertEquals(expectedSeries, series.get(0));
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
+
+        final Series series = allSeries.get(0);
+        assertEquals("科幻世界·中国科幻基石丛书", series.getTitle());
+        assertEquals("38", series.getIdentifierValue(Identifier.SID_DOUBAN).orElse(null));
 
         final String preferenceKey = EngineId.Douban.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
@@ -383,12 +384,13 @@ class ParseTest
         assertEquals(AuthorRole.TRANSLATOR, author.getRole());
         assertTrue(author.getIdentifierValue(Identifier.SID_DOUBAN).isEmpty());
 
-        final List<Series> series = book.getSeries();
-        assertNotNull(series);
-        assertEquals(1, series.size());
-        final Series expectedSeries;
-        expectedSeries = new Series("读客悬疑文库从书");
-        assertEquals(expectedSeries, series.get(0));
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
+
+        final Series series = allSeries.get(0);
+        assertEquals("读客悬疑文库从书", series.getTitle());
+        assertEquals("51250", series.getIdentifierValue(Identifier.SID_DOUBAN).orElse(null));
 
         final String preferenceKey = EngineId.Douban.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
