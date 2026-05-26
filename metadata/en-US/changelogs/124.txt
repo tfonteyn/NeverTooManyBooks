@@ -1,0 +1,9 @@
+NEW:
+- the builtin image crop editor was replaced by https://github.com/Yalantis/uCrop
+- the old side-menu was replaced by a menu that follows the user preferred menu-style.
+- upgraded to Material3Expressive
+- Identifiers are now split according to item type (book, author)
+- Series now also support Identifiers
+
+FIXES:
+- many smaller issues
