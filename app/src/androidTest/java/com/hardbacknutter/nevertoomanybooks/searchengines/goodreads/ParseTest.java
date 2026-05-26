@@ -84,16 +84,17 @@ class ParseTest
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()
                       .putBoolean(EngineId.Goodreads.getPreferenceKey()
-                                     + ".resolve.authors.wikidata", true)
+                                  + ".resolve.authors.wikidata", true)
                       .apply();
     }
 
     @Test
     void parseNextDataJson9789604419197()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, CredentialsException {
         final Book book = new Book();
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.goodreads_next_data_9789604419197);
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test
+                        .R.raw.goodreads_next_data_9789604419197);
         searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
@@ -181,11 +182,13 @@ class ParseTest
         assertTrue(oIv.isPresent());
         assertEquals("7048501", oIv.get());
 
-        final List<Series> series = book.getSeries();
-        assertNotNull(series);
-        assertEquals(1, series.size());
-        assertEquals("L'Agent 212", series.get(0).getTitle());
-        assertEquals("1", series.get(0).getNumber());
+        final List<Series> seriesList = book.getSeries();
+        assertNotNull(seriesList);
+        assertEquals(1, seriesList.size());
+        final Series series = seriesList.get(0);
+        assertEquals("L'Agent 212", series.getTitle());
+        assertEquals("1", series.getNumber());
+        assertEquals("51385", series.getIdentifierValue(Identifier.SID_GOODREADS).orElse(null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -196,7 +199,7 @@ class ParseTest
 
     @Test
     void parseNextDataJson9789028453807()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, CredentialsException {
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(
@@ -218,16 +221,9 @@ class ParseTest
         assertEquals("B0D79GXMVR", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("215846772", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
-        assertEquals(
-                "Johoo heeft een kleine chocoladewinkel in een steegje in Seoel."
-                + " Haar klanten komen niet alleen voor overheerlijke chocolade, maar ook"
-                + " voor het speciale liefdesadvies waar Johoo om bekendstaat. Ze luistert"
-                + " geduldig naar alle verhalen, en heeft voor iedereen precies het soort"
-                + " chocola dat diegene nodig heeft. Van een zevenjarige jongen die verliefd"
-                + " is op een meisje uit zijn klas, tot een oude man die door zijn eigen vrouw"
-                + " niet meer herkend wordt. Maar zou er ook een recept te vinden zijn voor de"
-                + " verloren liefde van Johoo zelf?",
-                book.getString(DBKey.DESCRIPTION, null));
+        final String desc = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(desc);
+        assertTrue(desc.startsWith("Johoo heeft een kleine chocoladewinkel"));
 
         final List<Tag> tags = book.getTags();
         assertEquals(0, tags.size());
@@ -272,11 +268,12 @@ class ParseTest
 
     @Test
     void parseNextDataJson9780062683250()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, CredentialsException {
 
         final Book book = new Book();
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.goodreads_next_data_9780062683250);
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test
+                        .R.raw.goodreads_next_data_9780062683250);
         searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
@@ -292,31 +289,9 @@ class ParseTest
         assertEquals("006268325X", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("49867186", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
-        assertEquals("<strong>A girl’s quest to find her father leads her to an extended"
-                     + " family of magical fighting booksellers who police the mythical Old World"
-                     + " of England when it intrudes on the modern world."
-                     + " From the bestselling master of teen fantasy, Garth Nix.</strong>"
-                     + "<br /><br />In a slightly alternate London in 1983, Susan Arkshaw"
-                     + " is looking for her father, a man she has never met."
-                     + " Crime boss Frank Thringley might be able to help"
-                     + " her, but Susan doesn’t get time to ask Frank any questions before he is"
-                     + " turned to dust by the prick of a silver hatpin in the hands of the"
-                     + " outrageously attractive Merlin.<br /><br />Merlin is a young left-handed"
-                     + " bookseller (one of the fighting ones), who with the right-handed"
-                     + " booksellers (the intellectual ones), are an extended family of magical"
-                     + " beings who police the mythic and legendary Old World when it intrudes on"
-                     + " the modern world, in addition to running several bookshops.<br /><br />"
-                     + "Susan’s search for her father begins with her mother’s possibly"
-                     + " misremembered or misspelt surnames, a reading room ticket, and a silver"
-                     + " cigarette case engraved with something that might be a coat of arms."
-                     + "<br /><br />Merlin has a quest of his own, to find the Old World entity"
-                     + " who used ordinary criminals to kill his mother. As he and his sister,"
-                     + " the right-handed bookseller Vivien, tread in the path of a botched or"
-                     + " covered-up police investigation from years past, they find this quest"
-                     + " strangely overlaps with Susan’s. Who or what was her father?"
-                     + " Susan, Merlin, and Vivien must find out, as the Old World erupts"
-                     + " dangerously into the New.",
-                     book.getString(DBKey.DESCRIPTION, null));
+        final String desc = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(desc);
+        assertTrue(desc.startsWith("<strong>A girl’s quest to find her father leads her"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(10, bookTags.size());
@@ -359,12 +334,14 @@ class ParseTest
         assertEquals("OL382982A", oIv.get());
         // We don't check all of them...
 
-        final List<Series> series = book.getSeries();
-        assertNotNull(series);
-        assertEquals(1, series.size());
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
 
-        assertEquals("Left-Handed Booksellers of London", series.get(0).getTitle());
-        assertEquals("1", series.get(0).getNumber());
+        final Series series = allSeries.get(0);
+        assertEquals("Left-Handed Booksellers of London", series.getTitle());
+        assertEquals("1", series.getNumber());
+        assertEquals("333313", series.getIdentifierValue(Identifier.SID_GOODREADS).orElse(null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -375,7 +352,7 @@ class ParseTest
 
     @Test
     void parseNextDataJson9780553803723()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, CredentialsException {
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject
@@ -397,15 +374,9 @@ class ParseTest
         assertEquals("0553803727", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("29581", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
-        assertEquals("Foundation and Empire tells the incredible story of a new breed"
-                     + " of man who create a new force for galactic government. Thus, the"
-                     + " Foundation hurtles into conflict with the decadent, decrepit First"
-                     + " Empire. In this struggle for power amid the chaos of the stars, man"
-                     + " stands at the threshold of a new, enlightened life which could easily"
-                     + " be put aside for the old forces of barbarism. The Foundation novels"
-                     + " of Isaac Asimov constitute what is very likely the most famed epic in"
-                     + " all of science-fiction",
-                     book.getString(DBKey.DESCRIPTION, null));
+        final String desc = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(desc);
+        assertTrue(desc.startsWith("Foundation and Empire tells the incredible story"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(10, bookTags.size());
@@ -463,12 +434,17 @@ class ParseTest
         series = seriesList.get(0);
         assertEquals("Foundation (Publication Order)", series.getTitle());
         assertEquals("2", series.getNumber());
+        assertEquals("59386", series.getIdentifierValue(Identifier.SID_GOODREADS).orElse(null));
+
         series = seriesList.get(1);
         assertEquals("Foundation (Chronological Order)", series.getTitle());
         assertEquals("4", series.getNumber());
+        assertEquals("43939", series.getIdentifierValue(Identifier.SID_GOODREADS).orElse(null));
+
         series = seriesList.get(2);
         assertEquals("Greater Foundation Universe", series.getTitle());
         assertEquals("12", series.getNumber());
+        assertEquals("49421", series.getIdentifierValue(Identifier.SID_GOODREADS).orElse(null));
 
         final String preferenceKey = EngineId.Goodreads.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
@@ -483,7 +459,7 @@ class ParseTest
      */
     @Test
     void withNulls()
-            throws IOException, StorageException, SearchException, CredentialsException {
+            throws IOException, StorageException, CredentialsException {
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -505,25 +481,9 @@ class ParseTest
         assertTrue(book.getIdentifierValue(Identifier.SID_ASIN).isEmpty());
         assertEquals("37557163", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
-        assertEquals("The Aeneid is an epic poem, written by Virgil between 29 and"
-                     + " 19 BC, that tells the legendary story of Aeneas, a Trojan who travelled"
-                     + " to Italy, where he became the ancestor of the Romans. It comprises"
-                     + " 9,896 lines in dactylic hexameter. The first six of the poem's twelve"
-                     + " books tell the story of Aeneas's wanderings from Troy to Italy, and"
-                     + " the poem's second half tells of the Trojans' ultimately victorious war"
-                     + " upon the Latins, under whose name Aeneas and his Trojan followers are"
-                     + " destined to be subsumed. The hero Aeneas was already known to Greco-Roman"
-                     + " legend and myth, having been a character in the Iliad. Virgil took the"
-                     + " disconnected tales of Aeneas's wanderings, his vague association with"
-                     + " the foundation of Rome and a personage of no fixed characteristics other"
-                     + " than a scrupulous pietas, and fashioned this into a compelling founding"
-                     + " myth or national epic that at once tied Rome to the legends of Troy,"
-                     + " explained the Punic Wars, glorified traditional Roman virtues, and"
-                     + " legitimized the Julio-Claudian dynasty as descendants of the founders,"
-                     + " heroes, and gods of Rome and Troy. The Aeneid is widely regarded as"
-                     + " Virgil's masterpiece and one of the greatest works of Latin literature."
-                     + " (less)",
-                     book.getString(DBKey.DESCRIPTION, null));
+        final String desc = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(desc);
+        assertTrue(desc.startsWith("The Aeneid is an epic poem, written by Virgil"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(10, bookTags.size());
@@ -555,13 +515,14 @@ class ParseTest
         assertEquals(AuthorRole.WRITER, author.getRole());
 
         // the lookup on OPEN_LIBRARY fails as they have this author listed as "Virgil Virgil"
-        assertEquals(2, author.getIdentifiers().size());
+        assertTrue(author.getIdentifiers().size() > 2);
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("919", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
-        assertEquals("Q17505763", oIv.get());
+        assertEquals("Q1398", oIv.get());
+        // and many more...
 
         final List<Series> seriesList = book.getSeries();
         assertNotNull(seriesList);

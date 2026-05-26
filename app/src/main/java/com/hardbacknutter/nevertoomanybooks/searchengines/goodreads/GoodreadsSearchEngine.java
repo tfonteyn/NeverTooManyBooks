@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -115,6 +116,8 @@ public class GoodreadsSearchEngine
     private static final int EPOCH_NULL_VALUE = 123;
     /** divider to convert milliseconds TO SECONDS. */
     private static final int MILLI_TO_SECONDS = 1000;
+
+    private static final Pattern SERIES_ID = Pattern.compile(".*/series/(\\d+)");
 
     private static final Pattern PARAMS_BOOK_ID_PATTERN = Pattern.compile("(\\d+).*");
 
@@ -388,7 +391,7 @@ public class GoodreadsSearchEngine
                @NonNull final JSONObject root,
                @NonNull final Book book,
                @NonNull final boolean[] fetchCovers)
-            throws JSONException, StorageException, SearchException, CredentialsException {
+            throws JSONException, StorageException, CredentialsException {
 
         final JSONObject props = root.optJSONObject("props");
         if (props == null) {
@@ -436,7 +439,7 @@ public class GoodreadsSearchEngine
                            @NonNull final JSONObject o,
                            @NonNull final Book book,
                            @NonNull final boolean[] fetchCovers)
-            throws JSONException, StorageException, CredentialsException {
+            throws JSONException, CredentialsException, CoverStorageException {
         final String title = o.optString("title");
         if (title.isEmpty()) {
             return;
@@ -664,10 +667,8 @@ public class GoodreadsSearchEngine
         // Get the legacyId as the SID_GOODREADS_BOOK.
         // It is this one we need to construct url's.
         final String legacyId = refObj.optString("legacyId");
-        if (!legacyId.isEmpty()) {
-            author.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
-        } else {
-            // if the explicit legacyId is absent, try the webUrl
+        if (legacyId.isEmpty()) {
+            // if the explicit legacyId is absent, parse the webUrl
             final String webUrl = refObj.optString("webUrl");
             if (!webUrl.isEmpty()) {
                 final Matcher matcher = AUTHOR_WEB_URL_ID.matcher(webUrl);
@@ -678,6 +679,8 @@ public class GoodreadsSearchEngine
                     }
                 }
             }
+        } else {
+            author.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
         }
         addAuthor(author, role, book);
     }
@@ -689,21 +692,42 @@ public class GoodreadsSearchEngine
             final JSONObject bs = bookSeries.optJSONObject(i);
             if (bs != null) {
                 final String numberInSeries = bs.optString("userPosition");
-                final JSONObject seriesRef = bs.optJSONObject("series");
-                if (seriesRef != null) {
-                    final String ref = seriesRef.optString("__ref");
-                    if (!ref.isEmpty()) {
-                        final JSONObject refObj = apolloState.optJSONObject(ref);
-                        if (refObj != null) {
-                            final String title = cleanName(refObj.optString("title"));
-                            if (!title.isBlank()) {
-                                book.add(Series.from(title, numberInSeries));
-                            }
-                        }
+                final JSONObject seriesObj = bs.optJSONObject("series");
+                if (seriesObj != null) {
+                    final String ref = seriesObj.optString("__ref");
+                    if (!ref.isBlank()) {
+                        parseSeriesRef(apolloState, ref, numberInSeries, book);
                     }
                 }
             }
         }
+    }
+
+    private void parseSeriesRef(@NonNull final JSONObject apolloState,
+                                @NonNull final String ref,
+                                @NonNull final String numberInSeries,
+                                @NonNull final Book book) {
+        // Follow the reference
+        final JSONObject refObj = apolloState.optJSONObject(ref);
+        if (refObj == null) {
+            return;
+        }
+        final String title = cleanName(refObj.optString("title"));
+        if (title.isBlank()) {
+            return;
+        }
+        final Series series = Series.from(title, numberInSeries);
+        final String url = refObj.optString("webUrl");
+        if (!url.isBlank()) {
+            final Matcher matcher = SERIES_ID.matcher(url);
+            if (matcher.find()) {
+                final String sid = matcher.group(1);
+                if (sid != null) {
+                    series.setIdentifierValue(Identifier.SID_GOODREADS, sid);
+                }
+            }
+        }
+        book.add(series);
     }
 
     private void parseBookGenres(@NonNull final JSONArray genres,
