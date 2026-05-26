@@ -111,6 +111,7 @@ class ParseTest
         final Series series = allSeries.get(0);
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
+        assertEquals("16030", series.getIdentifierValue(Identifier.SID_LAST_DODO_NL).orElse(null));
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -232,6 +233,8 @@ class ParseTest
         final Series series = allSeries.get(0);
         assertEquals("Het Venijn", series.getTitle());
         assertEquals("3", series.getNumber());
+        assertEquals("4190831", series.getIdentifierValue(Identifier.SID_LAST_DODO_NL)
+                                      .orElse(null));
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -309,6 +312,7 @@ class ParseTest
         final Series series = allSeries.get(0);
         assertEquals("De Klaagzang van de verloren gewesten", series.getTitle());
         assertEquals("1|a", series.getNumber());
+        assertEquals("11953", series.getIdentifierValue(Identifier.SID_LAST_DODO_NL).orElse(null));
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);

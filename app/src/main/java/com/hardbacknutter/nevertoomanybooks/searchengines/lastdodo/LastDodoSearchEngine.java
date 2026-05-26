@@ -107,8 +107,8 @@ public class LastDodoSearchEngine
     private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
             Pattern.compile("(.*)\\(([a-z].*)\\)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    /** It's a relative url. */
-    private static final Pattern AUTHOR_ID = Pattern.compile(".*/nl/areas/(\\d+)-.*");
+    /** Parse an id from the Author and Series urls It's a relative url. */
+    private static final Pattern AREAS_ID = Pattern.compile(".*/areas/(\\d+)-.*");
 
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     private final AuthorResolverHelper authorResolverHelper;
@@ -554,7 +554,7 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Serie / held": {
-                        processSeries(td, book);
+                        parseSeries(td, book);
                         break;
                     }
                     case "Reeks": {
@@ -783,7 +783,7 @@ public class LastDodoSearchEngine
             }
             final Author author = Author.from(cleanName(text));
             final String url = a.attr("href");
-            final Matcher matcher = AUTHOR_ID.matcher(url);
+            final Matcher matcher = AREAS_ID.matcher(url);
             if (matcher.find()) {
                 final String siId = matcher.group(1);
                 if (siId != null) {
@@ -800,14 +800,26 @@ public class LastDodoSearchEngine
      * @param td   data td
      * @param book Bundle to update
      */
-    private void processSeries(@NonNull final Element td,
-                               @NonNull final Book book) {
-        td.select("a")
-          .stream()
-          .map(this::cleanName)
-          .filter(name -> !name.isBlank())
-          .map(Series::from)
-          .forEach(book::add);
+    private void parseSeries(@NonNull final Element td,
+                             @NonNull final Book book) {
+        for (final Element a : td.select("a")) {
+            final String title = cleanName(a);
+            if (!title.isBlank()) {
+                final Series series = Series.from(title);
+                // "/nl/areas/4190831-venijn-het"
+                final String url = a.attr("href");
+                if (!url.isBlank()) {
+                    final Matcher matcher = AREAS_ID.matcher(url);
+                    if (matcher.find()) {
+                        final String sid = matcher.group(1);
+                        if (sid != null) {
+                            series.setIdentifierValue(Identifier.SID_LAST_DODO_NL, sid);
+                        }
+                    }
+                }
+                book.add(series);
+            }
+        }
     }
 
     /**
