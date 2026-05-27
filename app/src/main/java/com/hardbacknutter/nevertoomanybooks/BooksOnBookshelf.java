@@ -83,7 +83,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingle
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -125,6 +124,7 @@ import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Tuning;
+import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -656,7 +656,7 @@ public class BooksOnBookshelf
 
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         fabMenu.getItem(R.id.fab4_search_external_id)
-               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab()));
+               .ifPresent(item -> item.setEnabled(IdentifiersEditorContract.isShowExternalIdTab()));
     }
 
     /**
@@ -885,7 +885,7 @@ public class BooksOnBookshelf
 
         // update the fab menu visibility depending on current user settings
         fabMenu.getItem(R.id.fab4_search_external_id)
-               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab()));
+               .ifPresent(item -> item.setEnabled(IdentifiersEditorContract.isShowExternalIdTab()));
 
         // Always update the list of bookshelves
         // This will be redundant if the user just came back from

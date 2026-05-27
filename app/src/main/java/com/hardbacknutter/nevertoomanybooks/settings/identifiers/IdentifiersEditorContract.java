@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -44,7 +45,26 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class IdentifiersEditorContract
         extends ActivityResultContract<Void, Optional<SettingsOutput>> {
 
+    /**
+     * Whether to show the fragment/views that allows the user to edit external id's (sid).
+     * This used to be for books only, but is now generic usage.
+     * <p>
+     * {@code boolean}
+     */
+    public static final String PK_EDIT_BOOK_TABS_EXTERNAL_ID = "edit.book.tab.externalId";
+
     private static final String TAG = "IdentifiersEditorContract";
+
+    /**
+     * Check if the {@code external id} edit tab should be shown.
+     * This is an 'advanced' user preference.
+     *
+     * @return flag
+     */
+    public static boolean isShowExternalIdTab() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_EDIT_BOOK_TABS_EXTERNAL_ID, false);
+    }
 
     @NonNull
     @Override

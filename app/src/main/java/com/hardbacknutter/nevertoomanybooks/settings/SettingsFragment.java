@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -334,7 +333,7 @@ public class SettingsFragment
                     p.setIcon(R.drawable.group_24px);
                     p.setChecked(true);
                 });
-        factory.bool(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID,
+        factory.bool(IdentifiersEditorContract.PK_EDIT_BOOK_TABS_EXTERNAL_ID,
                      R.string.pt_allow_editing_external_id,
                      R.string.disabled, R.string.enabled,
                      null, p -> {

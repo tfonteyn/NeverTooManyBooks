@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -48,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
+import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
@@ -92,7 +92,7 @@ public abstract class BaseDBTest {
                       .putString(AppLocale.PK_UI_LOCALE, uiLocale)
                       .putString(CoverVolume.PK_VOLUME_INDEX, "0")
 
-                      .putBoolean(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
+                      .putBoolean(IdentifiersEditorContract.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
                       .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
                       .putBoolean(ColorMapper.PK_SEARCH_REFORMAT_COLOR, true)
                       .putBoolean(FormatMapper.PK_SEARCH_REFORMAT_FORMAT, true)

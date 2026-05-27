@@ -62,19 +62,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
+import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class EditBookFragment
         extends BaseFragment {
-
-    /**
-     * Whether to show the fragment that allows the user to edit the external id's.
-     * <p>
-     * {@code boolean}
-     *
-     * @see EditBookExternalIdFragment
-     */
-    public static final String PK_EDIT_BOOK_TABS_EXTERNAL_ID = "edit.book.tab.externalId";
 
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
@@ -107,17 +99,6 @@ public class EditBookFragment
                     hideKeyboard(viewPager);
                 }
             };
-
-    /**
-     * Check if the {@code external id} edit tab should be shown.
-     * This is an 'advanced' user preference.
-     *
-     * @return flag
-     */
-    public static boolean isShowExternalIdTab() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(PK_EDIT_BOOK_TABS_EXTERNAL_ID, false);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -352,7 +333,7 @@ public class EditBookFragment
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));
             }
-            if (isShowExternalIdTab()) {
+            if (IdentifiersEditorContract.isShowExternalIdTab()) {
                 tabList.add(new TabInfo(EditBookExternalIdFragment::new,
                                         R.string.lbl_tab_lbl_ext_id,
                                         R.string.lbl_tab_lbl_ext_id));
