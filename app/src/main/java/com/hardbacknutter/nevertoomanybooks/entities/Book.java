@@ -312,6 +312,9 @@ public class Book
 
     /**
      * Copy Constructor. Loads the bundle <strong>with</strong> type checks.
+     * <p>
+     * Does a <strong>shallow</strong> copy.
+     * TODO: for now a shallow copy is all we need/want but...
      *
      * @param data             book to copy all data from
      * @param realNumberParser to use for number parsing

@@ -174,6 +174,8 @@ public class DataManager
 
     /**
      * Store all passed values in our collection (with type checking).
+     * <p>
+     * Does a <strong>shallow</strong> copy.
      *
      * @param src              DataManager to copy from
      * @param realNumberParser to use for number parsing
