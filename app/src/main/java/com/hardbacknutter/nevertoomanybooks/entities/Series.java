@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -633,7 +634,10 @@ public class Series
         complete = source.complete;
 
         identifiers.clear();
-        identifiers.addAll(source.identifiers);
+        // deep copy
+        identifiers.addAll(source.identifiers.stream()
+                                             .map(Identifier.Value::new)
+                                             .collect(Collectors.toList()));
 
         if (includeBookFields) {
             number = source.number;

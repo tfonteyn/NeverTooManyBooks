@@ -1255,7 +1255,10 @@ public class Author
         realAuthor = source.realAuthor;
 
         identifiers.clear();
-        identifiers.addAll(source.identifiers);
+        // deep copy
+        identifiers.addAll(source.identifiers.stream()
+                                             .map(Identifier.Value::new)
+                                             .collect(Collectors.toList()));
 
         if (includeBookFields) {
             role = source.role;
