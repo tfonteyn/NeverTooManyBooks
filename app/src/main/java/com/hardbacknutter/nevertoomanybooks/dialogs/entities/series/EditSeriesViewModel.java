@@ -86,8 +86,9 @@ public class EditSeriesViewModel
      * @return {@code true} if modified
      */
     boolean isModified() {
-        return !(original.isSameName(currentEdit)
-                 && original.isComplete() == currentEdit.isComplete());
+        return !original.isSameName(currentEdit)
+               || original.isComplete() != currentEdit.isComplete()
+               || !Objects.equals(original.getIdentifiers(), currentEdit.getIdentifiers());
     }
 
     /**

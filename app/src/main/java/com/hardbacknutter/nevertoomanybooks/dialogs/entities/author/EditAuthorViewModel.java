@@ -221,17 +221,18 @@ public class EditAuthorViewModel
     }
 
     /**
-     * Were any of the fields changed?
+     * Check if any of the fields were changed.
      *
      * @return {@code true} if modified
      */
-    public boolean isModified() {
+    boolean isModified() {
         // We're not linked to a book here, hence no author roles.
         return !original.isSameName(currentEdit)
                || !Objects.equals(original.getBirthDate(), currentEdit.getBirthDate())
                || !Objects.equals(original.getDeathDate(), currentEdit.getDeathDate())
                || !Objects.equals(original.getRealAuthor(), currentEdit.getRealAuthor())
-               || original.isComplete() != currentEdit.isComplete();
+               || original.isComplete() != currentEdit.isComplete()
+               || !Objects.equals(original.getIdentifiers(), currentEdit.getIdentifiers());
     }
 
     /**
