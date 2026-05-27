@@ -789,7 +789,7 @@ public class Identifier
         @NonNull
         private final String key;
         @NonNull
-        private final String sid;
+        private String sid;
 
         /**
          * Constructor.
@@ -812,6 +812,10 @@ public class Identifier
         public Value(@NonNull final String key,
                      final long sid) {
             this(key, String.valueOf(sid));
+        }
+
+        public Value(@NonNull final Value source) {
+            this(source.key, source.sid);
         }
 
         private Value(@NonNull final Parcel in) {
@@ -841,6 +845,15 @@ public class Identifier
         @NonNull
         public String getKey() {
             return key;
+        }
+
+        /**
+         * Set the external website id (site-id, sid).
+         *
+         * @param sid value
+         */
+        public void setSid(@NonNull final String sid) {
+            this.sid = sid;
         }
 
         /**
