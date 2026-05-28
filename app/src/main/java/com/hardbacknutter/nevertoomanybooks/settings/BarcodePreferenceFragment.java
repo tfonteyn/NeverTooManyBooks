@@ -97,7 +97,7 @@ public class BarcodePreferenceFragment
                     p.setIcon(R.drawable.loupe_24px);
                 });
         factory.bool(CameraConfig.PK_CAMERA_AUTO_FOCUS,
-                     R.string.pt_barcode_zoom_control,
+                     R.string.pt_camera_auto_focus,
                      R.string.disabled, R.string.enabled, null, p -> {
                     p.setIcon(R.drawable.center_focus_weak_24px);
                     p.setChecked(true);
