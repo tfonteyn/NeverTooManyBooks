@@ -43,8 +43,6 @@
     -->
     <dimen name="scrollbar_padding">9dp</dimen>
 
-    <dimen name="column_margin_end">32dp</dimen>
-
     <dimen name="cbx_fixed_width_author_role">140dp</dimen>
 
     <dimen name="startup_splash_border">32dp</dimen>

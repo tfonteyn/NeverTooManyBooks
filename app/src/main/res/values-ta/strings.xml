@@ -101,11 +101,11 @@
     <string name="lbl_date_first_publication">முதல் வெளியீடு</string>
     <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">முதல் பப். ஆண்டு</string>
-    <string name="option_archive_type_csv">புத்தகங்கள் (.csv)</string>
+    <string name="X_option_archive_type_csv">புத்தகங்கள் (.csv)</string>
     <string name="option_archive_type_json">சாதொபொகு ஏற்றுமதி (.JSON)</string>
     <string name="option_archive_type_db">தரவுத்தள கோப்பு (.db)</string>
     <string name="option_info_lbl_archive_type_backup">முழு காப்புப்பிரதி / காப்பகத்தை மீட்டெடுங்கள்</string>
-    <string name="option_info_archive_type_csv">ஒரு காபிம கோப்பிற்கு புத்தகங்களை ஏற்றுமதி செய்யுங்கள்</string>
+    <string name="X_option_info_archive_type_csv">ஒரு காபிம கோப்பிற்கு புத்தகங்களை ஏற்றுமதி செய்யுங்கள்</string>
     <string name="pt_search_prefer_isbn10">முடிந்தவரை ISBN-10 ஐப் பயன்படுத்தவும்</string>
     <string name="pt_collect_series_info_from_toc">உள்ளடக்க அட்டவணையில் இருந்து தொடர் தகவல்களை சேகரிக்கவும்</string>
     <string name="lbl_troubleshooting">சரிசெய்தல்</string>
@@ -177,7 +177,7 @@
     <string name="warning_cannot_delete_only_bookshelf">உனக்குப் ஒரு புத்தக அலமாரி மட்டுமே உள்ளது, அதனால் அதை நீக்க முடியாது.</string>
     <string name="warning_already_in_list">ஏற்கனவே பட்டியலில்!</string>
     <string name="error_import_csv_line">%1$d வரிசையில் தெரியாத பிழை</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ஐடி</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ஐடி</small>]]></string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="warning_toc_confirm">இந்த தலைப்புகள் (பெரும்பாலும்) சரியானவை என்பதை உறுதிப்படுத்தவும்.</string>
     <string name="warning_backup_request">உங்கள் தரவுத்தளத்தை உங்கள் SDCARD க்கு காப்புப் பிரதி எடுக்க விரும்புகிறீர்களா?</string>
@@ -354,7 +354,7 @@
     <string name="option_storage_edit_settings">அமைப்புகளைத் திருத்தவும்</string>
     <string name="option_storage_quit_and_reinsert_sdcard">சரியான எச்டி கார்டை விட்டுவிட்டு மீண்டும் சேர்க்கவும்</string>
     <string name="option_sort_and_style_ellipsis">வரிசையாக்கம் &amp; பாணிகள்…</string>
-    <string name="lbl_select_style">ஸ்டைலைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="X_lbl_select_style">ஸ்டைலைத் தேர்ந்தெடுக்கவும்</string>
     <string name="option_level_reset">விருப்பமான நிலை விரிவாக்கம்</string>
     <string name="option_level_expand">அனைத்தையும் விரிவாக்குங்கள்</string>
     <string name="option_level_collapse">அனைத்தையும் சரக்கு</string>
@@ -374,7 +374,7 @@
     <string name="option_search_books_by_author_in_series">ஆசிரியர்/தொடரின் புத்தகங்கள்</string>
     <string name="option_author_works_book">புத்தகங்கள் மட்டுமே</string>
     <string name="option_author_works_toc">உள்ளடக்க தலைப்புகளின் அட்டவணை மட்டுமே</string>
-    <string name="action_crop">பயிர்</string>
+    <string name="X_action_crop">பயிர்</string>
     <string name="option_image_replace">மாற்றவும்…</string>
     <string name="option_image_replace_from_gallery">கேலரியில் இருந்து…</string>
     <string name="option_image_replace_from_camera">கேமராவிலிருந்து…</string>
@@ -549,7 +549,7 @@
     <string name="lbl_title">தலைப்பு</string>
     <string name="lbl_titles">தலைப்புகள்</string>
     <string name="lbl_original_title">அசல் தலைப்பு</string>
-    <string name="lbl_original_title_long">இந்த நூல் மொழிபெயர்ப்பாக இருந்தால் அசல் தலைப்பு</string>
+    <string name="X_lbl_original_title_long">இந்த நூல் மொழிபெயர்ப்பாக இருந்தால் அசல் தலைப்பு</string>
     <string name="lbl_original_language">மூல மொழி</string>
     <string name="lbl_barcode">பார்கோடு</string>
     <string name="lbl_description">விவரம்</string>
@@ -627,7 +627,7 @@
     <string name="pt_maintenance">பராமரிப்பு</string>
     <string name="pt_field_visibility">கள பார்வை</string>
     <string name="ps_manage_fields">சேர்/திருத்து புத்தகத் திரைகளில் தேர்ந்தெடுக்கப்பட்ட புலங்கள் தெரியும். தேர்வு செய்யப்படாத புலங்கள் மறைக்கப்பட்டுள்ளன.</string>
-    <string name="pt_sort_title_reordered">தலைப்புகளை வரிசைப்படுத்துங்கள்</string>
+    <string name="X_pt_sort_title_reordered">தலைப்புகளை வரிசைப்படுத்துங்கள்</string>
     <string name="pv_reformat_titles_prefixes">|</string>
     <string name="ps_show_titles_reordered_off">கொடுக்கப்பட்டபடி காட்சி,\n எ.கா. “ரிங்க்சின் இறைவன்”</string>
     <string name="ps_show_titles_reordered_on">ஒரு தலைப்பின் தொடக்கத்தில் ஒரு கட்டுரையை இறுதிவரை நகர்த்தவும்,\n எ.கா. “லார்ட் ஆஃப் தி ரிங்க்ச், தி”</string>
@@ -670,7 +670,7 @@
     <string name="pt_camera_auto_focus">தானியங்கி ﬁோகஸ்</string>
     <string name="pe_camera_front">முன் கேமரா</string>
     <string name="pe_camera_back">பின் கேமரா</string>
-    <string name="pe_camera_other">மற்றொன்று</string>
+    <string name="X_pe_camera_other">மற்றொன்று</string>
     <string name="pt_search_show_menu_options">தேடல் மெனுக்களைக் காட்டு</string>
     <string name="pc_ui">பயனர் இடைமுகம்</string>
     <string name="pt_ui_language">மொழி</string>
@@ -773,7 +773,7 @@
     <string name="info_bulk_set_location">தேர்ந்தெடுக்கப்பட்ட முனையின் கீழ் பட்டியலிடப்பட்ட அனைத்து புத்தகங்களுக்கும் நீங்கள் ஒதுக்க விரும்பும் இடத்தைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="menu_update_fields">புலங்களைப் புதுப்பிக்கவும்</string>
     <string name="menu_update_books">புத்தகங்களைப் புதுப்பிக்கவும்</string>
-    <string name="menu_search_updates">புதுப்பிப்புகளைத் தேடு</string>
+    <string name="X_menu_search_updates">புதுப்பிப்புகளைத் தேடு</string>
     <string name="info_select_fields_to_update">தேர்ந்தெடுக்கப்பட்ட புலங்கள் இணையத்திலிருந்து புதுப்பிக்கப்படும். தேர்வு செய்யப்படாத புலங்கள் மாறாமல் இருக்கும்.</string>
     <string name="lbl_select_fields">புலங்களைத் தேர்ந்தெடுக்கவும்</string>
     <string name="option_field_usage_copy_if_blank">காலியாக இருந்தால் நகலெடுக்கவும்</string>
@@ -874,7 +874,7 @@
     <string name="info_identifier_editor"><![CDATA[திருத்துவதற்கு முன் அடையாளங்காட்டிகளில் உள்ள <a href="%1$s">ஆவணத்தைப்</a> படிக்கவும்.]]></string>
     <string name="lbl_date_born">பிறந்தது</string>
     <string name="pt_fetch_author_info">ஆசிரியர் தகவலைப் பெறுங்கள்</string>
-    <string name="action_stop_searching">தேடுவதை நிறுத்துங்கள்</string>
+    <string name="X_action_stop_searching">தேடுவதை நிறுத்துங்கள்</string>
     <string name="lbl_fastscroller_draghandle">உருளைக் கட்டையின் விரலிசை</string>
     <string name="lbl_permission_request">அனுமதி கோரிக்கை</string>
     <string name="pt_barcode_zoom_control">பெரிதாக்க கட்டுப்பாடு</string>

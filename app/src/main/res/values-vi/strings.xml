@@ -72,10 +72,10 @@
     <string name="action_clear">Xóa</string>
     <string name="action_clear_queue">Xóa hàng đợi</string>
     <string name="action_create">Tạo</string>
-    <string name="action_crop">Cắt</string>
+    <string name="X_action_crop">Cắt</string>
     <string name="action_apply">Áp dụng</string>
     <string name="action_delete">Xóa</string>
-    <string name="action_stop_searching">Dừng tìm kiếm</string>
+    <string name="X_action_stop_searching">Dừng tìm kiếm</string>
     <string name="action_save_for_later">Lưu lại để xem sau</string>
     <string name="action_disable_message">Tắt tin nhắn</string>
     <string name="action_discard">Loại bỏ</string>
@@ -266,7 +266,7 @@
     <string name="info_purge_blns_all">Xóa trạng thái nút cho tất cả danh sách</string>
     <string name="info_purge_blns_item_name">Xóa trạng thái nút cho %1$s “%2$s”?</string>
     <string name="info_rebuild_scheduled">Xây dựng lại theo lịch trình</string>
-    <string name="menu_search_updates">Tìm kiếm cập nhật</string>
+    <string name="X_menu_search_updates">Tìm kiếm cập nhật</string>
     <string name="info_select_fields_to_update">Các trường được chọn sẽ được cập nhật từ internet. Các trường không được chọn sẽ không thay đổi.</string>
     <string name="lbl_citation_type">Định dạng trích dẫn/Chia sẻ</string>
     <string name="lbl_citation_type_default">Tôi đang đọc…</string>
@@ -429,7 +429,7 @@
     <string name="lbl_name">Tên</string>
     <string name="lbl_number">Số</string>
     <string name="lbl_original_title">Nhan đề gốc</string>
-    <string name="lbl_original_title_long">Nhan đề gốc nếu cuốn sách này là bản dịch</string>
+    <string name="X_lbl_original_title_long">Nhan đề gốc nếu cuốn sách này là bản dịch</string>
     <string name="lbl_owned">Sở hữu</string>
     <string name="lbl_images">Ảnh</string>
     <string name="lbl_image_3">Hình ảnh 4</string>
@@ -499,7 +499,7 @@
     <string name="lbl_virtual_libraries">Thư viện ảo trong thư viện này</string>
     <string name="lbl_website_address">Địa chỉ trang web (URL)</string>
     <string name="lbl_websites">Trang web</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Mã “claim/P” của Wikidata cho id tác giả</string>
     <string name="lbl_year">Năm</string>
     <string name="list_and">%1$s và %2$s</string>
@@ -521,7 +521,7 @@
     <string name="option_apply_to_all_related_books">Tất cả sách liên quan</string>
     <string name="option_apply_to_this_node_only">Chỉ nút này</string>
     <string name="option_archive_type_backup_zip">Sao lưu (.zip)</string>
-    <string name="option_archive_type_csv">Sách (.csv)</string>
+    <string name="X_option_archive_type_csv">Sách (.csv)</string>
     <string name="option_archive_type_db">Tệp cơ sở dữ liệu (.db)</string>
     <string name="option_archive_type_json">Xuất JSON (.json)</string>
     <string name="option_author_details">Tất cả tác phẩm của tác giả này</string>
@@ -571,7 +571,7 @@
     <string name="option_import_books_option_new_only">Chỉ sách mới</string>
     <string name="option_info_archive_format_db">Cơ sở dữ liệu SQLite.</string>
     <string name="option_info_archive_format_json">Tất cả dữ liệu ở định dạng JSON.</string>
-    <string name="option_info_archive_type_csv">Xuất sách sang tệp CSV</string>
+    <string name="X_option_info_archive_type_csv">Xuất sách sang tệp CSV</string>
     <string name="option_info_delete_removed_books">Sách đã xóa trên thiết bị kia cũng sẽ bị xóa trên thiết bị này.</string>
     <string name="option_info_import_books_option_all">Nhập sách mới và ghi đè sách hiện có. Sử dụng cái này để khôi phục bản sao lưu.</string>
     <string name="option_info_import_books_option_new_and_updated">Nhập sách mới và đồng bộ hóa sách hiện có dựa trên ngày sửa đổi gần đây nhất của chúng.</string>
@@ -584,7 +584,7 @@
     <string name="option_lend_return_book">Sách cho mượn đã được trả lại</string>
     <string name="option_level_collapse">Thu gọn tất cả</string>
     <string name="option_level_expand">Mở rộng tất cả</string>
-    <string name="lbl_select_style">Chọn Kiểu</string>
+    <string name="X_lbl_select_style">Chọn Kiểu</string>
     <string name="option_level_reset">Mở rộng cấp độ ưa thích</string>
     <string name="option_moving_covers_from_x_to_y">Di chuyển tất cả bìa từ “%1$s” sang “%2$s”</string>
     <string name="option_purge_bedetheque_authors_cache">Xóa bộ nhớ đệm của tác giả Bedetheque</string>
@@ -635,7 +635,7 @@
     <string name="pe_camera_back">Máy ảnh mặt sau</string>
     <string name="pt_camera_auto_focus">Lấy nét tự động</string>
     <string name="pe_camera_front">Máy ảnh mặt trước</string>
-    <string name="pe_camera_other">Khác</string>
+    <string name="X_pe_camera_other">Khác</string>
     <string name="pe_fast_scroller_overlay_dynamic">Động</string>
     <string name="pe_fast_scroller_overlay_static">Tĩnh</string>
     <string name="pe_grid">Lưới</string>
@@ -731,7 +731,7 @@
     <string name="pt_fetch_author_info_using_site_x">Lấy thông tin tác giả từ %1$s</string>
     <string name="pt_search_result_order">Tìm kiếm sẽ trả về cuốn sách gần đây nhất hoặc cuốn sách đầu tiên được tìm thấy.</string>
     <string name="pt_search_show_menu_options">Hiển thị menu tìm kiếm</string>
-    <string name="pt_sort_title_reordered">Sắp xếp nhan đề theo</string>
+    <string name="X_pt_sort_title_reordered">Sắp xếp nhan đề theo</string>
     <string name="pt_storage_volume">Dung lượng lưu trữ</string>
     <string name="pt_thumbnails_cache_resized">Hình ảnh đã thay đổi kích thước được lưu trữ</string>
     <string name="pt_thumbnails_rotate_auto">Xoay ảnh</string>

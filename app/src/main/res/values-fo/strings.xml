@@ -105,7 +105,7 @@
     <string name="lbl_group_1st_char_series_title">1. stavur í bókaraðheitinum</string>
     <string name="lbl_group_read_and_unread">Lisið og ólisið</string>
     <string name="lbl_identifier">Eyðkenni</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_identifiers">Eyðkenni</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_style">Stílur</string>

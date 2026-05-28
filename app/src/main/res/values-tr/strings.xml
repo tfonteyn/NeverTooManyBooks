@@ -131,7 +131,7 @@
     <string name="bookshelf_my_books">Kitaplarım</string>
     <string name="btn_all_books">Tüm kitaplar</string>
     <string name="action_clear_queue">Sırayı temizle</string>
-    <string name="action_stop_searching">Aramayı bırak</string>
+    <string name="X_action_stop_searching">Aramayı bırak</string>
     <string name="action_save_for_later">Daha sonrası için kaydet</string>
     <string name="action_disable_message">İletiyi kapat</string>
     <string name="action_email">E-posta</string>
@@ -149,7 +149,7 @@
     <string name="pt_camera_auto_focus">Otomatik odaklama</string>
     <string name="pe_camera_front">Ön kamera</string>
     <string name="camera_next_action">Fotoğraf çektikten sonraki eylem</string>
-    <string name="pe_camera_other">Diğer</string>
+    <string name="X_pe_camera_other">Diğer</string>
     <string name="cancelled">İptal edildi</string>
     <string name="cd_btn_drag_handle">Bu listeyi yeniden düzenlemek için beni sürükleyin</string>
     <string name="cd_clear_text_end_icon">Metni temizle</string>
@@ -258,8 +258,8 @@
     <string name="option_info_lbl_archive_is_export_only">Bu yalnızca verileri dışa aktarmak içindir; içe aktarma desteklenmez.</string>
     <string name="option_info_lbl_archive_type_backup">Tam Yedekleme / Geri Yükleme arşivi</string>
     <string name="option_archive_type_backup_zip">Yedek kopya (.zip)</string>
-    <string name="option_archive_type_csv">Kitaplar (.csv)</string>
-    <string name="option_info_archive_type_csv">Kitapların bir CSV dosyasına aktarılması</string>
+    <string name="X_option_archive_type_csv">Kitaplar (.csv)</string>
+    <string name="X_option_info_archive_type_csv">Kitapların bir CSV dosyasına aktarılması</string>
     <string name="option_archive_type_db">Veritabanı dosyası (.db)</string>
     <string name="option_archive_type_json">JSON dışa aktarma (.json)</string>
     <string name="lbl_author">Yazar</string>
@@ -463,7 +463,7 @@
     <string name="lbl_website_address">Site adresi (URL)</string>
     <string name="lbl_websites">Web siteleri</string>
     <string name="bookshelf_my_wishlist">İstek Listesi</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Yazar kimliği için Vikiveri “claim/P” kodu</string>
     <string name="lbl_year">Yıl</string>
     <string name="list_and">%1$s ve %2$s</string>
@@ -487,7 +487,7 @@
     <string name="option_barcode_scan_mode_manual">El ile</string>
     <string name="option_barcode_scan_mode_continuous">Sürekli tarama</string>
     <string name="option_book_sync_list_with_details">Listeyi senkronize edin/konumlandırın</string>
-    <string name="action_crop">Kırp</string>
+    <string name="X_action_crop">Kırp</string>
     <string name="option_image_replace">Değiştir…</string>
     <string name="option_cover_replace_from_alt_editions">Diğer sürümlerden…</string>
     <string name="option_image_replace_from_camera">Kameradan…</string>
@@ -607,7 +607,7 @@
     <string name="pt_search_prefer_isbn10">Mümkün olduğunda ISBN-10 kullanın</string>
     <string name="pt_search_reformat_color">“Kitap rengi” adlarını standartlaştırma</string>
     <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
-    <string name="pt_sort_title_reordered">Başlıkları sırala</string>
+    <string name="X_pt_sort_title_reordered">Başlıkları sırala</string>
     <string name="pt_cover_undo_enabled">Kitap kapaklarındaki işlemleri geri alma</string>
     <string name="ps_cover_undo_disabled">Kapak düzenleme/değiştirme geri alınamaz (daha az depolama alanı kullanır)</string>
     <string name="ps_cover_undo_enabled">Kapak düzenleme/değiştirme geri alınabilir (daha fazla depolama alanı kullanır)</string>
@@ -669,7 +669,7 @@
     <string name="option_info_import_books_option_new_only">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
     <string name="ps_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="info_rebuild_scheduled">Yeniden planlandı</string>
-    <string name="menu_search_updates">Güncellemeleri arayın</string>
+    <string name="X_menu_search_updates">Güncellemeleri arayın</string>
     <string name="info_select_fields_to_update">Seçilen alanlar İnternet’ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="lbl_citation_type">Alıntı/Paylaşım formatı</string>
     <string name="lbl_citation_type_default">Okuyorum…</string>
@@ -767,7 +767,7 @@
     <string name="pv_reformat_titles_prefixes">"|"</string>
     <string name="lbl_titles">Başlıklar</string>
     <string name="lbl_original_title">Orijinal başlık</string>
-    <string name="lbl_original_title_long">Bu kitap bir çeviriyse orijinal adı</string>
+    <string name="X_lbl_original_title_long">Bu kitap bir çeviriyse orijinal adı</string>
     <string name="error_site_access_blocked">Web sitesi tarafından erişim engellendi.</string>
     <string name="pt_scan_mode">Tarama modu</string>
     <string name="option_sync_deleted_book_records">Silinen kitapları senkronize edin</string>
@@ -869,7 +869,7 @@
     <string name="lbl_default_x">Varsayılan: %1$s</string>
     <string name="info_partial_date_picker">Seçimi kaldırmak için önceden seçilmiş bir ay veya güne dokunun.</string>
     <string name="action_restore_default_identifiers">Varsayılan Tanımlayıcıları geri yükleme</string>
-    <string name="lbl_select_style">Biçem seç</string>
+    <string name="X_lbl_select_style">Biçem seç</string>
     <string name="vldt_blank_or_valid_url_required">Boş değer veya geçerli URL gerekli</string>
     <string name="lbl_book_uri">Kitap URL’si</string>
     <string name="lbl_author_uri">Yazar URL’si</string>

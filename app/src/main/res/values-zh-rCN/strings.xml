@@ -78,7 +78,7 @@
     <string name="action_clear">创建</string>
     <string name="action_clear_queue">清空队列</string>
     <string name="action_create">创建</string>
-    <string name="action_crop">"剪裁"</string>
+    <string name="X_action_crop">"剪裁"</string>
     <string name="action_apply">应用</string>
     <string name="action_delete">删除</string>
     <string name="action_disable_message">禁用消息</string>
@@ -416,7 +416,7 @@
     <string name="lbl_name">姓名</string>
     <string name="lbl_number">数目</string>
     <string name="lbl_original_title">原标题</string>
-    <string name="lbl_original_title_long">原标题（此书为翻译）</string>
+    <string name="X_lbl_original_title_long">原标题（此书为翻译）</string>
     <string name="lbl_owned">已拥有</string>
     <string name="lbl_images">图片</string>
     <string name="lbl_image_3">图片 4</string>
@@ -485,7 +485,7 @@
     <string name="lbl_virtual_libraries">此图书馆中的虚拟书架</string>
     <string name="lbl_website_address">网站地址（URL）</string>
     <string name="lbl_websites">网站</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>识别符</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>识别符</small>]]></string>
     <string name="lbl_year">年</string>
     <string name="list_and">%1$s 与 %2$s</string>
     <string name="brackets">（%1$s）</string>
@@ -508,7 +508,7 @@
     <string name="option_apply_to_all_related_books">所有相关图书</string>
     <string name="option_apply_to_this_node_only">仅此节点</string>
     <string name="option_archive_type_backup_zip">备份（.zip）</string>
-    <string name="option_archive_type_csv">图书（.csv）</string>
+    <string name="X_option_archive_type_csv">图书（.csv）</string>
     <string name="option_archive_type_db">数据库文件（.db）</string>
     <string name="option_archive_type_json">JSON 导出（.json）</string>
     <string name="option_author_details">该作者的所有作品</string>
@@ -558,7 +558,7 @@
     <string name="option_import_books_option_new_only">仅限新书</string>
     <string name="option_info_archive_format_db">SQLite 数据库。</string>
     <string name="option_info_archive_format_json">以 JSON 格式导出所有数据。</string>
-    <string name="option_info_archive_type_csv">将图书导出到 CSV 文件</string>
+    <string name="X_option_info_archive_type_csv">将图书导出到 CSV 文件</string>
     <string name="option_info_delete_removed_books">另一设备上删除的图书也会在此设备上被删除。</string>
     <string name="option_info_import_books_option_all">导入新图书并覆盖已有图书。用此选项恢复备份。</string>
     <string name="option_info_import_books_option_new_and_updated">导入新图书，并基于最近修改日期同步已有图书。</string>
@@ -571,7 +571,7 @@
     <string name="option_lend_return_book">借书已还</string>
     <string name="option_level_collapse">全部收起</string>
     <string name="option_level_expand">全部展开</string>
-    <string name="lbl_select_style">选择样式</string>
+    <string name="X_lbl_select_style">选择样式</string>
     <string name="option_level_reset">偏好展开级别</string>
     <string name="option_moving_covers_from_x_to_y">将所有封面从“%1$s”移动到“%2$s”</string>
     <string name="option_purge_bedetheque_authors_cache">清除 Bedetheque 作者缓存</string>
@@ -622,7 +622,7 @@
     <string name="pe_camera_back">后置摄像头</string>
     <string name="pt_camera_auto_focus">自动对焦</string>
     <string name="pe_camera_front">前置摄像头</string>
-    <string name="pe_camera_other">其他</string>
+    <string name="X_pe_camera_other">其他</string>
     <string name="pe_fast_scroller_overlay_dynamic">动态</string>
     <string name="pe_fast_scroller_overlay_static">静态</string>
     <string name="pe_grid">网格</string>
@@ -714,7 +714,7 @@
     <string name="pt_search_reformat_format">标准化“图书格式”名称</string>
     <string name="pt_search_result_order">搜索返回最新书籍或者第找到的第一本。</string>
     <string name="pt_search_show_menu_options">显示搜索菜单</string>
-    <string name="pt_sort_title_reordered">标题排序方式</string>
+    <string name="X_pt_sort_title_reordered">标题排序方式</string>
     <string name="pt_storage_volume">储存位置</string>
     <string name="pt_thumbnails_cache_resized">缓存尺寸改变的图像</string>
     <string name="pt_thumbnails_rotate_auto">旋转照片</string>
@@ -864,9 +864,9 @@
     <string name="lbl_date_born">出生</string>
     <string name="pt_fetch_author_info">获取作者信息</string>
     <string name="pt_fetch_author_info_using_site_x">从 %1$s 获取作者信息</string>
-    <string name="menu_search_updates">搜索更新</string>
+    <string name="X_menu_search_updates">搜索更新</string>
     <string name="lbl_wikidata_claim_author_id">author id 的 Wikidata “claim/P” 代码</string>
-    <string name="action_stop_searching">停止搜索</string>
+    <string name="X_action_stop_searching">停止搜索</string>
     <string name="confirm_leave_code_search">有进行中的搜索和/或为未保存的结果。</string>
     <string name="action_save_for_later">保存以便稍后处理</string>
     <string name="lbl_author_role_foreword">前言</string>

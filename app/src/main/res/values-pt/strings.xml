@@ -140,7 +140,7 @@
     <string name="lbl_system_default">(Padrão do sistema)</string>
     <string name="lbl_tab_publication">Publicação</string>
     <string name="lbl_unread">Não lido</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Código “claim/P” do Wikidata para o id do autor</string>
     <string name="lbl_year">Ano</string>
     <string name="brackets">(%1$s)</string>
@@ -164,7 +164,7 @@
     <string name="pc_camera">Câmera</string>
     <string name="pt_camera_auto_focus">Foco automático</string>
     <string name="pe_camera_front">Câmera frontal</string>
-    <string name="pe_camera_other">Outros</string>
+    <string name="X_pe_camera_other">Outros</string>
     <string name="preference_not_set">Não definido</string>
     <string name="progress_msg_connecting">Conectando…</string>
     <string name="progress_msg_loading">Carregando…</string>
@@ -330,7 +330,7 @@
     <string name="option_set_incomplete">Definir como “incompleto”</string>
     <string name="option_author_details">Todas as obras deste autor</string>
     <string name="option_author_works_toc">Apenas títulos da Tabela de Conteúdos</string>
-    <string name="action_crop">Cortar</string>
+    <string name="X_action_crop">Cortar</string>
     <string name="option_image_replace_from_gallery">Da Galeria…</string>
     <string name="option_import">Importar</string>
     <string name="option_download_ebook_format">Transferir o eBook (%1$s)</string>
@@ -488,7 +488,7 @@
     <string name="lbl_date_acquired_month">Mês de Aquisição</string>
     <string name="lbl_date_acquired_day">Dia de Aquisição</string>
     <string name="option_info_lbl_archive_type_backup">Cópia de Segurança total / Ficheiro de recuperação</string>
-    <string name="option_archive_type_csv">Livros (.csv)</string>
+    <string name="X_option_archive_type_csv">Livros (.csv)</string>
     <string name="option_archive_type_db">Base de Dados (.db)</string>
     <string name="pt_storage_volume">Volume de armazenamento</string>
     <string name="pt_scanning_beep_on_barcode_found">Apitar quando um código de barras é encontrado</string>
@@ -507,7 +507,7 @@
     <string name="lbl_purge_blns">Limpar o estado do nó</string>
     <string name="info_purge_blns_all">Limpar o estado do nó de todas as listas</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">apenas sob o seu autor principal</string>
-    <string name="menu_search_updates">Procurar actualizações</string>
+    <string name="X_menu_search_updates">Procurar actualizações</string>
     <string name="info_select_fields_to_update">Os campos selecionados serão atualizados a partir da internet. Os campos não selecionados permanecerão inalterados.</string>
     <string name="option_bob_filter_lend_out_no">Livros disponíveis</string>
     <string name="X_lbl_anthologies">Antologias</string>
@@ -577,7 +577,7 @@
     <string name="action_show_options">Opções</string>
     <string name="action_clear_queue">Limpar fila</string>
     <string name="action_stop_scanning">Parar a leitura</string>
-    <string name="action_stop_searching">Parar de procurar</string>
+    <string name="X_action_stop_searching">Parar de procurar</string>
     <string name="action_save_for_later">Guardar para mais tarde</string>
     <string name="action_disable_message">Desativar mensagem</string>
     <string name="action_import">Importar</string>
@@ -730,7 +730,7 @@
     <string name="lbl_original_language">Língua original</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_edition">Edição</string>
-    <string name="pt_sort_title_reordered">Ordenar títulos por</string>
+    <string name="X_pt_sort_title_reordered">Ordenar títulos por</string>
     <string name="lbl_website_address">Endereço do sítio web (URL)</string>
     <string name="option_fab_add_book_by_external_id">ID do livro do site</string>
     <string name="confirm_create_real_author">“%1$s” ainda não existe. Devem ser criados?</string>
@@ -747,7 +747,7 @@
     <string name="title_backup_and_export">Cópia de Segurança e Exportação</string>
     <string name="lbl_export_options">Selecione o que será exportado.</string>
     <string name="info_export_books_option_since_last_full_backup">Livros adicionados ou atualizados desde a última cópia de segurança completa.</string>
-    <string name="option_info_archive_type_csv">Exportação dos livros para um ficheiro CSV</string>
+    <string name="X_option_info_archive_type_csv">Exportação dos livros para um ficheiro CSV</string>
     <string name="option_info_archive_format_db">Base de dados SQLite.</string>
     <string name="info_backup_successful">Cópia de segurança bem sucedida</string>
     <string name="option_import_books_option_new_only">Apenas novos livros</string>
@@ -771,7 +771,7 @@
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Títulos</string>
     <string name="lbl_original_title">Título original</string>
-    <string name="lbl_original_title_long">Título original se este livro for uma tradução</string>
+    <string name="X_lbl_original_title_long">Título original se este livro for uma tradução</string>
     <string name="error_site_access_blocked">O acesso foi bloqueado pelo sítio Web.</string>
     <string name="pt_scan_mode">Modo de leitura</string>
     <string name="option_sync_deleted_book_records">Sincronizar livros eliminados</string>
@@ -872,7 +872,7 @@
     <string name="lbl_default_x">Padrão: %1$s</string>
     <string name="info_partial_date_picker">Toque num mês ou dia previamente selecionado para o anular.</string>
     <string name="action_restore_default_identifiers">Repor los identificadores predefinidos</string>
-    <string name="lbl_select_style">Selecione Estilo</string>
+    <string name="X_lbl_select_style">Selecione Estilo</string>
     <string name="vldt_blank_or_valid_url_required">É necessário um valor vazio ou um URL válido</string>
     <string name="lbl_book_uri">URL do livro</string>
     <string name="lbl_author_uri">URL do autor</string>

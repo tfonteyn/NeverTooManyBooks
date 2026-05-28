@@ -53,14 +53,6 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <!-- Top level Theme for full screen usage. -->
-    <style name="Theme.App.FullScreen"
-           parent="Theme.App">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowIsFloating">false</item>
-    </style>
-
     <!-- Top level Theme to be used in AndroidManifest.xml-->
     <style name="Theme.App"
            parent="Base.Theme.App">

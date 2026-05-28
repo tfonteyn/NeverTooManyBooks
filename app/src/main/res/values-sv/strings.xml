@@ -76,7 +76,7 @@
     <string name="action_clear">Rensa</string>
     <string name="action_clear_queue">Rensa kö</string>
     <string name="action_create">Skapa</string>
-    <string name="action_crop">Beskär</string>
+    <string name="X_action_crop">Beskär</string>
     <string name="action_delete">Delete</string>
     <string name="action_disable_message">Inaktivera meddelande</string>
     <string name="action_discard">Ignorera</string>
@@ -110,7 +110,7 @@
     <string name="action_show_toc_long">Visa innehållsförteckning</string>
     <string name="action_skip">Hoppa över</string>
     <string name="action_stop_scanning">Stoppa skanning</string>
-    <string name="action_stop_searching">Stoppa sökning</string>
+    <string name="X_action_stop_searching">Stoppa sökning</string>
     <string name="action_synchronize">Synkronisera</string>
     <string name="action_undo">Ångra</string>
     <string name="x_of_y">%1$d av %2$d</string>
@@ -419,7 +419,7 @@
     <string name="lbl_group_1st_char_series_title">Första bokstaven i serietiteln</string>
     <string name="lbl_group_read_and_unread">Lästa &amp; Olästa</string>
     <string name="lbl_identifier">Identifierare</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_identifiers">Identifierare</string>
     <string name="lbl_image">Bild</string>
     <string name="lbl_image_2">Bild 3</string>
@@ -449,7 +449,7 @@
     <string name="lbl_number">Antal</string>
     <string name="lbl_original_language">Originalspråk</string>
     <string name="lbl_original_title">Originaltitel</string>
-    <string name="lbl_original_title_long">Originaltitel om boken är en översättning</string>
+    <string name="X_lbl_original_title_long">Originaltitel om boken är en översättning</string>
     <string name="lbl_owned">Ägd</string>
     <string name="lbl_pages">Sidor</string>
     <string name="lbl_percentage">Procent</string>
@@ -474,7 +474,7 @@
     <string name="lbl_search_for_books">Sök efter böcker</string>
     <string name="lbl_search_isbn">ISBN-sökning</string>
     <string name="lbl_select_fields">Välj fält</string>
-    <string name="lbl_select_style">Välj stil</string>
+    <string name="X_lbl_select_style">Välj stil</string>
     <string name="lbl_select_website">Välj en webbplats:</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Serier</string>
@@ -529,7 +529,7 @@
     <string name="list_element">• %s</string>
     <string name="list_semicolon">"; "</string>
     <string name="loose">Lös</string>
-    <string name="menu_search_updates">Sök efter uppdateringar</string>
+    <string name="X_menu_search_updates">Sök efter uppdateringar</string>
     <string name="menu_update_books">Uppdatera böcker</string>
     <string name="menu_update_fields">Uppdatera fält</string>
     <string name="name_colon_value">%1$s: %2$s</string>
@@ -543,7 +543,7 @@
     <string name="option_apply_to_all_related_books">Alla relaterade böcker</string>
     <string name="option_apply_to_this_node_only">Endast denna nod</string>
     <string name="option_archive_type_backup_zip">Backup (.zip)</string>
-    <string name="option_archive_type_csv">Böcker (.csv)</string>
+    <string name="X_option_archive_type_csv">Böcker (.csv)</string>
     <string name="option_archive_type_db">Databasfil (.db)</string>
     <string name="option_archive_type_json">JSON-export (.json)</string>
     <string name="option_author_details">Alla verk av denna författare</string>
@@ -594,7 +594,7 @@
     <string name="option_import_books_option_new_only">Endast nya böcker</string>
     <string name="option_info_archive_format_db">SQLite-databasen.</string>
     <string name="option_info_archive_format_json">All data i JSON-format.</string>
-    <string name="option_info_archive_type_csv">Export av böcker till CSV-fil</string>
+    <string name="X_option_info_archive_type_csv">Export av böcker till CSV-fil</string>
     <string name="option_info_delete_removed_books">Böcker som tagits bort på den andra enheten tas även bort här.</string>
     <string name="option_info_import_books_option_all">Importera nya och skriv över befintliga böcker. Använd för att återställa backup.</string>
     <string name="option_info_import_books_option_new_and_updated">Importera nya böcker och synkronisera befintliga baserat på senaste ändringsdatum.</string>
@@ -656,7 +656,7 @@
     <string name="pe_bob_row_menu_long_click">Använd alltid långtryck.</string>
     <string name="pe_camera_back">Bakkamera</string>
     <string name="pe_camera_front">Frontkamera</string>
-    <string name="pe_camera_other">Övrigt</string>
+    <string name="X_pe_camera_other">Övrigt</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamisk</string>
     <string name="pe_fast_scroller_overlay_static">Statisk</string>
     <string name="pe_grid">Rutnät</string>
@@ -753,7 +753,7 @@
     <string name="pt_search_reformat_format">Standardisera bokformatnamn</string>
     <string name="pt_search_result_order">Sökningen returnerar den senaste boken eller den första som hittas.</string>
     <string name="pt_search_show_menu_options">Visa sökmenyer</string>
-    <string name="pt_sort_title_reordered">Sortera titlar efter</string>
+    <string name="X_pt_sort_title_reordered">Sortera titlar efter</string>
     <string name="pt_storage_volume">Lagringsvolym</string>
     <string name="pt_thumbnails_cache_resized">Storleksändrade bilder cachas</string>
     <string name="pt_thumbnails_rotate_auto">Rotera bilder</string>

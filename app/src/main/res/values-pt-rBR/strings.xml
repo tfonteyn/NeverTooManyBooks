@@ -262,8 +262,8 @@
     <string name="lbl_original_language">Idioma original</string>
     <string name="action_restore_default_identifiers">Restaurar os identificadores padrão</string>
     <string name="site_description_czech">Tcheco e muito mais</string>
-    <string name="menu_search_updates">Busca de atualizações</string>
-    <string name="action_stop_searching">Parar de pesquisar</string>
+    <string name="X_menu_search_updates">Busca de atualizações</string>
+    <string name="X_action_stop_searching">Parar de pesquisar</string>
     <string name="action_save_for_later">Salvar para depois</string>
     <string name="confirm_leave_code_search">Há pesquisas em andamento e/ou resultados não salvos.</string>
     <string name="site_description_polish">Polonês</string>

@@ -147,7 +147,7 @@ A question mark is written as the character semicolon: ';'
     <string name="action_show_options">Επιλογές</string>
     <string name="action_show_toc_long">Πίνακας Περιεχομένων</string>
     <string name="action_stop_scanning">Διακοπή σάρωσης</string>
-    <string name="action_stop_searching">Διακοπή αναζήτησης</string>
+    <string name="X_action_stop_searching">Διακοπή αναζήτησης</string>
     <string name="btn_this_book">Μόνο αυτό το βιβλίο</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Κάμερα</string>
@@ -155,7 +155,7 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_camera_auto_focus">Αυτόματη εστίαση</string>
     <string name="pe_camera_front">Μπροστινή Κάμερα</string>
     <string name="camera_next_action">Ενέργεια μετά τη λήψη φωτογραφίας</string>
-    <string name="pe_camera_other">Άλλο</string>
+    <string name="X_pe_camera_other">Άλλο</string>
     <string name="cancelled">Ακυρώθηκε</string>
     <string name="cd_btn_drag_handle">Σύρετε για να αναδιατάξετε αυτή τη λίστα</string>
     <string name="cd_clear_text_end_icon">Διαγραφή κειμένου</string>
@@ -263,8 +263,8 @@ A question mark is written as the character semicolon: ';'
     <string name="option_info_lbl_archive_is_export_only">Μόνο για εξαγωγή δεδομένων· η εισαγωγή δεν υποστηρίζεται.</string>
     <string name="option_info_lbl_archive_type_backup">Πλήρες αντίγραφο ασφαλείας / επαναφοράς</string>
     <string name="option_archive_type_backup_zip">Αντίγραφο ασφαλείας (.zip)</string>
-    <string name="option_archive_type_csv">Βιβλία (.csv)</string>
-    <string name="option_info_archive_type_csv">Εξαγωγή των βιβλίων σε αρχείο CSV</string>
+    <string name="X_option_archive_type_csv">Βιβλία (.csv)</string>
+    <string name="X_option_info_archive_type_csv">Εξαγωγή των βιβλίων σε αρχείο CSV</string>
     <string name="option_archive_type_db">Αρχείο βάσης δεδομένων (.db)</string>
     <string name="option_archive_type_json">Εξαγωγή JSON (.json)</string>
     <string name="lbl_author">Συγγραφέας</string>
@@ -471,7 +471,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>
     <string name="lbl_websites">Ιστότοποι</string>
     <string name="bookshelf_my_wishlist">Επιθυμητά</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Κωδικός «claim/P» του αναγνωριστικού συγγραφέα στο Wikidata</string>
     <string name="lbl_year">Έτος</string>
     <string name="list_and">%1$s και %2$s</string>
@@ -495,7 +495,7 @@ A question mark is written as the character semicolon: ';'
     <string name="option_barcode_scan_mode_manual">Μη αυτόματο</string>
     <string name="option_barcode_scan_mode_continuous">Συνεχής σάρωση</string>
     <string name="option_book_sync_list_with_details">Συγχρονισμός/τοποθέτηση της λίστας</string>
-    <string name="action_crop">Περικοπή</string>
+    <string name="X_action_crop">Περικοπή</string>
     <string name="option_image_replace">Αντικατάσταση…</string>
     <string name="option_cover_replace_from_alt_editions">Από άλλες εκδόσεις…</string>
     <string name="option_image_replace_from_camera">Από την κάμερα…</string>
@@ -618,7 +618,7 @@ A question mark is written as the character semicolon: ';'
     <string name="ps_show_titles_reordered_off">Εμφάνιση όπως δίνεται,\nπ.χ. «Ο Άρχοντας των Δαχτυλιδιών»</string>
     <string name="error_type_not_supported">Δεν υποστηρίζεται ο τύπος: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Μετακίνηση άρθρου από την αρχή του τίτλου στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
-    <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων κατά</string>
+    <string name="X_pt_sort_title_reordered">Ταξινόμηση τίτλων κατά</string>
     <string name="pt_cover_undo_enabled">Αναίρεση ενεργειών εξωφύλλων</string>
     <string name="ps_cover_undo_disabled">Η επεξεργασία/αντικατάσταση εξωφύλλου δεν μπορεί να αναιρεθεί (χρησιμοποιεί λιγότερο αποθηκευτικό χώρο)</string>
     <string name="ps_cover_undo_enabled">Η επεξεργασία ή αντικατάσταση εξωφύλλου μπορεί να αναιρεθεί (χρησιμοποιεί περισσότερο αποθηκευτικό χώρο)</string>
@@ -680,7 +680,7 @@ A question mark is written as the character semicolon: ';'
     <string name="option_info_import_books_option_new_only">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
     <string name="ps_manage_fields">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
     <string name="info_rebuild_scheduled">Υπάρχει προγραμματισμένη αναδημιουργία</string>
-    <string name="menu_search_updates">Αναζήτηση ενημερώσεων</string>
+    <string name="X_menu_search_updates">Αναζήτηση ενημερώσεων</string>
     <string name="info_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχουν.</string>
     <string name="lbl_citation_type">Μορφή παραπομπής / κοινοποίησης</string>
     <string name="lbl_citation_type_default">Διαβάζω…</string>
@@ -771,7 +771,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_author_pseudonym_of_X">ψε. %1$s</string>
     <string name="lbl_titles">Τίτλοι</string>
     <string name="lbl_original_title">Πρωτότυπος τίτλος</string>
-    <string name="lbl_original_title_long">Πρωτότυπος τίτλος αν το βιβλίο είναι μετάφραση</string>
+    <string name="X_lbl_original_title_long">Πρωτότυπος τίτλος αν το βιβλίο είναι μετάφραση</string>
     <string name="error_site_access_blocked">Η πρόσβαση αποκλείστηκε από τον ιστότοπο.</string>
     <string name="pt_scan_mode">Λειτουργία σάρωσης</string>
     <string name="option_sync_deleted_book_records">Συγχρονισμός διαγραμμένων βιβλίων</string>
@@ -870,7 +870,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_default_x">Προεπιλογή: %1$s</string>
     <string name="info_partial_date_picker">Πατήστε σε έναν επιλεγμένο μήνα ή ημέρα για να καταργήσετε την επιλογή του.</string>
     <string name="action_restore_default_identifiers">Επαναφορά προεπιλεγμένων αναγνωριστικών</string>
-    <string name="lbl_select_style">Επιλογή Στυλ</string>
+    <string name="X_lbl_select_style">Επιλογή Στυλ</string>
     <string name="vldt_blank_or_valid_url_required">Απαιτείται κενή τιμή ή έγκυρη διεύθυνση URL</string>
     <string name="lbl_book_uri">URL βιβλίου</string>
     <string name="lbl_author_uri">URL συγγραφέα</string>

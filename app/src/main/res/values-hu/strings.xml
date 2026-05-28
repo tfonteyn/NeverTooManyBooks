@@ -111,7 +111,7 @@
     <string name="action_apply">Alkalmaz</string>
     <string name="action_clear">Törlés</string>
     <string name="action_create">Létrehozás</string>
-    <string name="action_crop">Körbevágás</string>
+    <string name="X_action_crop">Körbevágás</string>
     <string name="action_delete">Delete</string>
     <string name="action_discard">Elvetés</string>
     <string name="action_done">Kész</string>
@@ -181,7 +181,7 @@
     <string name="password">Jelszó</string>
     <string name="pc_advanced_options">Speciális</string>
     <string name="pc_camera">Kamera</string>
-    <string name="pe_camera_other">Egyéb</string>
+    <string name="X_pe_camera_other">Egyéb</string>
     <string name="pe_ui_theme_from_device">Eszköztéma</string>
     <string name="pt_bob_font_size">Betűméret</string>
     <string name="pt_layout">Elrendezés</string>
@@ -418,7 +418,7 @@
     <string name="option_storage_edit_settings">Beállítások módosítása</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Lépjen ki és helyezze be a megfelelő SD-kártyát</string>
     <string name="option_sort_and_style_ellipsis">Rendezés &amp; Stílusok…</string>
-    <string name="lbl_select_style">Stílus kiválasztása</string>
+    <string name="X_lbl_select_style">Stílus kiválasztása</string>
     <string name="option_level_reset">Preferált kibontás-állapot</string>
     <string name="option_level_collapse">Összecsukás</string>
     <string name="option_level_expand">Kibontás</string>
@@ -508,7 +508,7 @@
     <string name="action_less_ellipsis">Kevesebb…</string>
     <string name="action_merge">Egyesítés</string>
     <string name="action_duplicate">Megkettőzés</string>
-    <string name="action_stop_searching">Ne keress tovább</string>
+    <string name="X_action_stop_searching">Ne keress tovább</string>
     <string name="action_save_for_later">Mentés későbbre</string>
     <string name="action_disable_message">Üzenet letiltása</string>
     <string name="action_synchronize">Szinkronizálás</string>
@@ -562,7 +562,7 @@
     <string name="lbl_signed">Aláírt</string>
     <string name="lbl_titles">Címek</string>
     <string name="lbl_original_title">Eredeti cím</string>
-    <string name="lbl_original_title_long">Eredeti cím, ha ez a könyv fordítás</string>
+    <string name="X_lbl_original_title_long">Eredeti cím, ha ez a könyv fordítás</string>
     <string name="lbl_original_language">Eredeti nyelv</string>
     <string name="lbl_barcode">Vonalkód</string>
     <string name="lbl_location_long">A könyv helye</string>
@@ -597,15 +597,15 @@
     <string name="lbl_date_died">Meghalt</string>
     <string name="title_backup_and_export">Biztonsági mentés &amp; Exportálás</string>
     <string name="option_archive_type_db">Adatbázis fájl (.db)</string>
-    <string name="option_archive_type_csv">Könyvek (.csv)</string>
+    <string name="X_option_archive_type_csv">Könyvek (.csv)</string>
     <string name="ps_manage_fields">A kiválasztott mezők láthatóak a könyv hozzáadása/szerkesztése képernyőkön. A nem kiválasztott mezők rejtve vannak.</string>
     <string name="option_info_lbl_archive_type_backup">Teljes biztonsági mentés / Archívum visszaállítása</string>
     <string name="lbl_date_first_publication_as_single_char">1️⃣</string>
     <string name="pt_barcode_scanner">Vonalkódolvasó</string>
     <string name="lbl_export_options">Válassza ki, mi kerüljön exportálásra.</string>
-    <string name="option_info_archive_type_csv">Könyvek exportálása CSV fájlba</string>
+    <string name="X_option_info_archive_type_csv">Könyvek exportálása CSV fájlba</string>
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Azóta módosított könyvek importálása</string>
-    <string name="pt_sort_title_reordered">Címek rendezése</string>
+    <string name="X_pt_sort_title_reordered">Címek rendezése</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Publikáció</string>
     <string name="lbl_print_run">Példányszám</string>
@@ -616,7 +616,7 @@
     <string name="lbl_lend_out_to_name">Kölcsönadva neki: %1$s</string>
     <string name="lbl_identifier">Azonosító</string>
     <string name="lbl_identifiers">Azonosítók</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Wikidata „claim/P” kód a szerzői azonosítóhoz</string>
     <string name="lbl_year">Év</string>
     <string name="lbl_month">Hónap</string>
@@ -809,7 +809,7 @@
     <string name="info_bulk_set_location">Válassza ki a helyet, melyet a kiválasztott ág alatt felsorolt összes könyvhez szeretne hozzárendelni.</string>
     <string name="menu_update_fields">Mezők frissítése</string>
     <string name="menu_update_books">Könyvek frissítése</string>
-    <string name="menu_search_updates">Frissítések keresése</string>
+    <string name="X_menu_search_updates">Frissítések keresése</string>
     <string name="info_select_fields_to_update">A kiválasztott mezők az internetről frissülnek. A ki nem választott mezők változatlanok maradnak.</string>
     <string name="lbl_select_fields">Mezők kiválasztása</string>
     <string name="option_field_usage_copy_if_blank">Másolás, ha üres</string>

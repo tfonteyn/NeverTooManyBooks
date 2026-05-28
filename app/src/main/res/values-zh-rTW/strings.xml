@@ -79,7 +79,7 @@
     <string name="action_clear">清除</string>
     <string name="action_clear_queue">清除佇列</string>
     <string name="action_create">建立</string>
-    <string name="action_crop">裁剪</string>
+    <string name="X_action_crop">裁剪</string>
     <string name="action_apply">套用</string>
     <string name="action_delete">刪除</string>
     <string name="action_disable_message">停用訊息</string>
@@ -112,7 +112,7 @@
     <string name="action_show_toc_long">顯示內容表</string>
     <string name="action_skip">略過</string>
     <string name="action_stop_scanning">停止掃描</string>
-    <string name="action_stop_searching">停止搜尋</string>
+    <string name="X_action_stop_searching">停止搜尋</string>
     <string name="action_synchronize">同步化</string>
     <string name="action_undo">復原</string>
     <string name="and_others">%1$s……</string>
@@ -259,7 +259,7 @@
     <string name="info_purge_blns_all">清除所有清單的節點狀態</string>
     <string name="info_purge_blns_item_name">要清除 %1$s 「%2$s」的節點狀態嗎？</string>
     <string name="info_rebuild_scheduled">已計劃重建</string>
-    <string name="menu_search_updates">搜尋更新</string>
+    <string name="X_menu_search_updates">搜尋更新</string>
     <string name="info_select_fields_to_update">將從互聯網更新選取的欄位。將不會更改未選取欄位。</string>
     <string name="lbl_citation_type">引用/分享格式</string>
     <string name="lbl_citation_type_default">我正在閱讀……</string>
@@ -418,7 +418,7 @@
     <string name="lbl_name">名稱</string>
     <string name="lbl_number">數目</string>
     <string name="lbl_original_title">原標題</string>
-    <string name="lbl_original_title_long">原標題（如果這本書本是譯本）</string>
+    <string name="X_lbl_original_title_long">原標題（如果這本書本是譯本）</string>
     <string name="lbl_owned">已擁有</string>
     <string name="lbl_images">圖片</string>
     <string name="lbl_image_3">圖片 4</string>
@@ -489,7 +489,7 @@
     <string name="lbl_virtual_libraries">此圖書館中的虛擬書架</string>
     <string name="lbl_website_address">網址（網址）</string>
     <string name="lbl_websites">網站</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>識別符</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>識別符</small>]]></string>
     <string name="lbl_year">年</string>
     <string name="list_and">%1$s 與 %2$s</string>
     <string name="brackets">（%1$s）</string>
@@ -512,7 +512,7 @@
     <string name="option_apply_to_all_related_books">所有相關圖書</string>
     <string name="option_apply_to_this_node_only">僅此節點</string>
     <string name="option_archive_type_backup_zip">備份（.zip）</string>
-    <string name="option_archive_type_csv">圖書（.csv）</string>
+    <string name="X_option_archive_type_csv">圖書（.csv）</string>
     <string name="option_archive_type_db">資料庫檔案（.db）</string>
     <string name="option_archive_type_json">JSON 導出（.json）</string>
     <string name="option_author_details">該作者的所有作品</string>
@@ -562,7 +562,7 @@
     <string name="option_import_books_option_new_only">僅限新書</string>
     <string name="option_info_archive_format_db">SQLite 資料庫。</string>
     <string name="option_info_archive_format_json">以 JSON 格式匯出所有資料。</string>
-    <string name="option_info_archive_type_csv">將圖書匯出到 CSV 文件</string>
+    <string name="X_option_info_archive_type_csv">將圖書匯出到 CSV 文件</string>
     <string name="option_info_delete_removed_books">另一設備上刪除的圖書也會在此設備上被刪除。</string>
     <string name="option_info_import_books_option_all">導入新圖書並覆蓋已有圖書。用此選項恢復備份。</string>
     <string name="option_info_import_books_option_new_and_updated">匯入新圖書，並基於最近修改日期同步已有圖書。</string>
@@ -575,7 +575,7 @@
     <string name="option_lend_return_book">借書已還</string>
     <string name="option_level_collapse">折疊全部</string>
     <string name="option_level_expand">展開全部</string>
-    <string name="lbl_select_style">選擇樣式</string>
+    <string name="X_lbl_select_style">選擇樣式</string>
     <string name="option_level_reset">偏好展開級別</string>
     <string name="option_moving_covers_from_x_to_y">將所有封面從「%1$s」移至「%2$s」</string>
     <string name="option_purge_bedetheque_authors_cache">清除 Bedetheque 作者緩存</string>
@@ -626,7 +626,7 @@
     <string name="pe_camera_back">後攝影機</string>
     <string name="pt_camera_auto_focus">自動對焦</string>
     <string name="pe_camera_front">前置攝影機</string>
-    <string name="pe_camera_other">其他</string>
+    <string name="X_pe_camera_other">其他</string>
     <string name="pe_fast_scroller_overlay_dynamic">動態</string>
     <string name="pe_fast_scroller_overlay_static">靜態</string>
     <string name="pe_grid">網格</string>
@@ -714,7 +714,7 @@
     <string name="pt_search_reformat_format">標準化「圖書格式」名稱</string>
     <string name="pt_search_result_order">搜尋返回最新書籍或第找到的第一本。</string>
     <string name="pt_search_show_menu_options">顯示搜尋選單</string>
-    <string name="pt_sort_title_reordered">標題排序方式</string>
+    <string name="X_pt_sort_title_reordered">標題排序方式</string>
     <string name="pt_storage_volume">儲存位置</string>
     <string name="pt_thumbnails_cache_resized">快取尺寸改變的圖像</string>
     <string name="pt_thumbnails_rotate_auto">旋轉照片</string>

@@ -144,7 +144,7 @@
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="btn_all_books">Všechny knihy</string>
     <string name="action_clear_queue">Vymazat frontu</string>
-    <string name="action_stop_searching">Zastavit hledání</string>
+    <string name="X_action_stop_searching">Zastavit hledání</string>
     <string name="action_save_for_later">Uložit na později</string>
     <string name="action_disable_message">Zakázat zprávu</string>
     <string name="action_email">email</string>
@@ -162,7 +162,7 @@
     <string name="pt_camera_auto_focus">Autofokus</string>
     <string name="pe_camera_front">Přední fotoaparát</string>
     <string name="camera_next_action">Akce po pořízení snímku</string>
-    <string name="pe_camera_other">Ostatní</string>
+    <string name="X_pe_camera_other">Ostatní</string>
     <string name="cancelled">Zrušeno</string>
     <string name="cd_btn_drag_handle">Přetažením změníte pořadí tohoto seznamu</string>
     <string name="cd_clear_text_end_icon">Vymazat text</string>
@@ -279,8 +279,8 @@
     <string name="option_info_lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
     <string name="option_info_lbl_archive_type_backup">Úplná záloha / obnovení archivu</string>
     <string name="option_archive_type_backup_zip">Záložní kopie (.zip)</string>
-    <string name="option_archive_type_csv">Knihy (.csv)</string>
-    <string name="option_info_archive_type_csv">Export knih do souboru CSV</string>
+    <string name="X_option_archive_type_csv">Knihy (.csv)</string>
+    <string name="X_option_info_archive_type_csv">Export knih do souboru CSV</string>
     <string name="option_archive_type_db">Soubor databáze (.db)</string>
     <string name="option_archive_type_json">Export JSON (.json)</string>
     <string name="lbl_author">Autor</string>
@@ -484,7 +484,7 @@
     <string name="lbl_website_address">Adresa webu (URL)</string>
     <string name="lbl_websites">Webové stránky</string>
     <string name="bookshelf_my_wishlist">Seznam přání</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Kód „claim/P“ Wikidata pro id autora</string>
     <string name="lbl_year">Rok</string>
     <string name="list_and">%1$s a %2$s</string>
@@ -508,7 +508,7 @@
     <string name="option_barcode_scan_mode_manual">Ručně</string>
     <string name="option_barcode_scan_mode_continuous">Průběžné skenování</string>
     <string name="option_book_sync_list_with_details">Synchronizujte/umístěte seznam</string>
-    <string name="action_crop">Oříznout</string>
+    <string name="X_action_crop">Oříznout</string>
     <string name="option_image_replace">Nahradit…</string>
     <string name="option_cover_replace_from_alt_editions">Z jiné edice…</string>
     <string name="option_image_replace_from_camera">Z fotoaparátu…</string>
@@ -628,7 +628,7 @@
     <string name="pt_search_prefer_isbn10">Pokud je to možné, použijte ISBN-10</string>
     <string name="pt_search_reformat_color">Standardizovat názvy barev knih</string>
     <string name="pt_search_reformat_format">Standardizovat názvy formátu knihy</string>
-    <string name="pt_sort_title_reordered">Seřadit názvy podle</string>
+    <string name="X_pt_sort_title_reordered">Seřadit názvy podle</string>
     <string name="pt_cover_undo_enabled">Zrušení operací na obálkách knih</string>
     <string name="ps_cover_undo_disabled">Úpravu/záměnu obálky nelze vrátit zpět (využívá méně úložného prostoru)</string>
     <string name="ps_cover_undo_enabled">Úpravu/záměnu obálky lze vrátit zpět (využívá více úložného prostoru)</string>
@@ -780,7 +780,7 @@
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Tituly</string>
     <string name="lbl_original_title">Původní název</string>
-    <string name="lbl_original_title_long">Původní název, pokud je tato kniha překladem</string>
+    <string name="X_lbl_original_title_long">Původní název, pokud je tato kniha překladem</string>
     <string name="error_site_access_blocked">Přístup byl zablokován na webových stránkách.</string>
     <string name="pt_scan_mode">Režim skenování</string>
     <string name="option_sync_deleted_book_records">Synchronizace odstraněných knih</string>
@@ -887,7 +887,7 @@
     <string name="lbl_default_x">Výchozí: %1$s</string>
     <string name="info_partial_date_picker">Klepnutím na dříve vybraný měsíc nebo den zrušíte jeho výběr.</string>
     <string name="action_restore_default_identifiers">Obnovení výchozích identifikátorů</string>
-    <string name="lbl_select_style">Zvolit styl</string>
+    <string name="X_lbl_select_style">Zvolit styl</string>
     <string name="site_description_czech">Čeština a další</string>
     <string name="lbl_book_uri">Adresa URL knihy</string>
     <string name="lbl_author_uri">Adresa URL autora</string>
@@ -896,7 +896,7 @@
     <string name="info_identifier_editor"><![CDATA[Před editaci si prosím přečtěte <a href="%1$s">dokumentaci</a> k identifikátorům.]]></string>
     <string name="lbl_date_born">Nar.</string>
     <string name="pt_fetch_author_info">Načítaní informací o autorovi</string>
-    <string name="menu_search_updates">Hledání aktualizací</string>
+    <string name="X_menu_search_updates">Hledání aktualizací</string>
     <string name="lbl_author_role_foreword">Předmluva</string>
     <string name="lbl_image_2">Obrázek 3</string>
     <string name="lbl_fastscroller_draghandle">Velikost posuvníku</string>

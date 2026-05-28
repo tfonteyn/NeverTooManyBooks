@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -134,7 +137,7 @@
     <string name="bookshelf_my_books">I miei libri</string>
     <string name="btn_all_books">Tutti i libri</string>
     <string name="action_clear_queue">Cancella coda</string>
-    <string name="action_stop_searching">Smettere di cercare</string>
+    <string name="X_action_stop_searching">Smettere di cercare</string>
     <string name="action_save_for_later">Salva per dopo</string>
     <string name="action_disable_message">Disattiva messaggio</string>
     <string name="action_email">Email</string>
@@ -152,7 +155,7 @@
     <string name="pt_camera_auto_focus">Messa a fuoco auto</string>
     <string name="pe_camera_front">Fotocamera frontale</string>
     <string name="camera_next_action">Azione dopo aver scattato una foto</string>
-    <string name="pe_camera_other">Altro</string>
+    <string name="X_pe_camera_other">Altro</string>
     <string name="cancelled">Annullato</string>
     <string name="cd_btn_drag_handle">Trascina per riordinare questo elenco</string>
     <string name="cd_clear_text_end_icon">Cancella testo</string>
@@ -261,8 +264,8 @@
     <string name="option_info_lbl_archive_is_export_only">Questo è solo per l’esportazione dei dati; l’importazione non è supportata.</string>
     <string name="option_info_lbl_archive_type_backup">Archivio completo di backup / ripristino</string>
     <string name="option_archive_type_backup_zip">Copia di backup (.zip)</string>
-    <string name="option_archive_type_csv">Libri (.csv)</string>
-    <string name="option_info_archive_type_csv">Esportazione dei libri in un file CSV</string>
+    <string name="X_option_archive_type_csv">Libri (.csv)</string>
+    <string name="X_option_info_archive_type_csv">Esportazione dei libri in un file CSV</string>
     <string name="option_archive_type_db">File di database (.db)</string>
     <string name="option_archive_type_json">Esportazione JSON (.json)</string>
     <string name="lbl_author">Autore</string>
@@ -466,7 +469,7 @@
     <string name="lbl_website_address">Indirizzo sito web (URL)</string>
     <string name="lbl_websites">Siti web</string>
     <string name="bookshelf_my_wishlist">Lista dei desideri</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Codice Wikidata «claim/P» per l’id dell’autore</string>
     <string name="lbl_year">Anno</string>
     <string name="list_and">%1$s e %2$s</string>
@@ -490,7 +493,7 @@
     <string name="option_barcode_scan_mode_manual">Manuale</string>
     <string name="option_barcode_scan_mode_continuous">Scansione continua</string>
     <string name="option_book_sync_list_with_details">Sincronizza/posiziona la lista</string>
-    <string name="action_crop">Ritaglia</string>
+    <string name="X_action_crop">Ritaglia</string>
     <string name="option_image_replace">Sostituisci…</string>
     <string name="option_cover_replace_from_alt_editions">Da altre edizioni…</string>
     <string name="option_image_replace_from_camera">Dalla fotocamera…</string>
@@ -613,7 +616,7 @@
     <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «Il Signore degli Anelli»</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «Signore degli Anelli, Il»</string>
-    <string name="pt_sort_title_reordered">Ordina titoli per</string>
+    <string name="X_pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>
     <string name="ps_cover_undo_disabled">Una modifica/sostituzione della copertina non può essere annullata (utilizza meno memoria)</string>
     <string name="ps_cover_undo_enabled">Una modifica/sostituzione della copertina può essere annullata (utilizza più memoria)</string>
@@ -677,7 +680,7 @@
     <string name="option_info_import_books_option_new_only">Importa solo nuovi libri. Eventuali aggiornamenti ai libri esistenti verranno ignorati.</string>
     <string name="ps_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="info_rebuild_scheduled">Ricostruzione programmata</string>
-    <string name="menu_search_updates">Ricerca di aggiornamenti</string>
+    <string name="X_menu_search_updates">Ricerca di aggiornamenti</string>
     <string name="info_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
     <string name="lbl_citation_type">Formato di citazione/condivisione</string>
     <string name="lbl_citation_type_default">Sto leggendo…</string>
@@ -769,7 +772,7 @@
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Titoli</string>
     <string name="lbl_original_title">Titolo originale</string>
-    <string name="lbl_original_title_long">Titolo originale se il libro è una traduzione</string>
+    <string name="X_lbl_original_title_long">Titolo originale se il libro è una traduzione</string>
     <string name="error_site_access_blocked">L’accesso è stato bloccato dal sito web.</string>
     <string name="pt_scan_mode">Modalità di scansione</string>
     <string name="option_sync_deleted_book_records">Sincronizzare i libri eliminati</string>
@@ -870,7 +873,7 @@
     <string name="lbl_default_x">Predefinito: %1$s</string>
     <string name="info_partial_date_picker">Toccare un mese o un giorno precedentemente selezionato per deselezionarlo.</string>
     <string name="action_restore_default_identifiers">Ripristinare gli identificatori predefiniti</string>
-    <string name="lbl_select_style">Seleziona Stile</string>
+    <string name="X_lbl_select_style">Seleziona Stile</string>
     <string name="vldt_blank_or_valid_url_required">È richiesto un valore vuoto o un URL valido</string>
     <string name="lbl_book_uri">URL del libro</string>
     <string name="lbl_author_uri">URL dell’autore</string>

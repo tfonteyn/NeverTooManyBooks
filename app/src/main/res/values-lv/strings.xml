@@ -39,7 +39,7 @@
         <item quantity="one">%1$d birka</item>
         <item quantity="other">%1$d birkas</item>
     </plurals>
-    <string name="action_crop">Apgriezt</string>
+    <string name="X_action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">%1$s un %2$s</string>
     <string name="and_others_textual">%1$s u.c.</string>
@@ -186,7 +186,7 @@
     <string name="password">Parole</string>
     <string name="pc_advanced_options">Papildu</string>
     <string name="pc_camera">Kamera</string>
-    <string name="pe_camera_other">Citi</string>
+    <string name="X_pe_camera_other">Citi</string>
     <string name="pe_ui_theme_from_device">Ierīces motīvs</string>
     <string name="pt_bob_font_size">Fonta lielums</string>
     <string name="pt_layout">Izkārtojums</string>
@@ -202,7 +202,7 @@
     <string name="yes">Jā</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_wikidata_claim_author_id">Wikidata “claim/P” kods autora id</string>
-    <string name="action_stop_searching">Pārtrauciet meklēšanu</string>
+    <string name="X_action_stop_searching">Pārtrauciet meklēšanu</string>
     <string name="action_save_for_later">Saglabāt vēlāk</string>
     <string name="confirm_leave_code_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
     <string name="lbl_author_role_foreword">Priekšvārds</string>

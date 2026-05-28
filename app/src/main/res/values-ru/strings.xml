@@ -143,7 +143,7 @@
     <string name="bookshelf_my_books">Мои книги</string>
     <string name="btn_all_books">Все книги</string>
     <string name="action_clear_queue">Очистить очередь</string>
-    <string name="action_stop_searching">Прекратить поиск</string>
+    <string name="X_action_stop_searching">Прекратить поиск</string>
     <string name="action_save_for_later">Сохранить на потом</string>
     <string name="action_disable_message">Отключить сообщение</string>
     <string name="action_email">Электронная почта</string>
@@ -161,7 +161,7 @@
     <string name="pt_camera_auto_focus">Автофокус</string>
     <string name="pe_camera_front">Фронтальная камера</string>
     <string name="camera_next_action">Действие после съемки</string>
-    <string name="pe_camera_other">Другое</string>
+    <string name="X_pe_camera_other">Другое</string>
     <string name="cancelled">Отменено</string>
     <string name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке</string>
     <string name="cd_clear_text_end_icon">Очистить текстовое поле</string>
@@ -276,8 +276,8 @@
     <string name="option_info_lbl_archive_is_export_only">Это только для экспорта данных; импорт не поддерживается.</string>
     <string name="option_info_lbl_archive_type_backup">Полное резервное копирование / восстановление архива</string>
     <string name="option_archive_type_backup_zip">Резервная копия (.zip)</string>
-    <string name="option_archive_type_csv">Книги (.csv)</string>
-    <string name="option_info_archive_type_csv">Экспорт книг в файл CSV</string>
+    <string name="X_option_archive_type_csv">Книги (.csv)</string>
+    <string name="X_option_info_archive_type_csv">Экспорт книг в файл CSV</string>
     <string name="option_archive_type_db">Файл базы данных (.db)</string>
     <string name="option_archive_type_json">Экспорт JSON (.json)</string>
     <string name="lbl_author">Автор</string>
@@ -481,7 +481,7 @@
     <string name="lbl_website_address">Адрес сайта (URL)</string>
     <string name="lbl_websites">Веб-сайты</string>
     <string name="bookshelf_my_wishlist">Список желаний</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Код Викиданных «claim/P» для идентификатора автора</string>
     <string name="lbl_year">Год</string>
     <string name="list_and">%1$s и %2$s</string>
@@ -505,7 +505,7 @@
     <string name="option_barcode_scan_mode_manual">Вручную</string>
     <string name="option_barcode_scan_mode_continuous">Сканировать непрерывно</string>
     <string name="option_book_sync_list_with_details">Синхронизировать/позиционировать список</string>
-    <string name="action_crop">Кадрировать</string>
+    <string name="X_action_crop">Кадрировать</string>
     <string name="option_image_replace">Заменить…</string>
     <string name="option_cover_replace_from_alt_editions">Из других изданий…</string>
     <string name="option_image_replace_from_camera">С камеры…</string>
@@ -625,7 +625,7 @@
     <string name="pt_search_prefer_isbn10">Используйте ISBN-10, когда это возможно</string>
     <string name="pt_search_reformat_color">Стандартизировать названия цветов книг</string>
     <string name="pt_search_reformat_format">Стандартизировать названия формата книги</string>
-    <string name="pt_sort_title_reordered">Сортировать названия по</string>
+    <string name="X_pt_sort_title_reordered">Сортировать названия по</string>
     <string name="pt_cover_undo_enabled">Отмена операций на обложках книг</string>
     <string name="ps_cover_undo_disabled">Редактирование/замена обложки не может быть отменено (используется меньший объем памяти)</string>
     <string name="ps_cover_undo_enabled">Редактирование/замена обложки может быть отменено (используется больше памяти)</string>
@@ -778,7 +778,7 @@
     <string name="lbl_author_pseudonym_of_X">пс. %1$s</string>
     <string name="lbl_titles">Названия</string>
     <string name="lbl_original_title">Оригинальное название</string>
-    <string name="lbl_original_title_long">Оригинальное название, если эта книга является переводом</string>
+    <string name="X_lbl_original_title_long">Оригинальное название, если эта книга является переводом</string>
     <string name="error_site_access_blocked">Доступ был заблокирован сайтом.</string>
     <string name="pt_scan_mode">Режим сканирования</string>
     <string name="option_sync_deleted_book_records">Синхронизация удаленных книг</string>
@@ -886,7 +886,7 @@
     <string name="lbl_default_x">По умолчанию: %1$s</string>
     <string name="info_partial_date_picker">Нажмите на ранее выбранный месяц или день, чтобы снять выделение.</string>
     <string name="action_restore_default_identifiers">Восстановите идентификаторы по умолчанию</string>
-    <string name="lbl_select_style">Выбрать стиль</string>
+    <string name="X_lbl_select_style">Выбрать стиль</string>
     <string name="lbl_book_uri">URL-адрес книги</string>
     <string name="lbl_author_uri">URL автора</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Требуется пустое значение или действительный URL-адрес «https» с единственным идентификатором «%s»</string>
@@ -894,7 +894,7 @@
     <string name="info_identifier_editor"><![CDATA[Пожалуйста, прочитайте <a href="%1$s">документацию</a> по идентификаторам перед редактированием.]]></string>
     <string name="lbl_date_born">Род.</string>
     <string name="pt_fetch_author_info">Загрузка информации об авторе</string>
-    <string name="menu_search_updates">Поиск обновлений</string>
+    <string name="X_menu_search_updates">Поиск обновлений</string>
     <string name="lbl_author_role_foreword">Предисловие</string>
     <string name="lbl_image_2">Изображение 3</string>
     <string name="lbl_fastscroller_draghandle">Размер ползунка</string>

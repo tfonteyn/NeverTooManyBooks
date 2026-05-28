@@ -214,7 +214,7 @@
     <string name="password">Contrasinal</string>
     <string name="pc_advanced_options">Configuración avanzada</string>
     <string name="pc_camera">Cámara</string>
-    <string name="pe_camera_other">Outros</string>
+    <string name="X_pe_camera_other">Outros</string>
     <string name="pe_ui_theme_from_device">Tema do dispositivo</string>
     <string name="pt_bob_font_size">Tamaño do tipo de letra</string>
     <string name="pt_layout">Deseño</string>
@@ -385,7 +385,7 @@
     <string name="option_storage_edit_settings">Editar configuración</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Saír e reinserir a tarxeta SD correcta</string>
     <string name="option_sort_and_style_ellipsis">Ordenación e Estilos…</string>
-    <string name="lbl_select_style">Seleccionar Estilo</string>
+    <string name="X_lbl_select_style">Seleccionar Estilo</string>
     <string name="option_level_reset">Nivel de expansión preferido</string>
     <string name="option_level_expand">Expandir todo</string>
     <string name="option_level_collapse">Colapsar todo</string>
@@ -402,7 +402,7 @@
     <string name="option_search_books_by_author">Libros de esta autoría</string>
     <string name="option_author_works_book">Só libros</string>
     <string name="option_author_works_toc">So os títulos do Índice</string>
-    <string name="action_crop">Recortar</string>
+    <string name="X_action_crop">Recortar</string>
     <string name="option_image_replace">Substituír…</string>
     <string name="option_image_replace_from_gallery">Da Galería…</string>
     <string name="option_image_replace_from_camera">Da cámara…</string>
@@ -557,7 +557,7 @@
     <string name="lbl_dust_cover">Sobrecuberta</string>
     <string name="lbl_identifier">Identificador</string>
     <string name="lbl_identifiers">Identificadores</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_date_added">Data de inclusión</string>
     <string name="lbl_date_added_as_single_char">➕</string>
     <string name="lbl_date_added_year">Ano de inclusión</string>
@@ -588,7 +588,7 @@
     <string name="lbl_export_books_option_since_last_full_backup">Libros novos e actualizados</string>
     <string name="info_export_books_option_since_last_full_backup">Libros engadidos ou actualizados desde a última copia de seguridade completa.</string>
     <string name="option_archive_type_backup_zip">Copia de seguridade (.zip)</string>
-    <string name="option_archive_type_csv">Libros (.csv)</string>
+    <string name="X_option_archive_type_csv">Libros (.csv)</string>
     <string name="option_archive_type_db">Base de datos (.db)</string>
     <string name="option_info_archive_format_json">Todos os datos no formato JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Isto é só para exportar datos; non para importar.</string>
@@ -620,7 +620,7 @@
     <string name="option_archive_type_json">Exportación JSON (.json)</string>
     <string name="option_info_lbl_archive_type_backup">Copia de seguridade completa / Ficheiro de recuperación</string>
     <string name="lbl_day">Día</string>
-    <string name="lbl_original_title_long">Título orixinal se o libro é unha tradución</string>
+    <string name="X_lbl_original_title_long">Título orixinal se o libro é unha tradución</string>
     <string name="lbl_date_last_updated_as_single_char">🔄</string>
     <string name="lbl_date_last_updated_month">Mes da actualización</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
@@ -628,7 +628,7 @@
     <string name="lbl_cover_back">Contraportada</string>
     <string name="lbl_personal_notes">Notas persoais</string>
     <string name="lbl_date_read">Data da lectura</string>
-    <string name="option_info_archive_type_csv">Exporta os libros a un ficheiro CSV</string>
+    <string name="X_option_info_archive_type_csv">Exporta os libros a un ficheiro CSV</string>
     <string name="info_backup_successful">Copia de seguridade correcta</string>
     <string name="option_info_archive_format_db">Base de datos SQLite.</string>
     <string name="lbl_import_options">Escolle o que se vai importar.</string>
@@ -649,7 +649,7 @@
     <string name="pt_storage_volume">Volume de almacenamento</string>
     <string name="pt_maintenance">Mantemento</string>
     <string name="pt_field_visibility">Visibilidade dos campos</string>
-    <string name="pt_sort_title_reordered">Ordenación de títulos</string>
+    <string name="X_pt_sort_title_reordered">Ordenación de títulos</string>
     <string name="pc_image_cache">Caché das imaxes</string>
     <string name="lbl_capitalize_none">Sen cambios</string>
     <string name="lbl_capitalize_words">Comezo das palabras</string>
@@ -868,9 +868,9 @@
     <string name="option_field_usage_append">Engadir datos adicionais</string>
     <string name="lbl_tab_details">Detalles</string>
     <string name="unknown_author">[Autoría descoñecida]</string>
-    <string name="menu_search_updates">Buscar actualizacións</string>
+    <string name="X_menu_search_updates">Buscar actualizacións</string>
     <string name="lbl_wikidata_claim_author_id">Wikidata «claim/P»: código para o id da autoría</string>
-    <string name="action_stop_searching">Deter a busca</string>
+    <string name="X_action_stop_searching">Deter a busca</string>
     <string name="action_save_for_later">Gardar para máis tarde</string>
     <string name="confirm_leave_code_search">Hai buscas en curso e/ou resultados non gardados.</string>
     <string name="lbl_author_role_foreword">prólogo</string>

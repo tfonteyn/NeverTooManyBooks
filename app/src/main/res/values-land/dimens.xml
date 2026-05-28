@@ -20,8 +20,6 @@
   -->
 
 <resources>
-    <dimen name="app_icon_size_large">64dp</dimen>
-
     <dimen name="progress_margin_top">50dp</dimen>
     <dimen name="progress_width">340dp</dimen>
 

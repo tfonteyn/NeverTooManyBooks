@@ -890,7 +890,7 @@
     <!-- Booklist menu option -->
     <string name="option_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
     <!-- Booklist menu option -->
-    <string name="lbl_select_style">Select Style</string>
+    <string name="X_lbl_select_style">Select Style</string>
     <!-- Booklist menu option -->
     <string name="option_level_reset">Preferred level expansion</string>
     <!-- Booklist menu option -->
@@ -932,7 +932,7 @@
     <!-- "view all works of an author" menu option - show only TOC entries -->
     <string name="option_author_works_toc">Only Table Of Content titles</string>
     <!-- [VERIFIED] Cover image context menu option -->
-    <string name="action_crop">Crop</string>
+    <string name="X_action_crop">Crop</string>
 
     <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#replace"
         Image context menu option - submenu title -->
@@ -1234,7 +1234,7 @@
     <!-- Button text. -->
     <string name="action_stop_scanning">Stop scanning</string>
     <!-- Button -->
-    <string name="action_stop_searching">Stop searching</string>
+    <string name="X_action_stop_searching">Stop searching</string>
     <!-- Button: Save for later processing; Save for later editing; etc... -->
     <string name="action_save_for_later">Save for later</string>
     <!-- Button: The user wants to permanently hide a particular message/alert/... -->
@@ -1436,10 +1436,10 @@
     <string name="lbl_title">Title</string>
     <!-- Multiple book/series/story titles. Short label. -->
     <string name="lbl_titles">Titles</string>
-    <!-- Field label: the original title of a translated book; Short version of the label "lbl_original_title_long" -->
+    <!-- Field label: the original title of a translated book; Short version of the label "X_lbl_original_title_long" -->
     <string name="lbl_original_title">Original title</string>
     <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->
-    <string name="lbl_original_title_long">Original title if this book is a translation</string>
+    <string name="X_lbl_original_title_long">Original title if this book is a translation</string>
     <!-- Field label: the original language of a translated book. -->
     <string name="lbl_original_language">Original language</string>
 
@@ -1481,7 +1481,7 @@
          Example:  "Goodreads ID"  (with ID in a smaller font)
          The "ID" string should be very short, maximum 3 or 4 characters.
          -->
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
 
     <string name="lbl_identifier_key"
             translatable="false">@string/lbl_identifier</string>
@@ -1489,8 +1489,6 @@
     <string name="lbl_book_uri">Book URL</string>
     <!-- Identifier editor label. The field for the template of an author url. See also the wiki docs. -->
     <string name="lbl_author_uri">Author URL</string>
-    <!-- Identifier editor label. The field for the template of a series url. See also the wiki docs. -->
-    <string name="lbl_series_uri">Series URL</string>
     <!--
         The "claim" or "P" number which Wikidata uses for an author-id as
          defined by a given website.
@@ -1597,7 +1595,7 @@
     <!-- File format. Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_backup_zip">Backup (.zip)</string>
     <!-- File format. Text in a dropdown menu. Must be fairly short. -->
-    <string name="option_archive_type_csv">Books (.csv)</string>
+    <string name="X_option_archive_type_csv">Books (.csv)</string>
     <!-- File format. Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_json">JSON export (.json)</string>
     <!-- File format. Text in a dropdown menu. Must be fairly short. -->
@@ -1605,7 +1603,7 @@
     <!-- Explanatory note for 'lbl_archive_type_backup_zip' -->
     <string name="option_info_lbl_archive_type_backup">Full Backup / Restore archive</string>
     <!-- Explanatory note for 'lbl_archive_type_csv' -->
-    <string name="option_info_archive_type_csv">Export of the books to a CSV file</string>
+    <string name="X_option_info_archive_type_csv">Export of the books to a CSV file</string>
     <!-- Explanatory note for 'lbl_archive_type_json' -->
     <string name="option_info_archive_format_json">All data in JSON format.</string>
     <!-- Explanatory note for 'lbl_archive_type_db' -->
@@ -1700,7 +1698,7 @@
     <!-- Preference summary: screen where the user can select/deselect fields to be shown; e.g. user might want to hide fields they don't use. -->
     <string name="ps_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
     <!-- SwitchPreference title: How to sort titles. -->
-    <string name="pt_sort_title_reordered">Sort titles by</string>
+    <string name="X_pt_sort_title_reordered">Sort titles by</string>
 
     <!--
          These are the Locale specific title prefixes (grammar: 'article') that will be moved to
@@ -1884,7 +1882,7 @@
     <!-- ListPreference value -->
     <string name="pe_camera_back">Back Camera</string>
     <!-- [VERIFIED] ListPreference value -->
-    <string name="pe_camera_other">Other</string>
+    <string name="X_pe_camera_other">Other</string>
     <!-- Preference option title -->
     <string name="pt_search_show_menu_options">Show search menus</string>
     <!-- endregion -->
@@ -2206,7 +2204,7 @@
     <string name="menu_update_books">Update books</string>
     <!-- Context/options menu.
          Search the internet for updates for one or more books, authors, ... -->
-    <string name="menu_search_updates">Search for updates</string>
+    <string name="X_menu_search_updates">Search for updates</string>
 
     <!-- Booklist screen - context menu - Update Fields from internet for a set of books -->
     <string name="info_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>

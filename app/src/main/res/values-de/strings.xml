@@ -149,7 +149,7 @@
     <string name="pt_camera_auto_focus">Autofokus</string>
     <string name="pe_camera_front">Frontkamera</string>
     <string name="camera_next_action">Aktion nach dem Aufnehmen eines Fotos</string>
-    <string name="pe_camera_other">Andere</string>
+    <string name="X_pe_camera_other">Andere</string>
     <string name="cancelled">Abgebrochen</string>
     <string name="cd_btn_drag_handle">Verschiebe, um die Liste umzusortieren</string>
     <string name="cd_clear_text_end_icon">Text löschen</string>
@@ -257,8 +257,8 @@
     <string name="option_info_lbl_archive_is_export_only">Dies dient nur zum Exportieren von Daten. Der Import wird nicht unterstützt.</string>
     <string name="option_info_lbl_archive_type_backup">Vollständiges Backup / Restore-Archiv</string>
     <string name="option_archive_type_backup_zip">Backup (.zip)</string>
-    <string name="option_archive_type_csv">Bücher (.csv)</string>
-    <string name="option_info_archive_type_csv">Export der Bücher in eine CSV-Datei</string>
+    <string name="X_option_archive_type_csv">Bücher (.csv)</string>
+    <string name="X_option_info_archive_type_csv">Export der Bücher in eine CSV-Datei</string>
     <string name="option_archive_type_db">Datenbankdatei (.db)</string>
     <string name="option_archive_type_json">JSON-Export (.json)</string>
     <string name="lbl_author">Autor</string>
@@ -462,7 +462,7 @@
     <string name="lbl_website_address">Webadresse (URL)</string>
     <string name="lbl_websites">Websites</string>
     <string name="bookshelf_my_wishlist">Wunschzettel</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Wikidata „claim/P“-Code für die Autoren-ID</string>
     <string name="lbl_year">Jahr</string>
     <string name="list_and">%1$s und %2$s</string>
@@ -486,7 +486,7 @@
     <string name="option_barcode_scan_mode_manual">Manuell</string>
     <string name="option_barcode_scan_mode_continuous">Kontinuierlich scannen</string>
     <string name="option_book_sync_list_with_details">Liste synchronisieren/positionieren</string>
-    <string name="action_crop">Zuschneiden</string>
+    <string name="X_action_crop">Zuschneiden</string>
     <string name="option_image_replace">Ersetzen…</string>
     <string name="option_cover_replace_from_alt_editions">Von anderen Ausgaben…</string>
     <string name="option_image_replace_from_camera">Von der Kamera…</string>
@@ -609,7 +609,7 @@
     <string name="ps_show_titles_reordered_off">Anzeige wie angegeben,\nz. B. „Der Herr der Ringe“</string>
     <string name="error_type_not_supported">Typ nicht unterstützt: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Artikel am Anfang eines Titels ans Ende verschieben,\nz. B. „Herr der Ringe, Der“</string>
-    <string name="pt_sort_title_reordered">Titel sortieren nach</string>
+    <string name="X_pt_sort_title_reordered">Titel sortieren nach</string>
     <string name="pt_cover_undo_enabled">Rückgängigmachen von Operationen auf Covern</string>
     <string name="ps_cover_undo_disabled">Das Bearbeiten/Ersetzen eines Covers kann nicht rückgängig gemacht werden (verbraucht weniger Speicherplatz)</string>
     <string name="ps_cover_undo_enabled">Das Bearbeiten/Ersetzen eines Covers kann rückgängig gemacht werden (verbraucht mehr Speicherplatz)</string>
@@ -672,7 +672,7 @@
     <string name="option_info_import_books_option_new_only">Importiert nur neue Bücher. Aktualisierungen vorhandener Bücher werden ignoriert.</string>
     <string name="ps_manage_fields">Ausgewählte Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="info_rebuild_scheduled">Neuaufbau geplant</string>
-    <string name="menu_search_updates">Nach Aktualisierungen suchen</string>
+    <string name="X_menu_search_updates">Nach Aktualisierungen suchen</string>
     <string name="info_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
     <string name="lbl_citation_type">Zitier-/Freigabeformat</string>
     <string name="lbl_citation_type_default">Ich lese…</string>
@@ -765,7 +765,7 @@
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Titel</string>
     <string name="lbl_original_title">Originaltitel</string>
-    <string name="lbl_original_title_long">Originaltitel, wenn dieses Buch eine Übersetzung ist</string>
+    <string name="X_lbl_original_title_long">Originaltitel, wenn dieses Buch eine Übersetzung ist</string>
     <string name="error_site_access_blocked">Der Zugang wurde von der Website blockiert.</string>
     <string name="pt_scan_mode">Scan-Modus</string>
     <string name="option_sync_deleted_book_records">Gelöschte Bücher synchronisieren</string>
@@ -865,14 +865,14 @@
     <string name="lbl_default_x">Standard: %1$s</string>
     <string name="info_partial_date_picker">Tippe auf einen zuvor ausgewählten Monat oder Tag, um ihn abzuwählen.</string>
     <string name="action_restore_default_identifiers">Standard-Bezeichner wiederherstellen</string>
-    <string name="lbl_select_style">Stil wählen</string>
+    <string name="X_lbl_select_style">Stil wählen</string>
     <string name="vldt_blank_or_valid_url_required">Leerer Wert oder gültige URL erforderlich</string>
     <string name="lbl_book_uri">Buch-URL</string>
     <string name="lbl_author_uri">Autor-URL</string>
     <string name="info_identifier_editor"><![CDATA[Lese vor der Bearbeitung die <a href="%1$s">Dokumentation</a> zu Bezeichnern.]]></string>
     <string name="lbl_date_born">Geboren</string>
     <string name="pt_fetch_author_info">Autoreninformationen abrufen</string>
-    <string name="action_stop_searching">Suche abbrechen</string>
+    <string name="X_action_stop_searching">Suche abbrechen</string>
     <string name="lbl_author_role_foreword">Vorwort</string>
     <string name="lbl_image_2">Bild 3</string>
     <string name="lbl_fastscroller_draghandle">Bildlaufleiste-Schieberegler</string>

@@ -108,7 +108,7 @@
     <string name="action_show_toc_long">Inhoudsopgave weergeven</string>
     <string name="action_skip">Overslaan</string>
     <string name="action_stop_scanning">Stop scanning</string>
-    <string name="action_stop_searching">Stop met zoeken</string>
+    <string name="X_action_stop_searching">Stop met zoeken</string>
     <string name="action_synchronize">Synchroniseren</string>
     <string name="and_others">%1$s…</string>
     <string name="and_others_textual">%1$s et al.</string>
@@ -246,7 +246,7 @@
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
     <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s”?</string>
     <string name="info_rebuild_scheduled">Herbouw gepland</string>
-    <string name="menu_search_updates">Zoek naar updates</string>
+    <string name="X_menu_search_updates">Zoek naar updates</string>
     <string name="info_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
     <string name="lbl_citation_type">Opmaak citatie/delen</string>
     <string name="lbl_citation_type_default">Ik lees…</string>
@@ -446,7 +446,7 @@
     <string name="lbl_virtual_libraries">Virtuele bibliotheken in deze bibliotheek</string>
     <string name="lbl_website_address">Web-adres (URL)</string>
     <string name="lbl_websites">Websites</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_wikidata_claim_author_id">Wikidata „claim/P” code voor de auteur id</string>
     <string name="lbl_year">Jaar</string>
     <string name="list_and">%1$s en %2$s</string>
@@ -471,7 +471,7 @@
     <string name="option_search_books_on">Zoek op…</string>
     <string name="option_search_books_in_series">Boeken in deze reeks</string>
     <string name="option_archive_type_backup_zip">Backup kopie (.zip)</string>
-    <string name="option_archive_type_csv">Boeken (.csv)</string>
+    <string name="X_option_archive_type_csv">Boeken (.csv)</string>
     <string name="option_archive_type_db">Databasebestand (.db)</string>
     <string name="option_archive_type_json">JSON-export (.json)</string>
     <string name="option_author_details">Alle werken van deze Auteur</string>
@@ -493,7 +493,7 @@
     <string name="option_bug_report">Bugrapport</string>
     <string name="option_bug_report_database_upgrade">Database-upgradebestanden</string>
     <string name="option_bug_report_logfiles">Log bestanden</string>
-    <string name="action_crop">Bijsnijden</string>
+    <string name="X_action_crop">Bijsnijden</string>
     <string name="option_image_replace">Vervangen…</string>
     <string name="option_cover_replace_from_alt_editions">Van andere uitgaven…</string>
     <string name="option_image_replace_from_camera">Van Camera…</string>
@@ -524,7 +524,7 @@
     <string name="option_import_books_option_new_only">Alleen nieuwe boeken</string>
     <string name="option_info_archive_format_db">De SQLite-database.</string>
     <string name="option_info_archive_format_json">Alle gegevens in JSON-formaat.</string>
-    <string name="option_info_archive_type_csv">Export van de boeken naar een CSV-bestand</string>
+    <string name="X_option_info_archive_type_csv">Export van de boeken naar een CSV-bestand</string>
     <string name="option_info_import_books_option_all">Importeer nieuwe boeken en overschrijf bestaande boeken. Gebruik dit om een back-up te herstellen.</string>
     <string name="option_info_import_books_option_new_and_updated">Importeer nieuwe boeken en synchroniseer bestaande boeken op basis van hun laatste wijzigingsdatum.</string>
     <string name="option_info_import_books_option_new_only">Importeer alleen nieuwe boeken. Updates van bestaande boeken worden genegeerd.</string>
@@ -575,7 +575,7 @@
     <string name="pe_camera_back">Camera aan de achterzijde</string>
     <string name="pt_camera_auto_focus">Autofocus</string>
     <string name="pe_camera_front">Camera aan de voorzijde</string>
-    <string name="pe_camera_other">Overig</string>
+    <string name="X_pe_camera_other">Overig</string>
     <string name="loose">Ruim</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamisch</string>
     <string name="pe_fast_scroller_overlay_static">Statisch</string>
@@ -651,7 +651,7 @@
     <string name="pt_search_reformat_color">Standaardiseer namen van „boekkleuren”</string>
     <string name="pt_search_reformat_format">Standaardiseer namen van „boekformaten”</string>
     <string name="pt_fetch_author_info_using_site_x">Auteurinformatie ophalen van %1$s</string>
-    <string name="pt_sort_title_reordered">Sorteer titels op</string>
+    <string name="X_pt_sort_title_reordered">Sorteer titels op</string>
     <string name="pt_storage_volume">Opslagvolume</string>
     <string name="pt_cover_undo_enabled">Bewerkingen op boekomslagen ongedaan maken</string>
     <string name="ps_cover_undo_disabled">Een bewerking/vervanging van een omslag kan niet ongedaan worden gemaakt (gebruikt minder opslagruimte)</string>
@@ -766,7 +766,7 @@
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Titels</string>
     <string name="lbl_original_title">Oorspronkelijke titel</string>
-    <string name="lbl_original_title_long">Oorspronkelijke titel indien dit boek een vertaling is</string>
+    <string name="X_lbl_original_title_long">Oorspronkelijke titel indien dit boek een vertaling is</string>
     <string name="error_site_access_blocked">De toegang werd geblokkeerd door de website.</string>
     <string name="pt_scan_mode">Scanmodus</string>
     <string name="option_sync_deleted_book_records">Verwijderde boeken synchroniseren</string>
@@ -865,7 +865,7 @@
     <string name="lbl_default_x">Standaard: %1$s</string>
     <string name="info_partial_date_picker">Tik op een eerder geselecteerde maand of dag om de selectie ongedaan te maken.</string>
     <string name="action_restore_default_identifiers">De standaard Identifiers herstellen</string>
-    <string name="lbl_select_style">Selecteer een stijl</string>
+    <string name="X_lbl_select_style">Selecteer een stijl</string>
     <string name="vldt_blank_or_valid_url_required">Lege waarde of geldige URL vereist</string>
     <string name="lbl_book_uri">Boek URL</string>
     <string name="lbl_author_uri">Auteur URL</string>

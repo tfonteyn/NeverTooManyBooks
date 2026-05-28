@@ -20,9 +20,6 @@
   -->
 
 <resources>
-    <!-- The defaults for MultiSelect fields, i.e. select nothing -->
-    <string-array name="empty_array" />
-
     <!-- ListPreference -->
     <string-array name="pe_ui_theme_mode">
         <item>@string/pe_ui_theme_from_device</item>
