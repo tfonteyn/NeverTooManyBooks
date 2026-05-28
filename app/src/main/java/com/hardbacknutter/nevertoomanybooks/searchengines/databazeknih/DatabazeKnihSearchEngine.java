@@ -189,7 +189,7 @@ public class DatabazeKnihSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.DatabazeKnih.getName(context);
+        final String name = context.getString(R.string.identifier_databaze_knih);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_DATABAZE_KNIH,

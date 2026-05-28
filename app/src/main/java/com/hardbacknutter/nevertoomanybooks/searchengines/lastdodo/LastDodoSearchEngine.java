@@ -158,7 +158,7 @@ public class LastDodoSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.LastDodoNl.getName(context);
+        final String name = context.getString(R.string.identifier_lastdodo_nl);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_LAST_DODO_NL,

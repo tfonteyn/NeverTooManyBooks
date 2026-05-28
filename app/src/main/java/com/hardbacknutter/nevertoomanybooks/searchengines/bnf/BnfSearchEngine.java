@@ -181,7 +181,7 @@ public class BnfSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.Bnf.getName(context);
+        final String name = context.getString(R.string.identifier_bnf);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_BNF,

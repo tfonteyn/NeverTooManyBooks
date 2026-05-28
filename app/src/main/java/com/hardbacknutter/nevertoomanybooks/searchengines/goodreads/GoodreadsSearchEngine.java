@@ -184,7 +184,7 @@ public class GoodreadsSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.Goodreads.getName(context);
+        final String name = context.getString(R.string.identifier_goodreads);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_GOODREADS,

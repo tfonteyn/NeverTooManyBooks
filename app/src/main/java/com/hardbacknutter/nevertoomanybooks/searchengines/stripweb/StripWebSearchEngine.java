@@ -174,7 +174,7 @@ public class StripWebSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.StripWebBe.getName(context);
+        final String name = context.getString(R.string.identifier_stripweb_be);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_STRIPWEB,

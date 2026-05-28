@@ -149,7 +149,7 @@ public class GoogleBooksSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.GoogleBooks.getName(context);
+        final String name = context.getString(R.string.identifier_google_books);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_GOOGLE,

@@ -244,7 +244,7 @@ public class DnbSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.Dnb.getName(context);
+        final String name = context.getString(R.string.identifier_dnb);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_DNB,

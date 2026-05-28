@@ -108,7 +108,7 @@ public class WikidataSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.Wikidata.getName(context);
+        final String name = context.getString(R.string.identifier_wikidata);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_WIKIDATA,

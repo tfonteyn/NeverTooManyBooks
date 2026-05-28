@@ -223,7 +223,7 @@ public class StripInfoSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.StripInfoBe.getName(context);
+        final String name = context.getString(R.string.identifier_stripinfo_be);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_STRIP_INFO,

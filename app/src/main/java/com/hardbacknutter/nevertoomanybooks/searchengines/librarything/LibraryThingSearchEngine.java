@@ -121,7 +121,7 @@ public class LibraryThingSearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.LibraryThing.getName(context);
+        final String name = context.getString(R.string.identifier_library_thing);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_LIBRARY_THING,

@@ -215,7 +215,7 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
-        final String name = EngineId.OpenLibrary.getName(context);
+        final String name = context.getString(R.string.identifier_open_library);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_OPEN_LIBRARY,

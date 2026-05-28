@@ -361,7 +361,7 @@ public class AmazonSearchEngine
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         // links empty on purpose; created dynamically
-        final String name = EngineId.Amazon.getName(context);
+        final String name = context.getString(R.string.identifier_amazon);
         return Set.of(
                 Identifier.createBook(
                         Identifier.SID_ASIN,
