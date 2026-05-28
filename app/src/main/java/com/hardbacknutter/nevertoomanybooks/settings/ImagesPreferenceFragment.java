@@ -60,7 +60,8 @@ public class ImagesPreferenceFragment
         factory.singleChoice(ImageHandlerViewModel.PK_CAMERA_IMAGE_AUTOROTATE,
                              R.string.pt_thumbnails_rotate_auto,
                              R.array.pe_thumbnails_rotate_auto,
-                             R.array.pv_thumbnails_rotate_auto, null, p -> {
+                             R.array.pv_thumbnails_rotate_auto,
+                             null, p -> {
                     p.setIcon(R.drawable.rotate_right_24px);
                     p.setSelectedIndex(0);
                 });
@@ -69,9 +70,21 @@ public class ImagesPreferenceFragment
         factory.singleChoice(NextAction.PK_CAMERA_IMAGE_ACTION,
                              R.string.camera_next_action,
                              R.array.pe_camera_next_action,
-                             R.array.pv_camera_next_action, null, p -> {
+                             R.array.pv_camera_next_action,
+                             null, p -> {
                     p.setIcon(R.drawable.tune_24px);
                     p.setSelectedIndex(0);
+                });
+
+        factory.header(R.string.option_image_replace);
+
+        factory.bool(CoverStorage.PK_ENABLE_UNDO,
+                     R.string.pt_cover_undo_enabled,
+                     R.string.ps_cover_undo_disabled,
+                     R.string.ps_cover_undo_enabled,
+                     null, p -> {
+                    p.setIcon(R.drawable.undo_24px);
+                    p.setChecked(true);
                 });
 
         factory.header(R.string.pc_image_cache);

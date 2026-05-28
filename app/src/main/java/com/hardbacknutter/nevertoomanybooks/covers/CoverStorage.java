@@ -74,7 +74,7 @@ public class CoverStorage {
      *
      * @see #isUndoEnabled()
      */
-    private static final String PK_ENABLE_UNDO = "image.undo.enabled";
+    public static final String PK_ENABLE_UNDO = "image.undo.enabled";
 
     /**
      * Preference key: whether we're caching resized images in a temporary database.
