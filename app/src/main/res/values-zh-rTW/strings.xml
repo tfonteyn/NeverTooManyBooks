@@ -30,8 +30,11 @@
     <plurals name="n_books">
         <item quantity="other">%1$d 本書</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="other">%1$d 位作者</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="other">%1$d 部劇集</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="other">%1$s 顆星</item>
@@ -857,6 +860,8 @@
     <string name="confirm_delete_toc_entry_from_x_books">刪除 %2$s 的「%1$s」？\n\n它將從 %3$s 中移除。書籍本身不會被刪除。</string>
     <string name="confirm_delete_tag_from_x_books">刪除 「%1$s」 標籤？\n\n將從 %2$s 處刪除它。書籍本身不會被刪除。</string>
     <string name="confirm_delete_identifier_from_x_books">刪除識別符 「%1$s」？\n\n將從 %2$s 處刪除它。書籍本身不會被刪除。</string>
+    <string name="confirm_delete_identifier_from_x_authors">刪除識別符 「%1$s」？\n\n將從 %2$s 處刪除它。作者本身不會被刪除。</string>
+    <string name="confirm_delete_identifier_from_x_series">刪除識別符 「%1$s」？\n\n將從 %2$s 處刪除 it。系列本身不會被刪除。</string>
     <string name="action_restore_default_identifiers">恢復預設識別符</string>
     <string name="pt_bob_show_group_book_count">顯示每組中的書籍數。</string>
     <string name="lbl_book_uri">書籍 URL</string>

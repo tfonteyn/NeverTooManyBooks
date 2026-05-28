@@ -34,6 +34,11 @@
         <item quantity="many">%1$d livros encontrados</item>
         <item quantity="other">%1$d livros encontrados</item>
     </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d série</item>
+        <item quantity="many">%1$d séries</item>
+        <item quantity="other">%1$d séries</item>
+    </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrela</item>
         <item quantity="many">%1$s estrelas</item>
@@ -248,7 +253,9 @@
     <string name="lbl_citation_type">Formato de citação/compartilhamento</string>
     <string name="site_description_various_languages">Vários idiomas</string>
     <string name="confirm_merge_tags">A tag que você está modificando já existe. Você gostaria de mesclá-las?</string>
-    <string name="confirm_delete_identifier_from_x_books">Excluir o identificador “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos.</string>
+    <string name="confirm_delete_identifier_from_x_books">Eliminar o identificador “%1$s”?\n\nSerá eliminada de %2$s. Os livros mesmos não serão eliminados.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Eliminar o identificador “%1$s”?\n\nSerá eliminada de %2$s. Os autores mesmos não serão eliminados.</string>
+    <string name="confirm_delete_identifier_from_x_series">Eliminar o identificador “%1$s”?\n\nSerá eliminada de %2$s. As séries mesmas não serão eliminadas.</string>
     <string name="confirm_delete_substitutions">Excluir as substituições para “%1$s”?</string>
     <string name="confirm_delete_tag_from_x_books">Excluir a tag “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos.</string>
     <string name="lbl_tag">Tag</string>

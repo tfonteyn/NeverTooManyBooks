@@ -32,9 +32,13 @@
         <item quantity="one">%1$d bok hittad</item>
         <item quantity="other">%1$d böcker hittade</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d författare</item>
         <item quantity="other">%1$d författare</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d serie</item>
+        <item quantity="other">%1$d serier</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s stjärna</item>
@@ -164,6 +168,8 @@
     <string name="confirm_delete_book">Detta kommer att helt ta bort boken med titeln ”%1$s” av %2$s.\n\nÄr du säker på att du vill fortsätta?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Radera bokhyllan ”%1$s”?\n\nDen kommer att tas bort från %2$s. Böckerna själva kommer inte att raderas. De finns kvar på andra hyllor, eller på ”%3$s” hyllan.</string>
     <string name="confirm_delete_identifier_from_x_books">Radera identifieraren ”%1$s”?\n\nDen kommer att tas bort från %2$s. Böckerna själva kommer inte att raderas.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Radera identifieraren ”%1$s”?\n\nDen kommer att tas bort från %2$s. Författarna själva kommer inte att raderas.</string>
+    <string name="confirm_delete_identifier_from_x_series">Radera identifieraren ”%1$s”?\n\nDen kommer att tas bort från %2$s. Serierna själva kommer inte att raderas.</string>
     <string name="confirm_delete_publisher_from_x_books">Radera förlaget ”%1$s”?\n\nDet kommer att tas bort från %2$s. Böckerna själva kommer inte att raderas. Överväg att redigera förlaget och ändra förlagsnamnet till ett annat förlag för att bevara denna data.</string>
     <string name="confirm_delete_series_from_x_books">Radera serien ”%1$s”?\n\nDen kommer att tas bort från %2$s. Böckerna själva kommer inte att raderas. Överväg att redigera serien och ändra serienamnet till en annan serie för att bevara denna data.</string>
     <string name="confirm_delete_style">Radera stilen ”%1$s”?</string>

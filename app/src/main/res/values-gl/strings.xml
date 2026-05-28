@@ -33,9 +33,13 @@
         <item quantity="one">Atopado %1$d libro</item>
         <item quantity="other">Atopados %1$d libros</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d autor</item>
         <item quantity="other">%1$d autores</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d seria</item>
+        <item quantity="other">%1$d serias</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrela</item>
@@ -470,6 +474,8 @@
     <string name="option_enable_sync_options">Activar opcións de sincronización</string>
     <string name="confirm_delete_publisher_from_x_books">Excluír a editorial «%1$s»?\n\nVaise borrar de %2$s. Os libros en si non se eliminarán. Considera cambiar o nome polo de outra editorial para conservar estes datos.</string>
     <string name="confirm_delete_identifier_from_x_books">Borrar o identificador «%1$s»?\n\nExcluirase de %2$s. Os libros en si non se eliminan.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Borrar o identificador «%1$s»?\n\nExcluirase de %2$s. Os autores en si non se eliminan.</string>
+    <string name="confirm_delete_identifier_from_x_series">Borrar o identificador «%1$s»?\n\nExcluirase de %2$s. As series en si non se eliminan.</string>
     <string name="confirm_delete_substitutions">Excluír as substitucións para «%1$s»?</string>
     <string name="confirm_delete_style">Eliminar o estilo «%1$s»?</string>
     <string name="confirm_merge_bookshelves">O andel que estás a modificar xa existe. Queres fusionalos?</string>

@@ -30,17 +30,41 @@
         <item quantity="many">%1$d knihy</item>
         <item quantity="other">%1$d knih</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d knihy</item>
+        <item quantity="few">%1$d knih</item>
+        <item quantity="many">%1$d knih</item>
+        <item quantity="other">%1$d knih</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Nalezena %1$d kniha</item>
         <item quantity="few">Nalezeny %1$d knihy</item>
         <item quantity="many">Nalezeno %1$d knihy</item>
         <item quantity="other">Nalezeno %1$d knih</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d autor</item>
         <item quantity="few">%1$d autoři</item>
         <item quantity="many">%1$d autorů</item>
         <item quantity="other">%1$d autorů</item>
+    </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d autora</item>
+        <item quantity="few">%1$d autorů</item>
+        <item quantity="many">%1$d autorů</item>
+        <item quantity="other">%1$d autorů</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d série</item>
+        <item quantity="few">%1$d série</item>
+        <item quantity="many">%1$d série</item>
+        <item quantity="other">%1$d sérií</item>
+    </plurals>
+    <plurals name="n_series_from">
+        <item quantity="one">%1$d série</item>
+        <item quantity="few">%1$d sérií</item>
+        <item quantity="many">%1$d sérií</item>
+        <item quantity="other">%1$d sérií</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s hvězdička</item>
@@ -54,6 +78,13 @@
         <item quantity="many">%1$d štítků</item>
         <item quantity="other">%1$d štítků</item>
     </plurals>
+    <plurals name="n_tags_from">
+        <item quantity="one">%1$d štítku</item>
+        <item quantity="few">%1$d štítků</item>
+        <item quantity="many">%1$d štítků</item>
+        <item quantity="other">%1$d štítků</item>
+    </plurals>
+
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">Je zde %1$d dříve zadaný kód ISBN. Chcete zahájit jeho vyhledávání, nebo ho chcete odstranit?</item>
         <item quantity="few">Jsou zde %1$d dříve zadané kódy ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
@@ -174,6 +205,9 @@
     <string name="confirm_delete_series_from_x_books">Opravdu chcete smazat sérii „%1$s“?\n\nBude odstraněna z %2$s. Knihy samotné smazány nebudou. Zvažte prosím úpravu série a změnu názvu série s ohledem na zachování těchto dat.</string>
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
     <string name="confirm_delete_identifier_from_x_books">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Autoři samotní smazáni nebudou.</string>
+    <string name="confirm_delete_identifier_from_x_series">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Série samotné smazány nebudou.</string>
+
     <string name="confirm_delete_substitutions">Smazat náhrady za „%1$s“?</string>
     <string name="confirm_delete_tag_from_x_books">Smazat štítek „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Odstraňte název „%1$s“ (z %2$s)?\n\nBude odstraněn z %3$s. Knihy samotné smazány nebudou.</string>

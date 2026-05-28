@@ -35,10 +35,15 @@
         <item quantity="other">%1$d livres trouvés</item>
         <item quantity="many">%1$d livres trouvés</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d auteur</item>
         <item quantity="many">%1$d auteurs</item>
         <item quantity="other">%1$d auteurs</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d série</item>
+        <item quantity="other">%1$d séries</item>
+        <item quantity="many">%1$d séries</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s étoile</item>
@@ -169,6 +174,8 @@
     <string name="confirm_delete_series_from_x_books">Supprimer la série « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés. Envisagez de modifier la série et d’en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_style">Supprimer le style « %1$s » ?</string>
     <string name="confirm_delete_identifier_from_x_books">Supprimer l’identifiant « %1$s » ?\n\nIl sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Supprimer l’identifiant « %1$s » ?\n\nIl sera retiré de %2$s. Les auteurs eux-mêmes ne seront pas supprimés.</string>
+    <string name="confirm_delete_identifier_from_x_series">Supprimer l’identifiant « %1$s » ?\n\nIl sera retiré de %2$s. Les séries elles-mêmes ne seront pas supprimées.</string>
     <string name="confirm_delete_substitutions">Supprimer les substitutions pour « %1$s » ?</string>
     <string name="confirm_delete_tag_from_x_books">Supprimer l’étiquette « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Vraiment supprimer le titre « %1$s » (par %2$s) ?\n\nIl sera supprimée de %3$s. Les livres eux-mêmes ne seront pas supprimés.</string>

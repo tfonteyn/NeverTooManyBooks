@@ -32,9 +32,13 @@
         <item quantity="one">%1$d bók funnin</item>
         <item quantity="other">%1$d bøkur funnin</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d høvundur</item>
         <item quantity="other">%1$d høvundar</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d røð</item>
+        <item quantity="other">%1$d raðir</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s stjørna</item>
@@ -171,4 +175,7 @@
     <string name="warning_camera_permission_denied">Skanning av strikukodum ella myndatøka krevur atgongd til myndatól. Lat upp app-stillingarnar, vel Heimildir og virkja Myndatól.</string>
     <string name="warning_local_network_permission_required">Atgongd til %1$s á tínum lokala neti krevur loyvi.</string>
     <string name="warning_local_network_permission_denied">Atgongd til %1$s á tínum lokala neti krevur loyvi. Lat upp app-stillingarnar, vel Heimildir og virkja Eindir tætt við.</string>
+    <string name="confirm_delete_identifier_from_x_books">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Bøkurnar sjálvar verða ikki slettaðar.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Høvundarnir sjálvir verða ikki slettaðir.</string>
+    <string name="confirm_delete_identifier_from_x_series">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Røðirnar sjálvar verða ikki slettaðar.</string>
 </resources>

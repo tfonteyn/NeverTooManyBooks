@@ -35,9 +35,13 @@ A question mark is written as the character semicolon: ';'
         <item quantity="one">Βρέθηκε %1$d βιβλίο</item>
         <item quantity="other">Βρέθηκαν %1$d βιβλία</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d συγγραφέας</item>
         <item quantity="other">%1$d συγγραφείς</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d σειρά</item>
+        <item quantity="other">%1$d σειρές</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s αστέρι</item>
@@ -167,6 +171,8 @@ A question mark is written as the character semicolon: ';'
     <string name="confirm_delete_series_from_x_books">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΘα αφαιρεθεί από %2$s. Τα βιβλία δεν θα διαγραφούν. Σκεφτείτε να επεξεργαστείτε τη σειρά και να αλλάξετε το όνομά της σε αυτό κάποιας άλλης σειράς, ώστε να διατηρήσετε τα δεδομένα.</string>
     <string name="confirm_delete_style">Θέλετε να διαγραφεί το στυλ «%1$s»;</string>
     <string name="confirm_delete_identifier_from_x_books">Θέλετε να διαγραφεί το αναγνωριστικό «%1$s»;\n\nΘα αφαιρεθεί από %2$s. Τα βιβλία δεν θα διαγραφούν.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Θέλετε να διαγραφεί το αναγνωριστικό «%1$s»;\n\nΘα αφαιρεθεί από %2$s. Οι συγγραφείς δεν θα διαγραφούν.</string>
+    <string name="confirm_delete_identifier_from_x_series">Θέλετε να διαγραφεί το αναγνωριστικό «%1$s»;\n\nΘα αφαιρεθεί από %2$s. Οι σειρές δεν θα διαγραφούν.</string>
     <string name="confirm_delete_substitutions">Θέλετε να διαγραφούν οι αντικαταστάτες του «%1$s»;</string>
     <string name="confirm_delete_tag_from_x_books">Θέλετε να διαγραφεί η ετικέτα «%1$s»;\n\nΘα αφαιρεθεί από %2$s. Τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Διαγραφή του «%1$s» από τον/την %2$s;\n\nΘα διαγραφεί από %3$s. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>

@@ -32,9 +32,13 @@
         <item quantity="one">%1$d kitap bulundu</item>
         <item quantity="other">%1$d kitap bulundu</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d yazar</item>
         <item quantity="other">%1$d yazar</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d dizi</item>
+        <item quantity="other">%1$d dizi</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s yıldız</item>
@@ -161,6 +165,8 @@
     <string name="confirm_delete_series_from_x_books">“%1$s” serisi gerçekten silinsin mi?\n\n%2$s silinecektir. Kitabın kendisi silinmeyecektir. Seriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="confirm_delete_style">“%1$s” stili silinsin mi?</string>
     <string name="confirm_delete_identifier_from_x_books">“%1$s” tanımlayıcısını silelim mi?\n\n%2$s silinecektir. Kitapların kendileri silinmeyecektir.</string>
+    <string name="confirm_delete_identifier_from_x_authors">“%1$s” tanımlayıcısını silelim mi?\n\n%2$s silinecektir. Yazarların kendileri silinmeyecektir.</string>
+    <string name="confirm_delete_identifier_from_x_series">“%1$s” tanımlayıcısını silelim mi?\n\n%2$s silinecektir. Dizilerin kendileri silinmeyecektir.</string>
     <string name="confirm_delete_substitutions">“%1$s” için ikameleri silelim mi?</string>
     <string name="confirm_delete_tag_from_x_books">“%1$s” etiketini silin.\n\n%2$s silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_toc_entry_from_x_books">“%1$s” girişini gerçekten sil (%2$s)?\n\n%3$s silinecektir. Kitapların kendisi silinmeyecek.</string>

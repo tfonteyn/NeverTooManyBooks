@@ -32,9 +32,13 @@
         <item quantity="one">%1$d Buch gefunden</item>
         <item quantity="other">%1$d Bücher gefunden</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d Autor</item>
         <item quantity="other">%1$d Autoren</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d Serie</item>
+        <item quantity="other">%1$d Serien</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s Stern</item>
@@ -161,6 +165,8 @@
     <string name="confirm_delete_series_from_x_books">Serie „%1$s“ löschen?\n\nSie wird aus %2$s entfernt. Die Bücher werden nicht gelöscht. Berücksichtige, dass du ggf. den Namen der Serie ändern kannst, um die Daten der Serie zu behalten.</string>
     <string name="confirm_delete_style">Den Stil „%1$s“ löschen?</string>
     <string name="confirm_delete_identifier_from_x_books">Bezeichner „%1$s“ löschen?\n\nEr wird aus %2$s entfernt. Die Bücher selbst werden nicht gelöscht.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Bezeichner „%1$s“ löschen?\n\nEr wird aus %2$s entfernt. Die Autoren selbst werden nicht gelöscht.</string>
+    <string name="confirm_delete_identifier_from_x_series">Bezeichner „%1$s“ löschen?\n\nEr wird aus %2$s entfernt. Die Serien selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_substitutions">Die Ersetzungen für „%1$s“ löschen?</string>
     <string name="confirm_delete_tag_from_x_books">Den Tag „%1$s“ löschen?\n\nEr wird aus %2$s entfernt. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Den Eintrag „%1$s“ (von %2$s) löschen?\n\nEr wird aus %3$s entfernt. Die Bücher selbst werden nicht gelöscht.</string>

@@ -33,9 +33,13 @@
         <item quantity="one">%1$d talált könyv</item>
         <item quantity="other">%1$d talált könyv</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d szerző</item>
         <item quantity="other">%1$d szerző</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d sorozat</item>
+        <item quantity="other">%1$d sorozat</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s csillag</item>
@@ -482,6 +486,8 @@
     <string name="confirm_delete_series_from_x_books">„%1$s” sorozat törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve. Az adatok megőrzése érdekében fontolja meg a sorozat nevének megváltoztatását egy másik sorozat nevére.</string>
     <string name="confirm_delete_tag_from_x_books">„%1$s” címke törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
     <string name="confirm_delete_identifier_from_x_books">„%1$s” azonosító törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
+    <string name="confirm_delete_identifier_from_x_authors">„%1$s” azonosító törlése?\n\n%2$sből lesz eltávolítva. Maguk a szerzők nem lesznek törölve.</string>
+    <string name="confirm_delete_identifier_from_x_series">„%1$s” azonosító törlése?\n\n%2$sből lesz eltávolítva. Maguk a sorozatok nem lesznek törölve.</string>
     <string name="confirm_delete_substitutions">„%1$s” helyettesítéseinek törlése?</string>
     <string name="confirm_delete_style">„%1$s” stílus törlése?</string>
     <string name="confirm_merge_bookshelves">A módosítandó könyvespolc már létezik. Szeretné egyesíteni őket?</string>

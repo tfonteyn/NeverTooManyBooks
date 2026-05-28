@@ -270,7 +270,7 @@ public final class StandardDialogs {
 
         // Create the base message with the name of the shelf and the number of books on it.
         final int books = bookshelfDao.countBooks(bookshelf);
-        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books_from,
                                                                           books, books);
         String msg = context.getString(R.string.confirm_delete_bookshelf_from_x_books,
                                        bookshelf.getLabel(context),
@@ -334,7 +334,7 @@ public final class StandardDialogs {
                                     @NonNull final Series series,
                                     final int bookCount,
                                     @NonNull final Runnable onConfirm) {
-        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books_from,
                                                                           bookCount, bookCount);
 
         final String msg = context.getString(R.string.confirm_delete_series_from_x_books,
@@ -355,7 +355,7 @@ public final class StandardDialogs {
                                        @NonNull final Publisher publisher,
                                        final int bookCount,
                                        @NonNull final Runnable onConfirm) {
-        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books_from,
                                                                           bookCount, bookCount);
 
         final String msg = context.getString(R.string.confirm_delete_publisher_from_x_books,
@@ -375,7 +375,7 @@ public final class StandardDialogs {
                                       @NonNull final TocEntry tocEntry,
                                       @NonNull final Runnable onConfirm) {
         final int books = ServiceLocator.getInstance().getTocEntryDao().countBooks(tocEntry);
-        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books_from,
                                                                           books, books);
 
         final String msg = context.getString(R.string.confirm_delete_toc_entry_from_x_books,
@@ -397,7 +397,7 @@ public final class StandardDialogs {
                                  @NonNull final Tag tag,
                                  final int countBooks,
                                  @NonNull final Runnable onConfirm) {
-        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books_from,
                                                                           countBooks, countBooks);
         final String msg = context.getString(R.string.confirm_delete_tag_from_x_books,
                                              tag.getName(),

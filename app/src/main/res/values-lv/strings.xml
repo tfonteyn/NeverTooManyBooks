@@ -29,16 +29,42 @@
         <item quantity="one">%1$d grāmata</item>
         <item quantity="other">%1$d grāmatas</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_books_from">
+        <item quantity="zero">%1$d grāmatām</item>
+        <item quantity="one">%1$d grāmatas</item>
+        <item quantity="other">%1$d grāmatām</item>
+    </plurals>
+    <plurals name="n_authors">
         <item quantity="zero">%1$d autori</item>
         <item quantity="one">%1$d autors</item>
         <item quantity="other">%1$d autori</item>
+    </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="zero">%1$d autoriem</item>
+        <item quantity="one">%1$d autora</item>
+        <item quantity="other">%1$d autoriem</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="zero">%1$d sēriju</item>
+        <item quantity="one">%1$d sērija</item>
+        <item quantity="other">%1$d sērijas</item>
+    </plurals>
+    <plurals name="n_series_from">
+        <item quantity="zero">%1$d sēriju</item>
+        <item quantity="one">%1$d sērijas</item>
+        <item quantity="other">%1$d sērijām</item>
     </plurals>
     <plurals name="n_tags">
         <item quantity="zero">%1$d birkas</item>
         <item quantity="one">%1$d birka</item>
         <item quantity="other">%1$d birkas</item>
     </plurals>
+    <plurals name="n_tags_from">
+        <item quantity="zero">%1$d birkām</item>
+        <item quantity="one">%1$d birkas</item>
+        <item quantity="other">%1$d birkām</item>
+    </plurals>
+
     <string name="X_action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">%1$s un %2$s</string>
@@ -250,4 +276,7 @@
     <string name="pt_deduplication_title_matching_summary_off">Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Rediģēt ar…</string>
     <string name="preference_not_set">Nav iestatīts</string>
+    <string name="confirm_delete_identifier_from_x_books">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Pašas grāmatas netiks dzēstas.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Paši autori netiks dzēsti.</string>
+    <string name="confirm_delete_identifier_from_x_series">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Pašas sērijas netiks dzēstas.</string>
 </resources>

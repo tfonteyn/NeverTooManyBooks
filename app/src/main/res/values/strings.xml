@@ -54,28 +54,56 @@
         <item quantity="one">%1$d book</item>
         <item quantity="other">%1$d books</item>
     </plurals>
+    <!-- for languages that have a Genitive case in their grammar.
+             Other languages should just copy "n_books". -->
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d book</item>
+        <item quantity="other">%1$d books</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d book found</item>
         <item quantity="other">%1$d books found</item>
     </plurals>
-    <plurals name="n_author">
+
+    <plurals name="n_authors">
         <item quantity="one">%1$d author</item>
         <item quantity="other">%1$d authors</item>
     </plurals>
+    <!-- for languages that have a Genitive case in their grammar.
+         Other languages should just copy "n_authors". -->
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d author</item>
+        <item quantity="other">%1$d authors</item>
+    </plurals>
+
     <plurals name="n_series">
         <item quantity="one">%1$d series</item>
         <item quantity="other">%1$d series</item>
     </plurals>
-    <!-- Rating of a book is measured in 0 (not rated) or 1..5 stars -->
-    <plurals name="n_stars">
-        <item quantity="one">%1$s star</item>
-        <item quantity="other">%1$s stars</item>
+    <!-- for languages that have a Genitive case in their grammar.
+             Other languages should just copy "n_series". -->
+    <plurals name="n_series_from">
+        <item quantity="one">%1$d series</item>
+        <item quantity="other">%1$d series</item>
     </plurals>
 
     <plurals name="n_tags">
         <item quantity="one">%1$d tag</item>
         <item quantity="other">%1$d tags</item>
     </plurals>
+    <!-- for languages that have a Genitive case in their grammar.
+             Other languages should just copy "n_tags". -->
+    <plurals name="n_tags_from">
+        <item quantity="one">%1$d tag</item>
+        <item quantity="other">%1$d tags</item>
+    </plurals>
+
+    <!-- Rating of a book is measured in 0 (not rated) or 1..5 stars -->
+    <plurals name="n_stars">
+        <item quantity="one">%1$s star</item>
+        <item quantity="other">%1$s stars</item>
+    </plurals>
+
 
     <!-- A request for confirmation in a dialog asking the user to "Remove" or "Search"
          a list of ISBN number previously scanned.

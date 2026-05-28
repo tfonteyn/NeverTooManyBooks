@@ -33,8 +33,11 @@
     <plurals name="n_books">
         <item quantity="other">%1$d本书</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="other">%1$d 位作者</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="other">%1$d 部剧集</item>
     </plurals>
     <plurals name="n_tags">
         <item quantity="other">%1$d 标签</item>
@@ -853,6 +856,8 @@
     <string name="info_partial_date_picker">轻按之前选中的月份或天来取消选中。</string>
     <string name="lbl_original_language">原始语言</string>
     <string name="confirm_delete_identifier_from_x_books">删除识别符 “%1$s”？\n\n将从 %2$s 处删除它。书籍本身不会被删除。</string>
+    <string name="confirm_delete_identifier_from_x_authors">删除识别符 “%1$s”？\n\n将从 %2$s 处删除 it。作者本身不会被删除。</string>
+    <string name="confirm_delete_identifier_from_x_series">删除识别符 “%1$s”？\n\n将从 %2$s 处删除它。系列本身不会被删除。</string>
     <string name="action_restore_default_identifiers">恢复默认识别符</string>
     <string name="pt_bob_show_group_book_count">显示每组中的书籍数。</string>
     <string name="site_description_czech">捷克语及更多</string>

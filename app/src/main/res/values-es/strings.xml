@@ -34,10 +34,15 @@
         <item quantity="many">%1$d libros encontrados</item>
         <item quantity="other">%1$d libros encontrados</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d autor</item>
         <item quantity="many">%1$d autores</item>
         <item quantity="other">%1$d autores</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d serie</item>
+        <item quantity="other">%1$d series</item>
+        <item quantity="many">%1$d series</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s estrella</item>
@@ -167,6 +172,8 @@
     <string name="confirm_delete_series_from_x_books">¿Borrar la serie «%1$s»?\n\nSe eliminará de %2$s. Los libros en sí no se borrarán. Considere la posibilidad de editar la serie y cambiar el nombre de la serie por el de otra serie para conservar estos datos.</string>
     <string name="confirm_delete_style">¿Eliminar el estilo «%1$s»?</string>
     <string name="confirm_delete_identifier_from_x_books">¿Borrar el identificador «%1$s»?\n\nSe eliminará de %2$s. Los libros en sí no se eliminarán.</string>
+    <string name="confirm_delete_identifier_from_x_authors">¿Borrar el identificador «%1$s»?\n\nSe eliminará de %2$s. Los autores en sí no se eliminarán.</string>
+    <string name="confirm_delete_identifier_from_x_series">¿Borrar el identificador «%1$s»?\n\nSe eliminará de %2$s. Las series en sí no se eliminarán.</string>
     <string name="confirm_delete_substitutions">¿Suprimir las sustituciones de «%1$s»?</string>
     <string name="confirm_delete_tag_from_x_books">¿Quieres eliminar la etiqueta «%1$s»?\n\nSe eliminará de %2$s. Los libros en sí no se eliminarán.</string>
     <string name="confirm_delete_toc_entry_from_x_books">¿Realmente elimina la entrada «%1$s» (por %2$s)?\n\nSe eliminará de %3$s. Los libros en sí no serán borrados.</string>

@@ -30,17 +30,41 @@
         <item quantity="many">%1$d książek</item>
         <item quantity="other">%1$d książek</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d książki</item>
+        <item quantity="few">%1$d książek</item>
+        <item quantity="many">%1$d książek</item>
+        <item quantity="other">%1$d książek</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Znaleziono %1$d książkę</item>
         <item quantity="few">Znaleziono %1$d książki</item>
         <item quantity="many">Znaleziono %1$d książek</item>
         <item quantity="other">Znaleziono 1%1$d książek</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d autor</item>
         <item quantity="few">%1$d autorzy</item>
         <item quantity="many">%1$d autorów</item>
         <item quantity="other">%1$d autora</item>
+    </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d autora</item>
+        <item quantity="few">%1$d autorów</item>
+        <item quantity="many">%1$d autorów</item>
+        <item quantity="other">%1$d autorów</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d serial</item>
+        <item quantity="few">%1$d seriale</item>
+        <item quantity="many">%1$d seriali</item>
+        <item quantity="other">%1$d serialu</item>
+    </plurals>
+    <plurals name="n_series_from">
+        <item quantity="one">%1$d serialu</item>
+        <item quantity="few">%1$d seriali</item>
+        <item quantity="many">%1$d seriali</item>
+        <item quantity="other">%1$d seriali</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s gwiazdka</item>
@@ -53,6 +77,12 @@
         <item quantity="few">%1$d tagi</item>
         <item quantity="many">%1$d tagów</item>
         <item quantity="other">%1$d tagów</item>
+    </plurals>
+    <plurals name="n_tags_from">
+        <item quantity="one">%1$d znacznika</item>
+        <item quantity="few">%1$d znaczników</item>
+        <item quantity="many">%1$d znaczników</item>
+        <item quantity="other">%1$d znaczników</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">Jest %1$d wcześniej wprowadzony kod ISBN. Chcesz rozpocząć jego wyszukiwanie lub chcesz go usunąć?</item>
@@ -173,6 +203,8 @@
     <string name="confirm_delete_series_from_x_books">Czy na pewno usunąć serię „%1$s”?\n\nZostanie ona usunięta z %2$s. Same książki nie zostaną usunięte. Rozważ zmianę nazwy serii by zachować te dane.</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
     <string name="confirm_delete_identifier_from_x_books">Usunąć identyfikator „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Usunąć identyfikator „%1$s”?\n\nZostanie on usunięty od %2$s. Sami autorzy nie zostaną usunięci.</string>
+    <string name="confirm_delete_identifier_from_x_series">Usunąć identyfikator „%1$s”?\n\nZostanie on usunięty od %2$s. Same seriale nie zostaną usunięte.</string>
     <string name="confirm_delete_substitutions">Usunąć podstawienia dla „%1$s”?</string>
     <string name="confirm_delete_tag_from_x_books">Usunąć tag „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Naprawdę usuń wpis „%1$s” (przez %2$s)?\n\nZostanie on usunięty z %3$s. Same książki nie zostaną usunięte.</string>

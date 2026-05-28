@@ -30,8 +30,11 @@
     <plurals name="n_books_found">
         <item quantity="other">Đã tìm thấy %1$d cuốn sách</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="other">%1$d tác giả</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="other">%1$d loạt phim</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="other">%1$s sao</item>
@@ -159,6 +162,8 @@
     <string name="confirm_delete_series_from_x_books">Xóa bộ “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các cuốn sách sẽ không bị xóa. Hãy cân nhắc chỉnh sửa bộ này và đổi tên bộ này thành tên của bộ khác để bảo toàn dữ liệu này.</string>
     <string name="confirm_delete_style">Xóa kiểu “%1$s”?</string>
     <string name="confirm_delete_identifier_from_x_books">Xóa định danh “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các sách sẽ không bị xóa.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Xóa định danh “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các tác giả sẽ không bị xóa.</string>
+    <string name="confirm_delete_identifier_from_x_series">Xóa định danh “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các bộ truyện sẽ không bị xóa.</string>
     <string name="confirm_delete_substitutions">Xóa các thay thế cho “%1$s”?</string>
     <string name="confirm_delete_tag_from_x_books">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Thực sự xóa nhan đề “%1$s” của %2$s?\n\nNó sẽ bị xóa khỏi %3$s. Bản thân các cuốn sách sẽ không bị xóa.</string>

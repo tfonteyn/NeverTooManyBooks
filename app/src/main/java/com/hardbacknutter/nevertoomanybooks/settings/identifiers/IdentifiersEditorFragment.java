@@ -262,21 +262,21 @@ public class IdentifiersEditorFragment
                 msg = context.getString(
                         R.string.confirm_delete_identifier_from_x_books,
                         identifier.getName(),
-                        res.getQuantityString(R.plurals.n_books, count, count));
+                        res.getQuantityString(R.plurals.n_books_from, count, count));
                 break;
             }
             case Author: {
                 msg = context.getString(
                         R.string.confirm_delete_identifier_from_x_authors,
                         identifier.getName(),
-                        res.getQuantityString(R.plurals.n_author, count, count));
+                        res.getQuantityString(R.plurals.n_authors_from, count, count));
                 break;
             }
             case Series: {
                 msg = context.getString(
                         R.string.confirm_delete_identifier_from_x_series,
                         identifier.getName(),
-                        res.getQuantityString(R.plurals.n_series, count, count));
+                        res.getQuantityString(R.plurals.n_series_from, count, count));
                 break;
             }
             default:

@@ -32,9 +32,13 @@
         <item quantity="one">%1$d நூல் காணப்பட்டது</item>
         <item quantity="other">%1$d புத்தகங்கள் கிடைத்தன</item>
     </plurals>
-    <plurals name="n_author">
+    <plurals name="n_authors">
         <item quantity="one">%1$d எழுத்தாளர்</item>
         <item quantity="other">%1$d எழுத்தாளர்கள்</item>
+    </plurals>
+    <plurals name="n_series">
+        <item quantity="one">%1$d தொடர்</item>
+        <item quantity="other">%1$d தொடர்கள்</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s விண்மீன்</item>
@@ -418,6 +422,8 @@
     <string name="confirm_delete_publisher_from_x_books">வெளியீட்டாளரை “%1$s” நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது. இந்தத் தரவைப் பாதுகாக்க வெளியீட்டாளரைத் திருத்துவதையும் வெளியீட்டாளரின் பெயரை மற்றொரு வெளியீட்டாளருக்கு மாற்றுவதையும் கவனியுங்கள்.</string>
     <string name="confirm_delete_bookshelf_from_x_books">புத்தக அலமாரியை “%1$s” நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது. அவை இன்னும் வேறு எந்த அலமாரிகளிலும் அல்லது “%3$s” அலமாரியில் இருக்கும்.</string>
     <string name="confirm_delete_identifier_from_x_books">“%1$s” என்ற அடையாளங்காட்டியை நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
+    <string name="confirm_delete_identifier_from_x_authors">“%1$s” என்ற அடையாளங்காட்டியை நீக்கவா?\n\nஇது %2$s இலிருந்து நீக்கப்படும். ஆசிரியர்கள் தானே நீக்கப்பட மாட்டார்கள்.</string>
+    <string name="confirm_delete_identifier_from_x_series">“%1$s” என்ற அடையாளங்காட்டியை நீக்கவா?\n\nஇது %2$s இலிருந்து நீக்கப்படும். தொடர்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_delete_substitutions">“%1$s”க்கான மாற்றுகளை நீக்கவா?</string>
     <string name="confirm_delete_tag_from_x_books">“%1$s” என்ற குறிச்சொல்லை நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_delete_toc_entry_from_x_books">“ %1$s” என்ற தலைப்பை %2$s ஆல் நீக்கவா?\n\n இது %3$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
