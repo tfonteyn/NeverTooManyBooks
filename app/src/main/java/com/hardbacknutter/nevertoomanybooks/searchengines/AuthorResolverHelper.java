@@ -42,6 +42,14 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public final class AuthorResolverHelper {
 
     private static final String TAG = "AuthorResolverHelper";
+
+    /**
+     * Pref key.
+     * "[engine].resolve.authors.[resolver]"
+     */
+    private static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
+
+
     private final AuthorDao authorDao;
     private final SynchronizedDb db;
     private List<AuthorResolver> cachedResolvers;
@@ -52,6 +60,45 @@ public final class AuthorResolverHelper {
     public AuthorResolverHelper() {
         db = ServiceLocator.getInstance().getDb();
         authorDao = ServiceLocator.getInstance().getAuthorDao();
+    }
+
+    /**
+     * An engine using its own resolver.
+     *
+     * @param engineId the engine == resolver id
+     *
+     * @return flag
+     */
+    public static boolean isEnabled(@NonNull final EngineId engineId) {
+        return isEnabled(engineId, engineId, true);
+    }
+
+    /**
+     * An engine using a given resolver.
+     *
+     * @param engine   id
+     * @param resolver id
+     * @param defValue default
+     *
+     * @return flag
+     */
+    public static boolean isEnabled(@NonNull final EngineId engine,
+                                    @NonNull final EngineId resolver,
+                                    final boolean defValue) {
+
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(getPreferenceKey(engine, resolver), defValue);
+    }
+
+    @NonNull
+    public static String getPreferenceKey(@NonNull final EngineId engine) {
+        return engine.getPreferenceKey() + PK_RESOLVE_AUTHORS + engine.getPreferenceKey();
+    }
+
+    @NonNull
+    public static String getPreferenceKey(@NonNull final EngineId engine,
+                                          @NonNull final EngineId resolver) {
+        return engine.getPreferenceKey() + PK_RESOLVE_AUTHORS + resolver.getPreferenceKey();
     }
 
     @NonNull

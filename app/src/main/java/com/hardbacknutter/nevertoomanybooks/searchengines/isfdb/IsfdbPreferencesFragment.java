@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -66,8 +66,8 @@ public class IsfdbPreferencesFragment
                     p.setIcon(R.drawable.barcode_24px);
                 });
 
-        factory.bool(PK + AuthorResolverFactory.PK_RESOLVE_AUTHORS + PK,
-                     R.string.pt_fetch_author_info,  null, p -> {
+        factory.bool(AuthorResolverHelper.getPreferenceKey(EngineId.Isfdb),
+                     R.string.pt_fetch_author_info, null, p -> {
                     p.setIcon(R.drawable.cloud_download_24px);
                     p.setChecked(true);
                 });

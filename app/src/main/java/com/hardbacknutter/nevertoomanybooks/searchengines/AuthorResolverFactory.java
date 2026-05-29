@@ -41,12 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataAutho
 
 public final class AuthorResolverFactory {
 
-    /**
-     * Pref key.
-     * "[engine].resolve.authors.[resolver]"
-     */
-    public static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
-
     private AuthorResolverFactory() {
     }
 
@@ -157,7 +151,7 @@ public final class AuthorResolverFactory {
                           EngineId.Isfdb,
                           EngineId.OpenLibrary,
                           EngineId.Wikidata)
-                      .filter(AuthorResolverFactory::isEnabled)
+                      .filter(AuthorResolverHelper::isEnabled)
                       .collect(Collectors.toList());
 
         // These Engine resolvers rely on their SID.
@@ -166,7 +160,7 @@ public final class AuthorResolverFactory {
                 Stream.of(EngineId.DatabazeKnih,
                           EngineId.Dnb,
                           EngineId.Goodreads)
-                      .filter(AuthorResolverFactory::isEnabled)
+                      .filter(AuthorResolverHelper::isEnabled)
                       // Sanity check, all engines here should have keys,
                       // or we should not have added them!
                       .filter(engineId -> engineId.getIdentifierKey() != null)
@@ -177,41 +171,5 @@ public final class AuthorResolverFactory {
                      .sorted((f1, f2) ->
                                      f1.getName(context).compareToIgnoreCase(f2.getName(context)))
                      .collect(Collectors.toList());
-    }
-
-    /**
-     * An engine using its own resolver.
-     *
-     * @param engineId the engine == resolver id
-     *
-     * @return flag
-     */
-    private static boolean isEnabled(@NonNull final EngineId engineId) {
-        return isEnabled(engineId, engineId, true);
-    }
-
-    /**
-     * An engine using a given resolver.
-     *
-     * @param engine   id
-     * @param resolver id
-     * @param defValue default
-     *
-     * @return flag
-     */
-    private static boolean isEnabled(@NonNull final EngineId engine,
-                                     @NonNull final EngineId resolver,
-                                     final boolean defValue) {
-
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(getKey(engine, resolver), defValue);
-    }
-
-    // Allow easier use for testing
-    @VisibleForTesting
-    @NonNull
-    public static String getKey(@NonNull final EngineId engine,
-                                @NonNull final EngineId resolver) {
-        return engine.getPreferenceKey() + PK_RESOLVE_AUTHORS + resolver.getPreferenceKey();
     }
 }

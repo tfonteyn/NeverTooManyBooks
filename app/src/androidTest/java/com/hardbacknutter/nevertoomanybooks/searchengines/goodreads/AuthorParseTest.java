@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -57,7 +57,8 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        final GoodreadsSearchEngine searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
+        final GoodreadsSearchEngine searchEngine = (GoodreadsSearchEngine)
+                EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
@@ -77,9 +78,9 @@ class AuthorParseTest
         // limit to Goodreads only
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit()
-                      .putBoolean(AuthorResolverFactory.getKey(
+                      .putBoolean(AuthorResolverHelper.getPreferenceKey(
                               EngineId.Goodreads, EngineId.Goodreads), true)
-                      .putBoolean(AuthorResolverFactory.getKey(
+                      .putBoolean(AuthorResolverHelper.getPreferenceKey(
                               EngineId.Goodreads, EngineId.OpenLibrary), false)
                       .apply();
 

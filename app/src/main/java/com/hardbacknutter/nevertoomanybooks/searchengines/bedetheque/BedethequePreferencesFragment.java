@@ -33,7 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -69,7 +69,7 @@ public class BedethequePreferencesFragment
                     p.setIcon(R.drawable.barcode_24px);
                 });
 
-        factory.bool(pk + AuthorResolverFactory.PK_RESOLVE_AUTHORS + pk,
+        factory.bool(AuthorResolverHelper.getPreferenceKey(EngineId.Bedetheque),
                      R.string.pt_fetch_author_info, null, p -> {
                     p.setIcon(R.drawable.cloud_download_24px);
                     p.setChecked(true);

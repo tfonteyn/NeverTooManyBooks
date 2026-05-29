@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -73,8 +73,8 @@ public class StripInfoBePreferencesFragment
                      R.string.pt_search_prefer_isbn10, null, p -> {
                     p.setIcon(R.drawable.barcode_24px);
                 });
-        factory.bool(PK + AuthorResolverFactory.PK_RESOLVE_AUTHORS
-                     + EngineId.Bedetheque.getPreferenceKey(),
+        factory.bool(AuthorResolverHelper.getPreferenceKey(EngineId.StripInfoBe,
+                                                           EngineId.Bedetheque),
                      0, null, p -> {
                     p.setIcon(R.drawable.cloud_download_24px);
                     p.setChecked(true);

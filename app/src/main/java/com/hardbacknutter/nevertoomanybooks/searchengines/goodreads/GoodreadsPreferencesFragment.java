@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CommonSettingsFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -53,14 +53,14 @@ public class GoodreadsPreferencesFragment
                     p.setIcon(R.drawable.barcode_24px);
                 });
 
-        factory.bool(pk + AuthorResolverFactory.PK_RESOLVE_AUTHORS + pk,
+        factory.bool(AuthorResolverHelper.getPreferenceKey(EngineId.Goodreads),
                      R.string.pt_fetch_author_info, null, p -> {
                     p.setIcon(R.drawable.cloud_download_24px);
                     p.setChecked(true);
                 });
 
-        factory.bool(pk + AuthorResolverFactory.PK_RESOLVE_AUTHORS
-                     + EngineId.Wikidata.getPreferenceKey(),
+        factory.bool(AuthorResolverHelper.getPreferenceKey(EngineId.Goodreads,
+                                                           EngineId.Wikidata),
                      0, null, p -> {
                     p.setIcon(R.drawable.cloud_download_24px);
                     p.setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
