@@ -83,7 +83,7 @@ public class IdentifierCoder
         @Nullable
         final String uri = data.optString(DBKey.IDENTIFIERS.URI, null);
         if (uri != null) {
-            final Identifier identifier = new Identifier(key, entityType, type, name,
+            final Identifier identifier = new Identifier(entityType, type, key, name,
                                                          siteUrl, uri, wikidataClaim);
 
             identifier.setId(id);

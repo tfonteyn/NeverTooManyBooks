@@ -233,32 +233,32 @@ public class Identifier
      * Constructor for the predefined Identifiers.
      * Will be used when updated app versions bring new and TESTED urls.
      *
-     * @param key           a key(word) for this Identifier. e.g. "oclc"
-     *                      The UI editor does enforce length and lowercase.
      * @param entityType    to set
      * @param type          Text/Number
+     * @param key           a key(word) for this Identifier. e.g. "oclc"
+     *                      Should be lowercase.
+     *                      The UI editor does enforce lowercase.
      * @param name          a short name
      * @param siteUrl       url to the main website page
      * @param uri           a url with a {@code %s%} placeholder for the sid,
      *                      to view a {@code Book} on the site
      * @param wikidataClaim (optional) "Pxxx" Wikidata claim number
      */
-    public Identifier(@NonNull final String key,
-                      @NonNull final EntityType entityType,
+    public Identifier(@NonNull final EntityType entityType,
                       @NonNull final Type type,
+                      @NonNull final String key,
                       @NonNull final String name,
                       @Nullable final String siteUrl,
                       @Nullable final String uri,
                       @Nullable final String wikidataClaim) {
-        this.key = key;
         this.entityType = entityType;
-
         this.type = type;
+        this.key = key;
         this.name = name;
 
-        this.wikidataClaim = wikidataClaim;
         this.siteUrl = siteUrl;
         this.uri = uri;
+        this.wikidataClaim = wikidataClaim;
     }
 
     /**
@@ -270,60 +270,31 @@ public class Identifier
     public Identifier(final long id,
                       @NonNull final DataHolder rowData) {
         this.id = id;
-        key = rowData.getString(DBKey.IDENTIFIERS.KEY);
-        entityType = EntityType.byId(rowData.getInt(DBKey.IDENTIFIERS.ENTITY));
 
+        entityType = EntityType.byId(rowData.getInt(DBKey.IDENTIFIERS.ENTITY));
         type = Type.byId(rowData.getString(DBKey.IDENTIFIERS.TYPE).charAt(0));
+        key = rowData.getString(DBKey.IDENTIFIERS.KEY);
         name = rowData.getString(DBKey.IDENTIFIERS.NAME);
 
-        wikidataClaim = rowData.getString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM);
         siteUrl = rowData.getString(DBKey.IDENTIFIERS.SITE_URL, null);
         uri = rowData.getString(DBKey.IDENTIFIERS.URI, null);
+        wikidataClaim = rowData.getString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM);
     }
 
     private Identifier(@NonNull final Parcel in) {
         id = in.readLong();
         //noinspection DataFlowIssue
-        key = in.readString();
-        //noinspection DataFlowIssue
         entityType = in.readParcelable(EntityStage.Stage.class.getClassLoader());
-
         //noinspection DataFlowIssue
         type = in.readParcelable(EntityStage.Stage.class.getClassLoader());
         //noinspection DataFlowIssue
+        key = in.readString();
+        //noinspection DataFlowIssue
         name = in.readString();
 
-        wikidataClaim = in.readString();
         siteUrl = in.readString();
         uri = in.readString();
-    }
-
-    @NonNull
-    public static Identifier createBook(@NonNull final String key,
-                                        @NonNull final Type type,
-                                        @NonNull final String name,
-                                        @Nullable final String siteUrl,
-                                        @Nullable final String uri) {
-        return new Identifier(key, EntityType.Book, type, name, siteUrl, uri, null);
-    }
-
-    @NonNull
-    public static Identifier createAuthor(@NonNull final String key,
-                                          @NonNull final Type type,
-                                          @NonNull final String name,
-                                          @Nullable final String siteUrl,
-                                          @Nullable final String uri,
-                                          @Nullable final String wikidataClaim) {
-        return new Identifier(key, EntityType.Author, type, name, siteUrl, uri, wikidataClaim);
-    }
-
-    @NonNull
-    public static Identifier createSeries(@NonNull final String key,
-                                          @NonNull final Type type,
-                                          @NonNull final String name,
-                                          @Nullable final String siteUrl,
-                                          @Nullable final String uri) {
-        return new Identifier(key, EntityType.Series, type, name, siteUrl, uri, null);
+        wikidataClaim = in.readString();
     }
 
     /**
@@ -373,7 +344,6 @@ public class Identifier
         all.addAll(TerceraFundacion.createIdentifiers(context));
         all.addAll(URI.createIdentifiers(context));
         all.addAll(URN.createIdentifiers(context));
-
         all.addAll(VIAF.createIdentifiers(context));
         all.addAll(WikidataSearchEngine.createIdentifiers(context));
 
@@ -384,15 +354,14 @@ public class Identifier
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeLong(id);
-        dest.writeString(key);
         dest.writeParcelable(entityType, flags);
-
         dest.writeParcelable(type, flags);
+        dest.writeString(key);
         dest.writeString(name);
 
-        dest.writeString(wikidataClaim);
         dest.writeString(siteUrl);
         dest.writeString(uri);
+        dest.writeString(wikidataClaim);
     }
 
     @Override
@@ -418,6 +387,11 @@ public class Identifier
         this.id = id;
     }
 
+    @NonNull
+    public EntityType getEntityType() {
+        return entityType;
+    }
+
     /**
      * Get the type.
      *
@@ -426,11 +400,6 @@ public class Identifier
     @NonNull
     public Type getType() {
         return type;
-    }
-
-    @NonNull
-    public EntityType getEntityType() {
-        return entityType;
     }
 
     /**
@@ -443,6 +412,11 @@ public class Identifier
         return key;
     }
 
+    /**
+     * Set the Identifier key.
+     *
+     * @param key to set
+     */
     public void setKey(@NonNull final String key) {
         this.key = key;
     }
@@ -465,6 +439,11 @@ public class Identifier
         return name;
     }
 
+    /**
+     * Set the user displayable name.
+     *
+     * @param name name
+     */
     public void setName(@NonNull final String name) {
         this.name = name;
     }
@@ -477,6 +456,11 @@ public class Identifier
         return name;
     }
 
+    /**
+     * Get the WikiData claim number. Includes the prefix {@code P}.
+     *
+     * @return claim
+     */
     @NonNull
     public Optional<String> getWikidataClaim() {
         if (wikidataClaim != null && !wikidataClaim.isEmpty()) {
@@ -485,11 +469,17 @@ public class Identifier
         return Optional.empty();
     }
 
-    public void setWikidataClaim(@Nullable final String p) {
-        if (p == null || p.isBlank()) {
+    /**
+     * Set the WikiData claim number.
+     * If the prefix {@code P} is missing, it will be added.
+     *
+     * @param claim number
+     */
+    public void setWikidataClaim(@Nullable final String claim) {
+        if (claim == null || claim.isBlank()) {
             this.wikidataClaim = null;
         } else {
-            String wdp = p.strip();
+            String wdp = claim.strip();
             // add prefix if missing
             if (!wdp.startsWith(P)) {
                 wdp = P + wdp;
@@ -515,12 +505,18 @@ public class Identifier
         return siteUrl;
     }
 
+    /**
+     * Set the <strong>uri</strong> for viewing a reference on the site.
+     * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
+     *
+     * @param siteUrl uri to set
+     */
     public void setSiteUrl(@Nullable final String siteUrl) {
         this.siteUrl = siteUrl;
     }
 
     /**
-     * Get the <strong>uri</strong> for viewing a book on the site.
+     * Get the <strong>uri</strong> for viewing a reference on the site.
      * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
      *
      * @return uri
@@ -532,7 +528,8 @@ public class Identifier
             switch (entityType) {
                 case Book:
                     //noinspection DataFlowIssue
-                    return Optional.of(EngineId.Amazon.getConfig().getHostUrl() + "/dp/%s");
+                    return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
+                                       + "/dp/%s");
                 case Author:
                     //noinspection DataFlowIssue
                     return Optional.of(EngineId.Amazon.getConfig().getHostUrl()

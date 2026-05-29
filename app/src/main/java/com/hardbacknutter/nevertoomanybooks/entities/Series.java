@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
  * <a href="https://www.wikidata.org/wiki/Property:P179">P179: Series</a>
  * <a href="https://www.wikidata.org/wiki/Property:P478">P478: volume nr</a>
  * <p>
- * <a href="https://www.wikidata.org/wiki/Property:P1235">P1235: ISFDB</a>
  * <a href="https://www.wikidata.org/wiki/Property:P3589">P3589: Grand Comics Database (GCD) id</a>
  * <a href="https://www.wikidata.org/wiki/Property:P5792">P5792: NooSFere</a>
  * <a href="https://www.wikidata.org/wiki/Property:P5905">P5905: Comic Vine</a>

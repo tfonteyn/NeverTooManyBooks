@@ -123,7 +123,7 @@ public class IdentifierMigration {
             || bookUri != null && authorUri != null) {
             // no urls at all or both present; create Book AND Author
             final Identifier iBook = new Identifier(
-                    key, Identifier.EntityType.Book, type, name, siteUrl,
+                    Identifier.EntityType.Book, type, key, name, siteUrl,
                     null,
                     null);
             // reuse the id
@@ -131,7 +131,7 @@ public class IdentifierMigration {
 
             // new entry, no id
             final Identifier iAuthor = new Identifier(
-                    key, Identifier.EntityType.Author, type, name, siteUrl,
+                    Identifier.EntityType.Author, type, key, name, siteUrl,
                     null,
                     wikidataClaim);
 
@@ -140,7 +140,7 @@ public class IdentifierMigration {
         } else if (bookUri != null) {
             // We only a book uri, and no author uri
             final Identifier iBook = new Identifier(
-                    key, Identifier.EntityType.Book, type, name, siteUrl,
+                    Identifier.EntityType.Book, type, key, name, siteUrl,
                     bookUri,
                     null);
             // reuse the id
@@ -150,7 +150,7 @@ public class IdentifierMigration {
         } else {
             // we have an author uri and no book uri
             final Identifier iAuthor = new Identifier(
-                    key, Identifier.EntityType.Author, type, name, siteUrl,
+                    Identifier.EntityType.Author, type, key, name, siteUrl,
                     authorUri,
                     wikidataClaim);
             // reuse the id
