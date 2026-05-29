@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -934,4 +931,24 @@
     <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
     <string name="action_edit_with_ellipsis">Modifica con…</string>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d libro</item>
+        <item quantity="many">%1$d libri</item>
+        <item quantity="other">%1$d libri</item>
+    </plurals>
+    <plurals name="n_tags_from">
+        <item quantity="one">%1$d etichetta</item>
+        <item quantity="many">%1$d etichette</item>
+        <item quantity="other">%1$d etichette</item>
+    </plurals>
+    <plurals name="n_series_from">
+        <item quantity="one">%1$d serie</item>
+        <item quantity="many">%1$d serie</item>
+        <item quantity="other">%1$d serie</item>
+    </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d autore</item>
+        <item quantity="many">%1$d autori</item>
+        <item quantity="other">%1$d autori</item>
+    </plurals>
 </resources>
