@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
@@ -31,7 +34,7 @@
         <item quantity="other">%1$d本书</item>
     </plurals>
     <plurals name="n_books_from">
-        <item quantity="other">%1$d本书</item>
+        <item quantity="other">%1$d 本书</item>
     </plurals>
     <plurals name="n_authors">
         <item quantity="other">%1$d 位作者</item>
@@ -43,13 +46,13 @@
         <item quantity="other">%1$d 部剧集</item>
     </plurals>
     <plurals name="n_series_from">
-        <item quantity="other">%1$d 部剧集</item>
+        <item quantity="other">%1$d 个系列</item>
     </plurals>
     <plurals name="n_tags">
         <item quantity="other">%1$d 标签</item>
     </plurals>
     <plurals name="n_tags_from">
-        <item quantity="other">%1$d 标签</item>
+        <item quantity="other">%1$d 个标签</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">
         <item quantity="other">之前输入了 %1$d 个 ISBN 码。要开始搜索它们吗？还是应该删除它们呢？</item>
@@ -911,16 +914,5 @@
     <string name="pt_deduplication_title_matching_summary_on">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”。</string>
     <string name="pt_deduplication_title_matching_summary_off">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”。</string>
     <string name="action_edit_with_ellipsis">编辑于…</string>
-    <plurals name="n_books_from">
-        <item quantity="other">%1$d 本书</item>
-    </plurals>
-    <plurals name="n_authors_from">
-        <item quantity="other">%1$d 位作者</item>
-    </plurals>
-    <plurals name="n_series_from">
-        <item quantity="other">%1$d 个系列</item>
-    </plurals>
-    <plurals name="n_tags_from">
-        <item quantity="other">%1$d 个标签</item>
-    </plurals>
+
 </resources>

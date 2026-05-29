@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -62,14 +65,14 @@
         <item quantity="other">%1$s stelle</item>
     </plurals>
     <plurals name="n_tags">
-        <item quantity="one">%1$d tag</item>
-        <item quantity="many">%1$d tag</item>
-        <item quantity="other">%1$d tag</item>
+        <item quantity="one">%1$d etichetta</item>
+        <item quantity="many">%1$d etichette</item>
+        <item quantity="other">%1$d etichette</item>
     </plurals>
     <plurals name="n_tags_from">
-        <item quantity="one">%1$d tag</item>
-        <item quantity="many">%1$d tag</item>
-        <item quantity="other">%1$d tag</item>
+        <item quantity="one">%1$d etichetta</item>
+        <item quantity="many">%1$d etichette</item>
+        <item quantity="other">%1$d etichette</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">C’è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
@@ -192,9 +195,9 @@
     <string name="confirm_delete_identifier_from_x_authors">Cancellare l’identificatore «%1$s»?\n\nVerrà eliminata da %2$s. Gli autori stessi non verranno eliminati.</string>
     <string name="confirm_delete_identifier_from_x_series">Cancellare l’identificatore «%1$s»?\n\nVerrà eliminata da %2$s. Le serie stesse non verranno eliminate.</string>
     <string name="confirm_delete_substitutions">Cancellare le sostituzioni per «%1$s»?</string>
-    <string name="confirm_delete_tag_from_x_books">Eliminare il tag «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
+    <string name="confirm_delete_tag_from_x_books">Eliminare l’etichetta «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Cancellare davvero il titolo «%1$s» (di %2$s)?\n\nVerrà eliminata da %3$s. Libri stessi non saranno cancellati.</string>
-    <string name="confirm_merge_tags">Il tag che si sta modificando esiste già. Si desidera unirli?</string>
+    <string name="confirm_merge_tags">L’etichetta che si sta modificando esiste già. Si desidera unirli?</string>
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un’altra copia?</string>
     <string name="confirm_email_file">Vuoi inviare questo file a qualcuno per e-mail?</string>
     <string name="confirm_merge_authors">L’autore che si sta modificando esiste già. Si desidera unirli?</string>
@@ -339,7 +342,7 @@
     <string name="lbl_condition_book_reading_copy">Lettura copia</string>
     <string name="lbl_condition_book_very_good">Molto buona</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Unione di maiuscole e minuscole</string>
-    <string name="lbl_tag_mapper_apply_purge_unused">Eliminare i tag inutilizzati</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Eliminare le etichette inutilizzati</string>
     <string name="lbl_connection_timeout">Timeout connessione (secondi)</string>
     <string name="lbl_cover_back">Copertina posteriore</string>
     <string name="lbl_cover_front">Copertina</string>
@@ -454,8 +457,8 @@
     <string name="lbl_series_multiple">Collezione</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Impostazioni</string>
-    <string name="lbl_tag">Tag</string>
-    <string name="lbl_tags">Tag</string>
+    <string name="lbl_tag">Etichetta</string>
+    <string name="lbl_tags">Etichette</string>
     <string name="lbl_substitutions">Sostituzioni</string>
     <string name="lbl_signed">Firmato</string>
     <string name="lbl_site_book_id">ID libro del sito Web</string>
@@ -580,7 +583,7 @@
     <string name="info_backup_successful">Backup riuscito</string>
     <string name="info_tap_to_move_tag">Toccare un’etichetta per spostarla nel/dal libro.</string>
     <string name="lbl_add_or_edit_substitution">Aggiungere/modificare una regola di sostituzione</string>
-    <string name="info_substitutions_one_per_line">Aggiungi una sostituzione per riga oppure lascia vuoto per cancellare il tag</string>
+    <string name="info_substitutions_one_per_line">Aggiungi una sostituzione per riga oppure lascia vuoto per cancellare l’etichetta</string>
     <string name="info_download_successful">Download riuscito</string>
     <string name="info_export_report">Nella cartella selezionata è stato creato un file %1$s chiamato «%2$s». È necessario copiarlo manualmente altrove per proteggere i dati in caso di danneggiamento, smarrimento o furto del dispositivo.</string>
     <string name="info_export_successful">Esportazione riuscita</string>
@@ -892,7 +895,7 @@
     <string name="lbl_identifier">Identificatore</string>
     <string name="lbl_identifiers">Identificatori</string>
     <string name="confirm_apply_substitutions">Applicare le regole di sostituzione? Tutti i libri applicabili saranno aggiornati.</string>
-    <string name="lbl_tag_mapper_apply_merge_case">Unire tag che differiscono solo per le maiuscole e le minuscole</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Unire le etichette che differiscono solo per le maiuscole e le minuscole</string>
     <string name="lbl_default">Predefinito</string>
     <string name="lbl_default_x">Predefinito: %1$s</string>
     <string name="info_partial_date_picker">Toccare un mese o un giorno precedentemente selezionato per deselezionarlo.</string>
@@ -931,24 +934,4 @@
     <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
     <string name="action_edit_with_ellipsis">Modifica con…</string>
-    <plurals name="n_books_from">
-        <item quantity="one">%1$d libro</item>
-        <item quantity="many">%1$d libri</item>
-        <item quantity="other">%1$d libri</item>
-    </plurals>
-    <plurals name="n_tags_from">
-        <item quantity="one">%1$d etichetta</item>
-        <item quantity="many">%1$d etichette</item>
-        <item quantity="other">%1$d etichette</item>
-    </plurals>
-    <plurals name="n_series_from">
-        <item quantity="one">%1$d serie</item>
-        <item quantity="many">%1$d serie</item>
-        <item quantity="other">%1$d serie</item>
-    </plurals>
-    <plurals name="n_authors_from">
-        <item quantity="one">%1$d autore</item>
-        <item quantity="many">%1$d autori</item>
-        <item quantity="other">%1$d autori</item>
-    </plurals>
 </resources>
