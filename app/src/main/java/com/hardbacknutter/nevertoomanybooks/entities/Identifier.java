@@ -525,19 +525,13 @@ public class Identifier
     public Optional<String> getUri() {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
-            switch (entityType) {
-                case Book:
-                    //noinspection DataFlowIssue
-                    return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
-                                       + "/dp/%s");
-                case Author:
-                    //noinspection DataFlowIssue
-                    return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
-                                       + "/stores/author/%s");
-            }
+            return AmazonSearchEngine.getIdentifierUri(entityType);
         }
 
-        return Optional.ofNullable(uri);
+        if (uri == null) {
+            return Optional.empty();
+        }
+        return Optional.of(uri);
     }
 
     public void setUri(@Nullable final String uri) {

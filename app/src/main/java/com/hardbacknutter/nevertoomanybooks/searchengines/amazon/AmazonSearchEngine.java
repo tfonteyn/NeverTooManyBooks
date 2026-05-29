@@ -361,20 +361,17 @@ public class AmazonSearchEngine
     }
 
     /**
-     * Identifiers on Amazon are a bit difficult to implement correctly.
+     * Identifiers on Amazon are implemented with some special care.
      * For books, we just take the ASIN (which is the Amazon product identifier)
      * and use the search url for the user country amazon site.
      * Similar situation with the Author.
-     * <p>
-     * FIXME: implement identifiers more universally
-     * ENHANCE: according to wikidata, there is a url which can be used for authors:
-     *   https://amazon.com/wd/e/  but we'll need to implement using the country site
-     *   and verifying... as their url's sometimes are different in different countries.
+     * The ASIN for books is generated from the ISBN if possible.
      *
      * @param context Current context
      *
      * @return list
      *
+     * @see #getIdentifierUri(Identifier.EntityType)
      * @see Identifier#getUri()
      * @see ViewBookOnSiteMenuHandler
      */
@@ -398,6 +395,23 @@ public class AmazonSearchEngine
                                null,
                                "P4862")
         );
+    }
+
+    @NonNull
+    public static Optional<String> getIdentifierUri(@NonNull final Identifier.EntityType eType) {
+        switch (eType) {
+            case Book:
+                //noinspection DataFlowIssue
+                return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
+                                   + "/dp/%s");
+            case Author:
+                // according to wikidata, there is another url which can be used for authors:
+                //   https://amazon.com/wd/e/%s
+                //noinspection DataFlowIssue
+                return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
+                                   + "/stores/author/%s");
+        }
+        return Optional.empty();
     }
 
     @NonNull
