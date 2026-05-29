@@ -44,7 +44,7 @@ public class IdentifierCoder
         out.put(DBKey.IDENTIFIERS.KEY, identifier.getKey());
         out.put(DBKey.IDENTIFIERS.ENTITY, identifier.getEntityType().getId());
 
-        out.put(DBKey.IDENTIFIERS.TYPE, identifier.getType().getId());
+        out.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(identifier.getType().getId()));
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl());
 
