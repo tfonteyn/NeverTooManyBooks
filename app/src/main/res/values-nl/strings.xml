@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -171,7 +174,7 @@
     <string name="confirm_delete_publisher_from_x_books">Verwijder de uitgever „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd. Overweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_series_from_x_books">Verwijder de reeks „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd. Overweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_substitutions">De substituties voor „%1$s” verwijderen?</string>
-    <string name="confirm_delete_tag_from_x_books">Verwijder de tag „%1$s”?\n\neze wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
+    <string name="confirm_delete_tag_from_x_books">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_identifier_from_x_books">Identificatiecode „%1$s” verwijderen?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_identifier_from_x_authors">Identificatiecode „%1$s” verwijderen?\n\nHet wordt verwijderd uit %2$s. De auteurs zelf worden niet verwijderd.</string>
     <string name="confirm_delete_identifier_from_x_series">Identificatiecode „%1$s” verwijderen?\n\nHet wordt verwijderd uit %2$s. De series zelf worden niet verwijderd.</string>
