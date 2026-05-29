@@ -48,13 +48,13 @@ public final class ISNI {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_isni);
         return Set.of(
-                Identifier.createAuthor(
-                        Identifier.SID_ISNI,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P213")
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_ISNI,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P213")
         );
     }
 }

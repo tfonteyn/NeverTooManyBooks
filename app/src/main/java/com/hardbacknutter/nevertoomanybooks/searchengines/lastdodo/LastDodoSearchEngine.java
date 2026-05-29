@@ -160,25 +160,27 @@ public class LastDodoSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_lastdodo_nl);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_LAST_DODO_NL,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_LAST_DODO_NL,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        null),
-                Identifier.createSeries(
-                        Identifier.SID_LAST_DODO_NL,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_LAST_DODO_NL,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P10419"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_LAST_DODO_NL,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P10419"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_LAST_DODO_NL,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               "P10419")
         );
     }
 

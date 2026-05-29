@@ -32,7 +32,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 public final class KBR {
     private static final String SITE_URL = "https://opac.kbr.be";
-    private static final String BOOK_URL = "https://opac.kbr.be/Library/doc/SYRACUSE/%s";
+    // originally using "https://opac.kbr.be/Library/doc/SYRACUSE/%s"
+    // 2026-05-29: switching to use their permalink urls'
+    private static final String BOOK_URL = "https://uurl.kbr.be/bib/%s";
+    private static final String AUTHOR_URL = "https://uurl.kbr.be/aut/%s";
+    private static final String SERIES_URL = "https://uurl.kbr.be/bib/%s";
 
     private KBR() {
     }
@@ -41,19 +45,28 @@ public final class KBR {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_kbr);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_KBR,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_KBR,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        null,
-                        "P11249")
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_KBR,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P9088"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_KBR,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P11249"),
+                // Series SEEM to use the same wikidata claim as a book.
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_KBR,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               "P9088")
         );
     }
 }

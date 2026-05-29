@@ -246,19 +246,20 @@ public class DnbSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_dnb);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_DNB,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_DNB,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P7902")
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_DNB,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P1292"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_DNB,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P7902")
         );
     }
 

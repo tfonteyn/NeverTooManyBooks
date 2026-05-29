@@ -34,6 +34,7 @@ public final class Porbase {
 
     private static final String SITE_URL = "https://porbase.bnportugal.gov.pt";
     private static final String BOOK_URL = "https://id.bnportugal.gov.pt/bib/porbase/%s";
+    private static final String AUTHOR_URL = "https://id.bnportugal.gov.pt/aut/catbnp/%1";
 
     private Porbase() {
     }
@@ -42,19 +43,20 @@ public final class Porbase {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_porbase);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_PORBASE,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_PORBASE,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        null,
-                        "P1005")
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_PORBASE,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P6373"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_PORBASE,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P1005")
         );
     }
 }

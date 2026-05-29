@@ -50,25 +50,27 @@ public final class FantLab {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_fantlab);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_FANTLAB,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_FANTLAB,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P7433"),
-                Identifier.createSeries(
-                        Identifier.SID_FANTLAB,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_FANTLAB,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P7439"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_FANTLAB,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P7433"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_FANTLAB,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               null)
         );
     }
 }

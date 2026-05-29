@@ -47,30 +47,6 @@ public class WikidataSearchEngine
 
     private static final String PREFERENCE_KEY = "wikidata";
 
-    // Claim numbers for book identifiers.
-    //    private static final Map<String, String> SIDS = Map.ofEntries(
-    //            Map.entry("P5749", Identifier.SID_ASIN),
-    //            Map.entry("P5199", Identifier.SID_BRITISH_LIBRARY),
-    //            Map.entry("P10386", Identifier.SID_DATABAZE_KNIH),
-    //            Map.entry("P1292", Identifier.SID_DNB),
-    //            Map.entry("P6442", Identifier.SID_DOUBAN),
-    //            Map.entry("P7439", Identifier.SID_FANTLAB),
-    //            Map.entry("P8383", Identifier.SID_GOODREADS),
-    //            Map.entry("P675", Identifier.SID_GOOGLE),
-    //            Map.entry("P1234", Identifier.SID_ISFDB),
-    //            Map.entry("P9088", Identifier.SID_KBR),
-    //            Map.entry("P1144", Identifier.SID_LCCN),
-    //            Map.entry("P1085", Identifier.SID_LIBRARY_THING),
-    //            Map.entry("P2191", Identifier.SID_NILF),
-    //            Map.entry("P5571", Identifier.SID_NOOSFERE),
-    //            Map.entry("P10832", Identifier.SID_OCLC),
-    //            Map.entry("P648", Identifier.SID_OPEN_LIBRARY),
-    //            Map.entry("P6373", Identifier.SID_PORBASE)
-    //    );
-    //
-    //    private static final String SEARCH_BY_ISBN =
-    //            "https://www.wikidata.org/wiki/Special:Search?search=ISBN+%1$s";
-
     /**
      * Constructor.
      * <p>
@@ -110,25 +86,27 @@ public class WikidataSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_wikidata);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_WIKIDATA,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_WIKIDATA,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        null),
-                Identifier.createSeries(
-                        Identifier.SID_WIKIDATA,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_WIKIDATA,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               null),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_WIKIDATA,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P50"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Text,
+                               Identifier.SID_WIKIDATA,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               "P179")
         );
     }
 }

@@ -42,13 +42,13 @@ public final class VIAF {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_viaf);
         return Set.of(
-                Identifier.createAuthor(
-                        Identifier.SID_VIAF,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P214")
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_VIAF,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P214")
         );
     }
 }

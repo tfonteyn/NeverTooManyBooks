@@ -151,12 +151,13 @@ public class GoogleBooksSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_google_books);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_GOOGLE,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        BOOK_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_GOOGLE,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P675")
         );
     }
 

@@ -176,12 +176,13 @@ public class StripWebSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_stripweb_be);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_STRIPWEB,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        null)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_STRIPWEB,
+                               name,
+                               SITE_URL,
+                               null,
+                               null)
         );
     }
     @NonNull

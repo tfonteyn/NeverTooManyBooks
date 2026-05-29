@@ -42,19 +42,19 @@ public final class Lccn {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_lccn);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_LCCN,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_LCCN,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        null,
-                        "P244")
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_LCCN, name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P1144"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_LCCN,
+                               name,
+                               SITE_URL,
+                               null,
+                               "P244")
         );
     }
 }

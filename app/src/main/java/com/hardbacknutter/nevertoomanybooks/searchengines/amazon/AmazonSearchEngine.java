@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -308,6 +309,7 @@ public class AmazonSearchEngine
             // Spanish/Portuguese
             "desde "};
 
+    /** Portugal redirects to Spain. */
     private static final String SPANISH = "es";
 
     /**
@@ -358,24 +360,43 @@ public class AmazonSearchEngine
                 .setPreferenceFragmentClazz(AmazonPreferencesFragment.class);
     }
 
+    /**
+     * Identifiers on Amazon are a bit difficult to implement correctly.
+     * For books, we just take the ASIN (which is the Amazon product identifier)
+     * and use the search url for the user country amazon site.
+     * Similar situation with the Author.
+     * <p>
+     * FIXME: implement identifiers more universally
+     * ENHANCE: according to wikidata, there is a url which can be used for authors:
+     *   https://amazon.com/wd/e/  but we'll need to implement using the country site
+     *   and verifying... as their url's sometimes are different in different countries.
+     *
+     * @param context Current context
+     *
+     * @return list
+     *
+     * @see Identifier#getUri()
+     * @see ViewBookOnSiteMenuHandler
+     */
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         // links empty on purpose; created dynamically
         final String name = context.getString(R.string.identifier_amazon);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_ASIN,
-                        Identifier.Type.Text,
-                        name,
-                        null,
-                        null),
-                Identifier.createAuthor(
-                        Identifier.SID_ASIN,
-                        Identifier.Type.Text,
-                        name,
-                        null,
-                        null,
-                        "P4862")
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_ASIN,
+                               name,
+                               null,
+                               null,
+                               null),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_ASIN,
+                               name,
+                               null,
+                               null,
+                               "P4862")
         );
     }
 

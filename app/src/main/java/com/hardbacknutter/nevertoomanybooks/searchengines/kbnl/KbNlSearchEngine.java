@@ -74,6 +74,8 @@ public class KbNlSearchEngine
                    SearchEngine.CoverByEdition {
 
     private static final String SITE_URL = "https://www.kb.nl";
+    // URGENT: needs doublt checking if we can use the url as documented at
+    //  https://www.wikidata.org/wiki/Property:P1006
     private static final String BOOK_URL = "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
     private static final String AUTHOR_URL = "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s";
 
@@ -171,19 +173,20 @@ public class KbNlSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_kb_nl);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_KBNL,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_KBNL,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P1006")
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_KBNL,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               null),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_KBNL,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P1006")
         );
     }
 

@@ -31,6 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
+ * Digital Object Identifier.
+ *
  * @see <a href="https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation">
  *         doi-resolution-documentation</a>
  */
@@ -46,12 +48,13 @@ public final class DOI {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_doi);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_DOI,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        BOOK_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_DOI,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               null)
         );
     }
 }

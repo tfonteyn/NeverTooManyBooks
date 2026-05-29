@@ -32,20 +32,23 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 public final class URN {
 
+    // A URN site does not exist of course, we point the user to wikipedia
+    private static final String SITE_URL = "https://en.wikipedia.org/wiki/Uniform_Resource_Name";
+
     private URN() {
     }
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_urn);
+
         return Set.of(
-                // A URN site does not exist of course, lets point the user to wikipedia
-                Identifier.createBook(
-                        Identifier.SID_URN,
-                        Identifier.Type.Text,
-                        name,
-                        "https://en.wikipedia.org/wiki/Uniform_Resource_Name",
-                        null)
+                new Identifier(Identifier.EntityType.Book, Identifier.Type.Text,
+                               Identifier.SID_URN,
+                               name,
+                               SITE_URL,
+                               null,
+                               null)
         );
     }
 }

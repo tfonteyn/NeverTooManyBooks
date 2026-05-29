@@ -53,25 +53,27 @@ public final class TerceraFundacion {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_tercerafundacion);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_TERCERA_FUNDACION,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_TERCERA_FUNDACION,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        null),
-                Identifier.createSeries(
-                        Identifier.SID_TERCERA_FUNDACION,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_TERCERA_FUNDACION,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               null),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_TERCERA_FUNDACION,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               null),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_TERCERA_FUNDACION,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               null)
         );
     }
 }

@@ -30,10 +30,16 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+
+/**
+ * It's not entirely clear what the difference between LIBRIS and LIBRIS_XL is.
+ * This was copied from the ISFDB website. Some day we'll need to look at the details.
+ */
 public final class LibrisSE {
 
     private static final String SITE_URL = "https://libris.kb.se";
     private static final String BOOK_URL = "https://libris.kb.se/bib/%s";
+    private static final String AUTHOR_URL = "https://libris.kb.se/auth/%s";
 
     private static final String XL_SITE_URL = "https://libris.kb.se/katalogisering";
     private static final String XL_BOOK_URL = "https://libris.kb.se/%s";
@@ -45,18 +51,30 @@ public final class LibrisSE {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_libris);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_LIBRIS,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createBook(
-                        Identifier.SID_LIBRIS_XL,
-                        Identifier.Type.Text,
-                        name,
-                        XL_SITE_URL,
-                        XL_BOOK_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_LIBRIS,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               null),
+                // the url+number redirects to a permalink in the format of:
+                //   https://libris.kb.se/zw9cd5zh025njcf
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_LIBRIS,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P906"),
+
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_LIBRIS_XL,
+                               name,
+                               XL_SITE_URL,
+                               XL_BOOK_URL,
+                               null)
         );
     }
 }

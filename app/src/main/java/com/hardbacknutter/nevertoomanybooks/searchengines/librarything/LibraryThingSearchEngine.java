@@ -123,25 +123,27 @@ public class LibraryThingSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_library_thing);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_LIBRARY_THING,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_LIBRARY_THING,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P7400"),
-                Identifier.createSeries(
-                        Identifier.SID_LIBRARY_THING,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_LIBRARY_THING,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P1085"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_LIBRARY_THING,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P7400"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_LIBRARY_THING,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               "P8513")
         );
     }
 

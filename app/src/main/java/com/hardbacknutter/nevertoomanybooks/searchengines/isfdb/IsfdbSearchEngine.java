@@ -349,32 +349,34 @@ public class IsfdbSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_isfdb);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_ISFDB,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_ISFDB,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P1233"),
-                Identifier.createSeries(
-                        Identifier.SID_ISFDB,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        SERIES_URL),
-                new Identifier(Identifier.SID_ISFDB_PUB_SERIES,
-                               Identifier.EntityType.Series,
+                new Identifier(Identifier.EntityType.Book,
                                Identifier.Type.Number,
+                               Identifier.SID_ISFDB,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P1234"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_ISFDB,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P1233"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_ISFDB,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               "P1235"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_ISFDB_PUB_SERIES,
                                name,
                                SITE_URL,
                                PUB_SERIES_URL,
-                               null)
+                               "P13137")
         );
     }
 

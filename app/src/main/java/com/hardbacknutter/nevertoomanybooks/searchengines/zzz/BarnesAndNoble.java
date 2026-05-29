@@ -41,14 +41,15 @@ public final class BarnesAndNoble {
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_barnesandnoble);
+        // 2026-05-29: no wikidata claims found
         return Set.of(
-                // 2025-12-15: no wikidata author claim found
-                Identifier.createBook(
-                        Identifier.SID_BARNES_AND_NOBLE,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_BARNES_AND_NOBLE,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               null)
         );
     }
 }

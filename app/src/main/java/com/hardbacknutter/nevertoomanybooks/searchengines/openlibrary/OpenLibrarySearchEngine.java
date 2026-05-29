@@ -217,25 +217,27 @@ public class OpenLibrarySearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_open_library);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_OPEN_LIBRARY,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_OPEN_LIBRARY,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P648"),
-                Identifier.createSeries(
-                        Identifier.SID_OPEN_LIBRARY,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_OPEN_LIBRARY,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P648"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_OPEN_LIBRARY,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P648"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Text,
+                               Identifier.SID_OPEN_LIBRARY,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               null)
         );
     }
 

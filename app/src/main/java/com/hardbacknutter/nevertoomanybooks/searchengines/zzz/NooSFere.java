@@ -51,25 +51,29 @@ public final class NooSFere {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_noosfere);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_NOOSFERE,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_NOOSFERE,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P5570"),
-                Identifier.createSeries(
-                        Identifier.SID_NOOSFERE,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                // wikidata P5571 is documented as 'book' but is for ALL editions.
+                // wikidata P6901 is documented as 'edition' and is for individual books
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_NOOSFERE,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P6901"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_NOOSFERE,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P5570"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_NOOSFERE,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               "P5792")
         );
     }
 }

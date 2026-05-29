@@ -183,19 +183,20 @@ public class BnfSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_bnf);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_BNF,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_BNF,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P268")
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_BNF,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P268"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_BNF,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P268")
         );
     }
 

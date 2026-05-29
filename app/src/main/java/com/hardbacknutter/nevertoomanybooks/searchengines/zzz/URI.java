@@ -32,27 +32,39 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 public final class URI {
 
+    // A URN site does not exist of course, we point the user to wikipedia
+    private static final String SITE_URL =
+            "https://en.wikipedia.org/wiki/Uniform_Resource_Identifier";
+
     private URI() {
     }
 
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_uri);
+        // the url IS the sid
         return Set.of(
-                // the bookUrl/authorUrl IS the sid
-                Identifier.createBook(
-                        Identifier.SID_URI,
-                        Identifier.Type.Text,
-                        name,
-                        null,
-                        "%s"),
-                Identifier.createAuthor(
-                        Identifier.SID_URI,
-                        Identifier.Type.Text,
-                        name,
-                        null,
-                        "%s",
-                        null)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_URI,
+                               name,
+                               SITE_URL,
+                               "%s",
+                               null),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Text,
+                               Identifier.SID_URI,
+                               name,
+                               SITE_URL,
+                               "%s",
+                               null),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Text,
+                               Identifier.SID_URI,
+                               name,
+                               SITE_URL,
+                               "%s",
+                               null)
         );
     }
 }

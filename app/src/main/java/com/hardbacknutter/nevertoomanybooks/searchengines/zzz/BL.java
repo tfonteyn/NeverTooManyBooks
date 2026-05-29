@@ -43,13 +43,13 @@ public final class BL {
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_british_library);
         return Set.of(
-                // 2025-12-15: no wikidata author claim found
-                Identifier.createBook(
-                        Identifier.SID_BRITISH_LIBRARY,
-                        Identifier.Type.Text,
-                        name,
-                        SITE_URL,
-                        null)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Text,
+                               Identifier.SID_BRITISH_LIBRARY,
+                               name,
+                               SITE_URL,
+                               null,
+                               null)
         );
     }
 }

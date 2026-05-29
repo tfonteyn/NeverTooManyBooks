@@ -189,12 +189,13 @@ public class BibliotecePlSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_bibliotece_pl);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_BIBLIOTECE_PL,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_BIBLIOTECE_PL,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               null)
         );
     }
     @NonNull

@@ -171,25 +171,27 @@ public class DoubanSearchEngine
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_douban);
         return Set.of(
-                Identifier.createBook(
-                        Identifier.SID_DOUBAN,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        BOOK_URL),
-                Identifier.createAuthor(
-                        Identifier.SID_DOUBAN,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        AUTHOR_URL,
-                        "P6441"),
-                Identifier.createSeries(
-                        Identifier.SID_DOUBAN,
-                        Identifier.Type.Number,
-                        name,
-                        SITE_URL,
-                        SERIES_URL)
+                new Identifier(Identifier.EntityType.Book,
+                               Identifier.Type.Number,
+                               Identifier.SID_DOUBAN,
+                               name,
+                               SITE_URL,
+                               BOOK_URL,
+                               "P6442"),
+                new Identifier(Identifier.EntityType.Author,
+                               Identifier.Type.Number,
+                               Identifier.SID_DOUBAN,
+                               name,
+                               SITE_URL,
+                               AUTHOR_URL,
+                               "P6441"),
+                new Identifier(Identifier.EntityType.Series,
+                               Identifier.Type.Number,
+                               Identifier.SID_DOUBAN,
+                               name,
+                               SITE_URL,
+                               SERIES_URL,
+                               "P10318")
         );
     }
 
