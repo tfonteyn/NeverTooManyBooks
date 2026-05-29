@@ -33,13 +33,25 @@
     <plurals name="n_books">
         <item quantity="other">%1$d本书</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="other">%1$d本书</item>
+    </plurals>
     <plurals name="n_authors">
+        <item quantity="other">%1$d 位作者</item>
+    </plurals>
+    <plurals name="n_authors_from">
         <item quantity="other">%1$d 位作者</item>
     </plurals>
     <plurals name="n_series">
         <item quantity="other">%1$d 部剧集</item>
     </plurals>
+    <plurals name="n_series_from">
+        <item quantity="other">%1$d 部剧集</item>
+    </plurals>
     <plurals name="n_tags">
+        <item quantity="other">%1$d 标签</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="other">%1$d 标签</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">

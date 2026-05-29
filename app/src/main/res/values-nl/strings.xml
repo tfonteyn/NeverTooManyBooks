@@ -28,6 +28,10 @@
         <item quantity="one">%1$d boek</item>
         <item quantity="other">%1$d boeken</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d boek</item>
+        <item quantity="other">%1$d boeken</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d boek gevonden</item>
         <item quantity="other">%1$d boeken gevonden</item>
@@ -36,7 +40,15 @@
         <item quantity="one">%1$d auteur</item>
         <item quantity="other">%1$d auteurs</item>
     </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d auteur</item>
+        <item quantity="other">%1$d auteurs</item>
+    </plurals>
     <plurals name="n_series">
+        <item quantity="one">%1$d serie</item>
+        <item quantity="other">%1$d series</item>
+    </plurals>
+    <plurals name="n_series_from">
         <item quantity="one">%1$d serie</item>
         <item quantity="other">%1$d series</item>
     </plurals>
@@ -45,6 +57,10 @@
         <item quantity="other">%1$s sterren</item>
     </plurals>
     <plurals name="n_tags">
+        <item quantity="one">%1$d tag</item>
+        <item quantity="other">%1$d tags</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="one">%1$d tag</item>
         <item quantity="other">%1$d tags</item>
     </plurals>

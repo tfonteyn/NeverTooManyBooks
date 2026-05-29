@@ -31,6 +31,10 @@ A question mark is written as the character semicolon: ';'
         <item quantity="one">%1$d βιβλίο</item>
         <item quantity="other">%1$d βιβλία</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d βιβλίο</item>
+        <item quantity="other">%1$d βιβλία</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Βρέθηκε %1$d βιβλίο</item>
         <item quantity="other">Βρέθηκαν %1$d βιβλία</item>
@@ -39,7 +43,15 @@ A question mark is written as the character semicolon: ';'
         <item quantity="one">%1$d συγγραφέας</item>
         <item quantity="other">%1$d συγγραφείς</item>
     </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d συγγραφέας</item>
+        <item quantity="other">%1$d συγγραφείς</item>
+    </plurals>
     <plurals name="n_series">
+        <item quantity="one">%1$d σειρά</item>
+        <item quantity="other">%1$d σειρές</item>
+    </plurals>
+    <plurals name="n_series_from">
         <item quantity="one">%1$d σειρά</item>
         <item quantity="other">%1$d σειρές</item>
     </plurals>
@@ -48,6 +60,10 @@ A question mark is written as the character semicolon: ';'
         <item quantity="other">%1$s αστέρια</item>
     </plurals>
     <plurals name="n_tags">
+        <item quantity="one">%1$d ετικέτα</item>
+        <item quantity="other">%1$d ετικέτες</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="one">%1$d ετικέτα</item>
         <item quantity="other">%1$d ετικέτες</item>
     </plurals>

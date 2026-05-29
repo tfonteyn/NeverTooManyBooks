@@ -29,6 +29,10 @@
         <item quantity="one">%1$d könyv</item>
         <item quantity="other">%1$d könyv</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d könyv</item>
+        <item quantity="other">%1$d könyv</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d talált könyv</item>
         <item quantity="other">%1$d talált könyv</item>
@@ -37,7 +41,15 @@
         <item quantity="one">%1$d szerző</item>
         <item quantity="other">%1$d szerző</item>
     </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d szerző</item>
+        <item quantity="other">%1$d szerző</item>
+    </plurals>
     <plurals name="n_series">
+        <item quantity="one">%1$d sorozat</item>
+        <item quantity="other">%1$d sorozat</item>
+    </plurals>
+    <plurals name="n_series_from">
         <item quantity="one">%1$d sorozat</item>
         <item quantity="other">%1$d sorozat</item>
     </plurals>
@@ -46,6 +58,10 @@
         <item quantity="other">%1$s csillag</item>
     </plurals>
     <plurals name="n_tags">
+        <item quantity="one">%1$d címke</item>
+        <item quantity="other">%1$d címke</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="one">%1$d címke</item>
         <item quantity="other">%1$d címke</item>
     </plurals>

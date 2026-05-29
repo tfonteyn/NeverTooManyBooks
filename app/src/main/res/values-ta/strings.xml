@@ -28,6 +28,10 @@
         <item quantity="one">%1$d நூல்</item>
         <item quantity="other">%1$d புத்தகங்கள்</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d நூல்</item>
+        <item quantity="other">%1$d புத்தகங்கள்</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d நூல் காணப்பட்டது</item>
         <item quantity="other">%1$d புத்தகங்கள் கிடைத்தன</item>
@@ -36,7 +40,15 @@
         <item quantity="one">%1$d எழுத்தாளர்</item>
         <item quantity="other">%1$d எழுத்தாளர்கள்</item>
     </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d எழுத்தாளர்</item>
+        <item quantity="other">%1$d எழுத்தாளர்கள்</item>
+    </plurals>
     <plurals name="n_series">
+        <item quantity="one">%1$d தொடர்</item>
+        <item quantity="other">%1$d தொடர்கள்</item>
+    </plurals>
+    <plurals name="n_series_from">
         <item quantity="one">%1$d தொடர்</item>
         <item quantity="other">%1$d தொடர்கள்</item>
     </plurals>
@@ -45,6 +57,10 @@
         <item quantity="other">%1$s நட்சத்திரங்கள்</item>
     </plurals>
     <plurals name="n_tags">
+        <item quantity="one">%1$d குறிச்சொல்</item>
+        <item quantity="other">%1$d குறிச்சொற்கள்</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="one">%1$d குறிச்சொல்</item>
         <item quantity="other">%1$d குறிச்சொற்கள்</item>
     </plurals>

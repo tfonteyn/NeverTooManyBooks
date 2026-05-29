@@ -27,19 +27,31 @@
     <plurals name="n_books">
         <item quantity="other">%1$d cuốn sách</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="other">%1$d cuốn sách</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="other">Đã tìm thấy %1$d cuốn sách</item>
     </plurals>
     <plurals name="n_authors">
         <item quantity="other">%1$d tác giả</item>
     </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="other">%1$d tác giả</item>
+    </plurals>
     <plurals name="n_series">
+        <item quantity="other">%1$d loạt phim</item>
+    </plurals>
+    <plurals name="n_series_from">
         <item quantity="other">%1$d loạt phim</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="other">%1$s sao</item>
     </plurals>
     <plurals name="n_tags">
+        <item quantity="other">%1$d nhãn</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="other">%1$d nhãn</item>
     </plurals>
     <plurals name="confirm_queue_has_x_items">

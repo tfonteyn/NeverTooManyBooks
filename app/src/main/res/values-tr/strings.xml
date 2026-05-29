@@ -28,6 +28,10 @@
         <item quantity="one">%1$d kitap</item>
         <item quantity="other">%1$d kitaplar</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d kitap</item>
+        <item quantity="other">%1$d kitaplar</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d kitap bulundu</item>
         <item quantity="other">%1$d kitap bulundu</item>
@@ -36,7 +40,15 @@
         <item quantity="one">%1$d yazar</item>
         <item quantity="other">%1$d yazar</item>
     </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d yazar</item>
+        <item quantity="other">%1$d yazar</item>
+    </plurals>
     <plurals name="n_series">
+        <item quantity="one">%1$d dizi</item>
+        <item quantity="other">%1$d dizi</item>
+    </plurals>
+    <plurals name="n_series_from">
         <item quantity="one">%1$d dizi</item>
         <item quantity="other">%1$d dizi</item>
     </plurals>
@@ -45,6 +57,10 @@
         <item quantity="other">%1$s yıldızlar</item>
     </plurals>
     <plurals name="n_tags">
+        <item quantity="one">%1$d etiket</item>
+        <item quantity="other">%1$d etiketler</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="one">%1$d etiket</item>
         <item quantity="other">%1$d etiketler</item>
     </plurals>

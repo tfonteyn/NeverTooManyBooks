@@ -29,6 +29,11 @@
         <item quantity="many">%1$d livros</item>
         <item quantity="other">%1$d livros</item>
     </plurals>
+    <plurals name="n_books_from">
+        <item quantity="one">%1$d livro</item>
+        <item quantity="many">%1$d livros</item>
+        <item quantity="other">%1$d livros</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d livro encontrado</item>
         <item quantity="many">%1$d livros encontrados</item>
@@ -39,7 +44,17 @@
         <item quantity="many">%1$d autores</item>
         <item quantity="other">%1$d autores</item>
     </plurals>
+    <plurals name="n_authors_from">
+        <item quantity="one">%1$d autor</item>
+        <item quantity="many">%1$d autores</item>
+        <item quantity="other">%1$d autores</item>
+    </plurals>
     <plurals name="n_series">
+        <item quantity="one">%1$d série</item>
+        <item quantity="many">%1$d séries</item>
+        <item quantity="other">%1$d séries</item>
+    </plurals>
+    <plurals name="n_series_from">
         <item quantity="one">%1$d série</item>
         <item quantity="many">%1$d séries</item>
         <item quantity="other">%1$d séries</item>
@@ -50,6 +65,11 @@
         <item quantity="other">%1$s estrelas</item>
     </plurals>
     <plurals name="n_tags">
+        <item quantity="one">%1$d etiqueta</item>
+        <item quantity="many">%1$d etiquetas</item>
+        <item quantity="other">%1$d etiquetas</item>
+    </plurals>
+    <plurals name="n_tags_from">
         <item quantity="one">%1$d etiqueta</item>
         <item quantity="many">%1$d etiquetas</item>
         <item quantity="other">%1$d etiquetas</item>
