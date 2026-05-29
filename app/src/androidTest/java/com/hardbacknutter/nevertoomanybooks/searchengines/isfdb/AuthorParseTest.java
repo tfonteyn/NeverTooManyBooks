@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -61,12 +60,12 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        final SearchEngine searchEngine = EngineId.Isfdb.createSearchEngine(context);
+        final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        resolver = (IsfdbAuthorResolver) IsfdbAuthorResolver.create(context, searchEngine);
+        resolver = new IsfdbAuthorResolver(context, searchEngine);
 
         final SharedPreferences preferences = ServiceLocator.getInstance().getSharedPreferences();
         // Override the default 'false'

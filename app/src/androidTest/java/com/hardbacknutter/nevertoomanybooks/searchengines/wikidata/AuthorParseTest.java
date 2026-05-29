@@ -63,7 +63,7 @@ class AuthorParseTest
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        resolver = (WikidataAuthorResolver) WikidataAuthorResolver.create(context, searchEngine);
+        resolver = new WikidataAuthorResolver(context, searchEngine);
         authorParser = new WikidataAuthorParser(context, searchEngine);
     }
 

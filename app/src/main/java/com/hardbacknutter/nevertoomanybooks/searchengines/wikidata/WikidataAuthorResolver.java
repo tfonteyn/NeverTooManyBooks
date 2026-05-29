@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,8 +87,9 @@ public final class WikidataAuthorResolver
      * @param context      Current context
      * @param searchEngine the engine
      */
-    private WikidataAuthorResolver(@NonNull final Context context,
-                                   @NonNull final WikidataSearchEngine searchEngine) {
+    @VisibleForTesting
+    WikidataAuthorResolver(@NonNull final Context context,
+                           @NonNull final WikidataSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
         authorParser = new WikidataAuthorParser(context, searchEngine);
 

@@ -81,8 +81,9 @@ public final class DnbAuthorResolver
      * @param context      Current context
      * @param searchEngine the engine
      */
-    private DnbAuthorResolver(@NonNull final Context context,
-                              @NonNull final DnbSearchEngine searchEngine) {
+    @VisibleForTesting
+    DnbAuthorResolver(@NonNull final Context context,
+                      @NonNull final DnbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
         // hardcoded to the beta website
         authorUri = DnbSearchEngine.KATALOG_DNB_DE + "/DE/resource.html?id=%s";

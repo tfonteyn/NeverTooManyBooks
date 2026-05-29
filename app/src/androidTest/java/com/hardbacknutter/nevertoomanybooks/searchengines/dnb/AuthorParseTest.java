@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -61,12 +60,12 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        final SearchEngine searchEngine = EngineId.Dnb.createSearchEngine(context);
+        final DnbSearchEngine searchEngine = (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        resolver = (DnbAuthorResolver) DnbAuthorResolver.create(context, searchEngine);
+        resolver = new DnbAuthorResolver(context, searchEngine);
     }
 
     @Test

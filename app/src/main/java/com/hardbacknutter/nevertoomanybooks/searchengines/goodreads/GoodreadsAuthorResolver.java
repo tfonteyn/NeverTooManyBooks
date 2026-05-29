@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,8 +78,9 @@ public final class GoodreadsAuthorResolver
      * @param context      Current context
      * @param searchEngine the engine
      */
-    private GoodreadsAuthorResolver(@NonNull final Context context,
-                                    @NonNull final GoodreadsSearchEngine searchEngine) {
+    @VisibleForTesting
+    GoodreadsAuthorResolver(@NonNull final Context context,
+                            @NonNull final GoodreadsSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);

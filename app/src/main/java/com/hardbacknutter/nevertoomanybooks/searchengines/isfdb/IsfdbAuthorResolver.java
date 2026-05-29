@@ -73,8 +73,9 @@ public final class IsfdbAuthorResolver
      * @param context      Current context
      * @param searchEngine the engine
      */
-    private IsfdbAuthorResolver(@NonNull final Context context,
-                                @NonNull final IsfdbSearchEngine searchEngine) {
+    @VisibleForTesting
+    IsfdbAuthorResolver(@NonNull final Context context,
+                        @NonNull final IsfdbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
 
         authorSearchUrl = this.searchEngine.getHostUrl()

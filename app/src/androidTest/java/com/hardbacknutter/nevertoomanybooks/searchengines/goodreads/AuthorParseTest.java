@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
@@ -58,12 +57,12 @@ class AuthorParseTest
             throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        final SearchEngine searchEngine = EngineId.Goodreads.createSearchEngine(context);
+        final GoodreadsSearchEngine searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
-        resolver = (GoodreadsAuthorResolver) GoodreadsAuthorResolver.create(context, searchEngine);
+        resolver = new GoodreadsAuthorResolver(context, searchEngine);
     }
 
     @Test

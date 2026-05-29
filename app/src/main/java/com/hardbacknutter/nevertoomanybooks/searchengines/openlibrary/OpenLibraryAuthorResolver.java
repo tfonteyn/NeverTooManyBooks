@@ -72,7 +72,8 @@ public final class OpenLibraryAuthorResolver
      * @param context      Current context
      * @param searchEngine the engine
      */
-    private OpenLibraryAuthorResolver(@NonNull final Context context,
+    @VisibleForTesting
+    OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
         authorParser = new AuthorParser(context, searchEngine);
