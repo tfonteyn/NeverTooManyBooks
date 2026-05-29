@@ -115,7 +115,7 @@ public class LibraryThingSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.librarything.com",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_LIBRARY_THING)
+                .setIdentifierKeys(Identifier.SID_LIBRARY_THING, null)
                 .setPreferenceFragmentClazz(LibraryThingPreferencesFragment.class);
     }
 

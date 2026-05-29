@@ -142,7 +142,7 @@ public class GoogleBooksSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.googleapis.com",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_GOOGLE)
+                .setIdentifierKeys(Identifier.SID_GOOGLE, null)
                 .setMultipleCoverSizes(true)
                 .setPreferenceFragmentClazz(GoogleBooksPreferencesFragment.class);
     }

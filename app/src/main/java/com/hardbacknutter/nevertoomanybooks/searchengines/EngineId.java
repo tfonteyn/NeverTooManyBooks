@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -97,7 +98,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *                 Create the {@link Builder} using a unique string-id:
  *                 must be all lowercase, no-spaces; this becomes the {@link #key} field.
  *                 This key will be used in preferences, database settings,...
- *                 See existing engines for examples of the other parameters.
+ *                 <br>See existing engines for examples of the other parameters.
+ *                 For an example of using multiple Author-Resolvers,
+ *                 look at the Goodreads engine.
  *              </li>
  *              <li>If needed, add a preference fragment for the user to configure the engine.
  *                  The class MUST be annotated with {@code @Keep}.
@@ -113,7 +116,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *      <li>Add a new {@link Site} instance to the one or more list(s) in {@link #registerSites}
  *      </li>
  *
- *      <li>Configure {@link AuthorResolverFactory} as needed</li>
+ *      <li>Configure {@link AuthorResolverFactory#getEngines(Context, List)} as needed</li>
  * </ol>
  *
  * <strong>Note: NEVER change the {@link #key} of the sites</strong>.
@@ -192,12 +195,17 @@ public enum EngineId
     /** {@link SearchEngine.CoverByEdition} only. */
     private final boolean multipleCoverSizes;
     @Nullable
-    private final String identifierKey;
+    private final String bookIdentifierKey;
+    @Nullable
+    private final String authorIdentifierKey;
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private final Function<SearchEngineConfig.Builder, SearchEngineConfig> configSupplier;
     @Nullable
     private final Class<? extends Fragment> preferenceFragmentClazz;
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final BiFunction<Context, SearchEngine, List<AuthorResolver>> authorResolverSupplier;
     // Don't add to toString(), it would recurse
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -234,8 +242,11 @@ public enum EngineId
         this.defaultUrl = builder.defaultSearchUrl;
         this.defaultLocale = builder.defaultLocale;
 
-        this.identifierKey = builder.identifierKey;
+        this.bookIdentifierKey = builder.bookIdentifierKey;
+        this.authorIdentifierKey = builder.authorIdentifierKey;
         this.multipleCoverSizes = builder.multipleCoverSizes;
+
+        this.authorResolverSupplier = builder.authorResolverSupplier;
 
         this.configSupplier = builder.configConsumer;
         this.preferenceFragmentClazz = builder.preferenceFragmentClazz;
@@ -247,6 +258,8 @@ public enum EngineId
      * @param context   Current context
      * @param type      the type of Site list
      * @param languages the language cache container
+     *
+     * @throws IllegalArgumentException (debug)
      */
     static void registerSites(@NonNull final Context context,
                               @NonNull final Site.Type type,
@@ -505,13 +518,32 @@ public enum EngineId
     }
 
     /**
-     * Get the {@link Identifier} key.
+     * Get the book {@link Identifier} key.
      *
      * @return key, or {@code null} if there is none
      */
     @Nullable
-    public String getIdentifierKey() {
-        return identifierKey;
+    public String getBookIdentifierKey() {
+        return bookIdentifierKey;
+    }
+
+    /**
+     * Get the author {@link Identifier} key.
+     *
+     * @return key, or {@code null} if there is none
+     */
+    @Nullable
+    public String getAuthorIdentifierKey() {
+        return authorIdentifierKey;
+    }
+
+    @NonNull
+    List<AuthorResolver> getAuthorResolver(@NonNull final Context context,
+                                           @NonNull final SearchEngine searchEngine) {
+        if (authorResolverSupplier != null) {
+            return authorResolverSupplier.apply(context, searchEngine);
+        }
+        return List.of();
     }
 
     /**
@@ -604,7 +636,8 @@ public enum EngineId
                + ", defaultUrl=`" + defaultUrl + '`'
                + ", locale=" + defaultLocale
                + ", multipleCoverSizes=" + multipleCoverSizes
-               + ", identifierKey=" + identifierKey
+               + ", bookIdentifierKey=" + bookIdentifierKey
+               + ", authorIdentifierKey=" + authorIdentifierKey
                + ", clazz=" + clazz.getName()
                + ", preferenceFragmentClazz=" + preferenceFragmentClazz
                + '}';
@@ -633,11 +666,15 @@ public enum EngineId
         private boolean multipleCoverSizes;
 
         @Nullable
-        private String identifierKey;
+        private String bookIdentifierKey;
+        @Nullable
+        private String authorIdentifierKey;
         @Nullable
         private Class<? extends Fragment> preferenceFragmentClazz;
         @Nullable
         private Function<SearchEngineConfig.Builder, SearchEngineConfig> configConsumer;
+        @Nullable
+        private BiFunction<Context, SearchEngine, List<AuthorResolver>> authorResolverSupplier;
 
         /**
          * Constructor.
@@ -672,18 +709,27 @@ public enum EngineId
             return this;
         }
 
+
+        @NonNull
+        public Builder setIdentifierKeys(@NonNull final String identifierKey) {
+            return setIdentifierKeys(identifierKey, identifierKey);
+        }
+
         /**
-         * Set the {@link Identifier} for the website specific identifier for a book.
+         * Set the {@link Identifier} for the website specific identifier for a book and an author.
          * <p>
-         * FIXME: we're relying on book and author identifiers have the same key.
+         * FIXME: remove the need for authorIdentifierKey. We should that from the resolver supplier
          *
-         * @param identifierKey key
+         * @param bookIdentifierKey   key
+         * @param authorIdentifierKey key
          *
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder setIdentifierKey(@NonNull final String identifierKey) {
-            this.identifierKey = identifierKey;
+        public Builder setIdentifierKeys(@NonNull final String bookIdentifierKey,
+                                         @Nullable final String authorIdentifierKey) {
+            this.bookIdentifierKey = bookIdentifierKey;
+            this.authorIdentifierKey = authorIdentifierKey;
             return this;
         }
 
@@ -697,6 +743,21 @@ public enum EngineId
         @NonNull
         public Builder setMultipleCoverSizes(final boolean supports) {
             this.multipleCoverSizes = supports;
+            return this;
+        }
+
+        /**
+         * If the engine is going to do author resolving, configure the
+         * resolvers to use by setting a suitable list.
+         *
+         * @param supplier for the list
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setAuthorResolverSupplier(
+                @NonNull final BiFunction<Context, SearchEngine, List<AuthorResolver>> supplier) {
+            this.authorResolverSupplier = supplier;
             return this;
         }
 

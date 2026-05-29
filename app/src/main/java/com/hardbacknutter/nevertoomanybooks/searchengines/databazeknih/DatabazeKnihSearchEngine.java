@@ -183,8 +183,9 @@ public class DatabazeKnihSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.databazeknih.cz",
                                     new Locale("cs", "CZ"))
-                .setIdentifierKey(Identifier.SID_DATABAZE_KNIH)
-                .setPreferenceFragmentClazz(DatabazeKnihPreferencesFragment.class);
+                .setIdentifierKeys(Identifier.SID_DATABAZE_KNIH)
+                .setPreferenceFragmentClazz(DatabazeKnihPreferencesFragment.class)
+                .setAuthorResolverSupplier(DatabazeKnihAuthorResolver::create);
     }
 
     @NonNull

@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -37,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -119,13 +121,19 @@ public final class WikidataAuthorResolver
      * @return new instance
      */
     @NonNull
-    public static AuthorResolver create(@NonNull final Context context,
-                                        @NonNull final SearchEngine searchEngine) {
-        if (searchEngine instanceof WikidataSearchEngine) {
-            return new WikidataAuthorResolver(context, (WikidataSearchEngine) searchEngine);
-        } else {
-            return new WikidataAuthorResolver(context, searchEngine);
+    public static List<AuthorResolver> create(@NonNull final Context context,
+                                              @NonNull final SearchEngine searchEngine) {
+
+        if (AuthorResolverHelper.isEnabled(EngineId.Wikidata)) {
+            final AuthorResolver ar;
+            if (searchEngine instanceof WikidataSearchEngine) {
+                ar = new WikidataAuthorResolver(context, (WikidataSearchEngine) searchEngine);
+            } else {
+                ar = new WikidataAuthorResolver(context, searchEngine);
+            }
+            return List.of(ar);
         }
+        return List.of();
     }
 
     @Override

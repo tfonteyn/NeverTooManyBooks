@@ -207,8 +207,9 @@ public class BedethequeSearchEngine
                                             R.string.site_description_eu_comics),
                                     "https://www.bedetheque.com",
                                     Locale.FRANCE)
-                .setIdentifierKey(Identifier.SID_BEDETHEQUE)
+                .setIdentifierKeys(Identifier.SID_BEDETHEQUE)
                 .setPreferenceFragmentClazz(BedethequePreferencesFragment.class)
+                .setAuthorResolverSupplier(BedethequeAuthorResolver::create)
                 .setConfig(cb -> cb
                         // default timeouts based on limited testing
                         .setConnectTimeoutMs(15_000)

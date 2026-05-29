@@ -208,9 +208,10 @@ public class OpenLibrarySearchEngine
                                             R.string.site_description_catalog),
                                     "https://openlibrary.org",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_OPEN_LIBRARY)
+                .setIdentifierKeys(Identifier.SID_OPEN_LIBRARY)
                 .setMultipleCoverSizes(true)
-                .setPreferenceFragmentClazz(OpenLibraryPreferencesFragment.class);
+                .setPreferenceFragmentClazz(OpenLibraryPreferencesFragment.class)
+                .setAuthorResolverSupplier(OpenLibraryAuthorResolver::create);
     }
 
     @NonNull

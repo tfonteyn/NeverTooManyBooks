@@ -164,7 +164,7 @@ public class KbNlSearchEngine
                                             R.string.site_description_catalog),
                                     "https://webggc.oclc.org",
                                     new Locale("nl", "NL"))
-                .setIdentifierKey(Identifier.SID_KBNL)
+                .setIdentifierKeys(Identifier.SID_KBNL, null)
                 .setMultipleCoverSizes(true)
                 .setPreferenceFragmentClazz(KbNlPreferencesFragment.class);
     }

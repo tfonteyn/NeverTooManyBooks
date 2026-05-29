@@ -65,7 +65,7 @@ public final class AuthorResolverHelper {
     /**
      * An engine using its own resolver.
      *
-     * @param engineId the engine == resolver id
+     * @param engineId both requester and resolver
      *
      * @return flag
      */
@@ -76,8 +76,8 @@ public final class AuthorResolverHelper {
     /**
      * An engine using a given resolver.
      *
-     * @param engine   id
-     * @param resolver id
+     * @param engine   the requester
+     * @param resolver the resolver
      * @param defValue default
      *
      * @return flag
@@ -90,22 +90,51 @@ public final class AuthorResolverHelper {
                              .getBoolean(getPreferenceKey(engine, resolver), defValue);
     }
 
+    /**
+     * Construct the full preference key for the given engine.
+     *
+     * @param engine both requester and resolver
+     *
+     * @return key
+     *
+     * @see #getPreferenceKey(EngineId, EngineId)
+     */
     @NonNull
     public static String getPreferenceKey(@NonNull final EngineId engine) {
-        return engine.getPreferenceKey() + PK_RESOLVE_AUTHORS + engine.getPreferenceKey();
+        return getPreferenceKey(engine, engine);
     }
 
+    /**
+     * Construct the full preference key for the given engine.
+     *
+     * @param engine   the requester
+     * @param resolver the resolver
+     *
+     * @return key
+     *
+     * @see #getPreferenceKey(EngineId)
+     */
     @NonNull
     public static String getPreferenceKey(@NonNull final EngineId engine,
                                           @NonNull final EngineId resolver) {
         return engine.getPreferenceKey() + PK_RESOLVE_AUTHORS + resolver.getPreferenceKey();
     }
 
+    /**
+     * Get a list of the supported resolvers for the given engine.
+     * The list is cached locally.
+     *
+     * @param context      Current context
+     * @param searchEngine to use
+     *
+     * @return list
+     */
     @NonNull
     private List<AuthorResolver> getResolvers(@NonNull final Context context,
                                               @NonNull final SearchEngine searchEngine) {
         if (cachedResolvers == null) {
-            cachedResolvers = AuthorResolverFactory.getResolvers(context, searchEngine);
+            cachedResolvers = searchEngine.getEngineId()
+                                          .getAuthorResolver(context, searchEngine);
         }
         return cachedResolvers;
     }

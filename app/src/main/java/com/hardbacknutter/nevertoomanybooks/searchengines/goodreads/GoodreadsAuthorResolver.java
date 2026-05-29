@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -42,10 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataAuthorResolver;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -111,14 +114,26 @@ public final class GoodreadsAuthorResolver
      * @return new instance
      */
     @NonNull
-    public static AuthorResolver create(@NonNull final Context context,
-                                        @NonNull final SearchEngine searchEngine) {
-        if (searchEngine instanceof GoodreadsSearchEngine) {
-            return new GoodreadsAuthorResolver(context,
-                                               (GoodreadsSearchEngine) searchEngine);
-        } else {
-            return new GoodreadsAuthorResolver(context, searchEngine);
+    public static List<AuthorResolver> create(@NonNull final Context context,
+                                              @NonNull final SearchEngine searchEngine) {
+
+        final List<AuthorResolver> list = new ArrayList<>();
+
+        // Primary is Goodreads itself, enabled by default.
+        if (AuthorResolverHelper.isEnabled(EngineId.Goodreads)) {
+            if (searchEngine instanceof GoodreadsSearchEngine) {
+                list.add(new GoodreadsAuthorResolver(
+                        context, (GoodreadsSearchEngine) searchEngine));
+            } else {
+                list.add(new GoodreadsAuthorResolver(context, searchEngine));
+            }
         }
+
+        // Secondary is WikiData, disabled by default
+        if (AuthorResolverHelper.isEnabled(EngineId.Goodreads, EngineId.Wikidata, false)) {
+            list.addAll(WikidataAuthorResolver.create(context, searchEngine));
+        }
+        return list;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -109,14 +111,21 @@ public final class DatabazeKnihAuthorResolver
      * @return new instance
      */
     @NonNull
-    public static AuthorResolver create(@NonNull final Context context,
-                                        @NonNull final SearchEngine searchEngine) {
-        if (searchEngine instanceof DatabazeKnihSearchEngine) {
-            return new DatabazeKnihAuthorResolver(context,
-                                                  (DatabazeKnihSearchEngine) searchEngine);
-        } else {
-            return new DatabazeKnihAuthorResolver(context, searchEngine);
+    public static List<AuthorResolver> create(@NonNull final Context context,
+                                              @NonNull final SearchEngine searchEngine) {
+
+        if (AuthorResolverHelper.isEnabled(EngineId.DatabazeKnih)) {
+            final DatabazeKnihAuthorResolver ar;
+            if (searchEngine instanceof DatabazeKnihSearchEngine) {
+                ar = new DatabazeKnihAuthorResolver(
+                        context, (DatabazeKnihSearchEngine) searchEngine);
+            } else {
+                ar = new DatabazeKnihAuthorResolver(context, searchEngine);
+
+            }
+            return List.of(ar);
         }
+        return List.of();
     }
 
     @Override

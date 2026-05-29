@@ -79,7 +79,8 @@ public class WikidataSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.wikidata.org",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_WIKIDATA);
+                .setIdentifierKeys(Identifier.SID_WIKIDATA)
+                .setAuthorResolverSupplier(WikidataAuthorResolver::create);
     }
 
     @NonNull

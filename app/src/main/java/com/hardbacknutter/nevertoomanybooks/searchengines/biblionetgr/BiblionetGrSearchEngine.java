@@ -148,6 +148,7 @@ public class BiblionetGrSearchEngine
                                     SITE_URL,
                                     SITE_LOCALE)
                 .setPreferenceFragmentClazz(BiblionetGrPreferencesFragment.class)
+                .setAuthorResolverSupplier(BiblionetGrAuthorResolver::create)
                 .setConfig(cb -> cb
                         .build(SearchEngineConfig::new));
     }

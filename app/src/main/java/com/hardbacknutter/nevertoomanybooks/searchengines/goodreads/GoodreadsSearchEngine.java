@@ -178,8 +178,9 @@ public class GoodreadsSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.goodreads.com",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_GOODREADS)
-                .setPreferenceFragmentClazz(GoodreadsPreferencesFragment.class);
+                .setIdentifierKeys(Identifier.SID_GOODREADS)
+                .setPreferenceFragmentClazz(GoodreadsPreferencesFragment.class)
+                .setAuthorResolverSupplier(GoodreadsAuthorResolver::create);
     }
 
     @NonNull

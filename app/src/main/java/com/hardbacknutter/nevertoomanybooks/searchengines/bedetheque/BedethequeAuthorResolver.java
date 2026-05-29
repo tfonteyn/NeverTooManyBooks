@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -123,14 +125,20 @@ public class BedethequeAuthorResolver
      * @return new instance
      */
     @NonNull
-    public static AuthorResolver create(@NonNull final Context context,
-                                        @NonNull final SearchEngine searchEngine) {
-        if (searchEngine instanceof BedethequeSearchEngine) {
-            return new BedethequeAuthorResolver(context,
-                                                (BedethequeSearchEngine) searchEngine);
-        } else {
-            return new BedethequeAuthorResolver(context, searchEngine);
+    public static List<AuthorResolver> create(@NonNull final Context context,
+                                              @NonNull final SearchEngine searchEngine) {
+
+        if (AuthorResolverHelper.isEnabled(EngineId.Bedetheque)) {
+            final AuthorResolver ar;
+            if (searchEngine instanceof BedethequeSearchEngine) {
+                ar = new BedethequeAuthorResolver(
+                        context, (BedethequeSearchEngine) searchEngine);
+            } else {
+                ar = new BedethequeAuthorResolver(context, searchEngine);
+            }
+            return List.of(ar);
         }
+        return List.of();
     }
 
     @Override
@@ -436,6 +444,7 @@ public class BedethequeAuthorResolver
     }
 
     /**
+     * Parse an image.
      * <pre>
      *     {@code
      *     <div class="auteur-image">

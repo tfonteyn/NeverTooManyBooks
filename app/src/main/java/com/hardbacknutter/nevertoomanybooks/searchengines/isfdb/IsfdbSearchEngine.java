@@ -336,8 +336,9 @@ public class IsfdbSearchEngine
                                             R.string.site_description_fsf),
                                     "https://www.isfdb.org",
                                     SITE_LOCALE)
-                .setIdentifierKey(Identifier.SID_ISFDB)
+                .setIdentifierKeys(Identifier.SID_ISFDB)
                 .setPreferenceFragmentClazz(IsfdbPreferencesFragment.class)
+                .setAuthorResolverSupplier(IsfdbAuthorResolver::create)
                 .setConfig(cb -> cb
                         // default timeouts based on limited testing
                         .setConnectTimeoutMs(20_000)

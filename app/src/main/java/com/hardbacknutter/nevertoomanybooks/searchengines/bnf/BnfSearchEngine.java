@@ -173,8 +173,9 @@ public class BnfSearchEngine
                                             R.string.site_description_catalog),
                                     "https://catalogue.bnf.fr",
                                     SITE_LOCALE)
-                .setIdentifierKey(Identifier.SID_BNF)
+                .setIdentifierKeys(Identifier.SID_BNF)
                 .setPreferenceFragmentClazz(BnfPreferencesFragment.class)
+                .setAuthorResolverSupplier(BnfAuthorResolver::create)
                 .setConfig(cb -> cb
                         .build(SearchEngineConfig::new));
     }

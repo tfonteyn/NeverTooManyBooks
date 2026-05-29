@@ -150,8 +150,9 @@ public class LastDodoSearchEngine
                                             R.string.site_description_eu_comics),
                                     SITE_URL,
                                     new Locale("nl", "NL"))
-                .setIdentifierKey(Identifier.SID_LAST_DODO_NL)
+                .setIdentifierKeys(Identifier.SID_LAST_DODO_NL)
                 .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class)
+                .setAuthorResolverSupplier(LastdodoAuthorResolver::create)
                 .setConfig(cb -> cb
                         .build(SearchEngineConfig::new));
     }

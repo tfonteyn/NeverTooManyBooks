@@ -454,7 +454,7 @@ public class SearchBookUpdatesViewModel
                     Arrays.stream(EngineId.values())
                           .filter(EngineId::isEnabled)
                           .forEach(engineId -> {
-                              final String identifierKey = engineId.getIdentifierKey();
+                              final String identifierKey = engineId.getBookIdentifierKey();
                               if (identifierKey != null) {
                                   currentBook.getIdentifierValue(identifierKey)
                                              .ifPresent(sid -> externalIds.put(engineId, sid));

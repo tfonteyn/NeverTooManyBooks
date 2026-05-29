@@ -169,7 +169,8 @@ public class StripWebSearchEngine
                                             R.string.site_description_eu_comics),
                                     SITE_URL,
                                     new Locale("nl", "BE"))
-                .setPreferenceFragmentClazz(StripWebPreferencesFragment.class);
+                .setPreferenceFragmentClazz(StripWebPreferencesFragment.class)
+                .setAuthorResolverSupplier(StripWebAuthorResolver::create);
     }
 
     @NonNull

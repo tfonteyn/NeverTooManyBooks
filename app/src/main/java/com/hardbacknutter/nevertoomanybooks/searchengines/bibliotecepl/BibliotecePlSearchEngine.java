@@ -177,8 +177,9 @@ public class BibliotecePlSearchEngine
                                             R.string.site_description_catalog),
                                     SITE_URL,
                                     SITE_LOCALE)
-                .setIdentifierKey(Identifier.SID_BIBLIOTECE_PL)
+                .setIdentifierKeys(Identifier.SID_BIBLIOTECE_PL)
                 .setPreferenceFragmentClazz(BibliotecePlPreferencesFragment.class)
+                .setAuthorResolverSupplier(BibliotecePlAuthorResolver::create)
                 .setConfig(cb -> cb
                         // "books"
                         .setTagsToIgnore(Set.of("książki"))

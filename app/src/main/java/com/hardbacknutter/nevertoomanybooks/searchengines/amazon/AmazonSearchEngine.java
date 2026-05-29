@@ -356,7 +356,7 @@ public class AmazonSearchEngine
                                     "https://www.amazon.co.uk",
                 // The Locale will be dynamically set depending on the country
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_ASIN)
+                .setIdentifierKeys(Identifier.SID_ASIN, null)
                 .setPreferenceFragmentClazz(AmazonPreferencesFragment.class);
     }
 

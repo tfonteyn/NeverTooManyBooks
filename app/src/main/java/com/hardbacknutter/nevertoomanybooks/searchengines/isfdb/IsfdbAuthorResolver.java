@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -37,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -104,13 +106,19 @@ public final class IsfdbAuthorResolver
      * @return new instance
      */
     @NonNull
-    public static AuthorResolver create(@NonNull final Context context,
-                                        @NonNull final SearchEngine searchEngine) {
-        if (searchEngine instanceof IsfdbSearchEngine) {
-            return new IsfdbAuthorResolver(context, (IsfdbSearchEngine) searchEngine);
-        } else {
-            return new IsfdbAuthorResolver(context, searchEngine);
+    public static List<AuthorResolver> create(@NonNull final Context context,
+                                              @NonNull final SearchEngine searchEngine) {
+
+        if (AuthorResolverHelper.isEnabled(EngineId.Isfdb)) {
+            final AuthorResolver ar;
+            if (searchEngine instanceof IsfdbSearchEngine) {
+                ar = new IsfdbAuthorResolver(context, (IsfdbSearchEngine) searchEngine);
+            } else {
+                ar = new IsfdbAuthorResolver(context, searchEngine);
+            }
+            return List.of(ar);
         }
+        return List.of();
     }
 
     @Override

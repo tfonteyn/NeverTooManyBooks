@@ -212,8 +212,9 @@ public class StripInfoSearchEngine
                                             R.string.site_description_eu_comics),
                                     "https://www.stripinfo.be",
                                     new Locale("nl", "BE"))
-                .setIdentifierKey(Identifier.SID_STRIP_INFO)
+                .setIdentifierKeys(Identifier.SID_STRIP_INFO)
                 .setPreferenceFragmentClazz(StripInfoBePreferencesFragment.class)
+                .setAuthorResolverSupplier(StripInfoAuthorResolver::create)
                 .setConfig(cb -> cb
                         // default timeouts based on limited testing
                         .setConnectTimeoutMs(7_000)
