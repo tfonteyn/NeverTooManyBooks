@@ -310,7 +310,7 @@
     <string name="info_tap_on_thumbnail_to_zoom">Toque numa miniatura para exibir uma imagem maior.</string>
     <string name="info_tap_to_move_tag">Toque numa etiqueta para a mover de/para o livro.</string>
     <string name="lbl_add_or_edit_substitution">Adicionar/Editar uma regra de substituição</string>
-    <string name="info_substitutions_one_per_line">Adiciona uma substituição por linha ou deixa vazio para remover a tag</string>
+    <string name="info_substitutions_one_per_line">Adiciona uma substituição por linha ou deixa vazio para remover a etiqueta</string>
     <string name="info_download_successful">Transferência bem-sucedida</string>
     <string name="cd_btn_drag_handle">Arraste para reordenar esta lista</string>
     <string name="cd_clear_text_end_icon">Limpar texto</string>
