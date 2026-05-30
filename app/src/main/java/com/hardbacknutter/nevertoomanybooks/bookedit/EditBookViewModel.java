@@ -1062,22 +1062,16 @@ public class EditBookViewModel
      * @param fragmentId the hosting fragment for this set of fields
      * @param fieldGroup to create the fields for
      *
-     * @return the field added
-     *
      * @throws IllegalStateException (debug)
      */
-    @NonNull
-    List<Field<?, ? extends View>> initFields(@NonNull final Context context,
-                                              @NonNull final FragmentId fragmentId,
-                                              @NonNull final FieldGroup fieldGroup) {
+    void initFields(@NonNull final Context context,
+                    @NonNull final FragmentId fragmentId,
+                    @NonNull final FieldGroup fieldGroup) {
 
-        // init once only for each group
+        // Paranoia - init each group only once
         if (fieldGroups.contains(fieldGroup)) {
-            return allFields.stream()
-                            .filter(field -> field.getFragmentId() == fragmentId)
-                            .collect(Collectors.toList());
+            return;
         }
-        fieldGroups.add(fieldGroup);
 
         final List<Field<?, ? extends View>> fields;
         switch (fieldGroup) {
@@ -1099,8 +1093,9 @@ public class EditBookViewModel
             default:
                 throw new IllegalStateException("Unexpected value: " + fieldGroup);
         }
+
         allFields.addAll(fields);
-        return fields;
+        fieldGroups.add(fieldGroup);
     }
 
     @NonNull
