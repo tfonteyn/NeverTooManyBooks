@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 
 public class EditBookExternalIdFragment
@@ -50,16 +49,14 @@ public class EditBookExternalIdFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_external_id, container, false);
-    }
 
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        final View root = inflater
+                .inflate(R.layout.fragment_edit_book_external_id, container, false);
 
-        //noinspection DataFlowIssue
-        vm.initFields(getContext(), FragmentId.ExternalId, FieldGroup.ExternalId);
+        final ViewGroup content = root.findViewById(R.id.content_body);
+        vm.initFieldsExternalId(inflater, content, FragmentId.ExternalId);
+
+        return root;
     }
 
     @CallSuper

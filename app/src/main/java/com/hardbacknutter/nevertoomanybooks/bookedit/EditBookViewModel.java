@@ -22,17 +22,24 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.helper.widget.Flow;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.Instant;
@@ -71,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -97,7 +105,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.DecimalEditTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.EntityListDropDownMenuField;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.fields.IdentifierField;
 import com.hardbacknutter.nevertoomanybooks.fields.RatingBarEditField;
@@ -1319,81 +1326,71 @@ public class EditBookViewModel
         final FieldFormatter<String> sidLongFormatter =
                 (context, value) -> value != null && !"0".equals(value) ? value : "";
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_amazon,
-                                         Identifier.SID_ASIN)
-                           .setTextInputLayoutId(R.id.lbl_site_amazon)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_bedetheque,
-                                         Identifier.SID_BEDETHEQUE,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_bedetheque)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        final List<String> identifierKeys = List.of(Identifier.SID_ASIN,
+                                                    Identifier.SID_BEDETHEQUE,
+                                                    Identifier.SID_BIBLIOTECE_PL,
+                                                    Identifier.SID_BNF,
+                                                    Identifier.SID_DATABAZE_KNIH,
+                                                    Identifier.SID_DNB,
+                                                    Identifier.SID_GOODREADS,
+                                                    Identifier.SID_ISFDB,
+                                                    Identifier.SID_KBNL,
+                                                    Identifier.SID_LAST_DODO_NL,
+                                                    Identifier.SID_LIBRARY_THING,
+                                                    Identifier.SID_OPEN_LIBRARY,
+                                                    Identifier.SID_STRIP_INFO);
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_bibliotece_pl,
-                                         Identifier.SID_BIBLIOTECE_PL,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_bibliotece_pl)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        final int[] ids = new int[identifierKeys.size()];
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_bnf_fr,
-                                         Identifier.SID_BNF)
-                           .setTextInputLayoutId(R.id.lbl_site_bnf_fr)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        for (int i = 0; i < identifierKeys.size(); i++) {
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_databaze_knih,
-                                         Identifier.SID_DATABAZE_KNIH)
-                           .setTextInputLayoutId(R.id.lbl_site_databaze_knih)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+            final String identifierKey = identifierKeys.get(i);
+            final Optional<Identifier> oIdentifier = dao.find(identifierKey,
+                                                              Identifier.EntityType.Book);
+            // Paranoia
+            if (oIdentifier.isPresent()) {
+                final Identifier identifier = oIdentifier.get();
+                @LayoutRes
+                final int layoutId;
+                if (identifier.getType() == Identifier.Type.Number) {
+                    layoutId = R.layout.row_edit_sid_number;
+                } else {
+                    layoutId = R.layout.row_edit_sid_text;
+                }
+                final View v = inflater.inflate(layoutId, root, false);
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_dnb_de,
-                                         Identifier.SID_DNB)
-                           .setTextInputLayoutId(R.id.lbl_site_dnb_de)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+                final TextInputLayout til = v.findViewById(R.id.til);
+                final int tilId = View.generateViewId();
+                til.setId(tilId);
+                til.setHint(identifier.getName());
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_goodreads,
-                                         Identifier.SID_GOODREADS,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_goodreads)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+                final TextInputEditText tie = v.findViewById(R.id.tie);
+                final int tieId = View.generateViewId();
+                tie.setId(tieId);
+                // last one?
+                if (i == allFields.size() - 1) {
+                    tie.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                }
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_isfdb,
-                                         Identifier.SID_ISFDB,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_isfdb)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+                root.addView(v);
+                ids[i] = tilId;
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_kb_nl,
-                                         Identifier.SID_KBNL,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_kb_nl)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+                final EditTextField<String, EditText> field =
+                        new IdentifierField<>(fragmentId, tieId, identifierKey)
+                                .setTextInputLayoutId(tilId)
+                                .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_last_dodo_nl,
-                                         Identifier.SID_LAST_DODO_NL,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_last_dodo_nl)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+                if (identifier.getType() == Identifier.Type.Number) {
+                    field.setFormatter(sidLongFormatter, true);
+                }
+                allFields.add(field);
+            }
 
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_library_thing,
-                                         Identifier.SID_LIBRARY_THING,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_library_thing)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
-
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_open_library,
-                                         Identifier.SID_OPEN_LIBRARY)
-                           .setTextInputLayoutId(R.id.lbl_site_open_library)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
-
-        fields.add(new IdentifierField<>(fragmentId, R.id.site_strip_info_be,
-                                         Identifier.SID_STRIP_INFO,
-                                         sidLongFormatter, true)
-                           .setTextInputLayoutId(R.id.lbl_site_strip_info_be)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
-
-
-        return fields;
+            final Flow flow = root.findViewById(R.id.flow_site_ids);
+            flow.setReferencedIds(ids);
+        }
     }
 
     /**
