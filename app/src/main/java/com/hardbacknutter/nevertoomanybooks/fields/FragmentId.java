@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,8 +23,6 @@ import androidx.fragment.app.Fragment;
 
 /**
  * A non-null replacement for {@link Fragment#getTag()}.
- * <p>
- * Identifies the concrete fragment classes which will handle one or more {@link FieldGroup} lists.
  */
 public enum FragmentId {
     Main,

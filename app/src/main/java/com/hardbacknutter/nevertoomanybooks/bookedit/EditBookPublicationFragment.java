@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 
 public class EditBookPublicationFragment
@@ -58,7 +57,20 @@ public class EditBookPublicationFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
+
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        vm.initFieldsPublication(context, FragmentId.Publication);
+
         vb = FragmentEditBookPublicationBinding.inflate(inflater, container, false);
+
+        // On tablets the notes fields (notes, read-flag, read-dates...)
+        // are incorporated in the publication fragment
+        // On small screens (i.e. phones) they get their own tab
+        if (vb.notes != null) {
+            vm.initFieldsNotes(context, FragmentId.Publication);
+        }
+
         return vb.getRoot();
     }
 
@@ -67,16 +79,7 @@ public class EditBookPublicationFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Context context = getContext();
-
-        //noinspection DataFlowIssue
-        vm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
-        // On tablets the notes fields (notes, read-flag, read-dates...)
-        // are incorporated in the publication fragment
-        // On small screens (i.e. phones) they get their own tab
         if (vb.notes != null) {
-            vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
-
             // Always active as fields other than the read/readProgress fragment depend on it
             vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onReadStatusUpdate);
 

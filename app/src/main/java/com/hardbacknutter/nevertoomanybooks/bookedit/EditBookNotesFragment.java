@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadStatusFragmentFac
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 
 public class EditBookNotesFragment
@@ -53,6 +52,10 @@ public class EditBookNotesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
+
+        //noinspection DataFlowIssue
+        vm.initFieldsNotes(getContext(), FragmentId.Notes);
+
         return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
     }
 
@@ -61,15 +64,13 @@ public class EditBookNotesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection DataFlowIssue
-        vm.initFields(getContext(), FragmentId.Notes, FieldGroup.Notes);
-
         // Always active as fields other than the read/readProgress fragment depend on it
         vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onReadStatusUpdate);
 
         if (ServiceLocator.getInstance().isFieldEnabled(DBKey.READ__BOOL)
             || ServiceLocator.getInstance().isFieldEnabled(DBKey.READ_PROGRESS)) {
-            ReadStatusFragmentFactory.createEditor(getChildFragmentManager(), R.id.fragment_read,
+            ReadStatusFragmentFactory.createEditor(getChildFragmentManager(),
+                                                   R.id.fragment_read,
                                                    vm.getStyle());
         }
         // Update *this* fragment + the ReadStatusFragment

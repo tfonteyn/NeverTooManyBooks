@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -54,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiCh
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
@@ -120,6 +118,9 @@ public class EditBookFieldsFragment
         vb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
         coverViews = new ImageView[]{
                 vb.coverImage0, vb.coverImage1, vb.coverImage2, vb.coverImage3};
+
+        vm.initFieldsMain(FragmentId.Main);
+
         return vb.getRoot();
     }
 
@@ -130,10 +131,6 @@ public class EditBookFieldsFragment
 
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
-
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        vm.initFields(context, FragmentId.Main, FieldGroup.Main);
 
         createCoverDelegates();
 

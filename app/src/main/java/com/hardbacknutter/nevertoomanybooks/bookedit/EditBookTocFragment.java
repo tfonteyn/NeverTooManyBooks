@@ -76,7 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.AltEditionIsfdb;
@@ -193,7 +192,7 @@ public class EditBookTocFragment
                                      Lifecycle.State.RESUMED);
 
         //noinspection DataFlowIssue
-        vm.initFields(getContext(), FragmentId.Toc, FieldGroup.Toc);
+        vm.initFieldsToc(getContext(), FragmentId.Toc);
 
         initIsfdbTocSearchViewModel();
 
