@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ public class TextViewField<T>
     public TextViewField(@NonNull final FragmentId fragmentId,
                          @IdRes final int fieldViewId,
                          @NonNull final String fieldKey) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey, null);
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
     }
 
     /**
@@ -69,7 +69,8 @@ public class TextViewField<T>
                          @IdRes final int fieldViewId,
                          @NonNull final String fieldKey,
                          @NonNull final FieldFormatter<T> formatter) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey, formatter);
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+        setFormatter(formatter);
     }
 
     /**
@@ -86,7 +87,8 @@ public class TextViewField<T>
                          @NonNull final String fieldKey,
                          @NonNull final String prefKey,
                          @NonNull final FieldFormatter<T> formatter) {
-        super(fragmentId, fieldViewId, fieldKey, prefKey, formatter);
+        super(fragmentId, fieldViewId, fieldKey, prefKey);
+        setFormatter(formatter);
     }
 
     /**
@@ -124,7 +126,7 @@ public class TextViewField<T>
         final TextView view = getView();
         if (view != null) {
             try {
-                formatter.apply(rawValue, view);
+                getFormatter().apply(rawValue, view);
 
             } catch (@NonNull final ClassCastException e) {
                 // Due to the way a Book loads data from the database,

@@ -1129,8 +1129,8 @@ public class EditBookViewModel
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.original_language,
                                              DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
-                                             languageFormatter, true,
                                              this::getAllLanguagesCodes)
+                           .setFormatter(languageFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_original_language));
 
         fields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
@@ -1144,8 +1144,8 @@ public class EditBookViewModel
         //                  .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.LANGUAGE,
-                                             languageFormatter, true,
                                              this::getAllLanguagesCodes)
+                           .setFormatter(languageFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_language)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
@@ -1202,8 +1202,8 @@ public class EditBookViewModel
 
 
         // MUST be defined before the currency field is defined.
-        fields.add(new DecimalEditTextField(fragmentId, R.id.price_listed, DBKey.PRICE_LISTED,
-                                            doubleNumberFormatter)
+        fields.add(new DecimalEditTextField(fragmentId, R.id.price_listed, DBKey.PRICE_LISTED)
+                           .setFormatter(doubleNumberFormatter, false)
                            .setTextInputLayoutId(R.id.lbl_price_listed)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            // Copy to price_paid field if applicable
@@ -1273,8 +1273,8 @@ public class EditBookViewModel
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // MUST be defined before the currency.
-        fields.add(new DecimalEditTextField(fragmentId, R.id.price_paid, DBKey.PRICE_PAID,
-                                            doubleNumberFormatter)
+        fields.add(new DecimalEditTextField(fragmentId, R.id.price_paid, DBKey.PRICE_PAID)
+                           .setFormatter(doubleNumberFormatter, false)
                            .setTextInputLayoutId(R.id.lbl_price_paid)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            .addRelatedViews(R.id.lbl_price_paid,
@@ -1376,7 +1376,7 @@ public class EditBookViewModel
 
         // We're no longer using the LongNumberFormatter as we don't
         // need the extraction to a 'long'. Identifiers are now all 'String' values.
-        // Instead, use a custom formatter to keep the field empty
+        // Just use a custom formatter to keep the field empty
         // instead of displaying any "0" values.
         final FieldFormatter<String> sidLongFormatter =
                 (context, value) -> value != null && !"0".equals(value) ? value : "";

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.IdentifierOwner;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 public class IdentifierField<V extends EditText>
         extends EditTextField<String, V> {
@@ -44,24 +43,6 @@ public class IdentifierField<V extends EditText>
                            final int fieldViewId,
                            @NonNull final String fieldKey) {
         super(fragmentId, fieldViewId, fieldKey);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param fragmentId     the hosting {@link FragmentId} for this {@link Field}
-     * @param fieldViewId    the view id for this {@link Field}
-     * @param fieldKey       Key used to access a {@link DataManager}
-     *                       Set to {@code ""} to suppress all access.
-     * @param formatter      formatter to use
-     * @param enableReformat flag: reformat after every user-change.
-     */
-    public IdentifierField(@NonNull final FragmentId fragmentId,
-                           final int fieldViewId,
-                           @NonNull final String fieldKey,
-                           @NonNull final FieldFormatter<String> formatter,
-                           final boolean enableReformat) {
-        super(fragmentId, fieldViewId, fieldKey, formatter, enableReformat);
     }
 
     @Override

@@ -57,7 +57,7 @@ public class EditTextField<T, V extends EditText>
     private static final int REFORMAT_DELAY_MS = 500;
 
     /** Enable or disable the formatting text watcher. */
-    private final boolean enableReformat;
+    private boolean enableReformat;
 
     /** Timer for the text watcher. */
     private long lastChange;
@@ -74,31 +74,27 @@ public class EditTextField<T, V extends EditText>
      * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
+     *                    Set to {@code ""} to suppress all access.
      */
     public EditTextField(@NonNull final FragmentId fragmentId,
                          @IdRes final int fieldViewId,
                          @NonNull final String fieldKey) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey, null);
-        enableReformat = false;
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
     }
 
     /**
-     * Constructor.
+     * Set an optional formatter.
      *
-     * @param fragmentId     the hosting {@link FragmentId} for this {@link Field}
-     * @param fieldViewId    the view id for this {@link Field}
-     * @param fieldKey       Key used to access a {@link DataManager}
-     *                       Set to {@code ""} to suppress all access.
      * @param formatter      formatter to use
      * @param enableReformat flag: reformat after every user-change.
+     * @return {@code this} (for chaining)
      */
-    public EditTextField(@NonNull final FragmentId fragmentId,
-                         @IdRes final int fieldViewId,
-                         @NonNull final String fieldKey,
-                         @NonNull final FieldFormatter<T> formatter,
-                         final boolean enableReformat) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey, formatter);
+    @NonNull
+    public EditTextField<T, V> setFormatter(@NonNull final FieldFormatter<T> formatter,
+                                            final boolean enableReformat) {
+        setFormatter(formatter);
         this.enableReformat = enableReformat && formatter instanceof EditFieldFormatter;
+        return this;
     }
 
     /**
@@ -185,7 +181,7 @@ public class EditTextField<T, V extends EditText>
             CharSequence text = null;
             try {
                 //  First format the value as normal.
-                text = formatter.format(view.getContext(), rawValue);
+                text = getFormatter().format(view.getContext(), rawValue);
 
             } catch (@NonNull final ClassCastException e) {
                 // 1. Due to the way a Book loads data from the database,
@@ -241,8 +237,8 @@ public class EditTextField<T, V extends EditText>
 
         final String text = editable.toString().strip();
         // Update the actual value
-        if (formatter instanceof EditFieldFormatter) {
-            rawValue = ((EditFieldFormatter<T>) formatter).extract(context, text);
+        if (getFormatter() instanceof EditFieldFormatter) {
+            rawValue = ((EditFieldFormatter<T>) getFormatter()).extract(context, text);
         } else {
             // Without a formatter, we MUST assume <T> to be a String.
             // Make sure NOT to replace a 'null' value with an empty string
@@ -257,7 +253,7 @@ public class EditTextField<T, V extends EditText>
 
         if (enableReformat) {
             if (System.currentTimeMillis() - lastChange > REFORMAT_DELAY_MS) {
-                final String formatted = formatter.format(context, rawValue).toString();
+                final String formatted = getFormatter().format(context, rawValue).toString();
                 // If different, replace the encoded value with the formatted value.
                 if (!text.equalsIgnoreCase(formatted)) {
                     view.removeTextChangedListener(this);

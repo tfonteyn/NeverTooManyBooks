@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 
 /**
@@ -60,32 +59,12 @@ public class AutoCompleteTextField
         this.listSupplier = listSupplier;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param fragmentId     the hosting {@link FragmentId} for this {@link Field}
-     * @param fieldViewId    the view id for this {@link Field}
-     * @param fieldKey       Key used to access a {@link DataManager}
-     * @param formatter      formatter to use
-     * @param enableReformat flag: reformat after every user-change.
-     * @param listSupplier   Supplier with auto complete values
-     */
-    public AutoCompleteTextField(@NonNull final FragmentId fragmentId,
-                                 @IdRes final int fieldViewId,
-                                 @NonNull final String fieldKey,
-                                 @NonNull final FieldFormatter<String> formatter,
-                                 final boolean enableReformat,
-                                 @NonNull final Supplier<List<String>> listSupplier) {
-        super(fragmentId, fieldViewId, fieldKey, formatter, enableReformat);
-        this.listSupplier = listSupplier;
-    }
-
     @Override
     public void setParentView(@NonNull final View parent) {
         super.setParentView(parent);
         requireView().setAdapter(FieldArrayAdapter.createAutoComplete(
                 parent.getContext(),
                 listSupplier.get(),
-                formatter));
+                getFormatter()));
     }
 }

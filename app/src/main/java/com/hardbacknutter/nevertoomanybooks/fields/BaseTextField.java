@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Collection;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -54,7 +53,8 @@ abstract class BaseTextField<T, V extends TextView>
         extends BaseField<T, V> {
 
     @NonNull
-    final FieldFormatter<T> formatter;
+    private FieldFormatter<T> formatter = (context, value)
+            -> value != null ? String.valueOf(value) : "";
 
     @ExtEndIconDelegate.EndIconMode
     int endIconMode;
@@ -79,17 +79,21 @@ abstract class BaseTextField<T, V extends TextView>
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
      * @param prefKey     The preference key to check if this Field is used or not
-     * @param formatter   (optional) formatter to use
      */
     BaseTextField(@NonNull final FragmentId fragmentId,
                   @IdRes final int fieldViewId,
                   @NonNull final String fieldKey,
-                  @NonNull final String prefKey,
-                  @Nullable final FieldFormatter<T> formatter) {
+                  @NonNull final String prefKey) {
         super(fragmentId, fieldViewId, fieldKey, prefKey);
-        this.formatter = Objects.requireNonNullElseGet(
-                formatter,
-                () -> (context, value) -> value != null ? String.valueOf(value) : "");
+    }
+
+    void setFormatter(@NonNull final FieldFormatter<T> formatter) {
+        this.formatter = formatter;
+    }
+
+    @NonNull
+    public FieldFormatter<T> getFormatter() {
+        return formatter;
     }
 
     @Override

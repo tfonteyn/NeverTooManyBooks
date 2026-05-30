@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
@@ -54,13 +53,11 @@ public class DecimalEditTextField
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
-     * @param formatter   to use
      */
     public DecimalEditTextField(@NonNull final FragmentId fragmentId,
                                 @IdRes final int fieldViewId,
-                                @NonNull final String fieldKey,
-                                @NonNull final FieldFormatter<Number> formatter) {
-        super(fragmentId, fieldViewId, fieldKey, formatter, false);
+                                @NonNull final String fieldKey) {
+        super(fragmentId, fieldViewId, fieldKey);
     }
 
     @Override
