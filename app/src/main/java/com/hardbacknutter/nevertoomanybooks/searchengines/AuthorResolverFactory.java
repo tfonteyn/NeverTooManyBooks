@@ -69,10 +69,10 @@ public final class AuthorResolverFactory {
                           EngineId.Dnb,
                           EngineId.Goodreads)
                       .filter(AuthorResolverHelper::isEnabled)
-                      // Sanity check, all engines here should have keys,
-                      // or we should not have added them!
-                      .filter(engineId -> engineId.getAuthorIdentifierKey() != null)
-                      .filter(engineId -> sidKeys.contains(engineId.getAuthorIdentifierKey()))
+                      .filter(engineId -> engineId
+                              .getAuthorIdentifierKey()
+                              .map(sidKeys::contains)
+                              .orElse(false))
                       .collect(Collectors.toList());
 
         return Stream.concat(searchByName.stream(), searchBySid.stream())

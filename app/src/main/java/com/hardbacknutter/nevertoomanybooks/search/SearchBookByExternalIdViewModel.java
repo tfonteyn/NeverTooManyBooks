@@ -81,12 +81,8 @@ public class SearchBookByExternalIdViewModel
 
     @NonNull
     Optional<Identifier> getIdentifier(@NonNull final EngineId engineId) {
-        final String identifierKey = engineId.getBookIdentifierKey();
-        if (identifierKey != null) {
-            return identifierDao.find(identifierKey, Identifier.EntityType.Book);
-        } else {
-            return Optional.empty();
-        }
+        return engineId.getBookIdentifierKey()
+                       .flatMap(key -> identifierDao.find(key, Identifier.EntityType.Book));
     }
 
     @NonNull

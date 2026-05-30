@@ -453,13 +453,10 @@ public class SearchBookUpdatesViewModel
                     final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
                     Arrays.stream(EngineId.values())
                           .filter(EngineId::isEnabled)
-                          .forEach(engineId -> {
-                              final String identifierKey = engineId.getBookIdentifierKey();
-                              if (identifierKey != null) {
-                                  currentBook.getIdentifierValue(identifierKey)
-                                             .ifPresent(sid -> externalIds.put(engineId, sid));
-                              }
-                          });
+                          .forEach(engineId -> engineId
+                                  .getBookIdentifierKey()
+                                  .flatMap(currentBook::getIdentifierValue)
+                                  .ifPresent(sid -> externalIds.put(engineId, sid)));
 
                     if (!externalIds.isEmpty()) {
                         searchCriteria.setSids(externalIds);

@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -520,21 +521,21 @@ public enum EngineId
     /**
      * Get the book {@link Identifier} key.
      *
-     * @return key, or {@code null} if there is none
+     * @return key
      */
-    @Nullable
-    public String getBookIdentifierKey() {
-        return bookIdentifierKey;
+    @NonNull
+    public Optional<String> getBookIdentifierKey() {
+        return bookIdentifierKey == null ? Optional.empty() : Optional.of(bookIdentifierKey);
     }
 
     /**
      * Get the author {@link Identifier} key.
      *
-     * @return key, or {@code null} if there is none
+     * @return key
      */
-    @Nullable
-    public String getAuthorIdentifierKey() {
-        return authorIdentifierKey;
+    @NonNull
+    public Optional<String> getAuthorIdentifierKey() {
+        return authorIdentifierKey == null ? Optional.empty() : Optional.of(authorIdentifierKey);
     }
 
     @NonNull
