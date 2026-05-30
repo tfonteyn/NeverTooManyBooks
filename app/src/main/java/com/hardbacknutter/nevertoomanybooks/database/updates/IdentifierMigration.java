@@ -268,7 +268,8 @@ public class IdentifierMigration {
     void fixType(@NonNull final String key) {
         getPredefined(key).ifPresent(identifier -> db
                 .execSQL(UPDATE_ + TBL_IDENTIFIERS.getName()
-                         + _SET_ + DBKey.IDENTIFIERS.TYPE + "='" + identifier.getType() + '\''
+                         + _SET_ + DBKey.IDENTIFIERS.TYPE
+                         + "='" + identifier.getType().getId() + '\''
                          + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + identifier.getKey() + '\''));
     }
 

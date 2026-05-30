@@ -134,7 +134,7 @@ public class IdentifierDaoImpl
         stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindLong(++c, identifier.getEntityType().getId());
 
-        stmt.bindString(++c, String.valueOf(identifier.getType()));
+        stmt.bindString(++c, String.valueOf(identifier.getType().getId()));
         stmt.bindString(++c, identifier.getName());
 
         stmt.bindString(++c, identifier.getWikidataClaim().orElse(null));
@@ -166,7 +166,7 @@ public class IdentifierDaoImpl
         stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindLong(++c, identifier.getEntityType().getId());
 
-        stmt.bindString(++c, String.valueOf(identifier.getType()));
+        stmt.bindString(++c, String.valueOf(identifier.getType().getId()));
         stmt.bindString(++c, identifier.getName());
 
         stmt.bindString(++c, identifier.getWikidataClaim().orElse(null));

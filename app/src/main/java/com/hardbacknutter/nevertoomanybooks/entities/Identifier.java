@@ -395,7 +395,7 @@ public class Identifier
     /**
      * Get the type.
      *
-     * @return {@code L} for a {@code long}, {@code S} for a {@code String}
+     * @return {@link Type}.
      */
     @NonNull
     public Type getType() {
