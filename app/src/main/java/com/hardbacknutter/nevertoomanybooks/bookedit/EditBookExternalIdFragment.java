@@ -23,17 +23,26 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.helper.widget.Flow;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
+import com.hardbacknutter.nevertoomanybooks.fields.IdentifierField;
 
 public class EditBookExternalIdFragment
         extends EditBookBaseFragment {
@@ -53,8 +62,44 @@ public class EditBookExternalIdFragment
         final View root = inflater
                 .inflate(R.layout.fragment_edit_book_external_id, container, false);
 
+        vm.initFieldsExternalId(FragmentId.ExternalId);
+
         final ViewGroup content = root.findViewById(R.id.content_body);
-        vm.initFieldsExternalId(inflater, content, FragmentId.ExternalId);
+        final Flow flow = content.findViewById(R.id.flow_site_ids);
+
+        // collect ids to add to the Flow layout
+        final int[] ids = new int[EditBookViewModel.KEYS.length];
+
+        for (int i = 0; i < EditBookViewModel.KEYS.length; i++) {
+            final IdentifierField<EditText> field = (IdentifierField<EditText>)
+                    vm.<String, EditText>requireField(EditBookViewModel.KEYS[i]);
+
+            final Identifier identifier = field.getIdentifier();
+            @LayoutRes
+            final int layoutId;
+            if (identifier.getType() == Identifier.Type.Number) {
+                layoutId = R.layout.row_edit_sid_number;
+            } else {
+                layoutId = R.layout.row_edit_sid_text;
+            }
+            final View view = inflater.inflate(layoutId, content, false);
+
+            final TextInputLayout til = view.findViewById(R.id.til);
+            final int tilId = field.getTextInputLayoutId();
+            til.setId(tilId);
+            til.setHint(identifier.getName());
+            ids[i] = tilId;
+
+            final TextInputEditText tie = view.findViewById(R.id.tie);
+            tie.setId(field.getFieldViewId());
+            // last one?
+            if (i == EditBookViewModel.KEYS.length - 1) {
+                tie.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            }
+
+            content.addView(view);
+        }
+        flow.setReferencedIds(ids);
 
         return root;
     }

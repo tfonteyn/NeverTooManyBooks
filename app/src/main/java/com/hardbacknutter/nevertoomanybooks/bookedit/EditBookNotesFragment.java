@@ -53,8 +53,7 @@ public class EditBookNotesFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        //noinspection DataFlowIssue
-        vm.initFieldsNotes(getContext(), FragmentId.Notes);
+        vm.initFieldsNotes(FragmentId.Notes);
 
         return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
     }

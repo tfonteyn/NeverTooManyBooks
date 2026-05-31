@@ -22,24 +22,17 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.helper.widget.Flow;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.Instant;
@@ -49,9 +42,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -133,8 +128,37 @@ public class EditBookViewModel
      */
     public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
-    /** the list with all fields. */
-    private final List<Field<?, ? extends View>> allFields = new ArrayList<>();
+    /**
+     * The {@link Identifier} keys we allow the user to edit.
+     * NEWTHINGS: adding a new search engine:
+     *  optional: external id KEY add a field; Keep them alphabetic.
+     */
+    static final String[] KEYS = {
+            Identifier.SID_ASIN,
+            Identifier.SID_BEDETHEQUE,
+            Identifier.SID_BIBLIOTECE_PL,
+            Identifier.SID_BNF,
+            Identifier.SID_DATABAZE_KNIH,
+            Identifier.SID_DNB,
+            Identifier.SID_GOODREADS,
+            Identifier.SID_ISFDB,
+            Identifier.SID_KBNL,
+            Identifier.SID_LAST_DODO_NL,
+            Identifier.SID_LIBRARY_THING,
+            Identifier.SID_OPEN_LIBRARY,
+            Identifier.SID_STRIP_INFO};
+
+    /** key: the field-key. */
+    private final Map<String, Field<?, ? extends View>> fields = new HashMap<>();
+    /** key: the field-key. */
+    private final Map<String, FragmentId> fieldFragment = new HashMap<>();
+
+    /** Prevent recreating fields after a device rotation etc. */
+    private boolean initFieldsMain;
+    private boolean initFieldsPublication;
+    private boolean initFieldsNotes;
+    private boolean initFieldsToc;
+    private boolean initFieldsExternalId;
 
     /** The key is the fragment tag. */
     private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
@@ -345,50 +369,58 @@ public class EditBookViewModel
         return menuHandlers;
     }
 
+    /**
+     * Get the list of fields displayed by the given fragment.
+     *
+     * @param fragmentId to get the list for
+     *
+     * @return fields
+     */
     @NonNull
     List<Field<?, ? extends View>> getFields(@NonNull final FragmentId fragmentId) {
-        return allFields.stream()
-                        .filter(field -> field.getFragmentId() == fragmentId)
-                        .collect(Collectors.toList());
+        return fieldFragment.entrySet()
+                            .stream()
+                            .filter(entry -> entry.getValue() == fragmentId)
+                            .map(Map.Entry::getKey)
+                            .map(fields::get)
+                            .collect(Collectors.toList());
     }
 
     /**
-     * Find the Field (across all fragments) associated with the passed ID.
-     * If two fragments contain the same field (id) (which really should never happen... flw),
-     * the first one found is returned.
+     * Get the Field (across all fragments) for the given key.
      *
-     * @param id Field/View ID
+     * @param key Field key
+     * @param <T> type of Field value.
+     * @param <V> type of View for this field.
      *
      * @return Optional with the Field
      */
     @NonNull
-    private <T, V extends View> Optional<Field<T, V>> getField(@IdRes final int id) {
+    private <T, V extends View> Optional<Field<T, V>> getField(@NonNull final String key) {
         //noinspection unchecked
-        return allFields.stream()
-                        .filter(field -> field.getFieldViewId() == id)
-                        .map(field -> (Field<T, V>) field)
-                        .findFirst();
+        final Field<T, V> field = (Field<T, V>) fields.get(key);
+        return field == null ? Optional.empty() : Optional.of(field);
     }
 
     /**
-     * Return the Field associated with the passed ID.
+     * Get the Field for the given key.
      *
+     * @param key Field key
      * @param <T> type of Field value.
      * @param <V> type of View for this field.
-     * @param id  Field/View ID
      *
-     * @return Associated Field.
+     * @return Field.
      *
-     * @throws IllegalArgumentException if the field id was not found
+     * @throws IllegalArgumentException if the field was not found
      */
     @NonNull
-    <T, V extends View> Field<T, V> requireField(@IdRes final int id) {
+    <T, V extends View> Field<T, V> requireField(@NonNull final String key) {
         //noinspection unchecked
-        return allFields.stream()
-                        .filter(field -> field.getFieldViewId() == id)
-                        .map(field -> (Field<T, V>) field)
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
+        final Field<T, V> field = (Field<T, V>) fields.get(key);
+        if (field != null) {
+            return field;
+        }
+        throw new IllegalArgumentException("Field not found: " + key);
     }
 
     /**
@@ -457,16 +489,16 @@ public class EditBookViewModel
     /**
      * Called when a picker returns a newly selected date.
      *
-     * @param fieldIds   to update
+     * @param fieldKeys   to update
      * @param selections date(s) to set
      */
-    void onDateSet(@NonNull final int[] fieldIds,
+    void onDateSet(@NonNull final String[] fieldKeys,
                    @NonNull final Long[] selections) {
-        for (int i = 0; i < fieldIds.length; i++) {
+        for (int i = 0; i < fieldKeys.length; i++) {
             if (selections[i] == null) {
-                onDateSet(fieldIds[i], "");
+                onDateSet(fieldKeys[i], "");
             } else {
-                onDateSet(fieldIds[i], Instant.ofEpochMilli(selections[i])
+                onDateSet(fieldKeys[i], Instant.ofEpochMilli(selections[i])
                                               .atZone(ZoneId.systemDefault())
                                               .format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
@@ -476,13 +508,13 @@ public class EditBookViewModel
     /**
      * Called when a picker returns a newly selected date.
      *
-     * @param fieldId to update
+     * @param fieldKey to update
      * @param dateStr to set
      */
-    void onDateSet(@IdRes final int fieldId,
+    void onDateSet(@NonNull final String fieldKey,
                    @NonNull final String dateStr) {
 
-        final Field<String, TextView> field = requireField(fieldId);
+        final Field<String, TextView> field = requireField(fieldKey);
         final String previous = field.getValue();
 
         // Update BOTH the book and the field
@@ -492,7 +524,7 @@ public class EditBookViewModel
 
         // If we are setting the read-end date,
         // then we must set the read-flag/progress accordingly
-        if (fieldId == R.id.read_end && !dateStr.isEmpty()) {
+        if (DBKey.READ_END__DATE.equals(fieldKey) && !dateStr.isEmpty()) {
             book.putBoolean(DBKey.READ__BOOL, true);
             book.putString(DBKey.READ_PROGRESS, "");
             // Update *this* fragment + the ReadStatusFragment
@@ -509,7 +541,7 @@ public class EditBookViewModel
     }
 
     boolean isAnthology() {
-        final Field<Long, View> typeField = requireField(R.id.book_type);
+        final Field<Long, View> typeField = requireField(DBKey.CONTENT_TYPE);
         return Objects.equals(typeField.getValue(), Book.ContentType.Anthology.getId());
     }
 
@@ -886,25 +918,25 @@ public class EditBookViewModel
     void updateAuthors(@NonNull final List<Author> list) {
         // Update BOTH the book and the field
         book.setAuthors(list);
-        requireField(R.id.author).setValue(list);
+        requireField(Book.BKEY_AUTHOR_LIST).setValue(list);
     }
 
     void updateSeries(@NonNull final List<Series> list) {
         // Update BOTH the book and the field
         book.setSeries(list);
-        requireField(R.id.series_title).setValue(list);
+        requireField(Book.BKEY_SERIES_LIST).setValue(list);
     }
 
     void updatePublishers(@NonNull final List<Publisher> list) {
         // Update BOTH the book and the field
         book.setPublishers(list);
-        requireField(R.id.publisher).setValue(list);
+        requireField(Book.BKEY_PUBLISHER_LIST).setValue(list);
     }
 
     void updateTags(@NonNull final List<Tag> list) {
         // Update BOTH the book and the field
         book.setTags(list);
-        requireField(R.id.tags).setValue(list);
+        requireField(Book.BKEY_TAG_LIST).setValue(list);
     }
 
     void updateBookshelves(@NonNull final Set<Long> previousSelection,
@@ -915,7 +947,7 @@ public class EditBookViewModel
             return;
         }
 
-        final Field<List<Bookshelf>, TextView> field = requireField(R.id.bookshelves);
+        final Field<List<Bookshelf>, TextView> field = requireField(Book.BKEY_BOOKSHELF_LIST);
         final List<Bookshelf> previous = field.getValue();
 
         final List<Bookshelf> selected =
@@ -1054,116 +1086,141 @@ public class EditBookViewModel
         tocEntryDao.fixId(context, tocEntry, bookLocale);
     }
 
+    /**
+     * Add they field and remember to which fragment it belong.
+     * <p>
+     * If the field is already present, the new copy will replace the old one.
+     * Keys needs to be unique across fragments.
+     * i.e. a field can only be present on one fragment. Not enforced but essential.
+     *
+     * @param fragmentId the hosting fragment of the field
+     * @param field      to add
+     */
+    void addField(@NonNull final FragmentId fragmentId,
+                  @NonNull final Field<?, ? extends View> field) {
+        fields.put(field.getFieldKey(), field);
+        fieldFragment.put(field.getFieldKey(), fragmentId);
+    }
+
     @SuppressWarnings("SameParameterValue")
     void initFieldsMain(@NonNull final FragmentId fragmentId) {
-        allFields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
-                                          DBKey.FK_AUTHOR,
-                                          listFormatterAutoDetails)
+        if (initFieldsMain) {
+            return;
+        }
+        initFieldsMain = true;
+
+        addField(fragmentId, new TextViewField<>(R.id.author, Book.BKEY_AUTHOR_LIST,
+                                                 DBKey.FK_AUTHOR,
+                                                 listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_author)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.series_title, Book.BKEY_SERIES_LIST,
-                                          DBKey.FK_SERIES,
-                                          listFormatterAutoDetails)
+        addField(fragmentId, new TextViewField<>(R.id.series_title, Book.BKEY_SERIES_LIST,
+                                                 DBKey.FK_SERIES,
+                                                 listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_series));
 
-        allFields.add(new EditTextField<>(fragmentId, R.id.title, DBKey.TITLE)
+        addField(fragmentId, new EditTextField<>(R.id.title, DBKey.TITLE)
                            .setTextInputLayoutId(R.id.lbl_title)
                            .setCapitalization(EditTextField.Capitalization.Title)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
-        allFields.add(new EditTextField<>(fragmentId, R.id.original_title,
-                                          DBKey.TRANSLATION_ORIGINAL_TITLE)
+        addField(fragmentId, new EditTextField<>(R.id.original_title,
+                                                 DBKey.TRANSLATION_ORIGINAL_TITLE)
                            .setTextInputLayoutId(R.id.lbl_original_title)
                            .setCapitalization(EditTextField.Capitalization.Title)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        allFields.add(new AutoCompleteTextField(fragmentId, R.id.original_language,
-                                                DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
-                                                this::getAllLanguagesCodes)
+        addField(fragmentId, new AutoCompleteTextField(R.id.original_language,
+                                                       DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
+                                                       c -> getAllLanguagesCodes())
                            .setFormatter(languageFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_original_language));
 
-        allFields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
+        addField(fragmentId, new EditTextField<>(R.id.description, DBKey.DESCRIPTION)
                            .setTextInputLayoutId(R.id.lbl_description)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        allFields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.ISBN)
+        addField(fragmentId, new EditTextField<>(R.id.isbn, DBKey.ISBN)
                            .setTextInputLayoutId(R.id.lbl_isbn));
         // don't do this for now. There is a scan icon as end-icon.
         //                  .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
 
-        allFields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.LANGUAGE,
-                                                this::getAllLanguagesCodes)
+        addField(fragmentId, new AutoCompleteTextField(R.id.language, DBKey.LANGUAGE,
+                                                       c -> getAllLanguagesCodes())
                            .setFormatter(languageFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_language)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
         // Personal fields
-        allFields.add(new TextViewField<>(FragmentId.Main, R.id.tags, Book.BKEY_TAG_LIST,
-                                          DBKey.FK_TAG,
-                                          listFormatterNormalDetails)
+        addField(fragmentId, new TextViewField<>(R.id.tags, Book.BKEY_TAG_LIST,
+                                                 DBKey.FK_TAG,
+                                                 listFormatterNormalDetails)
                            .addRelatedViews(R.id.lbl_tags));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
-                                          DBKey.FK_BOOKSHELF,
-                                          listFormatterNormalDetails)
+        addField(fragmentId, new TextViewField<>(R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
+                                                 DBKey.FK_BOOKSHELF,
+                                                 listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_bookshelves)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
     }
 
     @SuppressWarnings("SameParameterValue")
-    void initFieldsPublication(@NonNull final Context context,
-                               @NonNull final FragmentId fragmentId) {
-        allFields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.FORMAT,
-                                                () -> getAllFormats(context))
+    void initFieldsPublication(@NonNull final FragmentId fragmentId) {
+        if (initFieldsPublication) {
+            return;
+        }
+        initFieldsPublication = true;
+
+        addField(fragmentId, new AutoCompleteTextField(R.id.format, DBKey.FORMAT,
+                                                       this::getAllFormats)
                            .setTextInputLayoutId(R.id.lbl_format));
 
-        allFields.add(new AutoCompleteTextField(fragmentId, R.id.color, DBKey.COLOR,
-                                                () -> getAllColors(context))
+        addField(fragmentId, new AutoCompleteTextField(R.id.color, DBKey.COLOR,
+                                                       this::getAllColors)
                            .setTextInputLayoutId(R.id.lbl_color));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                          DBKey.FK_PUBLISHER,
-                                          listFormatterNormalDetails)
+        addField(fragmentId, new TextViewField<>(R.id.publisher, Book.BKEY_PUBLISHER_LIST,
+                                                 DBKey.FK_PUBLISHER,
+                                                 listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_publisher));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.first_publication,
-                                          DBKey.FIRST_PUBLICATION_DATE,
-                                          dateFormatter)
+        addField(fragmentId, new TextViewField<>(R.id.first_publication,
+                                                 DBKey.FIRST_PUBLICATION_DATE,
+                                                 dateFormatter)
                            .setTextInputLayoutId(R.id.lbl_first_publication)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.date_published,
-                                          DBKey.PUBLICATION_DATE,
-                                          dateFormatter)
+        addField(fragmentId, new TextViewField<>(R.id.date_published,
+                                                 DBKey.PUBLICATION_DATE,
+                                                 dateFormatter)
                            .setTextInputLayoutId(R.id.lbl_date_published)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        allFields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.PAGES)
+        addField(fragmentId, new EditTextField<>(R.id.pages, DBKey.PAGES)
                            .setTextInputLayoutId(R.id.lbl_pages)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
 
         // MUST be defined before the currency field is defined.
-        allFields.add(new DecimalEditTextField(fragmentId, R.id.price_listed, DBKey.PRICE_LISTED)
+        addField(fragmentId, new DecimalEditTextField(R.id.price_listed, DBKey.PRICE_LISTED)
                            .setFormatter(doubleNumberFormatter, false)
                            .setTextInputLayoutId(R.id.lbl_price_listed)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            // Copy to price_paid field if applicable
                            .addOnFocusChangeListener((view, hasFocus) -> {
                                if (!hasFocus) {
-                                   getField(R.id.price_paid).ifPresent(destField -> {
+                                   getField(DBKey.PRICE_PAID).ifPresent(destField -> {
                                        if (destField.isEmpty()) {
                                            // Paranoia... parse it to a double.
                                            final double value = realNumberParser.toDouble(
-                                                   requireField(R.id.price_listed).getValue());
+                                                   requireField(DBKey.PRICE_LISTED).getValue());
                                            // Update BOTH the book and the field
                                            getBook().putDouble(DBKey.PRICE_PAID, value);
                                            destField.setValue(value);
@@ -1175,17 +1232,17 @@ public class EditBookViewModel
                                             R.id.lbl_price_listed_currency,
                                             R.id.price_listed_currency));
 
-        allFields.add(new AutoCompleteTextField(fragmentId, R.id.price_listed_currency,
-                                                DBKey.PRICE_LISTED_CURRENCY,
-                                                this::getAllListPriceCurrencyCodes)
+        addField(fragmentId, new AutoCompleteTextField(R.id.price_listed_currency,
+                                                       DBKey.PRICE_LISTED_CURRENCY,
+                                                       c -> getAllListPriceCurrencyCodes())
                            .setTextInputLayoutId(R.id.lbl_price_listed_currency)
                            // Copy to price_paid_currency field if applicable
                            .addOnFocusChangeListener((v, hasFocus) -> {
                                if (!hasFocus) {
-                                   getField(R.id.price_paid_currency).ifPresent(destField -> {
+                                   getField(DBKey.PRICE_PAID_CURRENCY).ifPresent(destField -> {
                                        if (destField.isEmpty()) {
                                            final String value = (String)
-                                                   requireField(R.id.price_listed_currency)
+                                                   requireField(DBKey.PRICE_LISTED_CURRENCY)
                                                            .getValue();
                                            if (value != null) {
                                                // Update BOTH the book and the field
@@ -1199,29 +1256,32 @@ public class EditBookViewModel
                            })
                            .setUsedKey(DBKey.PRICE_LISTED));
 
-        allFields.add(new EditTextField<>(fragmentId, R.id.print_run, DBKey.PRINT_RUN)
+        addField(fragmentId, new EditTextField<>(R.id.print_run, DBKey.PRINT_RUN)
                            .setTextInputLayoutId(R.id.lbl_print_run)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        allFields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.EDITION,
-                                                Book.Edition::getAll)
+        addField(fragmentId, new BitmaskChipGroupField(R.id.edition, DBKey.EDITION,
+                                                       Book.Edition::getAll)
                            .addRelatedViews(R.id.lbl_edition));
     }
 
     @SuppressWarnings("SameParameterValue")
-    void initFieldsNotes(@NonNull final Context context,
-                         @NonNull final FragmentId fragmentId) {
+    void initFieldsNotes(@NonNull final FragmentId fragmentId) {
+        if (initFieldsNotes) {
+            return;
+        }
+        initFieldsNotes = true;
 
-        allFields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.SIGNED__BOOL));
+        addField(fragmentId, new CompoundButtonField(R.id.cbx_signed, DBKey.SIGNED__BOOL));
 
-        allFields.add(new RatingBarEditField(fragmentId, R.id.rating, DBKey.RATING));
+        addField(fragmentId, new RatingBarEditField(R.id.rating, DBKey.RATING));
 
-        allFields.add(new EditTextField<>(fragmentId, R.id.notes, DBKey.PERSONAL_NOTES)
+        addField(fragmentId, new EditTextField<>(R.id.notes, DBKey.PERSONAL_NOTES)
                            .setTextInputLayoutId(R.id.lbl_notes)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // MUST be defined before the currency.
-        allFields.add(new DecimalEditTextField(fragmentId, R.id.price_paid, DBKey.PRICE_PAID)
+        addField(fragmentId, new DecimalEditTextField(R.id.price_paid, DBKey.PRICE_PAID)
                            .setFormatter(doubleNumberFormatter, false)
                            .setTextInputLayoutId(R.id.lbl_price_paid)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
@@ -1229,39 +1289,39 @@ public class EditBookViewModel
                                             R.id.lbl_price_paid_currency,
                                             R.id.price_paid_currency));
 
-        allFields.add(new AutoCompleteTextField(fragmentId, R.id.price_paid_currency,
-                                                DBKey.PRICE_PAID_CURRENCY,
-                                                this::getAllPricePaidCurrencyCodes)
+        addField(fragmentId, new AutoCompleteTextField(R.id.price_paid_currency,
+                                                       DBKey.PRICE_PAID_CURRENCY,
+                                                       c -> getAllPricePaidCurrencyCodes())
                            .setTextInputLayoutId(R.id.lbl_price_paid_currency)
                            .setUsedKey(DBKey.PRICE_PAID));
 
-        allFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
-                                                       DBKey.CONDITION_BOOK,
-                                                       context, R.array.lbl_book_condition)
+        addField(fragmentId, new StringArrayDropDownMenuField(R.id.condition,
+                                                              DBKey.CONDITION_BOOK,
+                                                              R.array.lbl_book_condition)
                            .setTextInputLayoutId(R.id.lbl_condition));
 
-        allFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition_cover,
-                                                       DBKey.CONDITION_COVER,
-                                                       context, R.array.lbl_dust_cover_condition)
+        addField(fragmentId, new StringArrayDropDownMenuField(R.id.condition_cover,
+                                                              DBKey.CONDITION_COVER,
+                                                              R.array.lbl_dust_cover_condition)
                            .setTextInputLayoutId(R.id.lbl_condition_cover));
 
-        allFields.add(new AutoCompleteTextField(fragmentId, R.id.location, DBKey.LOCATION,
-                                                this::getAllLocations)
+        addField(fragmentId, new AutoCompleteTextField(R.id.location, DBKey.LOCATION,
+                                                       c -> getAllLocations())
                            .setTextInputLayoutId(R.id.lbl_location));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.date_acquired, DBKey.DATE_ACQUIRED,
-                                          dateFormatter)
+        addField(fragmentId, new TextViewField<>(R.id.date_acquired, DBKey.DATE_ACQUIRED,
+                                                 dateFormatter)
                            .setTextInputLayoutId(R.id.lbl_date_acquired)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.read_start, DBKey.READ_START__DATE,
-                                          dateFormatter)
+        addField(fragmentId, new TextViewField<>(R.id.read_start, DBKey.READ_START__DATE,
+                                                 dateFormatter)
                            .setTextInputLayoutId(R.id.lbl_read_start)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            .setValidator(this::validateReadStartAndEndFields));
 
-        allFields.add(new TextViewField<>(fragmentId, R.id.read_end, DBKey.READ_END__DATE,
-                                          dateFormatter)
+        addField(fragmentId, new TextViewField<>(R.id.read_end, DBKey.READ_END__DATE,
+                                                 dateFormatter)
                            .setTextInputLayoutId(R.id.lbl_read_end)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                            .setValidator(this::validateReadStartAndEndFields));
@@ -1270,8 +1330,8 @@ public class EditBookViewModel
     private void validateReadStartAndEndFields(@NonNull final Field<String, TextView> field) {
 
         // we ignore the passed field, so we can use this validator for both fields.
-        final Field<String, TextView> startField = requireField(R.id.read_start);
-        final Field<String, TextView> endField = requireField(R.id.read_end);
+        final Field<String, TextView> startField = requireField(DBKey.READ_START__DATE);
+        final Field<String, TextView> endField = requireField(DBKey.READ_END__DATE);
 
         final String start = startField.getValue();
         if (start == null || start.isEmpty()) {
@@ -1297,99 +1357,50 @@ public class EditBookViewModel
     }
 
     @SuppressWarnings("SameParameterValue")
-    void initFieldsToc(@NonNull final Context context,
-                       @NonNull final FragmentId fragmentId) {
+    void initFieldsToc(@NonNull final FragmentId fragmentId) {
+        if (initFieldsToc) {
+            return;
+        }
+        initFieldsToc = true;
 
-        allFields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
-                                                        DBKey.CONTENT_TYPE,
-                                                        context,
-                                                        Book.ContentType.getAll())
-                           .setTextInputLayoutId(R.id.lbl_book_type));
+        addField(fragmentId, new EntityListDropDownMenuField<>(R.id.book_type,
+                                                               DBKey.CONTENT_TYPE,
+                                                               Book.ContentType.getAll())
+                .setTextInputLayoutId(R.id.lbl_book_type));
     }
 
     @SuppressWarnings("SameParameterValue")
-    void initFieldsExternalId(@NonNull final LayoutInflater inflater,
-                              @NonNull final ViewGroup root,
-                              @NonNull final FragmentId fragmentId) {
+    void initFieldsExternalId(@NonNull final FragmentId fragmentId) {
+        if (initFieldsExternalId) {
+            return;
+        }
+        initFieldsExternalId = true;
 
-        allFields.add(new CompoundButtonField(fragmentId, R.id.btn_auto_update_allowed,
-                                              DBKey.AUTO_UPDATE));
+        addField(fragmentId, new CompoundButtonField(R.id.btn_auto_update_allowed,
+                                                     DBKey.AUTO_UPDATE));
 
-        // NEWTHINGS: adding a new search engine:
-        //   optional: external id KEY add a field; don't forget to add to the layout as well
-        //  Keep them alphabetic.
-
-        // We're no longer using the LongNumberFormatter as we don't
-        // need the extraction to a 'long'. Identifiers are now all 'String' values.
-        // Just use a custom formatter to keep the field empty
-        // instead of displaying any "0" values.
+        // Identifiers are all 'String' values.
+        // Use a custom formatter to keep the field empty instead of displaying "0" values.
         final FieldFormatter<String> sidLongFormatter =
                 (context, value) -> value != null && !"0".equals(value) ? value : "";
 
         final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
-
-        final List<String> identifierKeys = List.of(Identifier.SID_ASIN,
-                                                    Identifier.SID_BEDETHEQUE,
-                                                    Identifier.SID_BIBLIOTECE_PL,
-                                                    Identifier.SID_BNF,
-                                                    Identifier.SID_DATABAZE_KNIH,
-                                                    Identifier.SID_DNB,
-                                                    Identifier.SID_GOODREADS,
-                                                    Identifier.SID_ISFDB,
-                                                    Identifier.SID_KBNL,
-                                                    Identifier.SID_LAST_DODO_NL,
-                                                    Identifier.SID_LIBRARY_THING,
-                                                    Identifier.SID_OPEN_LIBRARY,
-                                                    Identifier.SID_STRIP_INFO);
-
-        final int[] ids = new int[identifierKeys.size()];
-
-        for (int i = 0; i < identifierKeys.size(); i++) {
-
-            final String identifierKey = identifierKeys.get(i);
-            final Optional<Identifier> oIdentifier = dao.find(identifierKey,
+        for (int i = 0; i < EditBookViewModel.KEYS.length; i++) {
+            final Optional<Identifier> oIdentifier = dao.find(EditBookViewModel.KEYS[i],
                                                               Identifier.EntityType.Book);
             // Paranoia
             if (oIdentifier.isPresent()) {
                 final Identifier identifier = oIdentifier.get();
-                @LayoutRes
-                final int layoutId;
-                if (identifier.getType() == Identifier.Type.Number) {
-                    layoutId = R.layout.row_edit_sid_number;
-                } else {
-                    layoutId = R.layout.row_edit_sid_text;
-                }
-                final View v = inflater.inflate(layoutId, root, false);
-
-                final TextInputLayout til = v.findViewById(R.id.til);
-                final int tilId = View.generateViewId();
-                til.setId(tilId);
-                til.setHint(identifier.getName());
-
-                final TextInputEditText tie = v.findViewById(R.id.tie);
-                final int tieId = View.generateViewId();
-                tie.setId(tieId);
-                // last one?
-                if (i == allFields.size() - 1) {
-                    tie.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                }
-
-                root.addView(v);
-                ids[i] = tilId;
-
                 final EditTextField<String, EditText> field =
-                        new IdentifierField<>(fragmentId, tieId, identifierKey)
-                                .setTextInputLayoutId(tilId)
+                        new IdentifierField<>(View.generateViewId(), identifier)
+                                .setTextInputLayoutId(View.generateViewId())
                                 .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
 
                 if (identifier.getType() == Identifier.Type.Number) {
                     field.setFormatter(sidLongFormatter, true);
                 }
-                allFields.add(field);
+                addField(fragmentId, field);
             }
-
-            final Flow flow = root.findViewById(R.id.flow_site_ids);
-            flow.setReferencedIds(ids);
         }
     }
 
@@ -1397,16 +1408,12 @@ public class EditBookViewModel
      * Check if the given fragment handles (displays) the given field.
      *
      * @param fragmentId the hosting fragment for this set of fields
-     * @param fieldId    to check
+     * @param fieldKey   to check for
      *
      * @return {@code true} if the given fragment handles the given field
      */
     public boolean handlesField(@NonNull final FragmentId fragmentId,
-                                final int fieldId) {
-        return allFields.stream()
-                        // This will return a single field (or none)
-                        .filter(field -> field.getFieldViewId() == fieldId)
-                        // let's see if it's owned by the given fragment
-                        .anyMatch(field -> field.getFragmentId() == fragmentId);
+                                @NonNull final String fieldKey) {
+        return fieldFragment.get(fieldKey) == fragmentId;
     }
 }

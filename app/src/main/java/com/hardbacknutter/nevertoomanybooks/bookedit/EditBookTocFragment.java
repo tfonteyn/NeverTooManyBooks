@@ -177,6 +177,9 @@ public class EditBookTocFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         vb = FragmentEditBookTocBinding.inflate(inflater, container, false);
+
+        vm.initFieldsToc(FragmentId.Toc);
+
         return vb.getRoot();
     }
 
@@ -190,9 +193,6 @@ public class EditBookTocFragment
 
         getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
-
-        //noinspection DataFlowIssue
-        vm.initFieldsToc(getContext(), FragmentId.Toc);
 
         initIsfdbTocSearchViewModel();
 
@@ -563,7 +563,7 @@ public class EditBookTocFragment
     private void onIsfdbDataConfirmed(@NonNull final Book.ContentType contentType,
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (contentType != Book.ContentType.Book) {
-            final Field<Long, View> typeField = vm.requireField(R.id.book_type);
+            final Field<Long, View> typeField = vm.requireField(DBKey.CONTENT_TYPE);
             // Don't bother updating the book, that is done automatically when saving the book
             typeField.setValue(contentType.getId());
         }

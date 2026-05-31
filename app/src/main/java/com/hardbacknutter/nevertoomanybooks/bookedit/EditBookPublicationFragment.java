@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,9 +57,7 @@ public class EditBookPublicationFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        vm.initFieldsPublication(context, FragmentId.Publication);
+        vm.initFieldsPublication(FragmentId.Publication);
 
         vb = FragmentEditBookPublicationBinding.inflate(inflater, container, false);
 
@@ -68,7 +65,7 @@ public class EditBookPublicationFragment
         // are incorporated in the publication fragment
         // On small screens (i.e. phones) they get their own tab
         if (vb.notes != null) {
-            vm.initFieldsNotes(context, FragmentId.Publication);
+            vm.initFieldsNotes(FragmentId.Publication);
         }
 
         return vb.getRoot();
