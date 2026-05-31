@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -46,9 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.menus.AuthorViewAuthorOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
@@ -406,6 +409,18 @@ public class AuthorWorksViewModel
         if (data.isModified()) {
             dataModified = true;
         }
+    }
+
+    @NonNull
+    List<EngineId> getEnabledEnginesForSearch(@NonNull final Context context) {
+        // The SIDs we have for the author
+        final List<String> sidKeys = getPrimaryAuthor()
+                .getIdentifiers()
+                .stream()
+                .map(Identifier.Value::getKey)
+                .collect(Collectors.toList());
+
+        return AuthorResolverFactory.getEngines(context, sidKeys);
     }
 
     void resolve(@NonNull final Context context,

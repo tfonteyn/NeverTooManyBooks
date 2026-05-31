@@ -49,7 +49,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
@@ -65,13 +64,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -265,14 +262,8 @@ public class AuthorWorksFragment
     private void updateAuthorBySearch() {
         final Context context = getContext();
 
-        // The SIDs we have for the author
-        final List<String> sidKeys = vm.getPrimaryAuthor()
-                                       .getIdentifiers()
-                                       .stream()
-                                       .map(Identifier.Value::getKey)
-                                       .collect(Collectors.toList());
         //noinspection DataFlowIssue
-        final List<EngineId> enabledEngines = AuthorResolverFactory.getEngines(context, sidKeys);
+        final List<EngineId> enabledEngines = vm.getEnabledEnginesForSearch(context);
         final CharSequence[] options = enabledEngines
                 .stream()
                 .map(engineId -> engineId.getName(context))
