@@ -29,7 +29,6 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -68,7 +67,7 @@ public abstract class EditBookBaseFragment
 
     private static final String TAG = "EditBookBaseFragment";
     private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
-    private static final String BKEY_DATE_PICKER_FIELD_ID = TAG + ":pd:fieldId";
+    private static final String BKEY_DATE_PICKER_FIELD_KEY = TAG + ":pd:fieldKey";
 
     private ActivityResultLauncher<String> editSettingsLauncher;
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
@@ -88,11 +87,11 @@ public abstract class EditBookBaseFragment
                 if (extras == null) {
                     throw new IllegalArgumentException("No extras?");
                 }
-                final int fieldId = extras.getInt(BKEY_DATE_PICKER_FIELD_ID, -1);
-                if (fieldId == -1) {
-                    throw new IllegalArgumentException("No fieldId?");
+                final String fieldKey = extras.getString(BKEY_DATE_PICKER_FIELD_KEY, null);
+                if (fieldKey == null) {
+                    throw new IllegalArgumentException("No fieldKey?");
                 }
-                vm.onDateSet(fieldId, currentSelection.getIsoString());
+                vm.onDateSet(fieldKey, currentSelection.getIsoString());
             };
 
     private PartialDatePickerLauncher partialDatePickerLauncher;
@@ -235,22 +234,22 @@ public abstract class EditBookBaseFragment
         // Instead of each fragment doing their own, we've centralised
         // them all here for ease of maintenance
 
-        if (vm.handlesField(getFragmentId(), R.id.date_published)) {
-            addPartialDatePicker(R.string.lbl_date_published, R.id.date_published);
+        if (vm.handlesField(getFragmentId(), DBKey.PUBLICATION_DATE)) {
+            addPartialDatePicker(R.string.lbl_date_published, DBKey.PUBLICATION_DATE);
         }
 
-        if (vm.handlesField(getFragmentId(), R.id.first_publication)) {
-            addPartialDatePicker(R.string.lbl_date_first_publication, R.id.first_publication);
+        if (vm.handlesField(getFragmentId(), DBKey.FIRST_PUBLICATION_DATE)) {
+            addPartialDatePicker(R.string.lbl_date_first_publication, DBKey.FIRST_PUBLICATION_DATE);
         }
 
-        if (vm.handlesField(getFragmentId(), R.id.date_acquired)) {
-            addDatePicker(R.string.lbl_date_acquired, R.id.date_acquired);
+        if (vm.handlesField(getFragmentId(), DBKey.DATE_ACQUIRED)) {
+            addDatePicker(R.string.lbl_date_acquired, DBKey.DATE_ACQUIRED);
         }
 
-        if (vm.handlesField(getFragmentId(), R.id.read_end)) {
+        if (vm.handlesField(getFragmentId(), DBKey.READ_END__DATE)) {
             addDateRangePicker(R.string.lbl_read,
-                               R.string.lbl_read_start, R.id.read_start,
-                               R.string.lbl_read_end, R.id.read_end);
+                               R.string.lbl_read_start, DBKey.READ_START__DATE,
+                               R.string.lbl_read_end, DBKey.READ_END__DATE);
         }
     }
 
@@ -301,31 +300,31 @@ public abstract class EditBookBaseFragment
      *
      * @param titleId      title for the picker
      * @param startTitleId title of the picker if the end-date is not in use
-     * @param startFieldId to set up for the start-date
+     * @param startFieldKey to set up for the start-date
      * @param endTitleId   title of the picker if the start-date is not in use
-     * @param endFieldId   to set up for the end-date
+     * @param endFieldKey   to set up for the end-date
      */
     private void addDateRangePicker(@StringRes final int titleId,
                                     final int startTitleId,
-                                    @IdRes final int startFieldId,
+                                    @NonNull final String startFieldKey,
                                     final int endTitleId,
-                                    @IdRes final int endFieldId) {
+                                    @NonNull final String endFieldKey) {
 
-        final Field<String, TextView> startField = vm.requireField(startFieldId);
+        final Field<String, TextView> startField = vm.requireField(startFieldKey);
         final boolean startFieldIsUsed = startField.isUsed();
-        final Field<String, TextView> endField = vm.requireField(endFieldId);
+        final Field<String, TextView> endField = vm.requireField(endFieldKey);
         final boolean endFieldIsUsed = endField.isUsed();
 
         if (startFieldIsUsed) {
             // Always a single date picker for the start-date
-            addDatePicker(startTitleId, startFieldId);
+            addDatePicker(startTitleId, startFieldKey);
         }
 
         if (endFieldIsUsed) {
             // If read+end fields are active; use a date-span picker for the end-date
             if (startFieldIsUsed) {
                 final DateRangePicker dp = new DateRangePicker(getChildFragmentManager(),
-                                                               titleId, startFieldId, endFieldId);
+                                                               titleId, startFieldKey, endFieldKey);
                 dp.setDateParser(vm.getDateParser(), true);
                 dp.onResume(datePickerListener);
 
@@ -333,7 +332,7 @@ public abstract class EditBookBaseFragment
                         .launch(startField.getValue(), endField.getValue(), datePickerListener));
             } else {
                 // without using a start-date, single date picker for the end-date
-                addDatePicker(endTitleId, endFieldId);
+                addDatePicker(endTitleId, endFieldKey);
             }
         }
     }
@@ -342,15 +341,15 @@ public abstract class EditBookBaseFragment
      * Set up a date picker for selecting a single, full date.
      *
      * @param pickerTitleId title for the picker window
-     * @param fieldId       the field to hookup
+     * @param fieldKey      the field to hookup
      */
     private void addDatePicker(@StringRes final int pickerTitleId,
-                               @IdRes final int fieldId) {
+                               @NonNull final String fieldKey) {
 
-        final Field<String, TextView> field = vm.requireField(fieldId);
+        final Field<String, TextView> field = vm.requireField(fieldKey);
         if (field.isUsed()) {
             final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
-                                                             pickerTitleId, fieldId);
+                                                             pickerTitleId, fieldKey);
             dp.setDateParser(vm.getDateParser(), true);
             dp.onResume(datePickerListener);
 
@@ -363,16 +362,16 @@ public abstract class EditBookBaseFragment
      * Set up a date picker for selecting a partial date.
      *
      * @param pickerTitleId title for the picker window
-     * @param fieldId       the field to hookup
+     * @param fieldKey      the field to hookup
      */
     private void addPartialDatePicker(@StringRes final int pickerTitleId,
-                                      @IdRes final int fieldId) {
-        final Field<String, TextView> field = vm.requireField(fieldId);
+                                      @NonNull final String fieldKey) {
+        final Field<String, TextView> field = vm.requireField(fieldKey);
         if (field.isUsed()) {
             field.requireView().setOnClickListener(v -> {
                 // We're using the extras to pass the field id
                 final Bundle extras = new Bundle(1);
-                extras.putInt(BKEY_DATE_PICKER_FIELD_ID, field.getFieldViewId());
+                extras.putString(BKEY_DATE_PICKER_FIELD_KEY, field.getFieldKey());
                 //noinspection DataFlowIssue
                 partialDatePickerLauncher.launch(
                         getActivity(),
@@ -386,7 +385,7 @@ public abstract class EditBookBaseFragment
 
     void onReadStatusUpdate(@NonNull final Boolean modified) {
         // Refresh the read_end value displayed
-        final Field<String, TextView> readEnd = vm.requireField(R.id.read_end);
+        final Field<String, TextView> readEnd = vm.requireField(DBKey.READ_END__DATE);
         readEnd.setValue(vm.getBook().getString(DBKey.READ_END__DATE));
     }
 
