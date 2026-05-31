@@ -27,22 +27,30 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.IdentifierOwner;
 
 public class IdentifierField<V extends EditText>
         extends EditTextField<String, V> {
 
+    @NonNull
+    private final Identifier identifier;
+
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
-     * @param fieldKey    Key used to access a {@link DataManager}
+     * @param identifier  for this field
      */
-    public IdentifierField(@NonNull final FragmentId fragmentId,
-                           final int fieldViewId,
-                           @NonNull final String fieldKey) {
-        super(fragmentId, fieldViewId, fieldKey);
+    public IdentifierField(final int fieldViewId,
+                           @NonNull final Identifier identifier) {
+        super(fieldViewId, identifier.getKey());
+        this.identifier = identifier;
+    }
+
+    @NonNull
+    public Identifier getIdentifier() {
+        return identifier;
     }
 
     @Override

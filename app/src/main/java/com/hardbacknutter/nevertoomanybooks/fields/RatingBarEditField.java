@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,15 +37,13 @@ public class RatingBarEditField
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
      */
-    public RatingBarEditField(@NonNull final FragmentId fragmentId,
-                              @IdRes final int fieldViewId,
+    public RatingBarEditField(@IdRes final int fieldViewId,
                               @NonNull final String fieldKey) {
-        super(fragmentId, fieldViewId, fieldKey);
+        super(fieldViewId, fieldKey);
     }
 
     @Override

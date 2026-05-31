@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,34 +46,23 @@ public class EntityListDropDownMenuField<T extends Entity>
         extends BaseField<Long, AutoCompleteTextView> {
 
     @NonNull
-    private final EntityArrayAdapter<T> adapter;
-    @NonNull
     private final List<T> items;
 
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
-     * @param context     Current context
      * @param items       the list of items for the dropdown menu
      *
      * @throws IllegalArgumentException if the list has no items
      */
-    public EntityListDropDownMenuField(@NonNull final FragmentId fragmentId,
-                                       @IdRes final int fieldViewId,
+    public EntityListDropDownMenuField(@IdRes final int fieldViewId,
                                        @NonNull final String fieldKey,
-                                       @NonNull final Context context,
                                        @NonNull final List<T> items) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+        super(fieldViewId, fieldKey, fieldKey);
         this.items = items;
-        adapter = new EntityArrayAdapter<>(context, items);
-
-        if ((long) adapter.getCount() <= 0) {
-            throw new IllegalArgumentException("adapter.getCount()");
-        }
     }
 
     /**
@@ -94,7 +83,13 @@ public class EntityListDropDownMenuField<T extends Entity>
         super.setParentView(parent);
 
         final AutoCompleteTextView view = requireView();
+
+        final EntityArrayAdapter<T> adapter = new EntityArrayAdapter<>(view.getContext(), items);
+        if ((long) adapter.getCount() <= 0) {
+            throw new IllegalArgumentException("adapter.getCount()");
+        }
         view.setAdapter(adapter);
+
         view.setOnItemClickListener((p, v, position, id) -> {
             final Long previous = rawValue;
             rawValue = items.get(position).getId();

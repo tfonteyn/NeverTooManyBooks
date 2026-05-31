@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,15 +51,13 @@ public class CompoundButtonField
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
      */
-    public CompoundButtonField(@NonNull final FragmentId fragmentId,
-                               @IdRes final int fieldViewId,
+    public CompoundButtonField(@IdRes final int fieldViewId,
                                @NonNull final String fieldKey) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+        super(fieldViewId, fieldKey, fieldKey);
     }
 
     @Override

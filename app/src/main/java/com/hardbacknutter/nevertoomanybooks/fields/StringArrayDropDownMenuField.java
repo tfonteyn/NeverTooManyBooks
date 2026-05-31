@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,34 +41,31 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class StringArrayDropDownMenuField
         extends BaseField<Integer, AutoCompleteTextView> {
 
-    @NonNull
-    private final ExtArrayAdapter<CharSequence> adapter;
+    @ArrayRes
+    private final int arrayResId;
 
     /**
      * Constructor.
      *
-     * @param context     Current context
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
      * @param arrayResId  to use; the array <strong>must not</strong> be empty
      */
-    public StringArrayDropDownMenuField(@NonNull final FragmentId fragmentId,
-                                        @IdRes final int fieldViewId,
+    public StringArrayDropDownMenuField(@IdRes final int fieldViewId,
                                         @NonNull final String fieldKey,
-                                        @NonNull final Context context,
                                         @ArrayRes final int arrayResId) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        adapter = ExtArrayAdapter.createFromResource(
-                context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Passthrough, arrayResId);
-
-        if ((long) adapter.getCount() <= 0) {
-            throw new IllegalArgumentException("adapter.getCount()");
-        }
+        super(fieldViewId, fieldKey, fieldKey);
+        this.arrayResId = arrayResId;
     }
 
+    /**
+     * Set the id for the surrounding TextInputLayout (if this field has one).
+     *
+     * @param viewId view id
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public StringArrayDropDownMenuField setTextInputLayoutId(@IdRes final int viewId) {
         addRelatedViews(viewId);
@@ -80,7 +77,15 @@ public class StringArrayDropDownMenuField
         super.setParentView(parent);
 
         final AutoCompleteTextView view = requireView();
+
+        final ExtArrayAdapter<CharSequence> adapter = ExtArrayAdapter.createFromResource(
+                view.getContext(), R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Passthrough, arrayResId);
+        if ((long) adapter.getCount() <= 0) {
+            throw new IllegalArgumentException("adapter.getCount()");
+        }
         view.setAdapter(adapter);
+
         view.setOnItemClickListener((p, v, position, id) -> {
             final Integer previous = rawValue;
             rawValue = position;
@@ -100,6 +105,9 @@ public class StringArrayDropDownMenuField
 
         final AutoCompleteTextView view = getView();
         if (view != null) {
+            //noinspection unchecked
+            final ExtArrayAdapter<CharSequence> adapter =
+                    (ExtArrayAdapter<CharSequence>) view.getAdapter();
             if (rawValue != null && rawValue >= 0 && rawValue < adapter.getCount()) {
                 view.setText(adapter.getItem(rawValue), false);
             } else {

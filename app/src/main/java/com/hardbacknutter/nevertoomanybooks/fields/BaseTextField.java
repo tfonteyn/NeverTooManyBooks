@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -74,17 +75,15 @@ abstract class BaseTextField<T, V extends TextView>
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
      * @param prefKey     The preference key to check if this Field is used or not
      */
-    BaseTextField(@NonNull final FragmentId fragmentId,
-                  @IdRes final int fieldViewId,
+    BaseTextField(@IdRes final int fieldViewId,
                   @NonNull final String fieldKey,
                   @NonNull final String prefKey) {
-        super(fragmentId, fieldViewId, fieldKey, prefKey);
+        super(fieldViewId, fieldKey, prefKey);
     }
 
     void setFormatter(@NonNull final FieldFormatter<T> formatter) {
@@ -94,6 +93,16 @@ abstract class BaseTextField<T, V extends TextView>
     @NonNull
     public FieldFormatter<T> getFormatter() {
         return formatter;
+    }
+
+    /**
+     * Get the TextInputLayout id.
+     *
+     * @return id; {@code 0} if not set
+     */
+    @IntRange(from = 0)
+    public int getTextInputLayoutId() {
+        return textInputLayoutId;
     }
 
     @Override

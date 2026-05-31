@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
@@ -26,7 +27,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -41,30 +42,29 @@ public class AutoCompleteTextField
 
     /** The list for the adapter. */
     @NonNull
-    private final Supplier<List<String>> listSupplier;
+    private final Function<Context, List<String>> listSupplier;
 
     /**
      * Constructor.
      *
-     * @param fragmentId   the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId  the view id for this {@link Field}
      * @param fieldKey     Key used to access a {@link DataManager}
      * @param listSupplier Supplier with auto complete values
      */
-    public AutoCompleteTextField(@NonNull final FragmentId fragmentId,
-                                 @IdRes final int fieldViewId,
+    public AutoCompleteTextField(@IdRes final int fieldViewId,
                                  @NonNull final String fieldKey,
-                                 @NonNull final Supplier<List<String>> listSupplier) {
-        super(fragmentId, fieldViewId, fieldKey);
+                                 @NonNull final Function<Context, List<String>> listSupplier) {
+        super(fieldViewId, fieldKey);
         this.listSupplier = listSupplier;
     }
 
     @Override
     public void setParentView(@NonNull final View parent) {
         super.setParentView(parent);
+        final Context context = parent.getContext();
         requireView().setAdapter(FieldArrayAdapter.createAutoComplete(
-                parent.getContext(),
-                listSupplier.get(),
+                context,
+                listSupplier.apply(context),
                 getFormatter()));
     }
 }

@@ -47,47 +47,41 @@ public class TextViewField<T>
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      */
-    public TextViewField(@NonNull final FragmentId fragmentId,
-                         @IdRes final int fieldViewId,
+    public TextViewField(@IdRes final int fieldViewId,
                          @NonNull final String fieldKey) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+        super(fieldViewId, fieldKey, fieldKey);
     }
 
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      * @param formatter   (optional) formatter to use
      */
-    public TextViewField(@NonNull final FragmentId fragmentId,
-                         @IdRes final int fieldViewId,
+    public TextViewField(@IdRes final int fieldViewId,
                          @NonNull final String fieldKey,
                          @NonNull final FieldFormatter<T> formatter) {
-        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+        super(fieldViewId, fieldKey, fieldKey);
         setFormatter(formatter);
     }
 
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      * @param prefKey     The preference key to check if this Field is used or not
      * @param formatter   (optional) formatter to use
      */
-    public TextViewField(@NonNull final FragmentId fragmentId,
-                         @IdRes final int fieldViewId,
+    public TextViewField(@IdRes final int fieldViewId,
                          @NonNull final String fieldKey,
                          @NonNull final String prefKey,
                          @NonNull final FieldFormatter<T> formatter) {
-        super(fragmentId, fieldViewId, fieldKey, prefKey);
+        super(fieldViewId, fieldKey, prefKey);
         setFormatter(formatter);
     }
 
@@ -104,6 +98,7 @@ public class TextViewField<T>
         setErrorViewId(viewId);
         return this;
     }
+
 
     /**
      * Set the mode to use for the end-icon.

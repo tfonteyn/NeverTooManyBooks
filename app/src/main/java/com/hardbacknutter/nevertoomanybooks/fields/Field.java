@@ -106,14 +106,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 public interface Field<T, V extends View> {
 
     /**
-     * Get the {@link FragmentId} in which this Field is handled.
-     *
-     * @return id
-     */
-    @NonNull
-    FragmentId getFragmentId();
-
-    /**
      * Get the id for the Field view.
      *
      * @return view id

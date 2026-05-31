@@ -71,9 +71,6 @@ public abstract class BaseField<T, V extends View>
     @NonNull
     private final String fieldKey;
 
-    @NonNull
-    private final FragmentId fragmentId;
-
     /** Fields that need to follow visibility. */
     private final Collection<Integer> relatedViews = new HashSet<>();
 
@@ -131,17 +128,14 @@ public abstract class BaseField<T, V extends View>
     /**
      * Constructor.
      *
-     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
      * @param fieldViewId the view id for this {@link Field}
      * @param fieldKey    Key used to access a {@link DataManager}
      *                    Set to {@code ""} to suppress all access.
      * @param prefKey     The preference key to check if this Field is used or not
      */
-    BaseField(@NonNull final FragmentId fragmentId,
-              @IdRes final int fieldViewId,
+    BaseField(@IdRes final int fieldViewId,
               @NonNull final String fieldKey,
               @NonNull final String prefKey) {
-        this.fragmentId = fragmentId;
         this.fieldViewId = fieldViewId;
         this.fieldKey = fieldKey;
         usedKey = prefKey;
@@ -197,12 +191,6 @@ public abstract class BaseField<T, V extends View>
     @Override
     public void setAfterFieldChangeListener(@Nullable final AfterChangedListener listener) {
         afterFieldChangeListener = listener != null ? new WeakReference<>(listener) : null;
-    }
-
-    @Override
-    @NonNull
-    public FragmentId getFragmentId() {
-        return fragmentId;
     }
 
     @Override
@@ -482,7 +470,6 @@ public abstract class BaseField<T, V extends View>
         return "BaseField{"
                + "fieldKey=" + fieldKey
                + ", usedKey=" + usedKey
-               + ": fragmentId=" + fragmentId
                + ", relatedViews=" + relatedViews
                + ", initialValue=`" + initialValue + '`'
                + ", rawValue=`" + rawValue + '`'
