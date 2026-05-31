@@ -98,7 +98,8 @@ public class SingleChoiceDialogFragment
         }
 
         dvb.settings.setOnCheckedChangeListener((group, checkedId) -> {
-            final int index = group.indexOfChild(group.<RadioButton>findViewById(checkedId));
+            final RadioButton rb = group.findViewById(checkedId);
+            final int index = group.indexOfChild(rb);
             final CharSequence[] entryValues = Objects.requireNonNull(
                     setting.getEntryValues(), "setting.getEntryValues() was null");
 
