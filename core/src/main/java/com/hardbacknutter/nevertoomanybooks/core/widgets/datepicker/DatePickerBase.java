@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -52,9 +51,8 @@ abstract class DatePickerBase<S>
     @StringRes
     final int titleResId;
 
-    @IdRes
     @NonNull
-    final int[] fieldIds;
+    final String[] fieldKeys;
 
     boolean todayIfNone;
 
@@ -68,16 +66,16 @@ abstract class DatePickerBase<S>
      *
      * @param fm         The FragmentManager this fragment dialog be added to.
      * @param titleResId for the dialog screen
-     * @param fieldIds   field this dialog is bound to
+     * @param fieldKeys   fields this dialog is bound to
      */
     DatePickerBase(@NonNull final FragmentManager fm,
                    @StringRes final int titleResId,
-                   @IdRes @NonNull final int... fieldIds) {
+                   @NonNull final String... fieldKeys) {
         this.fragmentManager = fm;
         this.titleResId = titleResId;
-        this.fieldIds = fieldIds;
+        this.fieldKeys = fieldKeys;
 
-        fragmentTag = TAG + String.join("_", Arrays.toString(fieldIds));
+        fragmentTag = TAG + String.join("_", Arrays.toString(fieldKeys));
     }
 
     public void setDateParser(@NonNull final DateParser<LocalDateTime> dateParser,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -43,14 +42,14 @@ public class DateRangePicker
      *
      * @param fm               The FragmentManager this fragment will be added to.
      * @param titleResId       for the dialog screen
-     * @param startDateFieldId field to bind the start-date to
-     * @param endDateFieldId   field to bind the end-date to
+     * @param startDateFieldKey field to bind the start-date to
+     * @param endDateFieldKey   field to bind the end-date to
      */
     public DateRangePicker(@NonNull final FragmentManager fm,
                            @StringRes final int titleResId,
-                           @IdRes final int startDateFieldId,
-                           @IdRes final int endDateFieldId) {
-        super(fm, titleResId, startDateFieldId, endDateFieldId);
+                           @NonNull final String startDateFieldKey,
+                           @NonNull final String endDateFieldKey) {
+        super(fm, titleResId, startDateFieldKey, endDateFieldKey);
     }
 
     /**
@@ -96,9 +95,9 @@ public class DateRangePicker
 
         if (listener != null && listener.get() != null) {
             if (selection == null) {
-                listener.get().onResult(fieldIds, new Long[]{});
+                listener.get().onResult(fieldKeys, new Long[]{});
             } else {
-                listener.get().onResult(fieldIds, new Long[]{selection.first, selection.second});
+                listener.get().onResult(fieldKeys, new Long[]{selection.first, selection.second});
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,10 +38,10 @@ public interface DatePickerListener {
      * </pre>
      * Instant.ofEpochMilli(selections[0])
      *
-     * @param fieldIds   one or two field resource ids this dialog was bound to
+     * @param fieldKeys   one or two field keys this dialog was bound to
      * @param selections one or two values with the selected date(s);
      *                   either/both can be {@code null}
      */
-    void onResult(@NonNull int[] fieldIds,
+    void onResult(@NonNull String[] fieldKeys,
                   @NonNull Long[] selections);
 }

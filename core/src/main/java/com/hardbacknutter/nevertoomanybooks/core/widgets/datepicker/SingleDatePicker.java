@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -44,12 +43,12 @@ public class SingleDatePicker
      *
      * @param fm         The FragmentManager this fragment will be added to.
      * @param titleResId for the dialog screen
-     * @param fieldId    field this dialog is bound to
+     * @param fieldKey    field this dialog is bound to
      */
     public SingleDatePicker(@NonNull final FragmentManager fm,
                             @StringRes final int titleResId,
-                            @IdRes final int fieldId) {
-        super(fm, titleResId, fieldId);
+                            @NonNull final String fieldKey) {
+        super(fm, titleResId, fieldKey);
     }
 
     /**
@@ -106,7 +105,7 @@ public class SingleDatePicker
         }
 
         if (listener != null && listener.get() != null) {
-            listener.get().onResult(fieldIds, new Long[]{selection});
+            listener.get().onResult(fieldKeys, new Long[]{selection});
         }
     }
 }
