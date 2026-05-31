@@ -74,6 +74,10 @@ public class SyncReaderFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "SyncReaderFragment";
+
+    /** dummy key for the date picker. */
+    private static final String SYNC_DATE = "sd";
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -182,7 +186,7 @@ public class SyncReaderFragment
 
         syncDatePicker = new SingleDatePicker(getChildFragmentManager(),
                                               R.string.lbl_sync_date,
-                                              vb.lblSyncDate.getId());
+                                              SYNC_DATE);
 
         vb.syncDate.setOnClickListener(v -> syncDatePicker.launch(
                 vm.getSyncDate(), onSyncDateSet));
@@ -351,7 +355,7 @@ public class SyncReaderFragment
         vm.getExtraArgs().putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
     }
 
-    private void onSyncDateSet(@NonNull final int[] fieldIds,
+    private void onSyncDateSet(@NonNull final String[] fieldKeys,
                                @NonNull final Long[] selections) {
         // The arrays have either one field (which can be null) or none
         if (selections.length > 0) {
