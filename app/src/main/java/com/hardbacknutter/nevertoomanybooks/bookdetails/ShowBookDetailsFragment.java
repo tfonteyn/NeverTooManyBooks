@@ -52,6 +52,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -424,13 +425,13 @@ public class ShowBookDetailsFragment
         final Book book = vm.getBook();
 
         // Refresh the read_end value displayed
-        vm.getField(R.id.read_end).ifPresent(field -> {
+        vm.getField(DBKey.READ_END__DATE).ifPresent(field -> {
             field.setValue(book.getString(DBKey.READ_END__DATE));
             //noinspection DataFlowIssue
             field.setVisibility(getView(), true, false);
         });
 
-        vm.getField(R.id.date_last_updated).ifPresent(
+        vm.getField(DBKey.DATE_LAST_UPDATED__UTC).ifPresent(
                 field -> field.setValue(book.getString(DBKey.DATE_LAST_UPDATED__UTC)));
 
         // when running in embedded mode, update the BoB list
@@ -488,7 +489,7 @@ public class ShowBookDetailsFragment
         toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 
-        final List<Field<?, ? extends View>> fields = vm.getFields();
+        final Collection<Field<?, ? extends View>> fields = vm.getFields();
 
         final Context context = getContext();
         final RealNumberParser realNumberParser = vm.getRealNumberParser();
