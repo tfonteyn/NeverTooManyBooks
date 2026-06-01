@@ -279,4 +279,5 @@
     <string name="confirm_delete_identifier_from_x_books">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Pašas grāmatas netiks dzēstas.</string>
     <string name="confirm_delete_identifier_from_x_authors">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Paši autori netiks dzēsti.</string>
     <string name="confirm_delete_identifier_from_x_series">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Pašas sērijas netiks dzēstas.</string>
+    <string name="error_import_csv_calibre">Calibre “comments” kolonna netiek atbalstīta. Lūdzu, izdzēs to no CSV faila.</string>
 </resources>

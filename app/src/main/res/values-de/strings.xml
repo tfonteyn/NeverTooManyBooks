@@ -922,4 +922,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Beim Speichern werden Titel, die bis auf die Formatierung identisch sind, zusammengeführt (z. B. „Der Herr der Ringe“ und „Herr der Ringe, Der“).</string>
     <string name="pt_deduplication_title_matching_summary_off">Beim Speichern werden Titel, die bis auf die Formatierung identisch sind, nicht zusammengeführt (z. B. „Der Herr der Ringe“ und „Herr der Ringe, Der“).</string>
     <string name="action_edit_with_ellipsis">Bearbeiten mit…</string>
+    <string name="error_import_csv_calibre">Die Calibre-Spalte „comments“ wird nicht unterstützt. Bitte entferne sie aus der CSV-Datei.</string>
 </resources>

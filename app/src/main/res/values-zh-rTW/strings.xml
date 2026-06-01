@@ -915,4 +915,5 @@
     <string name="pt_deduplication_title_matching_summary_on">僅適用於使用冠詞的語言。英語範例：「The Lord of The Rings」和「Lord of The Rings, The」。</string>
     <string name="pt_deduplication_title_matching_summary_off">僅適用於使用冠詞的語言。英語範例：「The Lord of The Rings」和「Lord of The Rings, The」。</string>
     <string name="action_edit_with_ellipsis">編輯於…</string>
+    <string name="error_import_csv_calibre">不支援 Calibre 的「comments」欄位。請把它從 CSV 檔案中刪掉。</string>
 </resources>

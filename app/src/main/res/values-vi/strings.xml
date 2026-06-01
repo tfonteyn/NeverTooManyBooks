@@ -912,4 +912,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Chỉnh sửa bằng…</string>
+    <string name="error_import_csv_calibre">Cột “comments” của Calibre không được hỗ trợ. Hãy xóa nó khỏi tệp CSV nhé.</string>
 </resources>

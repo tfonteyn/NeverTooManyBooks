@@ -954,4 +954,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The».</string>
     <string name="pt_deduplication_title_matching_summary_off">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The».</string>
     <string name="action_edit_with_ellipsis">Изменить с помощью…</string>
+    <string name="error_import_csv_calibre">Колонка «comments» из Calibre не поддерживается. Пожалуйста, удали её из CSV-файла.</string>
 </resources>

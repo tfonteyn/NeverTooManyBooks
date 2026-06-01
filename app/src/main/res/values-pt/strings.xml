@@ -933,4 +933,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Ao salvar, os títulos que sejam idênticos, exceto pela formatação, serão mesclados (ex: “O Senhor dos Anéis” e “Senhor dos Anéis, O”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Ao salvar, os títulos que sejam idênticos, exceto pela formatação, não serão mesclados (ex: “O Senhor dos Anéis” e “Senhor dos Anéis, O”).</string>
     <string name="action_edit_with_ellipsis">Editar com…</string>
+    <string name="error_import_csv_calibre">A coluna “comments” do Calibre não é suportada. Por favor, remove-a do ficheiro CSV.</string>
 </resources>

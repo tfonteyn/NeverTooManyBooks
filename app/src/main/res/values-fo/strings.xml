@@ -178,4 +178,5 @@
     <string name="confirm_delete_identifier_from_x_books">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Bøkurnar sjálvar verða ikki slettaðar.</string>
     <string name="confirm_delete_identifier_from_x_authors">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Høvundarnir sjálvir verða ikki slettaðir.</string>
     <string name="confirm_delete_identifier_from_x_series">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Røðirnar sjálvar verða ikki slettaðar.</string>
+    <string name="error_import_csv_calibre">Calibre-teigin „comments“ verður ikki stuðlaður. Vinarliga strika hann úr CSV-fíluni.</string>
 </resources>

@@ -945,4 +945,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="pt_deduplication_title_matching_summary_off">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="action_edit_with_ellipsis">Upraviť pomocou…</string>
+    <string name="error_import_csv_calibre">Stĺpec „comments“ z Calibre nie je podporovaný. Odstráň ho prosím zo súboru CSV.</string>
 </resources>

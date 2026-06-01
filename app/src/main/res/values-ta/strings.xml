@@ -922,4 +922,5 @@
     <string name="pt_deduplication_title_matching_summary_on">கட்டுரைகளைப் பயன்படுத்தும் மொழிகளுக்கு மட்டுமே பொருந்தும். ஆங்கில உதாரணம்: “The Lord of The Rings” மற்றும் “Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">கட்டுரைகளைப் பயன்படுத்தும் மொழிகளுக்கு மட்டுமே பொருந்தும். ஆங்கில உதாரணம்: “The Lord of The Rings” மற்றும் “Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">இதன் மூலம் திருத்தவும்…</string>
+    <string name="error_import_csv_calibre">Calibre-இன் “comments” பத்திக்கு ஆதரவு இல்லை. தயவுசெய்து அதை CSV கோப்பிலிருந்து நீக்கிவிடுங்கள்.</string>
 </resources>

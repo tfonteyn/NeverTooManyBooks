@@ -935,4 +935,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Lors de l’enregistrement, les titres identiques à l’exception du formatage seront fusionnés (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
     <string name="pt_deduplication_title_matching_summary_off">Lors de l’enregistrement, les titres identiques à l’exception du formatage ne seront pas fusionnés (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
     <string name="action_edit_with_ellipsis">Modifier avec…</string>
+    <string name="error_import_csv_calibre">La colonne « comments » de Calibre n’est pas prise en charge. Supprime-la du fichier CSV, s’il te plaît.</string>
 </resources>

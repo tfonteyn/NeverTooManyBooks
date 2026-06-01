@@ -923,4 +923,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Ao gardar, os títulos que sexan idénticos agás polo formato fusionaranse (p. ex., «O Señor dos Aneis» e «Señor dos Aneis, O»).</string>
     <string name="pt_deduplication_title_matching_summary_off">Ao gardar, os títulos que sexan idénticos agás polo formato non se fusionarán (p. ex., «O Señor dos Aneis» e «Señor dos Aneis, O»).</string>
     <string name="action_edit_with_ellipsis">Editar con…</string>
+    <string name="error_import_csv_calibre">A columna “comments” de Calibre no se admite. Por favor, elimínaa do arquivo CSV.</string>
 </resources>
