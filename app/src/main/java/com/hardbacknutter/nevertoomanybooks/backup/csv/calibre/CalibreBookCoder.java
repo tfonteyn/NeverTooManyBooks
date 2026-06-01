@@ -1,0 +1,507 @@
+/*
+ * @Copyright 2018-2026 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.backup.csv.calibre;
+
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreIdentifiers;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
+import com.hardbacknutter.util.logger.LoggerFactory;
+
+/**
+ * From a test export from Calibre 9.7.0 we got these known columns
+ * if (in Calibre) we choose the full set in the original order.
+ * <p>
+ * author_sort,authors,
+ * comments,
+ * cover,
+ * timestamp,
+ * formats,isbn,id,identifiers, languages,
+ * library_name,
+ * pubdate,publisher,
+ * rating,
+ * series,series_index,size,
+ * tags,
+ * title,title_sort,
+ * uuid
+ */
+public class CalibreBookCoder
+        implements BookCoder {
+
+    private static final String TAG = "CalibreBookCoder";
+    /** Last-updated. */
+    private static final String COL_TIMESTAMP = "timestamp";
+
+    @NonNull
+    private final Author unknownAuthor;
+    @NonNull
+    private final List<Locale> userLocales;
+    @NonNull
+    private final List<String> csvColumnNames;
+    private final RatingParser ratingParser;
+    private final List<CalibreCustomField> customFields;
+    private final FullDateParser dateParser;
+    private final TagMapper tagMapper;
+    @NonNull
+    private final Style defaultStyle;
+    private final BookshelfDao bookshelfDao;
+    private final StringList<Author> authorCoder;
+    private final StringList<Tag> tagCoder;
+
+
+    public CalibreBookCoder(@NonNull final Context context,
+                            @NonNull final Style defaultStyle,
+                            @NonNull final List<Locale> userLocales,
+                            @NonNull final List<String> csvColumnNames,
+                            @NonNull final DataReader.Updates updateOption)
+            throws DataReaderException {
+        this.defaultStyle = defaultStyle;
+
+        // If a sync was requested, we'll need this column or cannot proceed.
+        if (updateOption == DataReader.Updates.OnlyNewer) {
+            requireColumnOrThrow(context, csvColumnNames, COL_TIMESTAMP);
+        }
+
+        this.userLocales = userLocales;
+        this.csvColumnNames = csvColumnNames;
+
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        customFields = serviceLocator.getCalibreCustomFieldDao().getCustomFields();
+        bookshelfDao = serviceLocator.getBookshelfDao();
+
+        authorCoder = new StringList<>(new AuthorCoder());
+        tagCoder = new StringList<>(new TagCoder());
+
+        final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
+        dateParser = new FullDateParser(new ISODateParser(systemLocale), userLocales);
+
+        this.ratingParser = new RatingParser(5);
+
+        unknownAuthor = Author.createUnknownAuthor(context);
+
+        tagMapper = new TagMapper(this.userLocales.get(0));
+    }
+
+    @NonNull
+    @Override
+    public Book decode(@NonNull final Context context,
+                       @NonNull final List<String> csvDataRow) {
+        final Book book = new Book();
+
+        Series series = null;
+
+        for (int c = 0; c < csvColumnNames.size(); c++) {
+            final String name = csvColumnNames.get(c).toLowerCase(Locale.ENGLISH);
+            final String value = csvDataRow.get(c);
+            if (value.isBlank()) {
+                continue;
+            }
+
+            if (name.startsWith("#")) {
+                customFields.stream()
+                            .filter(cf -> cf.getCalibreKey().equals(name))
+                            .forEach(cf -> processCustomField(cf, value, book));
+            } else {
+                // we won't get here if the "comments" column was present, so ignore it.
+                switch (name) {
+                    case "authors": {
+                        // ignored, we use "author_sort" by preference
+                        break;
+                    }
+                    case "author_sort": {
+                        processAuthors(value, book);
+                        break;
+                    }
+                    case "isbn": {
+                        book.setIsbn(ISBN.cleanText(value));
+                        break;
+                    }
+                    case "title": {
+                        book.setTitle(value);
+                        break;
+                    }
+                    case "title_sort": {
+                        // ignored
+                        break;
+                    }
+                    case "languages": {
+                        processLanguage(value, book);
+                        break;
+                    }
+                    case "pubdate": {
+                        dateParser.parse(value).ifPresent(book::setPublicationDate);
+                        break;
+                    }
+                    case "publisher": {
+                        // Single name only
+                        book.add(Publisher.from(value));
+                        break;
+                    }
+                    case "series": {
+                        // Single name only
+                        series = Series.from(value);
+                        break;
+                    }
+                    case "series_index": {
+                        if (series != null) {
+                            series.setNumber(value);
+                        }
+                        break;
+                    }
+                    case "identifiers": {
+                        processIdentifiers(value, book);
+                        break;
+                    }
+                    case "tags": {
+                        processTags(context, value, book);
+                        break;
+                    }
+                    case "rating": {
+                        if (!NumberParser.isZero(value)) {
+                            // if we have a non-zero, we use it.
+                            ratingParser.parse(value).ifPresent(book::setRating);
+                        }
+                        break;
+                    }
+                    case COL_TIMESTAMP: {
+                        // "2019-04-11T13:02:03+01:00"
+                        dateParser.parse(value).ifPresent(book::setLastModified);
+                        break;
+                    }
+                    case "cover": {
+                        // It's a path on disk; ignored
+                        break;
+                    }
+
+                    case "library_name": {
+                        // The name is not enough to construct the full reference.
+                        // Hence, we can't build the specific Calibre library information
+                        // we normally do when connecting the the Content Server.
+                        //
+                        // Side note: in theory all books in the csv input will have the
+                        // same library name. However, we ignore that on purpose which
+                        // allows users to edit/change this for each book. Why? why not :)
+                        //
+                        // So... we use it as the bookshelf.
+                        final Bookshelf bookshelf = bookshelfDao
+                                .findByName(value)
+                                .orElseGet(() -> new Bookshelf(value, defaultStyle));
+                        book.add(bookshelf);
+                        break;
+                    }
+                    case "id": {
+                        // book.putString(DBKey.CALIBRE.BOOK_ID, value);
+                        break;
+                    }
+                    case "uuid": {
+                        // book.putString(DBKey.CALIBRE.BOOK_UUID, value);
+                        break;
+                    }
+                    case "formats": {
+                        /// only ever seen a single entry, but lets assume ',' separated
+                        // We only can take the first anyhow.
+                        // Not using a coder, these are simple
+                        final String[] split = value.split(",");
+                        // Typically we would now insert "eBook", but as we can't
+                        // create the library info, we'll use the actual format here
+                        book.putString(DBKey.FORMAT, split[0]);
+                        break;
+                    }
+                    case "size": {
+                        // ignored
+                        break;
+                    }
+
+                    default: {
+                        // Unknown on 2026-05-31; log them for future support
+                        LoggerFactory.getLogger()
+                                     .w(TAG, "Unknown Calibre csv column=" + name);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (series != null) {
+            book.add(series);
+        }
+
+        // we MUST have a title.
+        if (book.getTitle().isEmpty()) {
+            book.setTitle(context.getString(R.string.unknown_title));
+        }
+
+        // we MUST have an author.
+        if (book.getAuthors().isEmpty()) {
+            book.add(unknownAuthor);
+        }
+
+        // check/fix the standard language field
+        book.getLocaleAndUpdateLanguage(userLocales.get(0), true);
+
+        // Verifying the dates is overkill for now, but leaving it
+        // as protection from input changes.
+
+        // Full DateTime stamp.
+        verifyDates(book, DBKey.getDateTimeKeys(), false, true);
+        // Full Date stamp, no time
+        verifyDates(book, DBKey.getFullDateKeys(), false, false);
+        // Partial Date stamp, no time
+        verifyDates(book, DBKey.getPartialDateKeys(), true, false);
+
+        // GitHub #205: force the "read" flag to =1 if a read_end" is present
+        // after the above validation of the date fields.
+        if (book.contains(DBKey.READ_END__DATE)) {
+            book.putBoolean(DBKey.READ__BOOL, true);
+        }
+
+        return book;
+    }
+
+    private void processAuthors(final String value,
+                                final Book book) {
+
+        final List<Author> list = book.getAuthors();
+
+        // Do not add if already there.
+        // We need to do this here (before going to the database)
+        // so we can keep them in the exact order as they come in.
+        // This is particularly important for Goodreads imports
+        authorCoder.decodeList(value).forEach(author -> {
+            if (list.stream().noneMatch(a -> a.isSameName(author))) {
+                list.add(author);
+            }
+        });
+
+        book.setAuthors(list);
+    }
+
+    private void processLanguage(@NonNull final String value,
+                                 @NonNull final Book book) {
+        // only ever seen a single entry, but lets assume ',' separated
+        // Not using a coder, the entries are just iso3 codes.
+        // We only can take the first anyhow.
+        book.setLanguage(value.split(",")[0]);
+    }
+
+    private void processTags(@NonNull final Context context,
+                             @NonNull final CharSequence value,
+                             @NonNull final Book book) {
+        final List<Tag> list = book.getTags();
+
+        // Do not add if already there.
+        // We need to do this here (before going to the database)
+        // so we can keep them in the exact order as they come in.
+        tagCoder.decodeList(value).forEach(tag -> {
+            if (list.stream().noneMatch(a -> a.isSameName(tag))) {
+                list.add(tag);
+            }
+        });
+
+        book.setTags(list);
+        tagMapper.map(context, book);
+    }
+
+    private void processCustomField(@NonNull final CalibreCustomField cf,
+                                    @NonNull final String value,
+                                    @NonNull final Book book) {
+        switch (cf.getType()) {
+            case CalibreCustomField.TYPE_BOOL: {
+                try {
+                    final boolean b = BooleanParser
+                            .parseBoolean(value, true);
+                    book.putBoolean(cf.getDbKey(), b);
+                } catch (@NonNull final NumberFormatException ignored) {
+                    // ignored
+                }
+                break;
+            }
+            case CalibreCustomField.TYPE_TEXT:
+            case CalibreCustomField.TYPE_COMMENTS:
+            case CalibreCustomField.TYPE_COMPOSITE: {
+                switch (cf.getCalibreKey()) {
+                    // Standard Calibre Release: 9.5 [13 Mar, 2026]
+                    case "#read_progress": {
+                        processReadProgress(value, book);
+                        break;
+                    }
+                    default:
+                        book.putString(cf.getDbKey(), SearchEngineUtils.cleanText(value));
+                }
+                break;
+            }
+            case CalibreCustomField.TYPE_DATETIME: {
+                dateParser.parse(value).ifPresent(
+                        date -> book.putLocalDateTime(cf.getDbKey(), date));
+                break;
+            }
+
+        }
+    }
+
+    private void processReadProgress(@NonNull final String value,
+                                     @NonNull final Book book) {
+        // format: "0 / 221" or "37%"
+        // remove trailing '%' character
+        if (value.endsWith("%") && value.length() > 1) {
+            try {
+                final int p = Integer.parseInt(value.substring(0, value.length() - 1));
+                book.setReadingProgress(new ReadingProgress(p));
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
+            }
+            return;
+        }
+
+        if (value.contains("/") && value.length() > 3) {
+            final String[] split = value.split("/");
+            if (split.length == 2) {
+                try {
+                    final int page = Integer.parseInt(split[0]);
+                    final int total = Integer.parseInt(split[1]);
+                    if (total > 0) {
+                        if (total >= page) {
+                            book.setReadingProgress(new ReadingProgress(page, total));
+                        }
+
+                        book.setPages(total);
+                    }
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    private void processIdentifiers(@NonNull final String value,
+                                    @NonNull final Book book) {
+        final List<Identifier.Value> ivs = new ArrayList<>();
+        // "google:C2O96Fd-uwYC,amazon:076530953X,isbn:9780765309532"
+        // Not using a coder, these are simple
+        Arrays.stream(value.split(","))
+              .map(ids -> ids.split(":"))
+              // [0] name, [1] value
+              .forEach(id -> CalibreIdentifiers.convertIdentifier(
+                      book, id[0], id[1], ivs));
+
+        if (!ivs.isEmpty()) {
+            book.setIdentifiers(ivs);
+        }
+    }
+
+    /**
+     * Verify the given date keys for containing valid dates.
+     *
+     * @param book        to verify
+     * @param keys        to verify
+     * @param partialDate flag: {@code true} to cut dates down to partial dates.
+     *                    i.e. remove time and any tailing "-01".
+     * @param keepTime    flag: whether to keep a time component or strip it
+     */
+    private void verifyDates(@NonNull final Book book,
+                             @NonNull final Set<String> keys,
+                             final boolean partialDate,
+                             final boolean keepTime) {
+        keys.stream().filter(book::contains).forEach(key -> {
+            final String s = book.getString(key);
+            final Optional<LocalDateTime> date = dateParser.parse(s);
+            if (date.isPresent()) {
+                String iso = SqlEncode.dateTime(date.get());
+
+                // cut off the time if present & required
+                if (!keepTime && iso.length() > 10) {
+                    iso = iso.substring(0, 10);
+                }
+
+                // Cut 'YYYY-MM-DD' down to month or year if possible & required
+                if (partialDate && iso.length() > 4) {
+                    while (iso.endsWith("-01")) {
+                        iso = iso.substring(0, iso.length() - 3);
+                    }
+                }
+                book.putString(key, iso);
+            } else {
+                book.remove(key);
+            }
+        });
+    }
+
+    /**
+     * Require a column to be present. First one found; remainders are not needed.
+     *
+     * @param context        Current context
+     * @param columnsPresent the column names which are present
+     * @param names          columns which should be checked for, in order of preference
+     *
+     * @throws DataReaderException if no suitable column is present
+     */
+    private void requireColumnOrThrow(@NonNull final Context context,
+                                      @NonNull final List<String> columnsPresent,
+                                      @NonNull final String... names)
+            throws DataReaderException {
+
+
+        for (final String name : names) {
+            if (columnsPresent.contains(name)) {
+                return;
+            }
+        }
+
+        throw new DataReaderException(context.getString(
+                R.string.error_import_csv_missing_columns_x, String.join(",", names)));
+    }
+}
