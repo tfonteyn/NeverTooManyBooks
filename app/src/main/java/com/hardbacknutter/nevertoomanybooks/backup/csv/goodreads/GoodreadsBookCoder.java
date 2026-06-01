@@ -53,16 +53,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * From a test export on 2024-04-22 we got these known columns.
+ * From a test export on 2026-06-01 we got these known columns.
  * <p>
  * Book Id,Title,
  * Author,Author l-f,Additional Authors,
  * ISBN,ISBN13,
- * My Rating,Average Rating,
+ * My Rating,
  * Publisher,Binding,Number of Pages,
  * Year Published,Original Publication Year,
  * Date Read,Date Added,
- * Bookshelves,Bookshelves with positions, Exclusive Shelf,
+ * Bookshelves,Bookshelves with positions,Exclusive Shelf,
  * My Review,Spoiler,Private Notes,
  * Read Count,Owned Copies
  * <p>
@@ -184,6 +184,8 @@ public class GoodreadsBookCoder
                     break;
                 }
                 case "average rating": {
+                    // 2026-06-01: this column seems to have been removed.
+                    //
                     // Don't overwrite "my rating"
                     // fetch as string to avoid unneeded parsing
                     final String s = book.getString(DBKey.RATING, null);

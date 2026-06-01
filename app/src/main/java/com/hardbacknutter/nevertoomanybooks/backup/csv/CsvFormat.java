@@ -90,12 +90,6 @@ public enum CsvFormat
     static CsvFormat guess(@NonNull final Context context,
                            @NonNull final String header)
             throws DataReaderException {
-        // RELEASE: check the latest Goodreads CSV export file header.
-        // A download on 2025-05-06 showed a header starting like this:
-        if (header.startsWith(
-                "Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,")) {
-            return CsvFormat.Goodreads;
-        }
 
         if (header.startsWith("_id,author_details,title,isbn")
             || header.startsWith("\"_id\",\"author_details\",\"title\",\"isbn\"")) {
@@ -108,29 +102,23 @@ public enum CsvFormat
             return CsvFormat.BC;
         }
 
-        // Calibre is trickier...  the order of the columns can be changed by the user.
-        // A standard export of my own had the below list. Some of the fields are custom fields,
-        // and for some of those we have hard-coded support.
-        // Note the header names are NOT quoted.
-        //
-        // author_sort,authors,comments,#country,cover,timestamp,formats,isbn,id,identifiers,
-        // languages,library_name,#notes,pubdate,publisher,rating,
-        // #read,#read_progress,#ebook,series,series_index,size,#status,tags,
-        // title,title_sort,uuid
-        //
-        // We're going to make some guesses and expectations.
-        // 1. Column names from calibre are not quoted.
-        // 2. Rely on "library_name" to recognise Calibre.
-        // 3. Insist on "author_sort" as it's more foolproof to parse
-        // 4. Insist on "title"
-        // 5. REJECT if we find a comments field.
         final Set<String> columnNames = Set.of(header.split(","));
+
+        // RELEASE: check the latest Goodreads CSV export file header.
+        // Check for some fairly distinct column names
+        if (columnNames.contains("Book Id")
+            && columnNames.contains("Author l-f")
+            && columnNames.contains("Exclusive Shelf")) {
+
+            return CsvFormat.Goodreads;
+        }
 
         if (columnNames.contains("library_name")
             && columnNames.contains("author_sort")
             && columnNames.contains("title")) {
 
-            // Calibre does not escape CR/LF. This breaks the format utterly.
+            // Calibre does not escape CR/LF in comment fields.
+            // This breaks the format utterly.
             // If we find these columns, simply refuse to continue.
             // If other fields contain any CR/LF, we'll throw an error when we get there.
             if (columnNames.contains("comments") || columnNames.contains("#notes")) {
