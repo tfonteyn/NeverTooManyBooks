@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,12 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 
 import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -35,29 +36,25 @@ import com.hardbacknutter.org.json.JSONObject;
  * Format: shelfName * {json}
  * <br><strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
-public class BookshelfCoder
+class BookshelfCoder
         implements StringList.Coder<Bookshelf> {
 
     @NonNull
     private final Style defaultStyle;
 
-    private final char elementSeparator;
-
     /**
      * Constructor.
      *
-     * @param elementSeparator custom separator
      * @param defaultStyle     the default style to use
      */
-    public BookshelfCoder(final char elementSeparator,
-                          @NonNull final Style defaultStyle) {
-        this.elementSeparator = elementSeparator;
+    BookshelfCoder(@NonNull final Style defaultStyle) {
         this.defaultStyle = defaultStyle;
     }
 
+    // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
     @Override
     public char getElementSeparator() {
-        return elementSeparator;
+        return ',';
     }
 
     @Override

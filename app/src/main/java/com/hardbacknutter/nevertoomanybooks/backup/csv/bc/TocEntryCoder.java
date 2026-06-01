@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 
 import androidx.annotation.NonNull;
 
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -44,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  *
  * <br><strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
-public class TocEntryCoder
+class TocEntryCoder
         implements StringList.Coder<TocEntry> {
 
     /**

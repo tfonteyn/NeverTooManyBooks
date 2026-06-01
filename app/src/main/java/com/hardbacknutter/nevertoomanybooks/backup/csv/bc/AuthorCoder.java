@@ -17,12 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 
 import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.org.json.JSONException;
@@ -40,31 +41,8 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>reading in: see {@link Author#from(String)}</li>
  * </ul>
  */
-public class AuthorCoder
+class AuthorCoder
         implements StringList.Coder<Author> {
-
-    private final char elementSeparator;
-
-    /**
-     * Constructor.
-     */
-    public AuthorCoder() {
-        this.elementSeparator = StringList.Coder.DEFAULT_ELEMENT_SEPARATOR;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param elementSeparator custom separator
-     */
-    public AuthorCoder(final char elementSeparator) {
-        this.elementSeparator = elementSeparator;
-    }
-
-    @Override
-    public char getElementSeparator() {
-        return elementSeparator;
-    }
 
     @Override
     @NonNull

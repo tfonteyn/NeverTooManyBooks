@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -135,7 +134,7 @@ public class CsvRecordReader
      * @param row     row number; used for error reporting
      * @param line    with CSV fields
      *
-     * @return a list with the row fields
+     * @return a list with the row fields. The case is preserved.
      *
      * @throws DataReaderException on failure to parse this line
      */
@@ -323,23 +322,19 @@ public class CsvRecordReader
                    DataReaderException {
 
         // First line in the import file must be the column names.
-        final String columnHeader = books.get(0);
-        // Now try and guess where this CSV file might have come from.
-        final CsvFormat csvFormat = CsvFormat.guess(columnHeader);
-
-        // Parse the column header to use as keys into the book.
-        // We swap column names as needed depending on origin.
-        final List<String> csvColumnNames = parse(context, 0, columnHeader)
-                .stream()
-                .map(name -> name.toLowerCase(Locale.ENGLISH))
-                .map(csvFormat::mapColumnName)
-                .collect(Collectors.toList());
-
-        // Check for required columns we cannot do without
-        // If a sync was requested, we'll need this column or cannot proceed.
-        if (getUpdateOption() == DataReader.Updates.OnlyNewer) {
-            requireColumnOrThrow(context, csvColumnNames, DBKey.DATE_LAST_UPDATED__UTC);
+        final String rawHeader = books.get(0);
+        final String header;
+        // Files can start with a BOM character
+        if (rawHeader.startsWith("\uFEFF")) {
+            header = rawHeader.substring(1);
+        } else {
+            header = rawHeader;
         }
+
+        // Now try and guess where this CSV file might have come from.
+        final CsvFormat csvFormat = CsvFormat.guess(context, header);
+        // and parse the column/header names
+        final List<String> csvColumnNames = parse(context, 0, header);
 
         // One book == One row. We start after the headings row.
         int row = 1;
@@ -360,7 +355,10 @@ public class CsvRecordReader
         final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
         final List<Locale> allLocales = LocaleListUtils.asList(
                 context.getResources().getConfiguration().getLocales());
-        final BookCoder bookCoder = new BookCoder(context, csvFormat, defaultStyle, allLocales);
+        final BookCoder bookCoder = BookCoderFactory.create(context, csvFormat, getUpdateOption(),
+                                                            csvColumnNames,
+                                                            defaultStyle, allLocales
+        );
 
         while (row < books.size() && !progressListener.isCancelled()) {
 
@@ -371,7 +369,7 @@ public class CsvRecordReader
                 final List<String> csvDataRow = parse(context, row, books.get(row));
 
                 if (csvDataRow.size() == csvColumnNames.size()) {
-                    final Book book = bookCoder.decode(context, csvColumnNames, csvDataRow);
+                    final Book book = bookCoder.decode(context, csvDataRow);
                     preprocessId(book);
                     preprocessUuid(book);
                     importBook(context, book);
@@ -462,30 +460,5 @@ public class CsvRecordReader
                 book.putString(DBKey.BOOK_UUID, uuid);
             }
         }
-    }
-
-    /**
-     * Require a column to be present. First one found; remainders are not needed.
-     *
-     * @param context        Current context
-     * @param columnsPresent the column names which are present
-     * @param names          columns which should be checked for, in order of preference
-     *
-     * @throws DataReaderException if no suitable column is present
-     */
-    private void requireColumnOrThrow(@NonNull final Context context,
-                                      @NonNull final List<String> columnsPresent,
-                                      @NonNull final String... names)
-            throws DataReaderException {
-
-
-        for (final String name : names) {
-            if (columnsPresent.contains(name)) {
-                return;
-            }
-        }
-
-        throw new DataReaderException(context.getString(
-                R.string.error_import_csv_missing_columns_x, String.join(",", names)));
     }
 }

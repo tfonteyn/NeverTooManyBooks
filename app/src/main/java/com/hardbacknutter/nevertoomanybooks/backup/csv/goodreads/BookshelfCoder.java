@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,26 +17,38 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.goodreads;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-/**
- * StringList factory for a Publisher.
- * <p>
- * Format: Name
- */
-public class PublisherCoder
-        implements StringList.Coder<Publisher> {
 
-    PublisherCoder() {
+class BookshelfCoder
+        implements StringList.Coder<Bookshelf> {
+
+    @NonNull
+    private final Style defaultStyle;
+
+    /**
+     * Constructor.
+     *
+     * @param defaultStyle the default style to use
+     */
+    BookshelfCoder(@NonNull final Style defaultStyle) {
+        this.defaultStyle = defaultStyle;
+    }
+
+    @Override
+    public char getElementSeparator() {
+        return ',';
     }
 
     @Override
     @NonNull
-    public Publisher decode(@NonNull final String element) {
-        return Publisher.from(element);
+    public Bookshelf decode(@NonNull final String element) {
+        return new Bookshelf(element, defaultStyle);
     }
 }

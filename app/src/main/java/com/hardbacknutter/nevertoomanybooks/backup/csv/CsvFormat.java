@@ -25,138 +25,27 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.updates.IdentifierMigration;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.util.logger.LoggerFactory;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 
 public enum CsvFormat
         implements Parcelable {
     /** A Goodreads export. */
-    Goodreads(R.string.site_goodreads) {
-        @NonNull
-        public String mapColumnName(@NonNull final String name) {
-            // From a test export on 2024-04-22:
-            // Book Id,Title,
-            // Author,Author l-f,Additional Authors,
-            // ISBN,ISBN13,
-            // My Rating,Average Rating,
-            // Publisher,Binding,Number of Pages,
-            // Year Published,Original Publication Year,Date Read,Date Added,
-            // Bookshelves,Bookshelves with positions,Exclusive Shelf,
-            // My Review, Spoiler,
-            // Private Notes,
-            // Read Count,Owned Copies
-            switch (name) {
-                case "book id":
-                    return Identifier.SID_GOODREADS;
-                case "title":
-                    return DBKey.TITLE;
-                case "author l-f":
-                    // Will be decoded during import
-                    return DBKey.AUTHOR.FORMATTED_FULL_NAME;
-                case "additional authors":
-                    // Added in addition to the one above
-                    return CsvGoodreads.ADDITIONAL_AUTHORS;
-                case "isbn":
-                    // ISBN-10; will be used if the "isbn13" field is empty
-                    return CsvGoodreads.ISBN10;
-                case "isbn13":
-                    return DBKey.ISBN;
-                case "my rating":
-                    return CsvGoodreads.MY_RATING;
-                case "average rating":
-                    return CsvGoodreads.AVERAGE_RATING;
-                case "publisher":
-                    return DBKey.PUBLISHER.NAME;
-                case "binding":
-                    return DBKey.FORMAT;
-                case "number of pages":
-                    return DBKey.PAGES;
-                case "year published":
-                    return DBKey.PUBLICATION_DATE;
-                case "original publication year":
-                    return DBKey.FIRST_PUBLICATION_DATE;
-                case "date read":
-                    return DBKey.READ_END__DATE;
-                case "date added":
-                    return DBKey.DATE_ADDED__UTC;
-                case "bookshelves":
-                    return CsvGoodreads.BOOKSHELVES;
-                case "exclusive shelf":
-                    return CsvGoodreads.EXCLUSIVE_SHELF;
-                case "my review":
-                    return CsvGoodreads.MY_REVIEW;
-                case "private notes":
-                    return DBKey.PERSONAL_NOTES;
+    Goodreads(R.string.site_goodreads, null),
 
-                // The next set are ignored for now
-                case "author":
-                    // ignored in favour of the "author l-f" field
-                case "bookshelves with positions":
-                    // we don't support positions for bookshelves
-                case "spoiler":
-                    // I believe this is a flag set when the "my review" field is
-                    // considered to contain spoilers - not supported.
-                case "read count":
-                    // We only support read == true/false
-                case "owned copies":
-                    // We do not have a concept of multiple copies
-                    // (although this could be a valid enhancement as we support lending out books)
+    Calibre(R.string.site_calibre, "timestamp"),
 
-                    // Just use a bogus name which will be ignored
-                    return CsvGoodreads.PREFIX + name;
-
-                default:
-                    // Unknown on 2024-04-22; log them for future support
-                    LoggerFactory.getLogger()
-                                 .w(TAG, "Unknown Goodreads csv column=" + name);
-                    return CsvGoodreads.PREFIX + name;
-            }
-        }
-
-        // The locales are ignored as not needed for Goodreads
-        @Override
-        @NonNull
-        public RatingParser createRatingParser(@NonNull final List<Locale> ignored) {
-            return new RatingParser(5);
-        }
-    },
     /** The original BC format, or the extended but obsolete NTMB 1.x .. 3.x format. */
-    BC(R.string.lbl_book_catalogue) {
-        @NonNull
-        public String mapColumnName(@NonNull final String name) {
-            final String mapped = IdentifierMigration.MAPPINGS.get(name);
-            return mapped == null ? name : mapped;
-        }
+    BC(R.string.lbl_book_catalogue, DBKey.DATE_LAST_UPDATED__UTC),
 
-        @Override
-        @NonNull
-        public RatingParser createRatingParser(@NonNull final List<Locale> locales) {
-            return new RatingParser(new RealNumberParser(locales), 5);
-        }
-    },
     /** Anything not explicitly recognised. */
-    Unknown(R.string.unknown) {
-        @NonNull
-        public String mapColumnName(@NonNull final String name) {
-            return name;
-        }
-
-        @Override
-        @NonNull
-        public RatingParser createRatingParser(@NonNull final List<Locale> locales) {
-            return new RatingParser(new RealNumberParser(locales), 5);
-        }
-    };
+    Unknown(R.string.unknown, null);
 
     /** {@link Parcelable}. */
     public static final Creator<CsvFormat> CREATOR = new Creator<>() {
@@ -177,60 +66,84 @@ public enum CsvFormat
     public static final String BKEY = TAG + ":bk";
     @StringRes
     private final int labelId;
+    @Nullable
+    private final String lastUpdateColumnName;
 
-    CsvFormat(@StringRes final int labelId) {
+    CsvFormat(@StringRes final int labelId,
+              @Nullable final String lastUpdateColumnName) {
         this.labelId = labelId;
+        this.lastUpdateColumnName = lastUpdateColumnName;
     }
 
     /**
      * Parse the CSV file header line to guess the origin/format.
      *
-     * @param header to parse
+     * @param context Current context
+     * @param header  to parse
      *
      * @return format detected
+     *
+     * @throws DataReaderException on total failure to detect
+     *                             or if there is a conflict found
      */
     @NonNull
-    static CsvFormat guess(@NonNull final String header) {
+    static CsvFormat guess(@NonNull final Context context,
+                           @NonNull final String header)
+            throws DataReaderException {
         // RELEASE: check the latest Goodreads CSV export file header.
         // A download on 2025-05-06 showed a header starting like this:
         if (header.startsWith(
                 "Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,")) {
             return CsvFormat.Goodreads;
+        }
 
-        } else if (header.startsWith("_id,author_details,title,isbn")
-                   || header.startsWith("\"_id\",\"author_details\",\"title\",\"isbn\"")) {
+        if (header.startsWith("_id,author_details,title,isbn")
+            || header.startsWith("\"_id\",\"author_details\",\"title\",\"isbn\"")) {
             // We have a pretty good match for original BC files
             return CsvFormat.BC;
+        }
 
-        } else if (header.startsWith("\"_id\",")) {
+        if (header.startsWith("\"_id\",")) {
             // It's likely/hopefully a match for BC or NTMB 1-3 formats
             return CsvFormat.BC;
+        }
 
+        // Calibre is trickier...  the order of the columns can be changed by the user.
+        // A standard export of my own had the below list. Some of the fields are custom fields,
+        // and for some of those we have hard-coded support.
+        // Note the header names are NOT quoted.
+        //
+        // author_sort,authors,comments,#country,cover,timestamp,formats,isbn,id,identifiers,
+        // languages,library_name,#notes,pubdate,publisher,rating,
+        // #read,#read_progress,#ebook,series,series_index,size,#status,tags,
+        // title,title_sort,uuid
+        //
+        // We're going to make some guesses and expectations.
+        // 1. Column names from calibre are not quoted.
+        // 2. Rely on "library_name" to recognise Calibre.
+        // 3. Insist on "author_sort" as it's more foolproof to parse
+        // 4. Insist on "title"
+        // 5. REJECT if we find a comments field.
+        final Set<String> columnNames = Set.of(header.split(","));
+
+        if (columnNames.contains("library_name")
+            && columnNames.contains("author_sort")
+            && columnNames.contains("title")) {
+
+            // Calibre does not escape CR/LF. This breaks the format utterly.
+            // If we find these columns, simply refuse to continue.
+            // If other fields contain any CR/LF, we'll throw an error when we get there.
+            if (columnNames.contains("comments") || columnNames.contains("#notes")) {
+                throw new DataReaderException(
+                        context.getString(R.string.error_import_csv_calibre));
+            }
+
+            // Hope for the best
+            return CsvFormat.Calibre;
         }
 
         return CsvFormat.Unknown;
     }
-
-    /**
-     * Map a column name as found in the input file to a {@link DBKey} if possible.
-     * Columns that need more processing <strong>MUST NOT</strong> use a {@link DBKey}.
-     *
-     * @param name to map
-     *
-     * @return mapped name
-     */
-    @NonNull
-    public abstract String mapColumnName(@NonNull String name);
-
-    /**
-     * Create a {@link RatingParser} suitable for this format.
-     *
-     * @param locales to use
-     *
-     * @return new instance
-     */
-    @NonNull
-    public abstract RatingParser createRatingParser(@NonNull List<Locale> locales);
 
     @Override
     public int describeContents() {
@@ -253,5 +166,10 @@ public enum CsvFormat
     @NonNull
     public CharSequence getLabel(@NonNull final Context context) {
         return context.getString(labelId);
+    }
+
+    @Nullable
+    String getLastUpdateColumnName() {
+        return lastUpdateColumnName;
     }
 }

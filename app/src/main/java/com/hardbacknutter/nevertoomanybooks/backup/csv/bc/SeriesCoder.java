@@ -17,12 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 
 import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.org.json.JSONException;
@@ -41,7 +42,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * <p>
  * <strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
-public class SeriesCoder
+class SeriesCoder
         implements StringList.Coder<Series> {
 
     @Override

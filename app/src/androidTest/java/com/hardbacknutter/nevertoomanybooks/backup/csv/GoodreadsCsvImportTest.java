@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -122,8 +124,8 @@ class GoodreadsCsvImportTest
         assertTrue(oMetaData.isPresent());
         metaData = oMetaData.get();
         assertNotNull(metaData);
-        assertEquals(CsvFormat.Goodreads,
-                     metaData.getData().getParcelable(CsvFormat.BKEY));
+        Assertions.assertEquals(CsvFormat.Goodreads,
+                                metaData.getData().getParcelable(CsvFormat.BKEY));
         assertTrue(metaData.getData().containsKey(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
         // "goodreads_library_export.csv" does NOT contain such a field
         assertFalse(metaData.getData().getBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
@@ -224,6 +226,11 @@ class GoodreadsCsvImportTest
             assertEquals(1, allPublishers.size());
             assertEquals("Tor Books", allPublishers.get(0).getName());
 
+            final List<Series> allSeries = book.getSeries();
+            assertEquals(1, allSeries.size());
+            final Series series = allSeries.get(0);
+            assertEquals("Remembrance of Earth’s Past", series.getTitle());
+            assertEquals("1", series.getNumber());
 
             final List<Author> allAuthors = book.getAuthors();
             assertEquals(3, allAuthors.size());
@@ -233,10 +240,10 @@ class GoodreadsCsvImportTest
             assertEquals("Cixin", author.getFamilyName());
             assertEquals("Liu", author.getGivenNames());
             author = allAuthors.get(1);
-            // wrong order, see note in BookCoder
+            // wrong order, see note in DefaultBookCoder
             assertEquals("Liu", author.getFamilyName());
             assertEquals("Ken", author.getGivenNames());
-            // duplicate/wrong-order, see note in BookCoder
+            // duplicate/wrong-order, see note in DefaultBookCoder
             author = allAuthors.get(2);
             assertEquals("Liu", author.getFamilyName());
             assertEquals("Cixin", author.getGivenNames());

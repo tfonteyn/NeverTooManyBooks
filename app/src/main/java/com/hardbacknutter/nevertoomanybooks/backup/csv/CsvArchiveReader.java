@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.Purger;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -92,21 +91,29 @@ public class CsvArchiveReader
             throws DataReaderException, CredentialsException, StorageException, IOException {
 
         // Sample the first line to get the (raw/lowercase) column names
-        final String columnHeader;
+        final String rawHeader;
         try (InputStream is = context.getContentResolver().openInputStream(uri);
              Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
              BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE)) {
-            columnHeader = reader.readLine();
+            rawHeader = reader.readLine();
+        }
+        final String header;
+        // Files can start with a BOM character
+        if (rawHeader.startsWith("\uFEFF")) {
+            header = rawHeader.substring(1);
+        } else {
+            header = rawHeader;
         }
 
-        final CsvFormat csvFormat = CsvFormat.guess(columnHeader);
+        final CsvFormat csvFormat = CsvFormat.guess(context, header);
+        final String lastUpdateColumnName = csvFormat.getLastUpdateColumnName();
 
-        final boolean supportsUpdates = CsvRecordReader
-                .parse(context, 0, columnHeader)
+        final boolean supportsUpdates = lastUpdateColumnName != null
+                                        && CsvRecordReader
+                                                .parse(context, 0, header)
                 .stream()
                 .map(name -> name.toLowerCase(Locale.ENGLISH))
-                .map(csvFormat::mapColumnName)
-                .anyMatch(DBKey.DATE_LAST_UPDATED__UTC::equals);
+                .anyMatch(lastUpdateColumnName::equals);
 
         final Bundle bundle = ServiceLocator.getInstance().newBundle();
         bundle.putParcelable(CsvFormat.BKEY, csvFormat);

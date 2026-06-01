@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 
 import android.content.Context;
 
@@ -36,20 +36,20 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvFormat;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvGoodreads;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.updates.GenreMigration;
+import com.hardbacknutter.nevertoomanybooks.database.updates.IdentifierMigration;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -57,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 
 /**
@@ -72,7 +74,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
  * In other words: this coder is NOT a full backup/restore!
  */
 @SuppressWarnings("SameParameterValue")
-public class BookCoder {
+public class DefaultBookCoder
+        implements BookCoder {
 
     /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
     private static final String CSV_COLUMN_TOC = "anthology_titles";
@@ -108,10 +111,7 @@ public class BookCoder {
 
     @NonNull
     private final Author unknownAuthor;
-    @NonNull
-    private final CsvFormat csvFormat;
-    @NonNull
-    private final Style defaultStyle;
+
     private final FullDateParser dateParser;
     private final RatingParser ratingParser;
     private final TagMapper tagMapper;
@@ -119,58 +119,57 @@ public class BookCoder {
     private final MoneyParser moneyParser;
     private final IdentifierDao identifierDao;
     @Nullable
-    private CsvGoodreads goodreads;
-    @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
+
+    private final List<String> csvColumnNames;
 
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param csvFormat    type/origin of the input data to decode
-     * @param defaultStyle the default style to use for {@link Bookshelf}s
-     * @param userLocales  to use for parsing
+     * @param context        Current context
+     * @param defaultStyle   the default style to use for {@link Bookshelf}s
+     * @param userLocales    to use for parsing
+     * @param csvColumnNames the list with the field(column) names
      */
-    public BookCoder(@NonNull final Context context,
-                     @NonNull final CsvFormat csvFormat,
-                     @NonNull final Style defaultStyle,
-                     @NonNull final List<Locale> userLocales) {
-        this.csvFormat = csvFormat;
-        this.defaultStyle = defaultStyle;
+    public DefaultBookCoder(@NonNull final Context context,
+                            @NonNull final Style defaultStyle,
+                            @NonNull final List<Locale> userLocales,
+                            @NonNull final List<String> csvColumnNames,
+                            @NonNull final DataReader.Updates updateOption,
+                            @NonNull final FullDateParser dateParser,
+                            @NonNull final MoneyParser moneyParser)
+            throws DataReaderException {
+
+        // If a sync was requested, we'll need this column or cannot proceed.
+        if (updateOption == DataReader.Updates.OnlyNewer) {
+            requireColumnOrThrow(context, csvColumnNames, DBKey.DATE_LAST_UPDATED__UTC);
+        }
+
+        this.csvColumnNames = csvColumnNames
+                .stream()
+                .map(name -> name.toLowerCase(Locale.ENGLISH))
+                .map(name -> {
+                    final String mapped = IdentifierMigration.MAPPINGS.get(name);
+                    return mapped == null ? name : mapped;
+                })
+                .collect(Collectors.toList());
+
         this.userLocales = userLocales;
+        this.dateParser = dateParser;
+        this.moneyParser = moneyParser;
+        this.ratingParser = new RatingParser(new RealNumberParser(this.userLocales), 5);
 
         identifierDao = ServiceLocator.getInstance().getIdentifierDao();
 
         authorCoder = new StringList<>(new AuthorCoder());
-        // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
-        bookshelfCoder = new StringList<>(new BookshelfCoder(',', defaultStyle));
+        bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
         publisherCoder = new StringList<>(new PublisherCoder());
         seriesCoder = new StringList<>(new SeriesCoder());
         tocCoder = new StringList<>(new TocEntryCoder());
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        dateParser = new FullDateParser(new ISODateParser(systemLocale), this.userLocales);
-
         tagMapper = new TagMapper(this.userLocales.get(0));
-
-        // Special treatment for the floating point parsers,
-        // due to CSV files potentially coming from "foreign" websites.
-
-        // Make sure US is added so we can parse "dot" decimal-separator
-        // even when the user Locale is a comma decimal-separator.
-        final List<Locale> tmpLocales = new ArrayList<>(this.userLocales);
-        if (!this.userLocales.contains(Locale.US)) {
-            tmpLocales.add(Locale.US);
-        }
-        // Make sure FRANCE is added so we can parse "comma" decimal-separator
-        // even when the user Locale is a dot decimal-separator.
-        if (!this.userLocales.contains(Locale.FRANCE)) {
-            tmpLocales.add(Locale.FRANCE);
-        }
-        moneyParser = new MoneyParser(userLocales.get(0), tmpLocales);
-        ratingParser = csvFormat.createRatingParser(tmpLocales);
     }
 
     /**
@@ -179,15 +178,15 @@ public class BookCoder {
      * Both csv lists <strong>must</strong> be the same length.
      *
      * @param context        Current context
-     * @param csvColumnNames the list with the field(column) names
      * @param csvDataRow     the list with the field data
      *
      * @return the decoded book
      */
     @NonNull
+    @Override
     public Book decode(@NonNull final Context context,
-                       @NonNull final List<String> csvColumnNames,
                        @NonNull final List<String> csvDataRow) {
+
         final Book book = new Book();
 
         // Read all non-empty columns of the current row into the Bundle.
@@ -221,7 +220,6 @@ public class BookCoder {
         processCalibreData(book);
         processRating(book);
         processPrice(book);
-        processDescriptionAndNotes(book);
         processGenre(context, book);
         processExternalIds(book);
 
@@ -244,25 +242,12 @@ public class BookCoder {
         return book;
     }
 
-    @NonNull
-    private CsvGoodreads getGoodreads() {
-        if (goodreads == null) {
-            goodreads = new CsvGoodreads(defaultStyle);
-        }
-        return goodreads;
-    }
-
     /**
      * Process alternative keys for the ISBN and clean the ISBN text as needed.
      *
      * @param book to process
      */
     private void processIsbn(@NonNull final Book book) {
-        if (!book.hasIsbn() && book.contains(CsvGoodreads.ISBN10)) {
-            book.setIsbn(book.getString(CsvGoodreads.ISBN10));
-        }
-        book.remove(CsvGoodreads.ISBN10);
-
         if (book.hasIsbn()) {
             // ALWAYS try to clean the ISBN.
             final String raw = book.getIsbn();
@@ -296,11 +281,9 @@ public class BookCoder {
     private void processAuthors(@NonNull final Book book) {
         final List<Author> list = book.getAuthors();
 
-        processAuthor(book, authorCoder, CSV_COLUMN_AUTHORS, list);
-        processAuthor(book, authorCoder, DBKey.AUTHOR.FORMATTED_FULL_NAME, list);
-        processAuthor(book, authorCoder, LEGACY_AUTHOR_NAME, list);
-        processAuthor(book, getGoodreads().getAuthorCoder(),
-                      CsvGoodreads.ADDITIONAL_AUTHORS, list);
+        processAuthor(book, CSV_COLUMN_AUTHORS, list);
+        processAuthor(book, DBKey.AUTHOR.FORMATTED_FULL_NAME, list);
+        processAuthor(book, LEGACY_AUTHOR_NAME, list);
 
         // check for individual author family/given fields in the input
         if (book.contains(DBKey.AUTHOR.FAMILY_NAME)) {
@@ -322,7 +305,6 @@ public class BookCoder {
     }
 
     private void processAuthor(@NonNull final Book book,
-                               @NonNull final StringList<Author> coder,
                                @NonNull final String key,
                                @NonNull final List<Author> list) {
         if (book.contains(key)) {
@@ -333,8 +315,7 @@ public class BookCoder {
                 // Do not add if already there.
                 // We need to do this here (before going to the database)
                 // so we can keep them in the exact order as they come in.
-                // This is particularly important for Goodreads imports
-                coder.decodeList(encodedList).forEach(author -> {
+                authorCoder.decodeList(encodedList).forEach(author -> {
                     if (list.stream().noneMatch(a -> a.isSameName(author))) {
                         list.add(author);
                     }
@@ -377,7 +358,7 @@ public class BookCoder {
     private void processSeries(@NonNull final Book book) {
         final List<Series> list = book.getSeries();
 
-        processSeries(book, seriesCoder, CSV_COLUMN_SERIES, list);
+        processSeries(book, CSV_COLUMN_SERIES, list);
 
         // check for individual series title/number fields in the input
         if (book.contains(DBKey.SERIES.TITLE)) {
@@ -400,7 +381,6 @@ public class BookCoder {
     }
 
     private void processSeries(@NonNull final Book book,
-                               @NonNull final StringList<Series> coder,
                                @NonNull final String key,
                                @NonNull final List<Series> list) {
         if (book.contains(key)) {
@@ -409,7 +389,7 @@ public class BookCoder {
 
             if (encodedList != null && !encodedList.isEmpty()) {
                 // Weeding out duplicates here is likely overkill but oh well.
-                coder.decodeList(encodedList).forEach(series -> {
+                seriesCoder.decodeList(encodedList).forEach(series -> {
                     if (list.stream().noneMatch(bs -> bs.isSameName(series)
                                                       && bs.getNumber()
                                                            .equals(series.getNumber()))) {
@@ -430,8 +410,8 @@ public class BookCoder {
     private void processPublishers(@NonNull final Book book) {
         final List<Publisher> list = book.getPublishers();
 
-        processPublisher(book, publisherCoder, CSV_COLUMN_PUBLISHERS, list);
-        processPublisher(book, publisherCoder, DBKey.PUBLISHER.NAME, list);
+        processPublisher(book, CSV_COLUMN_PUBLISHERS, list);
+        processPublisher(book, DBKey.PUBLISHER.NAME, list);
 
         if (!list.isEmpty()) {
             book.setPublishers(list);
@@ -439,7 +419,6 @@ public class BookCoder {
     }
 
     private void processPublisher(@NonNull final Book book,
-                                  @NonNull final StringList<Publisher> coder,
                                   @NonNull final String key,
                                   @NonNull final List<Publisher> list) {
         if (book.contains(key)) {
@@ -448,7 +427,7 @@ public class BookCoder {
 
             if (encodedList != null && !encodedList.isEmpty()) {
                 // Weeding out duplicates here is likely overkill but oh well.
-                coder.decodeList(encodedList).forEach(publisher -> {
+                publisherCoder.decodeList(encodedList).forEach(publisher -> {
                     if (list.stream().noneMatch(bs -> bs.isSameName(publisher))) {
                         list.add(publisher);
                     }
@@ -470,7 +449,7 @@ public class BookCoder {
     private void processToc(@NonNull final Book book) {
         final List<TocEntry> list = book.getToc();
 
-        processToc(book, tocCoder, CSV_COLUMN_TOC, list);
+        processToc(book, CSV_COLUMN_TOC, list);
 
         if (!list.isEmpty()) {
             book.setToc(list);
@@ -478,7 +457,6 @@ public class BookCoder {
     }
 
     private void processToc(@NonNull final Book book,
-                            @NonNull final StringList<TocEntry> coder,
                             @NonNull final String key,
                             @NonNull final List<TocEntry> list) {
         if (book.contains(key)) {
@@ -487,7 +465,7 @@ public class BookCoder {
 
             if (encodedList != null && !encodedList.isEmpty()) {
                 // Weeding out duplicates here is likely overkill but oh well.
-                coder.decodeList(encodedList).forEach(tocEntry -> {
+                tocCoder.decodeList(encodedList).forEach(tocEntry -> {
                     if (list.stream().noneMatch(bs -> bs.isSameName(tocEntry))) {
                         list.add(tocEntry);
                     }
@@ -506,28 +484,9 @@ public class BookCoder {
     private void processBookshelves(@NonNull final Book book) {
         final List<Bookshelf> list = book.getBookshelves();
 
-        processBookshelf(book, bookshelfCoder, DBKey.BOOKSHELF.NAME, list);
-        processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_1_1, list);
-        processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_TEXT, list);
-
-        if (book.contains(CsvGoodreads.BOOKSHELVES)
-            || book.contains(CsvGoodreads.EXCLUSIVE_SHELF)) {
-            //ENHANCE: provide mapping for the Goodreads
-            // "read", "to-read", "currently-reading" and "did-not-finish"
-            // fixed shelves. For now we just create those when not there yet.
-            // If 'read' is present, we also set our DBKey.READ__BOOL flag.
-            final StringList<Bookshelf> grBookshelfCoder = getGoodreads().getBookshelfCoder();
-            processBookshelf(book, grBookshelfCoder, CsvGoodreads.BOOKSHELVES, list);
-            processBookshelf(book, grBookshelfCoder, CsvGoodreads.EXCLUSIVE_SHELF, list);
-
-            if (list.stream().anyMatch(bookshelf -> "read".equals(bookshelf.getName()))) {
-                // DO NOT use book.setRead(true) as that will set related fields
-                // which is not desired here as that might overwrite incoming data
-                book.putBoolean(DBKey.READ__BOOL, true);
-            }
-        }
-        book.remove(CsvGoodreads.BOOKSHELVES);
-        book.remove(CsvGoodreads.EXCLUSIVE_SHELF);
+        processBookshelf(book, DBKey.BOOKSHELF.NAME, list);
+        processBookshelf(book, LEGACY_BOOKSHELF_1_1, list);
+        processBookshelf(book, LEGACY_BOOKSHELF_TEXT, list);
 
         if (!list.isEmpty()) {
             book.setBookshelves(list);
@@ -535,7 +494,6 @@ public class BookCoder {
     }
 
     private void processBookshelf(@NonNull final Book book,
-                                  @NonNull final StringList<Bookshelf> coder,
                                   @NonNull final String key,
                                   @NonNull final List<Bookshelf> list) {
         if (book.contains(key)) {
@@ -547,7 +505,7 @@ public class BookCoder {
                 // We need to do this here (before going to the database)
                 // so we can keep them in the exact order as they come in.
                 // This is particularly important for Goodreads imports
-                coder.decodeList(encodedList).forEach(bookshelf -> {
+                bookshelfCoder.decodeList(encodedList).forEach(bookshelf -> {
                     if (list.stream().noneMatch(bs -> bs.isSameName(bookshelf))) {
                         list.add(bookshelf);
                     }
@@ -581,7 +539,6 @@ public class BookCoder {
         }
     }
 
-    @SuppressWarnings("IfStatementWithNegatedCondition")
     private void processRating(@NonNull final Book book) {
         // Read the values as String and parse to verify they are valid.
         // The order of the "if" statements is important!
@@ -589,26 +546,7 @@ public class BookCoder {
         if (book.contains(DBKey.RATING)) {
             // If the key DBKey.RATING is present, we ALWAYS use it even if it's 0/empty
             ratingParser.parse(book.getString(DBKey.RATING)).ifPresent(book::setRating);
-        } else {
-            // Goodreads imports:
-            // Try MY_RATING first
-            String s = book.getString(CsvGoodreads.MY_RATING);
-            if (!NumberParser.isZero(s)) {
-                // if we have a non-zero, we use it.
-                ratingParser.parse(s).ifPresent(book::setRating);
-            } else {
-                // otherwise try AVERAGE_RATING
-                s = book.getString(CsvGoodreads.AVERAGE_RATING);
-                if (!NumberParser.isZero(s)) {
-                    // if we have a non-zero, we use it.
-                    ratingParser.parse(book.getString(CsvGoodreads.AVERAGE_RATING))
-                                .ifPresent(book::setRating);
-                }
-            }
         }
-        // no need to keep these now
-        book.remove(CsvGoodreads.MY_RATING);
-        book.remove(CsvGoodreads.AVERAGE_RATING);
     }
 
     private void processPrice(@NonNull final Book book) {
@@ -626,24 +564,6 @@ public class BookCoder {
                     book.remove(DBKey.PRICE_LISTED);
                 }
             }
-        }
-    }
-
-    private void processDescriptionAndNotes(@NonNull final Book book) {
-        //ENHANCE: Create a new field for a personal review.
-        // For now, just concatenate with the private notes... we'll probably regret this later...
-        // .
-        // We don't want to use the DBKey.DESCRIPTION field!
-        // The description is supposed to be a generic description, the back cover text, etc...
-        final String review = book.getString(CsvGoodreads.MY_REVIEW);
-        if (!review.isEmpty()) {
-            String notes = book.getString(DBKey.PERSONAL_NOTES);
-            if (!notes.isEmpty()) {
-                notes += "\n\n";
-            }
-            notes += review;
-            book.putString(DBKey.PERSONAL_NOTES, notes);
-            book.remove(CsvGoodreads.MY_REVIEW);
         }
     }
 
@@ -721,5 +641,30 @@ public class BookCoder {
                 book.remove(key);
             }
         });
+    }
+
+    /**
+     * Require a column to be present. First one found; remainders are not needed.
+     *
+     * @param context        Current context
+     * @param columnsPresent the column names which are present
+     * @param names          columns which should be checked for, in order of preference
+     *
+     * @throws DataReaderException if no suitable column is present
+     */
+    private void requireColumnOrThrow(@NonNull final Context context,
+                                      @NonNull final List<String> columnsPresent,
+                                      @NonNull final String... names)
+            throws DataReaderException {
+
+
+        for (final String name : names) {
+            if (columnsPresent.contains(name)) {
+                return;
+            }
+        }
+
+        throw new DataReaderException(context.getString(
+                R.string.error_import_csv_missing_columns_x, String.join(",", names)));
     }
 }

@@ -17,12 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import org.junit.jupiter.api.BeforeEach;
