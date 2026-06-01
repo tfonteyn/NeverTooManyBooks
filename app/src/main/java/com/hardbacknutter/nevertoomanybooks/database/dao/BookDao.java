@@ -270,19 +270,6 @@ public interface BookDao {
     TypedCursor fetchById(@IntRange(from = 1) long id);
 
     /**
-     * Return a Cursor with all Books for the given external book ID.
-     * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
-     *
-     * @param key        to use
-     * @param externalId to retrieve
-     *
-     * @return A Book Cursor with 0..n rows; ordered by book id
-     */
-    @NonNull
-    TypedCursor fetchByKey(@NonNull String key,
-                           @NonNull String externalId);
-
-    /**
      * Return a Cursor with all Books for the given list of {@link Book} ID's.
      *
      * @param idList List of book ID's to retrieve; should not be empty!

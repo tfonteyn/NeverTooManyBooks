@@ -704,14 +704,6 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchByKey(@NonNull final String key,
-                                  @NonNull final String externalId) {
-        return getBookCursor(TBL_BOOKS.dot(key) + "=?", new String[]{externalId},
-                             TBL_BOOKS.dot(DBKey.PK_ID));
-    }
-
-    @Override
-    @NonNull
     public TypedCursor fetchForAutoUpdate(@NonNull final List<Long> idList) {
         if (idList.isEmpty()) {
             throw new IllegalArgumentException("idList.isEmpty()");
