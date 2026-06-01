@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 
 /**
  * Note: the keys for the CSV columns are not the same as the internal Book keys
@@ -114,10 +116,10 @@ public class DefaultBookCoder
 
     private final FullDateParser dateParser;
     private final RatingParser ratingParser;
-    private final TagMapper tagMapper;
     private final List<Locale> userLocales;
     private final MoneyParser moneyParser;
     private final IdentifierDao identifierDao;
+    private final Collection<Mapper> mappers;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
 
@@ -169,7 +171,7 @@ public class DefaultBookCoder
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
-        tagMapper = new TagMapper(this.userLocales.get(0));
+        mappers = MapperFactory.create(context);
     }
 
     /**
@@ -238,6 +240,8 @@ public class DefaultBookCoder
         if (book.contains(DBKey.READ_END__DATE)) {
             book.putBoolean(DBKey.READ__BOOL, true);
         }
+
+        mappers.forEach(mapper -> mapper.map(context, book));
 
         return book;
     }
@@ -572,7 +576,6 @@ public class DefaultBookCoder
         final String genre = book.getString(LEGACY_GENRE);
         if (!genre.isEmpty()) {
             book.getTags().addAll(GenreMigration.convert(genre));
-            tagMapper.map(context, book);
             book.remove(LEGACY_GENRE);
         }
     }

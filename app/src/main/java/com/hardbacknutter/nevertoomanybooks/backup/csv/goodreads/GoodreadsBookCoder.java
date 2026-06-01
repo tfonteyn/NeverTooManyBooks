@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -47,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -85,6 +88,7 @@ public class GoodreadsBookCoder
     private final List<Locale> userLocales;
 
     private final List<String> csvColumnNames;
+    private final Collection<Mapper> mappers;
 
     /**
      * Constructor.
@@ -111,6 +115,7 @@ public class GoodreadsBookCoder
         bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
         publisherCoder = new StringList<>(new PublisherCoder());
 
+        mappers = MapperFactory.create(context);
         unknownAuthor = Author.createUnknownAuthor(context);
     }
 
@@ -268,6 +273,8 @@ public class GoodreadsBookCoder
 
         // check/fix the standard language field
         book.getLocaleAndUpdateLanguage(userLocales.get(0), true);
+
+        mappers.forEach(mapper -> mapper.map(context, book));
 
         // Verifying the dates is overkill for now, but leaving it
         // as protection from input changes.

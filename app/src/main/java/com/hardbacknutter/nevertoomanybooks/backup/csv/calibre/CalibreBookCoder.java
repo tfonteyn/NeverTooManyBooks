@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -59,7 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreIdentifiers;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -95,7 +97,7 @@ public class CalibreBookCoder
     private final RatingParser ratingParser;
     private final List<CalibreCustomField> customFields;
     private final FullDateParser dateParser;
-    private final TagMapper tagMapper;
+    private final Collection<Mapper> mappers;
     @NonNull
     private final Style defaultStyle;
     private final BookshelfDao bookshelfDao;
@@ -133,7 +135,7 @@ public class CalibreBookCoder
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
-        tagMapper = new TagMapper(this.userLocales.get(0));
+        mappers = MapperFactory.create(context);
     }
 
     @NonNull
@@ -309,6 +311,8 @@ public class CalibreBookCoder
             book.putBoolean(DBKey.READ__BOOL, true);
         }
 
+        mappers.forEach(mapper -> mapper.map(context, book));
+
         return book;
     }
 
@@ -353,7 +357,6 @@ public class CalibreBookCoder
         });
 
         book.setTags(list);
-        tagMapper.map(context, book);
     }
 
     private void processCustomField(@NonNull final CalibreCustomField cf,
