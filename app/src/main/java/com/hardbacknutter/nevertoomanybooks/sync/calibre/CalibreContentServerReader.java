@@ -682,39 +682,13 @@ public class CalibreContentServerReader
                     final String sid = remotes.optString(calKey);
                     if (!sid.isEmpty()) {
                         // MUST be converted to lc before we try and map
-                        convertIdentifier(book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
+                        CalibreIdentifiers.convertIdentifier(book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
                     }
                 }
             }
             if (!ivs.isEmpty()) {
                 book.setIdentifiers(ivs);
             }
-        }
-    }
-
-    private void convertIdentifier(@NonNull final Book book,
-                                   @NonNull final String calKey,
-                                   @NonNull final String sid,
-                                   @NonNull final List<Identifier.Value> ivs) {
-        if (CalibreContentServer.IDENTIFIER_ISBN.equals(calKey)) {
-            book.setIsbn(sid);
-
-        } else if (calKey.length() > 6 && calKey.startsWith("amazon")) {
-            // Other than strict "amazon", there are variants
-            // for local sites; e.g. "amazon_nl", "amazon_fr",...
-            // The actual ASIN is always the same,
-            // so just use the first one found.
-            if (book.getIdentifierValue(Identifier.SID_ASIN).isEmpty()) {
-                ivs.add(new Identifier.Value(Identifier.SID_ASIN, sid));
-            }
-        } else {
-            // Map the calKey to our key, or if not found,
-            // just use the calKey itself
-            String key = CalibreContentServer.IDENTIFIER_MAPPING_READER.get(calKey);
-            if (key == null) {
-                key = calKey;
-            }
-            ivs.add(new Identifier.Value(key, sid));
         }
     }
 

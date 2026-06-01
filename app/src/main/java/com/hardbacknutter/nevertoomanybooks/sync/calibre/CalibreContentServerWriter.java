@@ -404,7 +404,7 @@ public class CalibreContentServerWriter
         final JSONObject localIdentifiers = new JSONObject();
         localBook.getIdentifiers().forEach(iv -> {
             // Map our key to the calibre key, or if not found, just use the key itself
-            String calKey = CalibreContentServer.IDENTIFIER_MAPPING_WRITER.get(iv.getKey());
+            String calKey = CalibreIdentifiers.IDENTIFIER_MAPPING_WRITER.get(iv.getKey());
             if (calKey == null) {
                 calKey = iv.getKey();
             }
@@ -414,7 +414,7 @@ public class CalibreContentServerWriter
         // add the ISBN which Calibre treats as just another identifier
         final String isbn = localBook.getIsbn();
         if (!isbn.isEmpty()) {
-            localIdentifiers.put(CalibreContentServer.IDENTIFIER_ISBN, isbn);
+            localIdentifiers.put(CalibreIdentifiers.IDENTIFIER_ISBN, isbn);
         }
 
         // add the remotes, overwriting with locals as needed.

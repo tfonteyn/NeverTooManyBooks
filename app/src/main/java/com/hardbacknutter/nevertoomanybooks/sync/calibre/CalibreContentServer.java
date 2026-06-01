@@ -100,7 +100,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
@@ -169,12 +168,6 @@ public final class CalibreContentServer
                                                + '.' + SearchEngineConfig.PK_HOST_USER;
     private static final String PK_HOST_PASS = PREFERENCE_KEY
                                                + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
-    /**
-     * Calibre treats the ISBN as just another identifier.
-     * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre
-     * We're ignoring them as the "isbn" should take precedence really
-     */
-    static final String IDENTIFIER_ISBN = "isbn";
     /** Response root tag: Total number of items found in a query. */
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: The array of book ids returned in 'this' call. */
@@ -183,36 +176,6 @@ public final class CalibreContentServer
     private static final String PK_ENABLE_HTTP_LOGGING = PREFERENCE_KEY + '.' + "logging.http";
     private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
 
-    private static final String AMAZON = "amazon";
-    /**
-     * Key's that map 1:1 are not listed.
-     * This list only maps <strong>known</strong> keys
-     * from the predefined list at app install time.
-     * <p>
-     * Other keys we've seen now and then:
-     * "epl"
-     * "kobo"
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static final Map<String, String> IDENTIFIER_MAPPING_READER = Map.ofEntries(
-            // I'm not clear on why calibre prefers 'amazon' above 'asin'
-            // but heck, just convert it.
-            Map.entry(AMAZON, Identifier.SID_ASIN),
-            // mobi is obsolete so we always map it to pure 'asin'
-            Map.entry("mobi-asin", Identifier.SID_ASIN),
-            // Calibre typically uses 'uri' but sometimes we see 'url'
-            Map.entry("url", Identifier.SID_URI)
-    );
-
-    /**
-     * Key's that map 1:1 are not listed.
-     */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static final Map<String, String> IDENTIFIER_MAPPING_WRITER = Map.ofEntries(
-            // I'm not clear on why calibre prefers 'amazon' above 'asin'
-            // but heck, just convert it.
-            Map.entry(Identifier.SID_ASIN, AMAZON)
-    );
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
 
