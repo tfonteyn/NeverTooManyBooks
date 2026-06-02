@@ -17,38 +17,34 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.goodreads;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.util;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 
+public final class SimpleTagCoder
+        implements StringList.Coder<Tag> {
 
-class BookshelfCoder
-        implements StringList.Coder<Bookshelf> {
+    private final char elementSeparator;
+
+    private SimpleTagCoder(final char elementSeparator) {
+        this.elementSeparator = elementSeparator;
+    }
 
     @NonNull
-    private final Style defaultStyle;
-
-    /**
-     * Constructor.
-     *
-     * @param defaultStyle the default style to use
-     */
-    BookshelfCoder(@NonNull final Style defaultStyle) {
-        this.defaultStyle = defaultStyle;
+    public static StringList<Tag> create(final char elementSeparator) {
+        return new StringList<>(new SimpleTagCoder(elementSeparator));
     }
 
     @Override
     public char getElementSeparator() {
-        return ',';
+        return elementSeparator;
     }
 
     @Override
     @NonNull
-    public Bookshelf decode(@NonNull final String element) {
-        return new Bookshelf(element, defaultStyle);
+    public Tag decode(@NonNull final String element) {
+        return new Tag(element);
     }
 }

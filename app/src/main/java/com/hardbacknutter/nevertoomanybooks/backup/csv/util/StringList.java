@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.util;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,11 +51,13 @@ public class StringList<E> {
     /**
      * Convenience constructor for a StringList consisting of String elements.
      *
+     * @param elementSeparator to use
+     *
      * @return instance
      */
     @NonNull
-    public static StringList<String> newInstance() {
-        return new StringList<>(element -> element);
+    public static StringList<String> newInstance(final char elementSeparator) {
+        return new StringList<>(new SimpleStringCoder(elementSeparator));
     }
 
     /**
@@ -64,10 +66,28 @@ public class StringList<E> {
      * @param stringList String representing the list
      *
      * @return list
+     *
+     * @see Coder#getElementSeparator()
      */
     @NonNull
     public List<E> decodeList(@Nullable final CharSequence stringList) {
         return decode(stringList, coder.getElementSeparator(), false);
+    }
+
+    /**
+     * Decode the StringList into a list of <strong>elements</strong>.
+     *
+     * @param stringList String representing the list
+     * @param allowBlank Flag to allow adding empty (non-null) strings
+     *
+     * @return list
+     *
+     * @see Coder#getElementSeparator()
+     */
+    @NonNull
+    public List<E> decodeList(@Nullable final CharSequence stringList,
+                              final boolean allowBlank) {
+        return decode(stringList, coder.getElementSeparator(), allowBlank);
     }
 
     /**
@@ -76,6 +96,8 @@ public class StringList<E> {
      * @param stringList String representing the list of element sub-objects (parts)
      *
      * @return List of objects/parts
+     *
+     * @see Coder#getObjectSeparator()
      */
     @NonNull
     public List<E> decodeElement(@Nullable final CharSequence stringList) {
@@ -93,8 +115,8 @@ public class StringList<E> {
      * @return list
      */
     @NonNull
-    public List<E> decode(@Nullable final CharSequence stringList,
-                          final char delimiter,
+    private List<E> decode(@Nullable final CharSequence stringList,
+                           final char delimiter,
                           final boolean allowBlank) {
         final StringBuilder sb = new StringBuilder();
         final List<E> list = new ArrayList<>();
@@ -162,10 +184,7 @@ public class StringList<E> {
      *
      * @param <E> type of element.
      */
-    @FunctionalInterface
     public interface Coder<E> {
-
-        char DEFAULT_ELEMENT_SEPARATOR = '|';
 
         /**
          * Decode a <strong>SINGLE</strong> element.
@@ -177,16 +196,12 @@ public class StringList<E> {
         @NonNull
         E decode(@NonNull String element);
 
-
         /**
-         * the default separator character used between list elements.
-         * Some objects might need to override this default.
+         * The separator character used between list elements.
          *
          * @return the char
          */
-        default char getElementSeparator() {
-            return DEFAULT_ELEMENT_SEPARATOR;
-        }
+        char getElementSeparator();
 
         /**
          * the default separator character used between fields in a single element.
@@ -219,6 +234,27 @@ public class StringList<E> {
             // add the factory specific separators
             return StringCoder.escape(getElementSeparator(), getObjectSeparator(),
                                       source, escapeChars);
+        }
+    }
+
+    private static final class SimpleStringCoder
+            implements Coder<String> {
+
+        private final char elementSeparator;
+
+        private SimpleStringCoder(final char elementSeparator) {
+            this.elementSeparator = elementSeparator;
+        }
+
+        @Override
+        public char getElementSeparator() {
+            return elementSeparator;
+        }
+
+        @NonNull
+        @Override
+        public String decode(@NonNull final String element) {
+            return element;
         }
     }
 }

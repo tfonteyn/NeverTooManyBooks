@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv.bc;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import org.junit.jupiter.api.BeforeEach;

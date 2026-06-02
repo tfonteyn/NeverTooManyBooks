@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -36,10 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * StringList factory for a {@link TocEntry}.
  * <p>
  * Format:
- * <ul>
- *      <li>title (date) * authorName * {json}</li>
- *      <li>title * authorName * {json}</li>
- * </ul>
+ * {@code title [(date)] * authorName[ * {json}][|title [(date)] * authorName[ * {json}]|...]}
+ * <br>
  * authorName: see {@link AuthorCoder}
  * <br>date: see {@link #DATE_PATTERN}.
  *
@@ -65,7 +63,9 @@ class TocEntryCoder
                             + "\\)");
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
-    TocEntryCoder() {
+    @Override
+    public char getElementSeparator() {
+        return DefaultBookCoder.ELEMENT_SEPARATOR;
     }
 
     /**
@@ -89,7 +89,8 @@ class TocEntryCoder
     @Override
     @NonNull
     public TocEntry decode(@NonNull final String element) {
-        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final List<String> parts = StringList.newInstance(DefaultBookCoder.ELEMENT_SEPARATOR)
+                                             .decodeElement(element);
         String title = parts.get(0);
         final Author author = Author.from(parts.get(1));
 

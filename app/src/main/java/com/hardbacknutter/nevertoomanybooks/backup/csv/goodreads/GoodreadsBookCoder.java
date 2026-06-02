@@ -27,15 +27,16 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.DateVerifier;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimpleAuthorCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimpleBookshelfCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimplePublisherCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -74,21 +75,19 @@ public class GoodreadsBookCoder
 
     private static final String TAG = "GoodreadsBookCoder";
 
-    @NonNull
-    private final StringList<Author> authorCoder;
-    @NonNull
-    private final StringList<Bookshelf> bookshelfCoder;
-    @NonNull
-    private final StringList<Publisher> publisherCoder;
-
-    @NonNull
     private final Author unknownAuthor;
-    private final DateParser<LocalDateTime> dateParser;
-    private final RatingParser ratingParser;
-    private final List<Locale> userLocales;
 
+    private final List<Locale> userLocales;
     private final List<String> csvColumnNames;
+
+    private final RatingParser ratingParser;
+    private final DateParser<LocalDateTime> dateParser;
+    private final DateVerifier dateVerifier;
     private final Collection<Mapper> mappers;
+
+    private final StringList<Author> authorCoder;
+    private final StringList<Bookshelf> bookshelfCoder;
+    private final StringList<Publisher> publisherCoder;
 
     /**
      * Constructor.
@@ -106,16 +105,16 @@ public class GoodreadsBookCoder
         this.userLocales = userLocales;
         this.csvColumnNames = csvColumnNames;
 
+        ratingParser = new RatingParser(5);
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         this.dateParser = new ISODateParser(systemLocale);
-
-        this.ratingParser = new RatingParser(5);
-
-        authorCoder = new StringList<>(new AuthorCoder());
-        bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
-        publisherCoder = new StringList<>(new PublisherCoder());
-
+        dateVerifier = new DateVerifier(dateParser);
         mappers = MapperFactory.create(context);
+
+        authorCoder = SimpleAuthorCoder.create(',');
+        bookshelfCoder = SimpleBookshelfCoder.create(',', defaultStyle);
+        publisherCoder = SimplePublisherCoder.create(',');
+
         unknownAuthor = Author.createUnknownAuthor(context);
     }
 
@@ -282,11 +281,11 @@ public class GoodreadsBookCoder
         // as protection from input changes.
 
         // Full DateTime stamp.
-        verifyDates(book, DBKey.getDateTimeKeys(), false, true);
+        dateVerifier.verify(book, DBKey.getDateTimeKeys(), false, true);
         // Full Date stamp, no time
-        verifyDates(book, DBKey.getFullDateKeys(), false, false);
+        dateVerifier.verify(book, DBKey.getFullDateKeys(), false, false);
         // Partial Date stamp, no time
-        verifyDates(book, DBKey.getPartialDateKeys(), true, false);
+        dateVerifier.verify(book, DBKey.getPartialDateKeys(), true, false);
 
         // GitHub #205: force the "read" flag to =1 if a read_end" is present
         // after the above validation of the date fields.
@@ -437,42 +436,5 @@ public class GoodreadsBookCoder
             notes = notes + "\n\n" + value;
         }
         book.putString(DBKey.PERSONAL_NOTES, notes);
-    }
-
-    /**
-     * Verify the given date keys for containing valid dates.
-     *
-     * @param book        to verify
-     * @param keys        to verify
-     * @param partialDate flag: {@code true} to cut dates down to partial dates.
-     *                    i.e. remove time and any tailing "-01".
-     * @param keepTime    flag: whether to keep a time component or strip it
-     */
-    private void verifyDates(@NonNull final Book book,
-                             @NonNull final Set<String> keys,
-                             final boolean partialDate,
-                             final boolean keepTime) {
-        keys.stream().filter(book::contains).forEach(key -> {
-            final String s = book.getString(key);
-            final Optional<LocalDateTime> date = dateParser.parse(s);
-            if (date.isPresent()) {
-                String iso = SqlEncode.dateTime(date.get());
-
-                // cut off the time if present & required
-                if (!keepTime && iso.length() > 10) {
-                    iso = iso.substring(0, 10);
-                }
-
-                // Cut 'YYYY-MM-DD' down to month or year if possible & required
-                if (partialDate && iso.length() > 4) {
-                    while (iso.endsWith("-01")) {
-                        iso = iso.substring(0, iso.length() - 3);
-                    }
-                }
-                book.putString(key, iso);
-            } else {
-                book.remove(key);
-            }
-        });
     }
 }

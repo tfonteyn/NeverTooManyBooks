@@ -24,22 +24,21 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.DateVerifier;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimpleAuthorCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimpleTagCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -88,23 +87,35 @@ public class CalibreBookCoder
     /** Last-updated. */
     private static final String COL_TIMESTAMP = "timestamp";
 
-    @NonNull
     private final Author unknownAuthor;
-    @NonNull
+
     private final List<Locale> userLocales;
-    @NonNull
     private final List<String> csvColumnNames;
-    private final RatingParser ratingParser;
     private final List<CalibreCustomField> customFields;
+
+    private final RatingParser ratingParser;
     private final FullDateParser dateParser;
+    private final DateVerifier dateVerifier;
     private final Collection<Mapper> mappers;
-    @NonNull
-    private final Style defaultStyle;
-    private final BookshelfDao bookshelfDao;
+
     private final StringList<Author> authorCoder;
     private final StringList<Tag> tagCoder;
 
+    private final BookshelfDao bookshelfDao;
+    private final Style defaultStyle;
 
+
+    /**
+     * Constructor.
+     *
+     * @param context        Current context
+     * @param defaultStyle   the default style to use for {@link Bookshelf}s
+     * @param userLocales    to use for parsing
+     * @param csvColumnNames the list with the field(column) names
+     * @param updateOption   to use
+     *
+     * @throws DataReaderException when the import cannot go ahead
+     */
     public CalibreBookCoder(@NonNull final Context context,
                             @NonNull final Style defaultStyle,
                             @NonNull final List<Locale> userLocales,
@@ -123,19 +134,19 @@ public class CalibreBookCoder
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         customFields = serviceLocator.getCalibreCustomFieldDao().getCustomFields();
-        bookshelfDao = serviceLocator.getBookshelfDao();
 
-        authorCoder = new StringList<>(new AuthorCoder());
-        tagCoder = new StringList<>(new TagCoder());
-
+        ratingParser = new RatingParser(5);
         final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
         dateParser = new FullDateParser(new ISODateParser(systemLocale), userLocales);
+        dateVerifier = new DateVerifier(dateParser);
+        mappers = MapperFactory.create(context);
 
-        this.ratingParser = new RatingParser(5);
+        bookshelfDao = serviceLocator.getBookshelfDao();
+
+        authorCoder = SimpleAuthorCoder.create('&');
+        tagCoder = SimpleTagCoder.create(',');
 
         unknownAuthor = Author.createUnknownAuthor(context);
-
-        mappers = MapperFactory.create(context);
     }
 
     @NonNull
@@ -209,7 +220,7 @@ public class CalibreBookCoder
                         break;
                     }
                     case "tags": {
-                        processTags(context, value, book);
+                        processTags(value, book);
                         break;
                     }
                     case "rating": {
@@ -299,11 +310,11 @@ public class CalibreBookCoder
         // as protection from input changes.
 
         // Full DateTime stamp.
-        verifyDates(book, DBKey.getDateTimeKeys(), false, true);
+        dateVerifier.verify(book, DBKey.getDateTimeKeys(), false, true);
         // Full Date stamp, no time
-        verifyDates(book, DBKey.getFullDateKeys(), false, false);
+        dateVerifier.verify(book, DBKey.getFullDateKeys(), false, false);
         // Partial Date stamp, no time
-        verifyDates(book, DBKey.getPartialDateKeys(), true, false);
+        dateVerifier.verify(book, DBKey.getPartialDateKeys(), true, false);
 
         // GitHub #205: force the "read" flag to =1 if a read_end" is present
         // after the above validation of the date fields.
@@ -316,7 +327,7 @@ public class CalibreBookCoder
         return book;
     }
 
-    private void processAuthors(final String value,
+    private void processAuthors(final CharSequence value,
                                 final Book book) {
 
         final List<Author> list = book.getAuthors();
@@ -342,8 +353,7 @@ public class CalibreBookCoder
         book.setLanguage(value.split(",")[0]);
     }
 
-    private void processTags(@NonNull final Context context,
-                             @NonNull final CharSequence value,
+    private void processTags(@NonNull final CharSequence value,
                              @NonNull final Book book) {
         final List<Tag> list = book.getTags();
 
@@ -399,7 +409,7 @@ public class CalibreBookCoder
     private void processReadProgress(@NonNull final String value,
                                      @NonNull final Book book) {
         // format: "0 / 221" or "37%"
-        // remove trailing '%' character
+
         if (value.endsWith("%") && value.length() > 1) {
             try {
                 final int p = Integer.parseInt(value.substring(0, value.length() - 1));
@@ -434,7 +444,6 @@ public class CalibreBookCoder
                                     @NonNull final Book book) {
         final List<Identifier.Value> ivs = new ArrayList<>();
         // "google:C2O96Fd-uwYC,amazon:076530953X,isbn:9780765309532"
-        // Not using a coder, these are simple
         Arrays.stream(value.split(","))
               .map(ids -> ids.split(":"))
               // [0] name, [1] value
@@ -444,43 +453,6 @@ public class CalibreBookCoder
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
-    }
-
-    /**
-     * Verify the given date keys for containing valid dates.
-     *
-     * @param book        to verify
-     * @param keys        to verify
-     * @param partialDate flag: {@code true} to cut dates down to partial dates.
-     *                    i.e. remove time and any tailing "-01".
-     * @param keepTime    flag: whether to keep a time component or strip it
-     */
-    private void verifyDates(@NonNull final Book book,
-                             @NonNull final Set<String> keys,
-                             final boolean partialDate,
-                             final boolean keepTime) {
-        keys.stream().filter(book::contains).forEach(key -> {
-            final String s = book.getString(key);
-            final Optional<LocalDateTime> date = dateParser.parse(s);
-            if (date.isPresent()) {
-                String iso = SqlEncode.dateTime(date.get());
-
-                // cut off the time if present & required
-                if (!keepTime && iso.length() > 10) {
-                    iso = iso.substring(0, 10);
-                }
-
-                // Cut 'YYYY-MM-DD' down to month or year if possible & required
-                if (partialDate && iso.length() > 4) {
-                    while (iso.endsWith("-01")) {
-                        iso = iso.substring(0, iso.length() - 3);
-                    }
-                }
-                book.putString(key, iso);
-            } else {
-                book.remove(key);
-            }
-        });
     }
 
     /**

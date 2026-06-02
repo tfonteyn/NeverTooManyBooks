@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -429,7 +429,8 @@ public class Author
         }
 
         // check for commas
-        final List<String> tmp = StringList.newInstance().decode(uName, ',', true);
+        final List<String> tmp = StringList.newInstance(',')
+                                           .decodeList(uName, true);
         if (tmp.size() > 1) {
             final Matcher suffixMatcher = FAMILY_NAME_SUFFIX_PATTERN.matcher(tmp.get(1));
             if (suffixMatcher.find()) {

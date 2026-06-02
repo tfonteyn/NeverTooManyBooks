@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -33,11 +33,15 @@ import com.hardbacknutter.org.json.JSONObject;
 /**
  * StringList factory for a Bookshelf.
  * <p>
- * Format: shelfName * {json}
- * <br><strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
+ * Format: {@code name[ * {json}][|name[ * {json}]|...]}
+ * <br>
+ * <strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
 class BookshelfCoder
         implements StringList.Coder<Bookshelf> {
+
+    // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
+    private static final char ELEMENT_SEPARATOR = ',';
 
     @NonNull
     private final Style defaultStyle;
@@ -51,16 +55,17 @@ class BookshelfCoder
         this.defaultStyle = defaultStyle;
     }
 
-    // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
+
     @Override
     public char getElementSeparator() {
-        return ',';
+        return ELEMENT_SEPARATOR;
     }
 
     @Override
     @NonNull
     public Bookshelf decode(@NonNull final String element) {
-        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final List<String> parts = StringList.newInstance(ELEMENT_SEPARATOR)
+                                             .decodeElement(element);
         final Bookshelf bookshelf = new Bookshelf(parts.get(0), defaultStyle);
         if (parts.size() > 1) {
             try {

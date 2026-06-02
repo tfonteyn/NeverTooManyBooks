@@ -24,24 +24,24 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.DateVerifier;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimplePublisherCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -79,6 +79,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 public class DefaultBookCoder
         implements BookCoder {
 
+    static final char ELEMENT_SEPARATOR = '|';
+
     /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
     private static final String CSV_COLUMN_TOC = "anthology_titles";
     /** string-encoded column compatible with BC and NTMB 1.x-3.x. CSV files. */
@@ -100,30 +102,28 @@ public class DefaultBookCoder
     /** Migrated to tags starting in app version 7.0. */
     private static final String LEGACY_GENRE = "genre";
 
-    @NonNull
-    private final StringList<Author> authorCoder;
-    @NonNull
-    private final StringList<Bookshelf> bookshelfCoder;
-    @NonNull
-    private final StringList<Publisher> publisherCoder;
-    @NonNull
-    private final StringList<Series> seriesCoder;
-    @NonNull
-    private final StringList<TocEntry> tocCoder;
-
-    @NonNull
     private final Author unknownAuthor;
 
-    private final FullDateParser dateParser;
-    private final RatingParser ratingParser;
     private final List<Locale> userLocales;
+    private final List<String> csvColumnNames;
+
+    private final RatingParser ratingParser;
     private final MoneyParser moneyParser;
-    private final IdentifierDao identifierDao;
+    private final DateVerifier dateVerifier;
     private final Collection<Mapper> mappers;
+
+    private final StringList<Author> authorCoder;
+    private final StringList<Bookshelf> bookshelfCoder;
+    private final StringList<Publisher> publisherCoder;
+    private final StringList<Series> seriesCoder;
+    private final StringList<TocEntry> tocCoder;
+
+    private final IdentifierDao identifierDao;
+
+    // Created when needed      1+
+
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
-
-    private final List<String> csvColumnNames;
 
     /**
      * Constructor.
@@ -132,14 +132,15 @@ public class DefaultBookCoder
      * @param defaultStyle   the default style to use for {@link Bookshelf}s
      * @param userLocales    to use for parsing
      * @param csvColumnNames the list with the field(column) names
+     * @param updateOption   to use
+     *
+     * @throws DataReaderException when the import cannot go ahead
      */
     public DefaultBookCoder(@NonNull final Context context,
                             @NonNull final Style defaultStyle,
                             @NonNull final List<Locale> userLocales,
                             @NonNull final List<String> csvColumnNames,
-                            @NonNull final DataReader.Updates updateOption,
-                            @NonNull final FullDateParser dateParser,
-                            @NonNull final MoneyParser moneyParser)
+                            @NonNull final DataReader.Updates updateOption)
             throws DataReaderException {
 
         // If a sync was requested, we'll need this column or cannot proceed.
@@ -147,6 +148,7 @@ public class DefaultBookCoder
             requireColumnOrThrow(context, csvColumnNames, DBKey.DATE_LAST_UPDATED__UTC);
         }
 
+        // map potential old Identifier column names
         this.csvColumnNames = csvColumnNames
                 .stream()
                 .map(name -> name.toLowerCase(Locale.ENGLISH))
@@ -157,21 +159,46 @@ public class DefaultBookCoder
                 .collect(Collectors.toList());
 
         this.userLocales = userLocales;
-        this.dateParser = dateParser;
-        this.moneyParser = moneyParser;
-        this.ratingParser = new RatingParser(new RealNumberParser(this.userLocales), 5);
+
+        moneyParser = createMoneyParser(userLocales);
+
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+        final FullDateParser dateParser = new FullDateParser(new ISODateParser(systemLocale),
+                                                             this.userLocales);
+
+        ratingParser = new RatingParser(new RealNumberParser(this.userLocales), 5);
+        dateVerifier = new DateVerifier(dateParser);
+        mappers = MapperFactory.create(context);
 
         identifierDao = ServiceLocator.getInstance().getIdentifierDao();
 
         authorCoder = new StringList<>(new AuthorCoder());
         bookshelfCoder = new StringList<>(new BookshelfCoder(defaultStyle));
-        publisherCoder = new StringList<>(new PublisherCoder());
         seriesCoder = new StringList<>(new SeriesCoder());
         tocCoder = new StringList<>(new TocEntryCoder());
+        publisherCoder = SimplePublisherCoder.create(ELEMENT_SEPARATOR);
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
-        mappers = MapperFactory.create(context);
+    }
+
+    @NonNull
+    private static MoneyParser createMoneyParser(final List<Locale> userLocales) {
+        // Special treatment for the floating point parsers,
+        // due to CSV files potentially coming from "foreign" websites.
+
+        // Make sure US is added so we can parse "dot" decimal-separator
+        // even when the user Locale is a comma decimal-separator.
+        final List<Locale> moneyLocales = new ArrayList<>(userLocales);
+        if (!userLocales.contains(Locale.US)) {
+            moneyLocales.add(Locale.US);
+        }
+        // Make sure FRANCE is added so we can parse "comma" decimal-separator
+        // even when the user Locale is a dot decimal-separator.
+        if (!userLocales.contains(Locale.FRANCE)) {
+            moneyLocales.add(Locale.FRANCE);
+        }
+        return new MoneyParser(userLocales.get(0), moneyLocales);
     }
 
     /**
@@ -222,15 +249,15 @@ public class DefaultBookCoder
         processCalibreData(book);
         processRating(book);
         processPrice(book);
-        processGenre(context, book);
-        processExternalIds(book);
+        processGenre(book);
+        processIdentifiers(book);
 
         // Full DateTime stamp.
-        verifyDates(book, DBKey.getDateTimeKeys(), false, true);
+        dateVerifier.verify(book, DBKey.getDateTimeKeys(), false, true);
         // Full Date stamp, no time
-        verifyDates(book, DBKey.getFullDateKeys(), false, false);
+        dateVerifier.verify(book, DBKey.getFullDateKeys(), false, false);
         // Partial Date stamp, no time
-        verifyDates(book, DBKey.getPartialDateKeys(), true, false);
+        dateVerifier.verify(book, DBKey.getPartialDateKeys(), true, false);
 
         // BC (sometimes?) produces CSV files where a book can have:
         // "read"=0
@@ -571,8 +598,7 @@ public class DefaultBookCoder
         }
     }
 
-    private void processGenre(@NonNull final Context context,
-                              @NonNull final Book book) {
+    private void processGenre(@NonNull final Book book) {
         final String genre = book.getString(LEGACY_GENRE);
         if (!genre.isEmpty()) {
             book.getTags().addAll(GenreMigration.convert(genre));
@@ -589,7 +615,7 @@ public class DefaultBookCoder
      *
      * @param book the book
      */
-    private void processExternalIds(@NonNull final Book book) {
+    private void processIdentifiers(@NonNull final Book book) {
         final Set<String> known = identifierDao.getAll(Identifier.EntityType.Book)
                                                .stream()
                                                .map(Identifier::getKey)
@@ -607,43 +633,6 @@ public class DefaultBookCoder
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
-    }
-
-    /**
-     * Verify the given date keys for containing valid dates.
-     *
-     * @param book        to verify
-     * @param keys        to verify
-     * @param partialDate flag: {@code true} to cut dates down to partial dates.
-     *                    i.e. remove time and any tailing "-01".
-     * @param keepTime    flag: whether to keep a time component or strip it
-     */
-    private void verifyDates(@NonNull final Book book,
-                             @NonNull final Set<String> keys,
-                             final boolean partialDate,
-                             final boolean keepTime) {
-        keys.stream().filter(book::contains).forEach(key -> {
-            final String s = book.getString(key);
-            final Optional<LocalDateTime> date = dateParser.parse(s);
-            if (date.isPresent()) {
-                String iso = SqlEncode.dateTime(date.get());
-
-                // cut off the time if present & required
-                if (!keepTime && iso.length() > 10) {
-                    iso = iso.substring(0, 10);
-                }
-
-                // Cut 'YYYY-MM-DD' down to month or year if possible & required
-                if (partialDate && iso.length() > 4) {
-                    while (iso.endsWith("-01")) {
-                        iso = iso.substring(0, iso.length() - 3);
-                    }
-                }
-                book.putString(key, iso);
-            } else {
-                book.remove(key);
-            }
-        });
     }
 
     /**

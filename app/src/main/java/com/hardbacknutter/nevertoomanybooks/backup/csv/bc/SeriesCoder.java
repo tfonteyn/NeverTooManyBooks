@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.org.json.JSONException;
@@ -32,23 +32,28 @@ import com.hardbacknutter.org.json.JSONObject;
 /**
  * StringList factory for a Series.
  * <p>
- * Format:
- * <ul>
- *      <li>title (number) * {json}</li>
- *      <li>title * {json}</li>
- * </ul>
+ * Format: {@code title [(number)] * {json}[|title [(number)] * {json}|...]}
+ * <br>
  * number: alphanumeric, a proposed format is "1","1.0","1a", "1|omnibus" etc.
  * i.e. starting with a number (int or float) with optional alphanumeric characters trailing.
  * <p>
+ * <strong>Note:</strong> the " (number)" part is optional and can be missing.
+ * <br>
  * <strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
 class SeriesCoder
         implements StringList.Coder<Series> {
 
     @Override
+    public char getElementSeparator() {
+        return DefaultBookCoder.ELEMENT_SEPARATOR;
+    }
+
+    @Override
     @NonNull
     public Series decode(@NonNull final String element) {
-        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final List<String> parts = StringList.newInstance(DefaultBookCoder.ELEMENT_SEPARATOR)
+                                             .decodeElement(element);
         final Series series = Series.from(parts.get(0));
         if (parts.size() > 1) {
             try {

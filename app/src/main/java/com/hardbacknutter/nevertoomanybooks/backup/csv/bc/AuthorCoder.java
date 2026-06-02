@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.org.json.JSONException;
@@ -32,22 +32,25 @@ import com.hardbacknutter.org.json.JSONObject;
 /**
  * StringList factory for an Author.
  * <p>
- * Format: authorName * {json}
- * <br><strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
+ * Format: {@code name[ * {json}][|name[ * {json}]|...]}
+ * <br>
+ * <strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  * <p>
- * With authorName:
- * <ul>
- *      <li>writing out: "family, givenNames"</li>
- *      <li>reading in: see {@link Author#from(String)}</li>
- * </ul>
+ * With the name in a format supported by {@link Author#from(String)}
  */
 class AuthorCoder
         implements StringList.Coder<Author> {
 
     @Override
+    public char getElementSeparator() {
+        return DefaultBookCoder.ELEMENT_SEPARATOR;
+    }
+
+    @Override
     @NonNull
     public Author decode(@NonNull final String element) {
-        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final List<String> parts = StringList.newInstance(DefaultBookCoder.ELEMENT_SEPARATOR)
+                                             .decodeElement(element);
         final Author author = Author.from(parts.get(0));
         if (parts.size() > 1) {
             try {

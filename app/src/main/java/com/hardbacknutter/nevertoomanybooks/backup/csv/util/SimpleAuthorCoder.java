@@ -17,24 +17,34 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv.calibre;
+package com.hardbacknutter.nevertoomanybooks.backup.csv.util;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.backup.csv.StringList;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
-public class TagCoder
-        implements StringList.Coder<Tag> {
+public final class SimpleAuthorCoder
+        implements StringList.Coder<Author> {
+
+    private final char elementSeparator;
+
+    private SimpleAuthorCoder(final char elementSeparator) {
+        this.elementSeparator = elementSeparator;
+    }
+
+    @NonNull
+    public static StringList<Author> create(final char elementSeparator) {
+        return new StringList<>(new SimpleAuthorCoder(elementSeparator));
+    }
 
     @Override
     public char getElementSeparator() {
-        return ',';
+        return elementSeparator;
     }
 
     @Override
     @NonNull
-    public Tag decode(@NonNull final String element) {
-        return new Tag(element);
+    public Author decode(@NonNull final String element) {
+        return Author.from(element);
     }
 }
