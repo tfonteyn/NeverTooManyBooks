@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -17,10 +18,15 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|«|»|‘|’)
+     Using standard quotes instead of guillemets as per an Italian native user.
+--><!--suppress LongLine -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="n_books">
         <item quantity="one">%1$d libro</item>
         <item quantity="many">%1$d libri</item>
@@ -76,7 +82,7 @@
         <item quantity="many">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
         <item quantity="other">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
     </plurals>
-    <string name="quoted">«%1$s»</string>
+    <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Cancella credenziali</string>
     <string name="X_action_move">Sposta</string>
     <string name="X_action_next">Avanti</string>
@@ -183,17 +189,17 @@
     <string name="cd_clear_text_end_icon">Cancella testo</string>
     <string name="lbl_certificate_issued_by">Emesso da: %1$s</string>
     <string name="lbl_certificate_issued_to">Rilasciato a: %1$s</string>
-    <string name="confirm_delete_book">Il libro intitolato «%1$s» verrà completamente cancellato da %2$s.\n\n Procedere?</string>
-    <string name="confirm_delete_bookshelf_from_x_books">Eliminare davvero lo scaffale «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati. Saranno comunque presenti su qualsiasi altro scaffale o sullo scaffale «%3$s».</string>
-    <string name="confirm_delete_publisher_from_x_books">Eliminare davvero l’editore «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati. Considera la possibilità di modificare l’editore e di cambiare il nome dell’editore con quello di un altro editore per conservare questi dati.</string>
-    <string name="confirm_delete_series_from_x_books">Cancellare la serie «%1$s»?\n\nVerrà eliminata da %2$s. I libri non verranno cancellati. Valuta se modificare la serie e cambiare il nome della serie in quello di un’altra serie per preservare i dati.</string>
-    <string name="confirm_delete_style">Eliminare lo stile «%1$s»?</string>
-    <string name="confirm_delete_identifier_from_x_books">Cancellare l’identificatore «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
-    <string name="confirm_delete_identifier_from_x_authors">Cancellare l’identificatore «%1$s»?\n\nVerrà eliminata da %2$s. Gli autori stessi non verranno eliminati.</string>
-    <string name="confirm_delete_identifier_from_x_series">Cancellare l’identificatore «%1$s»?\n\nVerrà eliminata da %2$s. Le serie stesse non verranno eliminate.</string>
-    <string name="confirm_delete_substitutions">Cancellare le sostituzioni per «%1$s»?</string>
-    <string name="confirm_delete_tag_from_x_books">Eliminare l’etichetta «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
-    <string name="confirm_delete_toc_entry_from_x_books">Cancellare davvero il titolo «%1$s» (di %2$s)?\n\nVerrà eliminata da %3$s. Libri stessi non saranno cancellati.</string>
+    <string name="confirm_delete_book">Il libro intitolato “%1$s” verrà completamente cancellato da %2$s.\n\n Procedere?</string>
+    <string name="confirm_delete_bookshelf_from_x_books">Eliminare davvero lo scaffale “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati. Saranno comunque presenti su qualsiasi altro scaffale o sullo scaffale “%3$s”.</string>
+    <string name="confirm_delete_publisher_from_x_books">Eliminare davvero l’editore “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati. Considera la possibilità di modificare l’editore e di cambiare il nome dell’editore con quello di un altro editore per conservare questi dati.</string>
+    <string name="confirm_delete_series_from_x_books">Cancellare la serie “%1$s”?\n\nVerrà eliminata da %2$s. I libri non verranno cancellati. Valuta se modificare la serie e cambiare il nome della serie in quello di un’altra serie per preservare i dati.</string>
+    <string name="confirm_delete_style">Eliminare lo stile “%1$s”?</string>
+    <string name="confirm_delete_identifier_from_x_books">Cancellare l’identificatore “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
+    <string name="confirm_delete_identifier_from_x_authors">Cancellare l’identificatore “%1$s”?\n\nVerrà eliminata da %2$s. Gli autori stessi non verranno eliminati.</string>
+    <string name="confirm_delete_identifier_from_x_series">Cancellare l’identificatore “%1$s”?\n\nVerrà eliminata da %2$s. Le serie stesse non verranno eliminate.</string>
+    <string name="confirm_delete_substitutions">Cancellare le sostituzioni per “%1$s”?</string>
+    <string name="confirm_delete_tag_from_x_books">Eliminare l’etichetta “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
+    <string name="confirm_delete_toc_entry_from_x_books">Cancellare davvero il titolo “%1$s” (di %2$s)?\n\nVerrà eliminata da %3$s. Libri stessi non saranno cancellati.</string>
     <string name="confirm_merge_tags">L’etichetta che si sta modificando esiste già. Si desidera unirli?</string>
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un’altra copia?</string>
     <string name="confirm_email_file">Vuoi inviare questo file a qualcuno per e-mail?</string>
@@ -205,15 +211,15 @@
     <string name="confirm_rebuild_fts">I dati dell’indice di ricerca verranno ricostruiti al riavvio dell’app. Sei sicuro di voler continuare?</string>
     <string name="confirm_rebuild_index">Gli indici verranno ricostruiti al riavvio dell’app. Sei sicuro di voler continuare?</string>
     <string name="confirm_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell’app. Sei sicuro di voler continuare?</string>
-    <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
+    <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione “%2$s” nelle impostazioni.</string>
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>
     <string name="confirm_leave_code_search">Ci sono ricerche in corso e/o risultati non salvati.</string>
-    <string name="confirm_remove_toc_entry">Rimuovere il titolo «%1$s» di %2$s da questo libro?</string>
-    <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\nNota: La scelta «%3$s» sarà applicata immediatamente. Se scegli «%4$s», verrà creato un nuovo %5$s.</string>
-    <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>
+    <string name="confirm_remove_toc_entry">Rimuovere il titolo “%1$s” di %2$s da questo libro?</string>
+    <string name="confirm_scope_for_change">Hai modificato:\n “%1$s”\n in\n “%2$s”\n\nCome desideri applicare questa modifica?\nNota: La scelta “%3$s” sarà applicata immediatamente. Se scegli “%4$s”, verrà creato un nuovo %5$s.</string>
+    <string name="confirm_scope_for_delete">Elimina il titolo “%1$s” di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta “%3$s” non può essere annullata!</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
-    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Tocca «%1$s» per salvare un rapporto in una posizione ha scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
+    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Tocca “%1$s” per salvare un rapporto in una posizione ha scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
     <string name="disabled">Disattivata</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamico</string>
     <string name="enabled">Abilitato</string>
@@ -248,8 +254,8 @@
     <string name="error_storage_not_accessible">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
     <string name="error_unexpected">Si è verificato un errore non identificato.</string>
-    <string name="error_unknown_host">Si è verificato un problema di connessione al servizio attivo «%1$s».</string>
-    <string name="error_unexpected_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l’assistenza utilizzando l’opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
+    <string name="error_unknown_host">Si è verificato un problema di connessione al servizio attivo “%1$s”.</string>
+    <string name="error_unexpected_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l’assistenza utilizzando l’opzione “%1$s” nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_unsupported_version_v">Versione non supportata: %1$d</string>
     <string name="error_upgrade_not_supported">L’aggiornamento da versioni precedenti alla %1$s non è supportato.</string>
     <string name="option_fab_add_book_by_barcode_scan">Scansione di un codice a barre</string>
@@ -267,7 +273,7 @@
     <string name="httpErrorFileNotFound">Impossibile trovare il file richiesto.</string>
     <string name="httpErrorTimeout">Tempo esaurito per la connessione al server.</string>
     <string name="info_authorized">Autorizzato</string>
-    <string name="option_moving_covers_from_x_to_y">Sposta tutte le copertine da «%1$s» a «%2$s»</string>
+    <string name="option_moving_covers_from_x_to_y">Sposta tutte le copertine da “%1$s” a “%2$s”</string>
     <string name="option_isfdb_menu_populate_toc">Inserisci titoli automaticamente (ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">Informazioni</string>
@@ -463,11 +469,11 @@
     <string name="lbl_sorting">Ordinamento</string>
     <string name="lbl_sql_query">Interrogazione SQL</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Chiudi l’app e inserisci la scheda SD corretta</string>
-    <string name="option_storage_select">Usa «%1$s»</string>
+    <string name="option_storage_select">Usa “%1$s”</string>
     <string name="lbl_storage_settings">Spazio di archiviazione</string>
     <string name="pt_storage_volume">Volume di archiviazione</string>
     <string name="info_read_contacts_permission">L’accesso ai contatti è facoltativo, ma ti consente di selezionare facilmente a chi presti un libro.</string>
-    <string name="info_story_in_multiple_books">«%1$s» è presente in più libri:\n\n%2$s</string>
+    <string name="info_story_in_multiple_books">“%1$s” è presente in più libri:\n\n%2$s</string>
     <string name="option_isbn_strict">ISBN rigoroso</string>
     <string name="lbl_style">Stile</string>
     <string name="lbl_styles">Stili</string>
@@ -494,7 +500,7 @@
     <string name="lbl_websites">Siti web</string>
     <string name="bookshelf_my_wishlist">Lista dei desideri</string>
     <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_wikidata_claim_author_id">Codice Wikidata «claim/P» per l’id dell’autore</string>
+    <string name="lbl_wikidata_claim_author_id">Codice Wikidata “claim/P” per l’id dell’autore</string>
     <string name="lbl_year">Anno</string>
     <string name="list_and">%1$s e %2$s</string>
     <string name="brackets">(%1$s)</string>
@@ -582,7 +588,7 @@
     <string name="lbl_add_or_edit_substitution">Aggiungere/modificare una regola di sostituzione</string>
     <string name="info_substitutions_one_per_line">Aggiungi una sostituzione per riga oppure lascia vuoto per cancellare l’etichetta</string>
     <string name="info_download_successful">Download riuscito</string>
-    <string name="info_export_report">Nella cartella selezionata è stato creato un file %1$s chiamato «%2$s». È necessario copiarlo manualmente altrove per proteggere i dati in caso di danneggiamento, smarrimento o furto del dispositivo.</string>
+    <string name="info_export_report">Nella cartella selezionata è stato creato un file %1$s chiamato “%2$s”. È necessario copiarlo manualmente altrove per proteggere i dati in caso di danneggiamento, smarrimento o furto del dispositivo.</string>
     <string name="info_export_successful">Esportazione riuscita</string>
     <string name="option_info_delete_removed_books">I libri eliminati sull’altro dispositivo saranno eliminati anche su questo dispositivo.</string>
     <string name="info_import_complete">Importazione completata</string>
@@ -599,7 +605,7 @@
     <string name="progress_msg_searching_editions">Ricerca edizioni…</string>
     <string name="progress_msg_authenticating_to_site">Autenticazione su %1$s</string>
     <string name="progress_msg_searching_site">Ricerca in %1$s</string>
-    <string name="progress_msg_skip_s">Salta «%1$s»</string>
+    <string name="progress_msg_skip_s">Salta “%1$s”</string>
     <string name="progress_msg_starting_up">Avvio…</string>
     <string name="progress_msg_upgrading">Sto aggiornando…</string>
     <string name="progress_msg_x_created">%1$d creati</string>
@@ -635,11 +641,11 @@
     <string name="pt_scanning_beep_on_invalid">Suona se il codice ISBN acquisito non è valido</string>
     <string name="pt_scanning_beep_on_valid">Suona se il codice ISBN acquisito è valido</string>
     <string name="pt_search_prefer_isbn10">Usa ISBN-10 quando possibile</string>
-    <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
-    <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
-    <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «Il Signore degli Anelli»</string>
+    <string name="pt_search_reformat_color">Standardizzare i nomi di “colore del libro”</string>
+    <string name="pt_search_reformat_format">Standardizzare i nomi di “formato libro”</string>
+    <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio “Il Signore degli Anelli”</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s…</string>
-    <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «Signore degli Anelli, Il»</string>
+    <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio “Signore degli Anelli, Il”</string>
     <string name="X_pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pt_cover_undo_enabled">Annullare le operazioni sulle copertine dei libri</string>
     <string name="ps_cover_undo_disabled">Una modifica/sostituzione della copertina non può essere annullata (utilizza meno memoria)</string>
@@ -650,8 +656,8 @@
     <string name="pt_ui_system_locale">Lingua di sistema</string>
     <string name="pt_ui_theme">Tema</string>
     <string name="pt_website_search_order_and_enable">Priorità, abilita e disabilita</string>
-    <string name="ps_show_author_name_family_first">Visualizzare prima il nome della famiglia,\nes. «Alighieri, Dante»</string>
-    <string name="ps_show_author_name_given_first">Visualizzare prima i nomi,\nes. «Dante Alighieri»</string>
+    <string name="ps_show_author_name_family_first">Visualizzare prima il nome della famiglia,\nes. “Alighieri, Dante”</string>
+    <string name="ps_show_author_name_given_first">Visualizzare prima i nomi,\nes. “Dante Alighieri”</string>
     <string name="ps_bob_books_under_multiple_authors_each">Sotto ciascuno autore</string>
     <string name="ps_bob_books_under_multiple_publishers_each">sotto ciascun editore</string>
     <string name="ps_bob_books_under_multiple_series_each">Sotto ciascuno serie</string>
@@ -694,9 +700,9 @@
     <string name="site_description_german">Tedesco</string>
     <string name="info_tip_reset_done">Suggerimenti azzerati</string>
     <string name="tip_series_book_may_appear_more_than_once">Se i libri sono mostrati in tutte le serie a cui il libro appartiene, possono comparire più volte nell’elenco. L’eliminazione di uno di questi libri ha l’effetto di rimuovere tutte le copie dall’elenco.</string>
-    <string name="X_tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu «Visualizza su…» mostrerà solo ciò che è disponibile.</string>
+    <string name="X_tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu “Visualizza su…” mostrerà solo ciò che è disponibile.</string>
     <string name="tip_view_only_help">Puoi scorrere verso sinistra o verso destra per visualizzare altri libri.</string>
-    <string name="info_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD a ogni aggiornamento, a ogni backup del database o quando l’applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
+    <string name="info_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD a ogni aggiornamento, a ogni backup del database o quando l’applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante “%2$s” prima di eliminarli.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d libri, in %2$d voci</string>
     <string name="info_export_books_option_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall’ultimo backup completo.</string>
     <string name="option_info_import_books_option_all">Importa nuovi libri e sovrascrivi i libri esistenti. Usalo per ripristinare un backup.</string>
@@ -708,7 +714,7 @@
     <string name="info_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
     <string name="lbl_citation_type">Formato di citazione/condivisione</string>
     <string name="lbl_citation_type_default">Sto leggendo…</string>
-    <string name="citation_share_book_im_reading">Sto leggendo «%1$s» %2$s di %3$s %4$s</string>
+    <string name="citation_share_book_im_reading">Sto leggendo “%1$s” %2$s di %3$s %4$s</string>
     <string name="X_info_tap_on_image_to_select">Tocca l’immagine più grande per selezionarla.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Toccare una miniatura per visualizzare un’immagine più grande.</string>
     <string name="info_x_pages">%1$d pagine</string>
@@ -716,21 +722,21 @@
     <string name="unknown_author">[Autore sconosciuto]</string>
     <string name="unknown_title">[Titolo sconosciuto]</string>
     <string name="username">Nome utente</string>
-    <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
-    <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
-    <string name="vldt_date_expected_for_x">È prevista una data per «%1$s»</string>
+    <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per “%1$s”</string>
+    <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for “%1$s”</string>
+    <string name="vldt_date_expected_for_x">È prevista una data per “%1$s”</string>
     <string name="warning_camera_permission_required">La scansione dei codici a barre o l’acquisizione di foto richiede l’accesso alla fotocamera.</string>
     <string name="warning_camera_permission_denied">La scansione dei codici a barre o l’acquisizione di foto richiede l’accesso alla fotocamera. Apri le impostazioni dell’applicazione, seleziona Autorizzazioni e abilita Fotocamera.</string>
     <string name="warning_local_network_permission_required">L’accesso a %1$s sulla rete locale richiede l’autorizzazione.</string>
     <string name="warning_local_network_permission_denied">L’accesso a %1$s sulla rete locale richiede l’autorizzazione. Apri le impostazioni dell’applicazione, seleziona Autorizzazioni e abilita Dispositivi nelle vicinanze.</string>
     <string name="vldt_failure">Errore di convalida</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
-    <string name="vldt_integer_expected_for_x">È previsto un valore intero per «%1$s»</string>
+    <string name="vldt_integer_expected_for_x">È previsto un valore intero per “%1$s”</string>
     <string name="vldt_non_blank_required">È richiesto un valore</string>
-    <string name="vldt_non_blank_required_for_x">È richiesto un valore per «%1$s»</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Valore vuoto o URL «https» valido con un singolo segnaposto id «%s» richiesto</string>
+    <string name="vldt_non_blank_required_for_x">È richiesto un valore per “%1$s”</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Valore vuoto o URL “https” valido con un singolo segnaposto id “%s” richiesto</string>
     <string name="vldt_read_start_after_end">Data di inizio lettura successiva alla data di fine lettura</string>
-    <string name="vldt_real_expected_for_x">È previsto un valore reale per «%1$s»</string>
+    <string name="vldt_real_expected_for_x">È previsto un valore reale per “%1$s”</string>
     <string name="warning_cannot_delete_only_bookshelf">Hai solo una libreria, quindi non puoi eliminarla.</string>
     <string name="warning_already_in_list">Già nella lista!</string>
     <string name="warning_backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
@@ -762,14 +768,14 @@
     <string name="warning_toc_confirm">Conferma che i titoli di queste antologie sono in genere corretti.</string>
     <string name="warning_x_already_exists">%1$s già presente in elenco.</string>
     <string name="warning_no_extra_info_found">Nessuna informazione (aggiuntiva) trovata</string>
-    <string name="warning_x_is_not_a_valid_code">«%1$s» non è un codice valido</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s” non è un codice valido</string>
     <string name="whichEditApplication">Modifica con</string>
     <string name="whichSendApplication">Condividi</string>
     <string name="whichViewApplication">Apri con</string>
     <string name="x_of_y">%1$d di %2$d</string>
     <string name="cancel">Annulla</string>
     <string name="yes">Sì</string>
-    <string name="info_story_in_single_book">«%1$s» è presente in un solo libro:\n\n%2$s</string>
+    <string name="info_story_in_single_book">“%1$s” è presente in un solo libro:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importa un file di testo con gli ISBN. Il file deve contenere un singolo ISBN su ogni riga. I risultati verranno inseriti nella coda.</string>
     <string name="lbl_date_added">Data di inserimento</string>
     <string name="debug_select_items">Seleziona ciò che desideri includere:</string>
@@ -779,17 +785,17 @@
     <string name="lbl_group_1st_char_book_title">1° carattere del titolo del libro</string>
     <string name="lbl_author_is_a_pen_name_of">Questo è uno pseudonimo di:</string>
     <string name="vldt_real_author_must_be_valid">Deve essere vuoto o deve essere un autore esistente</string>
-    <string name="confirm_create_real_author">«%1$s» non esiste ancora. Devono essere creati?</string>
+    <string name="confirm_create_real_author">“%1$s” non esiste ancora. Devono essere creati?</string>
     <string name="pt_fetch_author_info_using_site_x">Recuperare le informazioni sull’autore da %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserva la denominazione del formato Bedetheque (francese)</string>
-    <string name="confirm_toc_list_update_with_books_main_author">Sostituire l’autore di tutte le voci con l’autore principale del libro «%1$s» ?</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Sostituire l’autore di tutte le voci con l’autore principale del libro “%1$s” ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tutti i libri sotto questa riga hanno copertine. Cercare di nuovo dall’alto?</string>
     <string name="info_all_books_have_covers">Tutti i libri su questa libreria hanno copertine</string>
     <string name="book_format_hardcover_oblong">Rilegato - oblunga</string>
     <string name="book_format_softcover_oblong">Copertina morbida - oblunga</string>
     <string name="lbl_purge_blns">Cancella lo stato del nodo</string>
     <string name="info_purge_blns_all">Cancella lo stato del nodo da tutti gli elenchi</string>
-    <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s «%2$s»\?</string>
+    <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s “%2$s”\?</string>
     <string name="error_updates_aborted">Aggiornamenti interrotti</string>
     <string name="lbl_country">Paese</string>
     <string name="pt_search_show_menu_options">Mostra i menu di ricerca</string>
@@ -841,8 +847,8 @@
     <string name="lbl_certificate_validity_period">Validità: %1$s - %2$s</string>
     <string name="lbl_reading">In lettura</string>
     <string name="action_edit_defaults">Modifica delle impostazioni predefinite</string>
-    <string name="ps_sort_author_name_given_first">Ordinamento in base ai nomi,\nes. «Dante Alighieri»</string>
-    <string name="ps_sort_author_name_family_first">Ordinamento in base al nome della famiglia,\nes. «Alighieri, Dante»</string>
+    <string name="ps_sort_author_name_given_first">Ordinamento in base ai nomi,\nes. “Dante Alighieri”</string>
+    <string name="ps_sort_author_name_family_first">Ordinamento in base al nome della famiglia,\nes. “Alighieri, Dante”</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Assegnare gli scaffali</string>
     <string name="site_description_comics">Fumetti</string>
@@ -910,7 +916,7 @@
     <string name="lbl_permission_request">Richiesta di autorizzazione</string>
     <string name="pt_barcode_zoom_control">Controllo zoom</string>
     <string name="pt_barcode_sounds">Suoni</string>
-    <string name="warning_delete_default_bookshelf">Questa è la tua libreria predefinita. Se la elimini, la nuova predefinita sarà: «%1$s».\n\nUsa «%2$s» dal menu principale per scegliere un’altra libreria predefinita.</string>
+    <string name="warning_delete_default_bookshelf">Questa è la tua libreria predefinita. Se la elimini, la nuova predefinita sarà: “%1$s”.\n\nUsa “%2$s” dal menu principale per scegliere un’altra libreria predefinita.</string>
     <string name="action_set_as_default">Imposta come predefinita</string>
     <string name="tip_bookshelf_management">La riga evidenziata indica la tua libreria attuale.\n\nLa libreria predefinita (contrassegnata con *) verrà usata automaticamente se quella attuale non è disponibile per qualsiasi motivo.</string>
     <string name="pt_search_tag_use_subject_number">Mantenere il prefisso numerico nelle etichette dei soggetti</string>
@@ -928,8 +934,8 @@
     <string name="action_sync_pull">Scarica modifiche</string>
     <string name="action_sync_push">Invia modifiche</string>
     <string name="pt_deduplication_title_matching">Corrispondenza titoli</string>
-    <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
-    <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
+    <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. “Il Signore degli Anelli” e “Signore degli Anelli, Il”).</string>
+    <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. “Il Signore degli Anelli” e “Signore degli Anelli, Il”).</string>
     <string name="action_edit_with_ellipsis">Modifica con…</string>
-    <string name="error_import_csv_calibre">La colonna \"comments\" di Calibre non è supportata. Rimuovila dal file CSV per favore.</string>
+    <string name="error_import_csv_calibre">La colonna “comments” di Calibre non è supportata. Rimuovila dal file CSV per favore.</string>
 </resources>
