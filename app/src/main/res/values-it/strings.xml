@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -934,5 +931,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. „Il Signore degli Anelli” e „Signore degli Anelli, Il”).</string>
     <string name="action_edit_with_ellipsis">Modifica con…</string>
-    <string name="error_import_csv_calibre">La colonna «comments» di Calibre non è supportata. Rimuovila dal file CSV per favore.</string>
+    <string name="error_import_csv_calibre">La colonna \"comments\" di Calibre non è supportata. Rimuovila dal file CSV per favore.</string>
 </resources>
