@@ -171,10 +171,17 @@ public class Upgrade {
 
     /**
      * Adds {@link CalibreCustomField}s which were added after the initial app release.
+     *
+     * FIXME: handle calibre custom fields the same as we do for new Identifiers
      */
     private void addNewCalibreCustomFields() {
         final CalibreMigration calibreMigration = new CalibreMigration(db);
-        calibreMigration.add("#read_progress",
+
+        // NEWTHINGS: adding a Calibre custom field
+        calibreMigration.add("#rating",
+                             CalibreCustomField.TYPE_RATING,
+                             DBKey.RATING);
+        calibreMigration.add(CalibreCustomField.FIELD_READ_PROGRESS,
                              CalibreCustomField.TYPE_COMPOSITE,
                              DBKey.READ_PROGRESS);
     }

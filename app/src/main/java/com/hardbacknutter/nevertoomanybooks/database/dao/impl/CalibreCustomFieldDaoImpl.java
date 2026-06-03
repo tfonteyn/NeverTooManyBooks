@@ -64,16 +64,28 @@ public class CalibreCustomFieldDaoImpl
     /**
      * Run at installation time a set of default fields.
      *
+     * NEWTHINGS: adding a Calibre custom field
+     *
      * @param db Underlying database
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         //noinspection CheckStyle
         final String[][] all = {
-                // Standard Calibre Release: 9.5 [13 Mar, 2026]
-                {"#read_progress", CalibreCustomField.TYPE_COMPOSITE, DBKey.READ_PROGRESS},
+                // From the built in templates:
 
-                // All of the below are custom fields as defined by NTMB.
+                // SPECIAL HANDLING REQUIRED,
+                {CalibreCustomField.FIELD_READ_PROGRESS,
+                        CalibreCustomField.TYPE_COMPOSITE,
+                        DBKey.READ_PROGRESS},
+
+                // No special handling, it's a value "","1","2"..."5"
+                // but with a distinct type.
+                {"#rating", CalibreCustomField.TYPE_RATING, DBKey.RATING},
+
+
+                // The below are custom fields as defined by NTMB.
                 // These need to be manually defined in Calibre.
+                // No special handling, these map 1:1
                 {"#read", CalibreCustomField.TYPE_BOOL, DBKey.READ__BOOL},
                 {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.READ_START__DATE},
                 {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.READ_END__DATE},

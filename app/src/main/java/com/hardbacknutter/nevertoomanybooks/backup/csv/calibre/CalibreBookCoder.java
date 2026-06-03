@@ -38,8 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimpleAuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.util.SimpleTagCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.util.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -56,8 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomFieldDecoder;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreIdentifiers;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
@@ -66,19 +65,37 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * From a test export from Calibre 9.7.0 we got these known columns
  * if (in Calibre) we choose the full set in the original order.
+ * Note that this set has less columns than when we do a sync
+ * with the Calibre Content Server.
+ * <pre>
+ *      author_sort,
+ *      authors,
+ *      comments,              BROKEN... as it does not encode CR/LF
+ *      cover,                 a path on disk
+ *      timestamp,             the last-update datetime
+ *      formats,               epub,mobi,...
+ *      isbn,
+ *      id,
+ *      identifiers,
+ *      languages,
+ *      library_name,
+ *      pubdate,
+ *      publisher,
+ *      rating,
+ *      series,
+ *      series_index,
+ *      size,                   of the ebook
+ *      tags,
+ *      title,
+ *      title_sort,
+ *      uuid
+ * </pre>
  * <p>
- * author_sort,authors,
- * comments,
- * cover,
- * timestamp,
- * formats,isbn,id,identifiers, languages,
- * library_name,
- * pubdate,publisher,
- * rating,
- * series,series_index,size,
- * tags,
- * title,title_sort,
- * uuid
+ * Note the "rating" column: this is the rating which Calibre gets from its metadata
+ * sources. The user can of course update it.
+ * <p>
+ * In addition, the user can create a custom column "#rating".
+ * When the latter is present, the "rating" is skipped.
  */
 public class CalibreBookCoder
         implements BookCoder {
@@ -100,6 +117,7 @@ public class CalibreBookCoder
 
     private final StringList<Author> authorCoder;
     private final StringList<Tag> tagCoder;
+    private final CalibreCustomFieldDecoder customFieldDecoder;
 
     private final BookshelfDao bookshelfDao;
     private final Style defaultStyle;
@@ -141,6 +159,8 @@ public class CalibreBookCoder
         dateVerifier = new DateVerifier(dateParser);
         mappers = MapperFactory.create(context);
 
+        customFieldDecoder = new CalibreCustomFieldDecoder(dateParser);
+
         bookshelfDao = serviceLocator.getBookshelfDao();
 
         authorCoder = SimpleAuthorCoder.create('&');
@@ -167,7 +187,7 @@ public class CalibreBookCoder
             if (name.startsWith("#")) {
                 customFields.stream()
                             .filter(cf -> cf.getCalibreKey().equals(name))
-                            .forEach(cf -> processCustomField(cf, value, book));
+                            .forEach(cf -> customFieldDecoder.decode(cf, value, book));
             } else {
                 // we won't get here if the "comments" column was present, so ignore it.
                 switch (name) {
@@ -216,7 +236,7 @@ public class CalibreBookCoder
                         break;
                     }
                     case "identifiers": {
-                        processIdentifiers(value, book);
+                        convertIdentifiers(value, book);
                         break;
                     }
                     case "tags": {
@@ -224,9 +244,12 @@ public class CalibreBookCoder
                         break;
                     }
                     case "rating": {
-                        if (!NumberParser.isZero(value)) {
-                            // if we have a non-zero, we use it.
-                            ratingParser.parse(value).ifPresent(book::setRating);
+                        // don't overwrite the "#rating" field
+                        if (!book.contains(DBKey.RATING)) {
+                            if (!NumberParser.isZero(value)) {
+                                // if we have a non-zero, we use it.
+                                ratingParser.parse(value).ifPresent(book::setRating);
+                            }
                         }
                         break;
                     }
@@ -265,13 +288,7 @@ public class CalibreBookCoder
                         break;
                     }
                     case "formats": {
-                        /// only ever seen a single entry, but lets assume ',' separated
-                        // We only can take the first anyhow.
-                        // Not using a coder, these are simple
-                        final String[] split = value.split(",");
-                        // Typically we would now insert "eBook", but as we can't
-                        // create the library info, we'll use the actual format here
-                        book.putString(DBKey.FORMAT, split[0]);
+                        processFormats(value, book);
                         break;
                     }
                     case "size": {
@@ -327,15 +344,14 @@ public class CalibreBookCoder
         return book;
     }
 
-    private void processAuthors(final CharSequence value,
-                                final Book book) {
+    private void processAuthors(@NonNull final CharSequence value,
+                                @NonNull final Book book) {
 
         final List<Author> list = book.getAuthors();
 
         // Do not add if already there.
         // We need to do this here (before going to the database)
         // so we can keep them in the exact order as they come in.
-        // This is particularly important for Goodreads imports
         authorCoder.decodeList(value).forEach(author -> {
             if (list.stream().noneMatch(a -> a.isSameName(author))) {
                 list.add(author);
@@ -349,106 +365,48 @@ public class CalibreBookCoder
                                  @NonNull final Book book) {
         // only ever seen a single entry, but lets assume ',' separated
         // Not using a coder, the entries are just iso3 codes.
-        // We only can take the first anyhow.
+        // We only support one language, so grab the first one
         book.setLanguage(value.split(",")[0]);
+    }
+
+    private void processFormats(@NonNull final String value,
+                                @NonNull final Book book) {
+        /// only ever seen a single entry, but lets assume ',' separated
+        // We only can take the first anyhow.
+        // Not using a coder, these are simple
+        final String[] split = value.split(",");
+        // Typically we would now insert "eBook", but as we can't
+        // create the library info, we'll use the actual format here
+        book.putString(DBKey.FORMAT, split[0]);
     }
 
     private void processTags(@NonNull final CharSequence value,
                              @NonNull final Book book) {
-        final List<Tag> list = book.getTags();
-
-        // Do not add if already there.
-        // We need to do this here (before going to the database)
-        // so we can keep them in the exact order as they come in.
-        tagCoder.decodeList(value).forEach(tag -> {
-            if (list.stream().noneMatch(a -> a.isSameName(tag))) {
-                list.add(tag);
-            }
-        });
-
-        book.setTags(list);
-    }
-
-    private void processCustomField(@NonNull final CalibreCustomField cf,
-                                    @NonNull final String value,
-                                    @NonNull final Book book) {
-        switch (cf.getType()) {
-            case CalibreCustomField.TYPE_BOOL: {
-                try {
-                    final boolean b = BooleanParser
-                            .parseBoolean(value, true);
-                    book.putBoolean(cf.getDbKey(), b);
-                } catch (@NonNull final NumberFormatException ignored) {
-                    // ignored
-                }
-                break;
-            }
-            case CalibreCustomField.TYPE_TEXT:
-            case CalibreCustomField.TYPE_COMMENTS:
-            case CalibreCustomField.TYPE_COMPOSITE: {
-                switch (cf.getCalibreKey()) {
-                    // Standard Calibre Release: 9.5 [13 Mar, 2026]
-                    case "#read_progress": {
-                        processReadProgress(value, book);
-                        break;
-                    }
-                    default:
-                        book.putString(cf.getDbKey(), SearchEngineUtils.cleanText(value));
-                }
-                break;
-            }
-            case CalibreCustomField.TYPE_DATETIME: {
-                dateParser.parse(value).ifPresent(
-                        date -> book.putLocalDateTime(cf.getDbKey(), date));
-                break;
-            }
-
+        final List<Tag> tags = tagCoder.decodeList(value);
+        if (!tags.isEmpty()) {
+            final List<Tag> list = book.getTags();
+            list.addAll(tags);
+            book.setTags(list);
         }
     }
 
-    private void processReadProgress(@NonNull final String value,
-                                     @NonNull final Book book) {
-        // format: "0 / 221" or "37%"
-
-        if (value.endsWith("%") && value.length() > 1) {
-            try {
-                final int p = Integer.parseInt(value.substring(0, value.length() - 1));
-                book.setReadingProgress(new ReadingProgress(p));
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-            return;
-        }
-
-        if (value.contains("/") && value.length() > 3) {
-            final String[] split = value.split("/");
-            if (split.length == 2) {
-                try {
-                    final int page = Integer.parseInt(split[0]);
-                    final int total = Integer.parseInt(split[1]);
-                    if (total > 0) {
-                        if (total >= page) {
-                            book.setReadingProgress(new ReadingProgress(page, total));
-                        }
-
-                        book.setPages(total);
-                    }
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore
-                }
-            }
-        }
-    }
-
-    private void processIdentifiers(@NonNull final String value,
+    /**
+     * See {@link CalibreContentServerReader}#convertIdentifiers.
+     *
+     * @param value to parse
+     * @param book  to update
+     */
+    private void convertIdentifiers(@NonNull final String value,
                                     @NonNull final Book book) {
         final List<Identifier.Value> ivs = new ArrayList<>();
         // "google:C2O96Fd-uwYC,amazon:076530953X,isbn:9780765309532"
         Arrays.stream(value.split(","))
               .map(ids -> ids.split(":"))
+              .filter(ids -> !ids[1].isEmpty())
               // [0] name, [1] value
+              // The name MUST be converted to lc before we try and map
               .forEach(id -> CalibreIdentifiers.convertIdentifier(
-                      book, id[0], id[1], ivs));
+                      book, id[0].toLowerCase(Locale.ENGLISH), id[1], ivs));
 
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);

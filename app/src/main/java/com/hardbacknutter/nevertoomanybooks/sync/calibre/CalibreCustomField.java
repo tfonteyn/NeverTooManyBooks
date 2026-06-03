@@ -59,11 +59,29 @@ public class CalibreCustomField
         }
     };
 
-    // TODO: transform to enum. This does mean changing the database table format.
+    // Special handling fields which we know about.
+    public static final String FIELD_READ_PROGRESS = "#read_progress";
+
+
+    // NEWTHINGS: adding a Calibre custom field type
+    // Don't transform to enum; we may want to support custom/unknown types.
     public static final String TYPE_BOOL = "bool";
     public static final String TYPE_COMMENTS = "comments";
+    /** A calculated field in Calibre. Processed as a String. */
     public static final String TYPE_COMPOSITE = "composite";
     public static final String TYPE_DATETIME = "datetime";
+    /** Processed as a String. */
+    public static final String TYPE_ENUMERATION = "enumeration";
+    /**
+     * Defined here but not used by us as we don't have any float typed columns,
+     * except 'rating' which is covered by TYPE_RATING.
+     */
+    public static final String TYPE_FLOAT = "float";
+    public static final String TYPE_INT = "int";
+    /** It's an empty string, or an int from 0..5. */
+    public static final String TYPE_RATING = "rating";
+    // ??
+    public static final String TYPE_SERIES = "series";
     public static final String TYPE_TEXT = "text";
 
     static final String METADATA_DATATYPE = "datatype";
@@ -171,7 +189,18 @@ public class CalibreCustomField
                + '}';
     }
 
-    @StringDef({TYPE_BOOL, TYPE_COMMENTS, TYPE_COMPOSITE, TYPE_DATETIME, TYPE_TEXT})
+    @StringDef({
+            TYPE_BOOL,
+            TYPE_COMMENTS,
+            TYPE_COMPOSITE,
+            TYPE_DATETIME,
+            TYPE_ENUMERATION,
+            TYPE_FLOAT,
+            TYPE_INT,
+            TYPE_RATING,
+            TYPE_SERIES,
+            TYPE_TEXT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
 

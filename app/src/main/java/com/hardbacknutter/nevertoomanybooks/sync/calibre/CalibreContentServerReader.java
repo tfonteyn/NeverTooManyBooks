@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.calibre.CalibreBookCoder;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -113,8 +113,6 @@ public class CalibreContentServerReader
     /** Response root tag: Number of items returned in 'this' call. */
     private static final String RESPONSE_TAG_NUM = "num";
 
-    /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
-    private static final String VALUE_IS_NONE = "None";
     /** A text "null" as value. Should be considered an error. */
     private static final String VALUE_IS_NULL = "null";
     /** error text for {@link #VALUE_IS_NULL}. */
@@ -526,6 +524,10 @@ public class CalibreContentServerReader
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.RATING)) {
+            // this is the rating which Calibre gets from its metadata
+            // sources. The user can of course update it.
+            // In addition, the user can create a custom column "#rating".
+            // When the latter is present, the "rating" will be overwritten.
             @IntRange(from = 0, to = 5)
             final int rating = calibreBook.getInt(CalibreBookJsonKey.RATING);
             // ignore a remote 0 == 'not-set' value
@@ -572,13 +574,20 @@ public class CalibreContentServerReader
         return book;
     }
 
-    //   "tags": [
-    //    "Action & Adventure",
-    //    "Fiction",
-    //    "Hard Science Fiction",
-    //    "Science Fiction",
-    //    "Space Opera"
-    //  ],
+    /**
+     * <pre>
+     *   "tags": [
+     *       "Action & Adventure",
+     *       "Fiction",
+     *       "Hard Science Fiction",
+     *       "Science Fiction",
+     *       "Space Opera"
+     *   ],
+     * </pre>
+     *
+     * @param calibreBook to parse
+     * @param book        to update
+     */
     private void convertTags(@NonNull final JSONObject calibreBook,
                              @NonNull final Book book) {
         final JSONArray calTags = calibreBook.optJSONArray(CalibreBookJsonKey.TAGS_ARRAY);
@@ -669,6 +678,12 @@ public class CalibreContentServerReader
         }
     }
 
+    /**
+     * See {@link CalibreBookCoder}#convertIdentifiers.
+     *
+     * @param calibreBook to parse
+     * @param book        to update
+     */
     private void convertIdentifiers(@NonNull final JSONObject calibreBook,
                                     @NonNull final Book book) {
         final JSONObject remotes = calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
@@ -682,7 +697,8 @@ public class CalibreContentServerReader
                     final String sid = remotes.optString(calKey);
                     if (!sid.isEmpty()) {
                         // MUST be converted to lc before we try and map
-                        CalibreIdentifiers.convertIdentifier(book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
+                        CalibreIdentifiers.convertIdentifier(
+                                book, calKey.toLowerCase(Locale.ENGLISH), sid, ivs);
                     }
                 }
             }
@@ -692,88 +708,154 @@ public class CalibreContentServerReader
         }
     }
 
+    /**
+     * Example of the "user_metadata" with more fields.
+     * <pre>
+     *     {
+     *     "#read_progress": {
+     *         "is_category": false,
+     *         "is_csp": false,
+     *         "kind": "field",
+     *         "display": {
+     *             "composite_sort": "number",
+     *             "composite_store_template_value_in_opf": false,
+     *             "contains_html": false,
+     *             "web_search_template": "",
+     *             "description": "blah blah",
+     *             "composite_template": "{id:reading_progress()}",
+     *             "use_decorations": false,
+     *             "make_category": false,
+     *             "composite_show_in_comments": false
+     *         },
+     *         "column": "value",
+     *         "is_editable": true,
+     *         "#value#": "0%",
+     *         "label": "read_progress",
+     *         "is_multiple": null,
+     *         "category_sort": "value",
+     *         "search_terms": [
+     *             "#read_progress"
+     *         ],
+     *         "rec_index": 26,
+     *         "link_column": "value",
+     *         "datatype": "composite",
+     *         "name": "Read progress",
+     *         "colnum": 1,
+     *         "is_custom": true,
+     *         "is_multiple2": {},
+     *         "table": "custom_column_1"
+     *     },
+     *     "#country": {
+     *         "is_category": true,
+     *         "is_csp": false,
+     *         "kind": "field",
+     *         "display": {
+     *             "enum_colors": [],
+     *             "enum_values": [
+     *                 "UK",
+     *                 "US",
+     *                 "EU"
+     *             ],
+     *             "web_search_template": "",
+     *             "description": "",
+     *             "use_decorations": false
+     *         },
+     *         "column": "value",
+     *         "is_editable": true,
+     *         "#value#": null,
+     *         "label": "country",
+     *         "is_multiple": null,
+     *         "category_sort": "value",
+     *         "search_terms": [
+     *             "#country"
+     *         ],
+     *         "rec_index": 23,
+     *         "#extra#": null,
+     *         "link_column": "value",
+     *         "datatype": "enumeration",
+     *         "name": "Country",
+     *         "colnum": 2,
+     *         "is_custom": true,
+     *         "is_multiple2": {},
+     *         "table": "custom_column_2"
+     *     },
+     *     "#rating": {
+     *         "is_category": true,
+     *         "is_csp": false,
+     *         "kind": "field",
+     *         "display": {
+     *             "allow_half_stars": false,
+     *             "web_search_template": "",
+     *             "description": ""
+     *         },
+     *         "column": "value",
+     *         "is_editable": true,
+     *         "#value#": null,
+     *         "label": "rating",
+     *         "is_multiple": null,
+     *         "category_sort": "value",
+     *         "search_terms": [
+     *             "#rating"
+     *         ],
+     *         "rec_index": 24,
+     *         "#extra#": null,
+     *         "link_column": "value",
+     *         "datatype": "rating",
+     *         "name": "My Rating",
+     *         "colnum": 3,
+     *         "is_custom": true,
+     *         "is_multiple2": {},
+     *         "table": "custom_column_3"
+     *     },
+     *     "#read_end": {
+     *         "is_category": false,
+     *         "is_csp": false,
+     *         "kind": "field",
+     *         "display": {
+     *             "web_search_template": "",
+     *             "description": "",
+     *             "date_format": null
+     *         },
+     *         "column": "value",
+     *         "is_editable": true,
+     *         "#value#": "None",
+     *         "label": "read_end",
+     *         "is_multiple": null,
+     *         "category_sort": "value",
+     *         "search_terms": [
+     *             "#read_end"
+     *         ],
+     *         "rec_index": 25,
+     *         "#extra#": null,
+     *         "link_column": "value",
+     *         "datatype": "datetime",
+     *         "name": "Read Done",
+     *         "colnum": 4,
+     *         "is_custom": true,
+     *         "is_multiple2": {},
+     *         "table": "custom_column_4"
+     *     }
+     * }
+     * </pre>
+     *
+     * @param calibreBook to convert
+     * @param book        to update
+     */
     private void convertCustomFields(@NonNull final JSONObject calibreBook,
                                      @NonNull final Book book) {
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
         if (userMetaData != null && library != null) {
-            // Sanity check, at this point it should always be true
+            final CalibreCustomFieldDecoder decoder = new CalibreCustomFieldDecoder(dateParser);
             library.getCustomFields().forEach(cf -> {
                 final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
                 if (data != null && cf.getType().equals(data.getString(
                         CalibreCustomField.METADATA_DATATYPE))) {
                     // Sanity check, should always be present
                     if (!data.isNull(CalibreCustomField.VALUE)) {
-                        // Special handling fields
-                        if (DBKey.READ_PROGRESS.equals(cf.getDbKey())) {
-                            convertReadingProgress(data, book);
-                        } else {
-                            // otherwise just by type
-                            convertCustomFieldByType(cf, data, book);
-                        }
+                        decoder.decode(cf, data, book);
                     }
                 }
             });
-        }
-    }
-
-    private void convertReadingProgress(@NonNull final JSONObject data,
-                                        @NonNull final Book book) {
-        // "#value#": "4%"
-        // "#value#": "100 / 332"
-        // "#value#": "0.25"
-        final String value = data.getString(CalibreCustomField.VALUE);
-        if (value.length() > 1 && value.endsWith("%")) {
-            try {
-                final int percentage = Integer
-                        .parseInt(value.substring(0, value.length() - 1));
-                book.setReadingProgress(new ReadingProgress(percentage));
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-        } else if (value.contains("/")) {
-            final String[] split = value.split("/");
-            if (split.length == 2) {
-                try {
-                    final int page = Integer.parseInt(split[0]);
-                    final int total = Integer.parseInt(split[1]);
-                    book.setReadingProgress(new ReadingProgress(page, total));
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // ignore
-                }
-            }
-        } else {
-            // fraction or unknown format
-            try {
-                final int percentage = (int) (Float.parseFloat(value) * 100);
-                book.setReadingProgress(new ReadingProgress(percentage));
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-        }
-    }
-
-    private void convertCustomFieldByType(@NonNull final CalibreCustomField cf,
-                                          @NonNull final JSONObject data,
-                                          @NonNull final Book book) {
-        switch (cf.getType()) {
-            case CalibreCustomField.TYPE_BOOL: {
-                book.putBoolean(cf.getDbKey(),
-                                data.getBoolean(CalibreCustomField.VALUE));
-                break;
-            }
-            case CalibreCustomField.TYPE_COMMENTS:
-            case CalibreCustomField.TYPE_COMPOSITE:
-            case CalibreCustomField.TYPE_DATETIME:
-            case CalibreCustomField.TYPE_TEXT: {
-                final String value = data.getString(CalibreCustomField.VALUE);
-                // ignore a remote 'not-set' value
-                if (!VALUE_IS_NONE.equals(value)) {
-                    book.putString(cf.getDbKey(), value);
-                }
-                break;
-            }
-            default:
-                throw new IllegalArgumentException(cf.getType());
         }
     }
 
