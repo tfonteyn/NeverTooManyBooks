@@ -1,10 +1,10 @@
 NEW:
-- the builtin image crop editor was replaced by https://github.com/Yalantis/uCrop
-- the old side-menu was replaced by a menu that follows the user preferred menu-style.
-- upgraded to Material3Expressive
-- Identifiers are now split according to item type (book, author)
-- Series now also support Identifiers
-- Support for importing Calibre CSV files
+- The builtin image crop editor was replaced by https://github.com/Yalantis/uCrop
+- The old side-menu was replaced by a menu that follows the user preferred menu-style.
+- Series now also support Identifiers.
+- Identifiers are now split according to item type (book, author, series).
+- Support for importing Calibre CSV files.
+- upgraded to Material3Expressive.
 
 FIXES:
 - many smaller issues
