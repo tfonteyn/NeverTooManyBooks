@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -84,7 +81,6 @@
         <item quantity="many">%1$d štítků</item>
         <item quantity="other">%1$d štítků</item>
     </plurals>
-
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">Je zde %1$d dříve zadaný kód ISBN. Chcete zahájit jeho vyhledávání, nebo ho chcete odstranit?</item>
         <item quantity="few">Jsou zde %1$d dříve zadané kódy ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
@@ -207,7 +203,6 @@
     <string name="confirm_delete_identifier_from_x_books">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_identifier_from_x_authors">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Autoři samotní smazáni nebudou.</string>
     <string name="confirm_delete_identifier_from_x_series">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Série samotné smazány nebudou.</string>
-
     <string name="confirm_delete_substitutions">Smazat náhrady za „%1$s“?</string>
     <string name="confirm_delete_tag_from_x_books">Smazat štítek „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Odstraňte název „%1$s“ (z %2$s)?\n\nBude odstraněn z %3$s. Knihy samotné smazány nebudou.</string>
@@ -605,7 +600,7 @@
     <string name="info_backup_successful">Zálohování proběhlo úspěšně</string>
     <string name="info_tap_to_move_tag">Klepnutím na štítek jej přesunete do/z knihy.</string>
     <string name="lbl_add_or_edit_substitution">Přidání/úprava pravidla nahrazení</string>
-    <string name="info_substitutions_one_per_line">Přidej jeden náhradní výraz na řádek, nebo nech prázdné, pokud chceš štítek smazat</string>
+    <string name="info_substitutions_one_per_line">Přidejte jeden náhradní výraz na řádek, nebo nechte prázdné, pokud chcete štítek smazat</string>
     <string name="info_download_successful">Stahování bylo úspěšné</string>
     <string name="info_export_report">Ve vybrané složce byl vytvořen soubor %1$s s názvem „%2$s“. Měli byste jej ručně zkopírovat jinam, abyste ochránili data pro případ poškození, ztráty nebo krádeže zařízení.</string>
     <string name="info_export_successful">Export byl úspěšný</string>
@@ -958,5 +953,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Pouze pro jazyky, které používají členy. Anglický příklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="pt_deduplication_title_matching_summary_off">Pouze pro jazyky, které používají členy. Anglický příklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="action_edit_with_ellipsis">Upravit v aplikaci…</string>
-    <string name="error_import_csv_calibre">Sloupec „comments“ z Calibre nepodporujeme. Odstraň ho prosím ze souboru CSV.</string>
+    <string name="error_import_csv_calibre">Sloupec „comments“ z Calibre nepodporujeme. Odstraňte ho prosím ze souboru CSV.</string>
 </resources>

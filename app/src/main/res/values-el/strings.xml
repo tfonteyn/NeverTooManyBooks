@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -925,5 +922,5 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_deduplication_title_matching_summary_on">Κατά την αποθήκευση, οι τίτλοι που είναι πανομοιότυποι εκτός από τη μορφοποίηση θα συγχωνεύονται (π.χ. «Ο Άρχοντας των Δαχτυλιδιών» και «Άρχοντας των Δαχτυλιδιών, Ο»).</string>
     <string name="pt_deduplication_title_matching_summary_off">Κατά την αποθήκευση, οι τίτλοι που είναι πανομοιότυποι εκτός από τη μορφοποίηση δεν θα συγχωνεύονται (π.χ. «Ο Άρχοντας των Δαχτυλιδιών» και «Άρχοντας των Δαχτυλιδιών, Ο»).</string>
     <string name="action_edit_with_ellipsis">Επεξεργασία με…</string>
-    <string name="error_import_csv_calibre">Η στήλη «comments» του Calibre δεν υποστηρίζεται. Παρακαλώ αφαίρεσέ την από το αρχείο CSV.</string>
+    <string name="error_import_csv_calibre">Η στήλη «σχόλια» του Calibre δεν υποστηρίζεται. Παρακαλώ αφαιρέστε την από το αρχείο CSV.</string>
 </resources>
