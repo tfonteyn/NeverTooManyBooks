@@ -84,6 +84,7 @@
  *      <ul>
  *          <li>BookCatalogue / Legacy NTMB 1.0-3.x</li>
  *          <li>Goodreads</li>
+ *          <li>Calibre</li>
  *      </ul>
  * </li>
  * <li>db: nothing actually implemented for now</li>
