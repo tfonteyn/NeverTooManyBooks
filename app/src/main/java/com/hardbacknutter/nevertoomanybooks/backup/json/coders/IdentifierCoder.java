@@ -42,9 +42,13 @@ public class IdentifierCoder
         final JSONObject out = new JSONObject();
         out.put(DBKey.PK_ID, identifier.getId());
         out.put(DBKey.IDENTIFIERS.KEY, identifier.getKey());
+
+        // Write as an int
         out.put(DBKey.IDENTIFIERS.ENTITY, identifier.getEntityType().getId());
 
+        // Write as a String for backwards compatibility.
         out.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(identifier.getType().getId()));
+
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl());
 
@@ -66,45 +70,50 @@ public class IdentifierCoder
             throws JSONException {
         final long id = data.getLong(DBKey.PK_ID);
         final String key = data.getString(DBKey.IDENTIFIERS.KEY);
-        // For legacy archives missing this field, we default to a Book
-        final Identifier.EntityType entityType = Identifier.EntityType.byId(
-                data.getInt(DBKey.IDENTIFIERS.ENTITY));
+
+        final Identifier.EntityType entityType;
+        if (data.has(DBKey.IDENTIFIERS.ENTITY)) {
+            entityType = Identifier.EntityType.byId(data.getInt(DBKey.IDENTIFIERS.ENTITY));
+        } else {
+            // ZipArchiveWriter#VERSION == 8 and earlier don't have this field
+            // Default to a Book
+            entityType = Identifier.EntityType.Book;
+        }
 
         final Identifier.Type type = Identifier.Type.byId(
                 data.getString(DBKey.IDENTIFIERS.TYPE).charAt(0));
         final String name = data.getString(DBKey.IDENTIFIERS.NAME);
-        @Nullable
+
         final String siteUrl = data.optString(DBKey.IDENTIFIERS.SITE_URL, null);
+        final String wikidataClaim = data.optString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM, null);
 
-        @Nullable
-        final String wikidataClaim =
-                data.optString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM, null);
-
-        @Nullable
-        final String uri = data.optString(DBKey.IDENTIFIERS.URI, null);
-        if (uri != null) {
-            final Identifier identifier = new Identifier(entityType, type, key, name,
-                                                         siteUrl, uri, wikidataClaim);
-
-            identifier.setId(id);
-            return List.of(identifier);
+        // check for fields which were present in ZipArchiveWriter#VERSION == 8
+        if (data.has(IdentifierMigration.BOOK_URI_OBSOLETE)
+            || data.has(IdentifierMigration.AUTHOR_URI_OBSOLETE)) {
+            return v8decode(data, id, key, type, name, siteUrl, wikidataClaim);
         }
+        // We MAY still have a ZipArchiveWriter#VERSION == 8,
+        // but the legacy fields are not present.
+        // Just continue decoding fields from ZipArchiveWriter#VERSION == 9 and up.
 
-        // Check for potential legacy fields and try migrating them
-        return decodeV7(id, key, type, name, siteUrl, wikidataClaim, data);
+        final String uri = data.optString(DBKey.IDENTIFIERS.URI, null);
+
+        final Identifier identifier = new Identifier(entityType, type, key, name,
+                                                     siteUrl, uri, wikidataClaim);
+        identifier.setId(id);
+        return List.of(identifier);
     }
 
     @NonNull
-    private Collection<Identifier> decodeV7(final long id,
+    private Collection<Identifier> v8decode(@NonNull final JSONObject data,
+                                            final long id,
                                             @NonNull final String key,
                                             @NonNull final Identifier.Type type,
                                             @NonNull final String name,
                                             @Nullable final String siteUrl,
-                                            @Nullable final String wikidataClaim,
-                                            @NonNull final JSONObject data) {
-        @Nullable
+                                            @Nullable final String wikidataClaim) {
+        // on of these is non-null, or we would not be in this method
         final String bookUrl = data.optString(IdentifierMigration.BOOK_URI_OBSOLETE, null);
-        @Nullable
         final String authorUrl = data.optString(IdentifierMigration.AUTHOR_URI_OBSOLETE, null);
 
         return IdentifierMigration.mapV7Identifier(
