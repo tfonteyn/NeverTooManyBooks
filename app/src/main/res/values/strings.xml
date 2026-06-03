@@ -325,7 +325,9 @@
     <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
     <!-- CSV import fails: the number of columns in a line does not match the number of headers -->
     <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
-    <!-- CSV import fails:  -->
+    <!-- CSV import fails:  the "comments" column can have CR/LF which break the CSV format.
+         Translators: the "comments" string is always in english in the CSV file.
+                      Leave it untranslated. -->
     <string name="error_import_csv_calibre">The Calibre “comments” column is not supported. Please remove it from the CSV file.</string>
     <!-- import fails due to a record missing a mandatory column/field -->
     <string name="error_record_must_contain_column">Record must contain a field named “%1$s”.</string>
