@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -37,6 +38,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -71,6 +73,9 @@ public class CsvArchiveReader
     private final Uri uri;
     @NonNull
     private final DataReader.Updates updateOption;
+    /** Set in {@link #readMetaData}. */
+    @Nullable
+    private CsvFormat csvFormat;
 
     /**
      * Constructor.
@@ -105,15 +110,15 @@ public class CsvArchiveReader
             header = rawHeader;
         }
 
-        final CsvFormat csvFormat = CsvFormat.guess(context, header);
-        final String lastUpdateColumnName = csvFormat.getLastUpdateColumnName();
+        final List<String> csvColumnNames = CsvRecordReader.parse(context, 0, header);
+        csvFormat = CsvFormat.guess(context, header, csvColumnNames);
 
-        final boolean supportsUpdates = lastUpdateColumnName != null
-                                        && CsvRecordReader
-                                                .parse(context, 0, header)
-                .stream()
-                .map(name -> name.toLowerCase(Locale.ENGLISH))
-                .anyMatch(lastUpdateColumnName::equals);
+        final String lastUpdateColumnName = csvFormat.getLastUpdateColumnName();
+        final boolean supportsUpdates =
+                lastUpdateColumnName != null
+                && csvColumnNames.stream()
+                                 .map(name -> name.toLowerCase(Locale.ENGLISH))
+                                 .anyMatch(lastUpdateColumnName::equals);
 
         final Bundle bundle = ServiceLocator.getInstance().newBundle();
         bundle.putParcelable(CsvFormat.BKEY, csvFormat);
@@ -143,13 +148,15 @@ public class CsvArchiveReader
         FileUtils.copy(source, destination);
 
         try (InputStream is = context.getContentResolver().openInputStream(uri);
-             RecordReader recordReader = new CsvRecordReader(updateOption)) {
+             CsvRecordReader recordReader = new CsvRecordReader(updateOption)) {
             if (is == null) {
                 throw new FileNotFoundException(uri.toString());
             }
             final ArchiveReaderRecord record = new CsvArchiveRecord(
                     new UriInfo(uri).getDisplayName(context), is);
 
+            // pre-config as we already know the format
+            recordReader.setFormat(csvFormat);
             return recordReader.read(context, record, progressListener);
         }
     }

@@ -114,6 +114,8 @@ public class CsvRecordReader
 
     /** Log tag. */
     private static final String TAG = "CsvRecordReader";
+    @Nullable
+    private CsvFormat csvFormat;
 
     /**
      * Constructor.
@@ -125,6 +127,16 @@ public class CsvRecordReader
     @AnyThread
     public CsvRecordReader(@NonNull final DataReader.Updates updateOption) {
         super(updateOption);
+    }
+
+    /**
+     * Optionally set the format if known before calling {@link #read}.
+     * If not set, a guess will be made using the first row of the CSV file.
+     *
+     * @param csvFormat (optional) the {@link CsvFormat}.
+     */
+    public void setFormat(@Nullable final CsvFormat csvFormat) {
+        this.csvFormat = csvFormat;
     }
 
     /**
@@ -331,10 +343,14 @@ public class CsvRecordReader
             header = rawHeader;
         }
 
-        // Now try and guess where this CSV file might have come from.
-        final CsvFormat csvFormat = CsvFormat.guess(context, header);
-        // and parse the column/header names
+        // Parse the column/header names
         final List<String> csvColumnNames = parse(context, 0, header);
+
+        // If we did not get the format in the constructor,
+        // try and guess where this CSV file might have come from.
+        if (csvFormat == null) {
+            csvFormat = CsvFormat.guess(context, header, csvColumnNames);
+        }
 
         // One book == One row. We start after the headings row.
         int row = 1;
@@ -357,8 +373,7 @@ public class CsvRecordReader
                 context.getResources().getConfiguration().getLocales());
         final BookCoder bookCoder = BookCoderFactory.create(context, csvFormat, getUpdateOption(),
                                                             csvColumnNames,
-                                                            defaultStyle, allLocales
-        );
+                                                            defaultStyle, allLocales);
 
         while (row < books.size() && !progressListener.isCancelled()) {
 
