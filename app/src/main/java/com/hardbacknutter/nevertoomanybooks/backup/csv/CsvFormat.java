@@ -120,14 +120,11 @@ public enum CsvFormat
         // The user can freely add/remove columns and change the order in Calibre.
         // Best outcome is if they simply export ALL columns.
         // "library_name" is the basic detection
-        // "author_sort": we could also use "authors", but using the "family, given"
-        //                name format is slight more reliable
-        // "isbn": duh
-        // "title": just for good measure...
+        // "authors" + "title" + "isbn" are the bare minimum
         if (columnNames.contains("library_name")
-            && columnNames.contains("author_sort")
-            && columnNames.contains("isbn")
-            && columnNames.contains("title")) {
+            && columnNames.contains("authors")
+            && columnNames.contains("title")
+            && columnNames.contains("isbn")) {
 
             // Calibre 9.9.0 or lower does not escape CR/LF in comment fields.
             // This breaks the format utterly.

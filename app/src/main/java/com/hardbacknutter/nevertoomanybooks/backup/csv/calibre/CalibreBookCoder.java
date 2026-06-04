@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomFieldDecoder;
@@ -68,9 +69,12 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Note that this set has less columns than when we do a sync
  * with the Calibre Content Server.
  * <pre>
- *      author_sort,
- *      authors,
- *      comments,              BROKEN... as it does not encode CR/LF
+ *      authors,               We use "authors" to make sure our extended re-ordering
+ *                             rules are applied
+ *      author_sort,           Ignored, see ^
+ *      comments,              This column will break CSV in Calibre up to 9.9.0 as
+ *                             it does not encode CR/LF.
+ *                             Calibre 9.10 ? 10.0 ? coming soon... should fix this.
  *      cover,                 a path on disk
  *      timestamp,             the last-update datetime
  *      formats,               epub,mobi,...
@@ -86,8 +90,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *      series_index,
  *      size,                   of the ebook
  *      tags,
- *      title,
- *      title_sort,
+ *      title,                  We use "title" to make sure our extended re-ordering
+ *                              rules are applied
+ *      title_sort,             Ignored, see ^
  *      uuid
  * </pre>
  * <p>
@@ -189,26 +194,26 @@ public class CalibreBookCoder
                             .filter(cf -> cf.getCalibreKey().equals(name))
                             .forEach(cf -> customFieldDecoder.decode(cf, value, book));
             } else {
-                // we won't get here if the "comments" column was present, so ignore it.
                 switch (name) {
                     case "authors": {
-                        // ignored, we use "author_sort" by preference
-                        break;
-                    }
-                    case "author_sort": {
                         processAuthors(value, book);
-                        break;
-                    }
-                    case "isbn": {
-                        book.setIsbn(ISBN.cleanText(value));
                         break;
                     }
                     case "title": {
                         book.setTitle(value);
                         break;
                     }
+                    case "author_sort":
                     case "title_sort": {
                         // ignored
+                        break;
+                    }
+                    case "comments": {
+                        book.setDescription(SearchEngineUtils.cleanText(value));
+                        break;
+                    }
+                    case "isbn": {
+                        book.setIsbn(ISBN.cleanText(value));
                         break;
                     }
                     case "languages": {
