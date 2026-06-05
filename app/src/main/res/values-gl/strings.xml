@@ -151,7 +151,7 @@
     <string name="warning_select_at_least_1_field">Escolle un campo para actualizar polo menos.</string>
     <string name="warning_requires_isbn">Esta acción require dun ISBN válido.</string>
     <string name="warning_book_not_found">Non se puido atopar o libro especificado.</string>
-    <string name="warning_import_csv">ADVERTENCIA: A importación de datos pode actualizar os rexistros de libros existentes con nova información se a columna UUID non está presente e o ID no ficheiro de importación é o mesmo que un ID existente. Isto adoita ser correcto se mudaches un campo nun ficheiro exportado. Se creaches un novo rexistro de libros, ou estás a importar os libros doutra persoa, asegúrate de que o campo UUID está presente ou de que o campo ID está en branco.</string>
+    <string name="warning_import_csv_bc">ADVERTENCIA: A importación de datos pode actualizar os rexistros de libros existentes con nova información se a columna UUID non está presente e o ID no ficheiro de importación é o mesmo que un ID existente. Isto adoita ser correcto se mudaches un campo nun ficheiro exportado. Se creaches un novo rexistro de libros, ou estás a importar os libros doutra persoa, asegúrate de que o campo UUID está presente ou de que o campo ID está en branco.</string>
     <string name="warning_import_failed_for_these_books">Fallou a importación destes libros/filas:</string>
     <string name="warning_import_failed_for_these_books_and_more">e %1$d máis.</string>
     <string name="warning_requires_site_and_id">Escolle un sitio e introduce unha identificación.</string>
@@ -923,5 +923,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Ao gardar, os títulos que sexan idénticos agás polo formato fusionaranse (p. ex., «O Señor dos Aneis» e «Señor dos Aneis, O»).</string>
     <string name="pt_deduplication_title_matching_summary_off">Ao gardar, os títulos que sexan idénticos agás polo formato non se fusionarán (p. ex., «O Señor dos Aneis» e «Señor dos Aneis, O»).</string>
     <string name="action_edit_with_ellipsis">Editar con…</string>
-    <string name="error_import_csv_calibre">A columna “comments” de Calibre no se admite. Por favor, elimínaa do arquivo CSV.</string>
+    <string name="warning_import_csv_calibre">A columna «comments» das versións antigas de Calibre pode causar arquivos CSV non válidos. Se se produce un erro, actualice Calibre á versión 9.10 o posterior antes de exportar para practicalo solución. Como alternativa, pode retirar a columna «comments» do seu arquivo e tentar a importación de novo.</string>
 </resources>

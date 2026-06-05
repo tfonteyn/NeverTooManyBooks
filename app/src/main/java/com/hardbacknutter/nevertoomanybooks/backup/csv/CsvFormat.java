@@ -32,13 +32,13 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 
 public enum CsvFormat
         implements Parcelable {
     /** A Goodreads export. */
     Goodreads(R.string.site_goodreads, null),
 
+    /** Calibre can export as CSV, although we prefer connecting to the Content Server. */
     Calibre(R.string.site_calibre, "timestamp"),
 
     /** The original BC format, or the extended but obsolete NTMB 1.x .. 3.x format. */
@@ -61,9 +61,12 @@ public enum CsvFormat
             return new CsvFormat[size];
         }
     };
+
     private static final String TAG = "CsvFormat";
+
     /** Bundle key to pass this object around. */
     public static final String BKEY = TAG + ":bk";
+
     @StringRes
     private final int labelId;
     @Nullable
@@ -79,20 +82,14 @@ public enum CsvFormat
      * Parse the CSV file header line to guess the origin/format.
      * Both the raw header and the preparsed column names will be used for a best-guess.
      *
-     * @param context     Current context
      * @param header      to parse
      * @param columnNames pre-parsed columns
      *
      * @return format detected
-     *
-     * @throws DataReaderException on total failure to detect
-     *                             or if there is a conflict found
      */
     @NonNull
-    static CsvFormat guess(@NonNull final Context context,
-                           @NonNull final String header,
-                           @NonNull final List<String> columnNames)
-            throws DataReaderException {
+    static CsvFormat guess(@NonNull final String header,
+                           @NonNull final List<String> columnNames) {
 
         // Normally the BC header has quoted column names, but lets test for both
         if (header.startsWith("\"_id\",\"author_details\",\"title\",\"isbn\"")
@@ -108,8 +105,10 @@ public enum CsvFormat
         }
 
         // RELEASE: check the latest Goodreads CSV export file header.
-        // Check for some fairly distinct column names.
+        // "Book Id" + "Exclusive Shelf" is the basic detection.
+        // "Title" + "Author l-f" are the bare minimum.
         if (columnNames.contains("Book Id")
+            && columnNames.contains("Title")
             && columnNames.contains("Author l-f")
             && columnNames.contains("Exclusive Shelf")) {
 
@@ -119,21 +118,11 @@ public enum CsvFormat
         // RELEASE: check the latest Calibre CSV export file header.
         // The user can freely add/remove columns and change the order in Calibre.
         // Best outcome is if they simply export ALL columns.
-        // "library_name" is the basic detection
-        // "authors" + "title" + "isbn" are the bare minimum
+        // "library_name" is the basic detection.
+        // "authors" + "title" are the bare minimum.
         if (columnNames.contains("library_name")
             && columnNames.contains("authors")
-            && columnNames.contains("title")
-            && columnNames.contains("isbn")) {
-
-            // Calibre 9.9.0 or lower does not escape CR/LF in comment fields.
-            // This breaks the format utterly.
-            // If we find these columns, simply refuse to continue.
-            // If other fields contain any CR/LF, we'll throw an error when we get there.
-            if (columnNames.contains("comments") || columnNames.contains("#notes")) {
-                throw new DataReaderException(
-                        context.getString(R.string.error_import_csv_calibre));
-            }
+            && columnNames.contains("title")) {
 
             return CsvFormat.Calibre;
         }

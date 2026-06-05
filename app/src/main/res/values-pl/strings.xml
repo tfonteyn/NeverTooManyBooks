@@ -751,7 +751,7 @@
     <string name="warning_image_copy_failed">Nie można skopiować obrazu.</string>
     <string name="warning_image_not_found">Nie można znaleźć obrazu.</string>
     <string name="warning_immediate_global_changes">OSTRZEŻENIE: Zapisane zmiany są natychmiast stosowane do wszystkich książek.</string>
-    <string name="warning_import_csv">OSTRZEŻENIE: Importowanie danych może zaktualizować istniejące rekordy książki o nowe informacje, jeśli kolumna UUID nie jest obecna, a identyfikator w pliku importu jest taki sam jak istniejący identyfikator. Zwykle jest to w porządku, jeśli zmieniono pole w wyeksportowanym pliku. Jeśli utworzyłeś nowy rekord książki lub importujesz książki innej osoby, upewnij się, że pole UUID jest obecne lub pole ID jest puste.</string>
+    <string name="warning_import_csv_bc">OSTRZEŻENIE: Importowanie danych może zaktualizować istniejące rekordy książki o nowe informacje, jeśli kolumna UUID nie jest obecna, a identyfikator w pliku importu jest taki sam jak istniejący identyfikator. Zwykle jest to w porządku, jeśli zmieniono pole w wyeksportowanym pliku. Jeśli utworzyłeś nowy rekord książki lub importujesz książki innej osoby, upewnij się, że pole UUID jest obecne lub pole ID jest puste.</string>
     <string name="warning_import_csv_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">i %1$d innych.</string>
     <string name="warning_import_failed_for_these_books">Import nie powiódł się dla tych książek/wierszy:</string>
@@ -947,5 +947,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Edytuj za pomocą…</string>
-    <string name="error_import_csv_calibre">Kolumna „comments” z Calibre nie jest obsługiwana. Usuń ją prośba z pliku CSV.</string>
+    <string name="warning_import_csv_calibre">Kolumna „comments” ze starszych wersji programu Calibre może powodować powstawanie nieprawidłowych plików CSV. W przypadku wystąpienia błędu, aktualizacja programu Calibre do wersji 9.10 lub nowszej przed eksportem zazwyczaj rozwiązuje problem. Alternatywnie możesz usunąć kolumnę „comments” ze swojego pliku i spróbować ponownie zaimportować.</string>
 </resources>

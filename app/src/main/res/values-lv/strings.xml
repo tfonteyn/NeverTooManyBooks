@@ -279,5 +279,5 @@
     <string name="confirm_delete_identifier_from_x_books">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Pašas grāmatas netiks dzēstas.</string>
     <string name="confirm_delete_identifier_from_x_authors">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Paši autori netiks dzēsti.</string>
     <string name="confirm_delete_identifier_from_x_series">Dzēst identifikatoru “%1$s”?\n\nTas tiks noņemts no %2$s. Pašas sērijas netiks dzēstas.</string>
-    <string name="error_import_csv_calibre">Calibre “comments” kolonna netiek atbalstīta. Lūdzu, izdzēs to no CSV faila.</string>
+    <string name="warning_import_csv_calibre">Kolonna “comments” no vecākām Calibre versijām var izraisīt nederīgus CSV failus. Ja rodas kļūda, problēmu parasti var novērst, pirms eksportēšanas atjauninot Calibre uz versiju 9.10 vai jaunāku. Kā alternatīvu varat noņemt kolonnu “comments” no sava faila un mēģināt importēt vēlreiz.</string>
 </resources>

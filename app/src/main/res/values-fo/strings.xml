@@ -178,5 +178,5 @@
     <string name="confirm_delete_identifier_from_x_books">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Bøkurnar sjálvar verða ikki slettaðar.</string>
     <string name="confirm_delete_identifier_from_x_authors">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Høvundarnir sjálvir verða ikki slettaðir.</string>
     <string name="confirm_delete_identifier_from_x_series">Sletta eyðmerkingina „%1$s“?\n\nHún verður strikað frá %2$s. Røðirnar sjálvar verða ikki slettaðar.</string>
-    <string name="error_import_csv_calibre">Calibre-teigin „comments“ verður ikki stuðlaður. Vinarliga strika hann úr CSV-fíluni.</string>
+    <string name="warning_import_csv_calibre">Teigurin „comments“ frá eldri útgávum av Calibre kann elva til ógildugar CSV-fílur. Um tú fært eitt lýti, hjálpir tað vanliga at dagføra Calibre til útgávu 9.10 ella nýggjari áðrenn útflyting. Annars kanst tú taka „comments“ teigin úr fíluni og royna at flyta inn aftur.</string>
 </resources>

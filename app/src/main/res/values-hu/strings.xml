@@ -233,7 +233,7 @@
     <string name="error_export_failed">Exportálás sikertelen.</string>
     <string name="error_backup_failed">Biztonsági mentés sikertelen.</string>
     <string name="error_type_not_supported">Nem támogatott típus: %1$s…</string>
-    <string name="warning_import_csv">FIGYELMEZTETÉS: Az adatok importálása frissítheti a meglévő könyvbejegyzéseket új információkkal, ha az UUID oszlop nincs jelen és az importált fájl azonosítója megegyezik egy meglévő azonosítóval. Ez általában rendben van, ha egy exportált fájl mezőjét módosította. Ha új könyvbejegyzést hozott létre vagy valaki más könyveit importálja, győződjön meg arról, hogy az UUID mező jelen van vagy az azonosító mezője üres.</string>
+    <string name="warning_import_csv_bc">FIGYELMEZTETÉS: Az adatok importálása frissítheti a meglévő könyvbejegyzéseket új információkkal, ha az UUID oszlop nincs jelen és az importált fájl azonosítója megegyezik egy meglévő azonosítóval. Ez általában rendben van, ha egy exportált fájl mezőjét módosította. Ha új könyvbejegyzést hozott létre vagy valaki más könyveit importálja, győződjön meg arról, hogy az UUID mező jelen van vagy az azonosító mezője üres.</string>
     <string name="warning_import_csv_unescaped_quote">Nem tiszta idézet a következő helyen: %1$d. sor %2$d. pozíció</string>
     <string name="warning_import_failed_for_these_books">A következő könyvek/sorok importálása sikertelen:</string>
     <string name="warning_import_failed_for_these_books_and_more">és még %1$d.</string>
@@ -923,5 +923,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Csak névelőket használó nyelvek esetén alkalmazható. Angol példa: „The Lord of The Rings” és „Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Szerkesztés ezzel…</string>
-    <string name="error_import_csv_calibre">A Calibre „comments” oszlopa nem támogatott. Kérlek, töröld ki a CSV fájlból.</string>
+    <string name="warning_import_csv_calibre">A Calibre régebbi verzióiból származó „comments” oszlop érvénytelen CSV-fájlokat eredményezhet. Ha hibába ütközik, a Calibre frissítése a 9.10-es vagy újabb verzióra az exportálás előtt általában megoldja a problémát. Alternatív megoldásként eltávolíthatja a „comments” oszlopot a fájlból, és próbálkozhat újra az importálással.</string>
 </resources>

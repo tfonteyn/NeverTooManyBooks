@@ -742,7 +742,7 @@
     <string name="warning_image_copy_failed">La imagen no se pudo copiar.</string>
     <string name="warning_image_not_found">No se pudo encontrar la imagen.</string>
     <string name="warning_immediate_global_changes">AVISO: Los cambios guardados se aplican instantáneamente a todos los libros.</string>
-    <string name="warning_import_csv">ADVERTENCIA: La importación de datos puede actualizar los registros de libros existentes con nueva información si la columna UUID no está presente y el ID en el archivo de importación es el mismo que un ID existente. Esto suele ser correcto si ha cambiado un campo en un archivo exportado. Si ha creado un nuevo registro de libros, o está importando los libros de otra persona, asegúrese de que el campo UUID está presente o de que el campo ID está en blanco.</string>
+    <string name="warning_import_csv_bc">ADVERTENCIA: La importación de datos puede actualizar los registros de libros existentes con nueva información si la columna UUID no está presente y el ID en el archivo de importación es el mismo que un ID existente. Esto suele ser correcto si ha cambiado un campo en un archivo exportado. Si ha creado un nuevo registro de libros, o está importando los libros de otra persona, asegúrese de que el campo UUID está presente o de que el campo ID está en blanco.</string>
     <string name="warning_import_csv_unescaped_quote">Carácter de comillas sin escapes en la fila %1$d, posición %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">y %1$d más.</string>
     <string name="warning_import_failed_for_these_books">La importación ha fallado para estos libros/filas:</string>
@@ -933,5 +933,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Al guardar, los títulos que sean idénticos excepto por el formato se fusionarán (p. ej., «El Señor de los Anillos» y «Señor de los Anillos, El»).</string>
     <string name="pt_deduplication_title_matching_summary_off">Al guardar, los títulos que sean idénticos excepto por el formato no se fusionarán (p. ej., «El Señor de los Anillos» y «Señor de los Anillos, El»).</string>
     <string name="action_edit_with_ellipsis">Editar con…</string>
-    <string name="error_import_csv_calibre">La columna “comments” de Calibre no je compatible. Por favor, elimínala del archivo CSV.</string>
+    <string name="warning_import_csv_calibre">La columna «comments» de las versiones antiguas de Calibre puede generar archivos CSV no válidos. Si experimenta un error, actualizar Calibre a la versión 9.10 o posterior antes de exportar suele solucionarlo. Como alternativa, puede eliminar la columna «comments» de su archivo e intentar la importación de nuevo.</string>
 </resources>

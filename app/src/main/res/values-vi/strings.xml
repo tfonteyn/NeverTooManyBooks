@@ -846,7 +846,7 @@
     <string name="warning_image_copy_failed">Không thể sao chép hình ảnh.</string>
     <string name="warning_image_not_found">Không thể tìm thấy hình ảnh.</string>
     <string name="warning_immediate_global_changes">CẢNH BÁO: Các thay đổi đã lưu sẽ được áp dụng ngay lập tức cho tất cả sách.</string>
-    <string name="warning_import_csv">CẢNH BÁO: Việc nhập dữ liệu có thể cập nhật các bản ghi sổ hiện có với thông tin mới nếu cột UUID không xuất hiện và ID trong tệp nhập giống với ID hiện có. Điều này thường ổn nếu bạn thay đổi một trường trong tệp đã xuất. Nếu bạn đã tạo một bản ghi sách mới hoặc đang nhập sách của người khác, hãy đảm bảo có trường UUID hoặc trường ID trống.</string>
+    <string name="warning_import_csv_bc">CẢNH BÁO: Việc nhập dữ liệu có thể cập nhật các bản ghi sổ hiện có với thông tin mới nếu cột UUID không xuất hiện và ID trong tệp nhập giống với ID hiện có. Điều này thường ổn nếu bạn thay đổi một trường trong tệp đã xuất. Nếu bạn đã tạo một bản ghi sách mới hoặc đang nhập sách của người khác, hãy đảm bảo có trường UUID hoặc trường ID trống.</string>
     <string name="warning_import_csv_unescaped_quote">Trích dẫn không thoát tại hàng %1$d, vị trí %2$d</string>
     <string name="warning_import_failed_for_these_books">Nhập không thành công cho các sách/hàng này:</string>
     <string name="warning_import_failed_for_these_books_and_more">và %1$d nữa.</string>
@@ -912,5 +912,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”.</string>
     <string name="pt_deduplication_title_matching_summary_off">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Chỉnh sửa bằng…</string>
-    <string name="error_import_csv_calibre">Cột “comments” của Calibre không được hỗ trợ. Hãy xóa nó khỏi tệp CSV nhé.</string>
+    <string name="warning_import_csv_calibre">Cột “comments” từ các phiên bản Calibre cũ có thể tạo ra các tệp CSV không hợp lệ. Nếu bạn gặp lỗi, việc cập nhật Calibre lên phiên bản 9.10 hoặc mới hơn trước khi xuất thường sẽ khắc phục được sự cố. Bạn có thể xóa cột “comments” khỏi tệp của mình và thử nhập lại.</string>
 </resources>

@@ -733,7 +733,7 @@
     <string name="warning_image_copy_failed">Bild konnte nicht kopiert werden.</string>
     <string name="warning_image_not_found">Bild konnte nicht gefunden werden.</string>
     <string name="warning_immediate_global_changes">WARNUNG: Gespeicherte Änderungen werden sofort für alle Bücher übernommen.</string>
-    <string name="warning_import_csv">ACHTUNG: Beim Importieren von Daten können bestehende Buchdatensätze mit neuen Informationen überschrieben werden, wenn die Spalte UUID nicht vorhanden ist und die ID in der Importdatei mit einer bestehenden ID übereinstimmt. Dies ist normalerweise kein Problem, wenn du ein Feld in einer exportierten Datei geändert hast. Wenn du einen neuen Buchdatensatz erstellt hast oder die Bücher einer anderen Person importierst, stelle sicher, dass das UUID-Feld vorhanden oder das ID-Feld leer ist.</string>
+    <string name="warning_import_csv_bc">ACHTUNG: Beim Importieren von Daten können bestehende Buchdatensätze mit neuen Informationen überschrieben werden, wenn die Spalte UUID nicht vorhanden ist und die ID in der Importdatei mit einer bestehenden ID übereinstimmt. Dies ist normalerweise kein Problem, wenn du ein Feld in einer exportierten Datei geändert hast. Wenn du einen neuen Buchdatensatz erstellt hast oder die Bücher einer anderen Person importierst, stelle sicher, dass das UUID-Feld vorhanden oder das ID-Feld leer ist.</string>
     <string name="warning_import_csv_unescaped_quote">Ungeescapte Anführungszeichen in Zeile %1$d, Position %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">und %1$d weitere.</string>
     <string name="warning_import_failed_for_these_books">Import für diese Bücher/Zeilen fehlgeschlagen:</string>
@@ -922,5 +922,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Beim Speichern werden Titel, die bis auf die Formatierung identisch sind, zusammengeführt (z. B. „Der Herr der Ringe“ und „Herr der Ringe, Der“).</string>
     <string name="pt_deduplication_title_matching_summary_off">Beim Speichern werden Titel, die bis auf die Formatierung identisch sind, nicht zusammengeführt (z. B. „Der Herr der Ringe“ und „Herr der Ringe, Der“).</string>
     <string name="action_edit_with_ellipsis">Bearbeiten mit…</string>
-    <string name="error_import_csv_calibre">Die Calibre-Spalte „comments“ wird nicht unterstützt. Bitte entferne sie aus der CSV-Datei.</string>
+    <string name="warning_import_csv_calibre">Die Spalte „comments“ aus älteren Calibre-Versionen kann zu ungültigen CSV-Dateien führen. Wenn ein Fehler auftritt, lässt sich dies meist beheben, indem Sie Calibre vor dem Exportieren auf Version 9.10 oder neuer aktualisieren. Alternativ können Sie die Spalte „comments“ aus Ihrer Datei entfernen und den Import erneut versuchen.</string>
 </resources>

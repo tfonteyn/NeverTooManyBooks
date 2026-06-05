@@ -812,7 +812,7 @@
     <string name="warning_image_copy_failed">無法複製圖像。</string>
     <string name="warning_image_not_found">找不到圖像。</string>
     <string name="warning_immediate_global_changes">警告：儲存的變更會立即套用至所有書籍。</string>
-    <string name="warning_import_csv">警告：如果 UUID 欄位不存在，且匯入檔案中的 ID 與現有 ID 相同，則匯入資料可能會以新資訊更新現有圖書記錄。如果您更改了匯出文件中的某個字段，通常不會有問題。如果您建立了新的帳簿記錄，或正在匯入他人的帳簿，請確保 UUID 欄位存在或 ID 欄位為空。</string>
+    <string name="warning_import_csv_bc">警告：如果 UUID 欄位不存在，且匯入檔案中的 ID 與現有 ID 相同，則匯入資料可能會以新資訊更新現有圖書記錄。如果您更改了匯出文件中的某個字段，通常不會有問題。如果您建立了新的帳簿記錄，或正在匯入他人的帳簿，請確保 UUID 欄位存在或 ID 欄位為空。</string>
     <string name="warning_import_csv_unescaped_quote">行 %1$d，位置 %2$d 的未轉義引號</string>
     <string name="warning_import_failed_for_these_books">這些圖書/行的導入失敗：</string>
     <string name="warning_import_failed_for_these_books_and_more">還有 %1$d 個。</string>
@@ -915,5 +915,5 @@
     <string name="pt_deduplication_title_matching_summary_on">僅適用於使用冠詞的語言。英語範例：「The Lord of The Rings」和「Lord of The Rings, The」。</string>
     <string name="pt_deduplication_title_matching_summary_off">僅適用於使用冠詞的語言。英語範例：「The Lord of The Rings」和「Lord of The Rings, The」。</string>
     <string name="action_edit_with_ellipsis">編輯於…</string>
-    <string name="error_import_csv_calibre">不支援 Calibre 的「comments」欄位。請把它從 CSV 檔案中刪掉。</string>
+    <string name="warning_import_csv_calibre">來自舊版 Calibre 的「comments」（評論）欄位可能會導致 CSV 檔案無效。如果遇到錯誤，通常在匯出前將 Calibre 更新至 9.10 或更高版本即可解決。或者，您也可以刪除檔案中的「comments」欄位，然後重新嘗試匯入。</string>
 </resources>

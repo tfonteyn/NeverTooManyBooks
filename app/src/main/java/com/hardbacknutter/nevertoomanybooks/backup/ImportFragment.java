@@ -339,42 +339,44 @@ public class ImportFragment
         //noinspection DataFlowIssue
         vb.archiveName.setText(vm.getSourceDisplayName(getContext()));
 
-        vm.getMetaData().ifPresentOrElse(
-                metaData -> {
-                    final StringJoiner info = new StringJoiner("\n");
-                    final Context context = getContext();
-
-                    @Nullable
-                    final CsvFormat csvFormat = metaData.getData().getParcelable(CsvFormat.BKEY);
-                    if (csvFormat != null) {
-                        info.add(context.getString(R.string.name_colon_value,
-                                                   context.getString(R.string.lbl_archive_format),
-                                                   csvFormat.getLabel(context)));
-                    }
-
-                    metaData.getCreatedLocalDate().ifPresent(date -> info
-                            .add(DateUtils.displayDateTime(context, date)));
-
-                    metaData.getBookCount().ifPresent(count -> info
-                            .add(getString(R.string.name_colon_value,
-                                           getString(R.string.lbl_books),
-                                           String.valueOf(count))));
-
-                    metaData.getImageCount().ifPresent(count -> info
-                            .add(getString(R.string.name_colon_value,
-                                           getString(R.string.lbl_images),
-                                           String.valueOf(count))));
-
-                    vb.archiveContent.setText(info.toString());
-                    vb.archiveContent.setVisibility(View.VISIBLE);
-
-                    updateUpdateOptionRadioButtons();
-                },
-                // Hide all meta-data
-                () -> vb.archiveContent.setVisibility(View.INVISIBLE)
-        );
+        vm.getMetaData().ifPresentOrElse(this::updateUpdateOptionRadioButtons,
+                                         () -> vb.archiveContent.setVisibility(View.INVISIBLE));
 
         vb.getRoot().setVisibility(View.VISIBLE);
+    }
+
+    private void updateUpdateOptionRadioButtons(@NonNull final ArchiveMetaData metaData) {
+        final StringJoiner info = new StringJoiner("\n");
+        final Context context = getContext();
+
+        //noinspection deprecation
+        @Nullable
+        final CsvFormat csvFormat = metaData.getData().getParcelable(CsvFormat.BKEY);
+        if (csvFormat != null) {
+            //noinspection DataFlowIssue
+            info.add(context.getString(R.string.name_colon_value,
+                                       context.getString(R.string.lbl_archive_format),
+                                       csvFormat.getLabel(context)));
+        }
+
+        //noinspection DataFlowIssue
+        metaData.getCreatedLocalDate().ifPresent(date -> info
+                .add(DateUtils.displayDateTime(context, date)));
+
+        metaData.getBookCount().ifPresent(count -> info
+                .add(getString(R.string.name_colon_value,
+                               getString(R.string.lbl_books),
+                               String.valueOf(count))));
+
+        metaData.getImageCount().ifPresent(count -> info
+                .add(getString(R.string.name_colon_value,
+                               getString(R.string.lbl_images),
+                               String.valueOf(count))));
+
+        vb.archiveContent.setText(info.toString());
+        vb.archiveContent.setVisibility(View.VISIBLE);
+
+        updateUpdateOptionRadioButtons();
     }
 
     private void updateUpdateOptionRadioButtons() {
@@ -396,25 +398,45 @@ public class ImportFragment
             return;
         }
 
-        if (vm.getEncoding() == ArchiveReaderEncoding.Csv) {
-            // CsvArchiveReader will make a database backup before importing.
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.warning_24px)
-                    .setTitle(R.string.lbl_import_books)
-                    .setMessage(R.string.warning_import_csv)
-                    .setNegativeButton(R.string.cancel,
-                                       (d, w) -> {
-                                           backPressedCallback.setEnabled(false);
-                                           //noinspection DataFlowIssue
-                                           getActivity().finish();
-                                       })
-                    .setPositiveButton(R.string.ok, (d, w) -> startImport())
-                    .create()
-                    .show();
-        } else {
+        // Anything but CSV is considered safe.
+        // This includes BC backup archives which contain a CSV books file.
+        final Optional<CsvFormat> oCsvFormat = vm.getCsvFormat();
+        if (oCsvFormat.isEmpty()) {
             startImport();
+            return;
         }
+
+        final CsvFormat csvFormat = oCsvFormat.get();
+
+        // Goodreads is typically a safe format.
+        if (csvFormat == CsvFormat.Goodreads) {
+            startImport();
+            return;
+        }
+
+        @StringRes
+        final int msg;
+        if (csvFormat == CsvFormat.Calibre) {
+            msg = R.string.warning_import_csv_calibre;
+        } else {
+            // Both BC and Unknown
+            msg = R.string.warning_import_csv_bc;
+        }
+
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.warning_24px)
+                .setTitle(R.string.lbl_import_books)
+                .setMessage(msg)
+                .setNegativeButton(R.string.cancel,
+                                   (d, w) -> {
+                                       backPressedCallback.setEnabled(false);
+                                       //noinspection DataFlowIssue
+                                       getActivity().finish();
+                                   })
+                .setPositiveButton(R.string.ok, (d, w) -> startImport())
+                .create()
+                .show();
     }
 
     private void startImport() {

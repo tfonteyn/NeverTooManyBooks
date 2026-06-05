@@ -422,7 +422,7 @@
     <string name="lbl_author_role_contributor">Contribuidor</string>
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
     <string name="option_storage_select">Usar “%1$s”</string>
-    <string name="warning_import_csv">AVISO: A importação de dados pode atualizar os registos de livros existentes com novas informações se a coluna UUID não estiver presente e o ID no ficheiro de importação for o mesmo que um ID existente. Normalmente, isto não tem qualquer problema se tiver alterado um campo num ficheiro exportado. Se tiver criado um novo registo de livro ou estiver a importar os livros de outra pessoa, certifique-se de que o campo UUID está presente ou que o campo ID está em branco.</string>
+    <string name="warning_import_csv_bc">AVISO: A importação de dados pode atualizar os registos de livros existentes com novas informações se a coluna UUID não estiver presente e o ID no ficheiro de importação for o mesmo que um ID existente. Normalmente, isto não tem qualquer problema se tiver alterado um campo num ficheiro exportado. Se tiver criado um novo registo de livro ou estiver a importar os livros de outra pessoa, certifique-se de que o campo UUID está presente ou que o campo ID está em branco.</string>
     <string name="confirm_delete_series_from_x_books">Excluir a série “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão excluídos. Considere editar a série e alterar o nome da série para o de outra série para preservar estes dados.</string>
     <string name="confirm_delete_publisher_from_x_books">Excluir o editor “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão excluídos. Considere editar o editor e alterar o nome do editor para o de outro editor para preservar estes dados.</string>
     <string name="warning_image_copy_failed">A imagem não pôde ser copiada.</string>
@@ -933,5 +933,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Ao salvar, os títulos que sejam idênticos, exceto pela formatação, serão mesclados (ex: “O Senhor dos Anéis” e “Senhor dos Anéis, O”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Ao salvar, os títulos que sejam idênticos, exceto pela formatação, não serão mesclados (ex: “O Senhor dos Anéis” e “Senhor dos Anéis, O”).</string>
     <string name="action_edit_with_ellipsis">Editar com…</string>
-    <string name="error_import_csv_calibre">A coluna “comments” do Calibre não é suportada. Por favor, remove-a do ficheiro CSV.</string>
+    <string name="warning_import_csv_calibre">A coluna “comments” de versões mais antigas do Calibre pode originar ficheiros CSV inválidos. Se deparar com um erro, atualizar o Calibre para a versão 9.10 ou posterior antes de exportar costuma resolver o problema. Alternativamente, pode remover a coluna “comments” do seu ficheiro e tentar a importação novamente.</string>
 </resources>

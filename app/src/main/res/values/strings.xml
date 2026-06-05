@@ -325,10 +325,7 @@
     <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
     <!-- CSV import fails: the number of columns in a line does not match the number of headers -->
     <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
-    <!-- CSV import fails:  the "comments" column can have CR/LF which break the CSV format.
-         Translators: the "comments" string is always in English in the CSV file.
-                      Leave it untranslated. -->
-    <string name="error_import_csv_calibre">The Calibre “comments” column is not supported. Please remove it from the CSV file.</string>
+
     <!-- import fails due to a record missing a mandatory column/field -->
     <string name="error_record_must_contain_column">Record must contain a field named “%1$s”.</string>
     <!-- generic backup failure -->
@@ -340,12 +337,20 @@
     <!-- endregion -->
     <!-- region ========== Warning messages. -->
     <!-- Importing a CSV book list; Warning shown BEFORE the import is started. -->
-    <string name="warning_import_csv">WARNING: Importing data may update existing book records with new information if the UUID column is not present and the ID in the import file is the same as an existing ID. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else’s books, ensure the UUID field is present or the ID field is blank.</string>
+    <string name="warning_import_csv_bc">WARNING: Importing data may update existing book records with new information if the UUID column is not present and the ID in the import file is the same as an existing ID. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else’s books, ensure the UUID field is present or the ID field is blank.</string>
+    <!-- Importing a CSV book list; Warning shown BEFORE the import is started.
+         The Calibre "comments" column MAY have CR/LF which break the CSV format.
+
+         Translators: the "comments" string is always in English in the CSV file.
+                      Leave it untranslated. -->
+    <string name="warning_import_csv_calibre">The “comments” column from older versions of Calibre can cause invalid CSV files. If you run into an error, updating Calibre to 9.10 or later before exporting usually fixes it. Alternatively, you can remove the “comments” column from your file and try importing again.</string>
     <!-- Importing a CSV book list; an individual line failed: report the exact position. -->
     <string name="warning_import_csv_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
-    <!-- Importing a list of books partially failed. This text is displayed as a header above a list of failures. -->
+    <!-- Importing a CSV book list; Partially failure.
+         This text is displayed as a header above a list of failures. -->
     <string name="warning_import_failed_for_these_books">Import failed for these books/rows:</string>
-    <!-- Importing a book list partially failed with more than 10 lines failing. Only 10 line numbers will be listed.
+    <!-- Importing a CSV book list; Partial failure with more than 10 lines failing.
+         Only 10 line numbers will be listed.
          This text is displayed as a footer below a list of failures stating how many more lines failed. -->
     <string name="warning_import_failed_for_these_books_and_more">and %1$d more.</string>
     <!-- Displayed when the user starts a backup/export, but after applying
@@ -702,7 +707,7 @@
     <!-- -book format -->
     <string name="book_format_unknown">Unknown</string>
     <!--  book format - mostly used for magazines like 'Reader's Digest'
-          A lot of english monthly magazines use the same format.
+          A lot of English monthly magazines use the same format.
           In French this is semi-officially known as "Petit format" or "Small size". -->
     <string name="book_format_digest">Digest</string>
     <!--  book format - string used if a website indicates it's an eBook -->

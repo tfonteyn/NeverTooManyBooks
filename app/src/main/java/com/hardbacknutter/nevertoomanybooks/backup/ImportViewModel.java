@@ -27,8 +27,10 @@ import androidx.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvFormat;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
@@ -85,9 +87,27 @@ public class ImportViewModel
      * @return encoding
      */
     @NonNull
-    public ArchiveReaderEncoding getEncoding() {
+    ArchiveReaderEncoding getEncoding() {
         Objects.requireNonNull(importHelper, ERROR_IMPORT_HELPER);
         return importHelper.getEncoding();
+    }
+
+    /**
+     * Get the {@link CsvFormat} if the archive encoding is {@link ArchiveReaderEncoding#Csv}.
+     * <p>
+     * This will only return a valid result after the metadata for the archive was read.
+     *
+     * @return format
+     */
+    @NonNull
+    Optional<CsvFormat> getCsvFormat() {
+        Objects.requireNonNull(importHelper, ERROR_IMPORT_HELPER);
+        if (importHelper.getEncoding() == ArchiveReaderEncoding.Csv) {
+            //noinspection deprecation
+            return importHelper.getMetaData()
+                               .map(md -> md.getData().getParcelable(CsvFormat.BKEY));
+        }
+        return Optional.empty();
     }
 
     @Override

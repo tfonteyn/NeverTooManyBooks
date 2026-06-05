@@ -111,7 +111,7 @@ public class CsvArchiveReader
         }
 
         final List<String> csvColumnNames = CsvRecordReader.parse(context, 0, header);
-        csvFormat = CsvFormat.guess(context, header, csvColumnNames);
+        csvFormat = CsvFormat.guess(header, csvColumnNames);
 
         final String lastUpdateColumnName = csvFormat.getLastUpdateColumnName();
         final boolean supportsUpdates =

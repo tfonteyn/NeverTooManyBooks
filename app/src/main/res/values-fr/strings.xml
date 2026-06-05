@@ -747,7 +747,7 @@
     <string name="warning_image_copy_failed">L’image n’a pas pu être copiée.</string>
     <string name="warning_image_not_found">L’image est introuvable.</string>
     <string name="warning_immediate_global_changes">ATTENTION : Les modifications enregistrées sont instantanément appliquées à tous les livres.</string>
-    <string name="warning_import_csv">ATTENTION : L’importation de données peut mettre à jour des enregistrements de livres existants avec de nouvelles informations si la colonne UUID n’est pas présente et que l’ID dans le fichier d’importation est le même qu’un ID existant. Cela ne pose généralement pas de problème si vous avez modifié un champ dans un fichier exporté. Si vous avez créé un nouvel enregistrement de livre ou si vous importez les livres de quelqu’un d’autre, assurez-vous que le champ UUID est présent ou que le champ ID est vide.</string>
+    <string name="warning_import_csv_bc">ATTENTION : L’importation de données peut mettre à jour des enregistrements de livres existants avec de nouvelles informations si la colonne UUID n’est pas présente et que l’ID dans le fichier d’importation est le même qu’un ID existant. Cela ne pose généralement pas de problème si vous avez modifié un champ dans un fichier exporté. Si vous avez créé un nouvel enregistrement de livre ou si vous importez les livres de quelqu’un d’autre, assurez-vous que le champ UUID est présent ou que le champ ID est vide.</string>
     <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">et %1$d autres.</string>
     <string name="warning_import_failed_for_these_books">L’importation a échoué pour ces livres/rangs :</string>
@@ -935,5 +935,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Lors de l’enregistrement, les titres identiques à l’exception du formatage seront fusionnés (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
     <string name="pt_deduplication_title_matching_summary_off">Lors de l’enregistrement, les titres identiques à l’exception du formatage ne seront pas fusionnés (par ex., « Le Seigneur des Anneaux » et « Seigneur des Anneaux, Le »).</string>
     <string name="action_edit_with_ellipsis">Modifier avec…</string>
-    <string name="error_import_csv_calibre">La colonne « comments » de Calibre n’est pas prise en charge. Supprime-la du fichier CSV, s’il te plaît.</string>
+    <string name="warning_import_csv_calibre">La colonne « comments » des anciennes versions de Calibre peut générer des fichiers CSV non valides. Si vous rencontrez une erreur, mettre à jour Calibre vers la version 9.10 ou ultérieure avant l’exportation résout généralement le problème. Alternativement, vous pouvez supprimer la colonne « comments » de votre fichier et réessayer l’importation.</string>
 </resources>

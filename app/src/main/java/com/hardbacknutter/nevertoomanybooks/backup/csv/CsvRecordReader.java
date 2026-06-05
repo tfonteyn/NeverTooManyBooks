@@ -349,7 +349,7 @@ public class CsvRecordReader
         // If we did not get the format in the constructor,
         // try and guess where this CSV file might have come from.
         if (csvFormat == null) {
-            csvFormat = CsvFormat.guess(context, header, csvColumnNames);
+            csvFormat = CsvFormat.guess(header, csvColumnNames);
         }
 
         // One book == One row. We start after the headings row.

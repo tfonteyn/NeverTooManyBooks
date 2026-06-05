@@ -756,7 +756,7 @@
     <string name="warning_image_copy_failed">Obrázek nelze zkopírovat.</string>
     <string name="warning_image_not_found">Obrázek nebyl nalezen.</string>
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Uložené změny se okamžitě použijí na všechny knihy.</string>
-    <string name="warning_import_csv">UPOZORNĚNÍ: Import dat může aktualizovat existující záznamy knih novými informacemi, pokud není přítomen sloupec UUID a ID v importním souboru je stejné jako existující ID. To je obvykle v pořádku, pokud jste změnili pole v exportovaném souboru. Pokud jste vytvořili nový záznam knihy nebo importujete knihy někoho jiného, ujistěte se, že je pole UUID přítomno nebo že je pole ID prázdné.</string>
+    <string name="warning_import_csv_bc">UPOZORNĚNÍ: Import dat může aktualizovat existující záznamy knih novými informacemi, pokud není přítomen sloupec UUID a ID v importním souboru je stejné jako existující ID. To je obvykle v pořádku, pokud jste změnili pole v exportovaném souboru. Pokud jste vytvořili nový záznam knihy nebo importujete knihy někoho jiného, ujistěte se, že je pole UUID přítomno nebo že je pole ID prázdné.</string>
     <string name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">a %1$d dalších.</string>
     <string name="warning_import_failed_for_these_books">Import těchto knih/řádků se nezdařil:</string>
@@ -953,5 +953,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Pouze pro jazyky, které používají členy. Anglický příklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="pt_deduplication_title_matching_summary_off">Pouze pro jazyky, které používají členy. Anglický příklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="action_edit_with_ellipsis">Upravit v aplikaci…</string>
-    <string name="error_import_csv_calibre">Sloupec „comments“ z Calibre nepodporujeme. Odstraňte ho prosím ze souboru CSV.</string>
+    <string name="warning_import_csv_calibre">Sloupec „comments“ (komentáře) ze starších verzí programu Calibre může způsobit neplatnost souborů CSV. Pokud narazíte na chybu, obvykle pomůže aktualizace programu Calibre na verzi 9.10 nebo novější před exportem. Případně můžete sloupec „comments“ ze souboru odebrat a zkusit import opakovat.</string>
 </resources>

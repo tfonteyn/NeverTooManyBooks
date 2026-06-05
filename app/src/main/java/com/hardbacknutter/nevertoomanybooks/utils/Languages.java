@@ -480,7 +480,7 @@ public class Languages {
     /**
      * Check if the device or user Locales has the given language enabled.
      * <p>
-     * Non-english sites are by default only enabled if either the device or
+     * Non-English sites are by default only enabled if either the device or
      * this app has the specified language enabled.
      * The user can still enable/disable them at will of course.
      *

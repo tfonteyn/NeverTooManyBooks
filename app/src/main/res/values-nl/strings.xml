@@ -756,7 +756,7 @@
     <string name="warning_image_copy_failed">Afbeelding kon niet gekopieerd worden.</string>
     <string name="warning_image_not_found">Afbeelding werd niet gevonden.</string>
     <string name="warning_immediate_global_changes">WAARSCHUWING: Opgeslagen wijzigingen worden direct toegepast op alle boeken.</string>
-    <string name="warning_import_csv">WAARSCHUWING: Het importeren van gegevens kan bestaande boekrecords bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de ID in het importbestand dezelfde is als een bestaande ID. Dit is meestal prima als je een veld in een geëxporteerd bestand hebt gewijzigd. Als je een nieuwe boekrecord hebt gemaakt of de boeken van iemand anders importeert, moet je ervoor zorgen dat het UUID-veld aanwezig is of dat het ID-veld leeg is.</string>
+    <string name="warning_import_csv_bc">WAARSCHUWING: Het importeren van gegevens kan bestaande boekrecords bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de ID in het importbestand dezelfde is als een bestaande ID. Dit is meestal prima als je een veld in een geëxporteerd bestand hebt gewijzigd. Als je een nieuwe boekrecord hebt gemaakt of de boeken van iemand anders importeert, moet je ervoor zorgen dat het UUID-veld aanwezig is of dat het ID-veld leeg is.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">en nog %1$d anderen.</string>
     <string name="warning_import_failed_for_these_books">Importeren is mislukt voor deze boeken/rijen:</string>
@@ -922,5 +922,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Bij het opslaan worden titels die identiek zijn, afgezien van de opmaak, samengevoegd (bijv. „De schat van Beersel” en „schat van Beersel, De”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Bij het opslaan worden titels die identiek zijn, afgezien van de opmaak, niet samengevoegd (bijv. „De schat van Beersel” en „schat van Beersel, De”).</string>
     <string name="action_edit_with_ellipsis">Bewerken met…</string>
-    <string name="error_import_csv_calibre">De Calibre-kolom „comments” wordt niet ondersteund. Verwijder ze a.u.b. uit het CSV-bestand.</string>
+    <string name="warning_import_csv_calibre">De kolom „comments” uit oudere versies van Calibre kan ongeldige CSV-bestanden veroorzaken. Als u een foutmelding krijgt, lost het bijwerken van Calibre naar versie 9.10 of nieuwer vóór het exporteren dit meestal op. Als alternatief kunt u de kolom „comments” uit uw bestand verwijderen en de import opnieuw proberen.</string>
 </resources>

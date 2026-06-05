@@ -664,7 +664,7 @@
     <string name="error_import_csv_line">Neznáma chyba v riadku %1$d</string>
     <string name="error_import_csv_line_to_long">Príliš dlhý riadok (riadok=%1$d, dĺžka=%2$d)</string>
     <string name="warning_enable_at_least_1_website">Povoľte aspoň jednu webovú stránku pre každú kategóriu.</string>
-    <string name="warning_import_csv">UPOZORNENIE: Import údajov môže aktualizovať existujúce záznamy kníh novými informáciami, ak stĺpec UUID nie je prítomný a ID v importovanom súbore je rovnaké ako existujúce ID. Zvyčajne je to v poriadku, ak ste zmenili pole v exportovanom súbore. Ak ste vytvorili nový záznam knihy alebo importujete knihy niekoho iného, uistite sa, že pole UUID je prítomné alebo je pole ID prázdne.</string>
+    <string name="warning_import_csv_bc">UPOZORNENIE: Import údajov môže aktualizovať existujúce záznamy kníh novými informáciami, ak stĺpec UUID nie je prítomný a ID v importovanom súbore je rovnaké ako existujúce ID. Zvyčajne je to v poriadku, ak ste zmenili pole v exportovanom súbore. Ak ste vytvorili nový záznam knihy alebo importujete knihy niekoho iného, uistite sa, že pole UUID je prítomné alebo je pole ID prázdne.</string>
     <string name="progress_msg_searching">Vyhľadáva sa…</string>
     <string name="warning_cannot_delete_only_bookshelf">Máš iba jednu policu na knihy, preto ju nemôžeš odstrániť.</string>
     <string name="warning_already_in_list">Už je v zozname!</string>
@@ -942,5 +942,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="pt_deduplication_title_matching_summary_off">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="action_edit_with_ellipsis">Upraviť pomocou…</string>
-    <string name="error_import_csv_calibre">Stĺpec „comments“ z Calibre nie je podporovaný. Odstráňte ho prosím zo súboru CSV.</string>
+    <string name="warning_import_csv_calibre">Stĺpec „comments“ zo starších verzií programu Calibre môže spôsobiť neplatnosť súborov CSV. Ak narazíte na chybu, zvyčajne pomôže aktualizácia programu Calibre na verziu 9.10 alebo novšiu pred exportom. Prípadne môžete stĺpec „comments“ zo svojho súboru odstrániť a skúsiť import znova.</string>
 </resources>

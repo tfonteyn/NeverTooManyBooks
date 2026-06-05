@@ -70,7 +70,7 @@ class CsvRecordReaderGuessTest
     void guessBC()
             throws DataReaderException {
         final List<String> columns = CsvRecordReader.parse(context, 0, BC);
-        final CsvFormat format = CsvFormat.guess(context, BC, columns);
+        final CsvFormat format = CsvFormat.guess(BC, columns);
 
         assertEquals(CsvFormat.BC, format);
     }
@@ -79,7 +79,7 @@ class CsvRecordReaderGuessTest
     void guessGoodreads()
             throws DataReaderException {
         final List<String> columns = CsvRecordReader.parse(context, 0, GOODREADS);
-        final CsvFormat format = CsvFormat.guess(context, GOODREADS, columns);
+        final CsvFormat format = CsvFormat.guess(GOODREADS, columns);
 
         assertEquals(CsvFormat.Goodreads, format);
     }
@@ -88,7 +88,7 @@ class CsvRecordReaderGuessTest
     void guessCalibre()
             throws DataReaderException {
         final List<String> columns = CsvRecordReader.parse(context, 0, CALIBRE);
-        final CsvFormat format = CsvFormat.guess(context, CALIBRE, columns);
+        final CsvFormat format = CsvFormat.guess(CALIBRE, columns);
 
         assertEquals(CsvFormat.Calibre, format);
     }
@@ -97,7 +97,7 @@ class CsvRecordReaderGuessTest
     void guessCalibreWithComments()
             throws DataReaderException {
         final List<String> columns = CsvRecordReader.parse(context, 0, CALIBRE_WITH_COMMENTS);
-        final CsvFormat format = CsvFormat.guess(context, CALIBRE_WITH_COMMENTS, columns);
+        final CsvFormat format = CsvFormat.guess(CALIBRE_WITH_COMMENTS, columns);
 
         assertEquals(CsvFormat.Calibre, format);
     }

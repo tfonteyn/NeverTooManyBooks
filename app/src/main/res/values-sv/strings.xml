@@ -868,7 +868,7 @@
     <string name="warning_image_copy_failed">Bilden kunde inte kopieras.</string>
     <string name="warning_image_not_found">Bilden kunde inte hittas.</string>
     <string name="warning_immediate_global_changes">VARNING: Sparade ändringar tillämpas omedelbart på alla böcker.</string>
-    <string name="warning_import_csv">VARNING: Importering av data kan uppdatera befintliga bokposter med ny information om UUID-kolumnen saknas och ID i importfilen är samma som ett befintligt ID. Detta är oftast okej om du ändrat ett fält i en exporterad fil. Om du skapat en ny bokpost eller importerar någon annans böcker, se till att UUID-fältet finns eller att ID-fältet är tomt.</string>
+    <string name="warning_import_csv_bc">VARNING: Importering av data kan uppdatera befintliga bokposter med ny information om UUID-kolumnen saknas och ID i importfilen är samma som ett befintligt ID. Detta är oftast okej om du ändrat ett fält i en exporterad fil. Om du skapat en ny bokpost eller importerar någon annans böcker, se till att UUID-fältet finns eller att ID-fältet är tomt.</string>
     <string name="warning_import_csv_unescaped_quote">Omarkerat citattecken i rad %1$d, position %2$d</string>
     <string name="warning_import_failed_for_these_books">Importen misslyckades för dessa böcker/rader:</string>
     <string name="warning_import_failed_for_these_books_and_more">och %1$d fler.</string>
@@ -925,5 +925,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Vid sparning kommer titlar som är identiska förutom formatering att slås samman (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Vid sparning kommer titlar som är identiska förutom formatering inte att slås samman (t.ex. ”Sagan om ringen” och ”Sagan om ringen, Den”).</string>
     <string name="action_edit_with_ellipsis">Redigera med…</string>
-    <string name="error_import_csv_calibre">Calibre-kolumnen ”comments” stöds inte. Ta bort den från CSV-filen, tack.</string>
+    <string name="warning_import_csv_calibre">Kolumnen ”comments” från äldre versioner av Calibre kan orsaka ogiltiga CSV-filer. Om du stöter på ett fel löser det sig oftast genom att uppdatera Calibre till version 9.10 eller senare innan du exporterar. Alternativt kan du ta bort kolumnen ”comments” från din fil och försöka importera igen.</string>
 </resources>

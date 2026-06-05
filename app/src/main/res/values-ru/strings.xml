@@ -756,7 +756,7 @@
     <string name="warning_image_copy_failed">Изображение не может быть скопировано.</string>
     <string name="warning_image_not_found">Изображение не может быть найдено.</string>
     <string name="warning_immediate_global_changes">ВНИМАНИЕ: Сохраненные изменения мгновенно применяются ко всем книгам.</string>
-    <string name="warning_import_csv">ПРЕДУПРЕЖДЕНИЕ: Импорт данных может обновить существующие записи о книгах новой информацией, если столбец UUID отсутствует, а идентификатор в файле импорта совпадает с существующим идентификатором. Обычно это нормально, если вы изменили какое-либо поле в экспортированном файле. Если вы создали новую запись о книге или импортируете чужие книги, убедитесь, что поле UUID присутствует или поле ID пустое.</string>
+    <string name="warning_import_csv_bc">ПРЕДУПРЕЖДЕНИЕ: Импорт данных может обновить существующие записи о книгах новой информацией, если столбец UUID отсутствует, а идентификатор в файле импорта совпадает с существующим идентификатором. Обычно это нормально, если вы изменили какое-либо поле в экспортированном файле. Если вы создали новую запись о книге или импортируете чужие книги, убедитесь, что поле UUID присутствует или поле ID пустое.</string>
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">и еще %1$d.</string>
     <string name="warning_import_failed_for_these_books">Для этих книг/рядов импорт не удался:</string>
@@ -954,5 +954,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The».</string>
     <string name="pt_deduplication_title_matching_summary_off">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The».</string>
     <string name="action_edit_with_ellipsis">Изменить с помощью…</string>
-    <string name="error_import_csv_calibre">Колонка «comments» из Calibre не поддерживается. Пожалуйста, удали её из CSV-файла.</string>
+    <string name="warning_import_csv_calibre">Колонка «comments» из старых версий Calibre может привести к созданию некорректных файлов CSV. Если вы столкнулись с ошибкой, обновление Calibre до версии 9.10 или более поздней перед экспортом обычно решает проблему. Кроме того, вы можете удалить колонку «comments» из своего файла и повторить импорт.</string>
 </resources>
