@@ -1,15 +1,3 @@
-Draft notes for next version:
-
-### 7.9.1
-
-NEW:
-
-FIXES:
-
-REMOVED:
-
-<hr style="border:1px solid blue;">
-
 Supported Android versions:
 
 * v2.1.0 requires Android 8.0 (API 26)
