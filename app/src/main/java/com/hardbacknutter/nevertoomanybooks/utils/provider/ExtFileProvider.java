@@ -90,10 +90,9 @@ import static org.xmlpull.v1.XmlPullParser.START_TAG;
  * Current version:
  * https://github.com/androidx/androidx/blob/androidx-main/core/core/src/main/java/androidx/core/content/FileProvider.java
  * <p>
- * Changes is this file have been surrounded with EXTFILEPROVIDER tags.
+ * Changes in this file have been surrounded with EXTFILEPROVIDER tags.
  * <p>
- * <p>
- * <p>
+ * ############################################################################################
  * <p>
  * FileProvider is a special subclass of {@link ContentProvider} that facilitates secure sharing
  * of files associated with an app by creating a <code>content://</code> {@link Uri} for a file

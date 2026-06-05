@@ -171,7 +171,7 @@ public class Upgrade {
 
     /**
      * Adds {@link CalibreCustomField}s which were added after the initial app release.
-     *
+     * <p>
      * FIXME: handle calibre custom fields the same as we do for new Identifiers
      */
     private void addNewCalibreCustomFields() {

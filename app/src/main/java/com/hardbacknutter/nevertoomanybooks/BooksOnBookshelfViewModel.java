@@ -547,7 +547,7 @@ public class BooksOnBookshelfViewModel
      * @param bookshelfId of the {@link Bookshelf}
      */
     void selectBookshelf(@NonNull final Context context,
-                         @IntRange(from = 0) final long bookshelfId) {
+                         @IntRange(from = Bookshelf.ALL_BOOKS) final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
         if (bookshelfId == 0) {

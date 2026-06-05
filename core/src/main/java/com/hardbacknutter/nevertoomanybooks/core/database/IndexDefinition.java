@@ -88,7 +88,7 @@ public class IndexDefinition {
      * @return name
      */
     @NonNull
-    public String getNameSuffix() {
+    String getNameSuffix() {
         return nameSuffix;
     }
 
@@ -159,6 +159,7 @@ public class IndexDefinition {
         return "IndexDefinition{"
                + "table=" + table
                + ", name=`" + name + '`'
+               + ", nameSuffix=`" + nameSuffix + '`'
                + ", unique=" + unique
                + ", domains=" + domains
                + "}";

@@ -63,7 +63,7 @@ public class CalibreCustomFieldDaoImpl
 
     /**
      * Run at installation time a set of default fields.
-     *
+     * <p>
      * NEWTHINGS: adding a Calibre custom field
      *
      * @param db Underlying database

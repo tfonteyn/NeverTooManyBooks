@@ -115,7 +115,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * An Author should return the Locale as set by the user for that Author (not implemented yet),
  * This should normally be the primary language the author writes in.
- * i.e. usually the author's native language, but some authors will e.g. use english/French...
+ * i.e. usually the author's native language, but some authors will e.g. use English/French...
  * to reach a larger market without translation needs.
  * If not set, then the Locale of the first book (oldest copyright? oldest 'added'?) of that author.
  * <p>
