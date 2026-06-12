@@ -85,11 +85,16 @@ public class FlexBottomSheetDialogFragment
         //   when the onscreen keyboard pops up.
         // SOFT_INPUT_ADJUST_RESIZE
         //   Ensures the BottomSheet sits above the keyboard.
-        //noinspection DataFlowIssue
+        //
+        // Right... SOFT_INPUT_ADJUST_RESIZE is deprecated, and we're told
+        // to use Window.setDecorFitsSystemWindows(false) which is API 30,
+        // .. and is deprecated/empty.
+        // In theory setting an insets listener on the root view (as we do
+        // above) is enough. Sigh...
+        //noinspection DataFlowIssue,deprecation
         dialog.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
 
         initDragHandle(view);
         initToolbar(view);
