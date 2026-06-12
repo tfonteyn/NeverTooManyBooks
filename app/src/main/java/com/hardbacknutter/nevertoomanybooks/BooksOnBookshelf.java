@@ -1741,11 +1741,18 @@ public class BooksOnBookshelf
         // can trigger an Activity recreation and we could get here
         // during such recreation... which would crash the fragment transaction.
         if (!(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))) {
-            // hence, we bail out if we're not in the 'started' state
             return;
         }
 
         final FragmentManager fm = getSupportFragmentManager();
+
+        // After a deep-sleep of the device, we can hit
+        // java.lang.IllegalStateException: FragmentManager has been destroyed
+        // Hence, check if the FragmentManager has already been destroyed
+        // or if the Activity is finishing
+        if (fm.isDestroyed() || isFinishing() || isDestroyed()) {
+            return;
+        }
 
         Fragment fragment = fm.findFragmentByTag(ShowBookDetailsFragment.TAG);
         if (fragment == null) {
@@ -1753,10 +1760,13 @@ public class BooksOnBookshelf
             fm.beginTransaction()
               .setReorderingAllowed(true)
               .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
-              .commit();
+              // As a secondary guard against the "FragmentManager has been destroyed"
+              // allow the transaction to be abandoned if the fm was destroyed between
+              // our above check and this line...   Android... URG....
+              .commitAllowingStateLoss();
         } else {
-            // In embedded mode, the above ShowBookDetailsFragment will have created its vm
-            // in the Activity scope
+            // In embedded mode, the above ShowBookDetailsFragment will
+            // have created its vm in the Activity scope
             final ShowBookDetailsViewModel childVm = new ViewModelProvider(this)
                     .get(ShowBookDetailsViewModel.class);
             childVm.displayBook(bookId);
