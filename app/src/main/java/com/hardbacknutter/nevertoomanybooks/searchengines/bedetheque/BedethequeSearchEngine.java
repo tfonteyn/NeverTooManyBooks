@@ -303,8 +303,7 @@ public class BedethequeSearchEngine
 
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book,
-                             validIsbn);
+            parseMultiResult(context, document, fetchCovers, book, isbn);
         }
         return book;
     }
@@ -344,7 +343,7 @@ public class BedethequeSearchEngine
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book,
-                                  @Nullable final String searchedIsbn)
+                                  @Nullable final ISBN searchedIsbn)
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
@@ -366,13 +365,13 @@ public class BedethequeSearchEngine
     /**
      * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
-     * @param context         Current context
-     * @param document        to parse
-     * @param fetchCovers     Set array indexes to {@code true} to fetch a cover for that index.
-     *                        Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
-     * @param searchedIsbnStr the ISBN the user searched for;
-     *                        Will be {@code null} if the search was done by SID
-     * @param book            to update
+     * @param context      Current context
+     * @param document     to parse
+     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
+     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param searchedIsbn the ISBN the user searched for;
+     *                     Will be {@code null} if the search was done by SID
+     * @param book         to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -385,7 +384,7 @@ public class BedethequeSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @Nullable final String searchedIsbnStr,
+                      @Nullable final ISBN searchedIsbn,
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
@@ -406,12 +405,11 @@ public class BedethequeSearchEngine
 
         boolean isMainEdition = true;
 
-        if (searchedIsbnStr == null) {
+        if (searchedIsbn == null) {
             // search by SID, always/only the main edition
             parseLabels(context, book, mainSection);
         } else {
             // search by ISBN
-            final ISBN searchedIsbn = new ISBN(searchedIsbnStr, true);
             // check if the main edition is an exact match
             if (matches(mainSection, searchedIsbn)) {
                 parseLabels(context, book, mainSection);
@@ -463,10 +461,10 @@ public class BedethequeSearchEngine
     }
 
     private void parseEditionDetails(@NonNull final Context context,
-                                   @NonNull final Element mainSection,
-                                   @NonNull final Element albumMain,
-                                   @NonNull final Element infos,
-                                   @NonNull final Book book) {
+                                     @NonNull final Element mainSection,
+                                     @NonNull final Element albumMain,
+                                     @NonNull final Element infos,
+                                     @NonNull final Book book) {
 
         // The title and series nr is a heading
         final Element titleElement = albumMain.selectFirst("h3.titre");
