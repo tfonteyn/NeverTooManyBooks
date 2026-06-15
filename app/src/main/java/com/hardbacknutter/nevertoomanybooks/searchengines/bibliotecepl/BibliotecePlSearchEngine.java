@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -132,7 +133,8 @@ public class BibliotecePlSearchEngine
     private static final String SPAN_DATA_IPUB_SEARCH_T = "span[data-ipub-search=t]";
     private static final String SPAN_DATA_IPUB_SEARCH_W = "span[data-ipub-search=w]";
 
-    private static final String SEARCH_PREFIX_ISBN = "isbn:";
+    // The ISBN prefix also works for ISSN numbers.
+    private static final String SEARCH_PREFIX_ISBN_OR_ISSN = "isbn:";
     private static final String SEARCH_PREFIX_TITLE = "t:";
     private static final String SEARCH_PREFIX_PERSON = "o:";
     private static final String SEARCH_PREFIX_PUBLISHER = "w:";
@@ -220,10 +222,13 @@ public class BibliotecePlSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl() + SEARCH + SEARCH_PREFIX_ISBN + validIsbn;
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+
+        final String url = getHostUrl() + SEARCH + SEARCH_PREFIX_ISBN_OR_ISSN + validIsbn;
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
@@ -240,7 +245,6 @@ public class BibliotecePlSearchEngine
     @Override
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
-                       @Nullable final String code,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
@@ -262,9 +266,12 @@ public class BibliotecePlSearchEngine
             words.add(SEARCH_PREFIX_PUBLISHER).add(tmp);
         }
 
-        // hardcoded to isbn although this could also be "issn:"
-        if (code != null && !code.isEmpty()) {
-            words.add(SEARCH_PREFIX_ISBN).add(code);
+        final ISBN isbn = criteria.getIsbn();
+        if (isbn != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+            if (!code.isEmpty()) {
+                words.add(SEARCH_PREFIX_ISBN_OR_ISSN).add(code);
+            }
         }
 
         final Book book = new Book();

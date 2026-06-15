@@ -218,14 +218,13 @@ public class BookSearchCriteria {
         isbn = null;
     }
 
-    @NonNull
-    public Optional<ISBN> getIsbn() {
-        final ISBN tmpIsbn = internalGetIsbn();
-        return tmpIsbn == null ? Optional.empty() : Optional.of(tmpIsbn);
-    }
-
+    /**
+     * Get the ISBN criteria.
+     *
+     * @return ISBN; can be {@code null} if none
+     */
     @Nullable
-    private ISBN internalGetIsbn() {
+    public ISBN getIsbn() {
         if (isbnText.isEmpty()) {
             return null;
         }
@@ -250,7 +249,7 @@ public class BookSearchCriteria {
     }
 
     boolean hasValidIsbn() {
-        final ISBN tmpIsbn = internalGetIsbn();
+        final ISBN tmpIsbn = getIsbn();
         if (tmpIsbn == null) {
             return false;
         }
@@ -287,7 +286,7 @@ public class BookSearchCriteria {
     }
 
     /**
-     * Is there at last one sid.
+     * Check if there is at least one sid.
      *
      * @return flag
      */
@@ -295,11 +294,24 @@ public class BookSearchCriteria {
         return !sids.isEmpty();
     }
 
+    /**
+     * Add a sid to the criteria.
+     *
+     * @param engineId to set the sid for
+     * @param sid      to set
+     */
     public void addSid(@NonNull final EngineId engineId,
                        @NonNull final String sid) {
         sids.put(engineId, sid);
     }
 
+    /**
+     * Get the sid matching the given engine.
+     *
+     * @param engineId to get a sid for
+     *
+     * @return sid
+     */
     @NonNull
     public Optional<String> getSid(@NonNull final EngineId engineId) {
         final String s = sids.get(engineId);
@@ -354,7 +366,7 @@ public class BookSearchCriteria {
     }
 
     /**
-     * Simple concatenation of all the {@link SearchEngine.ByText} values into a single String.
+     * Simple concatenation of the simple text values into a single String.
      *
      * @param delimiter to use
      *

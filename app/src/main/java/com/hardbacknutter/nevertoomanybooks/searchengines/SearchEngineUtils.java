@@ -26,6 +26,9 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+
 public final class SearchEngineUtils {
 
     /** All non-rendering characters to REMOVE. */
@@ -173,5 +176,24 @@ public final class SearchEngineUtils {
         text = P3_WHITESPACE_REDUCTION.matcher(text).replaceAll(" ");
         // And keep only alphanumeric characters and the space
         return KEEP_PATTERN.matcher(text).replaceAll("");
+    }
+
+    /**
+     * Get the ISBN criteria as a formatted string.
+     *
+     * @param engineId for the required format
+     * @param isbn     to format
+     *
+     * @return formatted ISBN text
+     */
+    @NonNull
+    public static String formatIsbn(@NonNull final EngineId engineId,
+                                    @NonNull final ISBN isbn) {
+        //noinspection DataFlowIssue
+        if (engineId.getConfig().prefersIsbn10() && isbn.isIsbn10Compat()) {
+            return isbn.asText(CodeType.Isbn10);
+        } else {
+            return isbn.asText();
+        }
     }
 }

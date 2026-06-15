@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.xml.sax.SAXException;
@@ -217,11 +218,11 @@ public class KbNlSearchEngine
 
     @NonNull
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
-            throws StorageException,
-                   SearchException,
-                   CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
         final Book book = getBook(context, url);

@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -62,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -214,9 +216,11 @@ public class BnfSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws StorageException, SearchException, CredentialsException {
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final String url = getHostUrl() + String.format(SEARCH, validIsbn);
         return search(context, url, fetchCovers);
@@ -226,13 +230,17 @@ public class BnfSearchEngine
     @Override
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
-                       @Nullable final String code,
                        @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, CoverStorageException {
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
-        if (code != null && !code.isEmpty()) {
-            words.add(code);
+
+        final ISBN isbn = criteria.getIsbn();
+        if (isbn != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+            if (!code.isEmpty()) {
+                words.add(code);
+            }
         }
 
         // Sanity check

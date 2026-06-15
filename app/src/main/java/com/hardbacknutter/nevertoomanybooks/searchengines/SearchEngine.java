@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -277,7 +278,7 @@ public interface SearchEngine
          * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
-         * @param validIsbn   to search for, <strong>will</strong> be valid.
+         * @param validIsbn   to search for
          * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
@@ -292,7 +293,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book searchByIsbn(@NonNull Context context,
-                          @NonNull String validIsbn,
+                          @NonNull ISBN validIsbn,
                           @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -307,7 +308,7 @@ public interface SearchEngine
      * <strong>IMPORTANT</strong>: only use the default implementation
      * if the engine's implementation of {@link ByIsbn} supports searching for non-valid
      * ISBN codes as generic codes!
-     * Otherwise {@link #searchByBarcode(Context, String, boolean[])} <strong>MUST</strong>
+     * Otherwise {@link #searchByBarcode(Context, ISBN, boolean[])} <strong>MUST</strong>
      * be properly implemented.
      *
      * @see SearchBy#Barcode
@@ -320,27 +321,26 @@ public interface SearchEngine
          * Called by the {@link SearchCoordinator#search}.
          * <p>
          * The default implementation redirect to
-         * {@link ByIsbn#searchByIsbn(Context, String, boolean[])}
+         * {@link ByIsbn#searchByIsbn(Context, ISBN, boolean[])}
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
-         * @param barcode     to search for, <strong>will</strong> be valid.
+         * @param barcode     to search for
          * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @see CodeType
-         *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
          * @throws SearchException      on generic exceptions (wrapped) during search
+         * @see CodeType
          */
         @WorkerThread
         @NonNull
         default Book searchByBarcode(@NonNull final Context context,
-                                     @NonNull final String barcode,
+                                     @NonNull final ISBN barcode,
                                      @NonNull final boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -368,12 +368,13 @@ public interface SearchEngine
          * the criteria not usable. It <strong>MUST NOT</strong> throw in such a situation.
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
+         * <p>
+         * FIXME: GitHub #131 "ISBN: 01-001-86" allow searches with null/empty criteria
+         *  when there is an isbnStr
+         *  => must update code in ALL SearchEngines to allow this!
          *
          * @param context     Current context
-         * @param criteria    text strings to search for
-         * @param code        isbn, barcode or generic code to search for.
-         *                    The interpretation depends on the engine.
-         *                    Optional / not supported by all engines
+         * @param criteria    to search for
          * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
@@ -387,7 +388,6 @@ public interface SearchEngine
         @NonNull
         Book search(@NonNull Context context,
                     @NonNull BookSearchCriteria criteria,
-                    @Nullable String code,
                     @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,

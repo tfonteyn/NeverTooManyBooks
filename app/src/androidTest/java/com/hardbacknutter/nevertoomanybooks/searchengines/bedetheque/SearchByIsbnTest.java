@@ -24,6 +24,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -72,7 +73,7 @@ class SearchByIsbnTest
         // role=0b0: Role{}, realAuthor=null}}],
         // publisher_list=[Publisher{id=0, name=`Cinebook`}]}]
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, "9781849182089",
+                .searchByIsbn(context, new ISBN("9781849182089", true),
                               new boolean[]{false, false, false, false});
         assertNotNull(book);
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));

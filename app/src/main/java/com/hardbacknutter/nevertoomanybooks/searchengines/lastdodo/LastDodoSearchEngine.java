@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -265,7 +266,7 @@ public class LastDodoSearchEngine
      * @return dash formatted isbn
      */
     @NonNull
-    private static String formatIsbn(@Nullable final String s) {
+    private static String formatIsbnWithDashes(@Nullable final String s) {
         if (s == null) {
             return "";
 
@@ -305,14 +306,16 @@ public class LastDodoSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final Book book = new Book();
 
         // Searching on the ISBN REQUIRES the dashes between the digits.
-        final String url = getHostUrl() + String.format(SEARCH, formatIsbn(validIsbn));
+        final String url = getHostUrl() + String.format(SEARCH, formatIsbnWithDashes(validIsbn));
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -331,21 +334,24 @@ public class LastDodoSearchEngine
     @Override
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
-                       @Nullable final String code,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
-        if (code != null && !code.isEmpty()) {
-            // Check the code to be a valid ISBN, but...
-            if (new ISBN(code, true).isValid()) {
-                // searching on the ISBN REQUIRES the dashes between the digits.
-                // Hence, use the code specially formatted, and not the isbn.asText().
-                words.add(formatIsbn(code));
-            } else {
-                // Generic code
-                words.add(code);
+
+        final ISBN isbn = criteria.getIsbn();
+        if (isbn != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+            if (!code.isEmpty()) {
+                // Check the code to be a valid ISBN, but...
+                if (isbn.isValid()) {
+                    // Searching on the ISBN REQUIRES the dashes between the digits.
+                    words.add(formatIsbnWithDashes(code));
+                } else {
+                    // Generic code
+                    words.add(code);
+                }
             }
         }
 

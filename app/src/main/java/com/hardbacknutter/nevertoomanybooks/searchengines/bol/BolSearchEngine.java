@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -241,9 +242,11 @@ public class BolSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final String hostUrl = getHostUrl();
         final String country = getCountry();
@@ -269,14 +272,18 @@ public class BolSearchEngine
     @Override
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
-                       @Nullable final String code,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
-        if (code != null && !code.isEmpty()) {
-            words.add(code);
+
+        final ISBN isbn = criteria.getIsbn();
+        if (isbn != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+            if (!code.isEmpty()) {
+                words.add(code);
+            }
         }
 
         final Book book = new Book();

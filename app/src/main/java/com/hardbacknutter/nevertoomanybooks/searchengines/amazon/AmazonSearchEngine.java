@@ -451,14 +451,13 @@ public class AmazonSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Try to convert an ISBN13 to ISBN10 (i.e. the ASIN)
-        final ISBN tmp = new ISBN(validIsbn, true);
-        // If conversion is not possible, use the ISBN13 anyhow
-        final String asin = tmp.isIsbn10Compat() ? tmp.asText(CodeType.Isbn10) : validIsbn;
+        // If conversion is not possible, use the original format
+        final String asin = isbn.isIsbn10Compat() ? isbn.asText(CodeType.Isbn10) : isbn.asText();
 
         final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin);
         return genericSearch(context, url, fetchCovers);

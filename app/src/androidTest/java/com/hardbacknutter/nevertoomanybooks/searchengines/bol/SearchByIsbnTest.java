@@ -24,6 +24,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -64,7 +65,8 @@ class SearchByIsbnTest
             throws SearchException, CredentialsException, StorageException {
 
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, "9789056478193", new boolean[]{false, false, false, false});
+                .searchByIsbn(context, new ISBN("9789056478193", true),
+                              new boolean[]{false, false, false, false});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());

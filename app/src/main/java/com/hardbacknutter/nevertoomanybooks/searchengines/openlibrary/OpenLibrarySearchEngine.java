@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -66,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
@@ -315,9 +317,11 @@ public class OpenLibrarySearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final Book book = new Book();
 
@@ -331,14 +335,18 @@ public class OpenLibrarySearchEngine
     @Override
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
-                       @Nullable final String code,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
-        if (code != null && !code.isEmpty()) {
-            words.add(code);
+
+        final ISBN isbn = criteria.getIsbn();
+        if (isbn != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+            if (!code.isEmpty()) {
+                words.add(code);
+            }
         }
 
         final Book book = new Book();

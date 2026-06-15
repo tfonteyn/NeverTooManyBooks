@@ -283,7 +283,7 @@ class BookSearch {
         final Collection<EngineId> sitesWithoutIsbn = new ArrayList<>();
 
         final boolean strictIsbn = criteria.isStrictIsbn();
-        final Optional<ISBN> oIsbn = criteria.getIsbn();
+        final ISBN isbn = criteria.getIsbn();
 
         activeEngines.forEach(engineId -> {
             // no synchronisation needed, at this point all other threads have finished.
@@ -301,8 +301,7 @@ class BookSearch {
                         // We did a general search with an ISBN; check if it matches
                         final String isbnFoundStr = result.getIsbn();
                         if (!isbnFoundStr.isEmpty()
-                            && oIsbn.isPresent()
-                            && oIsbn.get().equals(new ISBN(isbnFoundStr, strictIsbn))) {
+                            && isbn != null && isbn.equals(new ISBN(isbnFoundStr, strictIsbn))) {
                             sitesInOrder.add(engineId);
                         } else {
                             // The ISBN found does not match the ISBN we searched for;
@@ -312,7 +311,7 @@ class BookSearch {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                                 LoggerFactory.getLogger()
                                              .d(TAG, "accumulateResults",
-                                                "isbn=" + oIsbn.orElse(null),
+                                                "isbn=" + isbn,
                                                 "isbnFound=" + isbnFoundStr);
                             }
                         }

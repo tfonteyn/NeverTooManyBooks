@@ -46,10 +46,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -66,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -164,9 +167,11 @@ public class GoogleBooksSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException {
+            throws StorageException, SearchException, CredentialsException {
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final Book book = new Book();
 
@@ -187,7 +192,6 @@ public class GoogleBooksSearchEngine
     @WorkerThread
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
-                       @Nullable final String isbn,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
@@ -211,10 +215,13 @@ public class GoogleBooksSearchEngine
             args.add("inpublisher%3A" + encodeSpaces(publisher));
         }
 
-        if (isbn != null && !isbn.isEmpty()) {
-            args.add("isbn%3A" + encodeSpaces(publisher));
+        final ISBN isbn = criteria.getIsbn();
+        if (isbn != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+            if (!code.isEmpty()) {
+                args.add("isbn%3A" + encodeSpaces(code));
+            }
         }
-
         // Sanity check
         if (args.length() == 0) {
             return book;
@@ -659,10 +666,10 @@ public class GoogleBooksSearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
-            throws StorageException, SearchException {
+            throws StorageException, SearchException, CredentialsException {
         if (altEdition instanceof AltEditionIsbn) {
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final String isbn = edition.getIsbn();
+            final ISBN isbn = new ISBN(edition.getIsbn(), true);
             return searchByIsbn(context, isbn, new boolean[]{true, false, false, false})
                     .getImage(context, cIdx)
                     .map(File::getAbsolutePath);

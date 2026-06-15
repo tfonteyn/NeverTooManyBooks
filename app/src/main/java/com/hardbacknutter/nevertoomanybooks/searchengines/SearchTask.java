@@ -131,19 +131,19 @@ final class SearchTask
             return task;
         }
 
-        final Optional<ISBN> oIsbn = criteria.getIsbn();
+        final ISBN isbn = criteria.getIsbn();
+
         // Force a test on a valid ISBN
         // Whether this is a pure ISBN, or a generic code
         // is up to the flag as set in the criteria by the user.
-        if (oIsbn.isPresent() && oIsbn.get().isValid()
+        if (isbn != null && isbn.isValid()
             && engineId.supports(SearchEngine.SearchBy.Isbn)) {
             task.setSearchBy(SearchEngine.SearchBy.Isbn);
             return task;
         }
 
         // Force a test on a generic code, explicitly NOT checking for it being an ISNB
-        if (oIsbn.isPresent()) {
-            final ISBN isbn = oIsbn.get();
+        if (isbn != null) {
             if (isbn.getCodeType() != CodeType.Invalid
                 && engineId.supports(SearchEngine.SearchBy.Barcode)) {
                 task.setSearchBy(SearchEngine.SearchBy.Barcode);
@@ -237,24 +237,26 @@ final class SearchTask
                 break;
             }
             case Isbn: {
-                final String isbnStr = requireIsbnString();
+                final ISBN isbn = criteria.getIsbn();
+                if (isbn == null) {
+                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
+                }
                 book = ((SearchEngine.ByIsbn) searchEngine)
-                        .searchByIsbn(context, isbnStr, criteria.getFetchCovers());
+                        .searchByIsbn(context, isbn, criteria.getFetchCovers());
                 break;
             }
             case Barcode: {
-                final String isbnStr = requireIsbnString();
+                final ISBN isbn = criteria.getIsbn();
+                if (isbn == null) {
+                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
+                }
                 book = ((SearchEngine.ByBarcode) searchEngine)
-                        .searchByBarcode(context, isbnStr, criteria.getFetchCovers());
+                        .searchByBarcode(context, isbn, criteria.getFetchCovers());
                 break;
             }
             case Text: {
-                // FIXME: GitHub #131 "ISBN: 01-001-86" allow searches with null/empty criteria
-                //  when there is an isbnStr
-                //  => must update code in ALL SearchEngines to allow this!
-                final String isbnStr = isbnToString();
                 book = ((SearchEngine.ByText) searchEngine)
-                        .search(context, criteria, isbnStr, criteria.getFetchCovers());
+                        .search(context, criteria, criteria.getFetchCovers());
                 break;
             }
             default: {
@@ -266,36 +268,6 @@ final class SearchTask
         }
 
         return book;
-    }
-
-    @NonNull
-    private String requireIsbnString() {
-        final String s = isbnToString();
-        if (s == null || s.isEmpty()) {
-            throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
-        }
-        return s;
-    }
-
-    @Nullable
-    private String isbnToString() {
-        @Nullable
-        final String isbnStr;
-        // Do NOT check on validity, at this point the isbn IS
-        // allowed to be any other code as well.
-        final ISBN isbn = criteria.getIsbn().orElse(null);
-        if (isbn != null) {
-            //noinspection DataFlowIssue
-            if (searchEngine.getEngineId().getConfig()
-                            .prefersIsbn10() && isbn.isIsbn10Compat()) {
-                isbnStr = isbn.asText(CodeType.Isbn10);
-            } else {
-                isbnStr = isbn.asText();
-            }
-        } else {
-            isbnStr = null;
-        }
-        return isbnStr;
     }
 
     @Override

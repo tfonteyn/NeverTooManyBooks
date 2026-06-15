@@ -438,9 +438,11 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
+                             @NonNull final ISBN isbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
+
+        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final Book book = new Book();
 
@@ -463,7 +465,6 @@ public class IsfdbSearchEngine
     @WorkerThread
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
-                       @Nullable final String isbn,
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
@@ -475,10 +476,14 @@ public class IsfdbSearchEngine
 
         //noinspection OverlyBroadCatchBlock
         try {
-            if (isbn != null && !isbn.isEmpty()) {
-                index++;
-                url.add(String.format(USE, index, "pub_isbn",
-                                      URLEncoder.encode(isbn, CHARSET_ENCODE_URL)));
+            final ISBN isbn = criteria.getIsbn();
+            if (isbn != null) {
+                final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+                if (!code.isEmpty()) {
+                    index++;
+                    url.add(String.format(USE, index, "pub_isbn",
+                                          URLEncoder.encode(code, CHARSET_ENCODE_URL)));
+                }
             }
 
             final String title = criteria.getTitle();
