@@ -41,8 +41,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * This class name is a bit of a misnomer by now.
- * See {@link Type} for all supported codes.
- * {@link Type#UpcA} numbers are converted to {@link Type#Isbn10} if possible.
+ * See {@link CodeType} for all supported codes.
+ * {@link CodeType#UpcA} numbers are converted to {@link CodeType#Isbn10} if possible.
  *
  * <p>
  * ISBN stands for International Standard Book Number.
@@ -94,7 +94,6 @@ public class ISBN
     /** Log tag. */
     private static final String TAG = "ISBN";
 
-    private static final String ERROR_WRONG_SIZE = "Wrong size: ";
     private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
             "X can only be at the end of an ISBN-10";
 
@@ -168,7 +167,7 @@ public class ISBN
 
     /** The type of code, determined at creation time. */
     @NonNull
-    private final Type codeType;
+    private final CodeType codeType;
     /** The code as a pure text string. The raw input string for invalid codes. */
     @NonNull
     private final String codeText;
@@ -184,30 +183,31 @@ public class ISBN
      *      {@code strictIsbn == false}
      *      <br>accepts as valid:
      *      <ul>
-     *          <li>{@link Type#Isbn10}</li>
-     *          <li>{@link Type#Sbn}</li>
-     *          <li>{@link Type#Isbn13}</li>
-     *          <li>{@link Type#Ean13}</li>
-     *          <li>{@link Type#Issn8}</li>
-     *          <li>{@link Type#Ismn}</li>
-     *          <li>generic {@link Type#UpcA}</li>
+     *          <li>{@link CodeType#Isbn10}</li>
+     *          <li>{@link CodeType#Sbn}</li>
+     *          <li>{@link CodeType#Isbn13}</li>
+     *          <li>{@link CodeType#Ean13}</li>
+     *          <li>{@link CodeType#Issn8}</li>
+     *          <li>{@link CodeType#Ismn}</li>
+     *          <li>generic {@link CodeType#UpcA}</li>
      *      </ul>
      *  </li>
      *  <li>
      *      {@code strictIsbn == true}
      *      <br>accepts as valid:
      *      <ul>
-     *          <li>{@link Type#Isbn10}</li>
-     *          <li>{@link Type#Sbn}</li>
-     *          <li>{@link Type#Isbn13}</li>
-     *          <li>{@link Type#UpcA} <strong>if convertible to {@link Type#Isbn10}</strong></li>
+     *          <li>{@link CodeType#Isbn10}</li>
+     *          <li>{@link CodeType#Sbn}</li>
+     *          <li>{@link CodeType#Isbn13}</li>
+     *          <li>{@link CodeType#UpcA} <strong>if convertible
+     *              to {@link CodeType#Isbn10}</strong></li>
      *      </ul>
      *      Rejects as invalid:
      *      <ul>
-     *          <li>{@link Type#Ean13}</li>
-     *          <li>{@link Type#Issn8}</li>
-     *          <li>{@link Type#Ismn}</li>
-     *          <li>generic {@link Type#UpcA}</li>
+     *          <li>{@link CodeType#Ean13}</li>
+     *          <li>{@link CodeType#Issn8}</li>
+     *          <li>{@link CodeType#Ismn}</li>
+     *          <li>generic {@link CodeType#UpcA}</li>
      *      </ul>
      *  </li>
      *  <li>Accepts {@code null} which results in {@code Type.Invalid}.</li>
@@ -223,7 +223,7 @@ public class ISBN
         this.strictIsbn = strictIsbn;
 
         List<Integer> digits = null;
-        Type type = Type.Invalid;
+        CodeType type = CodeType.Invalid;
 
         if (text != null && !text.isEmpty()) {
             // Remove whitespace first for easier parsing.
@@ -231,22 +231,22 @@ public class ISBN
             if (!cleanStr.isEmpty()) {
                 try {
                     digits = toDigits(cleanStr, strictIsbn);
-                    type = Type.getType(digits);
+                    type = CodeType.getType(digits);
 
-                    if (type == Type.UpcA) {
+                    if (type == CodeType.UpcA) {
                         // is this UPC_A convertible to ISBN-10 ?
                         final String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
                         if (isbnPrefix != null) {
                             // yes, convert to ISBN-10
                             digits = toDigits(isbnPrefix + cleanStr.substring(12), false);
-                            digits.add(Type.calculateIsbn10Checksum(digits));
-                            type = Type.Isbn10;
+                            digits.add(CodeType.Isbn10.checksum(digits));
+                            type = CodeType.Isbn10;
                         }
-                    } else if (type == Type.Sbn) {
+                    } else if (type == CodeType.Sbn) {
                         // can always be converted to ISBN-10
                         digits = new ArrayList<>(digits.subList(0, 9));
                         digits.add(0, 0);
-                        type = Type.Isbn10;
+                        type = CodeType.Isbn10;
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
@@ -255,17 +255,17 @@ public class ISBN
                 }
 
                 // strict ISBN required?
-                if (strictIsbn && type != Type.Isbn10 && type != Type.Isbn13) {
-                    type = Type.Invalid;
+                if (strictIsbn && type != CodeType.Isbn10 && type != CodeType.Isbn13) {
+                    type = CodeType.Invalid;
                 }
             }
         }
 
         // Make sure the internal status is uniform.
-        if (type == Type.Invalid) {
+        if (type == CodeType.Invalid) {
             codeDigits = null;
             codeText = text != null ? text : "";
-            codeType = Type.Invalid;
+            codeType = CodeType.Invalid;
 
         } else {
             codeDigits = digits;
@@ -338,26 +338,16 @@ public class ISBN
      */
     public boolean isValid(final boolean strictIsbn) {
         if (strictIsbn) {
-            return codeType == Type.Isbn13 || codeType == Type.Isbn10;
+            return codeType == CodeType.Isbn13 || codeType == CodeType.Isbn10;
         } else {
             // other codes accepted as long as they are valid
-            return codeType != Type.Invalid;
+            return codeType != CodeType.Invalid;
         }
     }
 
-    /**
-     * Check if the ISBN code is of the given {@link Type}.
-     *
-     * @param type to check for
-     *
-     * @return {@code true} if it is
-     */
-    public boolean isType(@NonNull final Type type) {
-        if (type == Type.Ean13) {
-            // check for all subtypes
-            return codeType == Type.Ean13 || codeType == Type.Isbn13 || codeType == Type.Issn13;
-        }
-        return codeType == type;
+    @NonNull
+    public CodeType getCodeType() {
+        return codeType;
     }
 
     /**
@@ -368,7 +358,8 @@ public class ISBN
      */
     public boolean isIsbn10Compat() {
         // reminder: no need to check UPC_A here, as we would have converted it already
-        return codeType == Type.Isbn10 || codeType == Type.Isbn13 && codeText.startsWith(L978);
+        return codeType == CodeType.Isbn10
+               || codeType == CodeType.Isbn13 && codeText.startsWith(L978);
     }
 
     /**
@@ -398,22 +389,22 @@ public class ISBN
      * @throws NumberFormatException on failure
      */
     @NonNull
-    public String asText(@NonNull final Type type)
+    public String asText(@NonNull final CodeType type)
             throws NumberFormatException {
 
-        if (type == Type.Invalid) {
+        if (type == CodeType.Invalid) {
             return codeText;
         }
         Objects.requireNonNull(codeDigits, "codeDigits");
 
         switch (type) {
             case Isbn13: {
-                if (codeType == Type.Isbn13) {
+                if (codeType == CodeType.Isbn13) {
                     return codeText;
                 }
 
                 // Must be ISBN-10 to convert to 13 digits.
-                if (codeType == Type.Isbn10) {
+                if (codeType == CodeType.Isbn10) {
                     final List<Integer> digits = new ArrayList<>();
                     // standard prefix 978
                     digits.add(9);
@@ -425,66 +416,68 @@ public class ISBN
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(Type.calculateEan13Checksum(digits));
+                    digits.add(CodeType.Ean13.checksum(digits));
 
                     return concat(digits);
                 }
                 break;
             }
             case Isbn10: {
-                if (codeType == Type.Isbn10) {
+                if (codeType == CodeType.Isbn10) {
                     return codeText;
                 }
 
                 // Must be ISBN-13 and compatible with ISBN-10
-                if (codeType == Type.Isbn13 && codeText.startsWith(L978)) {
+                if (codeType == CodeType.Isbn13 && codeText.startsWith(L978)) {
                     // drop the first 3 digits, and copy the next 9.
                     final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 12; i++) {
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(Type.calculateIsbn10Checksum(digits));
+                    digits.add(CodeType.Isbn10.checksum(digits));
                     return concat(digits);
                 }
                 break;
             }
             case Issn8: {
-                if (codeType == Type.Issn8) {
+                if (codeType == CodeType.Issn8) {
                     return codeText;
                 }
 
                 // Must be ISSN-13 and compatible with ISSN-8
                 // Note that the vendor 2-digits are dropped as they are not part of ISSN itself.
-                if (codeType == Type.Issn13) {
+                if (codeType == CodeType.Issn13) {
                     // drop the first 3 digits, and copy the next 7.
                     final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 10; i++) {
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(Type.calculateIssn8Checksum(digits));
+                    digits.add(CodeType.Issn8.checksum(digits));
                     return concat(digits);
                 }
                 break;
             }
             case Issn13: {
                 // No conversions possible
-                if (codeType == Type.Issn13) {
+                if (codeType == CodeType.Issn13) {
                     return codeText;
                 }
                 break;
             }
             case Ismn: {
                 // No conversions possible
-                if (codeType == Type.Ismn) {
+                if (codeType == CodeType.Ismn) {
                     return codeText;
                 }
                 break;
             }
             case Ean13: {
                 // No conversions possible but ISBN-13 and ISSN-13 are valid subtypes.
-                if (codeType == Type.Ean13 || codeType == Type.Isbn13 || codeType == Type.Issn13) {
+                if (codeType == CodeType.Ean13
+                    || codeType == CodeType.Isbn13
+                    || codeType == CodeType.Issn13) {
                     return codeText;
                 }
                 break;
@@ -492,7 +485,7 @@ public class ISBN
             case UpcA: {
                 // No conversions possible. Any ISBN-10 compatible UPC number was already
                 // converted in the class constructor.
-                if (codeType == Type.UpcA) {
+                if (codeType == CodeType.UpcA) {
                     return codeText;
                 }
                 break;
@@ -602,7 +595,7 @@ public class ISBN
         // Reminder: do not compare 'codeText' !
 
         // Either one is invalid ? No match.
-        if (codeType == Type.Invalid || cmp.isType(Type.Invalid)) {
+        if (codeType == CodeType.Invalid || cmp.getCodeType() == CodeType.Invalid) {
             return false;
         }
 
@@ -641,288 +634,16 @@ public class ISBN
         return false;
     }
 
-    public enum Type {
-        /** None of the below. */
-        Invalid,
-
-        /** The original ISBN. 10 digits. */
-        Isbn10,
-        /** ISBN-13 is a subtype of EAN-13. 13 digits. */
-        Isbn13,
-        /** Generic 13 digit barcode. */
-        Ean13,
-        /**
-         * Generic product barcode. Minimum 12 digits but can be any length.
-         * May be automatically converted in the constructor when it's ISBN-10 compatible.
-         */
-        UpcA,
-        /**
-         * The precursor of ISBN-10.
-         * Consists of a 9 digits number optionally followed by 3 digit price (in the US).
-         * Can be converted to ISBN-10 by taking the first 9 digits,
-         * and prefix them with a {@code 0}.
-         * <p>
-         * Internal use only, as the constructor will always convert these to ISBN-10.
-         */
-        Sbn,
-        /** Periodicals. 8 digits. */
-        Issn8,
-        /** Periodicals. subtype of EAN-13. 13 digits. */
-        Issn13,
-        /** Sheet Music. 13 digits. */
-        Ismn;
-
-        /**
-         * Determine the type of code.
-         *
-         * @param digits to check
-         *
-         * @return type
-         *
-         * @throws NumberFormatException if parsing totally failed
-         */
-        @NonNull
-        private static Type getType(@Nullable final List<Integer> digits)
-                throws NumberFormatException {
-
-            if (digits == null || digits.isEmpty()) {
-                return Invalid;
-            }
-
-            final int size = digits.size();
-
-            // Most common 13 digits
-            if (size == 13 && calculateEan13Checksum(digits) == digits.get(12)) {
-                // Prefix 978 is "Bookland"
-                if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 8) {
-                    return Isbn13;
-
-                } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 9) {
-                    if (digits.get(3) == 0) {
-                        // Prefix 979 with first digit 0 is "Musicland"
-                        return Ismn;
-                    } else {
-                        // non-0 is "Bookland"... we PRESUME, it's not entirely clear
-                        // if these are simply 'reserved' or actual books.
-                        return Isbn13;
-                    }
-                } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 7) {
-                    // Prefix 977 are periodicals; an ISSN packed in an EAN-13
-                    return Issn13;
-
-                } else {
-                    // it's a generic EAN-13
-                    return Ean13;
-                }
-            }
-
-            // Older ISBN-10
-            if (size == 10 && calculateIsbn10Checksum(digits) == digits.get(9)) {
-                return Isbn10;
-            }
-
-            // Magazines/Serials with ISSN numbers
-            if (size == 8 && calculateIssn8Checksum(digits) == digits.get(7)) {
-                return Issn8;
-            }
-
-            // Legacy UPC_A codes.
-            // a UPC barcode might be longer than 12 characters due to allowed extensions.
-            // But only the first 12 characters are 'the' UPC_A code.
-            if (size >= 12 && calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
-                return UpcA;
-            }
-
-            // Legacy SBN with optional price digits.
-            if (size == 9 || size == 12) {
-                final List<Integer> sbn = new ArrayList<>(digits.subList(0, 9));
-                sbn.add(0, 0);
-                if (calculateIsbn10Checksum(sbn) == sbn.get(9)) {
-                    return Sbn;
-                }
-            }
-
-            return Invalid;
-        }
-
-        /**
-         * Calculate the check-digit (checksum) for the given digits.
-         * This calculation is valid for EAN-13 / ISBN-13 only
-         *
-         * @param digits list with the digits, either 13 or 12
-         *
-         * @return the check digit.
-         *
-         * @throws NumberFormatException on failure
-         */
-        private static int calculateEan13Checksum(@NonNull final List<Integer> digits)
-                throws NumberFormatException {
-            final int len = digits.size();
-            if (len < 12 || len > 13) {
-                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-            }
-            int sum = 0;
-            // 1. Take the first 12 digits of the 13-digit EAN/ISBN
-            // 2. Multiply each number in turn, from left to right by a number.
-            //    The first, leftmost, digit is multiplied by 1, the second by 3,
-            //    the third by 1 again, the fourth by 3 again, and so on to
-            //    the eleventh which is multiplied by 1 and the twelfth by 3.
-            //
-            // 3. Add all of the 12 products.
-
-            for (int dig = 1; dig < 13; dig += 2) {
-                sum += digits.get(dig - 1);
-            }
-            for (int dig = 2; dig < 13; dig += 2) {
-                sum += digits.get(dig - 1) * 3;
-            }
-
-            // 4. Do a modulo 10 division on the sum.
-            final int modulo = sum % 10;
-
-            if (modulo == 0) {
-                // If it's a zero, then the check digit is zero.
-                return 0;
-            } else {
-                // Otherwise subtract the remainder from 10.
-                return 10 - modulo;
-            }
-        }
-
-        /**
-         * Calculate the check-digit (checksum) for the given digits.
-         * This calculation is valid for ISBN-10 only
-         *
-         * @param digits list with the digits, either 10 or 9
-         *
-         * @return the check digit.
-         *
-         * @throws NumberFormatException on failure
-         */
-        private static int calculateIsbn10Checksum(@NonNull final List<Integer> digits)
-                throws NumberFormatException {
-            final int len = digits.size();
-            if (len < 9 || len > 10) {
-                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-            }
-            int sum = 0;
-            // 1. Take the first 9 digits of the 10-digit ISBN.
-            // 2. Multiply each number in turn, from left to right by a number.
-            //    The first, leftmost, digit of the nine is multiplied by 10,
-            //    then working from left to right, each successive digit is
-            //    multiplied by one less than the one before.
-            //    So the second digit is multiplied by 9, the third by 8,
-            //    and so on to the ninth which is multiplied by 2.
-            //
-            // 3. Add all of the 9 products.
-            int multiplier = 10;
-            for (int dig = 1; dig < 10; dig++) {
-                sum += digits.get(dig - 1) * multiplier;
-                multiplier--;
-            }
-
-            // 4. Do a modulo 11 division on the sum.
-            final int modulo = sum % 11;
-            if (modulo == 0) {
-                return 0;
-            } else {
-                return 11 - modulo;
-            }
-        }
-
-        /**
-         * Calculate the check-digit (checksum) for the given digits.
-         * This calculation is valid for ISSN only
-         *
-         * @param digits list with the digits, either 8 or 7
-         *
-         * @return the check digit.
-         *
-         * @throws NumberFormatException on failure
-         */
-        private static int calculateIssn8Checksum(@NonNull final List<Integer> digits)
-                throws NumberFormatException {
-            final int len = digits.size();
-            if (len < 7 || len > 8) {
-                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-            }
-            int sum = 0;
-            // 1. Take the first 7 digits of the 8-digit ISSN.
-            // 2. Multiply each number in turn, from left to right by a number.
-            //    The first, leftmost, digit of the seven is multiplied by 8,
-            //    then working from left to right, each successive digit is
-            //    multiplied by one less than the one before.
-            //    So the second digit is multiplied by 7, the third by 6,
-            //    and so on to the seventh which is multiplied by 2.
-            //
-            // 3. Add all of the 7 products.
-            int multiplier = 8;
-            for (int dig = 1; dig < 8; dig++) {
-                sum += digits.get(dig - 1) * multiplier;
-                multiplier--;
-            }
-
-            // 4. Do a modulo 11 division on the sum.
-            final int modulo = sum % 11;
-            if (modulo == 0) {
-                return 0;
-            } else {
-                return 11 - modulo;
-            }
-        }
-
-        /**
-         * Calculate the check-digit (checksum) for the given digits.
-         * This calculation is valid for UPC_A-12 only
-         *
-         * @param digits list with the digits, either 12 or 11
-         *
-         * @return the check digit.
-         *
-         * @throws NumberFormatException on failure
-         */
-        private static int calculateUpcAChecksum(@NonNull final List<Integer> digits)
-                throws NumberFormatException {
-            final int len = digits.size();
-            if (len < 11 || len > 12) {
-                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-            }
-            int sum = 0;
-            // 1. Take the first 11 digits of the 12-digit UPC_A
-            // 2. Sum the digits at odd-numbered positions (first, third, fifth,..., eleventh).
-            // Multiply the result by 3.
-            for (int dig = 1; dig < 12; dig += 2) {
-                sum += digits.get(dig - 1) * 3;
-            }
-            // 3. Add the digit sum at even-numbered positions (second, fourth, sixth,..., tenth)
-            // to the result.
-            for (int dig = 2; dig < 12; dig += 2) {
-                sum += digits.get(dig - 1);
-            }
-
-            // 4. Do a modulo 10 division on the sum.
-            final int modulo = sum % 10;
-
-            if (modulo == 0) {
-                // If it's a zero, then the check digit is zero.
-                return 0;
-            } else {
-                // Otherwise subtract the remainder from 10.
-                return 10 - modulo;
-            }
-        }
-    }
-
     /**
      * Describes how we check for valid codes. This is a user-setting.
      */
     public enum Validity {
         /** No checks are done, the code is used as-is. */
         None(0),
-        /** Any type as long as it's NOT {@link Type#Invalid}. */
+        /** Any type as long as it's NOT {@link CodeType#Invalid}. */
         Loose(1),
         /**
-         * Must be either {@link Type#Isbn10} or {@link Type#Isbn13}
+         * Must be either {@link CodeType#Isbn10} or {@link CodeType#Isbn13}
          * (or auto-converted) to be considered valid.
          */
         Strict(2);
@@ -1118,7 +839,7 @@ public class ISBN
                 if (length == 13) {
                     final ISBN isbn = new ISBN(str, strictIsbn);
                     if (isbn.isIsbn10Compat()) {
-                        altIsbn = isbn.asText(Type.Isbn10);
+                        altIsbn = isbn.asText(CodeType.Isbn10);
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
                         return;
@@ -1132,7 +853,7 @@ public class ISBN
                     // ISBN-10 or Legacy SBN
                     final ISBN isbn = new ISBN(str, strictIsbn);
                     if (isbn.isValid()) {
-                        altIsbn = isbn.asText(Type.Isbn13);
+                        altIsbn = isbn.asText(CodeType.Isbn13);
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
                         return;
@@ -1141,7 +862,7 @@ public class ISBN
                 } else if (length == 8 && !strictIsbn) {
                     // ISSN: indicate the code is valid, but disable the swap functionality
                     final ISBN isbn = new ISBN(str, false);
-                    if (isbn.isType(Type.Issn8)) {
+                    if (isbn.getCodeType() == CodeType.Issn8) {
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(null);
                         return;
@@ -1155,8 +876,8 @@ public class ISBN
 
                     // A UPC or a legacy SBN with price digits
                     // which was auto-converted to ISBN-10 when created
-                    if (isbn.isType(Type.Isbn10)) {
-                        altIsbn = isbn.asText(Type.Isbn13);
+                    if (isbn.getCodeType() == CodeType.Isbn10) {
+                        altIsbn = isbn.asText(CodeType.Isbn13);
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
                         return;
@@ -1164,7 +885,7 @@ public class ISBN
 
                     // A UPC which could NOT be converted to ISBN-10.
                     // Indicate the code is valid, but disable the swap functionality
-                    if (!strictIsbn && isbn.isType(Type.UpcA)) {
+                    if (!strictIsbn && isbn.getCodeType() == CodeType.UpcA) {
                         layout.setStartIconVisible(true);
                         layout.setStartIconOnClickListener(null);
                         return;

@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -438,7 +439,12 @@ public class BibliotecePlSearchEngine
                 // If it's an isbn-10 equal to the one we searched for, grab it.
                 final ISBN siteIsbn = new ISBN(isbnStr, true);
                 final ISBN searchIsbn = new ISBN(book.getIsbn(), true);
-                if (siteIsbn.isType(ISBN.Type.Isbn10) && searchIsbn.isType(ISBN.Type.Isbn13)
+
+                // If the user searched for an isbn-13,
+                // and the website returned an isbn-10
+                // AND they are really the same, THEN we preserve the isbn-10
+                if (searchIsbn.getCodeType() == CodeType.Isbn13
+                    && siteIsbn.getCodeType() == CodeType.Isbn10
                     && siteIsbn.equals(searchIsbn)) {
                     book.setIsbn(isbnStr);
                 }

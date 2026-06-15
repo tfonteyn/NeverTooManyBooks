@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
@@ -211,7 +212,8 @@ class ResultsAccumulator {
             // and the website returned an isbn-10
             // AND they are really the same, THEN we preserve the isbn-10
             // If the codes are different, we KEEP the one the user searched for.
-            if (dataIsbn.isType(ISBN.Type.Isbn10) && prevIsbn.isType(ISBN.Type.Isbn13)
+            if (prevIsbn.getCodeType() == CodeType.Isbn13
+                && dataIsbn.getCodeType() == CodeType.Isbn10
                 && dataIsbn.equals(prevIsbn)) {
                 book.putString(key, dataToAdd);
             }

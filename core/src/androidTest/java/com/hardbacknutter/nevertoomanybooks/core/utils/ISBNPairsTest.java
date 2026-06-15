@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ISBNPairsTest {
@@ -119,15 +121,15 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertTrue(isbn0.isType(ISBN.Type.Isbn10));
-            assertFalse(isbn1.isType(ISBN.Type.Isbn10));
+            assertSame(CodeType.Isbn10, isbn0.getCodeType());
+            assertNotSame(CodeType.Isbn10, isbn1.getCodeType());
         }
         for (final String[] isbnPair : invalid_isbn) {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertFalse(isbn0.isType(ISBN.Type.Isbn10));
-            assertFalse(isbn1.isType(ISBN.Type.Isbn10));
+            assertNotSame(CodeType.Isbn10, isbn0.getCodeType());
+            assertNotSame(CodeType.Isbn10, isbn1.getCodeType());
         }
     }
 
@@ -137,15 +139,15 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertFalse(isbn0.isType(ISBN.Type.Isbn13));
-            assertTrue(isbn1.isType(ISBN.Type.Isbn13));
+            assertNotSame(CodeType.Isbn13, isbn0.getCodeType());
+            assertSame(CodeType.Isbn13, isbn1.getCodeType());
         }
         for (final String[] isbnPair : invalid_isbn) {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertFalse(isbn0.isType(ISBN.Type.Isbn13));
-            assertFalse(isbn1.isType(ISBN.Type.Isbn13));
+            assertNotSame(CodeType.Isbn13, isbn0.getCodeType());
+            assertNotSame(CodeType.Isbn13, isbn1.getCodeType());
         }
     }
 
@@ -155,8 +157,8 @@ class ISBNPairsTest {
             final ISBN isbn10 = new ISBN(isbnPair[0], true);
             final ISBN isbn13 = new ISBN(isbnPair[1], true);
 
-            assertEquals(isbn10.asText(ISBN.Type.Isbn13), isbn13.asText(ISBN.Type.Isbn13));
-            assertEquals(isbn10.asText(ISBN.Type.Isbn10), isbn13.asText(ISBN.Type.Isbn10));
+            assertEquals(isbn10.asText(CodeType.Isbn13), isbn13.asText(CodeType.Isbn13));
+            assertEquals(isbn10.asText(CodeType.Isbn10), isbn13.asText(CodeType.Isbn10));
         }
     }
 

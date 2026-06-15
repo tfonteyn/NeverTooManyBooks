@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -282,7 +283,7 @@ final class SearchTask
             //noinspection DataFlowIssue
             if (searchEngine.getEngineId().getConfig()
                             .prefersIsbn10() && isbn.isIsbn10Compat()) {
-                isbnStr = isbn.asText(ISBN.Type.Isbn10);
+                isbnStr = isbn.asText(CodeType.Isbn10);
             } else {
                 isbnStr = isbn.asText();
             }

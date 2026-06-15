@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -79,7 +80,7 @@ public class ViewBookOnSiteMenuHandler
         final ISBN isbn = new ISBN(isbnStr, true);
         if (isbn.isValid() && isbn.isIsbn10Compat()) {
             ivs.add(new Identifier.Value(Identifier.SID_ASIN,
-                                         isbn.asText(ISBN.Type.Isbn10)));
+                                         isbn.asText(CodeType.Isbn10)));
         }
         return ivs;
     }

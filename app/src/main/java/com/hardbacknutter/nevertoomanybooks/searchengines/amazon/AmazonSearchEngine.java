@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -457,7 +458,7 @@ public class AmazonSearchEngine
         // Try to convert an ISBN13 to ISBN10 (i.e. the ASIN)
         final ISBN tmp = new ISBN(validIsbn, true);
         // If conversion is not possible, use the ISBN13 anyhow
-        final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
+        final String asin = tmp.isIsbn10Compat() ? tmp.asText(CodeType.Isbn10) : validIsbn;
 
         final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin);
         return genericSearch(context, url, fetchCovers);

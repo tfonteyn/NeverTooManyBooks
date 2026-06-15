@@ -30,6 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ISBNTest {
@@ -143,7 +144,7 @@ class ISBNTest {
     void validIsbn13(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, true);
         assertTrue(isbn.isValid());
-        assertTrue(isbn.isType(ISBN.Type.Isbn13));
+        assertSame(CodeType.Isbn13, isbn.getCodeType());
     }
 
     @ParameterizedTest
@@ -158,7 +159,7 @@ class ISBNTest {
     void validSbn(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, true);
         assertTrue(isbn.isValid());
-        assertTrue(isbn.isType(ISBN.Type.Isbn10));
+        assertSame(CodeType.Isbn10, isbn.getCodeType());
     }
 
     @ParameterizedTest
@@ -166,7 +167,7 @@ class ISBNTest {
     void validUpcIsbn(@NonNull final String upcStr,
                       @NonNull final String expected) {
         final ISBN isbn = new ISBN(upcStr, false);
-        assertTrue(isbn.isType(ISBN.Type.Isbn10));
+        assertSame(CodeType.Isbn10, isbn.getCodeType());
         assertTrue(isbn.isValid());
         assertEquals(expected, isbn.asText());
     }
@@ -177,7 +178,7 @@ class ISBNTest {
     void valid_upc(@NonNull final String upcStr,
                    @NonNull final String expected) {
         final ISBN upc = new ISBN(upcStr, false);
-        assertTrue(upc.isType(ISBN.Type.UpcA));
+        assertSame(CodeType.UpcA, upc.getCodeType());
         assertTrue(upc.isValid());
         assertEquals(expected, upc.asText());
     }
@@ -187,7 +188,8 @@ class ISBNTest {
     void valid_ean13(@NonNull final String eanStr,
                      @NonNull final String expected) {
         final ISBN ean = new ISBN(eanStr, false);
-        assertTrue(ean.isType(ISBN.Type.Ean13));
+        // check for all subtypes
+        assertSame(CodeType.Ean13, ean.getCodeType());
         assertTrue(ean.isValid());
         assertEquals(expected, ean.asText());
     }
@@ -199,8 +201,8 @@ class ISBNTest {
                      @NonNull final String expected) {
         final ISBN issn = new ISBN(issnStr, false);
         assertTrue(issn.isValid());
-        assertTrue(issn.isType(ISBN.Type.Issn8));
-        assertEquals(expected, issn.asText(ISBN.Type.Issn8));
+        assertSame(CodeType.Issn8, issn.getCodeType());
+        assertEquals(expected, issn.asText(CodeType.Issn8));
     }
 
     @ParameterizedTest
@@ -209,8 +211,8 @@ class ISBNTest {
                       @NonNull final String expected) {
         final ISBN issn = new ISBN(issnStr, false);
         assertTrue(issn.isValid());
-        assertTrue(issn.isType(ISBN.Type.Issn13));
-        assertEquals(expected, issn.asText(ISBN.Type.Issn13));
+        assertSame(CodeType.Issn13, issn.getCodeType());
+        assertEquals(expected, issn.asText(CodeType.Issn13));
     }
 
     @ParameterizedTest
@@ -219,7 +221,7 @@ class ISBNTest {
                        @NonNull final String expected) {
         final ISBN issn = new ISBN(issnStr, false);
         assertTrue(issn.isValid());
-        assertTrue(issn.isType(ISBN.Type.Issn13));
-        assertEquals(expected, issn.asText(ISBN.Type.Issn8));
+        assertSame(CodeType.Issn13, issn.getCodeType());
+        assertEquals(expected, issn.asText(CodeType.Issn8));
     }
 }

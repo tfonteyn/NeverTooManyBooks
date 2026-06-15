@@ -39,7 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -163,14 +163,14 @@ public interface SearchEngine
         /**
          * Search with a <strong>VALID</strong> ISBN.
          *
-         * @see ISBN.Type
+         * @see CodeType
          */
         Isbn(ByIsbn.class),
         /**
          * Search with an <strong>INVALID</strong> ISBN or actual barcode.
          * i.e. a code which is specifically supported by the site.
          *
-         * @see ISBN.Type
+         * @see CodeType
          */
         Barcode(ByBarcode.class),
         /**
@@ -266,7 +266,7 @@ public interface SearchEngine
      * Optional. But every engine should really implement this.
      *
      * @see SearchBy#Isbn
-     * @see ISBN.Type
+     * @see CodeType
      */
     interface ByIsbn
             extends SearchEngine {
@@ -283,7 +283,7 @@ public interface SearchEngine
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @see ISBN.Type
+         * @see CodeType
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
@@ -311,7 +311,7 @@ public interface SearchEngine
      * be properly implemented.
      *
      * @see SearchBy#Barcode
-     * @see ISBN.Type
+     * @see CodeType
      */
     interface ByBarcode
             extends ByIsbn {
@@ -331,7 +331,7 @@ public interface SearchEngine
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @see ISBN.Type
+         * @see CodeType
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
