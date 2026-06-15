@@ -626,9 +626,9 @@ class ParseTest
         assertTrue(barcode.isValid());
 
         final ISBN isbn = new ISBN("9069692736", true);
+        // check using the strictIsbn flag
         assertFalse(isbn.isValid());
-        // Double check
-        assertFalse(isbn.isValid(false));
+        // check the type directly
         assertSame(CodeType.Invalid, isbn.getCodeType());
 
         final Book book = new Book();

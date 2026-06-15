@@ -133,17 +133,22 @@ final class SearchTask
 
         final Optional<ISBN> oIsbn = criteria.getIsbn();
         // Force a test on a valid ISBN
+        // Whether this is a pure ISBN, or a generic code
+        // is up to the flag as set in the criteria by the user.
         if (oIsbn.isPresent() && oIsbn.get().isValid()
             && engineId.supports(SearchEngine.SearchBy.Isbn)) {
             task.setSearchBy(SearchEngine.SearchBy.Isbn);
             return task;
         }
 
-        // Force a test on a generic code
-        if (oIsbn.isPresent() && oIsbn.get().isValid(false)
-            && engineId.supports(SearchEngine.SearchBy.Barcode)) {
-            task.setSearchBy(SearchEngine.SearchBy.Barcode);
-            return task;
+        // Force a test on a generic code, explicitly NOT checking for it being an ISNB
+        if (oIsbn.isPresent()) {
+            final ISBN isbn = oIsbn.get();
+            if (isbn.getCodeType() != CodeType.Invalid
+                && engineId.supports(SearchEngine.SearchBy.Barcode)) {
+                task.setSearchBy(SearchEngine.SearchBy.Barcode);
+                return task;
+            }
         }
 
         if (engineId.supports(SearchEngine.SearchBy.Text)) {

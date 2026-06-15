@@ -31,6 +31,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
@@ -86,9 +87,6 @@ public class BookSearchCriteria {
 
     /**
      * Constructor.
-     * <p>
-     * The 'strictIsbn' flag is initialised from the global user-settings.
-     *
      */
     public BookSearchCriteria() {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -220,14 +218,20 @@ public class BookSearchCriteria {
 
     @NonNull
     public Optional<ISBN> getIsbn() {
+        final ISBN tmpIsbn = internalGetIsbn();
+        return tmpIsbn == null ? Optional.empty() : Optional.of(tmpIsbn);
+    }
+
+    @Nullable
+    private ISBN internalGetIsbn() {
         if (isbnText.isEmpty()) {
-            return Optional.empty();
+            return null;
         }
 
         if (isbn == null) {
             isbn = new ISBN(this.isbnText, this.strictIsbn);
         }
-        return Optional.of(isbn);
+        return isbn;
     }
 
     /**
@@ -244,7 +248,19 @@ public class BookSearchCriteria {
     }
 
     boolean hasValidIsbn() {
-        return getIsbn().map(value -> value.isValid(strictIsbn)).orElse(false);
+        final ISBN tmpIsbn = internalGetIsbn();
+        if (tmpIsbn == null) {
+            return false;
+        }
+
+        // We MUST use the strictIsbn as set on this criteria object,
+        // as the code can have come from the scanner and be theoretically less/more strict.
+        if (strictIsbn) {
+            return tmpIsbn.getCodeType() == CodeType.Isbn13
+                   || tmpIsbn.getCodeType() == CodeType.Isbn10;
+        } else {
+            return tmpIsbn.getCodeType() != CodeType.Invalid;
+        }
     }
 
     /**

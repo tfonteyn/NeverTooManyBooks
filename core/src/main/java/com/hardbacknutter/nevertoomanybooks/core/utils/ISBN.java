@@ -314,33 +314,16 @@ public class ISBN
     }
 
     /**
-     * Check if we have a valid code. Does not check for a specific type.
-     * <p>
-     * Uses the {@code strictIsbn} flag as set in the constructor.
+     * Check if we have a valid code. Does not check for a specific type
+     * unless the {@code strictIsbn} flag as set in the constructor is {@code true}.
      *
      * @return validity
      */
     @Override
     public boolean isValid() {
-        return isValid(strictIsbn);
-    }
-
-    /**
-     * Check if we have a valid code. Does not check for a specific type.
-     * <p>
-     * Allows overriding the {@code strictIsbn} flag as set in the constructor.
-     *
-     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
-     *                   {@code false} to allow other codes which
-     *                   <strong>MUST</strong> be valid
-     *
-     * @return validity
-     */
-    public boolean isValid(final boolean strictIsbn) {
         if (strictIsbn) {
             return codeType == CodeType.Isbn13 || codeType == CodeType.Isbn10;
         } else {
-            // other codes accepted as long as they are valid
             return codeType != CodeType.Invalid;
         }
     }
