@@ -231,7 +231,7 @@ public class ISBN
             if (!cleanStr.isEmpty()) {
                 try {
                     digits = toDigits(cleanStr, strictIsbn);
-                    type = getType(digits);
+                    type = Type.getType(digits);
 
                     if (type == Type.UpcA) {
                         // is this UPC_A convertible to ISBN-10 ?
@@ -239,7 +239,7 @@ public class ISBN
                         if (isbnPrefix != null) {
                             // yes, convert to ISBN-10
                             digits = toDigits(isbnPrefix + cleanStr.substring(12), false);
-                            digits.add(calculateIsbn10Checksum(digits));
+                            digits.add(Type.calculateIsbn10Checksum(digits));
                             type = Type.Isbn10;
                         }
                     } else if (type == Type.Sbn) {
@@ -354,7 +354,7 @@ public class ISBN
      */
     public boolean isType(@NonNull final Type type) {
         if (type == Type.Ean13) {
-            // ISBN-13 and ISSN-13 are subtypes of EAN13
+            // check for all subtypes
             return codeType == Type.Ean13 || codeType == Type.Isbn13 || codeType == Type.Issn13;
         }
         return codeType == type;
@@ -425,7 +425,7 @@ public class ISBN
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(calculateEan13Checksum(digits));
+                    digits.add(Type.calculateEan13Checksum(digits));
 
                     return concat(digits);
                 }
@@ -444,7 +444,7 @@ public class ISBN
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(calculateIsbn10Checksum(digits));
+                    digits.add(Type.calculateIsbn10Checksum(digits));
                     return concat(digits);
                 }
                 break;
@@ -463,7 +463,7 @@ public class ISBN
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(calculateIssnChecksum(digits));
+                    digits.add(Type.calculateIssn8Checksum(digits));
                     return concat(digits);
                 }
                 break;
@@ -553,246 +553,6 @@ public class ISBN
     }
 
     /**
-     * Determine the type of code.
-     *
-     * @param digits to check
-     *
-     * @return type
-     *
-     * @throws NumberFormatException if parsing totally failed
-     */
-    @NonNull
-    private Type getType(@Nullable final List<Integer> digits)
-            throws NumberFormatException {
-
-        if (digits == null || digits.isEmpty()) {
-            return Type.Invalid;
-        }
-
-        final int size = digits.size();
-
-        // Most common 13 digits
-        if (size == 13 && calculateEan13Checksum(digits) == digits.get(12)) {
-            // Prefix 978 is "Bookland"
-            if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 8) {
-                return Type.Isbn13;
-
-            } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 9) {
-                if (digits.get(3) == 0) {
-                    // Prefix 979 with first digit 0 is "Musicland"
-                    return Type.Ismn;
-                } else {
-                    // non-0 is "Bookland"... we PRESUME, it's not entirely clear
-                    // if these are simply 'reserved' or actual books.
-                    return Type.Isbn13;
-                }
-            } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 7) {
-                // Prefix 977 are periodicals; an ISSN packed in an EAN-13
-                return Type.Issn13;
-
-            } else {
-                // it's a generic EAN-13
-                return Type.Ean13;
-            }
-        }
-
-        // Older ISBN-10
-        if (size == 10 && calculateIsbn10Checksum(digits) == digits.get(9)) {
-            return Type.Isbn10;
-        }
-
-        // Magazines/Serials with ISSN numbers
-        if (size == 8 && calculateIssnChecksum(digits) == digits.get(7)) {
-            return Type.Issn8;
-        }
-
-        // Legacy UPC_A codes.
-        // a UPC barcode might be longer than 12 characters due to allowed extensions.
-        // But only the first 12 characters are 'the' UPC_A code.
-        if (size >= 12 && calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
-            return Type.UpcA;
-        }
-
-        // Legacy SBN with optional price digits.
-        if (size == 9 || size == 12) {
-            final List<Integer> sbn = new ArrayList<>(digits.subList(0, 9));
-            sbn.add(0, 0);
-            if (calculateIsbn10Checksum(sbn) == sbn.get(9)) {
-                return Type.Sbn;
-            }
-        }
-
-        return Type.Invalid;
-    }
-
-    /**
-     * Calculate the check-digit (checksum) for the given digits.
-     * This calculation is valid for ISBN-10 only
-     *
-     * @param digits list with the digits, either 10 or 9
-     *
-     * @return the check digit.
-     *
-     * @throws NumberFormatException on failure
-     */
-    private int calculateIsbn10Checksum(@NonNull final List<Integer> digits)
-            throws NumberFormatException {
-        final int len = digits.size();
-        if (len < 9 || len > 10) {
-            throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-        }
-        int sum = 0;
-        // 1. Take the first 9 digits of the 10-digit ISBN.
-        // 2. Multiply each number in turn, from left to right by a number.
-        //    The first, leftmost, digit of the nine is multiplied by 10,
-        //    then working from left to right, each successive digit is
-        //    multiplied by one less than the one before.
-        //    So the second digit is multiplied by 9, the third by 8,
-        //    and so on to the ninth which is multiplied by 2.
-        //
-        // 3. Add all of the 9 products.
-        int multiplier = 10;
-        for (int dig = 1; dig < 10; dig++) {
-            sum += digits.get(dig - 1) * multiplier;
-            multiplier--;
-        }
-
-        // 4. Do a modulo 11 division on the sum.
-        final int modulo = sum % 11;
-        if (modulo == 0) {
-            return 0;
-        } else {
-            return 11 - modulo;
-        }
-    }
-
-    /**
-     * Calculate the check-digit (checksum) for the given digits.
-     * This calculation is valid for ISSN only
-     *
-     * @param digits list with the digits, either 8 or 7
-     *
-     * @return the check digit.
-     *
-     * @throws NumberFormatException on failure
-     */
-    private int calculateIssnChecksum(@NonNull final List<Integer> digits)
-            throws NumberFormatException {
-        final int len = digits.size();
-        if (len < 7 || len > 8) {
-            throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-        }
-        int sum = 0;
-        // 1. Take the first 7 digits of the 8-digit ISSN.
-        // 2. Multiply each number in turn, from left to right by a number.
-        //    The first, leftmost, digit of the seven is multiplied by 8,
-        //    then working from left to right, each successive digit is
-        //    multiplied by one less than the one before.
-        //    So the second digit is multiplied by 7, the third by 6,
-        //    and so on to the seventh which is multiplied by 2.
-        //
-        // 3. Add all of the 7 products.
-        int multiplier = 8;
-        for (int dig = 1; dig < 8; dig++) {
-            sum += digits.get(dig - 1) * multiplier;
-            multiplier--;
-        }
-
-        // 4. Do a modulo 11 division on the sum.
-        final int modulo = sum % 11;
-        if (modulo == 0) {
-            return 0;
-        } else {
-            return 11 - modulo;
-        }
-    }
-
-    /**
-     * Calculate the check-digit (checksum) for the given digits.
-     * This calculation is valid for EAN-13 / ISBN-13 only
-     *
-     * @param digits list with the digits, either 13 or 12
-     *
-     * @return the check digit.
-     *
-     * @throws NumberFormatException on failure
-     */
-    private int calculateEan13Checksum(@NonNull final List<Integer> digits)
-            throws NumberFormatException {
-        final int len = digits.size();
-        if (len < 12 || len > 13) {
-            throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-        }
-        int sum = 0;
-        // 1. Take the first 12 digits of the 13-digit EAN/ISBN
-        // 2. Multiply each number in turn, from left to right by a number.
-        //    The first, leftmost, digit is multiplied by 1, the second by 3,
-        //    the third by 1 again, the fourth by 3 again, and so on to
-        //    the eleventh which is multiplied by 1 and the twelfth by 3.
-        //
-        // 3. Add all of the 12 products.
-
-        for (int dig = 1; dig < 13; dig += 2) {
-            sum += digits.get(dig - 1);
-        }
-        for (int dig = 2; dig < 13; dig += 2) {
-            sum += digits.get(dig - 1) * 3;
-        }
-
-        // 4. Do a modulo 10 division on the sum.
-        final int modulo = sum % 10;
-
-        if (modulo == 0) {
-            // If it's a zero, then the check digit is zero.
-            return 0;
-        } else {
-            // Otherwise subtract the remainder from 10.
-            return 10 - modulo;
-        }
-    }
-
-    /**
-     * Calculate the check-digit (checksum) for the given digits.
-     * This calculation is valid for UPC_A-12 only
-     *
-     * @param digits list with the digits, either 12 or 11
-     *
-     * @return the check digit.
-     *
-     * @throws NumberFormatException on failure
-     */
-    private int calculateUpcAChecksum(@NonNull final List<Integer> digits)
-            throws NumberFormatException {
-        final int len = digits.size();
-        if (len < 11 || len > 12) {
-            throw new NumberFormatException(ERROR_WRONG_SIZE + len);
-        }
-        int sum = 0;
-        // 1. Take the first 11 digits of the 12-digit UPC_A
-        // 2. Sum the digits at odd-numbered positions (first, third, fifth,..., eleventh).
-        // Multiply the result by 3.
-        for (int dig = 1; dig < 12; dig += 2) {
-            sum += digits.get(dig - 1) * 3;
-        }
-        // 3. Add the digit sum at even-numbered positions (second, fourth, sixth,..., tenth)
-        // to the result.
-        for (int dig = 2; dig < 12; dig += 2) {
-            sum += digits.get(dig - 1);
-        }
-
-        // 4. Do a modulo 10 division on the sum.
-        final int modulo = sum % 10;
-
-        if (modulo == 0) {
-            // If it's a zero, then the check digit is zero.
-            return 0;
-        } else {
-            // Otherwise subtract the remainder from 10.
-            return 10 - modulo;
-        }
-    }
-
-    /**
      * Get the concatenated digits. Digit 10 is always returned as '<strong>X</strong>'.
      *
      * @param digits the list of digits
@@ -858,8 +618,7 @@ public class ISBN
 
         // Lastly, different but compatible length/codes.
 
-        // ISBN-10 and ISBN-13:
-        // Compare the 9 significant digits:
+        // ISBN-10 and ISBN-13: Compare the 9 significant digits:
         // ISBN10: don't include the checksum -> 0..9
         // ISBN13: skip the first 3 character, and don't include the checksum -> 3..12
         if (codeDigits.size() == 10 && cmp.codeDigits.size() == 13) {
@@ -869,10 +628,9 @@ public class ISBN
             return codeDigits.subList(3, 12).equals(cmp.codeDigits.subList(0, 9));
         }
 
-        // ISSN and EAN-13
-        // Compare the 7 significant digits:
-        // ISSN: don't include the checksum -> 0..7
-        // EAN-13: skip the first 3 character, and don't include the remainder -> 3..11
+        // ISSN-8 and ISSN-13: Compare the 7 significant digits:
+        // ISSN-8: don't include the checksum -> 0..7
+        // ISSN-13: skip the first 3 character, and don't include the remainder -> 3..11
         if (codeDigits.size() == 8 && cmp.codeDigits.size() == 13) {
             return codeDigits.subList(0, 7).equals(cmp.codeDigits.subList(3, 11));
 
@@ -912,7 +670,247 @@ public class ISBN
         /** Periodicals. subtype of EAN-13. 13 digits. */
         Issn13,
         /** Sheet Music. 13 digits. */
-        Ismn
+        Ismn;
+
+        /**
+         * Determine the type of code.
+         *
+         * @param digits to check
+         *
+         * @return type
+         *
+         * @throws NumberFormatException if parsing totally failed
+         */
+        @NonNull
+        private static Type getType(@Nullable final List<Integer> digits)
+                throws NumberFormatException {
+
+            if (digits == null || digits.isEmpty()) {
+                return Invalid;
+            }
+
+            final int size = digits.size();
+
+            // Most common 13 digits
+            if (size == 13 && calculateEan13Checksum(digits) == digits.get(12)) {
+                // Prefix 978 is "Bookland"
+                if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 8) {
+                    return Isbn13;
+
+                } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 9) {
+                    if (digits.get(3) == 0) {
+                        // Prefix 979 with first digit 0 is "Musicland"
+                        return Ismn;
+                    } else {
+                        // non-0 is "Bookland"... we PRESUME, it's not entirely clear
+                        // if these are simply 'reserved' or actual books.
+                        return Isbn13;
+                    }
+                } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 7) {
+                    // Prefix 977 are periodicals; an ISSN packed in an EAN-13
+                    return Issn13;
+
+                } else {
+                    // it's a generic EAN-13
+                    return Ean13;
+                }
+            }
+
+            // Older ISBN-10
+            if (size == 10 && calculateIsbn10Checksum(digits) == digits.get(9)) {
+                return Isbn10;
+            }
+
+            // Magazines/Serials with ISSN numbers
+            if (size == 8 && calculateIssn8Checksum(digits) == digits.get(7)) {
+                return Issn8;
+            }
+
+            // Legacy UPC_A codes.
+            // a UPC barcode might be longer than 12 characters due to allowed extensions.
+            // But only the first 12 characters are 'the' UPC_A code.
+            if (size >= 12 && calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
+                return UpcA;
+            }
+
+            // Legacy SBN with optional price digits.
+            if (size == 9 || size == 12) {
+                final List<Integer> sbn = new ArrayList<>(digits.subList(0, 9));
+                sbn.add(0, 0);
+                if (calculateIsbn10Checksum(sbn) == sbn.get(9)) {
+                    return Sbn;
+                }
+            }
+
+            return Invalid;
+        }
+
+        /**
+         * Calculate the check-digit (checksum) for the given digits.
+         * This calculation is valid for EAN-13 / ISBN-13 only
+         *
+         * @param digits list with the digits, either 13 or 12
+         *
+         * @return the check digit.
+         *
+         * @throws NumberFormatException on failure
+         */
+        private static int calculateEan13Checksum(@NonNull final List<Integer> digits)
+                throws NumberFormatException {
+            final int len = digits.size();
+            if (len < 12 || len > 13) {
+                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
+            }
+            int sum = 0;
+            // 1. Take the first 12 digits of the 13-digit EAN/ISBN
+            // 2. Multiply each number in turn, from left to right by a number.
+            //    The first, leftmost, digit is multiplied by 1, the second by 3,
+            //    the third by 1 again, the fourth by 3 again, and so on to
+            //    the eleventh which is multiplied by 1 and the twelfth by 3.
+            //
+            // 3. Add all of the 12 products.
+
+            for (int dig = 1; dig < 13; dig += 2) {
+                sum += digits.get(dig - 1);
+            }
+            for (int dig = 2; dig < 13; dig += 2) {
+                sum += digits.get(dig - 1) * 3;
+            }
+
+            // 4. Do a modulo 10 division on the sum.
+            final int modulo = sum % 10;
+
+            if (modulo == 0) {
+                // If it's a zero, then the check digit is zero.
+                return 0;
+            } else {
+                // Otherwise subtract the remainder from 10.
+                return 10 - modulo;
+            }
+        }
+
+        /**
+         * Calculate the check-digit (checksum) for the given digits.
+         * This calculation is valid for ISBN-10 only
+         *
+         * @param digits list with the digits, either 10 or 9
+         *
+         * @return the check digit.
+         *
+         * @throws NumberFormatException on failure
+         */
+        private static int calculateIsbn10Checksum(@NonNull final List<Integer> digits)
+                throws NumberFormatException {
+            final int len = digits.size();
+            if (len < 9 || len > 10) {
+                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
+            }
+            int sum = 0;
+            // 1. Take the first 9 digits of the 10-digit ISBN.
+            // 2. Multiply each number in turn, from left to right by a number.
+            //    The first, leftmost, digit of the nine is multiplied by 10,
+            //    then working from left to right, each successive digit is
+            //    multiplied by one less than the one before.
+            //    So the second digit is multiplied by 9, the third by 8,
+            //    and so on to the ninth which is multiplied by 2.
+            //
+            // 3. Add all of the 9 products.
+            int multiplier = 10;
+            for (int dig = 1; dig < 10; dig++) {
+                sum += digits.get(dig - 1) * multiplier;
+                multiplier--;
+            }
+
+            // 4. Do a modulo 11 division on the sum.
+            final int modulo = sum % 11;
+            if (modulo == 0) {
+                return 0;
+            } else {
+                return 11 - modulo;
+            }
+        }
+
+        /**
+         * Calculate the check-digit (checksum) for the given digits.
+         * This calculation is valid for ISSN only
+         *
+         * @param digits list with the digits, either 8 or 7
+         *
+         * @return the check digit.
+         *
+         * @throws NumberFormatException on failure
+         */
+        private static int calculateIssn8Checksum(@NonNull final List<Integer> digits)
+                throws NumberFormatException {
+            final int len = digits.size();
+            if (len < 7 || len > 8) {
+                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
+            }
+            int sum = 0;
+            // 1. Take the first 7 digits of the 8-digit ISSN.
+            // 2. Multiply each number in turn, from left to right by a number.
+            //    The first, leftmost, digit of the seven is multiplied by 8,
+            //    then working from left to right, each successive digit is
+            //    multiplied by one less than the one before.
+            //    So the second digit is multiplied by 7, the third by 6,
+            //    and so on to the seventh which is multiplied by 2.
+            //
+            // 3. Add all of the 7 products.
+            int multiplier = 8;
+            for (int dig = 1; dig < 8; dig++) {
+                sum += digits.get(dig - 1) * multiplier;
+                multiplier--;
+            }
+
+            // 4. Do a modulo 11 division on the sum.
+            final int modulo = sum % 11;
+            if (modulo == 0) {
+                return 0;
+            } else {
+                return 11 - modulo;
+            }
+        }
+
+        /**
+         * Calculate the check-digit (checksum) for the given digits.
+         * This calculation is valid for UPC_A-12 only
+         *
+         * @param digits list with the digits, either 12 or 11
+         *
+         * @return the check digit.
+         *
+         * @throws NumberFormatException on failure
+         */
+        private static int calculateUpcAChecksum(@NonNull final List<Integer> digits)
+                throws NumberFormatException {
+            final int len = digits.size();
+            if (len < 11 || len > 12) {
+                throw new NumberFormatException(ERROR_WRONG_SIZE + len);
+            }
+            int sum = 0;
+            // 1. Take the first 11 digits of the 12-digit UPC_A
+            // 2. Sum the digits at odd-numbered positions (first, third, fifth,..., eleventh).
+            // Multiply the result by 3.
+            for (int dig = 1; dig < 12; dig += 2) {
+                sum += digits.get(dig - 1) * 3;
+            }
+            // 3. Add the digit sum at even-numbered positions (second, fourth, sixth,..., tenth)
+            // to the result.
+            for (int dig = 2; dig < 12; dig += 2) {
+                sum += digits.get(dig - 1);
+            }
+
+            // 4. Do a modulo 10 division on the sum.
+            final int modulo = sum % 10;
+
+            if (modulo == 0) {
+                // If it's a zero, then the check digit is zero.
+                return 0;
+            } else {
+                // Otherwise subtract the remainder from 10.
+                return 10 - modulo;
+            }
+        }
     }
 
     /**
