@@ -433,7 +433,7 @@ public class SearchBookUpdatesViewModel
 
                     final String isbnStr = currentBook.getIsbn();
                     if (!isbnStr.isEmpty()) {
-                        searchCriteria.setIsbnText(isbnStr);
+                        searchCriteria.setRawIsbnText(isbnStr);
                         canSearch = true;
                     }
 

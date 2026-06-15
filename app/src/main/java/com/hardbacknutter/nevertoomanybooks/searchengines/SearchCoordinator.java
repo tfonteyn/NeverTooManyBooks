@@ -230,7 +230,7 @@ public class SearchCoordinator
                     // They will redo the search WITH the ISBN/code.
                     // Replace the search text with the (we hope) exact ISBN/code we just found.
                     // Worst case, explicitly use an empty string.
-                    currentSearch.getCriteria().setIsbnText(result.getIsbn());
+                    currentSearch.getCriteria().setRawIsbnText(result.getIsbn());
                     searchStarted = startConcurrentSearch(context, currentSearch);
                 } else {
                     // sequentially start the next search which has not run yet.

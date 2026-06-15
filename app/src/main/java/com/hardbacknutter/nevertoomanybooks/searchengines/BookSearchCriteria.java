@@ -199,19 +199,21 @@ public class BookSearchCriteria {
     }
 
     /**
-     * @see SearchEngine.ByIsbn
+     * Get the ISBN criteria as a raw string.
+     *
+     * @return raw ISBN text
      */
     @NonNull
-    public String getIsbnText() {
+    public String getRawIsbnText() {
         return isbnText;
     }
 
     /**
-     * Set the ISBN criteria.
+     * Set the ISBN criteria as a raw string.
      *
      * @param isbnText to search for
      */
-    public void setIsbnText(@NonNull final String isbnText) {
+    public void setRawIsbnText(@NonNull final String isbnText) {
         this.isbnText = isbnText;
         isbn = null;
     }
