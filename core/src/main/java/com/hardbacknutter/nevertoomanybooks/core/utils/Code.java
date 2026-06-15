@@ -22,6 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.NonNull;
 
+/**
+ * This is not fixed... for now, it's a simple abstraction used for the ItemQueue functionality,
+ * but might be removed/changed.
+ */
 public interface Code {
 
     /**

@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRe
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
@@ -410,7 +409,7 @@ public final class ImageHandler {
 
         final String isbnStr = coverBrowserIsbnSupplier.get();
         if (!isbnStr.isEmpty()) {
-            final Code isbn = new ISBN(isbnStr, true);
+            final ISBN isbn = new ISBN(isbnStr, true);
             if (isbn.isValid()) {
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),

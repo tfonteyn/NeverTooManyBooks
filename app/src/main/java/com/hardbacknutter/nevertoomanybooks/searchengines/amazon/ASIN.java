@@ -23,8 +23,8 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 /**
@@ -47,7 +47,7 @@ public final class ASIN
 
     /** ASIN codes are always 10 characters. */
     private static final int ASIN_LEN = 10;
-    /** The first 10 characters are numeric; this fact is used during validity checks. */
+    /** Alphanumeric. */
     private static final String VALID_CHARS = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private final String code;
     private final boolean valid;
@@ -62,8 +62,8 @@ public final class ASIN
         return valid;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String asText() {
         return code;
     }

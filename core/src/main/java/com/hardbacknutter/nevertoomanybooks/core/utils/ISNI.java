@@ -37,8 +37,7 @@ import java.util.regex.Pattern;
  * @see <a href="https://en.wikipedia.org/wiki/International_Standard_Name_Identifier">
  *         Wikipedia</a>
  */
-public class ISNI
-        implements Code {
+public class ISNI {
 
     /** Remove the '-' character and all whitespace. */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[-\\s+]");
@@ -102,7 +101,6 @@ public class ISNI
      *
      * @return string
      */
-    @Override
     @NonNull
     public String asText() {
         return isni;
@@ -113,7 +111,6 @@ public class ISNI
      *
      * @return validity
      */
-    @Override
     public boolean isValid() {
         return valid;
     }

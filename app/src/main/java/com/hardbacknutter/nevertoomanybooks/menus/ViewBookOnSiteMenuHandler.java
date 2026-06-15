@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -70,7 +69,7 @@ public class ViewBookOnSiteMenuHandler
         final String isbnStr = data.getString(DBKey.ISBN);
 
         // check if the ISBN *is* an ASIN
-        final Code asin = new ASIN(isbnStr);
+        final ASIN asin = new ASIN(isbnStr);
         if (asin.isValid()) {
             ivs.add(new Identifier.Value(Identifier.SID_ASIN, asin.asText()));
             return ivs;

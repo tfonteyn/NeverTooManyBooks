@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -80,7 +79,7 @@ public class IsfdbGetEditionsTask
      * @param isbn to search for
      */
     @UiThread
-    public void search(@NonNull final Code isbn) {
+    public void search(@NonNull final ISBN isbn) {
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
             ISBN.requireValidIsbn(validIsbn);
