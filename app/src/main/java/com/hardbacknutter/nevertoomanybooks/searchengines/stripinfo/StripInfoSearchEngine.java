@@ -344,14 +344,14 @@ public class StripInfoSearchEngine
         final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parseRootDocument(context, validIsbn, document, fetchCovers, book);
+            parseRootDocument(context, isbn, document, fetchCovers, book);
         }
         return book;
     }
 
     @VisibleForTesting
     public void parseRootDocument(@NonNull final Context context,
-                                  @NonNull final String validIsbn,
+                                  @NonNull final ISBN searchedIsbn,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
@@ -364,7 +364,7 @@ public class StripInfoSearchEngine
 
         // Finally, replace potential invalid ISBN numbers.
         // See method docs for details
-        processBarcode(validIsbn, book);
+        processBarcode(searchedIsbn, book);
     }
 
     private boolean isMultiResult(@NonNull final Document document) {
@@ -689,22 +689,22 @@ public class StripInfoSearchEngine
      * as present of the physical book,
      * while the barcode field will (usually) contain the correct ISBN.
      *
-     * @param searchIsbnText the ISBN which we searched for
-     * @param book           to update
+     * @param searchedIsbn the ISBN which we searched for
+     * @param book         to update
      */
     @VisibleForTesting
-    public void processBarcode(@NonNull final String searchIsbnText,
+    public void processBarcode(@NonNull final ISBN searchedIsbn,
                                @NonNull final Book book) {
 
         final String barcode = book.getString(SiteField.BARCODE, null);
         if (barcode != null && !barcode.isEmpty()) {
             final ISBN isbnFromBarcode = new ISBN(barcode, true);
-            // We found a valid barcode
+            // If we found a valid barcode
             if (isbnFromBarcode.isValid()
-                // or, it was invalid, but it *IS* the one we were searching for
-                || isbnFromBarcode.asText().equals(searchIsbnText)) {
+                // or, if it was invalid, but *IS* the one we were searching for...
+                || isbnFromBarcode.equals(searchedIsbn)) {
 
-                // Then the barcode always replaces the ISBN from the site!
+                // then the barcode always replaces the ISBN from the site!
                 book.setIsbn(isbnFromBarcode.asText());
                 book.remove(SiteField.BARCODE);
             }

@@ -562,7 +562,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // we've set the doc, but will redirect.. so an internet download WILL be done.
-        searchEngine.parseRootDocument(context, "9782756010830",
+        searchEngine.parseRootDocument(context, new ISBN("9782756010830", true),
                                        document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -618,25 +618,26 @@ class ParseTest
     }
 
     // Geheime Driehoek nr 3, "As en Goud"
-    // ISBN	9069692736 <-- incorrect
-    // Barcode	9789069692739 <-- correct
     @Test
     void asEnGoud() {
-        final ISBN barcode = new ISBN("9789069692739", true);
+        final String correctBarcode = "9789069692739";
+        final String incorrectBarcode = "9069692736";
+
+        final ISBN barcode = new ISBN(correctBarcode, true);
         assertTrue(barcode.isValid());
 
-        final ISBN isbn = new ISBN("9069692736", true);
+        final ISBN isbn = new ISBN(incorrectBarcode, true);
         // check using the strictIsbn flag
         assertFalse(isbn.isValid());
         // check the type directly
         assertSame(CodeType.Invalid, isbn.getCodeType());
 
         final Book book = new Book();
-        book.setIsbn("9069692736");
-        book.putString(StripInfoSearchEngine.SiteField.BARCODE, "9789069692739");
-        searchEngine.processBarcode("9789069692739", book);
+        book.setIsbn(incorrectBarcode);
+        book.putString(StripInfoSearchEngine.SiteField.BARCODE, correctBarcode);
+        searchEngine.processBarcode(barcode, book);
 
-        assertEquals("9789069692739", book.getString(DBKey.ISBN, null));
+        assertEquals(correctBarcode, book.getString(DBKey.ISBN, null));
         assertFalse(book.contains(StripInfoSearchEngine.SiteField.BARCODE));
     }
 }
