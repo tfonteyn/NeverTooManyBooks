@@ -57,32 +57,20 @@ public class ViewBookOnSiteMenuHandler
         // The code below sole goal is to check for, or try to construct an ASIN
         // and add it as-needed/if-possible to the list of identifier values.
 
-        // If we have an ASIN, return all the Identifiers now.
+        // If we already have an ASIN, return all Identifiers now.
         if (ivs.stream().map(Identifier.Value::getKey).anyMatch(Identifier.SID_ASIN::equals)) {
             return ivs;
         }
-        // If we don't have an ISBN, nothing we can try more, return all the Identifiers now.
-        if (!data.contains(DBKey.ISBN)) {
-            return ivs;
-        }
 
-        // No ASIN present, see if we can deduce one from the ISBN
-        final String isbnStr = data.getString(DBKey.ISBN);
-
-        // check if the ISBN *is* an ASIN
-        final ASIN asin = new ASIN(isbnStr);
-        if (asin.isValid()) {
-            ivs.add(new Identifier.Value(Identifier.SID_ASIN, asin.asText()));
-            return ivs;
-        }
-
-        // If the ISBN is an ISBN-10, then it *is* an ASIN
-        final ISBN isbn = new ISBN(isbnStr, true);
-        if (isbn.isValid() && isbn.isIsbn10Compat()) {
-            ivs.add(new Identifier.Value(Identifier.SID_ASIN,
-                                         isbn.asText(CodeType.Isbn10)));
+        // See if we can derive the ASIN from the ISBN
+        if (data.contains(DBKey.ISBN)) {
+            final ASIN asin = new ASIN(data.getString(DBKey.ISBN));
+            if (asin.isValid()) {
+                ivs.add(new Identifier.Value(Identifier.SID_ASIN, asin.asText()));
+            }
         }
         return ivs;
+
     }
 
     @NonNull
