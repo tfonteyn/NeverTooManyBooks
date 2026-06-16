@@ -259,7 +259,7 @@ public class LastDodoSearchEngine
     /**
      * Takes a string which (hopefully) contains a 10 or 13 digit ISBN,
      * and formats it in the traditional way with '-' characters.
-     * Any non-valid string is returned as-is;  a {@code null} becomes {@code ""}
+     * Any string of a different length is returned as-is;  a {@code null} becomes {@code ""}
      *
      * @param s to format
      *
@@ -269,22 +269,24 @@ public class LastDodoSearchEngine
     private static String formatIsbnWithDashes(@Nullable final String s) {
         if (s == null) {
             return "";
+        }
 
-        } else if (s.length() == 10) {
+        if (s.length() == 10) {
             return s.substring(0, 2) + '-'
                    + s.substring(2, 6) + '-'
                    + s.substring(6, 9) + '-'
                    + s.charAt(9);
+        }
 
-        } else if (s.length() == 13) {
+        if (s.length() == 13) {
             return s.substring(0, 3) + '-'
                    + s.substring(3, 5) + '-'
                    + s.substring(5, 9) + '-'
                    + s.substring(9, 12) + '-'
                    + s.charAt(12);
-        } else {
-            return s;
         }
+
+        return s;
     }
 
     @NonNull
@@ -310,12 +312,14 @@ public class LastDodoSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
 
         final Book book = new Book();
 
-        // Searching on the ISBN REQUIRES the dashes between the digits.
-        final String url = getHostUrl() + String.format(SEARCH, formatIsbnWithDashes(validIsbn));
+        // Reformat 10 or 13 digit codes to the site-required format,
+        // whether they are valid ISBN or not.
+        final String url = getHostUrl() + String.format(SEARCH, formatIsbnWithDashes(code));
+
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -344,14 +348,9 @@ public class LastDodoSearchEngine
         if (isbn != null) {
             final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
             if (!code.isEmpty()) {
-                // Check the code to be a valid ISBN, but...
-                if (isbn.isValid()) {
-                    // Searching on the ISBN REQUIRES the dashes between the digits.
-                    words.add(formatIsbnWithDashes(code));
-                } else {
-                    // Generic code
-                    words.add(code);
-                }
+                // Reformat 10 or 13 digit codes to the site-required format,
+                // whether they are valid ISBN or not.
+                words.add(formatIsbnWithDashes(code));
             }
         }
 
