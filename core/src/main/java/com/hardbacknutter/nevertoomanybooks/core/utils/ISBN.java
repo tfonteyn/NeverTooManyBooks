@@ -96,6 +96,7 @@ public class ISBN
 
     private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
             "X can only be at the end of an ISBN-10";
+    private static final String ERROR_ISBN_MUST_BE_VALID = "isbn must be valid";
 
     /**
      * The extended barcode combined with the UPC_A vendor prefix can be used to
@@ -299,17 +300,19 @@ public class ISBN
     }
 
     /**
-     * Check the validity of an ISBN string. THIS A MEANT FOR DEBUGGING ONLY.
+     * DEBUG ONLY. Check the validity of an ISBN string.
      *
      * @param text to check
      *
      * @throws IllegalArgumentException (debug) if invalid
      */
     public static void requireValidIsbn(@Nullable final String text) {
-        if (text == null || text.isEmpty()
-            || !new ISBN(text, true).isValid()) {
-
-            throw new IllegalArgumentException("isbn must be valid");
+        if (text == null || text.isBlank()) {
+            throw new IllegalArgumentException(ERROR_ISBN_MUST_BE_VALID);
+        }
+        final ISBN isbn = new ISBN(text, true);
+        if (!isbn.isIsbn()) {
+            throw new IllegalArgumentException(ERROR_ISBN_MUST_BE_VALID);
         }
     }
 
