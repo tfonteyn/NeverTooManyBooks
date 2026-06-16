@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -699,9 +700,11 @@ public class StripInfoSearchEngine
         final String barcode = book.getString(SiteField.BARCODE, null);
         if (barcode != null && !barcode.isEmpty()) {
             final ISBN isbnFromBarcode = new ISBN(barcode, true);
-            // If we found a valid barcode
-            if (isbnFromBarcode.isValid()
-                // or, if it was invalid, but *IS* the one we were searching for...
+            // If we found a pure ISBN
+            if (isbnFromBarcode.getCodeType() == CodeType.Isbn13
+                || isbnFromBarcode.getCodeType() == CodeType.Isbn10
+                // or, if it was a different code, or even an invalid code,
+                // but *IS* the one we were searching for
                 || isbnFromBarcode.equals(searchedIsbn)) {
 
                 // then the barcode always replaces the ISBN from the site!
