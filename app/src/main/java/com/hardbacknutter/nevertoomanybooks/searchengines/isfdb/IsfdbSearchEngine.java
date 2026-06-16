@@ -1498,44 +1498,54 @@ public class IsfdbSearchEngine
                 }
 
                 for (final Element tr : entries) {
-                    // 1st column: Title == the book link
-                    final Element edLink = tr.child(0).selectFirst("a");
-                    if (edLink != null) {
-                        final String url = edLink.attr("href");
-                        if (!url.isEmpty()) {
-                            String publisher = null;
-                            String isbnStr = null;
-
-                            // 3rd column: the publisher
-                            final Element pa = tr.child(3).selectFirst("a");
-                            if (pa != null) {
-                                publisher = cleanName(pa);
-                            }
-                            // 4th column: the ISBN/Catalog ID.
-                            final String catNr = tr.child(4).text();
-                            if (catNr.length() > 9) {
-                                final ISBN isbn = new ISBN(catNr, true);
-                                if (isbn.isValid()) {
-                                    isbnStr = isbn.asText();
-                                }
-                            }
-                            final long isfdbId = stripNumber(url, '?');
-                            // Sanity check
-                            if (isfdbId != 0) {
-                                editions.add(new AltEditionIsfdb(isfdbId, isbnStr,
-                                                                 publisher, lang));
-                            }
-                        }
-                    }
+                    parseEdition(tr, lang, editions);
                 }
             }
-
         } else {
             // dunno, let's log it
             LoggerFactory.getLogger().w(TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return editions;
+    }
+
+    private void parseEdition(@NonNull final Element tr,
+                              @Nullable final String lang,
+                              @NonNull final List<AltEditionIsfdb> editions) {
+
+        // 1st column: Title == the book link
+        final Element edLink = tr.child(0).selectFirst("a");
+        if (edLink == null) {
+            return;
+        }
+
+        final String url = edLink.attr("href");
+        if (url.isEmpty()) {
+            return;
+        }
+
+        String publisher = null;
+        String isbnStr = null;
+
+        // 3rd column: the publisher
+        final Element pa = tr.child(3).selectFirst("a");
+        if (pa != null) {
+            publisher = cleanName(pa);
+        }
+        // 4th column: the ISBN/Catalog ID.
+        final String catNr = tr.child(4).text();
+        if (catNr.length() > 9) {
+            final ISBN isbn = new ISBN(catNr, true);
+            if (isbn.isIsbn()) {
+                isbnStr = isbn.asText();
+            }
+        }
+        final long isfdbId = stripNumber(url, '?');
+        // Sanity check
+        if (isfdbId != 0) {
+            editions.add(new AltEditionIsfdb(isfdbId, isbnStr,
+                                             publisher, lang));
+        }
     }
 
     /**
