@@ -319,6 +319,8 @@ public class ISBN
     /**
      * Check if we have a valid code. Does not check for a specific type
      * unless the {@code strictIsbn} flag as set in the constructor is {@code true}.
+     * <p>
+     * Use {@link #getCodeType()} or {@link #isIsbn()} by preference.
      *
      * @return validity
      */
@@ -337,7 +339,16 @@ public class ISBN
     }
 
     /**
-     * Check if the ISBN code is either an ISBN-10,
+     * Convenience method.
+     *
+     * @return flag
+     */
+    public boolean isIsbn() {
+        return codeType == CodeType.Isbn10 || codeType == CodeType.Isbn13;
+    }
+
+    /**
+     * Check if the code is either an ISBN-10,
      * or an ISBN-13 which can be converted to an ISBN-10.
      *
      * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
