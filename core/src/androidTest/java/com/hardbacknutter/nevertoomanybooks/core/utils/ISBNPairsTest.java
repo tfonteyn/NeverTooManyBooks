@@ -81,12 +81,12 @@ class ISBNPairsTest {
 
         // If either one is invalid, we consider them different
         final ISBN o1 = new ISBN(isbnStr1, true);
-        if (!o1.isValid()) {
+        if (o1.getCodeType() != CodeType.Isbn13 && o1.getCodeType() != CodeType.Isbn10) {
             return false;
         }
 
         final ISBN o2 = new ISBN(isbnStr2, true);
-        if (!o2.isValid()) {
+        if (o2.getCodeType() != CodeType.Isbn13 && o2.getCodeType() != CodeType.Isbn10) {
             return false;
         }
 
@@ -99,8 +99,10 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertTrue(isbn0.isValid());
-            assertTrue(isbn1.isValid());
+            assertTrue(isbn0.getCodeType() == CodeType.Isbn13
+                       || isbn0.getCodeType() == CodeType.Isbn10);
+            assertTrue(isbn1.getCodeType() == CodeType.Isbn13
+                       || isbn1.getCodeType() == CodeType.Isbn10);
         }
     }
 
@@ -110,8 +112,10 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertFalse(isbn0.isValid());
-            assertFalse(isbn1.isValid());
+            assertFalse(isbn0.getCodeType() == CodeType.Isbn13
+                        || isbn0.getCodeType() == CodeType.Isbn10);
+            assertFalse(isbn1.getCodeType() == CodeType.Isbn13
+                        || isbn1.getCodeType() == CodeType.Isbn10);
         }
     }
 

@@ -143,33 +143,32 @@ class ISBNTest {
     @MethodSource("validIsbn13")
     void validIsbn13(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, true);
-        assertTrue(isbn.isValid());
         assertSame(CodeType.Isbn13, isbn.getCodeType());
     }
 
     @ParameterizedTest
     @MethodSource("invalidIsbn13")
     void invalidIsbn13(@NonNull final String isbnStr) {
-        final ISBN isbn = new ISBN(isbnStr, true);
-        assertFalse(isbn.isValid());
+        final ISBN code = new ISBN(isbnStr, true);
+        assertSame(CodeType.Invalid, code.getCodeType());
     }
 
     @ParameterizedTest
     @MethodSource("validSbn")
-    void validSbn(@NonNull final String isbnStr) {
-        final ISBN isbn = new ISBN(isbnStr, true);
-        assertTrue(isbn.isValid());
-        assertSame(CodeType.Isbn10, isbn.getCodeType());
+    void validSbn(@NonNull final String sbnStr,
+                  @NonNull final String expected) {
+        final ISBN code = new ISBN(sbnStr, true);
+        assertSame(CodeType.Isbn10, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Isbn10));
     }
 
     @ParameterizedTest
     @MethodSource("validUpcIsbn")
     void validUpcIsbn(@NonNull final String upcStr,
                       @NonNull final String expected) {
-        final ISBN isbn = new ISBN(upcStr, false);
-        assertSame(CodeType.Isbn10, isbn.getCodeType());
-        assertTrue(isbn.isValid());
-        assertEquals(expected, isbn.asText());
+        final ISBN code = new ISBN(upcStr, false);
+        assertSame(CodeType.Isbn10, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Isbn10));
     }
 
 
@@ -177,51 +176,44 @@ class ISBNTest {
     @MethodSource("valid_upc")
     void valid_upc(@NonNull final String upcStr,
                    @NonNull final String expected) {
-        final ISBN upc = new ISBN(upcStr, false);
-        assertSame(CodeType.UpcA, upc.getCodeType());
-        assertTrue(upc.isValid());
-        assertEquals(expected, upc.asText());
+        final ISBN code = new ISBN(upcStr, false);
+        assertSame(CodeType.UpcA, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.UpcA));
     }
 
     @ParameterizedTest
     @MethodSource("valid_ean13")
     void valid_ean13(@NonNull final String eanStr,
                      @NonNull final String expected) {
-        final ISBN ean = new ISBN(eanStr, false);
-        // check for all subtypes
-        assertSame(CodeType.Ean13, ean.getCodeType());
-        assertTrue(ean.isValid());
-        assertEquals(expected, ean.asText());
+        final ISBN code = new ISBN(eanStr, false);
+        assertSame(CodeType.Ean13, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Ean13));
     }
-
 
     @ParameterizedTest
     @MethodSource("valid_issn8")
     void valid_issn8(@NonNull final String issnStr,
                      @NonNull final String expected) {
-        final ISBN issn = new ISBN(issnStr, false);
-        assertTrue(issn.isValid());
-        assertSame(CodeType.Issn8, issn.getCodeType());
-        assertEquals(expected, issn.asText(CodeType.Issn8));
+        final ISBN code = new ISBN(issnStr, false);
+        assertSame(CodeType.Issn8, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Issn8));
     }
 
     @ParameterizedTest
     @MethodSource("valid_issn13")
     void valid_issn13(@NonNull final String issnStr,
                       @NonNull final String expected) {
-        final ISBN issn = new ISBN(issnStr, false);
-        assertTrue(issn.isValid());
-        assertSame(CodeType.Issn13, issn.getCodeType());
-        assertEquals(expected, issn.asText(CodeType.Issn13));
+        final ISBN code = new ISBN(issnStr, false);
+        assertSame(CodeType.Issn13, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Issn13));
     }
 
     @ParameterizedTest
     @MethodSource("valid_issn138")
     void valid_issn138(@NonNull final String issnStr,
                        @NonNull final String expected) {
-        final ISBN issn = new ISBN(issnStr, false);
-        assertTrue(issn.isValid());
-        assertSame(CodeType.Issn13, issn.getCodeType());
-        assertEquals(expected, issn.asText(CodeType.Issn8));
+        final ISBN code = new ISBN(issnStr, false);
+        assertSame(CodeType.Issn13, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Issn8));
     }
 }
