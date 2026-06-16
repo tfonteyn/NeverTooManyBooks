@@ -409,12 +409,12 @@ public final class ImageHandler {
 
         final String isbnStr = coverBrowserIsbnSupplier.get();
         if (!isbnStr.isEmpty()) {
-            final ISBN isbn = new ISBN(isbnStr, true);
-            if (isbn.isValid()) {
+            final ISBN code = new ISBN(isbnStr, true);
+            if (code.isIsbn()) {
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),
                                             coverBrowserTitleSupplier.get(),
-                                            isbn.asText(), cIdx);
+                                            code.asText(), cIdx);
                 return;
             }
         }
