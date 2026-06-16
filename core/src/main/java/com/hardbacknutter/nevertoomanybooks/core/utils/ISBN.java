@@ -703,46 +703,49 @@ public class ISBN
         }
 
         private void clean(@Nullable final Editable editable) {
-            if (isbnValidityCheck != Validity.None && editable != null && editable.length() > 0) {
-                final String text = editable.toString().strip();
-                if (text.isEmpty()) {
+            if (isbnValidityCheck == Validity.None
+                || editable == null || editable.length() == 0) {
+                return;
+            }
+
+            final String text = editable.toString().strip();
+            if (text.isEmpty()) {
+                return;
+            }
+
+            if (isbnValidityCheck == Validity.Loose) {
+                // Text representation of ISBN-13/10 string is often
+                // split in groups of digits with '-' in between.
+                // This is, as observed, usually 10 + 3 '-' (or 10 + 2 '-' + 'x'),
+                // or 13 + 4 '-' characters.
+                // Examples of this pattern:
+                // 978-1-23456-789-0
+                // 978-1-2345-6789-0
+                // 978-1-234-56789-0
+                // 978-1-23-456789-0
+                // 1-234-56789-x
+                //
+                // Note we DELIBERATELY do not attempt to clean other lengths.
+                // (at first we did... this proved to be annoying to the user who wanted
+                // to enter a custom code.
+                // Even this 13/17 length rule might be too restrictive?)
+                if (text.length() != 13 && text.length() != 17) {
                     return;
                 }
-
-                if (isbnValidityCheck == Validity.Loose) {
-                    // Text representation of ISBN-13/10 string is often
-                    // split in groups of digits with '-' in between.
-                    // This is, as observed, usually 10 + 3 '-' (or 10 + 2 '-' + 'x'),
-                    // or 13 + 4 '-' characters.
-                    // Examples of this pattern:
-                    // 978-1-23456-789-0
-                    // 978-1-2345-6789-0
-                    // 978-1-234-56789-0
-                    // 978-1-23-456789-0
-                    // 1-234-56789-x
-                    //
-                    // Note we DELIBERATELY do not attempt to clean other lengths.
-                    // (at first we did... this proved to be annoying to the user who wanted
-                    // to enter a custom code.
-                    // Even this 13/17 length rule might be too restrictive?)
-                    if (text.length() != 13 && text.length() != 17) {
+                for (final char c : text.toCharArray()) {
+                    if (!Character.isDigit(c) && c != '-' && c != 'x' && c != 'X') {
+                        // non isbn character, leave it.
                         return;
                     }
-                    for (final char c : text.toCharArray()) {
-                        if (!Character.isDigit(c) && c != '-' && c != 'x' && c != 'X') {
-                            // non isbn character, leave it.
-                            return;
-                        }
-                    }
                 }
+            }
 
-                // Validity.Strict, or we decided we can clean up anyhow.
-                final String isbnText = cleanText(text);
-                if (!isbnText.equals(text)) {
-                    editText.removeTextChangedListener(this);
-                    editable.replace(0, editable.length(), isbnText);
-                    editText.addTextChangedListener(this);
-                }
+            // Validity.Strict, or we decided we can clean up anyhow.
+            final String isbnText = cleanText(text);
+            if (!isbnText.equals(text)) {
+                editText.removeTextChangedListener(this);
+                editable.replace(0, editable.length(), isbnText);
+                editText.addTextChangedListener(this);
             }
         }
     }
@@ -807,6 +810,12 @@ public class ISBN
                                   final int count) {
         }
 
+        private void invalidate() {
+            layout.setStartIconVisible(false);
+            layout.setStartIconOnClickListener(null);
+            LoggerFactory.getLogger().d(TAG, "invalidate");
+        }
+
         /**
          * Validate the input, and set the start-icon visibility/OnClickListener as needed.
          * Does NOT modify the editable.
@@ -814,71 +823,67 @@ public class ISBN
          * @param editable to validate; will not be modified.
          */
         private void validate(@Nullable final Editable editable) {
-            if (editable != null && editable.length() > 0) {
-                final String str = editable.toString().strip();
-                final int length = str.length();
-                final boolean strictIsbn = isbnValidityCheck == Validity.Strict;
 
-                if (length == 13) {
-                    final ISBN isbn = new ISBN(str, strictIsbn);
-                    if (isbn.isIsbn10Compat()) {
-                        altIsbn = isbn.asText(CodeType.Isbn10);
-                        layout.setStartIconVisible(true);
-                        layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                        return;
-                    } else if (isbn.isValid()) {
-                        layout.setStartIconVisible(true);
-                        layout.setStartIconOnClickListener(null);
-                        return;
-                    }
-
-                } else if (length == 10 || length == 9) {
-                    // ISBN-10 or Legacy SBN
-                    final ISBN isbn = new ISBN(str, strictIsbn);
-                    if (isbn.isValid()) {
-                        altIsbn = isbn.asText(CodeType.Isbn13);
-                        layout.setStartIconVisible(true);
-                        layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                        return;
-                    }
-
-                } else if (length == 8 && !strictIsbn) {
-                    // ISSN: indicate the code is valid, but disable the swap functionality
-                    final ISBN isbn = new ISBN(str, false);
-                    if (isbn.getCodeType() == CodeType.Issn8) {
-                        layout.setStartIconVisible(true);
-                        layout.setStartIconOnClickListener(null);
-                        return;
-                    }
-
-                } else if (length >= 12) {
-                    // UPC or Legacy SBN with price digits
-                    // Disregard the strict setting, as a 12-digit code MAY be a valid ISBN-10.
-                    // We'll explicitly check the type below.
-                    final ISBN isbn = new ISBN(str, false);
-
-                    // A UPC or a legacy SBN with price digits
-                    // which was auto-converted to ISBN-10 when created
-                    if (isbn.getCodeType() == CodeType.Isbn10) {
-                        altIsbn = isbn.asText(CodeType.Isbn13);
-                        layout.setStartIconVisible(true);
-                        layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                        return;
-                    }
-
-                    // A UPC which could NOT be converted to ISBN-10.
-                    // Indicate the code is valid, but disable the swap functionality
-                    if (!strictIsbn && isbn.getCodeType() == CodeType.UpcA) {
-                        layout.setStartIconVisible(true);
-                        layout.setStartIconOnClickListener(null);
-                        return;
-                    }
-                }
+            if (editable == null || editable.length() == 0) {
+                // empty field
+                invalidate();
+                return;
             }
 
-            // invalid, not-strict, or the user is still typing
-            layout.setStartIconVisible(false);
+            final String str = editable.toString().strip();
+            final int length = str.length();
+
+            // Bail out if the code length is not recognised as potentially valid:
+            // Valid lengths are: 8,9,10,12 or longer
+            if (length < 8 || length == 11) {
+                // not a recognised code-length and/or the user is still typing
+                invalidate();
+                return;
+            }
+
+            // Create it without forcing ISBN, we'll check the type in detail.
+            final ISBN code = new ISBN(str, false);
+            if (isbnValidityCheck == Validity.Strict && code.getCodeType() == CodeType.Invalid) {
+                // We're in strict mode, reject any invalid codes
+                invalidate();
+                return;
+            }
+
+            // ISBN-10 + any legacy SBN/UPC which was converted to ISBN-10
+            if (code.getCodeType() == CodeType.Isbn10) {
+                layout.setStartIconVisible(true);
+                // ISBN-10, which can always be converted to ISBN-13
+                altIsbn = code.asText(CodeType.Isbn13);
+                layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
+                LoggerFactory.getLogger().d(TAG, code.getCodeType());
+                return;
+            }
+
+            if (code.getCodeType() == CodeType.Isbn13) {
+                layout.setStartIconVisible(true);
+                if (code.isIsbn10Compat()) {
+                    // can be converted to ISBN-10
+                    altIsbn = code.asText(CodeType.Isbn10);
+                    layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
+                    LoggerFactory.getLogger().d(TAG, code.getCodeType());
+                } else {
+                    // cannot be converted
+                    layout.setStartIconOnClickListener(null);
+                    LoggerFactory.getLogger().d(TAG, code.getCodeType());
+                }
+                return;
+            }
+
+            if (isbnValidityCheck == Validity.Strict) {
+                // We're in strict mode, reject all other code (even when valid)
+                invalidate();
+                return;
+            }
+
+            // We're not in strict mode, just show validity status
+            layout.setStartIconVisible(code.getCodeType() != CodeType.Invalid);
             layout.setStartIconOnClickListener(null);
+            LoggerFactory.getLogger().d(TAG, code.getCodeType());
         }
     }
 }
