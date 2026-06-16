@@ -624,8 +624,7 @@ class ParseTest
         final String incorrectBarcode = "9069692736";
 
         final ISBN barcode = new ISBN(correctBarcode, true);
-        assertTrue(barcode.getCodeType() == CodeType.Isbn13
-                   || barcode.getCodeType() == CodeType.Isbn10);
+        assertTrue(barcode.isIsbn());
 
         final ISBN isbn = new ISBN(incorrectBarcode, true);
         assertSame(CodeType.Invalid, isbn.getCodeType());

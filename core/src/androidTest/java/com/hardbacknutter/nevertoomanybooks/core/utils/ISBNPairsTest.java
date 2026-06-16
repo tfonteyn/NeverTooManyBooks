@@ -66,12 +66,12 @@ class ISBNPairsTest {
     };
 
     /**
-     * Check if two codes are matching.
+     * Check if two ISBN codes are matching.
      *
      * @param isbnStr1 first code
      * @param isbnStr2 second code
      *
-     * @return {@code true} if the 2 codes match.
+     * @return {@code true} if the 2 ISBN codes match.
      */
     private static boolean matches(@Nullable final String isbnStr1,
                                    @Nullable final String isbnStr2) {
@@ -79,14 +79,14 @@ class ISBNPairsTest {
             return false;
         }
 
-        // If either one is invalid, we consider them different
+        // If either one is not a valid ISBN, we consider them different
         final ISBN o1 = new ISBN(isbnStr1, true);
-        if (o1.getCodeType() != CodeType.Isbn13 && o1.getCodeType() != CodeType.Isbn10) {
+        if (!o1.isIsbn()) {
             return false;
         }
 
         final ISBN o2 = new ISBN(isbnStr2, true);
-        if (o2.getCodeType() != CodeType.Isbn13 && o2.getCodeType() != CodeType.Isbn10) {
+        if (!o2.isIsbn()) {
             return false;
         }
 
@@ -99,10 +99,8 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertTrue(isbn0.getCodeType() == CodeType.Isbn13
-                       || isbn0.getCodeType() == CodeType.Isbn10);
-            assertTrue(isbn1.getCodeType() == CodeType.Isbn13
-                       || isbn1.getCodeType() == CodeType.Isbn10);
+            assertTrue(isbn0.isIsbn());
+            assertTrue(isbn1.isIsbn());
         }
     }
 
@@ -112,10 +110,8 @@ class ISBNPairsTest {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
-            assertFalse(isbn0.getCodeType() == CodeType.Isbn13
-                        || isbn0.getCodeType() == CodeType.Isbn10);
-            assertFalse(isbn1.getCodeType() == CodeType.Isbn13
-                        || isbn1.getCodeType() == CodeType.Isbn10);
+            assertFalse(isbn0.isIsbn());
+            assertFalse(isbn1.isIsbn());
         }
     }
 
@@ -178,7 +174,7 @@ class ISBNPairsTest {
     void isbn_matchesInvalidInvalid() {
         for (final String[] isbnPair : invalid_isbn) {
             assertFalse(matches(isbnPair[0], isbnPair[1]),
-                        "isbnPair=" + Arrays.toString(isbnPair));
+                        () -> "isbnPair=" + Arrays.toString(isbnPair));
         }
     }
 
