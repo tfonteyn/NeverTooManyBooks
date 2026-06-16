@@ -257,8 +257,7 @@ public class BookSearchCriteria {
         // We MUST use the strictIsbn as set on this criteria object,
         // as the code can have come from the scanner and be theoretically less/more strict.
         if (strictIsbn) {
-            return tmpIsbn.getCodeType() == CodeType.Isbn13
-                   || tmpIsbn.getCodeType() == CodeType.Isbn10;
+            return tmpIsbn.isIsbn();
         } else {
             return tmpIsbn.getCodeType() != CodeType.Invalid;
         }

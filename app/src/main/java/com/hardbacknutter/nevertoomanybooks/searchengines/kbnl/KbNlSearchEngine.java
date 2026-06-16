@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -77,8 +76,10 @@ public class KbNlSearchEngine
     private static final String SITE_URL = "https://www.kb.nl";
     // URGENT: needs doublt checking if we can use the url as documented at
     //  https://www.wikidata.org/wiki/Property:P1006
-    private static final String BOOK_URL = "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
-    private static final String AUTHOR_URL = "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s";
+    private static final String BOOK_URL =
+            "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
+    private static final String AUTHOR_URL =
+            "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -254,7 +255,7 @@ public class KbNlSearchEngine
 
         if (fetchCovers[0]) {
             final ISBN isbn = new ISBN(book.getIsbn(), true);
-            if (isbn.getCodeType() == CodeType.Isbn13 || isbn.getCodeType() == CodeType.Isbn10) {
+            if (isbn.isIsbn()) {
                 final AltEdition edition = new AltEditionIsbn(isbn.asText());
                 searchBestCoverByEdition(context, edition, 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));

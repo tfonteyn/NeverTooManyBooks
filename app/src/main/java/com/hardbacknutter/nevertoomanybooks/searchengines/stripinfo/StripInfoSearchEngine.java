@@ -701,8 +701,7 @@ public class StripInfoSearchEngine
         if (barcode != null && !barcode.isEmpty()) {
             final ISBN isbnFromBarcode = new ISBN(barcode, true);
             // If we found a pure ISBN
-            if (isbnFromBarcode.getCodeType() == CodeType.Isbn13
-                || isbnFromBarcode.getCodeType() == CodeType.Isbn10
+            if (isbnFromBarcode.isIsbn()
                 // or, if it was a different code, or even an invalid code,
                 // but *IS* the one we were searching for
                 || isbnFromBarcode.equals(searchedIsbn)) {
