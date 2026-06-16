@@ -23,9 +23,9 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 /**
  * ASIN stands for Amazon Standard Identification Number.
@@ -52,9 +52,23 @@ public final class ASIN
     private final String code;
     private final boolean valid;
 
-    public ASIN(@NonNull final String code) {
-        this.code = SearchEngineUtils.cleanText(code).toUpperCase(Locale.ENGLISH);
-        valid = isValid(this.code);
+    /**
+     * Constructor.
+     *
+     * @param text string to digest
+     */
+    public ASIN(@NonNull final String text) {
+        final String tmpCode = text.toUpperCase(Locale.ENGLISH);
+        // Historically, a Book ASIN is just an ISBN-10
+        // For leniency we also accept ISBN-13, and convert those to ISBN-10
+        final ISBN isbn = new ISBN(tmpCode, true);
+        if (isbn.isIsbn10Compat()) {
+            this.code = isbn.asText(CodeType.Isbn10);
+            valid = true;
+        } else {
+            this.code = tmpCode;
+            valid = isAlphaNumeric10(this.code);
+        }
     }
 
     @Override
@@ -69,21 +83,15 @@ public final class ASIN
     }
 
     /**
-     * Validate an Amazon ASIN.
+     * Validate an Amazon ASIN as being a 10 character long, alpha-numeric string.
      *
      * @param asin to validate
      *
      * @return validity
      */
-    private static boolean isValid(@NonNull final String asin) {
-
+    private static boolean isAlphaNumeric10(@NonNull final String asin) {
         if (asin.length() != ASIN_LEN) {
             return false;
-        }
-
-        // Historically, a Book ASIN is just an ISBN-10.
-        if (new ISBN(asin, true).isValid()) {
-            return true;
         }
 
         // But these days, it can also be a Kindle book, self-published without ISBN,...
