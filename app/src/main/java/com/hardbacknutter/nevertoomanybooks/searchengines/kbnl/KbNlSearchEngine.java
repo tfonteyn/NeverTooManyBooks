@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -253,7 +254,7 @@ public class KbNlSearchEngine
 
         if (fetchCovers[0]) {
             final ISBN isbn = new ISBN(book.getIsbn(), true);
-            if (isbn.isValid()) {
+            if (isbn.getCodeType() == CodeType.Isbn13 || isbn.getCodeType() == CodeType.Isbn10) {
                 final AltEdition edition = new AltEditionIsbn(isbn.asText());
                 searchBestCoverByEdition(context, edition, 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
