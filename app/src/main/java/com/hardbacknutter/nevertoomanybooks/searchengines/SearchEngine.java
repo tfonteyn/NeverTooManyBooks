@@ -228,43 +228,14 @@ public interface SearchEngine
                        CredentialsException;
     }
 
-    /** Optional. */
-    interface SearchOnSite
-            extends SearchEngine {
-
-        /**
-         * Should the menu be visible.
-         *
-         * @param context Current context
-         *
-         * @return {@code true} to show
-         */
-        boolean isShowSearchOnSiteMenu(@NonNull Context context);
-
-        /**
-         * Create a url to search on the website with Author/Series.
-         * At least one of the Author/Series parameters must not be {@code null}.
-         * <p>
-         * {@link SearchEngine.Login} will NOT be called upon.
-         *
-         * @param context Current context
-         * @param author  to search for
-         * @param series  to search for
-         *
-         * @return url
-         *
-         * @throws IllegalArgumentException if both Author and Series are {@code null}
-         */
-        @AnyThread
-        @NonNull
-        String createSearchOnSiteUrl(@NonNull Context context,
-                                     @Nullable Author author,
-                                     @Nullable Series series)
-                throws IllegalArgumentException;
-    }
-
     /**
      * Optional. But every engine should really implement this.
+     * <p>
+     * A slight misnomer...  this method will be called to search
+     * on <strong>any valid</strong> code.
+     * Of course, an implementation may reject some codes if the site does
+     * not support them. But the guarantee here is that the code itself
+     * <strong>will be valid</strong>
      *
      * @see SearchBy#Isbn
      * @see CodeType
@@ -278,7 +249,7 @@ public interface SearchEngine
          * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
-         * @param validIsbn   to search for
+         * @param validCode   to search for
          * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
@@ -293,7 +264,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book searchByIsbn(@NonNull Context context,
-                          @NonNull ISBN validIsbn,
+                          @NonNull ISBN validCode,
                           @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -302,12 +273,13 @@ public interface SearchEngine
 
     /**
      * Optional.
-     * Implement if the engine can search generic bar codes,
-     * or is known to store/support invalid ISBNs.
+     * Implement if the engine can search generic and/or invalid codes.
+     * In other words, this method will be called with a <strong>potentially invalid code</strong>.
      * <p>
      * <strong>IMPORTANT</strong>: only use the default implementation
-     * if the engine's implementation of {@link ByIsbn} supports searching for non-valid
-     * ISBN codes as generic codes!
+     * if the engine's implementation of {@link ByIsbn} also
+     * supports searching for non-valid codes!
+     * <p>
      * Otherwise {@link #searchByBarcode(Context, ISBN, boolean[])} <strong>MUST</strong>
      * be properly implemented.
      *
@@ -320,13 +292,13 @@ public interface SearchEngine
         /**
          * Called by the {@link SearchCoordinator#search}.
          * <p>
-         * The default implementation redirect to
+         * The default implementation redirects to
          * {@link ByIsbn#searchByIsbn(Context, ISBN, boolean[])}
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
-         * @param barcode     to search for
+         * @param code        to search for
          * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
@@ -340,12 +312,12 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         default Book searchByBarcode(@NonNull final Context context,
-                                     @NonNull final ISBN barcode,
+                                     @NonNull final ISBN code,
                                      @NonNull final boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
                        CredentialsException {
-            return searchByIsbn(context, barcode, fetchCovers);
+            return searchByIsbn(context, code, fetchCovers);
         }
     }
 
@@ -427,6 +399,41 @@ public interface SearchEngine
                 throws CredentialsException, SearchException;
     }
 
+    /** Optional. */
+    interface SearchOnSite
+            extends SearchEngine {
+
+        /**
+         * Should the menu be visible.
+         *
+         * @param context Current context
+         *
+         * @return {@code true} to show
+         */
+        boolean isShowSearchOnSiteMenu(@NonNull Context context);
+
+        /**
+         * Create a url to search on the website with Author/Series.
+         * At least one of the Author/Series parameters must not be {@code null}.
+         * <p>
+         * {@link SearchEngine.Login} will NOT be called upon.
+         *
+         * @param context Current context
+         * @param author  to search for
+         * @param series  to search for
+         *
+         * @return url
+         *
+         * @throws IllegalArgumentException if both Author and Series are {@code null}
+         */
+        @AnyThread
+        @NonNull
+        String createSearchOnSiteUrl(@NonNull Context context,
+                                     @Nullable Author author,
+                                     @Nullable Series series)
+                throws IllegalArgumentException;
+    }
+
     /**
      * Optional.
      *
@@ -436,12 +443,12 @@ public interface SearchEngine
             extends SearchEngine {
 
         /**
-         * Find alternative editions for the given ISBN.
+         * Find alternative editions for the given code.
          * <p>
          * {@link Login} will NOT be called upon.
          *
          * @param context   Current context
-         * @param validIsbn to search for, <strong>must</strong> be valid.
+         * @param validCode to search for, <strong>must</strong> be valid.
          *
          * @return a list of {@link T} alternative editions, can be empty.
          *
@@ -451,7 +458,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         List<T> searchAlternativeEditions(@NonNull Context context,
-                                          @NonNull String validIsbn)
+                                          @NonNull String validCode)
                 throws SearchException,
                        CredentialsException;
     }
