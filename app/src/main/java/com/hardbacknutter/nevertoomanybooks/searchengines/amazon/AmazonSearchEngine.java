@@ -720,12 +720,15 @@ public class AmazonSearchEngine
 
                     if (LABEL_ASIN.contains(lcLabel)) {
                         // Not checking validity, this is straight from Amazon after all.
-                        final ASIN asin = new ASIN(text[1]);
+                        // But do clean the string, as the website often contains invisible
+                        // unicode characters.
+                        final ASIN asin = new ASIN(SearchEngineUtils.cleanText(text[1]));
                         book.setIdentifierValue(Identifier.SID_ASIN, asin.asText());
 
                         if (!book.hasIsbn()) {
-                            // Set as ISBN if we don't have on yet.
-                            // If the book has a real ISBN-13 it will overwrite this.
+                            // Set as ISBN if we don't have one yet.
+                            // If the book has a real ISBN-13 it will overwrite this
+                            // when we get to parsing the ISBN.
                             book.setIsbn(asin.asText());
                         }
                     } else if (LABEL_ISBN_13.equals(lcLabel)) {
