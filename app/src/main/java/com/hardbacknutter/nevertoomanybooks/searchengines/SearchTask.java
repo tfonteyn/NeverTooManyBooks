@@ -122,36 +122,36 @@ final class SearchTask
 
         final EngineId engineId = searchEngine.getEngineId();
 
-        // check for a sid matching the site.
-        // This always takes preference over all other criteria
-        final Optional<String> oSid = criteria.getSid(engineId);
-        if (oSid.isPresent()
-            && engineId.supports(SearchEngine.SearchBy.ExternalId)) {
-            task.setSearchBy(SearchEngine.SearchBy.ExternalId);
-            return task;
-        }
-
-        final ISBN isbn = criteria.getIsbn();
-
-        // Force a test on a valid ISBN
-        // Whether this is a pure ISBN, or a generic code
-        // is up to the flag as set in the criteria by the user.
-        if (isbn != null && isbn.isValid()
-            && engineId.supports(SearchEngine.SearchBy.Isbn)) {
-            task.setSearchBy(SearchEngine.SearchBy.Isbn);
-            return task;
-        }
-
-        // Force a test on a generic code, explicitly NOT checking for it being an ISNB
-        if (isbn != null) {
-            if (isbn.getCodeType() != CodeType.Invalid
-                && engineId.supports(SearchEngine.SearchBy.Barcode)) {
-                task.setSearchBy(SearchEngine.SearchBy.Barcode);
+        // Search by SID takes preference over all other criteria
+        if (engineId.supports(SearchEngine.SearchBy.ExternalId)) {
+            if (criteria.getSid(engineId).isPresent()) {
+                task.setSearchBy(SearchEngine.SearchBy.ExternalId);
                 return task;
             }
         }
 
-        if (engineId.supports(SearchEngine.SearchBy.Text)) {
+        final ISBN code = criteria.getIsbn();
+
+        // Search by a VALID code.
+        if (engineId.supports(SearchEngine.SearchBy.Isbn) && code != null) {
+            // Either strict ISBN, or any other valid code
+            // depending on the user criteria 'strict' flag.
+            if (criteria.isStrictIsbn() ? code.isIsbn()
+                                        : code.getCodeType() != CodeType.Invalid) {
+                task.setSearchBy(SearchEngine.SearchBy.Isbn);
+                return task;
+            }
+        }
+
+        // Search by any code, including invalid ones
+        if (engineId.supports(SearchEngine.SearchBy.Barcode) && code != null) {
+            task.setSearchBy(SearchEngine.SearchBy.Barcode);
+            return task;
+        }
+
+        // Search by anything which may be supported by the engine.
+        // Check on empty criteria is paranoia...
+        if (engineId.supports(SearchEngine.SearchBy.Text) && !criteria.isEmpty()) {
             task.setSearchBy(SearchEngine.SearchBy.Text);
             return task;
         }
