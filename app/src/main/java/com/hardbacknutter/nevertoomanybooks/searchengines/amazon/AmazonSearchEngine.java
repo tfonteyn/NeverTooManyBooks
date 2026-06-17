@@ -114,7 +114,7 @@ import org.jsoup.nodes.Element;
  */
 public class AmazonSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByBarcode,
+        implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
                    SearchEngine.CoverByEdition,
                    SearchEngine.SearchOnSite {
@@ -482,15 +482,6 @@ public class AmazonSearchEngine
         } else {
             return new Book();
         }
-    }
-
-    @NonNull
-    @Override
-    public Book searchByBarcode(@NonNull final Context context,
-                                @NonNull final String barcode,
-                                @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-        return searchByExternalId(context, barcode, fetchCovers);
     }
 
     @NonNull
