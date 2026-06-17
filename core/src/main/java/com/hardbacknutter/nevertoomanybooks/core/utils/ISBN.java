@@ -100,10 +100,6 @@ public final class ISBN
     /** Log tag. */
     private static final String TAG = "ISBN";
 
-    private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
-            "X can only be at the end of an ISBN-10";
-    private static final String ERROR_ISBN_MUST_BE_VALID = "isbn must be valid";
-
     /**
      * The extended barcode combined with the UPC_A vendor prefix can be used to
      * reconstruct the ISBN.
@@ -132,6 +128,11 @@ public final class ISBN
     private static final String L977 = "977";
     private static final String L978 = "978";
     private static final String L979 = "979";
+
+    private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
+            "X can only be at the end of an ISBN-10";
+    private static final String ERROR_ISBN_MUST_BE_VALID = "isbn must be valid";
+    private static final String ERROR_CODE_DIGITS_NULL = "codeDigits";
 
     static {
         // UPC_A Prefix -- ISBN Prefix mapping file (may not be complete)
@@ -346,6 +347,26 @@ public final class ISBN
     }
 
     /**
+     * Get the concatenated digits. Digit 10 is always returned as '<strong>X</strong>'.
+     *
+     * @param digits the list of digits
+     *
+     * @return the code as a string.
+     */
+    @NonNull
+    private static String concat(@NonNull final Iterable<Integer> digits) {
+        final StringBuilder sb = new StringBuilder();
+        for (final int d : digits) {
+            if (d == 10) {
+                sb.append('X');
+            } else {
+                sb.append(d);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * DEBUG ONLY. Check the validity of an ISBN string.
      *
      * @param text to check
@@ -385,21 +406,12 @@ public final class ISBN
         return codeType;
     }
 
-    /**
-     * Convenience method.
-     *
-     * @return flag
-     */
+    @Override
     public boolean isIsbn() {
         return codeType == CodeType.Isbn10 || codeType == CodeType.Isbn13;
     }
 
-    /**
-     * Check if the code is either an ISBN-10,
-     * or an ISBN-13 which can be converted to an ISBN-10.
-     *
-     * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
-     */
+    @Override
     public boolean isIsbn10Compat() {
         // reminder: no need to check UPC_A here, as we would have converted it already
         return codeType == CodeType.Isbn10
@@ -420,42 +432,48 @@ public final class ISBN
     }
 
     /**
-     * Get the ISBN as a text string converted to the given type.
+     * Get the code as a text string converted to the given type.
      * It will have been cleaned and reduced to digits/x only.
      * <p>
-     * <strong>WARNING:</strong> when converting an ISBN-13 to ISBN-10,
+     * <strong>WARNING:</strong> when converting an
+     * {@link CodeType#Isbn13} to {@link CodeType#Isbn10},
      * you must call {@link #isIsbn10Compat()} prior to avoid this method throwing an exception.
      *
-     * @param type to convert to
+     * @param toType to convert to
      *
      * @return string
      *
-     * @throws NumberFormatException on failure
+     * @throws NumberFormatException if a conversion is not possible.
      */
     @NonNull
-    public String asText(@NonNull final CodeType type)
+    public String asText(@NonNull final CodeType toType)
             throws NumberFormatException {
 
-        if (type == CodeType.Invalid) {
+        // Same type? No conversion duh
+        if (codeType == toType) {
             return codeText;
         }
-        Objects.requireNonNull(codeDigits, "codeDigits");
 
-        switch (type) {
-            case Isbn13: {
-                if (codeType == CodeType.Isbn13) {
+        // Both EAN-13 ? No conversion needed.
+        if (codeType.isEan13Compat() && toType.isEan13Compat()) {
+            return codeText;
+        }
+
+        // types not listed cannot be converted
+        switch (codeType) {
+            case Isbn10: {
+                if (toType == CodeType.Asin) {
                     return codeText;
-                }
 
-                // Must be ISBN-10 to convert to 13 digits.
-                if (codeType == CodeType.Isbn10) {
+                } else if (toType == CodeType.Isbn13) {
+                    Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
                     final List<Integer> digits = new ArrayList<>();
-                    // standard prefix 978
+                    // Add the standard prefix 978.
+                    // Copy the first 9 digits.
+                    // Drop the original checksum digit.
                     digits.add(9);
                     digits.add(7);
                     digits.add(8);
-
-                    // copy the first 9 digits
                     for (int i = 0; i < 9; i++) {
                         digits.add(codeDigits.get(i));
                     }
@@ -466,14 +484,13 @@ public final class ISBN
                 }
                 break;
             }
-            case Isbn10: {
-                if (codeType == CodeType.Isbn10) {
-                    return codeText;
-                }
-
-                // Must be ISBN-13 and compatible with ISBN-10
-                if (codeType == CodeType.Isbn13 && codeText.startsWith(L978)) {
-                    // drop the first 3 digits, and copy the next 9.
+            case Isbn13: {
+                if ((toType == CodeType.Isbn10 || toType == CodeType.Asin)
+                    && codeText.startsWith(L978)) {
+                    Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
+                    // Drop the first 3 digits.
+                    // Copy the next 9.
+                    // Drop the original checksum digit.
                     final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 12; i++) {
                         digits.add(codeDigits.get(i));
@@ -484,15 +501,12 @@ public final class ISBN
                 }
                 break;
             }
-            case Issn8: {
-                if (codeType == CodeType.Issn8) {
-                    return codeText;
-                }
-
-                // Must be ISSN-13 and compatible with ISSN-8
-                // Note that the vendor 2-digits are dropped as they are not part of ISSN itself.
-                if (codeType == CodeType.Issn13) {
-                    // drop the first 3 digits, and copy the next 7.
+            case Issn13: {
+                if (toType == CodeType.Issn8) {
+                    Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
+                    // Drop the first 3 digits.
+                    // Copy the next 7.
+                    // Drop the 2-digit vendor code and the trailing price digits.
                     final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 10; i++) {
                         digits.add(codeDigits.get(i));
@@ -503,40 +517,9 @@ public final class ISBN
                 }
                 break;
             }
-            case Issn13: {
-                // No conversions possible
-                if (codeType == CodeType.Issn13) {
-                    return codeText;
-                }
-                break;
-            }
-            case Ismn: {
-                // No conversions possible
-                if (codeType == CodeType.Ismn) {
-                    return codeText;
-                }
-                break;
-            }
-            case Ean13: {
-                // No conversions possible
-                if (codeType.isEan13Compat()) {
-                    return codeText;
-                }
-                break;
-            }
-            case UpcA: {
-                // No conversions possible. Any ISBN-10 compatible UPC number was already
-                // converted in the class constructor.
-                if (codeType == CodeType.UpcA) {
-                    return codeText;
-                }
-                break;
-            }
-            default:
-                break;
         }
 
-        throw new NumberFormatException("Unable to convert type: " + codeType + " to " + type);
+        throw new NumberFormatException("Unable to convert type: " + codeType + " to " + toType);
     }
 
     /**
@@ -585,26 +568,6 @@ public final class ISBN
             }
         }
         return digits;
-    }
-
-    /**
-     * Get the concatenated digits. Digit 10 is always returned as '<strong>X</strong>'.
-     *
-     * @param digits the list of digits
-     *
-     * @return the code as a string.
-     */
-    @NonNull
-    private String concat(@NonNull final Iterable<Integer> digits) {
-        final StringBuilder sb = new StringBuilder();
-        for (final int d : digits) {
-            if (d == 10) {
-                sb.append('X');
-            } else {
-                sb.append(d);
-            }
-        }
-        return sb.toString();
     }
 
     @Override
