@@ -34,7 +34,7 @@ public enum CodeType {
         @IntRange(from = 0, to = 10)
         public int checksum(@NonNull final List<Integer> digits)
                 throws NumberFormatException {
-            throw new NumberFormatException(ERROR_NOT_APPLICABLE);
+            throw new NumberFormatException(ERROR_NOT_APPLICABLE + name());
         }
     },
     /** The original ISBN. 10 digits. */
@@ -199,7 +199,7 @@ public enum CodeType {
         @IntRange(from = 0, to = 10)
         public int checksum(@NonNull final List<Integer> digits)
                 throws NumberFormatException {
-            throw new NumberFormatException(ERROR_NOT_APPLICABLE);
+            throw new NumberFormatException(ERROR_NOT_APPLICABLE + name());
         }
     },
     /** Periodicals. 8 digits. */
@@ -263,9 +263,22 @@ public enum CodeType {
                 throws NumberFormatException {
             return Ean13.checksum(digits);
         }
+    },
+    /**
+     * Amazon ASIN.
+     *
+     * @see ASIN
+     */
+    Asin {
+        @Override
+        @IntRange(from = 0, to = 10)
+        public int checksum(@NonNull final List<Integer> digits)
+                throws NumberFormatException {
+            throw new NumberFormatException(ERROR_NOT_APPLICABLE + name());
+        }
     };
 
-    private static final String ERROR_NOT_APPLICABLE = "N/A";
+    private static final String ERROR_NOT_APPLICABLE = "N/A: ";
     private static final String ERROR_WRONG_SIZE = "Wrong size: ";
 
     /**

@@ -29,6 +29,14 @@ import androidx.annotation.NonNull;
 public interface Code {
 
     /**
+     * Get the code-type enum.
+     *
+     * @return CodeType
+     */
+    @NonNull
+    CodeType getCodeType();
+
+    /**
      * Check if we have a valid code.
      *
      * @return validity

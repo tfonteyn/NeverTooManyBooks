@@ -68,6 +68,12 @@ public final class ASIN
     }
 
     @Override
+    @NonNull
+    public CodeType getCodeType() {
+        return CodeType.Asin;
+    }
+
+    @Override
     public boolean isValid() {
         return valid;
     }

@@ -41,30 +41,34 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * This class name is a bit of a misnomer by now.
+ * It represents all <strong>numeric</strong> codes supported.
  * See {@link CodeType} for all supported codes.
- * {@link CodeType#UpcA} numbers are converted to {@link CodeType#Isbn10} if possible.
- *
+ * ISBN uses the digit 10 for 'X'.
  * <p>
  * ISBN stands for International Standard Book Number.
  * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
  * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">ISBN</a>
  * See <a href="https://isbn-information.com">https://isbn-information.com</a>
  * <p>
- * An International Standard Serial Number (ISSN) is an eight-digit serial number used to uniquely
- * identify a serial publication, such as a magazine.
+ * An International Standard Serial Number {@link CodeType#Issn8} is an eight-digit serial
+ * number used to uniquely identify a serial publication, such as a magazine.
  * See <a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number">ISSN</a>
+ * The {@link CodeType#Issn13} is an encoded version, with a {@code 977} "country code",
+ * followed by the 7 main digits of the ISSN (the check digit is not included),
+ * followed by 2 publisher-defined digits, followed by the EAN check digit.
  * <p>
- * The International Standard Music Number or ISMN (ISO 10957) is a thirteen-character
- * alphanumeric identifier for printed music
+ * The International Standard Music Number or {@link CodeType#Ismn} (ISO 10957)
+ * is a thirteen-character alphanumeric identifier for printed music
  * See <a href="https://en.wikipedia.org/wiki/International_Standard_Music_Number">ISMN</a>
  * <p>
- * A Universal Product Code (UPC) is a barcode symbology that is widely used
+ * A Universal Product Code {@link CodeType#UpcA} is a barcode symbology that is widely used
  * worldwide for tracking trade items in stores.
  * See <a href="https://en.wikipedia.org/wiki/Universal_Product_Code">UPC_A</a>
- * and <a href="https://www.cbr.com/comic-book-covers-upc-meaning/">Specifics for comics</a>
+ * and <a href="https://www.cbr.com/comic-book-covers-upc-meaning/">Specifics for comics</a>.
+ * {@link CodeType#UpcA} numbers are converted to {@link CodeType#Isbn10} if possible.
  * <p>
- * An Amazon Standard Identification Number (ASIN) is a 10-character alphanumeric unique
- * identifier assigned by Amazon.com.
+ * An Amazon Standard Identification Number {@link CodeType#Asin} is a 10-character
+ * alphanumeric unique identifier assigned by Amazon.com.
  * ISBN-10 codes are identical with ASIN codes (but not the reverse).
  * See <a href="https://en.wikipedia.org/wiki/Amazon_Standard_Identification_Number">ASIN</a>
  * <p>
@@ -76,7 +80,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * EAN GS1 prefix country code</a>
  * <p>
  * The precursor of ISBN was known as the 9-digit Standard Book Numbering (SBN)
- * created in 1966. An SBN can be converted to an ISBN-10 by prefixing with the digit {@code 0}.
+ * created in 1966.
+ * {@link CodeType#Sbn} is always converted to {@link CodeType#Isbn10}
+ * by prefixing with the digit {@code 0}.
  * <p>
  * The EAN "country code" 978 (and later 979) has been allocated since the 1980s to reserve
  * a Unique Country Code (UCC) prefix for EAN identifiers of published books, regardless of
@@ -84,7 +90,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * maintaining a redundant parallel numbering system. This is informally known as "Bookland".
  * <p>
  * The prefix 979 with first digit 0 is used for International Standard Music Number
- * (ISMN a.k.a. "MusicLand")
+ * (ISMN a.k.a. "MusicLand").
  * <br>The prefix 977 indicates International Standard Serial Number (ISSN).
  */
 @SuppressWarnings("MagicNumber")
@@ -123,6 +129,7 @@ public class ISBN
     private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
     /** Remove the '-' character and all whitespace. */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[-\\s+]");
+    private static final String L977 = "977";
     private static final String L978 = "978";
     private static final String L979 = "979";
 
@@ -333,6 +340,7 @@ public class ISBN
         }
     }
 
+    @Override
     @NonNull
     public CodeType getCodeType() {
         return codeType;
