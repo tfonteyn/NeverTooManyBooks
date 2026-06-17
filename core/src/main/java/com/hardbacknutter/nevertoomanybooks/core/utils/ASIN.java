@@ -45,25 +45,34 @@ public final class ASIN
     private static final int ASIN_LEN = 10;
     /** Alphanumeric. */
     private static final String VALID_CHARS = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    /**
+     * The cleaned/converted text. May be invalid.
+     *
+     * @see #isValid()
+     */
+    @NonNull
     private final String code;
     private final boolean valid;
+    private final boolean isIsbn10;
 
     /**
      * Constructor.
      *
-     * @param text string to digest
+     * @param text string to parse
      */
     public ASIN(@NonNull final String text) {
         final String tmpCode = text.toUpperCase(Locale.ENGLISH);
         // Historically, a Book ASIN is just an ISBN-10
-        // For leniency we also accept ISBN-13, and convert those to ISBN-10
+        // For leniency we also accept ISBN-13, and convert them to ISBN-10 if possible
         final ISBN isbn = ISBN.parseISBN(tmpCode);
         if (isbn.isIsbn10Compat()) {
             this.code = isbn.asText(CodeType.Isbn10);
-            valid = true;
+            this.isIsbn10 = true;
+            this.valid = true;
         } else {
             this.code = tmpCode;
-            valid = isAlphaNumeric10(this.code);
+            this.isIsbn10 = false;
+            this.valid = isAlphaNumeric10(this.code);
         }
     }
 
@@ -76,6 +85,16 @@ public final class ASIN
     @Override
     public boolean isValid() {
         return valid;
+    }
+
+    @Override
+    public boolean isIsbn() {
+        return isIsbn10;
+    }
+
+    @Override
+    public boolean isIsbn10Compat() {
+        return isIsbn10;
     }
 
     @Override

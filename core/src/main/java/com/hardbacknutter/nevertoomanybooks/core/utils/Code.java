@@ -22,14 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.NonNull;
 
-/**
- * This is not fixed... for now, it's a simple abstraction used for the ItemQueue functionality,
- * but might be removed/changed.
- */
 public interface Code {
 
     /**
-     * Get the code-type enum.
+     * Get the {@link CodeType}.
      *
      * @return CodeType
      */
@@ -44,8 +40,24 @@ public interface Code {
     boolean isValid();
 
     /**
+     * Check if the code <strong>is</strong> an {@link CodeType#Isbn10}
+     * or an {@link CodeType#Isbn13}.
+     *
+     * @return flag
+     */
+    boolean isIsbn();
+
+    /**
+     * Check if the code <strong>is</strong> an {@link CodeType#Isbn10},
+     * or an {@link CodeType#Isbn13} which can be converted to an {@link CodeType#Isbn10}.
+     *
+     * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
+     */
+    boolean isIsbn10Compat();
+
+    /**
      * Get the code as a normalised text string.
-     * Normalization format depends on the implementation.
+     * Normalization format depends on the {@link CodeType}.
      *
      * @return string
      */
