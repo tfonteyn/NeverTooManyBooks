@@ -334,7 +334,7 @@ public class ISBN
     @Override
     public boolean isValid() {
         if (strictIsbn) {
-            return codeType == CodeType.Isbn13 || codeType == CodeType.Isbn10;
+            return isIsbn();
         } else {
             return codeType != CodeType.Invalid;
         }
@@ -479,10 +479,8 @@ public class ISBN
                 break;
             }
             case Ean13: {
-                // No conversions possible but ISBN-13 and ISSN-13 are valid subtypes.
-                if (codeType == CodeType.Ean13
-                    || codeType == CodeType.Isbn13
-                    || codeType == CodeType.Issn13) {
+                // No conversions possible
+                if (codeType.isEan13Compat()) {
                     return codeText;
                 }
                 break;

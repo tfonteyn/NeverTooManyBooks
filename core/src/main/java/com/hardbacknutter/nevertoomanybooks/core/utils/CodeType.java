@@ -140,7 +140,7 @@ public enum CodeType {
     },
     /**
      * Generic product barcode. Minimum 12 digits but can be any length.
-     * May be automatically converted in the constructor when it's ISBN-10 compatible.
+     * May be automatically converted in {@link ISBN} when it's {@link #Isbn10} compatible.
      */
     UpcA {
         /**
@@ -187,12 +187,12 @@ public enum CodeType {
         }
     },
     /**
-     * The precursor of ISBN-10.
+     * The precursor of {@link #Isbn10}.
      * Consists of a 9 digits number optionally followed by 3 digit price (in the US).
-     * Can be converted to ISBN-10 by taking the first 9 digits,
+     * Can be converted to {@link #Isbn10} by taking the first 9 digits,
      * and prefix them with a {@code 0}.
      * <p>
-     * Internal use only, as the constructor will always convert these to ISBN-10.
+     * Internal use only, as {@link ISBN} will always convert these to {@link #Isbn10}.
      */
     Sbn {
         @Override
@@ -293,6 +293,18 @@ public enum CodeType {
     @IntRange(from = 0, to = 10)
     public abstract int checksum(@NonNull List<Integer> digits)
             throws NumberFormatException;
+
+    /**
+     * Convenience method to check all EAN-13 compatible codes.
+     *
+     * @return flag
+     */
+    public boolean isEan13Compat() {
+        return this == CodeType.Ean13
+               || this == CodeType.Isbn13
+               || this == CodeType.Issn13
+               || this == CodeType.Ismn;
+    }
 
     /**
      * Determine the type of code.
