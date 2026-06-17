@@ -301,7 +301,7 @@ class BookSearch {
                         // We did a general search with an ISBN; check if it matches
                         final String isbnFoundStr = result.getIsbn();
                         if (!isbnFoundStr.isEmpty()
-                            && isbn != null && isbn.equals(new ISBN(isbnFoundStr, strictIsbn))) {
+                            && isbn != null && isbn.equals(ISBN.parse(isbnFoundStr, strictIsbn))) {
                             sitesInOrder.add(engineId);
                         } else {
                             // The ISBN found does not match the ISBN we searched for;

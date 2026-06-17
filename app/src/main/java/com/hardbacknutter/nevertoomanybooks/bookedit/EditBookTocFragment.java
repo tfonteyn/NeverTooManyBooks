@@ -474,7 +474,7 @@ public class EditBookTocFragment
 
         final String isbnStr = book.getIsbn();
         if (!isbnStr.isEmpty()) {
-            final ISBN code = new ISBN(isbnStr, true);
+            final ISBN code = ISBN.parseISBN(isbnStr);
             if (code.isIsbn()) {
                 Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();

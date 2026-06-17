@@ -254,7 +254,7 @@ public class KbNlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ISBN isbn = new ISBN(book.getIsbn(), true);
+            final ISBN isbn = ISBN.parseISBN(book.getIsbn());
             if (isbn.isIsbn()) {
                 final AltEdition edition = new AltEditionIsbn(isbn.asText());
                 searchBestCoverByEdition(context, edition, 0).ifPresent(

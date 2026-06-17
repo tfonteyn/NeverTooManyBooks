@@ -932,8 +932,8 @@ public class BookDaoImpl
     }
 
     @Override
-    public boolean bookExistsByIsbn(@NonNull final String isbnStr) {
-        final ISBN isbn = new ISBN(isbnStr, false);
+    public boolean bookExistsByIsbn(@NonNull final String code) {
+        final ISBN isbn = ISBN.parse(code);
         // If the string is ISBN-10 compatible, we search on both formats;
         // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range.
         if (isbn.isIsbn10Compat()) {
@@ -944,7 +944,7 @@ public class BookDaoImpl
             }
         } else {
             // otherwise just search on the string as-is; regardless of validity
-            // (this would actually include valid ISBN-13 in the 979 range).
+            // (this will include valid ISBN-13 in the 979 range).
             try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ISBN_EXISTS)) {
                 stmt.bindString(1, isbn.asText());
                 return stmt.simpleQueryForLongOrZero() == 1;

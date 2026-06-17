@@ -54,7 +54,7 @@ public class IsbnQueueViewModel
         @Override
         @NonNull
         public ISBN apply(@NonNull final String s) {
-            return new ISBN(s, strictIsbn);
+            return ISBN.parse(s, strictIsbn);
         }
     }
 }

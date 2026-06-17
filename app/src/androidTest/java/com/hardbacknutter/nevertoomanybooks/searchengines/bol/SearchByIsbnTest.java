@@ -65,7 +65,7 @@ class SearchByIsbnTest
             throws SearchException, CredentialsException, StorageException {
 
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, new ISBN("9789056478193", true),
+                .searchByIsbn(context, ISBN.parseISBN("9789056478193"),
                               new boolean[]{false, false, false, false});
 
         assertNotNull(book);

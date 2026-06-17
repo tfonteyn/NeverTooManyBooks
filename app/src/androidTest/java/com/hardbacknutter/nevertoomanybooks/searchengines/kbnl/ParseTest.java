@@ -331,7 +331,7 @@ class ParseTest
 
         // this will first hit a multi-result page, take the first book, and fetch that.
         final Book book = searchEngine
-                .searchByIsbn(context, new ISBN("9020612476", true),
+                .searchByIsbn(context, ISBN.parseISBN("9020612476"),
                               new boolean[]{false, false, false, false});
 
         verify9020612476(book);

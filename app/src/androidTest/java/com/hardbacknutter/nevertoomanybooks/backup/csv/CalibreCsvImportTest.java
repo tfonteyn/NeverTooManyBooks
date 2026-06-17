@@ -148,7 +148,7 @@ class CalibreCsvImportTest
         // "Creatures of Light and Darkness","Creatures of Light and Darkness",
         // "8578dcf0-cd1c-404c-beed-d71e89393cfd"
 
-        try (Cursor cursor = bookDao.fetchByIsbn(List.of(new ISBN("9780061936456", true)))) {
+        try (Cursor cursor = bookDao.fetchByIsbn(List.of(ISBN.parseISBN("9780061936456")))) {
             assertEquals(1, cursor.getCount());
             assertTrue(cursor.moveToNext());
             final Book book = Book.from(cursor);
@@ -199,7 +199,7 @@ class CalibreCsvImportTest
         // "Adventures of Tom Bombadil, and Other Verses From the Red Book, The",
         // "b8fbf2a5-dc38-4957-bafe-6d1a92deac7b"
 
-        try (Cursor cursor = bookDao.fetchByIsbn(List.of(new ISBN("9780044407263", true)))) {
+        try (Cursor cursor = bookDao.fetchByIsbn(List.of(ISBN.parseISBN("9780044407263")))) {
             assertEquals(1, cursor.getCount());
             assertTrue(cursor.moveToNext());
             final Book book = Book.from(cursor);

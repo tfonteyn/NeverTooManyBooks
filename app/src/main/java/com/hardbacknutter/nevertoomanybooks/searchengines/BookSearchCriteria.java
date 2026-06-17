@@ -230,7 +230,7 @@ public class BookSearchCriteria {
         }
 
         if (isbn == null) {
-            isbn = new ISBN(this.isbnText, this.strictIsbn);
+            isbn = ISBN.parse(this.isbnText, this.strictIsbn);
         }
         return isbn;
     }

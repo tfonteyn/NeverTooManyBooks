@@ -68,7 +68,7 @@ public class SearchByIsbnTest
     public void Isbn0702315516()
             throws SearchException, CredentialsException, StorageException {
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, new ISBN("0702315516", true),
+                .searchByIsbn(context, ISBN.parseISBN("0702315516"),
                               new boolean[]{false, false, false, false});
         assertNotNull(book);
         assertFalse(book.isEmpty());

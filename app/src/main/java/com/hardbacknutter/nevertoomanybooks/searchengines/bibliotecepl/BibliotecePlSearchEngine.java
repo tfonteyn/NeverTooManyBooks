@@ -444,8 +444,8 @@ public class BibliotecePlSearchEngine
             final String isbnStr = ISBN.cleanText(isbnElements.get(0).text());
             if (book.hasIsbn()) {
                 // If it's an isbn-10 equal to the one we searched for, grab it.
-                final ISBN siteIsbn = new ISBN(isbnStr, true);
-                final ISBN searchIsbn = new ISBN(book.getIsbn(), true);
+                final ISBN siteIsbn = ISBN.parseISBN(isbnStr);
+                final ISBN searchIsbn = ISBN.parseISBN(book.getIsbn());
 
                 // If the user searched for an isbn-13,
                 // and the website returned an isbn-10

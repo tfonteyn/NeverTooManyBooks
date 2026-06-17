@@ -669,7 +669,7 @@ public class GoogleBooksSearchEngine
             throws StorageException, SearchException, CredentialsException {
         if (altEdition instanceof AltEditionIsbn) {
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final ISBN isbn = new ISBN(edition.getIsbn(), true);
+            final ISBN isbn = ISBN.parseISBN(edition.getIsbn());
             return searchByIsbn(context, isbn, new boolean[]{true, false, false, false})
                     .getImage(context, cIdx)
                     .map(File::getAbsolutePath);

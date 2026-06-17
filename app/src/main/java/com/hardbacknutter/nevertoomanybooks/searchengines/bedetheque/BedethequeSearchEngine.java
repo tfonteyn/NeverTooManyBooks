@@ -619,7 +619,7 @@ public class BedethequeSearchEngine
         if (isbnLabel != null) {
             final String isbnStr = parseLabelText(isbnLabel);
             if (isbnStr != null) {
-                final ISBN isbnFound = new ISBN(isbnStr, true);
+                final ISBN isbnFound = ISBN.parseISBN(isbnStr);
                 return isbnFound.equals(searchedIsbn);
             }
         }

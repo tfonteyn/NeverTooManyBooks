@@ -562,7 +562,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // we've set the doc, but will redirect.. so an internet download WILL be done.
-        searchEngine.parseRootDocument(context, new ISBN("9782756010830", true),
+        searchEngine.parseRootDocument(context, ISBN.parseISBN("9782756010830"),
                                        document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -623,10 +623,10 @@ class ParseTest
         final String correctBarcode = "9789069692739";
         final String incorrectBarcode = "9069692736";
 
-        final ISBN barcode = new ISBN(correctBarcode, true);
+        final ISBN barcode = ISBN.parseISBN(correctBarcode);
         assertTrue(barcode.isIsbn());
 
-        final ISBN isbn = new ISBN(incorrectBarcode, true);
+        final ISBN isbn = ISBN.parseISBN(incorrectBarcode);
         assertSame(CodeType.Invalid, isbn.getCodeType());
 
         final Book book = new Book();

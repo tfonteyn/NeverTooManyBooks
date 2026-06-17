@@ -204,9 +204,9 @@ class ResultsAccumulator {
 
         } else {
             // The user-input for the search.
-            final ISBN prevIsbn = new ISBN(previous, false);
+            final ISBN prevIsbn = ISBN.parse(previous);
             // The code we got from the website.
-            final ISBN dataIsbn = new ISBN(dataToAdd, false);
+            final ISBN dataIsbn = ISBN.parse(dataToAdd);
 
             // If the user searched for an isbn-13,
             // and the website returned an isbn-10

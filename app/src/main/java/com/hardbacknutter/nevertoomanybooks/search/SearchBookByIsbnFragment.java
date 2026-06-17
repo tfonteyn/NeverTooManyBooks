@@ -475,7 +475,7 @@ public class SearchBookByIsbnFragment
             viewToModel();
 
             final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
-            final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
+            final ISBN code = ISBN.parse(vm.getIsbnText(), strictIsbn);
             if (!code.isValid()) {
                 final String text = code.asText();
                 if (text.isEmpty()) {
@@ -864,7 +864,7 @@ public class SearchBookByIsbnFragment
     private void onBarcodeScanned(@NonNull final String barCode) {
         final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
 
-        final ISBN code = new ISBN(barCode, strictIsbn);
+        final ISBN code = ISBN.parse(barCode, strictIsbn);
         if (code.isValid()) {
             if (strictIsbn) {
                 SoundManager.beepOnValidIsbn();

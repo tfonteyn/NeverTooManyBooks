@@ -1535,7 +1535,7 @@ public class IsfdbSearchEngine
         // 4th column: the ISBN/Catalog ID.
         final String catNr = tr.child(4).text();
         if (catNr.length() > 9) {
-            final ISBN isbn = new ISBN(catNr, true);
+            final ISBN isbn = ISBN.parseISBN(catNr);
             if (isbn.isIsbn()) {
                 isbnStr = isbn.asText();
             }

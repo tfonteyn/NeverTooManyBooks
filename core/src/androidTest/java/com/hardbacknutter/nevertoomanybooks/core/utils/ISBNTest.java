@@ -142,14 +142,14 @@ class ISBNTest {
     @ParameterizedTest
     @MethodSource("validIsbn13")
     void validIsbn13(@NonNull final String isbnStr) {
-        final ISBN isbn = new ISBN(isbnStr, true);
+        final ISBN isbn = ISBN.parseISBN(isbnStr);
         assertSame(CodeType.Isbn13, isbn.getCodeType());
     }
 
     @ParameterizedTest
     @MethodSource("invalidIsbn13")
     void invalidIsbn13(@NonNull final String isbnStr) {
-        final ISBN code = new ISBN(isbnStr, true);
+        final ISBN code = ISBN.parseISBN(isbnStr);
         assertSame(CodeType.Invalid, code.getCodeType());
     }
 
@@ -157,7 +157,7 @@ class ISBNTest {
     @MethodSource("validSbn")
     void validSbn(@NonNull final String sbnStr,
                   @NonNull final String expected) {
-        final ISBN code = new ISBN(sbnStr, true);
+        final ISBN code = ISBN.parseISBN(sbnStr);
         assertSame(CodeType.Isbn10, code.getCodeType());
         assertEquals(expected, code.asText(CodeType.Isbn10));
     }
@@ -166,7 +166,7 @@ class ISBNTest {
     @MethodSource("validUpcIsbn")
     void validUpcIsbn(@NonNull final String upcStr,
                       @NonNull final String expected) {
-        final ISBN code = new ISBN(upcStr, false);
+        final ISBN code = ISBN.parse(upcStr);
         assertSame(CodeType.Isbn10, code.getCodeType());
         assertEquals(expected, code.asText(CodeType.Isbn10));
     }
@@ -176,7 +176,7 @@ class ISBNTest {
     @MethodSource("valid_upc")
     void valid_upc(@NonNull final String upcStr,
                    @NonNull final String expected) {
-        final ISBN code = new ISBN(upcStr, false);
+        final ISBN code = ISBN.parse(upcStr);
         assertSame(CodeType.UpcA, code.getCodeType());
         assertEquals(expected, code.asText(CodeType.UpcA));
     }
@@ -185,7 +185,7 @@ class ISBNTest {
     @MethodSource("valid_ean13")
     void valid_ean13(@NonNull final String eanStr,
                      @NonNull final String expected) {
-        final ISBN code = new ISBN(eanStr, false);
+        final ISBN code = ISBN.parse(eanStr);
         assertSame(CodeType.Ean13, code.getCodeType());
         assertEquals(expected, code.asText(CodeType.Ean13));
     }
@@ -194,7 +194,7 @@ class ISBNTest {
     @MethodSource("valid_issn8")
     void valid_issn8(@NonNull final String issnStr,
                      @NonNull final String expected) {
-        final ISBN code = new ISBN(issnStr, false);
+        final ISBN code = ISBN.parse(issnStr);
         assertSame(CodeType.Issn8, code.getCodeType());
         assertEquals(expected, code.asText(CodeType.Issn8));
     }
@@ -203,7 +203,7 @@ class ISBNTest {
     @MethodSource("valid_issn13")
     void valid_issn13(@NonNull final String issnStr,
                       @NonNull final String expected) {
-        final ISBN code = new ISBN(issnStr, false);
+        final ISBN code = ISBN.parse(issnStr);
         assertSame(CodeType.Issn13, code.getCodeType());
         assertEquals(expected, code.asText(CodeType.Issn13));
     }
@@ -212,7 +212,7 @@ class ISBNTest {
     @MethodSource("valid_issn138")
     void valid_issn138(@NonNull final String issnStr,
                        @NonNull final String expected) {
-        final ISBN code = new ISBN(issnStr, false);
+        final ISBN code = ISBN.parse(issnStr);
         assertSame(CodeType.Issn13, code.getCodeType());
         assertEquals(expected, code.asText(CodeType.Issn8));
     }

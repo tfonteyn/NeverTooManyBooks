@@ -73,7 +73,7 @@ class SearchByIsbnTest
         // role=0b0: Role{}, realAuthor=null}}],
         // publisher_list=[Publisher{id=0, name=`Cinebook`}]}]
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, new ISBN("9781849182089", true),
+                .searchByIsbn(context, ISBN.parseISBN("9781849182089"),
                               new boolean[]{false, false, false, false});
         assertNotNull(book);
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));

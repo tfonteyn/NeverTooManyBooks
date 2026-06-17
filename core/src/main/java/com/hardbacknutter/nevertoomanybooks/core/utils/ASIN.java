@@ -57,7 +57,7 @@ public final class ASIN
         final String tmpCode = text.toUpperCase(Locale.ENGLISH);
         // Historically, a Book ASIN is just an ISBN-10
         // For leniency we also accept ISBN-13, and convert those to ISBN-10
-        final ISBN isbn = new ISBN(tmpCode, true);
+        final ISBN isbn = ISBN.parseISBN(tmpCode);
         if (isbn.isIsbn10Compat()) {
             this.code = isbn.asText(CodeType.Isbn10);
             valid = true;

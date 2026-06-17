@@ -94,7 +94,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <br>The prefix 977 indicates International Standard Serial Number (ISSN).
  */
 @SuppressWarnings("MagicNumber")
-public class ISBN
+public final class ISBN
         implements Code {
 
     /** Log tag. */
@@ -222,12 +222,12 @@ public class ISBN
      *  <li>Accepts {@code ' '} and {@code '-'} separator characters.</li>
      *  </ul>
      *
-     * @param text       string to digest
+     * @param text       string to parse
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      *                   {@code false} to also accept any other valid code.
      */
-    public ISBN(@Nullable final String text,
-                final boolean strictIsbn) {
+    private ISBN(@Nullable final String text,
+                 final boolean strictIsbn) {
         this.strictIsbn = strictIsbn;
 
         List<Integer> digits = null;
@@ -283,6 +283,45 @@ public class ISBN
     }
 
     /**
+     * Constructor - generic code.
+     *
+     * @param text string to parse
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static ISBN parse(@Nullable final String text) {
+        return new ISBN(text, false);
+    }
+
+    /**
+     * Constructor - ISBN codes only, anything else will be set to {@link CodeType#Invalid}.
+     *
+     * @param text string to parse
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static ISBN parseISBN(@Nullable final String text) {
+        return new ISBN(text, true);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param text       string to parse
+     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     *                   {@code false} to also accept any other valid code.
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static ISBN parse(@Nullable final String text,
+                             final boolean strictIsbn) {
+        return new ISBN(text, strictIsbn);
+    }
+
+    /**
      * Filter a string keeping only digits and 'X'.
      *
      * @param text string to parse
@@ -317,7 +356,7 @@ public class ISBN
         if (text == null || text.isBlank()) {
             throw new IllegalArgumentException(ERROR_ISBN_MUST_BE_VALID);
         }
-        final ISBN isbn = new ISBN(text, true);
+        final ISBN isbn = parseISBN(text);
         if (!isbn.isIsbn()) {
             throw new IllegalArgumentException(ERROR_ISBN_MUST_BE_VALID);
         }
@@ -862,7 +901,7 @@ public class ISBN
             }
 
             // Create it without forcing ISBN, we'll check the type in detail.
-            final ISBN code = new ISBN(str, false);
+            final ISBN code = parse(str);
             if (isbnValidityCheck == Validity.Strict && code.getCodeType() == CodeType.Invalid) {
                 // We're in strict mode, reject any invalid codes
                 invalidate();

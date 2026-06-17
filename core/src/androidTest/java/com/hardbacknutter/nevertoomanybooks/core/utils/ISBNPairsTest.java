@@ -80,12 +80,12 @@ class ISBNPairsTest {
         }
 
         // If either one is not a valid ISBN, we consider them different
-        final ISBN o1 = new ISBN(isbnStr1, true);
+        final ISBN o1 = ISBN.parseISBN(isbnStr1);
         if (!o1.isIsbn()) {
             return false;
         }
 
-        final ISBN o2 = new ISBN(isbnStr2, true);
+        final ISBN o2 = ISBN.parseISBN(isbnStr2);
         if (!o2.isIsbn()) {
             return false;
         }
@@ -96,8 +96,8 @@ class ISBNPairsTest {
     @Test
     void isbn_isValid() {
         for (final String[] isbnPair : valid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
             assertTrue(isbn0.isIsbn());
             assertTrue(isbn1.isIsbn());
@@ -107,8 +107,8 @@ class ISBNPairsTest {
     @Test
     void isbn_isInvalid() {
         for (final String[] isbnPair : invalid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
             assertFalse(isbn0.isIsbn());
             assertFalse(isbn1.isIsbn());
@@ -118,15 +118,15 @@ class ISBNPairsTest {
     @Test
     void isbn_is10() {
         for (final String[] isbnPair : valid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
             assertSame(CodeType.Isbn10, isbn0.getCodeType());
             assertNotSame(CodeType.Isbn10, isbn1.getCodeType());
         }
         for (final String[] isbnPair : invalid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
             assertNotSame(CodeType.Isbn10, isbn0.getCodeType());
             assertNotSame(CodeType.Isbn10, isbn1.getCodeType());
@@ -136,15 +136,15 @@ class ISBNPairsTest {
     @Test
     void isbn_is13() {
         for (final String[] isbnPair : valid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
             assertNotSame(CodeType.Isbn13, isbn0.getCodeType());
             assertSame(CodeType.Isbn13, isbn1.getCodeType());
         }
         for (final String[] isbnPair : invalid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
             assertNotSame(CodeType.Isbn13, isbn0.getCodeType());
             assertNotSame(CodeType.Isbn13, isbn1.getCodeType());
@@ -154,8 +154,8 @@ class ISBNPairsTest {
     @Test
     void isbn_swap1013() {
         for (final String[] isbnPair : valid_isbn) {
-            final ISBN isbn10 = new ISBN(isbnPair[0], true);
-            final ISBN isbn13 = new ISBN(isbnPair[1], true);
+            final ISBN isbn10 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn13 = ISBN.parseISBN(isbnPair[1]);
 
             assertEquals(isbn10.asText(CodeType.Isbn13), isbn13.asText(CodeType.Isbn13));
             assertEquals(isbn10.asText(CodeType.Isbn10), isbn13.asText(CodeType.Isbn10));
@@ -188,8 +188,8 @@ class ISBNPairsTest {
     @Test
     void isbn_equalsValidValid() {
         for (final String[] isbnPair : valid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
             assertEquals(isbn0, isbn1);
         }
     }
@@ -197,8 +197,8 @@ class ISBNPairsTest {
     @Test
     void isbn_equalsInvalidInvalid() {
         for (final String[] isbnPair : invalid_isbn) {
-            final ISBN isbn0 = new ISBN(isbnPair[0], true);
-            final ISBN isbn1 = new ISBN(isbnPair[1], true);
+            final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
+            final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
             assertNotEquals(isbn0, isbn1);
         }
     }
@@ -206,8 +206,8 @@ class ISBNPairsTest {
     @Test
     void isbn_equalsValidInvalid() {
         for (int i = 0; i < invalid_isbn.length; i++) {
-            final ISBN isbn0 = new ISBN(valid_isbn[i][0], true);
-            final ISBN isbn1 = new ISBN(invalid_isbn[i][1], true);
+            final ISBN isbn0 = ISBN.parseISBN(valid_isbn[i][0]);
+            final ISBN isbn1 = ISBN.parseISBN(invalid_isbn[i][1]);
             assertNotEquals(isbn0, isbn1);
         }
     }
