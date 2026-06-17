@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import org.junit.jupiter.api.Test;
 

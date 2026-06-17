@@ -17,15 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
-
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 /**
  * ASIN stands for Amazon Standard Identification Number.
