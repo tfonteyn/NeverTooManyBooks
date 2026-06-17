@@ -64,6 +64,29 @@ class ISBNTest {
         );
     }
 
+    @NonNull
+    static Stream<Arguments> validIsbn1310() {
+        return Stream.of(
+                Arguments.of("9782723481229", "2723481220"),
+                Arguments.of("978-1-886778-17-7", "1886778175"),
+                Arguments.of("9781886778177", "1886778175"),
+                Arguments.of("978-0-684-18818-8", "068418818X"),
+                Arguments.of("9780684188188", "068418818X")
+                );
+    }
+
+    @NonNull
+    static Stream<Arguments> validIsbn1013() {
+        return Stream.of(
+                Arguments.of("272348-1220", "9782723481229"),
+                Arguments.of("18-8677-8175", "9781886778177"),
+                Arguments.of("1886-77-8175", "9781886778177"),
+                Arguments.of("068-418818-X", "9780684188188"),
+                Arguments.of("06841-88-18X", "9780684188188")
+        );
+    }
+
+
     /**
      * SBN codes which can be translated to ISBN-10.
      */
@@ -151,6 +174,24 @@ class ISBNTest {
     void invalidIsbn13(@NonNull final String isbnStr) {
         final ISBN code = ISBN.parseISBN(isbnStr);
         assertSame(CodeType.Invalid, code.getCodeType());
+    }
+
+    @ParameterizedTest
+    @MethodSource("validIsbn1310")
+    void validIsbn1310(@NonNull final String isbnStr,
+                      @NonNull final String expected) {
+        final ISBN code = ISBN.parseISBN(isbnStr);
+        assertSame(CodeType.Isbn13, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Isbn10));
+    }
+
+    @ParameterizedTest
+    @MethodSource("validIsbn1013")
+    void validIsbn1013(@NonNull final String isbnStr,
+                       @NonNull final String expected) {
+        final ISBN code = ISBN.parseISBN(isbnStr);
+        assertSame(CodeType.Isbn10, code.getCodeType());
+        assertEquals(expected, code.asText(CodeType.Isbn13));
     }
 
     @ParameterizedTest
