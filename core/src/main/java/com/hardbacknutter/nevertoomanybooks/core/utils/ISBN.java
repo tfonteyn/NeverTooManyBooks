@@ -681,14 +681,14 @@ public final class ISBN
      */
     public enum Validity {
         /** No checks are done, the code is used as-is. */
-        None(0),
+        NoChecks(0),
         /** Any type as long as it's NOT {@link CodeType#Invalid}. */
-        Loose(1),
+        ValidCodes(1),
         /**
          * Must be either {@link CodeType#Isbn10} or {@link CodeType#Isbn13}
          * (or auto-converted) to be considered valid.
          */
-        Strict(2);
+        Isbn(2);
 
         private final int id;
 
@@ -708,7 +708,7 @@ public final class ISBN
             return Arrays.stream(values())
                          .filter(v -> v.id == id)
                          .findFirst()
-                         .orElse(Loose);
+                         .orElse(ValidCodes);
         }
     }
 
@@ -718,27 +718,27 @@ public final class ISBN
         @NonNull
         private final TextInputEditText editText;
         @NonNull
-        private Validity isbnValidityCheck;
+        private Validity validity;
 
         /**
          * Constructor.
          *
-         * @param editText          the view to watch
-         * @param isbnValidityCheck validity check-level for ISBN codes
+         * @param editText the view to watch
+         * @param validity validity check-level for codes
          */
         public CleanupTextWatcher(@NonNull final TextInputEditText editText,
-                                  @NonNull final Validity isbnValidityCheck) {
+                                  @NonNull final Validity validity) {
             this.editText = editText;
-            this.isbnValidityCheck = isbnValidityCheck;
+            this.validity = validity;
         }
 
         /**
          * Update the validity level.
          *
-         * @param isbnValidityCheck validity check-level for ISBN codes
+         * @param validity validity check-level for codes
          */
-        public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
-            this.isbnValidityCheck = isbnValidityCheck;
+        public void setValidityLevel(@NonNull final Validity validity) {
+            this.validity = validity;
             clean(editText.getEditableText());
         }
 
@@ -762,7 +762,7 @@ public final class ISBN
         }
 
         private void clean(@Nullable final Editable editable) {
-            if (isbnValidityCheck == Validity.None
+            if (validity == Validity.NoChecks
                 || editable == null || editable.length() == 0) {
                 return;
             }
@@ -772,7 +772,7 @@ public final class ISBN
                 return;
             }
 
-            if (isbnValidityCheck == Validity.Loose) {
+            if (validity == Validity.ValidCodes) {
                 // Text representation of ISBN-13/10 string is often
                 // split in groups of digits with '-' in between.
                 // This is, as observed, usually 10 + 3 '-' (or 10 + 2 '-' + 'x'),
@@ -799,7 +799,7 @@ public final class ISBN
                 }
             }
 
-            // Validity.Strict, or we decided we can clean up anyhow.
+            // Validity.Isbn, or we decided we can clean up anyhow.
             final String isbnText = cleanText(text);
             if (!isbnText.equals(text)) {
                 editText.removeTextChangedListener(this);
@@ -902,7 +902,7 @@ public final class ISBN
 
             // Create it without forcing ISBN, we'll check the type in detail.
             final ISBN code = parse(str);
-            if (isbnValidityCheck == Validity.Strict && code.getCodeType() == CodeType.Invalid) {
+            if (isbnValidityCheck == Validity.Isbn && code.getCodeType() == CodeType.Invalid) {
                 // We're in strict mode, reject any invalid codes
                 invalidate();
                 return;
@@ -933,7 +933,7 @@ public final class ISBN
                 return;
             }
 
-            if (isbnValidityCheck == Validity.Strict) {
+            if (isbnValidityCheck == Validity.Isbn) {
                 // We're in strict mode, reject all other code (even when valid)
                 invalidate();
                 return;

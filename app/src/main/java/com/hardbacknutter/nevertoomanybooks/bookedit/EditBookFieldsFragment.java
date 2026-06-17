@@ -255,15 +255,15 @@ public class EditBookFieldsFragment
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             switch (isbnValidityCheck) {
-                case Strict:
+                case Isbn:
                     menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
                     break;
 
-                case Loose:
+                case ValidCodes:
                     menu.findItem(R.id.MENU_ISBN_VALIDITY_LOOSE).setChecked(true);
                     break;
 
-                case None:
+                case NoChecks:
                 default:
                     menu.findItem(R.id.MENU_ISBN_VALIDITY_NONE).setChecked(true);
                     break;
@@ -275,21 +275,21 @@ public class EditBookFieldsFragment
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_ISBN_VALIDITY_NONE) {
-                isbnValidityCheck = ISBN.Validity.None;
-                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.None);
-                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.None);
+                isbnValidityCheck = ISBN.Validity.NoChecks;
+                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.NoChecks);
+                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.NoChecks);
                 return true;
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
-                isbnValidityCheck = ISBN.Validity.Loose;
-                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Loose);
-                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Loose);
+                isbnValidityCheck = ISBN.Validity.ValidCodes;
+                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.ValidCodes);
+                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.ValidCodes);
                 return true;
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-                isbnValidityCheck = ISBN.Validity.Strict;
-                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Strict);
-                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Strict);
+                isbnValidityCheck = ISBN.Validity.Isbn;
+                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Isbn);
+                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Isbn);
                 return true;
             }
 

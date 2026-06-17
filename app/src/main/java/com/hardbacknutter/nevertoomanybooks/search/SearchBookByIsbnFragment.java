@@ -421,15 +421,15 @@ public class SearchBookByIsbnFragment
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
         // The search preference determines the level here; NOT the 'edit book'
-        final ISBN.Validity isbnValidityCheck = BookSearchCriteria.isStrictIsbnGlobal()
-                                                ? ISBN.Validity.Strict
-                                                : ISBN.Validity.None;
+        final ISBN.Validity validity = BookSearchCriteria.isStrictIsbnGlobal()
+                                       ? ISBN.Validity.Isbn
+                                       : ISBN.Validity.NoChecks;
 
-        isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
+        isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, validity);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
 
         isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn,
-                                                                   isbnValidityCheck);
+                                                                   validity);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
         vb.isbnDel.setOnClickListener(v -> {
@@ -1053,7 +1053,8 @@ public class SearchBookByIsbnFragment
                 final boolean checked = !menuItem.isChecked();
                 BookSearchCriteria.setStrictIsbnDefault(checked);
 
-                final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
+                final ISBN.Validity validity = checked ? ISBN.Validity.Isbn
+                                                       : ISBN.Validity.NoChecks;
                 isbnCleanupTextWatcher.setValidityLevel(validity);
                 isbnValidationTextWatcher.setValidityLevel(validity);
                 return true;
