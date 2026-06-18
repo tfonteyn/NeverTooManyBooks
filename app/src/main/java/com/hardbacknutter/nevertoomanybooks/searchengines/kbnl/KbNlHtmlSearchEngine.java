@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -60,8 +61,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
- * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
+ * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>.
+ * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>.
  */
 public class KbNlHtmlSearchEngine
         extends JsoupSearchEngineBase
@@ -78,6 +79,8 @@ public class KbNlHtmlSearchEngine
             "https://webservices.bibliotheek.be/index.php?func=cover&ISBN=%1$s&coversize=%2$s";
 
     /**
+     * Search by code.
+     * <p>
      * param 1: db version (part of the site session vars)
      * param 2: the set number (part of the site session vars)
      * param 3: the ISBN
@@ -93,7 +96,9 @@ public class KbNlHtmlSearchEngine
                                              + "TRM=%3$s";
 
     /**
-     * param 1: db version (part of the site session vars)
+     * Fetch a book.
+     * <p>
+     * param 1: db version (part of the site session vars).
      * param 2: the set number (part of the site session params)
      * Param 3: the SHW part of the url as found in a multi-result
      */
@@ -234,16 +239,18 @@ public class KbNlHtmlSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final Element a = titleList.selectFirst("td.rec_title > div > a");
-        if (a != null) {
-            final String show = a.attr("href");
-            if (!show.isEmpty()) {
-                final String url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr,
-                                                                show);
-                final Document redirected = loadDocument(context, url, null);
-                if (!isCancelled()) {
-                    parse(redirected, book);
-                }
-            }
+        if (a == null) {
+            return;
+        }
+        final String show = a.attr("href");
+        if (show.isEmpty()) {
+            return;
+        }
+
+        final String url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            parse(redirected, book);
         }
     }
 
@@ -387,34 +394,36 @@ public class KbNlHtmlSearchEngine
     private void processTitle(@NonNull final Element td,
                               @NonNull final Book book) {
         final Element a = td.selectFirst("a");
-        if (a != null) {
-            final String[] cleanedData = a.text().split("/");
-            final String s = cleanText(cleanedData[0]);
-            if (!s.isBlank()) {
-                book.setTitle(s);
-            }
-            // It's temping to decode cleanedData[1],
-            // but the data has proven to be very unstructured and mostly unusable.
+        if (a == null) {
+            return;
         }
+        final String[] cleanedData = a.text().split("/");
+        final String s = cleanText(cleanedData[0]);
+        if (!s.isBlank()) {
+            book.setTitle(s);
+        }
+        // It's temping to decode cleanedData[1],
+        // but the data has proven to be very unstructured and mostly unusable.
     }
 
     private void parseAuthor(@NonNull final Element td,
                              @AuthorRole.Role final int type,
                              @NonNull final Book book) {
         final Elements aas = td.select("a");
-        if (!aas.isEmpty()) {
-            for (final Element a : aas) {
-                // remove a year part in the name
-                String s = a.text().split("\\(")[0].strip();
-                // reject separators as for example: <psi:text>;</psi:text>
-                if (s.length() == 1) {
-                    return;
-                }
+        if (aas.isEmpty()) {
+            return;
+        }
+        for (final Element a : aas) {
+            // remove a year part in the name
+            String s = a.text().split("\\(")[0].strip();
+            // reject separators as for example: <psi:text>;</psi:text>
+            if (s.length() == 1) {
+                return;
+            }
 
-                s = cleanName(s);
-                if (!s.isBlank()) {
-                    addAuthor(Author.from(s), type, book);
-                }
+            s = cleanName(s);
+            if (!s.isBlank()) {
+                addAuthor(Author.from(s), type, book);
             }
         }
     }
@@ -422,51 +431,55 @@ public class KbNlHtmlSearchEngine
     private void processSeries(@NonNull final Element td,
                                @NonNull final Book book) {
         final Element span = td.selectFirst("span");
-        if (span != null) {
-            // Note how this is different from the psi result
-            final String s = cleanName(span);
-            if (!s.isBlank()) {
-                book.add(Series.from(s, tmpSeriesNr));
-            }
-            tmpSeriesNr = null;
+        if (span == null) {
+            return;
         }
+        // Note how this is different from the psi result
+        final String s = cleanName(span);
+        if (!s.isBlank()) {
+            book.add(Series.from(s, tmpSeriesNr));
+        }
+        tmpSeriesNr = null;
     }
 
     private void processSeriesNumber(@NonNull final Element td) {
         // This element is listed BEFORE the Series ("reeks") itself so store it tmp.
         final Element span = td.selectFirst("span");
-        if (span != null) {
-            final String[] nrStr = span.text().split("/")[0].split(" ");
-            if (nrStr.length > 1) {
-                tmpSeriesNr = nrStr[1];
-            } else {
-                tmpSeriesNr = nrStr[0];
-            }
+        if (span == null) {
+            return;
+        }
+        final String[] nrStr = span.text().split("/")[0].split(" ");
+        if (nrStr.length > 1) {
+            tmpSeriesNr = nrStr[1];
+        } else {
+            tmpSeriesNr = nrStr[0];
         }
     }
 
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
-        if (!book.hasIsbn()) {
-            final Elements spans = td.select("span");
-            if (!spans.isEmpty()) {
-                // oh boy... aside of actual/valid ISBN numbers we've also seen things like
-                // " : 42.00F"
-                final String isbnText = ISBN.cleanText(spans.get(0).text());
-                // so we do a crude test on the length and hope for the best
-                // (don't do a full ISBN test here, no need)
-                if (isbnText.length() == 10 || isbnText.length() == 13) {
-                    book.setIsbn(isbnText);
+        if (book.hasIsbn()) {
+            return;
+        }
+        final Elements spans = td.select("span");
+        if (spans.isEmpty()) {
+            return;
+        }
+        // oh boy... aside of actual/valid ISBN numbers we've also seen things like
+        // " : 42.00F"
+        final String isbnText = ISBN.cleanText(spans.get(0).text());
+        // so we do a crude test on the length and hope for the best
+        // (don't do a full ISBN test here, no need)
+        if (isbnText.length() == 10 || isbnText.length() == 13) {
+            book.setIsbn(isbnText);
+        }
+        if (spans.size() > 1) {
+            if (!book.contains(DBKey.FORMAT)) {
+                String format = spans.get(1).text();
+                if (format.startsWith("(")) {
+                    format = format.substring(1, format.length() - 1);
                 }
-                if (spans.size() > 1) {
-                    if (!book.contains(DBKey.FORMAT)) {
-                        String format = spans.get(1).text();
-                        if (format.startsWith("(")) {
-                            format = format.substring(1, format.length() - 1);
-                        }
-                        book.setFormat(format);
-                    }
-                }
+                book.setFormat(format);
             }
         }
     }
@@ -474,56 +487,61 @@ public class KbNlHtmlSearchEngine
     private void parsePublisher(@NonNull final Element td,
                                 @NonNull final Book book) {
         final Elements spans = td.select("span");
-        if (!spans.isEmpty()) {
-            String text = spans.stream()
-                               .map(Element::text)
-                               .filter(name -> !name.isEmpty())
-                               .collect(Collectors.joining(" "));
-            // the part before the ":" is (usually?) the city. 2nd part is the name
-            if (text.contains(":")) {
-                text = text.split(":")[1].strip();
-            }
-            text = cleanName(text);
-            if (!text.isBlank()) {
-                book.add(Publisher.from(text));
-            }
+        if (spans.isEmpty()) {
+            return;
+        }
+        String text = spans.stream()
+                           .map(Element::text)
+                           .filter(name -> !name.isEmpty())
+                           .collect(Collectors.joining(" "));
+        // the part before the ":" is (usually?) the city. 2nd part is the name
+        if (text.contains(":")) {
+            text = text.split(":")[1].strip();
+        }
+        text = cleanName(text);
+        if (!text.isBlank()) {
+            book.add(Publisher.from(text));
         }
     }
 
     private void processDatePublished(@NonNull final Element td,
                                       @NonNull final Book book) {
-        if (!book.contains(DBKey.PUBLICATION_DATE)) {
-            final Element span = td.selectFirst("span");
-            if (span != null) {
-                // It's not good... we've seen some different notations.
-                // e.g.:  [2019]
-                // e.g.:  c1977, cover 1978
-                // Grab the first bit before a comma, and strip it for digits + hope for the best
-                final String year = SearchEngineUtils.digits(span.text().split(",")[0]);
-                if (!year.isEmpty()) {
-                    try {
-                        book.setPublicationDate(Integer.parseInt(year));
-                    } catch (@NonNull final NumberFormatException ignore) {
-                        // ignore
-                    }
-                }
+        if (book.contains(DBKey.PUBLICATION_DATE)) {
+            return;
+        }
+        final Element span = td.selectFirst("span");
+        if (span == null) {
+            return;
+        }
+        // It's not good... we've seen some different notations.
+        // e.g.:  [2019]
+        // e.g.:  c1977, cover 1978
+        // Grab the first bit before a comma, and strip it for digits + hope for the best
+        final String year = SearchEngineUtils.digits(span.text().split(",")[0]);
+        if (!year.isEmpty()) {
+            try {
+                book.setPublicationDate(Integer.parseInt(year));
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
             }
         }
     }
 
     private void processPages(@NonNull final Element td,
                               @NonNull final Book book) {
-        if (!book.contains(DBKey.PAGES)) {
-            final Element span = td.selectFirst("span");
-            if (span != null) {
-                final String pagesStr = span.text().split(" ")[0];
-                try {
-                    book.setPages(Integer.parseInt(pagesStr));
-                } catch (@NonNull final NumberFormatException e) {
-                    // use source
-                    book.setPages(pagesStr);
-                }
-            }
+        if (book.contains(DBKey.PAGES)) {
+            return;
+        }
+        final Element span = td.selectFirst("span");
+        if (span == null) {
+            return;
+        }
+        final String pagesStr = span.text().split(" ")[0];
+        try {
+            book.setPages(Integer.parseInt(pagesStr));
+        } catch (@NonNull final NumberFormatException e) {
+            // use source
+            book.setPages(pagesStr);
         }
     }
 
@@ -540,14 +558,14 @@ public class KbNlHtmlSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     @NonNull
     private Optional<String> searchBestCoverByEdition(@NonNull final Context context,
                                                       @NonNull final AltEdition edition,
                                                       @IntRange(from = 0, to = 0) final int cIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx,
                                                           ImageWebSize.Large);
@@ -575,7 +593,7 @@ public class KbNlHtmlSearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
-            throws StorageException {
+            throws CoverStorageException {
 
         if (altEdition instanceof AltEditionIsbn) {
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;

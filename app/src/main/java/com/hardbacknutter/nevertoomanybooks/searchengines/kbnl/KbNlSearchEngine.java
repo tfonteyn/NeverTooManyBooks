@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -95,8 +96,10 @@ public class KbNlSearchEngine
     //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
 
     /**
-     * param 1: db version (part of the site session vars).
-     * param 2: the set number (part of the site session vars).
+     * Search by code.
+     *
+     * param 1: db version (part of the site session vars)
+     * param 2: the set number (part of the site session vars)
      * param 3: the ISBN.
      */
     private static final String SEARCH_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/CMD?"
@@ -110,9 +113,11 @@ public class KbNlSearchEngine
                                              + "TRM=%3$s";
 
     /**
-     * param 1: db version (part of the site session vars).
-     * param 2: the set number (part of the site session params).
-     * Param 3: the SHW part of the url as found in a multi-result.
+     * Fetch a book.
+     * <p>
+     * param 1: db version (part of the site session vars)
+     * param 2: the set number (part of the site session params)
+     * Param 3: the SHW part of the url as found in a multi-result
      */
     private static final String MULTI_RESULT_BOOK_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
@@ -330,14 +335,14 @@ public class KbNlSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     @NonNull
     private Optional<String> searchBestCoverByEdition(@NonNull final Context context,
                                                       @NonNull final AltEdition edition,
                                                       @IntRange(from = 0, to = 0) final int cIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx,
                                                           ImageWebSize.Large);
@@ -365,7 +370,7 @@ public class KbNlSearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
-            throws StorageException {
+            throws CoverStorageException {
 
         if (altEdition instanceof AltEditionIsbn) {
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
