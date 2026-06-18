@@ -39,23 +39,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Info about a cover file.
  */
-public class ImageFileInfo
-        implements Parcelable {
+public class ImageFileInfo {
 
-    /** {@link Parcelable}. */
-    public static final Creator<ImageFileInfo> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public ImageFileInfo createFromParcel(@NonNull final Parcel in) {
-            return new ImageFileInfo(in);
-        }
-
-        @Override
-        @NonNull
-        public ImageFileInfo[] newArray(final int size) {
-            return new ImageFileInfo[size];
-        }
-    };
     private static final String TAG = "ImageFileInfo";
     @NonNull
     private final AltEdition edition;
@@ -97,19 +82,6 @@ public class ImageFileInfo
     }
 
     /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private ImageFileInfo(@NonNull final Parcel in) {
-        //noinspection DataFlowIssue
-        edition = in.readParcelable(getClass().getClassLoader());
-        fileSpec = in.readString();
-        engineId = in.readParcelable(getClass().getClassLoader());
-        size = in.readParcelable(getClass().getClassLoader());
-    }
-
-    /**
      * Get a temporary filename.
      *
      * @param source of the image (normally a SearchEngine specific code)
@@ -148,15 +120,6 @@ public class ImageFileInfo
 
         // Compare without the path/timestamp part
         return s1[1].equals(s2[1]);
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeParcelable(edition, flags);
-        dest.writeString(fileSpec);
-        dest.writeParcelable(engineId, flags);
-        dest.writeParcelable(size, flags);
     }
 
     @NonNull
@@ -231,11 +194,6 @@ public class ImageFileInfo
             }
             return true;
         }
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @NonNull
