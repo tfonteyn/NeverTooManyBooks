@@ -66,10 +66,6 @@ public class SearchEditionsTask
      */
     @UiThread
     public void search(@NonNull final String validIsbn) {
-        // sanity check
-        if (BuildConfig.DEBUG /* always */) {
-            ISBN.requireValidIsbn(validIsbn);
-        }
 
         this.validIsbn = validIsbn;
         execute();

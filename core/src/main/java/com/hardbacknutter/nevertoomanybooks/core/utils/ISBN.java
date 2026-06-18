@@ -367,23 +367,6 @@ public final class ISBN
     }
 
     /**
-     * DEBUG ONLY. Check the validity of an ISBN string.
-     *
-     * @param text to check
-     *
-     * @throws IllegalArgumentException (debug) if invalid
-     */
-    public static void requireValidIsbn(@Nullable final String text) {
-        if (text == null || text.isBlank()) {
-            throw new IllegalArgumentException(ERROR_ISBN_MUST_BE_VALID);
-        }
-        final ISBN isbn = parseISBN(text);
-        if (!isbn.isIsbn()) {
-            throw new IllegalArgumentException(ERROR_ISBN_MUST_BE_VALID);
-        }
-    }
-
-    /**
      * Check if we have a valid code. Does not check for a specific type
      * unless the {@code strictIsbn} flag as set in the constructor is {@code true}.
      * <p>

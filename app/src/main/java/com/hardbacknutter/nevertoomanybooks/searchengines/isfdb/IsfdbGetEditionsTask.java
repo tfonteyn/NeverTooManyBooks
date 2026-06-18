@@ -30,7 +30,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -80,10 +79,6 @@ public class IsfdbGetEditionsTask
      */
     @UiThread
     public void search(@NonNull final ISBN isbn) {
-        // sanity check
-        if (BuildConfig.DEBUG /* always */) {
-            ISBN.requireValidIsbn(validIsbn);
-        }
 
         this.validIsbn = isbn.asText();
         execute();
