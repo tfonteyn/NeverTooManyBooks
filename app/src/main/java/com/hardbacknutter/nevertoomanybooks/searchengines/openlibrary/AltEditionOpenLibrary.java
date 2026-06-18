@@ -20,9 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -34,21 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 public class AltEditionOpenLibrary
         implements AltEdition {
-
-    /** {@link Parcelable}. */
-    public static final Creator<AltEditionOpenLibrary> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public AltEditionOpenLibrary createFromParcel(@NonNull final Parcel in) {
-            return new AltEditionOpenLibrary(in);
-        }
-
-        @Override
-        @NonNull
-        public AltEditionOpenLibrary[] newArray(final int size) {
-            return new AltEditionOpenLibrary[size];
-        }
-    };
 
     @NonNull
     private final String olid;
@@ -84,15 +66,6 @@ public class AltEditionOpenLibrary
         System.arraycopy(covers, 0, this.covers, 0, maxCovers);
     }
 
-    private AltEditionOpenLibrary(@NonNull final Parcel in) {
-        //noinspection DataFlowIssue
-        olid = in.readString();
-        isbn = in.readString();
-        langIso3 = in.readString();
-        publisher = in.readString();
-        in.readLongArray(covers);
-    }
-
     @Override
     public boolean mayHaveCover() {
         return covers[0] != 0;
@@ -126,21 +99,6 @@ public class AltEditionOpenLibrary
     @NonNull
     public long[] getCovers() {
         return covers;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(olid);
-        dest.writeString(isbn);
-        dest.writeString(langIso3);
-        dest.writeString(publisher);
-        dest.writeLongArray(covers);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override

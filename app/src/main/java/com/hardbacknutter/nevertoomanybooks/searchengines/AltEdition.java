@@ -21,17 +21,17 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.os.Parcelable;
+
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 /**
  * An object of this type is created during a call
- * to {@link SearchEngine.AlternativeEditions#searchAlternativeEditions(Context, String)}.
+ * to {@link SearchEngine.AlternativeEditions#searchAlternativeEditions(Context, ISBN)}.
  * <p>
  * Depending on the concrete type, it will be used to fetch alternative editions of
  * the requested book, or to fetch alternative covers.
  */
-public interface AltEdition
-        extends Parcelable {
+public interface AltEdition {
 
     /**
      * This edition <strong>MAY</strong> have a cover.

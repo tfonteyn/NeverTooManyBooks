@@ -20,28 +20,10 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 
 public class AltEditionIsbn
         implements AltEdition {
-
-    /** {@link Parcelable}. */
-    public static final Creator<AltEditionIsbn> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public AltEditionIsbn createFromParcel(@NonNull final Parcel in) {
-            return new AltEditionIsbn(in);
-        }
-
-        @Override
-        @NonNull
-        public AltEditionIsbn[] newArray(final int size) {
-            return new AltEditionIsbn[size];
-        }
-    };
 
     @NonNull
     private final String isbn;
@@ -55,11 +37,6 @@ public class AltEditionIsbn
         this.isbn = validIsbn;
     }
 
-    private AltEditionIsbn(@NonNull final Parcel in) {
-        //noinspection DataFlowIssue
-        isbn = in.readString();
-    }
-
     /**
      * The ISBN for this edition.
      *
@@ -68,17 +45,6 @@ public class AltEditionIsbn
     @NonNull
     public String getIsbn() {
         return isbn;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(isbn);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override

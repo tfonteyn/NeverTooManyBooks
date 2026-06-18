@@ -20,9 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,21 +27,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 public class AltEditionDouban
         implements AltEdition {
-
-    /** {@link Parcelable}. */
-    public static final Creator<AltEditionDouban> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public AltEditionDouban createFromParcel(@NonNull final Parcel in) {
-            return new AltEditionDouban(in);
-        }
-
-        @Override
-        @NonNull
-        public AltEditionDouban[] newArray(final int size) {
-            return new AltEditionDouban[size];
-        }
-    };
 
     private final long id;
     @Nullable
@@ -65,12 +47,6 @@ public class AltEditionDouban
         this.id = id;
         this.bookUrl = bookUrl;
         this.coverUrl = coverUrl;
-    }
-
-    private AltEditionDouban(@NonNull final Parcel in) {
-        id = in.readLong();
-        bookUrl = in.readString();
-        coverUrl = in.readString();
     }
 
     @Override
@@ -95,19 +71,6 @@ public class AltEditionDouban
     @Nullable
     public String getCoverUrl() {
         return coverUrl;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(id);
-        dest.writeString(bookUrl);
-        dest.writeString(coverUrl);
     }
 
     @Override

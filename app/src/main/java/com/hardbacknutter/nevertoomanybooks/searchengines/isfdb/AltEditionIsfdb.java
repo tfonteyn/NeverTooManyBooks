@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -32,21 +29,6 @@ import org.jsoup.nodes.Document;
 
 public class AltEditionIsfdb
         implements AltEdition {
-
-    /** {@link Parcelable}. */
-    public static final Creator<AltEditionIsfdb> CREATOR = new Creator<>() {
-        @Override
-        @NonNull
-        public AltEditionIsfdb createFromParcel(@NonNull final Parcel in) {
-            return new AltEditionIsfdb(in);
-        }
-
-        @Override
-        @NonNull
-        public AltEditionIsfdb[] newArray(final int size) {
-            return new AltEditionIsfdb[size];
-        }
-    };
 
     @Nullable
     private final String isbn;
@@ -61,9 +43,6 @@ public class AltEditionIsfdb
      * If a fetch of editions resulted in a single book returned (via redirects),
      * then the doc is kept here for immediate processing.
      * If we get (at least) 2 editions, then this will always be {@code null}.
-     * <p>
-     * IMPORTANT: the document is NOT parcelled. This is acceptable as all code
-     * will assume it's potentially {@code null} and (re)fetch it when needed.
      */
     @Nullable
     private Document document;
@@ -105,13 +84,6 @@ public class AltEditionIsfdb
         this.document = document;
     }
 
-    private AltEditionIsfdb(@NonNull final Parcel in) {
-        isfdbId = in.readLong();
-        isbn = in.readString();
-        publisher = in.readString();
-        langIso3 = in.readString();
-    }
-
     @Nullable
     public Document getDocument() {
         return document;
@@ -146,20 +118,6 @@ public class AltEditionIsfdb
     @Nullable
     public String getPublisher() {
         return publisher;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(isfdbId);
-        dest.writeString(isbn);
-        dest.writeString(publisher);
-        dest.writeString(langIso3);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override
