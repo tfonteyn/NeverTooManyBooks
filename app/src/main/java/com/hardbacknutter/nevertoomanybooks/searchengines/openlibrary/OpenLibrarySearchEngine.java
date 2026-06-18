@@ -1624,13 +1624,14 @@ public class OpenLibrarySearchEngine
      * @see #fetchImageByKey(Context, char, String, String, int, ImageWebSize)
      * @see #searchBestCover(Context, String, String, int)
      */
+    @SuppressWarnings("ChainOfInstanceofChecks")
     @Override
     @NonNull
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 3) final int cIdx,
                                                  @Nullable final ImageWebSize size)
-            throws StorageException {
+            throws CoverStorageException {
 
         if (altEdition instanceof AltEditionOpenLibrary) {
             final AltEditionOpenLibrary edition = (AltEditionOpenLibrary) altEdition;
@@ -1671,14 +1672,14 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @NonNull
     private Optional<String> searchBestCover(@NonNull final Context context,
                                              @NonNull final String key,
                                              @NonNull final String id,
                                              @IntRange(from = 0, to = 3) final int cIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         Optional<String> oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
                                                      ImageWebSize.Large);

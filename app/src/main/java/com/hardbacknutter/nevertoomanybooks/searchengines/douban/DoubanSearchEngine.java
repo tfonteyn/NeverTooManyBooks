@@ -848,6 +848,8 @@ public class DoubanSearchEngine
         return List.of();
     }
 
+    @SuppressWarnings("ChainOfInstanceofChecks")
+    @Override
     @NonNull
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
