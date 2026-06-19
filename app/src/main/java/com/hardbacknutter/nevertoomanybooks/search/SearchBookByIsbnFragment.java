@@ -624,7 +624,7 @@ public class SearchBookByIsbnFragment
         final CameraConfig cameraConfig = vm.getCameraConfig();
 
         final BarcodeScanner.Builder builder = new BarcodeScanner.Builder()
-                .setBarcodeFormats(BarcodeFamily.PRODUCT)
+                .setBarcodeFormats(ScannerContract.BARCODES)
                 .setAutoFocus(cameraConfig.isAutoFocus());
 
         // -1: no preference: do NOT set, otherwise set to 0 or 1

@@ -27,6 +27,9 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.zxing.BarcodeFormat;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
-import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -50,6 +52,17 @@ public class ScannerContract
     private static final String TAG = "ScannerContract";
 
     /**
+     * The barcode formats we read.
+     */
+    public static final List<BarcodeFormat> BARCODES = List.of(
+            BarcodeFormat.EAN_13,
+            BarcodeFormat.UPC_A,
+            BarcodeFormat.UPC_EAN_EXTENSION,
+            BarcodeFormat.UPC_E,
+            BarcodeFormat.EAN_8
+    );
+
+    /**
      * Create a default {@link ScanOptions} objects using the user-configured
      * camera and a set of barcodes suited for ISBN and UPC codes.
      *
@@ -61,7 +74,7 @@ public class ScannerContract
     public static ScanOptions createDefaultOptions(@NonNull final CameraConfig cameraConfig) {
 
         return new ScanOptions()
-                .setBarcodeFormats(BarcodeFamily.PRODUCT)
+                .setBarcodeFormats(BARCODES)
                 .setAutoFocus(cameraConfig.isAutoFocus())
                 .setUseCameraWithLensFacing(cameraConfig.getLensFacing())
                 .setShowZoomControl(cameraConfig.isZoomControlEnabled());
