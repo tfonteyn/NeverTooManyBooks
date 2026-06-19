@@ -61,6 +61,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -474,11 +475,11 @@ public class EditBookTocFragment
 
         final String isbnStr = book.getIsbn();
         if (!isbnStr.isEmpty()) {
-            final ISBN code = ISBN.parseISBN(isbnStr);
-            if (code.isIsbn()) {
+            final ProductCode productCode = ISBN.parseISBN(isbnStr);
+            if (productCode.isIsbn()) {
                 Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
-                isfdbTocSearchVm.searchByIsbn(code);
+                isfdbTocSearchVm.searchByProductCode(productCode);
                 return;
             }
         }

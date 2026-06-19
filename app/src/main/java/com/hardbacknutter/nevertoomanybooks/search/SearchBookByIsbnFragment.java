@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContr
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
@@ -137,9 +138,9 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * Manual entry:
  * <ol>
  *     <li>user enters code and clicks the search-button</li>
- *     <li>{@link #prepare(ISBN)}</li>
- *     <li>{@link #preSearchInteractively(ISBN)}</li>
- *     <li>{@link #startSearch(ISBN)}</li>
+ *     <li>{@link #prepare(ProductCode)}</li>
+ *     <li>{@link #preSearchInteractively(ProductCode)}</li>
+ *     <li>{@link #startSearch(ProductCode)}</li>
  *     <li>{@link SearchBookBaseFragment}#startSearch(Criteria)</li>
  *     <li>{@link SearchCoordinator}#startSearch(Criteria)</li>
  * </ol>
@@ -159,7 +160,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * <ol>
  *     <li>User scans a single code</li>
  *     <li>{@link #onBarcodeScanned(String)}</li>
- *     <li>{@link #prepare(ISBN)}</li>
+ *     <li>{@link #prepare(ProductCode)}</li>
  *     <li>... see Manual Entry</li>
  * </ol>
  * <ol>
@@ -172,7 +173,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * <ol>
  *     <li>User scans a code</li>
  *     <li>{@link #onBarcodeScanned(String)}</li>
- *     <li>{@link #prepare(ISBN)}</li>
+ *     <li>{@link #prepare(ProductCode)}</li>
  *     <li>... see Manual Entry</li>
  * </ol>
  * <ol>
@@ -187,7 +188,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * <ol>
  *     <li>User scans a code</li>
  *     <li>{@link #onBarcodeScanned(String)}</li>
- *     <li>{@link #preSearchBatch(ISBN)}</li>
+ *     <li>{@link #preSearchBatch(ProductCode)}</li>
  *     <li>{@link QueueViewModel#add(QueuedItem, Function)}</li>
  *     <li>scanner starts again</li>
  * </ol>
@@ -224,7 +225,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * </ol>
  */
 public class SearchBookByIsbnFragment
-        extends QueueFragment<ISBN> {
+        extends QueueFragment {
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnFrag";
@@ -476,9 +477,9 @@ public class SearchBookByIsbnFragment
             viewToModel();
 
             final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
-            final ISBN code = ISBN.parse(vm.getIsbnText(), strictIsbn);
-            if (!code.isValid()) {
-                final String text = code.asText();
+            final ProductCode productCode = ISBN.parse(vm.getIsbnText(), strictIsbn);
+            if (!productCode.isValid()) {
+                final String text = productCode.asText();
                 if (text.isEmpty()) {
                     vb.lblIsbn.setError(getString(R.string.vldt_non_blank_required));
                 } else {
@@ -487,7 +488,7 @@ public class SearchBookByIsbnFragment
                 return;
             }
 
-            prepare(code);
+            prepare(productCode);
         });
     }
 
@@ -688,13 +689,13 @@ public class SearchBookByIsbnFragment
     /**
      * Prepare to search.
      *
-     * @param code to search for
+     * @param productCode to search for
      */
-    private void prepare(@NonNull final ISBN code) {
+    private void prepare(@NonNull final ProductCode productCode) {
         if (isQueuePopulated() || vm.getScannerMode() == ScanMode.Batch) {
-            preSearchBatch(code);
+            preSearchBatch(productCode);
         } else {
-            preSearchInteractively(code);
+            preSearchInteractively(productCode);
         }
     }
 
@@ -703,11 +704,11 @@ public class SearchBookByIsbnFragment
      * Prepare to search.
      * Check for codes already existing locally, interact with the user as needed.
      *
-     * @param code to search for
+     * @param productCode to search for
      *
-     * @see #prepare(ISBN)
+     * @see #prepare(ProductCode)
      */
-    private void preSearchInteractively(@NonNull final ISBN code) {
+    private void preSearchInteractively(@NonNull final ProductCode productCode) {
         // paranoia: we should not be in the situation... flw
         // check if we have an active search, if so, quit silently.
         if (isSearchActive()) {
@@ -715,16 +716,16 @@ public class SearchBookByIsbnFragment
         }
 
         // Check if the ISBN already exists in our database,
-        final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
+        final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(productCode);
         if (!existingIds.isEmpty()) {
-            onBookAlreadyPresent(code, existingIds, () -> startSearch(code));
+            onBookAlreadyPresent(productCode, existingIds, () -> startSearch(productCode));
             return;
         }
 
         setEnableProgressMessages(true);
 
         // Start the search
-        final int searchId = startSearch(code);
+        final int searchId = startSearch(productCode);
         if (searchId == 0) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_book_search_failed,
@@ -737,14 +738,13 @@ public class SearchBookByIsbnFragment
      * Called <strong>before</strong> a search is started if the entered code
      * is already present in the local database.
      *
-     * @param code        which was already present
+     * @param productCode which was already present
      * @param existingIds the local books which use that code
      * @param onAdd       action to take when the user selects "add anyway"
      *
-     * @see #preSearchInteractively(ISBN)
+     * @see #preSearchInteractively(ProductCode)
      */
-    @SuppressWarnings("TypeMayBeWeakened")
-    private void onBookAlreadyPresent(@NonNull final ISBN code,
+    private void onBookAlreadyPresent(@NonNull final ProductCode productCode,
                                       @NonNull final List<Pair<Long, String>> existingIds,
                                       @NonNull final Runnable onAdd) {
         // always quit scanning until the user manually starts it again
@@ -754,7 +754,7 @@ public class SearchBookByIsbnFragment
         final long firstFound = existingIds.get(0).first;
         // Show the "title (isbn)" with a caution message
         final String msg = getString(R.string.a_bracket_b_bracket,
-                                     existingIds.get(0).second, code.asText())
+                                     existingIds.get(0).second, productCode.asText())
                            + "\n\n" + getString(R.string.confirm_duplicate_book_message);
 
         //noinspection DataFlowIssue
@@ -786,10 +786,10 @@ public class SearchBookByIsbnFragment
      *     <li>continuous scan or queue/batch mode</li>
      * </ul>
      *
-     * @param code to search for
+     * @param productCode to search for
      */
-    private void preSearchBatch(@NonNull final ISBN code) {
-        final int searchId = addToQueue(code);
+    private void preSearchBatch(@NonNull final ProductCode productCode) {
+        final int searchId = addToQueue(productCode);
 
         // Is this a manual search (user enters ISBN)
         // or a single scan (scan returns ISBN)
@@ -840,19 +840,19 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Sits between {@link #prepare(ISBN)} and {@link #startSearch(BookSearchCriteria)}
+     * Sits between {@link #prepare(ProductCode)} and {@link #startSearch(BookSearchCriteria)}
      * Needed to:
      * - support {@link ScanMode#Batch} mode.
      * - allow starting with or without calling {@link #onBookAlreadyPresent}
      *
-     * @param code to search for
+     * @param productCode to search for
      *
      * @return the search-id, or {@code 0} if no search was started
      */
     @Override
-    protected int startSearch(@NonNull final ISBN code) {
+    protected int startSearch(@NonNull final ProductCode productCode) {
         final BookSearchCriteria criteria = new BookSearchCriteria();
-        criteria.setProductCodeFromScan(code, vm.getScannerMode());
+        criteria.setProductCodeFromScan(productCode, vm.getScannerMode());
 
         return startSearch(criteria);
     }
@@ -865,8 +865,8 @@ public class SearchBookByIsbnFragment
     private void onBarcodeScanned(@NonNull final String barCode) {
         final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
 
-        final ISBN code = ISBN.parse(barCode, strictIsbn);
-        if (code.isValid()) {
+        final ProductCode productCode = ISBN.parse(barCode, strictIsbn);
+        if (productCode.isValid()) {
             if (strictIsbn) {
                 SoundManager.beepOnValidIsbn();
             } else {
@@ -875,21 +875,21 @@ public class SearchBookByIsbnFragment
 
             switch (vm.getScannerMode()) {
                 case Batch: {
-                    preSearchBatch(code);
+                    preSearchBatch(productCode);
                     break;
                 }
                 case Single: {
                     onScanningFinished(true);
                     vm.setIsbnText(barCode);
                     modelToView();
-                    prepare(code);
+                    prepare(productCode);
                     break;
                 }
                 case Continuous: {
                     onScanningFinished(false);
                     vm.setIsbnText(barCode);
                     modelToView();
-                    prepare(code);
+                    prepare(productCode);
                     break;
                 }
             }
@@ -906,7 +906,7 @@ public class SearchBookByIsbnFragment
                 vm.setIsbnText(barCode);
                 modelToView();
                 vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
-                                              code.asText()));
+                                              productCode.asText()));
             }
         }
     }

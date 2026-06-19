@@ -445,15 +445,15 @@ public class BibliotecePlSearchEngine
             final String isbnStr = ISBN.cleanText(isbnElements.get(0).text());
             if (book.hasIsbn()) {
                 // If it's an isbn-10 equal to the one we searched for, grab it.
-                final ProductCode siteIsbn = ISBN.parseISBN(isbnStr);
-                final ProductCode searchIsbn = ISBN.parseISBN(book.getIsbn());
+                final ProductCode productCodeFromSite = ISBN.parseISBN(isbnStr);
+                final ProductCode productCodeSearched = ISBN.parseISBN(book.getIsbn());
 
                 // If the user searched for an isbn-13,
                 // and the website returned an isbn-10
                 // AND they are really the same, THEN we preserve the isbn-10
-                if (searchIsbn.getType() == ProductCodeType.Isbn13
-                    && siteIsbn.getType() == ProductCodeType.Isbn10
-                    && siteIsbn.equals(searchIsbn)) {
+                if (productCodeSearched.getType() == ProductCodeType.Isbn13
+                    && productCodeFromSite.getType() == ProductCodeType.Isbn10
+                    && productCodeFromSite.equals(productCodeSearched)) {
                     book.setIsbn(isbnStr);
                 }
             } else {

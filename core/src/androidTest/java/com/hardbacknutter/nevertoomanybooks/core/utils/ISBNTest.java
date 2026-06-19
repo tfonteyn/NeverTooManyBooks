@@ -29,9 +29,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ISBNTest {
 
@@ -165,51 +163,51 @@ class ISBNTest {
     @ParameterizedTest
     @MethodSource("validIsbn13")
     void validIsbn13(@NonNull final String isbnStr) {
-        final ISBN isbn = ISBN.parseISBN(isbnStr);
-        assertSame(ProductCodeType.Isbn13, isbn.getType());
+        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        assertSame(ProductCodeType.Isbn13, productCode.getType());
     }
 
     @ParameterizedTest
     @MethodSource("invalidIsbn13")
     void invalidIsbn13(@NonNull final String isbnStr) {
-        final ISBN code = ISBN.parseISBN(isbnStr);
-        assertSame(ProductCodeType.Invalid, code.getType());
+        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        assertSame(ProductCodeType.Invalid, productCode.getType());
     }
 
     @ParameterizedTest
     @MethodSource("validIsbn1310")
     void validIsbn1310(@NonNull final String isbnStr,
                       @NonNull final String expected) {
-        final ISBN code = ISBN.parseISBN(isbnStr);
-        assertSame(ProductCodeType.Isbn13, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Isbn10));
+        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        assertSame(ProductCodeType.Isbn13, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Isbn10));
     }
 
     @ParameterizedTest
     @MethodSource("validIsbn1013")
     void validIsbn1013(@NonNull final String isbnStr,
                        @NonNull final String expected) {
-        final ISBN code = ISBN.parseISBN(isbnStr);
-        assertSame(ProductCodeType.Isbn10, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Isbn13));
+        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        assertSame(ProductCodeType.Isbn10, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Isbn13));
     }
 
     @ParameterizedTest
     @MethodSource("validSbn")
     void validSbn(@NonNull final String sbnStr,
                   @NonNull final String expected) {
-        final ISBN code = ISBN.parseISBN(sbnStr);
-        assertSame(ProductCodeType.Isbn10, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Isbn10));
+        final ProductCode productCode = ISBN.parseISBN(sbnStr);
+        assertSame(ProductCodeType.Isbn10, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Isbn10));
     }
 
     @ParameterizedTest
     @MethodSource("validUpcIsbn")
     void validUpcIsbn(@NonNull final String upcStr,
                       @NonNull final String expected) {
-        final ISBN code = ISBN.parse(upcStr);
-        assertSame(ProductCodeType.Isbn10, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Isbn10));
+        final ProductCode productCode = ISBN.parse(upcStr);
+        assertSame(ProductCodeType.Isbn10, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Isbn10));
     }
 
 
@@ -217,44 +215,44 @@ class ISBNTest {
     @MethodSource("valid_upc")
     void valid_upc(@NonNull final String upcStr,
                    @NonNull final String expected) {
-        final ISBN code = ISBN.parse(upcStr);
-        assertSame(ProductCodeType.UpcA, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.UpcA));
+        final ProductCode productCode = ISBN.parse(upcStr);
+        assertSame(ProductCodeType.UpcA, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.UpcA));
     }
 
     @ParameterizedTest
     @MethodSource("valid_ean13")
     void valid_ean13(@NonNull final String eanStr,
                      @NonNull final String expected) {
-        final ISBN code = ISBN.parse(eanStr);
-        assertSame(ProductCodeType.Ean13, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Ean13));
+        final ProductCode productCode = ISBN.parse(eanStr);
+        assertSame(ProductCodeType.Ean13, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Ean13));
     }
 
     @ParameterizedTest
     @MethodSource("valid_issn8")
     void valid_issn8(@NonNull final String issnStr,
                      @NonNull final String expected) {
-        final ISBN code = ISBN.parse(issnStr);
-        assertSame(ProductCodeType.Issn8, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Issn8));
+        final ProductCode productCode = ISBN.parse(issnStr);
+        assertSame(ProductCodeType.Issn8, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Issn8));
     }
 
     @ParameterizedTest
     @MethodSource("valid_issn13")
     void valid_issn13(@NonNull final String issnStr,
                       @NonNull final String expected) {
-        final ISBN code = ISBN.parse(issnStr);
-        assertSame(ProductCodeType.Issn13, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Issn13));
+        final ProductCode productCode = ISBN.parse(issnStr);
+        assertSame(ProductCodeType.Issn13, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Issn13));
     }
 
     @ParameterizedTest
     @MethodSource("valid_issn138")
     void valid_issn138(@NonNull final String issnStr,
                        @NonNull final String expected) {
-        final ISBN code = ISBN.parse(issnStr);
-        assertSame(ProductCodeType.Issn13, code.getType());
-        assertEquals(expected, code.asText(ProductCodeType.Issn8));
+        final ProductCode productCode = ISBN.parse(issnStr);
+        assertSame(ProductCodeType.Issn13, productCode.getType());
+        assertEquals(expected, productCode.asText(ProductCodeType.Issn8));
     }
 }

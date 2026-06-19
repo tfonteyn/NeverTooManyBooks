@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMe
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -409,12 +410,12 @@ public final class ImageHandler {
 
         final String isbnStr = coverBrowserIsbnSupplier.get();
         if (!isbnStr.isEmpty()) {
-            final ISBN code = ISBN.parseISBN(isbnStr);
-            if (code.isIsbn()) {
+            final ProductCode productCode = ISBN.parseISBN(isbnStr);
+            if (productCode.isIsbn()) {
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),
                                             coverBrowserTitleSupplier.get(),
-                                            code.asText(), cIdx);
+                                            productCode.asText(), cIdx);
                 return;
             }
         }

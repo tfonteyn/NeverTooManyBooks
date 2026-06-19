@@ -25,12 +25,13 @@ import androidx.annotation.NonNull;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 
 @SuppressWarnings("WeakerAccess")
 public class IsbnQueueViewModel
-        extends QueueViewModel<ISBN> {
+        extends QueueViewModel {
 
     /** Storage key into preferences for the current queue. */
     private static final String PK_SCAN_QUEUE = "scan.queue";
@@ -43,7 +44,7 @@ public class IsbnQueueViewModel
     }
 
     private static class IsbnFactory
-            implements Function<String, ISBN> {
+            implements Function<String, ProductCode> {
 
         private final boolean strictIsbn;
 
@@ -53,7 +54,7 @@ public class IsbnQueueViewModel
 
         @Override
         @NonNull
-        public ISBN apply(@NonNull final String s) {
+        public ProductCode apply(@NonNull final String s) {
             return ISBN.parse(s, strictIsbn);
         }
     }

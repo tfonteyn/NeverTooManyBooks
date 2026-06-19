@@ -31,12 +31,12 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-public class QueuedItem<CODE extends ProductCode> {
+public class QueuedItem {
 
     private static final String TAG = "QueuedItem";
 
     @NonNull
-    private final CODE code;
+    private final ProductCode productCode;
     /** Set when the search is started. */
     private int searchId;
     /** Set when the result is available. */
@@ -46,10 +46,10 @@ public class QueuedItem<CODE extends ProductCode> {
     /**
      * Constructor.
      *
-     * @param code the {@link ProductCode} this item will represent
+     * @param productCode the {@link ProductCode} this item will represent
      */
-    public QueuedItem(@NonNull final CODE code) {
-        this.code = code;
+    public QueuedItem(@NonNull final ProductCode productCode) {
+        this.productCode = productCode;
     }
 
     /**
@@ -58,8 +58,8 @@ public class QueuedItem<CODE extends ProductCode> {
      * @return code
      */
     @NonNull
-    public CODE getCode() {
-        return code;
+    public ProductCode getProductCode() {
+        return productCode;
     }
 
     /**
@@ -106,22 +106,22 @@ public class QueuedItem<CODE extends ProductCode> {
         }
 
         @SuppressWarnings("unchecked")
-        final QueuedItem<CODE> item = (QueuedItem<CODE>) o;
+        final QueuedItem item = (QueuedItem) o;
         return searchId == item.searchId
-               && Objects.equals(code, item.code)
+               && Objects.equals(productCode, item.productCode)
                && Objects.equals(result, item.result);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, searchId, result);
+        return Objects.hash(productCode, searchId, result);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "QueuedItem{"
-               + "code=" + code
+               + "code=" + productCode
                + ", searchId=" + searchId
                + ", result=" + result
                + '}';

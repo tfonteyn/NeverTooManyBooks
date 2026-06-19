@@ -699,15 +699,15 @@ public class StripInfoSearchEngine
 
         final String barcode = book.getString(SiteField.BARCODE, null);
         if (barcode != null && !barcode.isEmpty()) {
-            final ProductCode isbnFromBarcode = ISBN.parseISBN(barcode);
+            final ProductCode productCode = ISBN.parseISBN(barcode);
             // If we found a pure ISBN
-            if (isbnFromBarcode.isIsbn()
+            if (productCode.isIsbn()
                 // or, if it was a different code, or even an invalid code,
                 // but *IS* the one we were searching for
-                || isbnFromBarcode.equals(searchedCode)) {
+                || productCode.equals(searchedCode)) {
 
                 // then the barcode always replaces the ISBN from the site!
-                book.setIsbn(isbnFromBarcode.asText());
+                book.setIsbn(productCode.asText());
                 book.remove(SiteField.BARCODE);
             }
         }

@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.AltEditionIsfdb;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetBookTask;
@@ -39,8 +39,8 @@ public class IsfdbTocSearchViewModel
     private final IsfdbGetEditionsTask isfdbGetEditionsTask = new IsfdbGetEditionsTask();
     private final IsfdbGetBookTask isfdbGetBookTask = new IsfdbGetBookTask();
 
-    void searchByIsbn(@NonNull final ISBN isbn) {
-        isfdbGetEditionsTask.search(isbn);
+    void searchByProductCode(@NonNull final ProductCode productCode) {
+        isfdbGetEditionsTask.search(productCode);
     }
 
     @NonNull

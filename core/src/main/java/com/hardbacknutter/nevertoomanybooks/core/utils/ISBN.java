@@ -263,7 +263,9 @@ public final class ISBN
                 }
 
                 // strict ISBN required?
-                if (strictIsbn && type != ProductCodeType.Isbn10 && type != ProductCodeType.Isbn13) {
+                if (strictIsbn
+                    && type != ProductCodeType.Isbn10
+                    && type != ProductCodeType.Isbn13) {
                     type = ProductCodeType.Invalid;
                 }
             }
@@ -290,7 +292,7 @@ public final class ISBN
      * @return new instance
      */
     @NonNull
-    public static ISBN parse(@Nullable final String text) {
+    public static ProductCode parse(@Nullable final String text) {
         return new ISBN(text, false);
     }
 
@@ -302,7 +304,7 @@ public final class ISBN
      * @return new instance
      */
     @NonNull
-    public static ISBN parseISBN(@Nullable final String text) {
+    public static ProductCode parseISBN(@Nullable final String text) {
         return new ISBN(text, true);
     }
 
@@ -316,7 +318,7 @@ public final class ISBN
      * @return new instance
      */
     @NonNull
-    public static ISBN parse(@Nullable final String text,
+    public static ProductCode parse(@Nullable final String text,
                              final boolean strictIsbn) {
         return new ISBN(text, strictIsbn);
     }
@@ -390,7 +392,8 @@ public final class ISBN
 
     @Override
     public boolean isIsbn() {
-        return productCodeType == ProductCodeType.Isbn10 || productCodeType == ProductCodeType.Isbn13;
+        return productCodeType == ProductCodeType.Isbn10
+               || productCodeType == ProductCodeType.Isbn13;
     }
 
     @Override
@@ -503,7 +506,8 @@ public final class ISBN
             }
         }
 
-        throw new NumberFormatException("Unable to convert type: " + productCodeType + " to " + toType);
+        throw new NumberFormatException("Unable to convert type: "
+                                        + productCodeType + " to " + toType);
     }
 
     /**
@@ -584,7 +588,8 @@ public final class ISBN
         // Reminder: do not compare 'codeText' !
 
         // Either one is invalid ? No match.
-        if (productCodeType == ProductCodeType.Invalid || cmp.getType() == ProductCodeType.Invalid) {
+        if (productCodeType == ProductCodeType.Invalid
+            || cmp.getType() == ProductCodeType.Invalid) {
             return false;
         }
 
@@ -812,34 +817,35 @@ public final class ISBN
             }
 
             // Create it without forcing ISBN, we'll check the type in detail.
-            final ISBN code = parse(str);
-            if (isbnValidityCheck == ProductCodeValidity.Isbn && code.getType() == ProductCodeType.Invalid) {
+            final ProductCode productCode = parse(str);
+            if (isbnValidityCheck == ProductCodeValidity.Isbn
+                && productCode.getType() == ProductCodeType.Invalid) {
                 // We're in strict mode, reject any invalid codes
                 invalidate();
                 return;
             }
 
             // ISBN-10 + any legacy SBN/UPC which was converted to ISBN-10
-            if (code.getType() == ProductCodeType.Isbn10) {
+            if (productCode.getType() == ProductCodeType.Isbn10) {
                 layout.setStartIconVisible(true);
                 // ISBN-10, which can always be converted to ISBN-13
-                altIsbn = code.asText(ProductCodeType.Isbn13);
+                altIsbn = productCode.asText(ProductCodeType.Isbn13);
                 layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                LoggerFactory.getLogger().d(TAG, code.getType());
+                LoggerFactory.getLogger().d(TAG, productCode.getType());
                 return;
             }
 
-            if (code.getType() == ProductCodeType.Isbn13) {
+            if (productCode.getType() == ProductCodeType.Isbn13) {
                 layout.setStartIconVisible(true);
-                if (code.isIsbn10Compat()) {
+                if (productCode.isIsbn10Compat()) {
                     // can be converted to ISBN-10
-                    altIsbn = code.asText(ProductCodeType.Isbn10);
+                    altIsbn = productCode.asText(ProductCodeType.Isbn10);
                     layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                    LoggerFactory.getLogger().d(TAG, code.getType());
+                    LoggerFactory.getLogger().d(TAG, productCode.getType());
                 } else {
                     // cannot be converted
                     layout.setStartIconOnClickListener(null);
-                    LoggerFactory.getLogger().d(TAG, code.getType());
+                    LoggerFactory.getLogger().d(TAG, productCode.getType());
                 }
                 return;
             }
@@ -851,9 +857,9 @@ public final class ISBN
             }
 
             // We're not in strict mode, just show validity status
-            layout.setStartIconVisible(code.getType() != ProductCodeType.Invalid);
+            layout.setStartIconVisible(productCode.getType() != ProductCodeType.Invalid);
             layout.setStartIconOnClickListener(null);
-            LoggerFactory.getLogger().d(TAG, code.getType());
+            LoggerFactory.getLogger().d(TAG, productCode.getType());
         }
     }
 }

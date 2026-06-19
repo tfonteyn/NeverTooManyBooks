@@ -261,9 +261,9 @@ public class KbNlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ProductCode isbn = ISBN.parseISBN(book.getIsbn());
-            if (isbn.isIsbn()) {
-                final AltEdition edition = new AltEditionProductCode(isbn);
+            final ProductCode productCode = ISBN.parseISBN(book.getIsbn());
+            if (productCode.isIsbn()) {
+                final AltEdition edition = new AltEditionProductCode(productCode);
                 searchBestCoverByEdition(context, edition, 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }

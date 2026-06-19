@@ -47,23 +47,21 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 
 /**
  * Most methods will need external synchronization.
- *
- * @param <CODE> queue item type
  */
-class ItemQueue<CODE extends ProductCode> {
+class ItemQueue {
 
     /** File reader buffer. */
     private static final int BUFFER_SIZE = 65535;
     private static final String CSV = ",";
 
     @SuppressWarnings("TypeMayBeWeakened")
-    private final Queue<QueuedItem<CODE>> q = new ConcurrentLinkedQueue<>();
+    private final Queue<QueuedItem> q = new ConcurrentLinkedQueue<>();
 
     /** Storage key into preferences for the current queue. */
     @NonNull
     private final String pkScanQueue;
     @NonNull
-    private final Function<String, CODE> codeFactory;
+    private final Function<String, ProductCode> codeFactory;
 
     /**
      * Constructor.
@@ -73,7 +71,7 @@ class ItemQueue<CODE extends ProductCode> {
      *                    and return a new instance of a {@code CODE}
      */
     ItemQueue(@NonNull final String pkScanQueue,
-              @NonNull final Function<String, CODE> codeFactory) {
+              @NonNull final Function<String, ProductCode> codeFactory) {
         this.pkScanQueue = pkScanQueue;
         this.codeFactory = codeFactory;
     }
@@ -84,7 +82,7 @@ class ItemQueue<CODE extends ProductCode> {
      * @return list
      */
     @NonNull
-    List<QueuedItem<CODE>> readFromPreferences() {
+    List<QueuedItem> readFromPreferences() {
         final String[] list = ServiceLocator.getInstance().getSharedPreferences()
                                             .getString(pkScanQueue, "")
                                             .split(CSV);
@@ -115,8 +113,8 @@ class ItemQueue<CODE extends ProductCode> {
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    List<QueuedItem<CODE>> readFromFile(@NonNull final Context context,
-                                        @NonNull final Uri uri)
+    List<QueuedItem> readFromFile(@NonNull final Context context,
+                                  @NonNull final Uri uri)
             throws IOException {
         //TODO: should be run as background task, and use LiveData to update the view...
         // ... but it's so fast for any reasonable length list....
@@ -136,7 +134,7 @@ class ItemQueue<CODE extends ProductCode> {
     }
 
     @NonNull
-    private List<QueuedItem<CODE>> readFromStream(@NonNull final Stream<String> stream) {
+    private List<QueuedItem> readFromStream(@NonNull final Stream<String> stream) {
         return stream
                 // allow multiple csv
                 .map(line -> line.split(CSV))
@@ -147,13 +145,13 @@ class ItemQueue<CODE extends ProductCode> {
                 .filter(s -> !s.isBlank())
                 // valid codes only
                 .map(codeFactory)
-                .filter(CODE::isValid)
+                .filter(ProductCode::isValid)
                 .map(QueuedItem::new)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    Iterator<QueuedItem<CODE>> iterator() {
+    Iterator<QueuedItem> iterator() {
         return q.iterator();
     }
 
@@ -165,7 +163,7 @@ class ItemQueue<CODE extends ProductCode> {
      * @return item
      */
     @NonNull
-    Optional<QueuedItem<CODE>> bySearchId(final int searchId) {
+    Optional<QueuedItem> bySearchId(final int searchId) {
         return q.stream()
                 .filter(item -> item.getSearchId() == searchId)
                 .findAny();
@@ -174,12 +172,12 @@ class ItemQueue<CODE extends ProductCode> {
     /**
      * Check if the given {@code CODE} is already in the queue.
      *
-     * @param code to find
+     * @param productCode to find
      *
      * @return {@code true} if already present
      */
-    boolean contains(@NonNull final CODE code) {
-        return q.stream().anyMatch(qi -> qi.getCode().equals(code));
+    boolean contains(@NonNull final ProductCode productCode) {
+        return q.stream().anyMatch(qi -> qi.getProductCode().equals(productCode));
     }
 
     public int size() {
@@ -189,11 +187,11 @@ class ItemQueue<CODE extends ProductCode> {
     /**
      * Unconditionally add the given item.
      * <p>
-     * Use {@link #contains(CODE)} <strong>before</strong> calling this method as needed.
+     * Use {@link #contains(ProductCode)} <strong>before</strong> calling this method as needed.
      *
      * @param item to add
      */
-    void add(@NonNull final QueuedItem<CODE> item) {
+    void add(@NonNull final QueuedItem item) {
         q.add(item);
         writeToPreferences();
     }
@@ -206,7 +204,7 @@ class ItemQueue<CODE extends ProductCode> {
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean remove(@NonNull final QueuedItem<CODE> item) {
+    boolean remove(@NonNull final QueuedItem item) {
         final boolean removed = q.remove(item);
         if (removed) {
             writeToPreferences();
@@ -236,8 +234,8 @@ class ItemQueue<CODE extends ProductCode> {
      */
     private void writeToPreferences() {
         final String list = q.stream()
-                             .map(QueuedItem::getCode)
-                             .map(CODE::asText)
+                             .map(QueuedItem::getProductCode)
+                             .map(ProductCode::asText)
                              .collect(Collectors.joining(CSV));
         ServiceLocator.getInstance().getSharedPreferences()
                       .edit().putString(pkScanQueue, list).apply();

@@ -620,8 +620,8 @@ public class BedethequeSearchEngine
         if (isbnLabel != null) {
             final String isbnStr = parseLabelText(isbnLabel);
             if (isbnStr != null) {
-                final ProductCode isbnFound = ISBN.parseISBN(isbnStr);
-                return isbnFound.equals(searchedCode);
+                final ProductCode productCode = ISBN.parseISBN(isbnStr);
+                return productCode.equals(searchedCode);
             }
         }
         return false;

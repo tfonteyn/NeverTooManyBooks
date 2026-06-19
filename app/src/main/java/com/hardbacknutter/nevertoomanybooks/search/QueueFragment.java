@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-public abstract class QueueFragment<CODE extends ProductCode>
+public abstract class QueueFragment
         extends SearchBookBaseFragment {
 
     private static final String TAG = "QueueFragment";
@@ -81,7 +81,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
     private static final String ANY_URI = "*/*";
 
     /** Handles the queue. */
-    private QueueViewModel<CODE> qvm;
+    private QueueViewModel qvm;
 
     /**
      * Intercept 'back' when there are items in the queue still being searched for.
@@ -144,7 +144,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
      * @param style for displaying info about the found books.
      */
     @SuppressWarnings("SameParameterValue")
-    void initQueue(@NonNull final Class<? extends QueueViewModel<CODE>> clazz,
+    void initQueue(@NonNull final Class<? extends QueueViewModel> clazz,
                    @NonNull final Style style) {
 
         qvm = new ViewModelProvider(this).get(clazz);
@@ -195,7 +195,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
         qvm.onUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
         final Context context = getContext();
-        final List<QueuedItem<CODE>> items = qvm.readFromPreferences();
+        final List<QueuedItem> items = qvm.readFromPreferences();
         if (items.isEmpty()) {
             afterOnViewCreated.run();
         } else {
@@ -235,7 +235,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
     private void onOpenUri(@NonNull final Uri uri) {
         try {
             //noinspection DataFlowIssue
-            final List<QueuedItem<CODE>> items = qvm.readFromFile(getContext(), uri);
+            final List<QueuedItem> items = qvm.readFromFile(getContext(), uri);
             if (!items.isEmpty()) {
                 startSearch(items);
             }
@@ -251,7 +251,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
      *
      * @param items to search for
      */
-    private void startSearch(@NonNull final List<QueuedItem<CODE>> items) {
+    private void startSearch(@NonNull final List<QueuedItem> items) {
         // Do NOT switch on the ScanMode.Batch or otherwise
         // but DO hide the progress
         setEnableProgressMessages(false);
@@ -272,11 +272,11 @@ public abstract class QueueFragment<CODE extends ProductCode>
     /**
      * Start a search for the given code.
      *
-     * @param code to search for
+     * @param productCode to search for
      *
      * @return the search-id, or {@code 0} if no search was started
      */
-    abstract int startSearch(@NonNull CODE code);
+    abstract int startSearch(@NonNull ProductCode productCode);
 
     /**
      * Implementation must call {@code inputField#requestFocus()}.
@@ -300,15 +300,15 @@ public abstract class QueueFragment<CODE extends ProductCode>
     /**
      * Add to the queue and start a search.
      *
-     * @param code to add
+     * @param productCode to add
      *
      * @return the searchId, or:
      *         {@link QueueViewModel#SEARCH_NOT_STARTED} if no search was started.
      *         This is not necessarily an error;
      *         {@link QueueViewModel#SEARCH_DUPLICATE_ITEM} if the item was already present.
      */
-    int addToQueue(@NonNull final CODE code) {
-        return qvm.add(new QueuedItem<>(code), this::startSearch);
+    int addToQueue(@NonNull final ProductCode productCode) {
+        return qvm.add(new QueuedItem(productCode), this::startSearch);
     }
 
     /**
@@ -323,7 +323,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
      *
      * @param list to display; can be empty
      */
-    private void onQueueUpdated(@NonNull final Iterator<QueuedItem<CODE>> list) {
+    private void onQueueUpdated(@NonNull final Iterator<QueuedItem> list) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onQueueUpdated");
         }
@@ -334,7 +334,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
         }
 
         while (list.hasNext()) {
-            final QueuedItem<CODE> item = list.next();
+            final QueuedItem item = list.next();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 LoggerFactory.getLogger().d(TAG, "onQueueUpdated", "item=" + item);
@@ -344,7 +344,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
             // RTL-friendly Chip Layout
             chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
             chip.setTag(item);
-            chip.setText(item.getCode().asText());
+            chip.setText(item.getProductCode().asText());
             chip.setCheckable(false);
             chip.setOnCloseIconClickListener(this::removeFromQueue);
             chip.setOnClickListener(this::onQueueItemClicked);
@@ -400,7 +400,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
      */
     private void onQueueItemClicked(@NonNull final View chip) {
         @SuppressWarnings("unchecked")
-        final QueuedItem<CODE> item = (QueuedItem<CODE>) chip.getTag();
+        final QueuedItem item = (QueuedItem) chip.getTag();
         @Nullable
         final BookSearchResult result = item.getResult();
         final boolean hasErrors = result != null && result.hasErrors();
@@ -417,7 +417,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
         final String info;
         if (hasBook) {
             final StringJoiner sj = new StringJoiner("\n");
-            sj.add(item.getCode().asText());
+            sj.add(item.getProductCode().asText());
 
             final Book book = result.getBook();
             final Author primaryAuthor = book.getPrimaryAuthor();
@@ -430,7 +430,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
         } else {
             // No result (yet); the search is ongoing
             // or there was a result, but not enough data to constitute a Book
-            info = item.getCode().asText();
+            info = item.getProductCode().asText();
         }
         dvb.info.setText(info);
 
@@ -598,7 +598,7 @@ public abstract class QueueFragment<CODE extends ProductCode>
      */
     private void removeFromQueue(@NonNull final View chip) {
         @SuppressWarnings("unchecked")
-        final QueuedItem<CODE> item = (QueuedItem<CODE>) chip.getTag();
+        final QueuedItem item = (QueuedItem) chip.getTag();
         // remove but update the view manually to avoid flicker
         qvm.remove(coordinator, item);
         vbQueue.removeView(chip);

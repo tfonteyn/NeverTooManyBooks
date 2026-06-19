@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 @SuppressWarnings("WeakerAccess")
-public abstract class QueueViewModel<CODE extends ProductCode>
+public abstract class QueueViewModel
         extends ViewModel {
 
     /** Return code from {@link #add(QueuedItem, Function)}. */
@@ -52,14 +52,14 @@ public abstract class QueueViewModel<CODE extends ProductCode>
     /** Log tag. */
     private static final String TAG = "QueueViewModel";
 
-    private final MutableLiveData<Iterator<QueuedItem<CODE>>> onUpdate =
+    private final MutableLiveData<Iterator<QueuedItem>> onUpdate =
             new MutableLiveData<>();
 
     private final Object lock = new Object();
 
     /** The batch mode queue. */
     @GuardedBy("lock")
-    private ItemQueue<CODE> queue;
+    private ItemQueue queue;
 
     /**
      * Pseudo constructor.
@@ -69,9 +69,9 @@ public abstract class QueueViewModel<CODE extends ProductCode>
     public abstract void init();
 
     protected void init(@NonNull final String pkQueue,
-                        @NonNull final Function<String, CODE> codeFactory) {
+                        @NonNull final Function<String, ProductCode> codeFactory) {
         if (queue == null) {
-            queue = new ItemQueue<>(pkQueue, codeFactory);
+            queue = new ItemQueue(pkQueue, codeFactory);
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      * @return an iterator over the queue
      */
     @NonNull
-    public LiveData<Iterator<QueuedItem<CODE>>> onUpdate() {
+    public LiveData<Iterator<QueuedItem>> onUpdate() {
         return onUpdate;
     }
 
@@ -104,7 +104,7 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      * @return iterator
      */
     @NonNull
-    public Iterator<QueuedItem<CODE>> iterator() {
+    public Iterator<QueuedItem> iterator() {
         return queue.iterator();
     }
 
@@ -118,11 +118,11 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      *
      * @return {@code true} if at least one item was added and a search started for it
      */
-    public boolean add(@NonNull final List<QueuedItem<CODE>> items,
-                       @NonNull final Function<CODE, Integer> startSearch) {
+    public boolean add(@NonNull final List<QueuedItem> items,
+                       @NonNull final Function<ProductCode, Integer> startSearch) {
         boolean atLeastOneStarted = false;
         synchronized (lock) {
-            for (final QueuedItem<CODE> item : items) {
+            for (final QueuedItem item : items) {
                 final int searchId = add(item, startSearch);
                 if (searchId > 0) {
                     atLeastOneStarted = true;
@@ -147,20 +147,20 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      *         This is not necessarily an error;
      *         {@link #SEARCH_DUPLICATE_ITEM} if the item was already present.
      */
-    public int add(@NonNull final QueuedItem<CODE> item,
-                   @NonNull final Function<CODE, Integer> startSearch) {
+    public int add(@NonNull final QueuedItem item,
+                   @NonNull final Function<ProductCode, Integer> startSearch) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "addToQueueAndStartSearch", "item=" + item);
         }
         synchronized (lock) {
             // duplicates are rejected
-            if (queue.contains(item.getCode())) {
+            if (queue.contains(item.getProductCode())) {
                 return SEARCH_DUPLICATE_ITEM;
             }
             // FIRST ADD at the end of the queue.
             queue.add(item);
             // THEN START the search.
-            final int searchId = startSearch.apply(item.getCode());
+            final int searchId = startSearch.apply(item.getProductCode());
             if (searchId > 0) {
                 item.setSearchId(searchId);
                 onUpdate.setValue(queue.iterator());
@@ -181,15 +181,15 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      *
      * @return {@code true} if at least one search was started
      */
-    public boolean startSearches(@NonNull final Function<CODE, Integer> startSearch) {
+    public boolean startSearches(@NonNull final Function<ProductCode, Integer> startSearch) {
         boolean atLeastOneStarted = false;
         synchronized (lock) {
-            final Iterator<QueuedItem<CODE>> list = queue.iterator();
+            final Iterator<QueuedItem> list = queue.iterator();
             while (list.hasNext()) {
-                final QueuedItem<CODE> item = list.next();
+                final QueuedItem item = list.next();
                 // not started yet?
                 if (!item.isSearching()) {
-                    final int searchId = startSearch.apply(item.getCode());
+                    final int searchId = startSearch.apply(item.getProductCode());
                     if (searchId > 0) {
                         item.setSearchId(searchId);
                         atLeastOneStarted = true;
@@ -254,7 +254,7 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      * @param item        to remove/cancel
      */
     public void remove(@NonNull final SearchCoordinator coordinator,
-                       @NonNull final QueuedItem<CODE> item) {
+                       @NonNull final QueuedItem item) {
         synchronized (lock) {
             // don't care about the result, we're discarding the whole item
             final int searchId = item.getSearchId();
@@ -276,7 +276,7 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    public List<QueuedItem<CODE>> readFromFile(@NonNull final Context context,
+    public List<QueuedItem> readFromFile(@NonNull final Context context,
                                                @NonNull final Uri uri)
             throws IOException {
         return queue.readFromFile(context, uri);
@@ -288,7 +288,7 @@ public abstract class QueueViewModel<CODE extends ProductCode>
      * @return list
      */
     @NonNull
-    public List<QueuedItem<CODE>> readFromPreferences() {
+    public List<QueuedItem> readFromPreferences() {
         return queue.readFromPreferences();
     }
 

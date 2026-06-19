@@ -57,7 +57,7 @@ public final class ASIN
 
     /** If the code was a pure ISBN-10, we cache it. */
     @Nullable
-    private final ISBN isbn10;
+    private final ProductCode isbn10;
 
     /**
      * Constructor.
@@ -68,7 +68,7 @@ public final class ASIN
         final String tmpCode = text.toUpperCase(Locale.ENGLISH);
         // Historically, a Book ASIN is just an ISBN-10
         // For leniency we also accept ISBN-13, and convert them to ISBN-10 if possible
-        final ISBN isbn = ISBN.parseISBN(tmpCode);
+        final ProductCode isbn = ISBN.parseISBN(tmpCode);
         if (isbn.isIsbn10Compat()) {
             this.codeText = isbn.asText(ProductCodeType.Isbn10);
             this.isbn10 = isbn;

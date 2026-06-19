@@ -205,17 +205,17 @@ class ResultsAccumulator {
 
         } else {
             // The user-input for the search.
-            final ProductCode prevIsbn = ISBN.parse(previous);
+            final ProductCode productCodeSearched = ISBN.parse(previous);
             // The code we got from the website.
-            final ProductCode dataIsbn = ISBN.parse(dataToAdd);
+            final ProductCode productCodeFromSite = ISBN.parse(dataToAdd);
 
             // If the user searched for an isbn-13,
             // and the website returned an isbn-10
             // AND they are really the same, THEN we preserve the isbn-10
             // If the codes are different, we KEEP the one the user searched for.
-            if (prevIsbn.getType() == ProductCodeType.Isbn13
-                && dataIsbn.getType() == ProductCodeType.Isbn10
-                && dataIsbn.equals(prevIsbn)) {
+            if (productCodeSearched.getType() == ProductCodeType.Isbn13
+                && productCodeFromSite.getType() == ProductCodeType.Isbn10
+                && productCodeFromSite.equals(productCodeSearched)) {
                 book.putString(key, dataToAdd);
             }
         }
