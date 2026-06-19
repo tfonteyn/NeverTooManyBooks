@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
@@ -61,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -344,9 +343,9 @@ public class OpenLibrarySearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!code.isEmpty()) {
-                words.add(code);
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            if (!codeStr.isEmpty()) {
+                words.add(codeStr);
             }
         }
 
@@ -1415,16 +1414,18 @@ public class OpenLibrarySearchEngine
      * Now issue: {@code https://openlibrary.org/works/OL5725956W/editions.json}
      * and continue in {@link #parseEditions(JSONObject)}.
      *
-     * @param context   Current context
-     * @param validIsbn to search for, <strong>must</strong> be valid.
+     * @param context     Current context
+     * @param productCode to search for, <strong>must</strong> be valid.
      */
     @NonNull
     @Override
     public List<AltEditionOpenLibrary> searchAlternativeEditions(@NonNull final Context context,
-                                                                 @NonNull final String validIsbn)
+                                                                 @NonNull final ProductCode productCode)
             throws SearchException {
 
-        String url = getHostUrl() + "/isbn/" + validIsbn + ".json";
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+
+        String url = getHostUrl() + "/isbn/" + codeStr + ".json";
         try {
             String response = loadDocument(context, url);
 
@@ -1444,7 +1445,7 @@ public class OpenLibrarySearchEngine
     }
 
     /**
-     * Parse the edition data as retrieved by {@link #searchAlternativeEditions(Context, String)}.
+     * Parse the edition data as retrieved by {@link #searchAlternativeEditions(Context, ProductCode)}.
      * <pre>
      * {
      *   "links": {
@@ -1643,7 +1644,7 @@ public class OpenLibrarySearchEngine
                 return fetchImageByKey(context, COVER_KEY_BOOK, "id",
                                        String.valueOf(covers[cIdx]), cIdx, size);
             }
-        } else if (altEdition instanceof AltEditionIsbn) {
+        } else if (altEdition instanceof AltEditionProductCode) {
             if (cIdx > 0) {
                 // ENHANCE: we cannot return a back-cover here, as we need the native
                 //  OL cover-id ( != OLID book id) which we do not store locally.
@@ -1653,11 +1654,12 @@ public class OpenLibrarySearchEngine
                 return Optional.empty();
             }
 
-            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final String isbn = edition.getIsbn();
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
+            final ProductCode productCode = edition.getCode();
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
             // Frontcover only
-            return fetchImageByKey(context, COVER_KEY_BOOK, "isbn", isbn, 0, size);
+            return fetchImageByKey(context, COVER_KEY_BOOK, "isbn", codeStr, 0, size);
         }
 
         return Optional.empty();

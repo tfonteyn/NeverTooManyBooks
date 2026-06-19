@@ -699,7 +699,7 @@ public class StripInfoSearchEngine
 
         final String barcode = book.getString(SiteField.BARCODE, null);
         if (barcode != null && !barcode.isEmpty()) {
-            final ISBN isbnFromBarcode = ISBN.parseISBN(barcode);
+            final ProductCode isbnFromBarcode = ISBN.parseISBN(barcode);
             // If we found a pure ISBN
             if (isbnFromBarcode.isIsbn()
                 // or, if it was a different code, or even an invalid code,

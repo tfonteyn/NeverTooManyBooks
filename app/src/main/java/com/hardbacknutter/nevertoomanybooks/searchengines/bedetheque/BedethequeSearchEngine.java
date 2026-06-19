@@ -333,7 +333,7 @@ public class BedethequeSearchEngine
      * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book         to update
-     * @param searchedCode from user-search
+     * @param searchedIsbn ISBN from user-search
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -344,7 +344,7 @@ public class BedethequeSearchEngine
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book,
-                                  @Nullable final ProductCode searchedCode)
+                                  @Nullable final ProductCode searchedIsbn)
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
@@ -356,7 +356,7 @@ public class BedethequeSearchEngine
                 if (!url.isBlank()) {
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, searchedCode, book);
+                        parse(context, redirected, fetchCovers, searchedIsbn, book);
                     }
                 }
             }
@@ -620,7 +620,7 @@ public class BedethequeSearchEngine
         if (isbnLabel != null) {
             final String isbnStr = parseLabelText(isbnLabel);
             if (isbnStr != null) {
-                final ISBN isbnFound = ISBN.parseISBN(isbnStr);
+                final ProductCode isbnFound = ISBN.parseISBN(isbnStr);
                 return isbnFound.equals(searchedCode);
             }
         }

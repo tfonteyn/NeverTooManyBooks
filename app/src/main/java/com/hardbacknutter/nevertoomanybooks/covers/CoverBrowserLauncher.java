@@ -85,17 +85,17 @@ public class CoverBrowserLauncher
      * @param context   preferably the {@code Activity}
      *                  but another UI {@code Context} will also do.
      * @param bookTitle to display
-     * @param isbn      ISBN of book
+     * @param code      of book
      * @param cIdx      0..n image index
      */
     public void launch(@NonNull @UiContext final Context context,
                        @NonNull final String bookTitle,
-                       @NonNull final String isbn,
+                       @NonNull final String code,
                        @IntRange(from = 0, to = 3) final int cIdx) {
 
         final Bundle args = new Bundle(4);
         args.putString(DBKey.TITLE, bookTitle);
-        args.putString(DBKey.ISBN, isbn);
+        args.putString(DBKey.ISBN, code);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
         showDialog(context, args);

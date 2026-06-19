@@ -23,12 +23,14 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 public class AltEditionDouban
         implements AltEdition {
 
-    private final long id;
+    /** {@link Identifier#SID_DOUBAN}. */
+    private final long sid;
     @Nullable
     private final String bookUrl;
     @Nullable
@@ -37,14 +39,14 @@ public class AltEditionDouban
     /**
      * Constructor.
      *
-     * @param id       {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_DOUBAN}
+     * @param sid      {@link Identifier#SID_DOUBAN}
      * @param bookUrl  full url to the book on the Douban site
      * @param coverUrl full url to the cover on the Douban site
      */
-    AltEditionDouban(final long id,
+    AltEditionDouban(final long sid,
                      @Nullable final String bookUrl,
                      @Nullable final String coverUrl) {
-        this.id = id;
+        this.sid = sid;
         this.bookUrl = bookUrl;
         this.coverUrl = coverUrl;
     }
@@ -55,12 +57,12 @@ public class AltEditionDouban
     }
 
     /**
-     * {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_DOUBAN}.
+     * {@link Identifier#SID_DOUBAN}.
      *
      * @return the website id
      */
-    public long getId() {
-        return id;
+    public long getSid() {
+        return sid;
     }
 
     @Nullable
@@ -77,7 +79,7 @@ public class AltEditionDouban
     @NonNull
     public String toString() {
         return "AltEditionDouban{"
-               + "id=" + id
+               + "sid=" + sid
                + ", bookUrl=`" + bookUrl + '`'
                + ", coverUrl=`" + coverUrl + '`'
                + '}';

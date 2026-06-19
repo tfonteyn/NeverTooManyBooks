@@ -29,6 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -61,7 +62,7 @@ class AltEditionsTest
     void searchAlternativeEditionsTest()
             throws SearchException, CredentialsException {
         final List<AltEditionDouban> editions = searchEngine
-                .searchAlternativeEditions(context, "9787536692930");
+                .searchAlternativeEditions(context, ISBN.parse("9787536692930"));
 
         Log.d(TAG, editions.toString());
 
@@ -72,11 +73,11 @@ class AltEditionsTest
         // The order however, can be DIFFERENT EACH TIME !
         // This is just a crude test, so we just look for the test result
         final Optional<AltEditionDouban> oe = editions.stream()
-                                                      .filter(ed -> ed.getId() == 36892731)
+                                                      .filter(ed -> ed.getSid() == 36892731)
                                                       .findAny();
         assertTrue(oe.isPresent());
         final AltEditionDouban edition = oe.get();
-        assertEquals(36892731, edition.getId());
+        assertEquals(36892731, edition.getSid());
         assertEquals("https://book.douban.com/subject/36892731/", edition.getBookUrl());
         assertEquals("https://img3.doubanio.com/view/subject/m/public/s34863232.jpg",
                      edition.getCoverUrl());

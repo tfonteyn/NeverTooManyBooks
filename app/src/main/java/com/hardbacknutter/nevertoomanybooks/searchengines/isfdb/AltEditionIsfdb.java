@@ -27,13 +27,17 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 import org.jsoup.nodes.Document;
 
+/**
+ * Note that the code (ISBN or Catalog-ID) and publisher are currently only set,
+ * but never read. KEEP these for future usage.
+ */
 public class AltEditionIsfdb
         implements AltEdition {
 
+    /** {@link Identifier#SID_ISFDB}. */
+    private final long sid;
     @Nullable
-    private final String isbn;
-    /** The ISFDB book ID. */
-    private final long isfdbId;
+    private final String productCode;
     @Nullable
     private final String publisher;
     @Nullable
@@ -50,17 +54,18 @@ public class AltEditionIsfdb
     /**
      * Constructor: we found a link to a book.
      *
-     * @param isfdbId   of the edition we found
-     * @param isbn      of the edition we found (as read from the site)
-     * @param publisher of the edition we found (as read from the site)
-     * @param langIso3  the iso3 code for the language of this edition
+     * @param sid         {@link Identifier#SID_ISFDB}
+     * @param productCode of this edition as found on the site;
+     *                    this can be an ISBN, or a catalog-id
+     * @param langIso3    the iso3 code for the language of this edition
+     * @param publisher   primary publisher name of this edition
      */
-    AltEditionIsfdb(final long isfdbId,
-                    @Nullable final String isbn,
-                    @Nullable final String publisher,
-                    @Nullable final String langIso3) {
-        this.isfdbId = isfdbId;
-        this.isbn = isbn;
+    AltEditionIsfdb(final long sid,
+                    @Nullable final String productCode,
+                    @Nullable final String langIso3,
+                    @Nullable final String publisher) {
+        this.sid = sid;
+        this.productCode = productCode;
         this.publisher = publisher;
         this.langIso3 = langIso3;
         document = null;
@@ -70,20 +75,25 @@ public class AltEditionIsfdb
      * Constructor: we found a single edition,
      * the document contains the book for further processing.
      *
-     * @param isfdbId  of the edition we found
-     * @param isbn     we <strong>searched on</strong>
-     * @param document the JSoup document of the edition we found
+     * @param sid         {@link Identifier#SID_ISFDB}
+     * @param productCode we <strong>searched on</strong>; this can be an ISBN, or a catalog-id
+     * @param document    the JSoup document of the edition we found
      */
-    AltEditionIsfdb(final long isfdbId,
-                    @Nullable final String isbn,
+    AltEditionIsfdb(final long sid,
+                    @Nullable final String productCode,
                     @Nullable final Document document) {
-        this.isfdbId = isfdbId;
-        this.isbn = isbn;
+        this.sid = sid;
+        this.productCode = productCode;
         this.publisher = null;
         this.langIso3 = null;
         this.document = document;
     }
 
+    /**
+     * If the edition was a single book, the document of the book page is cached.
+     *
+     * @return book page, or {@code null} if there were multiple editions.
+     */
     @Nullable
     public Document getDocument() {
         return document;
@@ -101,20 +111,35 @@ public class AltEditionIsfdb
      *
      * @return the website id
      */
-    long getIsfdbId() {
-        return isfdbId;
+    long getSid() {
+        return sid;
     }
 
+    /**
+     * ISBN or catalog-id.
+     *
+     * @return code
+     */
     @Nullable
-    public String getIsbn() {
-        return isbn;
+    public String getProductCode() {
+        return productCode;
     }
 
+    /**
+     * The language of this edition.
+     *
+     * @return language; can be {@code null} if the site did not have it
+     */
     @Nullable
     public String getLangIso3() {
         return langIso3;
     }
 
+    /**
+     * The publisher of this edition.
+     *
+     * @return name; can be {@code null} if the site did not have it
+     */
     @Nullable
     public String getPublisher() {
         return publisher;
@@ -124,10 +149,10 @@ public class AltEditionIsfdb
     @NonNull
     public String toString() {
         return "AltEditionIsfdb{"
-               + "isfdbId=" + isfdbId
-               + ", isbn=`" + isbn + '`'
-               + ", publisher=`" + publisher + '`'
+               + "sid=" + sid
+               + ", productCode=`" + productCode + '`'
                + ", langIso3=`" + langIso3 + '`'
+               + ", publisher=`" + publisher + '`'
                + ", document?=" + (document != null)
                + '}';
     }

@@ -74,7 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -294,8 +294,6 @@ public class IsfdbSearchEngine
     /** with some luck we'll get these as well. */
     @Nullable
     private PartialDate firstPublicationYear;
-    /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
-    private String searchForIsbn;
     @Nullable
     private FutureHttp<Boolean> httpGet;
     @Nullable
@@ -443,11 +441,9 @@ public class IsfdbSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
         final Book book = new Book();
 
-        final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, codeStr);
+        final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, productCode);
         if (!editions.isEmpty()) {
             fetchByEdition(context, editions.get(0), fetchCovers, book);
         }
@@ -478,12 +474,16 @@ public class IsfdbSearchEngine
         //noinspection OverlyBroadCatchBlock
         try {
             final ProductCode productCode = criteria.getProductCode();
+            @Nullable
+            String codeStr = null;
             if (productCode != null) {
-                final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-                if (!code.isEmpty()) {
+                codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+                if (!codeStr.isEmpty()) {
                     index++;
                     url.add(String.format(USE, index, "pub_isbn",
-                                          URLEncoder.encode(code, CHARSET_ENCODE_URL)));
+                                          URLEncoder.encode(codeStr, CHARSET_ENCODE_URL)));
+                } else {
+                    codeStr = null;
                 }
             }
 
@@ -513,7 +513,7 @@ public class IsfdbSearchEngine
                 return book;
             }
 
-            final List<AltEditionIsfdb> editions = fetchEditions(context, url.toString());
+            final List<AltEditionIsfdb> editions = fetchEditions(context, url.toString(), codeStr);
             if (!editions.isEmpty()) {
                 fetchByEdition(context, editions.get(0), fetchCovers, book);
             }
@@ -534,10 +534,10 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public List<AltEditionIsfdb> searchAlternativeEditions(@NonNull final Context context,
-                                                           @NonNull final String validIsbn)
+                                                           @NonNull final ProductCode productCode)
             throws SearchException, CredentialsException {
 
-        final List<AltEditionIsfdb> list = fetchEditionsByIsbn(context, validIsbn);
+        final List<AltEditionIsfdb> list = fetchEditionsByIsbn(context, productCode);
         // We strip the potential document (which can be large)
         // as the caller does not use it for now
         list.forEach(AltEditionIsfdb::clearDocument);
@@ -546,6 +546,7 @@ public class IsfdbSearchEngine
     }
 
     @SuppressWarnings("ChainOfInstanceofChecks")
+    @Override
     @NonNull
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
@@ -555,7 +556,7 @@ public class IsfdbSearchEngine
 
         if (altEdition instanceof AltEditionIsfdb) {
             final AltEditionIsfdb edition = (AltEditionIsfdb) altEdition;
-            final long isfdbId = edition.getIsfdbId();
+            final long isfdbId = edition.getSid();
 
             // The id should always be valid, but paranoia...
             if (isfdbId > 0) {
@@ -566,11 +567,10 @@ public class IsfdbSearchEngine
                             .map(fileSpec -> new File(fileSpec).getAbsolutePath());
                 }
             }
-        } else if (altEdition instanceof AltEditionIsbn) {
-            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final String isbn = edition.getIsbn();
-
-            final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, isbn);
+        } else if (altEdition instanceof AltEditionProductCode) {
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
+            final ProductCode productCode = edition.getCode();
+            final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, productCode);
             if (!editions.isEmpty() && !isCancelled()) {
                 // Grab the first edition found and search again by isfdb id
                 return searchCoverByEdition(context, editions.get(0), cIdx, size);
@@ -1403,8 +1403,8 @@ public class IsfdbSearchEngine
     /**
      * Get the list with {@link AltEditionIsfdb}s for the given isbn.
      *
-     * @param context   Current context
-     * @param validIsbn to get editions for. MUST be valid.
+     * @param context     Current context
+     * @param productCode to get editions for. MUST be valid.
      *
      * @return list of editions found, can be empty, but never {@code null}
      *
@@ -1414,26 +1414,29 @@ public class IsfdbSearchEngine
     @WorkerThread
     @NonNull
     List<AltEditionIsfdb> fetchEditionsByIsbn(@NonNull final Context context,
-                                              @NonNull final String validIsbn)
+                                              @NonNull final ProductCode productCode)
             throws SearchException, CredentialsException {
-        searchForIsbn = validIsbn;
 
-        final String url = getHostUrl() + String.format(CGI_EDITIONS, validIsbn);
-        return fetchEditions(context, url);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+
+        final String url = getHostUrl() + String.format(CGI_EDITIONS, codeStr);
+        return fetchEditions(context, url, codeStr);
     }
 
     /**
-     * Parses the downloaded {@link Document} for the edition list.
+     * Parse the downloaded {@link Document} with the edition list.
      *
-     * @param context  Current context
-     * @param document to parse
+     * @param context        Current context
+     * @param document       to parse
+     * @param searchCode (optional) the code added to the url; {@code null} if none was used
      *
      * @return list of editions found, can be empty, but never {@code null}
      */
     @NonNull
     @VisibleForTesting
     List<AltEditionIsfdb> parseEditions(@NonNull final Context context,
-                                        @NonNull final Document document) {
+                                        @NonNull final Document document,
+                                        @Nullable final String searchCode) {
 
         final List<AltEditionIsfdb> editions = new ArrayList<>();
 
@@ -1444,7 +1447,7 @@ public class IsfdbSearchEngine
             final long isfdbId = stripNumber(pageUrl, '?');
             // Sanity check
             if (isfdbId != 0) {
-                editions.add(new AltEditionIsfdb(isfdbId, searchForIsbn, document));
+                editions.add(new AltEditionIsfdb(isfdbId, searchCode, document));
             }
 
         } else if (pageUrl.contains(CGI_TITLE)
@@ -1500,61 +1503,69 @@ public class IsfdbSearchEngine
                 }
 
                 for (final Element tr : entries) {
-                    parseEdition(tr, lang, editions);
+                    final AltEditionIsfdb edition = parseEdition(tr, lang);
+                    if (edition != null) {
+                        editions.add(edition);
+                    }
                 }
             }
         } else {
-            // dunno, let's log it
+            // We ended up on an unknown page (url)
             LoggerFactory.getLogger().w(TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return editions;
     }
 
-    private void parseEdition(@NonNull final Element tr,
-                              @Nullable final String lang,
-                              @NonNull final List<AltEditionIsfdb> editions) {
+    /**
+     * Parse the edition element (an html {@code TR}).
+     *
+     * @param tr   to parse
+     * @param lang the language of that edition
+     *
+     * @return edition, or {@code null} if parsing failed
+     */
+    @Nullable
+    private AltEditionIsfdb parseEdition(@NonNull final Element tr,
+                                         @Nullable final String lang) {
 
         // 1st column: Title == the book link
         final Element edLink = tr.child(0).selectFirst("a");
+        // Sanity check
         if (edLink == null) {
-            return;
+            return null;
         }
 
         final String url = edLink.attr("href");
+        // Sanity check
         if (url.isEmpty()) {
-            return;
+            return null;
         }
 
-        String publisher = null;
-        String isbnStr = null;
-
         // 3rd column: the publisher
+        String publisher = null;
         final Element pa = tr.child(3).selectFirst("a");
         if (pa != null) {
             publisher = cleanName(pa);
         }
-        // 4th column: the ISBN/Catalog ID.
+        // 4th column: the ISBN/Catalog ID; don't parse it here
         final String catNr = tr.child(4).text();
-        if (catNr.length() > 9) {
-            final ISBN isbn = ISBN.parseISBN(catNr);
-            if (isbn.isIsbn()) {
-                isbnStr = isbn.asText();
-            }
-        }
+
         final long isfdbId = stripNumber(url, '?');
         // Sanity check
-        if (isfdbId != 0) {
-            editions.add(new AltEditionIsfdb(isfdbId, isbnStr,
-                                             publisher, lang));
+        if (isfdbId == 0) {
+            return null;
         }
+
+        return new AltEditionIsfdb(isfdbId, catNr, lang, publisher);
     }
 
     /**
      * Get the list with {@link AltEditionIsfdb}s for the given url.
      *
-     * @param context Current context
-     * @param url     A fully qualified ISFDB search url
+     * @param context         Current context
+     * @param url             A fully qualified ISFDB search url
+     * @param searchCodeText (optional) the code added to the url; {@code null} if none was used
      *
      * @return list of editions found, can be empty, but never {@code null}
      *
@@ -1564,7 +1575,8 @@ public class IsfdbSearchEngine
     @WorkerThread
     @NonNull
     private List<AltEditionIsfdb> fetchEditions(@NonNull final Context context,
-                                                @NonNull final String url)
+                                                @NonNull final String url,
+                                                @Nullable final String searchCodeText)
             throws SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url, null);
@@ -1577,7 +1589,7 @@ public class IsfdbSearchEngine
         }
 
         if (!isCancelled()) {
-            return parseEditions(context, document);
+            return parseEditions(context, document, searchCodeText);
         }
         return new ArrayList<>();
     }
@@ -1595,7 +1607,7 @@ public class IsfdbSearchEngine
 
         // go get it.
         final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID,
-                                                        edition.getIsfdbId());
+                                                        edition.getSid());
         return loadDocument(context, url, null);
     }
 

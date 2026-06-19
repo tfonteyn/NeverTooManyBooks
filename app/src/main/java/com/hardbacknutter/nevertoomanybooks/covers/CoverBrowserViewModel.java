@@ -46,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
@@ -84,7 +86,6 @@ public class CoverBrowserViewModel
 
     /**
      * Holder for all active tasks, so we can cancel them if needed.
-     * key: isbn.
      */
     private final Map<AltEdition, FetchImageTask> galleryTasks = new HashMap<>();
     /** Editions. */
@@ -145,8 +146,8 @@ public class CoverBrowserViewModel
     private String selectedFileAbsolutePath;
     /** Handles downloading, checking and clean-up of files. */
     private FileManager fileManager;
-    /** ISBN of book to fetch other editions of. */
-    private String baseIsbn;
+    /** Code of book to fetch other editions of. */
+    private ProductCode productCode;
     /** Index of the image we're handling. */
     @IntRange(from = 0, to = 3)
     private int cIdx;
@@ -168,9 +169,9 @@ public class CoverBrowserViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (baseIsbn == null) {
-            baseIsbn = SanityCheck.requireValue(args.getString(DBKey.ISBN),
-                                                DBKey.ISBN);
+        if (productCode == null) {
+            productCode = ISBN.parse(SanityCheck.requireValue(args.getString(DBKey.ISBN),
+                                                              DBKey.ISBN));
             cIdx = args.getInt(BKEY_FILE_INDEX);
 
             // optional
@@ -416,7 +417,7 @@ public class CoverBrowserViewModel
     }
 
     void searchEditions() {
-        searchEditionsTask.search(baseIsbn);
+        searchEditionsTask.search(productCode);
     }
 
     boolean isSearchEditionsTaskRunning() {

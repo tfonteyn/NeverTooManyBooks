@@ -224,7 +224,7 @@ public class SearchCoordinator
             }
 
             // Start new search(es) as needed/allowed.
-            if (currentSearch.isWaitingForIsbnOrCode()) {
+            if (currentSearch.isWaitingForProductCode()) {
                 if (result != null && result.hasIsbn()) {
                     // Start the remaining searches, even if they have run before.
                     // They will redo the search WITH the ISBN/code.
@@ -750,7 +750,7 @@ public class SearchCoordinator
             bookSearch.debugSearchTaskStarting(engineId, task.getTaskId(), waitForIsbnOrCode);
         }
 
-        bookSearch.setWaitingForIsbnOrCode(waitForIsbnOrCode);
+        bookSearch.setWaitingForProductCode(waitForIsbnOrCode);
 
         synchronized (activeSearches) {
             activeSearches.put(bookSearch.getId(), bookSearch);

@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
@@ -281,9 +280,9 @@ public class BolSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!code.isEmpty()) {
-                words.add(code);
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            if (!codeStr.isEmpty()) {
+                words.add(codeStr);
             }
         }
 

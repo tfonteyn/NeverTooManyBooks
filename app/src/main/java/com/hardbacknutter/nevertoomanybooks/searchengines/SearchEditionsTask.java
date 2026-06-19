@@ -29,13 +29,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -49,8 +48,8 @@ public class SearchEditionsTask
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
 
-    /** The isbn we're looking up. */
-    private String validIsbn;
+    /** The code we're looking up. */
+    private ProductCode productCode;
 
     /**
      * Constructor.
@@ -62,12 +61,12 @@ public class SearchEditionsTask
     /**
      * Start the task.
      *
-     * @param validIsbn to search for, <strong>must</strong> be valid.
+     * @param productCode to search for, <strong>must</strong> be valid.
      */
     @UiThread
-    public void search(@NonNull final String validIsbn) {
+    public void search(@NonNull final ProductCode productCode) {
 
-        this.validIsbn = validIsbn;
+        this.productCode = productCode;
         execute();
     }
 
@@ -81,7 +80,7 @@ public class SearchEditionsTask
         // keep the order, but eliminate duplicates.
         final Collection<AltEdition> editions = new LinkedHashSet<>();
         // Always add the original isbn!
-        editions.add(new AltEditionIsbn(validIsbn));
+        editions.add(new AltEditionProductCode(productCode));
 
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             throw new NetworkUnavailableException(this.getClass().getName());
@@ -100,7 +99,7 @@ public class SearchEditionsTask
                         // can we reach the site ?
                         searchEngine.ping();
                         // search for and add the editions
-                        editions.addAll(searchEngine.searchAlternativeEditions(context, validIsbn));
+                        editions.addAll(searchEngine.searchAlternativeEditions(context, productCode));
 
                     } catch (@NonNull final IOException
                                             | CredentialsException

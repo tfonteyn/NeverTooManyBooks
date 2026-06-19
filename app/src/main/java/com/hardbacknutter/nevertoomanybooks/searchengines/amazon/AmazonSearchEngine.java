@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -457,11 +457,15 @@ public class AmazonSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        // Try to convert an ISBN13 to ISBN10 (i.e. the ASIN)
-        // If conversion is not possible, use the original format
-        final String asin = productCode.isIsbn10Compat()
-                            ? productCode.asText(ProductCodeType.Isbn10)
-                            : productCode.asText();
+        final String asin;
+        // If we get a convertible ISBN code convert it to ASIN
+        if (productCode.isIsbn10Compat()) {
+            asin = productCode.asText(ProductCodeType.Asin);
+        } else {
+            // Fallback to whatever we were passed in,
+            // this includes native ASIN codes.
+            asin = productCode.asText();
+        }
 
         final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin);
         return genericSearch(context, url, fetchCovers);
@@ -510,11 +514,12 @@ public class AmazonSearchEngine
                                                  @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws StorageException, SearchException, CredentialsException {
-        if (altEdition instanceof AltEditionIsbn) {
-            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final String isbn = edition.getIsbn();
+        if (altEdition instanceof AltEditionProductCode) {
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
+            final ProductCode productCode = edition.getCode();
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
-            final String url = getHostUrl() + String.format(BY_PRODUCT_ID, isbn);
+            final String url = getHostUrl() + String.format(BY_PRODUCT_ID, codeStr);
             final Document document = loadDocument(context, url, null);
 
             checkCaptcha(context, url, document);
@@ -523,7 +528,7 @@ public class AmazonSearchEngine
                 return Optional.empty();
             }
 
-            return parseCover(context, document, isbn, cIdx)
+            return parseCover(context, document, codeStr, cIdx)
                     // let the system resolve any path variations
                     .map(fileSpec -> new File(fileSpec).getAbsolutePath());
         }

@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
@@ -61,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -236,9 +235,9 @@ public class DoubanSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!code.isEmpty()) {
-                words.add(code);
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            if (!codeStr.isEmpty()) {
+                words.add(codeStr);
             }
         }
 
@@ -819,10 +818,12 @@ public class DoubanSearchEngine
     @NonNull
     @Override
     public List<AltEditionDouban> searchAlternativeEditions(@NonNull final Context context,
-                                                            @NonNull final String validIsbn)
+                                                            @NonNull final ProductCode productCode)
             throws SearchException, CredentialsException {
 
-        final String url = getHostUrl() + String.format(SEARCH_URL, validIsbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+
+        final String url = getHostUrl() + String.format(SEARCH_URL, codeStr);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final Optional<JSONArray> oItems = extractItemList(document);
@@ -865,19 +866,21 @@ public class DoubanSearchEngine
             if (bookUrl != null && !bookUrl.isEmpty()) {
                 final Document document = loadDocument(context, bookUrl, null);
                 if (!isCancelled()) {
-                    return parseCover(context, document, String.valueOf(edition.getId()), cIdx)
+                    return parseCover(context, document, String.valueOf(edition.getSid()), cIdx)
                             // let the system resolve any path variations
                             .map(fileSpec -> new File(fileSpec).getAbsolutePath());
                 }
             }
-        } else if (altEdition instanceof AltEditionIsbn) {
-            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
+        } else if (altEdition instanceof AltEditionProductCode) {
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
 
-            final String isbn = edition.getIsbn();
-            final String url = getHostUrl() + String.format(SEARCH_URL, isbn);
+            final ProductCode productCode = edition.getCode();
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+
+            final String url = getHostUrl() + String.format(SEARCH_URL, codeStr);
             final Document document = loadDocument(context, url, null);
             if (!isCancelled()) {
-                return parseCover(context, document, isbn, cIdx)
+                return parseCover(context, document, codeStr, cIdx)
                         // let the system resolve any path variations
                         .map(fileSpec -> new File(fileSpec).getAbsolutePath());
             }

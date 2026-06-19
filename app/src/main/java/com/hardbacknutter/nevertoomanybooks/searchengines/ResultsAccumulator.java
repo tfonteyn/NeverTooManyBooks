@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -204,9 +205,9 @@ class ResultsAccumulator {
 
         } else {
             // The user-input for the search.
-            final ISBN prevIsbn = ISBN.parse(previous);
+            final ProductCode prevIsbn = ISBN.parse(previous);
             // The code we got from the website.
-            final ISBN dataIsbn = ISBN.parse(dataToAdd);
+            final ProductCode dataIsbn = ISBN.parse(dataToAdd);
 
             // If the user searched for an isbn-13,
             // and the website returned an isbn-10

@@ -447,8 +447,8 @@ public interface SearchEngine
          * <p>
          * {@link Login} will NOT be called upon.
          *
-         * @param context   Current context
-         * @param validCode to search for, <strong>must</strong> be valid.
+         * @param context     Current context
+         * @param productCode to search for, <strong>must</strong> be valid.
          *
          * @return a list of {@link T} alternative editions, can be empty.
          *
@@ -458,7 +458,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         List<T> searchAlternativeEditions(@NonNull Context context,
-                                          @NonNull String validCode)
+                                          @NonNull ProductCode productCode)
                 throws SearchException,
                        CredentialsException;
     }

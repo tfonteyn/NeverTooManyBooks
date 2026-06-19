@@ -22,36 +22,38 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.NonNull;
 
-public class AltEditionIsbn
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+
+public class AltEditionProductCode
         implements AltEdition {
 
     @NonNull
-    private final String isbn;
+    private final ProductCode productCode;
 
     /**
      * Constructor.
      *
-     * @param validIsbn <strong>must</strong> be valid.
+     * @param productCode <strong>must</strong> be valid.
      */
-    public AltEditionIsbn(@NonNull final String validIsbn) {
-        this.isbn = validIsbn;
+    public AltEditionProductCode(@NonNull final ProductCode productCode) {
+        this.productCode = productCode;
     }
 
     /**
-     * The ISBN for this edition.
+     * The code for this edition.
      *
-     * @return isbn
+     * @return code
      */
     @NonNull
-    public String getIsbn() {
-        return isbn;
+    public ProductCode getCode() {
+        return productCode;
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "AltEditionIsbn{"
-               + "isbn=`" + isbn + '`'
+        return "AltEditionProductCode{"
+               + "productCode=`" + productCode + '`'
                + '}';
     }
 }

@@ -269,9 +269,9 @@ public class BibliotecePlSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!code.isEmpty()) {
-                words.add(SEARCH_PREFIX_ISBN_OR_ISSN).add(code);
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            if (!codeStr.isEmpty()) {
+                words.add(SEARCH_PREFIX_ISBN_OR_ISSN).add(codeStr);
             }
         }
 
@@ -445,8 +445,8 @@ public class BibliotecePlSearchEngine
             final String isbnStr = ISBN.cleanText(isbnElements.get(0).text());
             if (book.hasIsbn()) {
                 // If it's an isbn-10 equal to the one we searched for, grab it.
-                final ISBN siteIsbn = ISBN.parseISBN(isbnStr);
-                final ISBN searchIsbn = ISBN.parseISBN(book.getIsbn());
+                final ProductCode siteIsbn = ISBN.parseISBN(isbnStr);
+                final ProductCode searchIsbn = ISBN.parseISBN(book.getIsbn());
 
                 // If the user searched for an isbn-13,
                 // and the website returned an isbn-10

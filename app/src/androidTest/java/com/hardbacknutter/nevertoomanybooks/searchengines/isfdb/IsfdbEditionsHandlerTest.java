@@ -81,7 +81,8 @@ class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<AltEditionIsfdb> editions = searchEngine.parseEditions(context, document);
+        final List<AltEditionIsfdb> editions =
+                searchEngine.parseEditions(context, document, null);
 
         assertEquals(27, editions.size());
         assertEquals("eng", editions.get(0).getLangIso3());
@@ -103,7 +104,8 @@ class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<AltEditionIsfdb> editions = searchEngine.parseEditions(context, document);
+        final List<AltEditionIsfdb> editions =
+                searchEngine.parseEditions(context, document, null);
 
         assertEquals(4, editions.size());
         assertEquals("nld", editions.get(0).getLangIso3());

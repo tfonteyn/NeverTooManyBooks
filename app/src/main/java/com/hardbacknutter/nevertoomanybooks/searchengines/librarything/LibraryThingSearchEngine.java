@@ -46,12 +46,15 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.xml.sax.SAXException;
@@ -65,7 +68,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class LibraryThingSearchEngine
         extends SearchEngineBase
-        implements SearchEngine.AlternativeEditions<AltEditionIsbn>,
+        implements SearchEngine.AlternativeEditions<AltEditionProductCode>,
                    SearchEngine.UserRegistration {
 
     private static final String SITE_URL = "https://www.librarything.com";
@@ -203,9 +206,11 @@ public class LibraryThingSearchEngine
     @WorkerThread
     @NonNull
     @Override
-    public List<AltEditionIsbn> searchAlternativeEditions(@NonNull final Context context,
-                                                          @NonNull final String validIsbn)
+    public List<AltEditionProductCode> searchAlternativeEditions(@NonNull final Context context,
+                                                                 @NonNull final ProductCode productCode)
             throws SearchException, CredentialsException {
+
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final String apiToken = ServiceLocator.getInstance().getSharedPreferences()
                                               .getString(PK_API_TOKEN, null);
@@ -225,7 +230,7 @@ public class LibraryThingSearchEngine
         }
 
         final String url = getHostUrl() + String.format("/api/%1$s/thingISBN/%2$s",
-                                                        apiToken, validIsbn);
+                                                        apiToken, codeStr);
         final SAXParser parser;
         try {
             parser = SAXParserFactory.newInstance().newSAXParser();
@@ -278,7 +283,7 @@ public class LibraryThingSearchEngine
         @SuppressWarnings("StringBufferField")
         private final StringBuilder builder = new StringBuilder();
         /** All editions we find. */
-        private final List<AltEditionIsbn> editions = new ArrayList<>();
+        private final List<AltEditionProductCode> editions = new ArrayList<>();
 
         /**
          * Get the results.
@@ -286,7 +291,7 @@ public class LibraryThingSearchEngine
          * @return the list with editions.
          */
         @NonNull
-        public List<AltEditionIsbn> getResult() {
+        public List<AltEditionProductCode> getResult() {
             return editions;
         }
 
@@ -297,7 +302,7 @@ public class LibraryThingSearchEngine
                                @NonNull final String qName) {
 
             if (localName.equalsIgnoreCase(XML_ISBN)) {
-                editions.add(new AltEditionIsbn(builder.toString()));
+                editions.add(new AltEditionProductCode(ISBN.parse(builder.toString())));
             }
 
             // Always reset the length. This is not entirely the right thing to do, but works

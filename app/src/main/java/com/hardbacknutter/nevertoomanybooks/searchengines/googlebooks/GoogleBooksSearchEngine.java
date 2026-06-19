@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -62,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -218,9 +217,9 @@ public class GoogleBooksSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!code.isEmpty()) {
-                args.add("isbn%3A" + encodeSpaces(code));
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            if (!codeStr.isEmpty()) {
+                args.add("isbn%3A" + encodeSpaces(codeStr));
             }
         }
         // Sanity check
@@ -668,10 +667,10 @@ public class GoogleBooksSearchEngine
                                                  @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws StorageException, SearchException, CredentialsException {
-        if (altEdition instanceof AltEditionIsbn) {
-            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final ISBN isbn = ISBN.parseISBN(edition.getIsbn());
-            return searchByIsbn(context, isbn, new boolean[]{true, false, false, false})
+        if (altEdition instanceof AltEditionProductCode) {
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
+            final ProductCode productCode = edition.getCode();
+            return searchByIsbn(context, productCode, new boolean[]{true, false, false, false})
                     .getImage(context, cIdx)
                     .map(File::getAbsolutePath);
         }

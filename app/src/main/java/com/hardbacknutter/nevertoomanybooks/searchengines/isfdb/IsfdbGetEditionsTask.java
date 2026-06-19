@@ -36,14 +36,14 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 /**
  * This task is bypassing {@link SearchEngine.AlternativeEditions}
- * and uses {@link IsfdbSearchEngine#fetchEditionsByIsbn(Context, String)}
+ * and uses {@link IsfdbSearchEngine#fetchEditionsByIsbn(Context, ProductCode)}
  * directly. The former strips the full book document (on purpose),
  * while the latter does not which saves us from an unneeded
  * round trip fetching the same info twice.
@@ -59,8 +59,8 @@ public class IsfdbGetEditionsTask
     /** Log tag. */
     private static final String TAG = "IsfdbGetEditionsTask";
 
-    /** The isbn we're looking up. */
-    private String validIsbn;
+    /** The code we're looking up. */
+    private ProductCode productCode;
 
     @Nullable
     private IsfdbSearchEngine searchEngine;
@@ -75,12 +75,11 @@ public class IsfdbGetEditionsTask
     /**
      * Start the search.
      *
-     * @param isbn to search for
+     * @param productCode to search for
      */
     @UiThread
-    public void search(@NonNull final ISBN isbn) {
-
-        this.validIsbn = isbn.asText();
+    public void search(@NonNull final ProductCode productCode) {
+        this.productCode = productCode;
         execute();
     }
 
@@ -116,6 +115,6 @@ public class IsfdbGetEditionsTask
         // can we reach the site ?
         searchEngine.ping();
 
-        return searchEngine.fetchEditionsByIsbn(context, validIsbn);
+        return searchEngine.fetchEditionsByIsbn(context, productCode);
     }
 }

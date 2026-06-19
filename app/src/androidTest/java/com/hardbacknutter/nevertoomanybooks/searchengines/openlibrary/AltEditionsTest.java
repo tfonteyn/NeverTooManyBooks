@@ -26,6 +26,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -58,7 +59,7 @@ class AltEditionsTest
     void searchAlternativeEditionsTest()
             throws SearchException {
         final List<AltEditionOpenLibrary> editions = searchEngine
-                .searchAlternativeEditions(context, "9780141339092");
+                .searchAlternativeEditions(context, ISBN.parse("9780141339092"));
 
         //Log.d(TAG, editions.toString());
 
@@ -70,13 +71,13 @@ class AltEditionsTest
         // This is just a crude test, so we just look for the test result
         final Optional<AltEditionOpenLibrary> oe =
                 editions.stream()
-                        .filter(ed -> "9783551357793".equals(ed.getIsbn()))
+                        .filter(ed -> "9783551357793".equals(ed.getProductCode()))
                         .findAny();
         assertTrue(oe.isPresent());
         final AltEditionOpenLibrary edition = oe.get();
 
-        assertEquals("OL49350279M", edition.getOLID());
-        assertEquals("9783551357793", edition.getIsbn());
+        assertEquals("OL49350279M", edition.getSid());
+        assertEquals("9783551357793", edition.getProductCode());
         assertEquals("Carlsen", edition.getPublisher());
         assertEquals("ger", edition.getLangIso3());
     }

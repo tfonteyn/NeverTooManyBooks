@@ -88,7 +88,7 @@ class BookSearch {
     private Map<EngineId, Long> searchTasksEndTime;
 
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
-    private boolean waitingForIsbnOrCode;
+    private boolean waitingForProductCode;
 
     /**
      * Constructor.
@@ -128,12 +128,12 @@ class BookSearch {
         return sites;
     }
 
-    boolean isWaitingForIsbnOrCode() {
-        return waitingForIsbnOrCode;
+    boolean isWaitingForProductCode() {
+        return waitingForProductCode;
     }
 
-    void setWaitingForIsbnOrCode(final boolean waitingForIsbnOrCode) {
-        this.waitingForIsbnOrCode = waitingForIsbnOrCode;
+    void setWaitingForProductCode(final boolean waitingForProductCode) {
+        this.waitingForProductCode = waitingForProductCode;
     }
 
     void addResult(@NonNull final EngineId engineId,
@@ -312,7 +312,7 @@ class BookSearch {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                                 LoggerFactory.getLogger()
                                              .d(TAG, "accumulateResults",
-                                                "isbn=" + productCode,
+                                                "productCode=" + productCode,
                                                 "isbnFound=" + isbnFoundStr);
                             }
                         }

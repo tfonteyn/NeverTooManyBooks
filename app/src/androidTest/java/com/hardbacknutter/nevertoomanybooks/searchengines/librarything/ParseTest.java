@@ -29,7 +29,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -71,8 +72,8 @@ class ParseTest
     void p1()
             throws SearchException, CredentialsException {
 
-        final List<AltEditionIsbn> isbns = searchEngine
-                .searchAlternativeEditions(context, "0441172717");
+        final List<AltEditionProductCode> isbns = searchEngine
+                .searchAlternativeEditions(context, ISBN.parse("0441172717"));
 
         Log.d(TAG, isbns.toString());
 

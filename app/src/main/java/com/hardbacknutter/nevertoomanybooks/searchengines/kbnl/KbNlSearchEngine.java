@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -241,7 +241,7 @@ public class KbNlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final AltEdition edition = new AltEditionIsbn(codeStr);
+            final AltEdition edition = new AltEditionProductCode(productCode);
             searchBestCoverByEdition(context, edition, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
@@ -261,9 +261,9 @@ public class KbNlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ISBN isbn = ISBN.parseISBN(book.getIsbn());
+            final ProductCode isbn = ISBN.parseISBN(book.getIsbn());
             if (isbn.isIsbn()) {
-                final AltEdition edition = new AltEditionIsbn(isbn.asText());
+                final AltEdition edition = new AltEditionProductCode(isbn);
                 searchBestCoverByEdition(context, edition, 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }
@@ -374,9 +374,10 @@ public class KbNlSearchEngine
                                                  @Nullable final ImageWebSize size)
             throws CoverStorageException {
 
-        if (altEdition instanceof AltEditionIsbn) {
-            final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
-            final String isbn = edition.getIsbn();
+        if (altEdition instanceof AltEditionProductCode) {
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
+            final ProductCode productCode = edition.getCode();
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
             final String sizeParam;
             if (size == null) {
@@ -396,8 +397,8 @@ public class KbNlSearchEngine
                 }
             }
 
-            final String url = String.format(BASE_URL_COVERS, isbn, sizeParam);
-            return saveImage(context, url, null, isbn, cIdx, size);
+            final String url = String.format(BASE_URL_COVERS, codeStr, sizeParam);
+            return saveImage(context, url, null, codeStr, cIdx, size);
         }
         return Optional.empty();
     }

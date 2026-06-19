@@ -313,13 +313,13 @@ public class LastDodoSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final Book book = new Book();
 
         // Reformat 10 or 13 digit codes to the site-required format,
         // whether they are valid ISBN or not.
-        final String url = getHostUrl() + String.format(SEARCH, formatIsbnWithDashes(code));
+        final String url = getHostUrl() + String.format(SEARCH, formatIsbnWithDashes(codeStr));
 
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
@@ -347,11 +347,11 @@ public class LastDodoSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!code.isEmpty()) {
+            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            if (!codeStr.isEmpty()) {
                 // Reformat 10 or 13 digit codes to the site-required format,
                 // whether they are valid ISBN or not.
-                words.add(formatIsbnWithDashes(code));
+                words.add(formatIsbnWithDashes(codeStr));
             }
         }
 

@@ -32,10 +32,11 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 public class AltEditionOpenLibrary
         implements AltEdition {
 
+    /** {@link Identifier#SID_OPEN_LIBRARY}. */
     @NonNull
-    private final String olid;
+    private final String sid;
     @Nullable
-    private final String isbn;
+    private final String productCode;
     @Nullable
     private final String langIso3;
     @Nullable
@@ -45,20 +46,20 @@ public class AltEditionOpenLibrary
     /**
      * Constructor.
      *
-     * @param olid      {@link Identifier#SID_OPEN_LIBRARY}
-     * @param isbn      of the book
-     * @param langIso3  language ISO3 code of the book
-     * @param publisher primary publisher name
-     * @param covers    the OL native cover id(s).
-     *                  Up to {@code DBKey.NR_OF_BOOK_COVERS} will be used.
+     * @param sid         {@link Identifier#SID_OPEN_LIBRARY}
+     * @param productCode of this edition; this can be an ISBN, or a catalog-id
+     * @param langIso3    the iso3 code for the language of this edition
+     * @param publisher   primary publisher name of this edition
+     * @param covers      the OL native cover id(s).
+     *                    Up to {@code DBKey.NR_OF_BOOK_COVERS} will be used.
      */
-    AltEditionOpenLibrary(@NonNull final String olid,
-                          @Nullable final String isbn,
+    AltEditionOpenLibrary(@NonNull final String sid,
+                          @Nullable final String productCode,
                           @Nullable final String langIso3,
                           @Nullable final String publisher,
                           @NonNull final long[] covers) {
-        this.olid = olid;
-        this.isbn = isbn;
+        this.sid = sid;
+        this.productCode = productCode;
         this.langIso3 = langIso3;
         this.publisher = publisher;
         // paranoia: both should be the same length
@@ -77,25 +78,45 @@ public class AltEditionOpenLibrary
      * @return the website id
      */
     @NonNull
-    public String getOLID() {
-        return olid;
+    public String getSid() {
+        return sid;
     }
 
+    /**
+     * ISBN or catalog-id.
+     *
+     * @return code
+     */
     @Nullable
-    public String getIsbn() {
-        return isbn;
+    public String getProductCode() {
+        return productCode;
     }
 
+    /**
+     * The language of this edition.
+     *
+     * @return language; can be {@code null} if the site did not have it
+     */
     @Nullable
     public String getLangIso3() {
         return langIso3;
     }
 
+    /**
+     * The publisher of this edition.
+     *
+     * @return name; can be {@code null} if the site did not have it
+     */
     @Nullable
     public String getPublisher() {
         return publisher;
     }
 
+    /**
+     * The OpenLibrary native cover id(s).
+     *
+     * @return array of length {@code DBKey.NR_OF_BOOK_COVERS}
+     */
     @NonNull
     public long[] getCovers() {
         return covers;
@@ -105,8 +126,8 @@ public class AltEditionOpenLibrary
     @NonNull
     public String toString() {
         return "AltEditionOpenLibrary{"
-               + "olid=`" + olid + '`'
-               + ", isbn=`" + isbn + '`'
+               + "sid=`" + sid + '`'
+               + ", productCode=`" + productCode + '`'
                + ", langIso3=`" + langIso3 + '`'
                + ", publisher=`" + publisher + '`'
                + ", covers=`" + Arrays.toString(covers) + '`'

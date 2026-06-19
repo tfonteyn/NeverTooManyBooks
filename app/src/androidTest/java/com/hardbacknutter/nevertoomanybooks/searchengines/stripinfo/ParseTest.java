@@ -29,6 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -623,11 +624,11 @@ class ParseTest
         final String correctBarcode = "9789069692739";
         final String incorrectBarcode = "9069692736";
 
-        final ISBN barcode = ISBN.parseISBN(correctBarcode);
+        final ProductCode barcode = ISBN.parseISBN(correctBarcode);
         assertTrue(barcode.isIsbn());
 
-        final ISBN isbn = ISBN.parseISBN(incorrectBarcode);
-        assertSame(ProductCodeType.Invalid, isbn.getType());
+        final ProductCode productCode = ISBN.parseISBN(incorrectBarcode);
+        assertSame(ProductCodeType.Invalid, productCode.getType());
 
         final Book book = new Book();
         book.setIsbn(incorrectBarcode);
