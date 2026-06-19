@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.AltEditionIsfdb;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetBookTask;

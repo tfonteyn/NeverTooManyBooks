@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 
 /**
  * Most methods will need external synchronization.

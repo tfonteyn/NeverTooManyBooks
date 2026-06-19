@@ -154,7 +154,7 @@ public class Identifier
     public static final String SID_URN = "urn";
     public static final String SID_WIKIDATA = "wikidata";
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.core.utils.ISNI}. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI}. */
     public static final String SID_ISNI = "isni";
     /** <a href="https://viaf.org">viaf</a>. */
     public static final String SID_VIAF = "viaf";

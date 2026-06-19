@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 
 public class AltEditionProductCode
         implements AltEdition {

@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 
 /**
  * An object of this type is created during a call

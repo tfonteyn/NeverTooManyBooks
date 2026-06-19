@@ -24,8 +24,8 @@ import androidx.annotation.NonNull;
 
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 

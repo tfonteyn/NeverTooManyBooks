@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ASIN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ASIN;
 
 /**
  * Collects all {@link Identifier}s present

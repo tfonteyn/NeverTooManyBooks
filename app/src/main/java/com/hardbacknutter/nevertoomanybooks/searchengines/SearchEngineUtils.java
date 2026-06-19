@@ -26,8 +26,8 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 
 public final class SearchEngineUtils {
 

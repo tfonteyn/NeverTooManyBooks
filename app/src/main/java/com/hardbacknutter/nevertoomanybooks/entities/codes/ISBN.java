@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.core.utils;
+package com.hardbacknutter.nevertoomanybooks.entities.codes;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -448,7 +448,7 @@ public final class ISBN
         // types not listed cannot be converted or would not make sense
         // e.g. we don't do isbn10 to ismn13 or similar non-sensical conversions.
         switch (productCodeType) {
-            case Isbn10: {
+            case ProductCodeType.Isbn10: {
                 if (toType == ProductCodeType.Asin) {
                     return codeText;
 
@@ -471,7 +471,7 @@ public final class ISBN
                 }
                 break;
             }
-            case Isbn13: {
+            case ProductCodeType.Isbn13: {
                 if ((toType == ProductCodeType.Isbn10 || toType == ProductCodeType.Asin)
                     && codeText.startsWith(L978)) {
                     Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
@@ -488,7 +488,7 @@ public final class ISBN
                 }
                 break;
             }
-            case Issn13: {
+            case ProductCodeType.Issn13: {
                 if (toType == ProductCodeType.Issn8) {
                     Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
                     // Drop the first 3 digits.

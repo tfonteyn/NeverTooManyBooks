@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 /**
  * The ISNI site.
  *
- * @see com.hardbacknutter.nevertoomanybooks.core.utils.ISNI
+ * @see com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI
  */
 public final class ISNI {
 
