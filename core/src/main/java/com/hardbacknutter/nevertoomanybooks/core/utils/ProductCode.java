@@ -63,4 +63,18 @@ public interface ProductCode {
      */
     @NonNull
     String asText();
+
+    /**
+     * Get the code as a text string converted to the given type.
+     * Normalization format depends on the {@link ProductCodeType}.
+     *
+     * @param toType to convert to
+     *
+     * @return string
+     *
+     * @throws NumberFormatException if a conversion is not possible.
+     */
+    @NonNull
+    String asText(@NonNull ProductCodeType toType)
+            throws NumberFormatException;
 }

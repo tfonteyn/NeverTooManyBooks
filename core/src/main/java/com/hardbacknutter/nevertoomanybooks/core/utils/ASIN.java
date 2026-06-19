@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
@@ -51,9 +52,12 @@ public final class ASIN
      * @see #isValid()
      */
     @NonNull
-    private final String code;
+    private final String codeText;
     private final boolean valid;
-    private final boolean isIsbn10;
+
+    /** If the code was a pure ISBN-10, we cache it. */
+    @Nullable
+    private final ISBN isbn10;
 
     /**
      * Constructor.
@@ -66,41 +70,14 @@ public final class ASIN
         // For leniency we also accept ISBN-13, and convert them to ISBN-10 if possible
         final ISBN isbn = ISBN.parseISBN(tmpCode);
         if (isbn.isIsbn10Compat()) {
-            this.code = isbn.asText(ProductCodeType.Isbn10);
-            this.isIsbn10 = true;
+            this.codeText = isbn.asText(ProductCodeType.Isbn10);
+            this.isbn10 = isbn;
             this.valid = true;
         } else {
-            this.code = tmpCode;
-            this.isIsbn10 = false;
-            this.valid = isAlphaNumeric10(this.code);
+            this.codeText = tmpCode;
+            this.isbn10 = null;
+            this.valid = isAlphaNumeric10(this.codeText);
         }
-    }
-
-    @Override
-    @NonNull
-    public ProductCodeType getType() {
-        return ProductCodeType.Asin;
-    }
-
-    @Override
-    public boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public boolean isIsbn() {
-        return isIsbn10;
-    }
-
-    @Override
-    public boolean isIsbn10Compat() {
-        return isIsbn10;
-    }
-
-    @Override
-    @NonNull
-    public String asText() {
-        return code;
     }
 
     /**
@@ -132,5 +109,46 @@ public final class ASIN
             }
         }
         return foundAlpha;
+    }
+
+    @Override
+    @NonNull
+    public ProductCodeType getType() {
+        return ProductCodeType.Asin;
+    }
+
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
+
+    @Override
+    public boolean isIsbn() {
+        return isbn10 != null;
+    }
+
+    @Override
+    public boolean isIsbn10Compat() {
+        return isbn10 != null;
+    }
+
+    @Override
+    @NonNull
+    public String asText() {
+        return codeText;
+    }
+
+    @NonNull
+    @Override
+    public String asText(@NonNull final ProductCodeType toType)
+            throws NumberFormatException {
+        if (toType == ProductCodeType.Asin
+            || toType == ProductCodeType.Isbn10 && isbn10 != null) {
+            return codeText;
+        }
+        if (toType == ProductCodeType.Isbn13 && isbn10 != null) {
+            return isbn10.asText(ProductCodeType.Isbn13);
+        }
+        throw new NumberFormatException("Unable to convert type: Asin to " + toType);
     }
 }

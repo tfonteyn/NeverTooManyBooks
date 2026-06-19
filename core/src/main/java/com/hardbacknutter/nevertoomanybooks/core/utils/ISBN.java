@@ -427,6 +427,7 @@ public final class ISBN
      *
      * @throws NumberFormatException if a conversion is not possible.
      */
+    @Override
     @NonNull
     public String asText(@NonNull final ProductCodeType toType)
             throws NumberFormatException {
@@ -441,7 +442,8 @@ public final class ISBN
             return codeText;
         }
 
-        // types not listed cannot be converted
+        // types not listed cannot be converted or would not make sense
+        // e.g. we don't do isbn10 to ismn13 or similar non-sensical conversions.
         switch (productCodeType) {
             case Isbn10: {
                 if (toType == ProductCodeType.Asin) {
