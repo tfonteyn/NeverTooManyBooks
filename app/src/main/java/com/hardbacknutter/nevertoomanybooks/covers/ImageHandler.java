@@ -129,7 +129,7 @@ public final class ImageHandler {
      * We always use the <strong>current</strong> value (e.g. when editing).
      */
     @Nullable
-    private final Supplier<String> coverBrowserIsbnSupplier;
+    private final Supplier<String> coverBrowserCodeSupplier;
     /**
      * Book use only; {@code null} otherwise.
      * We always use the <strong>current</strong> value (e.g. when editing).
@@ -165,7 +165,7 @@ public final class ImageHandler {
         reloadImageCallback = builder.reloadImage;
         placeholderDrawable = builder.placeholderDrawable;
         coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
-        coverBrowserIsbnSupplier = builder.coverBrowserIsbnSupplier;
+        coverBrowserCodeSupplier = builder.coverBrowserIsbnSupplier;
         // Minor hack...  if we have a title/isbn supplier, then we have a Book
         // and will need a coverBrowserLauncher.
         if (coverBrowserTitleSupplier != null) {
@@ -405,12 +405,12 @@ public final class ImageHandler {
      * The results come back in {@link #onPictureSelected(String)}
      */
     private void startBookCoverBrowser() {
-        Objects.requireNonNull(coverBrowserIsbnSupplier, "coverBrowserIsbnSupplier");
+        Objects.requireNonNull(coverBrowserCodeSupplier, "coverBrowserIsbnSupplier");
         Objects.requireNonNull(coverBrowserTitleSupplier, "coverBrowserTitleSupplier");
 
-        final String isbnStr = coverBrowserIsbnSupplier.get();
-        if (!isbnStr.isEmpty()) {
-            final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        final String codeStr = coverBrowserCodeSupplier.get();
+        if (!codeStr.isEmpty()) {
+            final ProductCode productCode = ISBN.parseISBN(codeStr);
             if (productCode.isIsbn()) {
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),

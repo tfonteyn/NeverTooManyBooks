@@ -249,22 +249,21 @@ public interface SearchEngine
          * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
-         * @param validCode   to search for
+         * @param productCode to search for
          * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @see ProductCodeType
-         *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
          * @throws SearchException      on generic exceptions (wrapped) during search
+         * @see ProductCodeType
          */
         @WorkerThread
         @NonNull
         Book searchByIsbn(@NonNull Context context,
-                          @NonNull ProductCode validCode,
+                          @NonNull ProductCode productCode,
                           @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -471,7 +470,7 @@ public interface SearchEngine
          * Get a single cover image of the specified size.
          * <p>
          * The {@link AltEdition} to be passed in will typically (always?) be coming from
-         * {@link AlternativeEditions#searchAlternativeEditions(Context, String)}.
+         * {@link AlternativeEditions#searchAlternativeEditions(Context, ProductCode)}.
          * i.o.w.:
          * Engines which implement {@link AlternativeEditions} will collect a list of
          * potential {@link AltEdition}.

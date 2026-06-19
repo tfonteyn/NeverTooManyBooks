@@ -120,7 +120,7 @@ public class EditBookTocFragment
             };
 
     /**
-     * ISFDB editions of a book(isbn).
+     * ISFDB editions of a book.
      * We'll try them one by one if the user asks for a re-try.
      */
     @NonNull

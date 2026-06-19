@@ -258,7 +258,7 @@ public class SearchBookByIsbnFragment
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
 
-    /** Handles ISBN and fragment data. */
+    /** Handles {@link ProductCode} and fragment data. */
     private SearchBookByIsbnViewModel vm;
 
     private PermissionRequester permissionRequester;
@@ -715,7 +715,7 @@ public class SearchBookByIsbnFragment
             return;
         }
 
-        // Check if the ISBN already exists in our database,
+        // Check if the product code already exists in our database,
         final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(productCode);
         if (!existingIds.isEmpty()) {
             onBookAlreadyPresent(productCode, existingIds, () -> startSearch(productCode));

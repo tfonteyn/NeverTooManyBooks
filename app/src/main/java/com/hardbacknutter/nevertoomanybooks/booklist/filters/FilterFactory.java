@@ -200,7 +200,7 @@ public final class FilterFactory {
                         dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
             }
             case DBKey.ISBN: {
-                // Does the book have an ISBN (or any other code) or none.
+                // Does the book have a ProductCode or not.
                 return new PHasValueFilter(
                         dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN,
                         R.array.lbl_bob_filter_isbn);
