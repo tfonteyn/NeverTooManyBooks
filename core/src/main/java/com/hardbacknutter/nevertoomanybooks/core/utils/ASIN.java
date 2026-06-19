@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * ASIN stands for Amazon Standard Identification Number.
@@ -150,5 +151,34 @@ public final class ASIN
             return isbn10.asText(ProductCodeType.Isbn13);
         }
         throw new NumberFormatException("Unable to convert type: Asin to " + toType);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ASIN{"
+               + "codeText='" + codeText + '\''
+               + ", valid=" + valid
+               + ", isbn10=" + isbn10
+               + '}';
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ASIN asin = (ASIN) o;
+        return valid == asin.valid
+               && Objects.equals(codeText, asin.codeText)
+               && Objects.equals(isbn10, asin.isbn10);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(codeText, valid, isbn10);
     }
 }
