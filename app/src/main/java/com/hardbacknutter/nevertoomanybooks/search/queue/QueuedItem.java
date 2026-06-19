@@ -27,11 +27,11 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-public class QueuedItem<CODE extends Code> {
+public class QueuedItem<CODE extends ProductCode> {
 
     private static final String TAG = "QueuedItem";
 
@@ -46,14 +46,14 @@ public class QueuedItem<CODE extends Code> {
     /**
      * Constructor.
      *
-     * @param code the {@link Code} this item will represent
+     * @param code the {@link ProductCode} this item will represent
      */
     public QueuedItem(@NonNull final CODE code) {
         this.code = code;
     }
 
     /**
-     * Get the wrapped {@link Code} for this item.
+     * Get the wrapped {@link ProductCode} for this item.
      *
      * @return code
      */

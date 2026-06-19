@@ -22,40 +22,45 @@ package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.NonNull;
 
-import java.util.Arrays;
-
-/**
- * Describes how we check for valid codes. This is a user-setting.
- */
-public enum CodeValidity {
-    /** No checks are done, the code is used as-is. */
-    NoChecks(0),
-    /** Any type as long as it's NOT {@link CodeType#Invalid}. */
-    ValidCodes(1),
-    /**
-     * Must be either {@link CodeType#Isbn10} or {@link CodeType#Isbn13}
-     * (or auto-converted) to be considered valid.
-     */
-    Isbn(2);
-
-    private final int id;
-
-    CodeValidity(final int id) {
-        this.id = id;
-    }
+public interface ProductCode {
 
     /**
-     * Lookup by id.
+     * Get the {@link ProductCodeType}.
      *
-     * @param id to lookup
-     *
-     * @return Validity level
+     * @return ProductCodeType
      */
     @NonNull
-    public static CodeValidity byId(final int id) {
-        return Arrays.stream(values())
-                     .filter(v -> v.id == id)
-                     .findFirst()
-                     .orElse(ValidCodes);
-    }
+    ProductCodeType getType();
+
+    /**
+     * Check if we have a valid code.
+     *
+     * @return validity
+     */
+    boolean isValid();
+
+    /**
+     * Check if the code <strong>is</strong> an {@link ProductCodeType#Isbn10}
+     * or an {@link ProductCodeType#Isbn13}.
+     *
+     * @return flag
+     */
+    boolean isIsbn();
+
+    /**
+     * Check if the code <strong>is</strong> an {@link ProductCodeType#Isbn10},
+     * or an {@link ProductCodeType#Isbn13} which can be converted to an {@link ProductCodeType#Isbn10}.
+     *
+     * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
+     */
+    boolean isIsbn10Compat();
+
+    /**
+     * Get the code as a normalised text string.
+     * Normalization format depends on the {@link ProductCodeType}.
+     *
+     * @return string
+     */
+    @NonNull
+    String asText();
 }

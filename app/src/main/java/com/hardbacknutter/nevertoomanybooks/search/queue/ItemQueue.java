@@ -43,14 +43,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 
 /**
  * Most methods will need external synchronization.
  *
  * @param <CODE> queue item type
  */
-class ItemQueue<CODE extends Code> {
+class ItemQueue<CODE extends ProductCode> {
 
     /** File reader buffer. */
     private static final int BUFFER_SIZE = 65535;

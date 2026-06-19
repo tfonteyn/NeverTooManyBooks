@@ -39,7 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -164,14 +164,14 @@ public interface SearchEngine
         /**
          * Search with a <strong>VALID</strong> ISBN.
          *
-         * @see CodeType
+         * @see ProductCodeType
          */
         Isbn(ByIsbn.class),
         /**
          * Search with an <strong>INVALID</strong> ISBN or actual barcode.
          * i.e. a code which is specifically supported by the site.
          *
-         * @see CodeType
+         * @see ProductCodeType
          */
         Barcode(ByBarcode.class),
         /**
@@ -238,7 +238,7 @@ public interface SearchEngine
      * <strong>will be valid</strong>
      *
      * @see SearchBy#Isbn
-     * @see CodeType
+     * @see ProductCodeType
      */
     interface ByIsbn
             extends SearchEngine {
@@ -255,7 +255,7 @@ public interface SearchEngine
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @see CodeType
+         * @see ProductCodeType
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
@@ -284,7 +284,7 @@ public interface SearchEngine
      * be properly implemented.
      *
      * @see SearchBy#Barcode
-     * @see CodeType
+     * @see ProductCodeType
      */
     interface ByBarcode
             extends ByIsbn {
@@ -307,7 +307,7 @@ public interface SearchEngine
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
          * @throws SearchException      on generic exceptions (wrapped) during search
-         * @see CodeType
+         * @see ProductCodeType
          */
         @WorkerThread
         @NonNull

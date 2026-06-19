@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum CodeType {
+public enum ProductCodeType {
     /** None of the below. */
     Invalid {
         @Override
@@ -300,10 +300,10 @@ public enum CodeType {
      * @return flag
      */
     public boolean isEan13Compat() {
-        return this == CodeType.Ean13
-               || this == CodeType.Isbn13
-               || this == CodeType.Issn13
-               || this == CodeType.Ismn;
+        return this == ProductCodeType.Ean13
+               || this == ProductCodeType.Isbn13
+               || this == ProductCodeType.Issn13
+               || this == ProductCodeType.Ismn;
     }
 
     /**
@@ -316,7 +316,7 @@ public enum CodeType {
      * @throws NumberFormatException if parsing totally failed
      */
     @NonNull
-    static CodeType getType(@Nullable final List<Integer> digits)
+    static ProductCodeType getType(@Nullable final List<Integer> digits)
             throws NumberFormatException {
 
         if (digits == null || digits.isEmpty()) {

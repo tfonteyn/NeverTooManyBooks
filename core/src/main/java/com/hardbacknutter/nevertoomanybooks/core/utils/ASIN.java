@@ -39,7 +39,7 @@ import java.util.Locale;
  *         the-story-behind-asins</a>
  */
 public final class ASIN
-        implements Code {
+        implements ProductCode {
 
     /** ASIN codes are always 10 characters. */
     private static final int ASIN_LEN = 10;
@@ -66,7 +66,7 @@ public final class ASIN
         // For leniency we also accept ISBN-13, and convert them to ISBN-10 if possible
         final ISBN isbn = ISBN.parseISBN(tmpCode);
         if (isbn.isIsbn10Compat()) {
-            this.code = isbn.asText(CodeType.Isbn10);
+            this.code = isbn.asText(ProductCodeType.Isbn10);
             this.isIsbn10 = true;
             this.valid = true;
         } else {
@@ -78,8 +78,8 @@ public final class ASIN
 
     @Override
     @NonNull
-    public CodeType getCodeType() {
-        return CodeType.Asin;
+    public ProductCodeType getType() {
+        return ProductCodeType.Asin;
     }
 
     @Override

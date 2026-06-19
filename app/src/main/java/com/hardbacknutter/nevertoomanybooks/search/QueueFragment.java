@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Code;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookFoundBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-public abstract class QueueFragment<CODE extends Code>
+public abstract class QueueFragment<CODE extends ProductCode>
         extends SearchBookBaseFragment {
 
     private static final String TAG = "QueueFragment";

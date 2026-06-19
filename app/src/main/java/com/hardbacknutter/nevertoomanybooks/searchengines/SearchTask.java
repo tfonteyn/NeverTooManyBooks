@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -137,7 +137,7 @@ final class SearchTask
             // Either strict ISBN, or any other valid code
             // depending on the user criteria 'strict' flag.
             if (criteria.isStrictIsbn() ? code.isIsbn()
-                                        : code.getCodeType() != CodeType.Invalid) {
+                                        : code.getType() != ProductCodeType.Invalid) {
                 task.setSearchBy(SearchEngine.SearchBy.Isbn);
                 return task;
             }

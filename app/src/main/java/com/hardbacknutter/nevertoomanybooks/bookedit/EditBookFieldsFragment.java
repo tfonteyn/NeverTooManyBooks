@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeValidity;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -90,7 +90,7 @@ public class EditBookFieldsFragment
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
 
     /** The level of checking the ISBN code. */
-    private CodeValidity isbnValidityCheck;
+    private ProductCodeValidity isbnValidityCheck;
     /** View Binding. */
     private FragmentEditBookFieldsBinding vb;
 
@@ -276,21 +276,21 @@ public class EditBookFieldsFragment
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_ISBN_VALIDITY_NONE) {
-                isbnValidityCheck = CodeValidity.NoChecks;
-                isbnCleanupTextWatcher.setValidityLevel(CodeValidity.NoChecks);
-                isbnValidationTextWatcher.setValidityLevel(CodeValidity.NoChecks);
+                isbnValidityCheck = ProductCodeValidity.NoChecks;
+                isbnCleanupTextWatcher.setValidityLevel(ProductCodeValidity.NoChecks);
+                isbnValidationTextWatcher.setValidityLevel(ProductCodeValidity.NoChecks);
                 return true;
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
-                isbnValidityCheck = CodeValidity.ValidCodes;
-                isbnCleanupTextWatcher.setValidityLevel(CodeValidity.ValidCodes);
-                isbnValidationTextWatcher.setValidityLevel(CodeValidity.ValidCodes);
+                isbnValidityCheck = ProductCodeValidity.ValidCodes;
+                isbnCleanupTextWatcher.setValidityLevel(ProductCodeValidity.ValidCodes);
+                isbnValidationTextWatcher.setValidityLevel(ProductCodeValidity.ValidCodes);
                 return true;
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-                isbnValidityCheck = CodeValidity.Isbn;
-                isbnCleanupTextWatcher.setValidityLevel(CodeValidity.Isbn);
-                isbnValidationTextWatcher.setValidityLevel(CodeValidity.Isbn);
+                isbnValidityCheck = ProductCodeValidity.Isbn;
+                isbnCleanupTextWatcher.setValidityLevel(ProductCodeValidity.Isbn);
+                isbnValidationTextWatcher.setValidityLevel(ProductCodeValidity.Isbn);
                 return true;
             }
 

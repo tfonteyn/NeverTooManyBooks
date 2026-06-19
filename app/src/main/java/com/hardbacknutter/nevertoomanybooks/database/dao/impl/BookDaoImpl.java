@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -901,8 +901,8 @@ public class BookDaoImpl
         // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range.
         if (isbn.isIsbn10Compat()) {
             try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ISBN_10_OR_13,
-                                             new String[]{isbn.asText(CodeType.Isbn10),
-                                                     isbn.asText(CodeType.Isbn13)})) {
+                                             new String[]{isbn.asText(ProductCodeType.Isbn10),
+                                                     isbn.asText(ProductCodeType.Isbn13)})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
@@ -938,8 +938,8 @@ public class BookDaoImpl
         // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range.
         if (isbn.isIsbn10Compat()) {
             try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ISBN_10_OR_13_EXISTS)) {
-                stmt.bindString(1, isbn.asText(CodeType.Isbn10));
-                stmt.bindString(2, isbn.asText(CodeType.Isbn13));
+                stmt.bindString(1, isbn.asText(ProductCodeType.Isbn10));
+                stmt.bindString(2, isbn.asText(ProductCodeType.Isbn13));
                 return stmt.simpleQueryForLongOrZero() == 1;
             }
         } else {

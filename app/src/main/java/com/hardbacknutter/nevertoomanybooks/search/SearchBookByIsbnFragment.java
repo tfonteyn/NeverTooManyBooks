@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContr
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeValidity;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -422,9 +422,9 @@ public class SearchBookByIsbnFragment
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
         // The search preference determines the level here; NOT the 'edit book'
-        final CodeValidity validity = BookSearchCriteria.isStrictIsbnGlobal()
-                                       ? CodeValidity.Isbn
-                                       : CodeValidity.NoChecks;
+        final ProductCodeValidity validity = BookSearchCriteria.isStrictIsbnGlobal()
+                                       ? ProductCodeValidity.Isbn
+                                       : ProductCodeValidity.NoChecks;
 
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, validity);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
@@ -1054,8 +1054,8 @@ public class SearchBookByIsbnFragment
                 final boolean checked = !menuItem.isChecked();
                 BookSearchCriteria.setStrictIsbnDefault(checked);
 
-                final CodeValidity validity = checked ? CodeValidity.Isbn
-                                                      : CodeValidity.NoChecks;
+                final ProductCodeValidity validity = checked ? ProductCodeValidity.Isbn
+                                                             : ProductCodeValidity.NoChecks;
                 isbnCleanupTextWatcher.setValidityLevel(validity);
                 isbnValidationTextWatcher.setValidityLevel(validity);
                 return true;

@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeValidity;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -124,7 +124,7 @@ public class EditBookViewModel
      * ISBN/code Validity level.
      * Type: int
      *
-     * @see CodeValidity
+     * @see ProductCodeValidity
      */
     public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
@@ -248,11 +248,11 @@ public class EditBookViewModel
      * @return Validity level
      */
     @NonNull
-    CodeValidity getLevel() {
+    ProductCodeValidity getLevel() {
         // -1 default (i.e. invalid) will force the Validity default enum to be returned.
         final int id = ServiceLocator.getInstance().getSharedPreferences()
                                      .getIntFromString(PK_EDIT_BOOK_ISBN_CHECKS, -1);
-        return CodeValidity.byId(id);
+        return ProductCodeValidity.byId(id);
     }
 
     int getCurrentTab() {

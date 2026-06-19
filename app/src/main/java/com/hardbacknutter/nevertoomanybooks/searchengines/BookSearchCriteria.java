@@ -31,7 +31,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
@@ -259,7 +259,7 @@ public class BookSearchCriteria {
         if (strictIsbn) {
             return tmpIsbn.isIsbn();
         } else {
-            return tmpIsbn.getCodeType() != CodeType.Invalid;
+            return tmpIsbn.getType() != ProductCodeType.Invalid;
         }
     }
 

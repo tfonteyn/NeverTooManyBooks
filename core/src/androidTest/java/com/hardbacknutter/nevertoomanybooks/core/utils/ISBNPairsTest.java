@@ -121,15 +121,15 @@ class ISBNPairsTest {
             final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
-            assertSame(CodeType.Isbn10, isbn0.getCodeType());
-            assertNotSame(CodeType.Isbn10, isbn1.getCodeType());
+            assertSame(ProductCodeType.Isbn10, isbn0.getType());
+            assertNotSame(ProductCodeType.Isbn10, isbn1.getType());
         }
         for (final String[] isbnPair : invalid_isbn) {
             final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
-            assertNotSame(CodeType.Isbn10, isbn0.getCodeType());
-            assertNotSame(CodeType.Isbn10, isbn1.getCodeType());
+            assertNotSame(ProductCodeType.Isbn10, isbn0.getType());
+            assertNotSame(ProductCodeType.Isbn10, isbn1.getType());
         }
     }
 
@@ -139,15 +139,15 @@ class ISBNPairsTest {
             final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
-            assertNotSame(CodeType.Isbn13, isbn0.getCodeType());
-            assertSame(CodeType.Isbn13, isbn1.getCodeType());
+            assertNotSame(ProductCodeType.Isbn13, isbn0.getType());
+            assertSame(ProductCodeType.Isbn13, isbn1.getType());
         }
         for (final String[] isbnPair : invalid_isbn) {
             final ISBN isbn0 = ISBN.parseISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.parseISBN(isbnPair[1]);
 
-            assertNotSame(CodeType.Isbn13, isbn0.getCodeType());
-            assertNotSame(CodeType.Isbn13, isbn1.getCodeType());
+            assertNotSame(ProductCodeType.Isbn13, isbn0.getType());
+            assertNotSame(ProductCodeType.Isbn13, isbn1.getType());
         }
     }
 
@@ -157,8 +157,8 @@ class ISBNPairsTest {
             final ISBN isbn10 = ISBN.parseISBN(isbnPair[0]);
             final ISBN isbn13 = ISBN.parseISBN(isbnPair[1]);
 
-            assertEquals(isbn10.asText(CodeType.Isbn13), isbn13.asText(CodeType.Isbn13));
-            assertEquals(isbn10.asText(CodeType.Isbn10), isbn13.asText(CodeType.Isbn10));
+            assertEquals(isbn10.asText(ProductCodeType.Isbn13), isbn13.asText(ProductCodeType.Isbn13));
+            assertEquals(isbn10.asText(ProductCodeType.Isbn10), isbn13.asText(ProductCodeType.Isbn10));
         }
     }
 

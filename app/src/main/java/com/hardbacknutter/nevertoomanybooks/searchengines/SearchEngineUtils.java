@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.CodeType;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 public final class SearchEngineUtils {
@@ -191,7 +191,7 @@ public final class SearchEngineUtils {
                                     @NonNull final ISBN isbn) {
         //noinspection DataFlowIssue
         if (engineId.getConfig().prefersIsbn10() && isbn.isIsbn10Compat()) {
-            return isbn.asText(CodeType.Isbn10);
+            return isbn.asText(ProductCodeType.Isbn10);
         } else {
             return isbn.asText();
         }

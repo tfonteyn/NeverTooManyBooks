@@ -41,7 +41,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * This class name is a bit of a misnomer by now.
  * It represents all <strong>numeric</strong> codes supported.
- * See {@link CodeType} for all supported codes.
+ * See {@link ProductCodeType} for all supported codes.
  * ISBN uses the digit 10 for 'X'.
  * <p>
  * ISBN stands for International Standard Book Number.
@@ -49,24 +49,24 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">ISBN</a>
  * See <a href="https://isbn-information.com">https://isbn-information.com</a>
  * <p>
- * An International Standard Serial Number {@link CodeType#Issn8} is an eight-digit serial
+ * An International Standard Serial Number {@link ProductCodeType#Issn8} is an eight-digit serial
  * number used to uniquely identify a serial publication, such as a magazine.
  * See <a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number">ISSN</a>
- * The {@link CodeType#Issn13} is an encoded version, with a {@code 977} "country code",
+ * The {@link ProductCodeType#Issn13} is an encoded version, with a {@code 977} "country code",
  * followed by the 7 main digits of the ISSN (the check digit is not included),
  * followed by 2 publisher-defined digits, followed by the EAN check digit.
  * <p>
- * The International Standard Music Number or {@link CodeType#Ismn} (ISO 10957)
+ * The International Standard Music Number or {@link ProductCodeType#Ismn} (ISO 10957)
  * is a thirteen-character alphanumeric identifier for printed music
  * See <a href="https://en.wikipedia.org/wiki/International_Standard_Music_Number">ISMN</a>
  * <p>
- * A Universal Product Code {@link CodeType#UpcA} is a barcode symbology that is widely used
+ * A Universal Product Code {@link ProductCodeType#UpcA} is a barcode symbology that is widely used
  * worldwide for tracking trade items in stores.
  * See <a href="https://en.wikipedia.org/wiki/Universal_Product_Code">UPC_A</a>
  * and <a href="https://www.cbr.com/comic-book-covers-upc-meaning/">Specifics for comics</a>.
- * {@link CodeType#UpcA} numbers are converted to {@link CodeType#Isbn10} if possible.
+ * {@link ProductCodeType#UpcA} numbers are converted to {@link ProductCodeType#Isbn10} if possible.
  * <p>
- * An Amazon Standard Identification Number {@link CodeType#Asin} is a 10-character
+ * An Amazon Standard Identification Number {@link ProductCodeType#Asin} is a 10-character
  * alphanumeric unique identifier assigned by Amazon.com.
  * ISBN-10 codes are identical with ASIN codes (but not the reverse).
  * See <a href="https://en.wikipedia.org/wiki/Amazon_Standard_Identification_Number">ASIN</a>
@@ -80,7 +80,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * The precursor of ISBN was known as the 9-digit Standard Book Numbering (SBN)
  * created in 1966.
- * {@link CodeType#Sbn} is always converted to {@link CodeType#Isbn10}
+ * {@link ProductCodeType#Sbn} is always converted to {@link ProductCodeType#Isbn10}
  * by prefixing with the digit {@code 0}.
  * <p>
  * The EAN "country code" 978 (and later 979) has been allocated since the 1980s to reserve
@@ -94,7 +94,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 @SuppressWarnings("MagicNumber")
 public final class ISBN
-        implements Code {
+        implements ProductCode {
 
     /** Log tag. */
     private static final String TAG = "ISBN";
@@ -175,7 +175,7 @@ public final class ISBN
 
     /** The type of code, determined at creation time. */
     @NonNull
-    private final CodeType codeType;
+    private final ProductCodeType productCodeType;
     /** The code as a pure text string. The raw input string for invalid codes. */
     @NonNull
     private final String codeText;
@@ -191,31 +191,31 @@ public final class ISBN
      *      {@code strictIsbn == false}
      *      <br>accepts as valid:
      *      <ul>
-     *          <li>{@link CodeType#Isbn10}</li>
-     *          <li>{@link CodeType#Sbn}</li>
-     *          <li>{@link CodeType#Isbn13}</li>
-     *          <li>{@link CodeType#Ean13}</li>
-     *          <li>{@link CodeType#Issn8}</li>
-     *          <li>{@link CodeType#Ismn}</li>
-     *          <li>generic {@link CodeType#UpcA}</li>
+     *          <li>{@link ProductCodeType#Isbn10}</li>
+     *          <li>{@link ProductCodeType#Sbn}</li>
+     *          <li>{@link ProductCodeType#Isbn13}</li>
+     *          <li>{@link ProductCodeType#Ean13}</li>
+     *          <li>{@link ProductCodeType#Issn8}</li>
+     *          <li>{@link ProductCodeType#Ismn}</li>
+     *          <li>generic {@link ProductCodeType#UpcA}</li>
      *      </ul>
      *  </li>
      *  <li>
      *      {@code strictIsbn == true}
      *      <br>accepts as valid:
      *      <ul>
-     *          <li>{@link CodeType#Isbn10}</li>
-     *          <li>{@link CodeType#Sbn}</li>
-     *          <li>{@link CodeType#Isbn13}</li>
-     *          <li>{@link CodeType#UpcA} <strong>if convertible
-     *              to {@link CodeType#Isbn10}</strong></li>
+     *          <li>{@link ProductCodeType#Isbn10}</li>
+     *          <li>{@link ProductCodeType#Sbn}</li>
+     *          <li>{@link ProductCodeType#Isbn13}</li>
+     *          <li>{@link ProductCodeType#UpcA} <strong>if convertible
+     *              to {@link ProductCodeType#Isbn10}</strong></li>
      *      </ul>
      *      Rejects as invalid:
      *      <ul>
-     *          <li>{@link CodeType#Ean13}</li>
-     *          <li>{@link CodeType#Issn8}</li>
-     *          <li>{@link CodeType#Ismn}</li>
-     *          <li>generic {@link CodeType#UpcA}</li>
+     *          <li>{@link ProductCodeType#Ean13}</li>
+     *          <li>{@link ProductCodeType#Issn8}</li>
+     *          <li>{@link ProductCodeType#Ismn}</li>
+     *          <li>generic {@link ProductCodeType#UpcA}</li>
      *      </ul>
      *  </li>
      *  <li>Accepts {@code null} which results in {@code Type.Invalid}.</li>
@@ -231,7 +231,7 @@ public final class ISBN
         this.strictIsbn = strictIsbn;
 
         List<Integer> digits = null;
-        CodeType type = CodeType.Invalid;
+        ProductCodeType type = ProductCodeType.Invalid;
 
         if (text != null && !text.isEmpty()) {
             // Remove whitespace first for easier parsing.
@@ -239,22 +239,22 @@ public final class ISBN
             if (!cleanStr.isEmpty()) {
                 try {
                     digits = toDigits(cleanStr, strictIsbn);
-                    type = CodeType.getType(digits);
+                    type = ProductCodeType.getType(digits);
 
-                    if (type == CodeType.UpcA) {
+                    if (type == ProductCodeType.UpcA) {
                         // is this UPC_A convertible to ISBN-10 ?
                         final String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
                         if (isbnPrefix != null) {
                             // yes, convert to ISBN-10
                             digits = toDigits(isbnPrefix + cleanStr.substring(12), false);
-                            digits.add(CodeType.Isbn10.checksum(digits));
-                            type = CodeType.Isbn10;
+                            digits.add(ProductCodeType.Isbn10.checksum(digits));
+                            type = ProductCodeType.Isbn10;
                         }
-                    } else if (type == CodeType.Sbn) {
+                    } else if (type == ProductCodeType.Sbn) {
                         // can always be converted to ISBN-10
                         digits = new ArrayList<>(digits.subList(0, 9));
                         digits.add(0, 0);
-                        type = CodeType.Isbn10;
+                        type = ProductCodeType.Isbn10;
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
@@ -263,22 +263,22 @@ public final class ISBN
                 }
 
                 // strict ISBN required?
-                if (strictIsbn && type != CodeType.Isbn10 && type != CodeType.Isbn13) {
-                    type = CodeType.Invalid;
+                if (strictIsbn && type != ProductCodeType.Isbn10 && type != ProductCodeType.Isbn13) {
+                    type = ProductCodeType.Invalid;
                 }
             }
         }
 
         // Make sure the internal status is uniform.
-        if (type == CodeType.Invalid) {
+        if (type == ProductCodeType.Invalid) {
             codeDigits = null;
             codeText = text != null ? text : "";
-            codeType = CodeType.Invalid;
+            productCodeType = ProductCodeType.Invalid;
 
         } else {
             codeDigits = digits;
             codeText = concat(codeDigits);
-            codeType = type;
+            productCodeType = type;
         }
     }
 
@@ -295,7 +295,7 @@ public final class ISBN
     }
 
     /**
-     * Constructor - ISBN codes only, anything else will be set to {@link CodeType#Invalid}.
+     * Constructor - ISBN codes only, anything else will be set to {@link ProductCodeType#Invalid}.
      *
      * @param text string to parse
      *
@@ -369,7 +369,7 @@ public final class ISBN
      * Check if we have a valid code. Does not check for a specific type
      * unless the {@code strictIsbn} flag as set in the constructor is {@code true}.
      * <p>
-     * Use {@link #getCodeType()} or {@link #isIsbn()} by preference.
+     * Use {@link #getType()} or {@link #isIsbn()} by preference.
      *
      * @return validity
      */
@@ -378,26 +378,26 @@ public final class ISBN
         if (strictIsbn) {
             return isIsbn();
         } else {
-            return codeType != CodeType.Invalid;
+            return productCodeType != ProductCodeType.Invalid;
         }
     }
 
     @Override
     @NonNull
-    public CodeType getCodeType() {
-        return codeType;
+    public ProductCodeType getType() {
+        return productCodeType;
     }
 
     @Override
     public boolean isIsbn() {
-        return codeType == CodeType.Isbn10 || codeType == CodeType.Isbn13;
+        return productCodeType == ProductCodeType.Isbn10 || productCodeType == ProductCodeType.Isbn13;
     }
 
     @Override
     public boolean isIsbn10Compat() {
         // reminder: no need to check UPC_A here, as we would have converted it already
-        return codeType == CodeType.Isbn10
-               || codeType == CodeType.Isbn13 && codeText.startsWith(L978);
+        return productCodeType == ProductCodeType.Isbn10
+               || productCodeType == ProductCodeType.Isbn13 && codeText.startsWith(L978);
     }
 
     /**
@@ -418,7 +418,7 @@ public final class ISBN
      * It will have been cleaned and reduced to digits/x only.
      * <p>
      * <strong>WARNING:</strong> when converting an
-     * {@link CodeType#Isbn13} to {@link CodeType#Isbn10},
+     * {@link ProductCodeType#Isbn13} to {@link ProductCodeType#Isbn10},
      * you must call {@link #isIsbn10Compat()} prior to avoid this method throwing an exception.
      *
      * @param toType to convert to
@@ -428,26 +428,26 @@ public final class ISBN
      * @throws NumberFormatException if a conversion is not possible.
      */
     @NonNull
-    public String asText(@NonNull final CodeType toType)
+    public String asText(@NonNull final ProductCodeType toType)
             throws NumberFormatException {
 
         // Same type? No conversion duh
-        if (codeType == toType) {
+        if (productCodeType == toType) {
             return codeText;
         }
 
         // Both EAN-13 ? No conversion needed.
-        if (codeType.isEan13Compat() && toType.isEan13Compat()) {
+        if (productCodeType.isEan13Compat() && toType.isEan13Compat()) {
             return codeText;
         }
 
         // types not listed cannot be converted
-        switch (codeType) {
+        switch (productCodeType) {
             case Isbn10: {
-                if (toType == CodeType.Asin) {
+                if (toType == ProductCodeType.Asin) {
                     return codeText;
 
-                } else if (toType == CodeType.Isbn13) {
+                } else if (toType == ProductCodeType.Isbn13) {
                     Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
                     final List<Integer> digits = new ArrayList<>();
                     // Add the standard prefix 978.
@@ -460,14 +460,14 @@ public final class ISBN
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(CodeType.Ean13.checksum(digits));
+                    digits.add(ProductCodeType.Ean13.checksum(digits));
 
                     return concat(digits);
                 }
                 break;
             }
             case Isbn13: {
-                if ((toType == CodeType.Isbn10 || toType == CodeType.Asin)
+                if ((toType == ProductCodeType.Isbn10 || toType == ProductCodeType.Asin)
                     && codeText.startsWith(L978)) {
                     Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
                     // Drop the first 3 digits.
@@ -478,13 +478,13 @@ public final class ISBN
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(CodeType.Isbn10.checksum(digits));
+                    digits.add(ProductCodeType.Isbn10.checksum(digits));
                     return concat(digits);
                 }
                 break;
             }
             case Issn13: {
-                if (toType == CodeType.Issn8) {
+                if (toType == ProductCodeType.Issn8) {
                     Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
                     // Drop the first 3 digits.
                     // Copy the next 7.
@@ -494,14 +494,14 @@ public final class ISBN
                         digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
-                    digits.add(CodeType.Issn8.checksum(digits));
+                    digits.add(ProductCodeType.Issn8.checksum(digits));
                     return concat(digits);
                 }
                 break;
             }
         }
 
-        throw new NumberFormatException("Unable to convert type: " + codeType + " to " + toType);
+        throw new NumberFormatException("Unable to convert type: " + productCodeType + " to " + toType);
     }
 
     /**
@@ -557,7 +557,7 @@ public final class ISBN
     public String toString() {
         return "ISBN{"
                + "strictIsbn=" + strictIsbn
-               + ", codeType=" + codeType
+               + ", productCodeType=" + productCodeType
                + ", codeText=" + codeText
                + ", codeDigits=" + codeDigits
                + '}';
@@ -566,7 +566,7 @@ public final class ISBN
     @Override
     public int hashCode() {
         // only use the 'codeText' if we have no digits!
-        return Objects.hash(codeType, Objects.requireNonNullElse(codeDigits, codeText));
+        return Objects.hash(productCodeType, Objects.requireNonNullElse(codeDigits, codeText));
     }
 
     @Override
@@ -582,7 +582,7 @@ public final class ISBN
         // Reminder: do not compare 'codeText' !
 
         // Either one is invalid ? No match.
-        if (codeType == CodeType.Invalid || cmp.getCodeType() == CodeType.Invalid) {
+        if (productCodeType == ProductCodeType.Invalid || cmp.getType() == ProductCodeType.Invalid) {
             return false;
         }
 
@@ -627,7 +627,7 @@ public final class ISBN
         @NonNull
         private final TextInputEditText editText;
         @NonNull
-        private CodeValidity validity;
+        private ProductCodeValidity validity;
 
         /**
          * Constructor.
@@ -636,7 +636,7 @@ public final class ISBN
          * @param validity validity check-level for codes
          */
         public CleanupTextWatcher(@NonNull final TextInputEditText editText,
-                                  @NonNull final CodeValidity validity) {
+                                  @NonNull final ProductCodeValidity validity) {
             this.editText = editText;
             this.validity = validity;
         }
@@ -646,7 +646,7 @@ public final class ISBN
          *
          * @param validity validity check-level for codes
          */
-        public void setValidityLevel(@NonNull final CodeValidity validity) {
+        public void setValidityLevel(@NonNull final ProductCodeValidity validity) {
             this.validity = validity;
             clean(editText.getEditableText());
         }
@@ -671,7 +671,7 @@ public final class ISBN
         }
 
         private void clean(@Nullable final Editable editable) {
-            if (validity == CodeValidity.NoChecks
+            if (validity == ProductCodeValidity.NoChecks
                 || editable == null || editable.length() == 0) {
                 return;
             }
@@ -681,7 +681,7 @@ public final class ISBN
                 return;
             }
 
-            if (validity == CodeValidity.ValidCodes) {
+            if (validity == ProductCodeValidity.ValidCodes) {
                 // Text representation of ISBN-13/10 string is often
                 // split in groups of digits with '-' in between.
                 // This is, as observed, usually 10 + 3 '-' (or 10 + 2 '-' + 'x'),
@@ -730,7 +730,7 @@ public final class ISBN
         @Nullable
         private String altIsbn;
         @NonNull
-        private CodeValidity isbnValidityCheck;
+        private ProductCodeValidity isbnValidityCheck;
 
         /**
          * Constructor.
@@ -741,7 +741,7 @@ public final class ISBN
          */
         public ValidationTextWatcher(@NonNull final TextInputLayout layoutView,
                                      @NonNull final TextInputEditText editText,
-                                     @NonNull final CodeValidity isbnValidityCheck) {
+                                     @NonNull final ProductCodeValidity isbnValidityCheck) {
             layout = layoutView;
             layout.setStartIconVisible(false);
 
@@ -754,7 +754,7 @@ public final class ISBN
          *
          * @param isbnValidityCheck validity check-level for ISBN codes
          */
-        public void setValidityLevel(@NonNull final CodeValidity isbnValidityCheck) {
+        public void setValidityLevel(@NonNull final ProductCodeValidity isbnValidityCheck) {
             this.isbnValidityCheck = isbnValidityCheck;
             validate(editText.getEditableText());
         }
@@ -811,47 +811,47 @@ public final class ISBN
 
             // Create it without forcing ISBN, we'll check the type in detail.
             final ISBN code = parse(str);
-            if (isbnValidityCheck == CodeValidity.Isbn && code.getCodeType() == CodeType.Invalid) {
+            if (isbnValidityCheck == ProductCodeValidity.Isbn && code.getType() == ProductCodeType.Invalid) {
                 // We're in strict mode, reject any invalid codes
                 invalidate();
                 return;
             }
 
             // ISBN-10 + any legacy SBN/UPC which was converted to ISBN-10
-            if (code.getCodeType() == CodeType.Isbn10) {
+            if (code.getType() == ProductCodeType.Isbn10) {
                 layout.setStartIconVisible(true);
                 // ISBN-10, which can always be converted to ISBN-13
-                altIsbn = code.asText(CodeType.Isbn13);
+                altIsbn = code.asText(ProductCodeType.Isbn13);
                 layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                LoggerFactory.getLogger().d(TAG, code.getCodeType());
+                LoggerFactory.getLogger().d(TAG, code.getType());
                 return;
             }
 
-            if (code.getCodeType() == CodeType.Isbn13) {
+            if (code.getType() == ProductCodeType.Isbn13) {
                 layout.setStartIconVisible(true);
                 if (code.isIsbn10Compat()) {
                     // can be converted to ISBN-10
-                    altIsbn = code.asText(CodeType.Isbn10);
+                    altIsbn = code.asText(ProductCodeType.Isbn10);
                     layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                    LoggerFactory.getLogger().d(TAG, code.getCodeType());
+                    LoggerFactory.getLogger().d(TAG, code.getType());
                 } else {
                     // cannot be converted
                     layout.setStartIconOnClickListener(null);
-                    LoggerFactory.getLogger().d(TAG, code.getCodeType());
+                    LoggerFactory.getLogger().d(TAG, code.getType());
                 }
                 return;
             }
 
-            if (isbnValidityCheck == CodeValidity.Isbn) {
+            if (isbnValidityCheck == ProductCodeValidity.Isbn) {
                 // We're in strict mode, reject all other code (even when valid)
                 invalidate();
                 return;
             }
 
             // We're not in strict mode, just show validity status
-            layout.setStartIconVisible(code.getCodeType() != CodeType.Invalid);
+            layout.setStartIconVisible(code.getType() != ProductCodeType.Invalid);
             layout.setStartIconOnClickListener(null);
-            LoggerFactory.getLogger().d(TAG, code.getCodeType());
+            LoggerFactory.getLogger().d(TAG, code.getType());
         }
     }
 }
