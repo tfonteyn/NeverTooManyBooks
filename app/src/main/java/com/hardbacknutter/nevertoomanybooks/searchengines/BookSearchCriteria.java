@@ -31,6 +31,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -41,7 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
  * Actual members used will depend on the actual search method, one of:
  * {@link SearchEngine.ByText}, {@link SearchEngine.ByExternalId}, {@link SearchEngine.ByIsbn}.
  * <p>
- * All values are 'raw', i.e. exactly as entered by the user in a form.
+ * All values are 'raw', i.e. exactly as entered by the user in a form,
+ * with {@link #productCode} the parsed value according to {@link #strictIsbn}.
  */
 public class BookSearchCriteria {
 
@@ -59,17 +61,15 @@ public class BookSearchCriteria {
     /** Routing purposes. */
     @Nullable
     private ScanMode scanMode;
-    /**
-     * Raw ISBN text for search.
-     *
-     * @see SearchEngine.ByIsbn
-     */
+
+    /** Raw code text for searches. */
     @NonNull
-    private String isbnText = "";
+    private String productCodeStr = "";
+    /** The parsed code. */
     @Nullable
-    private ISBN isbn;
+    private ProductCode productCode;
     /**
-     * {@code true} for strict ISBN checking,
+     * {@code true} for strict ISBN parsing,
      * {@code false} for allowing other valid generic codes.
      */
     private boolean strictIsbn;
@@ -199,67 +199,67 @@ public class BookSearchCriteria {
     }
 
     /**
-     * Get the ISBN criteria as a raw string.
+     * Get the product-code criteria as a raw string.
      *
-     * @return raw ISBN text
+     * @return raw product-code text
      */
     @NonNull
-    public String getRawIsbnText() {
-        return isbnText;
+    String getRawProductCode() {
+        return productCodeStr;
     }
 
     /**
-     * Set the ISBN criteria as a raw string.
+     * Set the product-code criteria as a raw string.
      *
-     * @param isbnText to search for
+     * @param text to search for
      */
-    public void setRawIsbnText(@NonNull final String isbnText) {
-        this.isbnText = isbnText;
-        isbn = null;
+    public void setRawProductCode(@NonNull final String text) {
+        this.productCodeStr = text;
+        productCode = null;
     }
 
     /**
-     * Get the ISBN criteria.
+     * Get the {@link ProductCode} criteria.
      *
-     * @return ISBN; can be {@code null} if none
+     * @return code; can be {@code null} if none
      */
     @Nullable
-    public ISBN getIsbn() {
-        if (isbnText.isEmpty()) {
+    public ProductCode getProductCode() {
+        if (productCodeStr.isEmpty()) {
             return null;
         }
 
-        if (isbn == null) {
-            isbn = ISBN.parse(this.isbnText, this.strictIsbn);
+        if (productCode == null) {
+            productCode = ISBN.parse(this.productCodeStr, this.strictIsbn);
         }
-        return isbn;
+        return productCode;
     }
 
     /**
-     * Set the ISBN criteria.
+     * Set the {@link ProductCode} criteria.
      *
-     * @param isbn     to search for
+     * @param productCode     to search for
      * @param scanMode will be returned with the result
      */
-    public void setIsbnFromScan(@NonNull final ISBN isbn,
-                                @NonNull final ScanMode scanMode) {
-        this.isbnText = isbn.asText();
-        this.isbn = isbn;
+    public void setProductCodeFromScan(@NonNull final ProductCode productCode,
+                                       @NonNull final ScanMode scanMode) {
+        this.productCodeStr = productCode.asText();
+        this.productCode = productCode;
         this.scanMode = scanMode;
     }
 
-    boolean hasValidIsbn() {
-        final ISBN tmpIsbn = getIsbn();
-        if (tmpIsbn == null) {
+    boolean hasValidProductCode() {
+        final ProductCode tmpProductCode = getProductCode();
+        if (tmpProductCode == null) {
             return false;
         }
 
         // We MUST use the strictIsbn as set on this criteria object,
         // as the code can have come from the scanner and be theoretically less/more strict.
         if (strictIsbn) {
-            return tmpIsbn.isIsbn();
+            return tmpProductCode.isIsbn();
         } else {
-            return tmpIsbn.getType() != ProductCodeType.Invalid;
+            return tmpProductCode.getType() != ProductCodeType.Invalid;
         }
     }
 
@@ -281,7 +281,7 @@ public class BookSearchCriteria {
      */
     public void setStrictIsbn(final boolean strictIsbn) {
         this.strictIsbn = strictIsbn;
-        isbn = null;
+        productCode = null;
     }
 
     /**
@@ -344,7 +344,7 @@ public class BookSearchCriteria {
         series = "";
         seriesNr = "";
         publisher = "";
-        isbnText = "";
+        productCodeStr = "";
         strictIsbn = isStrictIsbnGlobal();
         sids.clear();
     }
@@ -360,7 +360,7 @@ public class BookSearchCriteria {
                && series.isEmpty()
                && seriesNr.isEmpty()
                && publisher.isEmpty()
-               && isbnText.isEmpty()
+               && productCodeStr.isEmpty()
                && sids.isEmpty();
     }
 
@@ -406,8 +406,8 @@ public class BookSearchCriteria {
                + ", seriesNr=`" + seriesNr + '`'
                + ", publisher=`" + publisher + '`'
                + ", scanMode=" + scanMode
-               + ", isbnText=`" + isbnText + '`'
-               + ", isbn=" + isbn
+               + ", productCodeStr=`" + productCodeStr + '`'
+               + ", productCode=" + productCode
                + ", strictIsbn=" + strictIsbn
                + ", sidSearchText=`" + sids + '`'
                + ", fetchCovers=" + Arrays.toString(fetchCovers)

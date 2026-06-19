@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.util.logger.Logger;
@@ -202,12 +203,12 @@ class BookSearch {
         final Set<EngineId> completedOrder = determineCompletedOrder();
 
         // Now convert the 'completed' order to the 'best' order
-        if (criteria.hasValidIsbn()) {
+        if (criteria.hasValidProductCode()) {
             // When searching by ISBN, determine the best order use the site-data found.
             sitesInOrder = determineBestOrder(completedOrder);
             // Add the ISBN we initially searched for.
             // This avoids overwriting with a potentially different isbn from the sites
-            book.setIsbn(criteria.getRawIsbnText());
+            book.setIsbn(criteria.getRawProductCode());
         } else {
             // We did not have an ISBN as a search criteria; use the default order
             sitesInOrder = new ArrayList<>(completedOrder);
@@ -233,7 +234,7 @@ class BookSearch {
         // If we did not get an ISBN, use the one we originally searched for.
         final String isbnStr = book.getString(DBKey.ISBN, null);
         if (isbnStr == null || isbnStr.isEmpty()) {
-            book.setIsbn(criteria.getRawIsbnText());
+            book.setIsbn(criteria.getRawProductCode());
         }
 
         // If we did not get a title, use the one we originally searched for.
@@ -283,7 +284,7 @@ class BookSearch {
         final Collection<EngineId> sitesWithoutIsbn = new ArrayList<>();
 
         final boolean strictIsbn = criteria.isStrictIsbn();
-        final ISBN isbn = criteria.getIsbn();
+        final ProductCode productCode = criteria.getProductCode();
 
         activeEngines.forEach(engineId -> {
             // no synchronisation needed, at this point all other threads have finished.
@@ -301,7 +302,7 @@ class BookSearch {
                         // We did a general search with an ISBN; check if it matches
                         final String isbnFoundStr = result.getIsbn();
                         if (!isbnFoundStr.isEmpty()
-                            && isbn != null && isbn.equals(ISBN.parse(isbnFoundStr, strictIsbn))) {
+                            && productCode != null && productCode.equals(ISBN.parse(isbnFoundStr, strictIsbn))) {
                             sitesInOrder.add(engineId);
                         } else {
                             // The ISBN found does not match the ISBN we searched for;
@@ -311,7 +312,7 @@ class BookSearch {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                                 LoggerFactory.getLogger()
                                              .d(TAG, "accumulateResults",
-                                                "isbn=" + isbn,
+                                                "isbn=" + productCode,
                                                 "isbnFound=" + isbnFoundStr);
                             }
                         }

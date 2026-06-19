@@ -852,7 +852,7 @@ public class SearchBookByIsbnFragment
     @Override
     protected int startSearch(@NonNull final ISBN code) {
         final BookSearchCriteria criteria = new BookSearchCriteria();
-        criteria.setIsbnFromScan(code, vm.getScannerMode());
+        criteria.setProductCodeFromScan(code, vm.getScannerMode());
 
         return startSearch(criteria);
     }

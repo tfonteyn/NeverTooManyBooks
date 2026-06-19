@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -222,18 +223,18 @@ public class BibliotecePlSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
-        final String url = getHostUrl() + SEARCH + SEARCH_PREFIX_ISBN_OR_ISSN + validIsbn;
+        final String url = getHostUrl() + SEARCH + SEARCH_PREFIX_ISBN_OR_ISSN + codeStr;
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
         // force the isbn here as the result (single book) can contain multiple isbn
-        book.setIsbn(validIsbn);
+        book.setIsbn(codeStr);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);
@@ -266,9 +267,9 @@ public class BibliotecePlSearchEngine
             words.add(SEARCH_PREFIX_PUBLISHER).add(tmp);
         }
 
-        final ISBN isbn = criteria.getIsbn();
-        if (isbn != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final ProductCode productCode = criteria.getProductCode();
+        if (productCode != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
             if (!code.isEmpty()) {
                 words.add(SEARCH_PREFIX_ISBN_OR_ISSN).add(code);
             }

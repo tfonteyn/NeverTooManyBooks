@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -242,15 +243,15 @@ public class BolSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final String hostUrl = getHostUrl();
         final String country = getCountry();
-        final String url = hostUrl + String.format(BY_ISBN, country, validIsbn);
+        final String url = hostUrl + String.format(BY_ISBN, country, codeStr);
         final Document document = loadDocument(context, url, Map.of(
                 HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
 
@@ -278,9 +279,9 @@ public class BolSearchEngine
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
-        final ISBN isbn = criteria.getIsbn();
-        if (isbn != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final ProductCode productCode = criteria.getProductCode();
+        if (productCode != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
             if (!code.isEmpty()) {
                 words.add(code);
             }

@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -438,15 +439,15 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final Book book = new Book();
 
-        final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, validIsbn);
+        final List<AltEditionIsfdb> editions = fetchEditionsByIsbn(context, codeStr);
         if (!editions.isEmpty()) {
             fetchByEdition(context, editions.get(0), fetchCovers, book);
         }
@@ -476,9 +477,9 @@ public class IsfdbSearchEngine
 
         //noinspection OverlyBroadCatchBlock
         try {
-            final ISBN isbn = criteria.getIsbn();
-            if (isbn != null) {
-                final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+            final ProductCode productCode = criteria.getProductCode();
+            if (productCode != null) {
+                final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
                 if (!code.isEmpty()) {
                     index++;
                     url.add(String.format(USE, index, "pub_isbn",
@@ -544,6 +545,7 @@ public class IsfdbSearchEngine
         return list;
     }
 
+    @SuppressWarnings("ChainOfInstanceofChecks")
     @NonNull
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,

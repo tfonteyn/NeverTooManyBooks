@@ -26,8 +26,8 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 
 public final class SearchEngineUtils {
 
@@ -179,21 +179,21 @@ public final class SearchEngineUtils {
     }
 
     /**
-     * Get the ISBN criteria as a formatted string.
+     * Get the {@link ProductCode} criteria as a formatted string.
      *
-     * @param engineId for the required format
-     * @param isbn     to format
+     * @param engineId    for the required format
+     * @param productCode to format
      *
-     * @return formatted ISBN text
+     * @return formatted product code text
      */
     @NonNull
     public static String formatIsbn(@NonNull final EngineId engineId,
-                                    @NonNull final ISBN isbn) {
+                                    @NonNull final ProductCode productCode) {
         //noinspection DataFlowIssue
-        if (engineId.getConfig().prefersIsbn10() && isbn.isIsbn10Compat()) {
-            return isbn.asText(ProductCodeType.Isbn10);
+        if (engineId.getConfig().prefersIsbn10() && productCode.isIsbn10Compat()) {
+            return productCode.asText(ProductCodeType.Isbn10);
         } else {
-            return isbn.asText();
+            return productCode.asText();
         }
     }
 }

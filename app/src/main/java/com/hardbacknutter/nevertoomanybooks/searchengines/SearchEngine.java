@@ -39,8 +39,8 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -264,7 +264,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book searchByIsbn(@NonNull Context context,
-                          @NonNull ISBN validCode,
+                          @NonNull ProductCode validCode,
                           @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -280,7 +280,7 @@ public interface SearchEngine
      * if the engine's implementation of {@link ByIsbn} also
      * supports searching for non-valid codes!
      * <p>
-     * Otherwise {@link #searchByBarcode(Context, ISBN, boolean[])} <strong>MUST</strong>
+     * Otherwise {@link #searchByBarcode(Context, ProductCode, boolean[])} <strong>MUST</strong>
      * be properly implemented.
      *
      * @see SearchBy#Barcode
@@ -293,12 +293,12 @@ public interface SearchEngine
          * Called by the {@link SearchCoordinator#search}.
          * <p>
          * The default implementation redirects to
-         * {@link ByIsbn#searchByIsbn(Context, ISBN, boolean[])}
+         * {@link ByIsbn#searchByIsbn(Context, ProductCode, boolean[])}
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
          *
          * @param context     Current context
-         * @param code        to search for
+         * @param productCode to search for
          * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
          *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
@@ -312,12 +312,12 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         default Book searchByBarcode(@NonNull final Context context,
-                                     @NonNull final ISBN code,
+                                     @NonNull final ProductCode productCode,
                                      @NonNull final boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
                        CredentialsException {
-            return searchByIsbn(context, code, fetchCovers);
+            return searchByIsbn(context, productCode, fetchCovers);
         }
     }
 

@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -308,11 +309,11 @@ public class LastDodoSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final Book book = new Book();
 
@@ -344,9 +345,9 @@ public class LastDodoSearchEngine
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
-        final ISBN isbn = criteria.getIsbn();
-        if (isbn != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final ProductCode productCode = criteria.getProductCode();
+        if (productCode != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
             if (!code.isEmpty()) {
                 // Reformat 10 or 13 digit codes to the site-required format,
                 // whether they are valid ISBN or not.

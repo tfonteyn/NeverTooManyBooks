@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -287,23 +288,23 @@ public class BedethequeSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final Book book = new Book();
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
         final String url = getHostUrl() + String.format(
-                BY_ISBN, ensureCookie(context), validIsbn);
+                BY_ISBN, ensureCookie(context), codeStr);
 
         final Document document = loadDocument(context, url, extraRequestProperties);
 
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book, isbn);
+            parseMultiResult(context, document, fetchCovers, book, productCode);
         }
         return book;
     }
@@ -332,7 +333,7 @@ public class BedethequeSearchEngine
      * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book         to update
-     * @param searchedIsbn ISBN from user-search
+     * @param searchedCode from user-search
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -343,7 +344,7 @@ public class BedethequeSearchEngine
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book,
-                                  @Nullable final ISBN searchedIsbn)
+                                  @Nullable final ProductCode searchedCode)
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
@@ -355,7 +356,7 @@ public class BedethequeSearchEngine
                 if (!url.isBlank()) {
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, searchedIsbn, book);
+                        parse(context, redirected, fetchCovers, searchedCode, book);
                     }
                 }
             }
@@ -369,7 +370,7 @@ public class BedethequeSearchEngine
      * @param document     to parse
      * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
-     * @param searchedIsbn the ISBN the user searched for;
+     * @param searchedCode which the user searched for;
      *                     Will be {@code null} if the search was done by SID
      * @param book         to update
      *
@@ -384,7 +385,7 @@ public class BedethequeSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @Nullable final ISBN searchedIsbn,
+                      @Nullable final ProductCode searchedCode,
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
@@ -405,13 +406,13 @@ public class BedethequeSearchEngine
 
         boolean isMainEdition = true;
 
-        if (searchedIsbn == null) {
+        if (searchedCode == null) {
             // search by SID, always/only the main edition
             parseLabels(context, book, mainSection);
         } else {
             // search by ISBN
             // check if the main edition is an exact match
-            if (matches(mainSection, searchedIsbn)) {
+            if (matches(mainSection, searchedCode)) {
                 parseLabels(context, book, mainSection);
             } else {
                 // check the other editions
@@ -420,7 +421,7 @@ public class BedethequeSearchEngine
                     final Element albumMain = edition.selectFirst("div.album-main");
                     if (albumMain != null) {
                         final Element infos = albumMain.selectFirst("div.album-main > ul.infos");
-                        if (infos != null && matches(infos, searchedIsbn)) {
+                        if (infos != null && matches(infos, searchedCode)) {
                             parseEditionDetails(context, mainSection, albumMain, infos, book);
                             parseEditionCovers(context, edition, fetchCovers, book);
                             // quit the for-loop
@@ -614,13 +615,13 @@ public class BedethequeSearchEngine
     }
 
     private boolean matches(@NonNull final Element section,
-                            @NonNull final ISBN searchedIsbn) {
+                            @NonNull final ProductCode searchedCode) {
         final Element isbnLabel = section.selectFirst("li > label:contains(EAN/ISBN :)");
         if (isbnLabel != null) {
             final String isbnStr = parseLabelText(isbnLabel);
             if (isbnStr != null) {
                 final ISBN isbnFound = ISBN.parseISBN(isbnStr);
-                return isbnFound.equals(searchedIsbn);
+                return isbnFound.equals(searchedCode);
             }
         }
         return false;

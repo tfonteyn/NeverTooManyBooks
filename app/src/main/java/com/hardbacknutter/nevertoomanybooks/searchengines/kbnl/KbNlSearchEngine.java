@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -97,7 +98,7 @@ public class KbNlSearchEngine
 
     /**
      * Search by code.
-     *
+     * <p>
      * param 1: db version (part of the site session vars)
      * param 2: the set number (part of the site session vars)
      * param 3: the ISBN.
@@ -223,15 +224,16 @@ public class KbNlSearchEngine
         }
     }
 
+    @Override
     @NonNull
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
-        final String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
+        final String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, codeStr);
         final Book book = getBook(context, url);
 
         if (isCancelled()) {
@@ -239,7 +241,7 @@ public class KbNlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final AltEdition edition = new AltEditionIsbn(validIsbn);
+            final AltEdition edition = new AltEditionIsbn(codeStr);
             searchBestCoverByEdition(context, edition, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }

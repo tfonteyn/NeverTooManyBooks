@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ASIN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -452,13 +453,15 @@ public class AmazonSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Try to convert an ISBN13 to ISBN10 (i.e. the ASIN)
         // If conversion is not possible, use the original format
-        final String asin = isbn.isIsbn10Compat() ? isbn.asText(ProductCodeType.Isbn10) : isbn.asText();
+        final String asin = productCode.isIsbn10Compat()
+                            ? productCode.asText(ProductCodeType.Isbn10)
+                            : productCode.asText();
 
         final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin);
         return genericSearch(context, url, fetchCovers);
@@ -475,7 +478,7 @@ public class AmazonSearchEngine
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final ASIN asin = new ASIN(externalId);
+        final ProductCode asin = new ASIN(externalId);
         if (asin.isValid()) {
             final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin.asText());
             return genericSearch(context, url, fetchCovers);

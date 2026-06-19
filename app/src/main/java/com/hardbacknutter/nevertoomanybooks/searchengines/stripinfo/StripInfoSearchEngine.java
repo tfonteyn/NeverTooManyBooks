@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -333,25 +334,25 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final Book book = new Book();
 
-        final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
+        final String url = getHostUrl() + String.format(BY_ISBN, codeStr);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parseRootDocument(context, isbn, document, fetchCovers, book);
+            parseRootDocument(context, productCode, document, fetchCovers, book);
         }
         return book;
     }
 
     @VisibleForTesting
     public void parseRootDocument(@NonNull final Context context,
-                                  @NonNull final ISBN searchedIsbn,
+                                  @NonNull final ProductCode searchedCode,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
@@ -364,7 +365,7 @@ public class StripInfoSearchEngine
 
         // Finally, replace potential invalid ISBN numbers.
         // See method docs for details
-        processBarcode(searchedIsbn, book);
+        processBarcode(searchedCode, book);
     }
 
     private boolean isMultiResult(@NonNull final Document document) {
@@ -689,11 +690,11 @@ public class StripInfoSearchEngine
      * as present of the physical book,
      * while the barcode field will (usually) contain the correct ISBN.
      *
-     * @param searchedIsbn the ISBN which we searched for
+     * @param searchedCode the ProductCode which we searched for
      * @param book         to update
      */
     @VisibleForTesting
-    public void processBarcode(@NonNull final ISBN searchedIsbn,
+    public void processBarcode(@NonNull final ProductCode searchedCode,
                                @NonNull final Book book) {
 
         final String barcode = book.getString(SiteField.BARCODE, null);
@@ -703,7 +704,7 @@ public class StripInfoSearchEngine
             if (isbnFromBarcode.isIsbn()
                 // or, if it was a different code, or even an invalid code,
                 // but *IS* the one we were searching for
-                || isbnFromBarcode.equals(searchedIsbn)) {
+                || isbnFromBarcode.equals(searchedCode)) {
 
                 // then the barcode always replaces the ISBN from the site!
                 book.setIsbn(isbnFromBarcode.asText());

@@ -39,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
@@ -54,7 +54,7 @@ final class SearchTask
 
     private static final AtomicInteger TASK_ID = new AtomicInteger();
 
-    private static final String ERROR_ISBN_STR_NOT_SET = "isbnStr not set";
+    private static final String ERROR_PRODUCT_CODE_NOT_SET = "ProductCode not set";
 
     private final int searchId;
     @NonNull
@@ -130,21 +130,21 @@ final class SearchTask
             }
         }
 
-        final ISBN code = criteria.getIsbn();
+        final ProductCode productCode = criteria.getProductCode();
 
         // Search by a VALID code.
-        if (engineId.supports(SearchEngine.SearchBy.Isbn) && code != null) {
+        if (engineId.supports(SearchEngine.SearchBy.Isbn) && productCode != null) {
             // Either strict ISBN, or any other valid code
             // depending on the user criteria 'strict' flag.
-            if (criteria.isStrictIsbn() ? code.isIsbn()
-                                        : code.getType() != ProductCodeType.Invalid) {
+            if (criteria.isStrictIsbn() ? productCode.isIsbn()
+                                        : productCode.getType() != ProductCodeType.Invalid) {
                 task.setSearchBy(SearchEngine.SearchBy.Isbn);
                 return task;
             }
         }
 
         // Search by any code, including invalid ones
-        if (engineId.supports(SearchEngine.SearchBy.Barcode) && code != null) {
+        if (engineId.supports(SearchEngine.SearchBy.Barcode) && productCode != null) {
             task.setSearchBy(SearchEngine.SearchBy.Barcode);
             return task;
         }
@@ -237,21 +237,21 @@ final class SearchTask
                 break;
             }
             case Isbn: {
-                final ISBN isbn = criteria.getIsbn();
-                if (isbn == null) {
-                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
+                final ProductCode productCode = criteria.getProductCode();
+                if (productCode == null) {
+                    throw new IllegalArgumentException(ERROR_PRODUCT_CODE_NOT_SET);
                 }
                 book = ((SearchEngine.ByIsbn) searchEngine)
-                        .searchByIsbn(context, isbn, criteria.getFetchCovers());
+                        .searchByIsbn(context, productCode, criteria.getFetchCovers());
                 break;
             }
             case Barcode: {
-                final ISBN isbn = criteria.getIsbn();
-                if (isbn == null) {
-                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
+                final ProductCode productCode = criteria.getProductCode();
+                if (productCode == null) {
+                    throw new IllegalArgumentException(ERROR_PRODUCT_CODE_NOT_SET);
                 }
                 book = ((SearchEngine.ByBarcode) searchEngine)
-                        .searchByBarcode(context, isbn, criteria.getFetchCovers());
+                        .searchByBarcode(context, productCode, criteria.getFetchCovers());
                 break;
             }
             case Text: {

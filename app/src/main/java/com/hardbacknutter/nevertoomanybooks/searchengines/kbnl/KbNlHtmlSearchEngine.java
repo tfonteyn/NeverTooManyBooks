@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -185,18 +186,18 @@ public class KbNlHtmlSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
-
         ensureCookie();
+
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final Book book = new Book();
 
         final String url = getHostUrl() + String.format(SEARCH_URL,
-                                                        dbVersion, setNr, validIsbn);
+                                                        dbVersion, setNr, codeStr);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final Element titleList = document.selectFirst("div.titlelist");
@@ -212,7 +213,7 @@ public class KbNlHtmlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final AltEdition edition = new AltEditionIsbn(validIsbn);
+            final AltEdition edition = new AltEditionIsbn(codeStr);
             searchBestCoverByEdition(context, edition, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }

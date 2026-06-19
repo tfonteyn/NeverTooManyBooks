@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -167,16 +168,16 @@ public class GoogleBooksSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
         final Book book = new Book();
 
         // %3A  :
-        final String url = getHostUrl() + SEARCH + "isbn%3A" + validIsbn;
+        final String url = getHostUrl() + SEARCH + "isbn%3A" + codeStr;
         fetchBook(context, url, fetchCovers, book);
         return book;
     }
@@ -215,9 +216,9 @@ public class GoogleBooksSearchEngine
             args.add("inpublisher%3A" + encodeSpaces(publisher));
         }
 
-        final ISBN isbn = criteria.getIsbn();
-        if (isbn != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final ProductCode productCode = criteria.getProductCode();
+        if (productCode != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
             if (!code.isEmpty()) {
                 args.add("isbn%3A" + encodeSpaces(code));
             }

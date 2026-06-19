@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -216,13 +217,13 @@ public class BnfSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ISBN isbn,
+                             @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String validIsbn = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
-        final String url = getHostUrl() + String.format(SEARCH, validIsbn);
+        final String url = getHostUrl() + String.format(SEARCH, codeStr);
         return search(context, url, fetchCovers);
     }
 
@@ -235,9 +236,9 @@ public class BnfSearchEngine
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
-        final ISBN isbn = criteria.getIsbn();
-        if (isbn != null) {
-            final String code = SearchEngineUtils.formatIsbn(getEngineId(), isbn);
+        final ProductCode productCode = criteria.getProductCode();
+        if (productCode != null) {
+            final String code = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
             if (!code.isEmpty()) {
                 words.add(code);
             }
