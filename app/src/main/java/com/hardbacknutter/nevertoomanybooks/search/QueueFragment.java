@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookFoundBinding;
@@ -559,7 +560,8 @@ public abstract class QueueFragment<CODE extends ProductCode>
         final String isbnStr = book.getIsbn();
         if (!isbnStr.isEmpty()) {
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
-            if (bookDao.bookExistsByIsbn(isbnStr)) {
+            // all codes accepted, including invalid ones
+            if (bookDao.bookExists(ISBN.parse(isbnStr))) {
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.warning_24px)

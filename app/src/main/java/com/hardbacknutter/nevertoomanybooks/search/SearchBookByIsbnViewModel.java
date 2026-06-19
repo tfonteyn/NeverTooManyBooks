@@ -196,7 +196,7 @@ public class SearchBookByIsbnViewModel
 
     @NonNull
     List<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
-        return bookDao.getBookIdAndTitleByIsbn(code);
+        return bookDao.getBookIdAndTitle(code);
     }
 
     /**

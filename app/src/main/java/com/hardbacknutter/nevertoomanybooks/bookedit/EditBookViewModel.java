@@ -65,8 +65,10 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -121,12 +123,12 @@ public class EditBookViewModel
         implements BookReadStatusViewModel {
 
     /**
-     * ISBN/code Validity level.
+     * {@link ProductCode} Validity level.
      * Type: int
      *
      * @see ProductCodeValidity
      */
-    public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
+    public static final String PK_EDIT_BOOK_PRODUCT_CODE_CHECKS = "edit.book.isbn.checks";
 
     /**
      * The {@link Identifier} keys we allow the user to edit.
@@ -243,7 +245,7 @@ public class EditBookViewModel
     private TocEntryDao tocEntryDao;
 
     /**
-     * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
+     * Get the user preferred validity level check for (by the user) editing product codes.
      *
      * @return Validity level
      */
@@ -251,7 +253,7 @@ public class EditBookViewModel
     ProductCodeValidity getLevel() {
         // -1 default (i.e. invalid) will force the Validity default enum to be returned.
         final int id = ServiceLocator.getInstance().getSharedPreferences()
-                                     .getIntFromString(PK_EDIT_BOOK_ISBN_CHECKS, -1);
+                                     .getIntFromString(PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, -1);
         return ProductCodeValidity.byId(id);
     }
 
@@ -593,7 +595,8 @@ public class EditBookViewModel
         if (book.isNew()) {
             final String isbnStr = book.getIsbn();
             if (!isbnStr.isEmpty()) {
-                return bookDao.bookExistsByIsbn(isbnStr);
+                // all codes accepted, including invalid ones
+                return bookDao.bookExists(ISBN.parse(isbnStr));
             }
         }
 
@@ -800,10 +803,10 @@ public class EditBookViewModel
      * @return List of ISO currency codes
      */
     @NonNull
-    private List<String> getAllListPriceCurrencyCodes() {
+    private List<String> getAllListPriceCurrencies() {
         if (listPriceCurrencies == null) {
             final Set<String> set = new LinkedHashSet<>(
-                    bookDao.getCurrencyCodes(DBKey.PRICE_LISTED));
+                    bookDao.getCurrencies(DBKey.PRICE_LISTED));
             set.addAll(getDefaultCurrencies());
             listPriceCurrencies = new ArrayList<>(set);
         }
@@ -818,10 +821,10 @@ public class EditBookViewModel
      * @return List of ISO currency codes
      */
     @NonNull
-    private List<String> getAllPricePaidCurrencyCodes() {
+    private List<String> getAllPricePaidCurrencies() {
         if (pricePaidCurrencies == null) {
             final Set<String> set = new LinkedHashSet<>(
-                    bookDao.getCurrencyCodes(DBKey.PRICE_PAID));
+                    bookDao.getCurrencies(DBKey.PRICE_PAID));
             set.addAll(getDefaultCurrencies());
             pricePaidCurrencies = new ArrayList<>(set);
         }
@@ -1144,7 +1147,7 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_description)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
+        // Not using a EditIsbn custom View, as we want to be able to enter all product-codes here.
         addField(fragmentId, new EditTextField<>(R.id.isbn, DBKey.ISBN)
                            .setTextInputLayoutId(R.id.lbl_isbn));
         // don't do this for now. There is a scan icon as end-icon.
@@ -1234,7 +1237,7 @@ public class EditBookViewModel
 
         addField(fragmentId, new AutoCompleteTextField(R.id.price_listed_currency,
                                                        DBKey.PRICE_LISTED_CURRENCY,
-                                                       c -> getAllListPriceCurrencyCodes())
+                                                       c -> getAllListPriceCurrencies())
                            .setTextInputLayoutId(R.id.lbl_price_listed_currency)
                            // Copy to price_paid_currency field if applicable
                            .addOnFocusChangeListener((v, hasFocus) -> {
@@ -1291,7 +1294,7 @@ public class EditBookViewModel
 
         addField(fragmentId, new AutoCompleteTextField(R.id.price_paid_currency,
                                                        DBKey.PRICE_PAID_CURRENCY,
-                                                       c -> getAllPricePaidCurrencyCodes())
+                                                       c -> getAllPricePaidCurrencies())
                            .setTextInputLayoutId(R.id.lbl_price_paid_currency)
                            .setUsedKey(DBKey.PRICE_PAID));
 

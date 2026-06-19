@@ -58,8 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -842,21 +842,21 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchByIsbn(@NonNull final List<ISBN> isbnList) {
-        if (isbnList.isEmpty()) {
-            throw new IllegalArgumentException("isbnList.isEmpty()");
+    public TypedCursor fetch(@NonNull final List<ProductCode> list) {
+        if (list.isEmpty()) {
+            throw new IllegalArgumentException("list.isEmpty()");
         }
 
-        if (isbnList.size() == 1) {
+        if (list.size() == 1) {
             // optimise for single book
             return getBookCursor(TBL_BOOKS.dot(DBKey.ISBN) + "=?",
-                                 new String[]{isbnList.get(0).asText()}, null);
+                                 new String[]{list.get(0).asText()}, null);
         } else {
             return getBookCursor(TBL_BOOKS.dot(DBKey.ISBN)
                                  + " IN ("
-                                 + isbnList.stream()
-                                           .map(s -> '\'' + s.asText() + '\'')
-                                           .collect(Collectors.joining(","))
+                                 + list.stream()
+                                       .map(s -> '\'' + s.asText() + '\'')
+                                       .collect(Collectors.joining(","))
                                  + ')',
                                  null,
                                  TBL_BOOKS.dot(DBKey.PK_ID));
@@ -895,36 +895,35 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public List<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull final ISBN isbn) {
-        final List<Pair<Long, String>> list = new ArrayList<>();
-        // If the string is ISBN-10 compatible, we search on both formats;
-        // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range.
-        if (isbn.isIsbn10Compat()) {
-            try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ISBN_10_OR_13,
-                                             new String[]{isbn.asText(ProductCodeType.Isbn10),
-                                                     isbn.asText(ProductCodeType.Isbn13)})) {
+    public List<Pair<Long, String>> getBookIdAndTitle(@NonNull final ProductCode productCode) {
+        final List<Pair<Long, String>> result = new ArrayList<>();
+
+        // If the code is ISBN-10 compatible, search on both ISBN-10 and ISBN-13
+        if (productCode.isIsbn10Compat()) {
+            try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ISBN_10_OR_13, new String[]{
+                    productCode.asText(ProductCodeType.Isbn10),
+                    productCode.asText(ProductCodeType.Isbn13)})) {
                 while (cursor.moveToNext()) {
-                    list.add(new Pair<>(cursor.getLong(0),
+                    result.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
                 }
             }
         } else {
-            // otherwise just search on the string as-is; regardless of validity
-            // (this would actually include valid ISBN-13 in the 979 range).
-            try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ISBN, new String[]{isbn.asText()})) {
+            // Otherwise just search on the code as-is
+            try (Cursor cursor = db.rawQuery(Sql.FIND_BY_PRODUCT_CODE, new String[]{
+                    productCode.asText()})) {
                 while (cursor.moveToNext()) {
-                    list.add(new Pair<>(cursor.getLong(0),
+                    result.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
                 }
             }
         }
 
-        return list;
+        return result;
     }
 
     @Override
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean bookExistsById(@IntRange(from = 1) final long id) {
+    public boolean bookExists(@IntRange(from = 1) final long id) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ID_EXISTS)) {
             stmt.bindLong(1, id);
             return stmt.simpleQueryForLongOrZero() == 1;
@@ -932,21 +931,23 @@ public class BookDaoImpl
     }
 
     @Override
-    public boolean bookExistsByIsbn(@NonNull final String code) {
-        final ISBN isbn = ISBN.parse(code);
-        // If the string is ISBN-10 compatible, we search on both formats;
-        // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range.
-        if (isbn.isIsbn10Compat()) {
+    public boolean bookExists(@NonNull final ProductCode productCode) {
+        // Sanity check, we don't want false positives
+        if (productCode.asText().isBlank()) {
+            return false;
+        }
+
+        // If the code is ISBN-10 compatible, search on both ISBN-10 and ISBN-13
+        if (productCode.isIsbn10Compat()) {
             try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ISBN_10_OR_13_EXISTS)) {
-                stmt.bindString(1, isbn.asText(ProductCodeType.Isbn10));
-                stmt.bindString(2, isbn.asText(ProductCodeType.Isbn13));
+                stmt.bindString(1, productCode.asText(ProductCodeType.Isbn10));
+                stmt.bindString(2, productCode.asText(ProductCodeType.Isbn13));
                 return stmt.simpleQueryForLongOrZero() == 1;
             }
         } else {
-            // otherwise just search on the string as-is; regardless of validity
-            // (this will include valid ISBN-13 in the 979 range).
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_ISBN_EXISTS)) {
-                stmt.bindString(1, isbn.asText());
+            // Otherwise just search on the code as-is
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.BOOK_PRODUCT_CODE_EXISTS)) {
+                stmt.bindString(1, productCode.asText());
                 return stmt.simpleQueryForLongOrZero() == 1;
             }
         }
@@ -954,7 +955,7 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public List<String> getCurrencyCodes(@NonNull final String key) {
+    public List<String> getCurrencies(@NonNull final String key) {
         if (!DBKey.getMoneyKeys().contains(key)) {
             throw new IllegalArgumentException(key);
         }
@@ -1052,16 +1053,21 @@ public class BookDaoImpl
         static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_BOOKS.getName();
 
-        /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
+        /**
+         * Find the {@link Book} id and title.
+         * Search by an ISBN-10 compatible {@link ProductCode}.
+         * Uses both ISBN-10 and ISBN-13 formats.
+         */
         static final String FIND_BY_ISBN_10_OR_13 =
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + DBKey.ISBN + " LIKE ? OR " + DBKey.ISBN + " LIKE ?";
 
         /**
-         * Find the {@link Book} id+title based on a search for the ISBN.
-         * The isbn need not be valid and can in fact be any code whatsoever.
+         * Find the {@link Book} id AND title.
+         * Search by the {@link ProductCode}.
+         * The {@link ProductCode} need not be valid.
          */
-        static final String FIND_BY_ISBN =
+        static final String FIND_BY_PRODUCT_CODE =
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + DBKey.ISBN + " LIKE ?";
 
@@ -1081,8 +1087,9 @@ public class BookDaoImpl
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /**
-         * Check if a {@link Book} exists with a specified {@link DBKey#PK_ID}.
-         * The result will be {@code 0} or {@code 1}.
+         * Check if a {@link Book} exists.
+         * Search by the specified {@link DBKey#PK_ID}.
+         * The rowcount/result will be {@code 0} or {@code 1}.
          */
         static final String BOOK_ID_EXISTS =
                 SELECT_EXISTS_ + '('
@@ -1090,19 +1097,22 @@ public class BookDaoImpl
                 + ')';
 
         /**
-         * Check if a {@link Book} exists with a single specified {@link DBKey#ISBN}.
-         * The result will be {@code 0} or {@code 1}.
-         */
-        static final String BOOK_ISBN_EXISTS =
-                SELECT_EXISTS_ + '(' + FIND_BY_ISBN + ')';
-
-        /**
-         * Check if a {@link Book} exists with either a {@link DBKey#ISBN}
-         * ISBN-10, or an ISBN-13 in the 978 range.
-         * The result will be {@code 0} or {@code 1}.
+         * Check if a {@link Book} exists.
+         * Search by an ISBN-10 compatible {@link ProductCode}.
+         * Uses both ISBN-10 and ISBN-13 formats.
+         * The rowcount/result will be {@code 0} or {@code 1}.
          */
         static final String BOOK_ISBN_10_OR_13_EXISTS =
                 SELECT_EXISTS_ + '(' + FIND_BY_ISBN_10_OR_13 + ')';
+
+        /**
+         * Check if a {@link Book} exists.
+         * Search by the {@link ProductCode}.
+         * The {@link ProductCode} need not be valid.
+         * The rowcount/result will be {@code 0} or {@code 1}.
+         */
+        static final String BOOK_PRODUCT_CODE_EXISTS =
+                SELECT_EXISTS_ + '(' + FIND_BY_PRODUCT_CODE + ')';
 
         /** Book UUID only, for accessing all cover image files. */
         static final String SELECT_ALL_UUID =

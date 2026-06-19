@@ -129,10 +129,10 @@ class CsvArchiveReaderTest
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
 
-        assertTrue(bookDao.bookExistsById(666000001));
-        assertTrue(bookDao.bookExistsById(666000002));
-        assertTrue(bookDao.bookExistsById(666000003));
-        assertTrue(bookDao.bookExistsById(666000004));
+        assertTrue(bookDao.bookExists(666000001));
+        assertTrue(bookDao.bookExists(666000002));
+        assertTrue(bookDao.bookExists(666000003));
+        assertTrue(bookDao.bookExists(666000004));
         assertEquals(booksPresent + 4, bookDao.count());
 
         checkBook1();
@@ -141,7 +141,7 @@ class CsvArchiveReaderTest
 
         // Delete 1 book; then re-import using "Overwrite"
         bookDao.delete(666000002);
-        assertFalse(bookDao.bookExistsById(666000002));
+        assertFalse(bookDao.bookExists(666000002));
 
         file = TestUtils.createFile(
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
@@ -163,9 +163,9 @@ class CsvArchiveReaderTest
         bookDao.delete(666000001);
         bookDao.delete(666000003);
         bookDao.delete(666000004);
-        assertFalse(bookDao.bookExistsById(666000001));
-        assertFalse(bookDao.bookExistsById(666000003));
-        assertFalse(bookDao.bookExistsById(666000004));
+        assertFalse(bookDao.bookExists(666000001));
+        assertFalse(bookDao.bookExists(666000003));
+        assertFalse(bookDao.bookExists(666000004));
 
         try (Cursor cursor = bookDao.fetchById(666000002)) {
             assertTrue(cursor.moveToFirst());

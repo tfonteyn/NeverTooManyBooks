@@ -118,7 +118,7 @@ public abstract class BaseRecordReader
                 // If the book contains an ID, and it already exists, REMOVE that ID.
                 // Otherwise, we'll be reuse it.
                 final long importedId = book.getId();
-                if (importedId <= 0 || bookDao.bookExistsById(importedId)) {
+                if (importedId <= 0 || bookDao.bookExists(importedId)) {
                     book.remove(DBKey.PK_ID);
                 }
                 insertBook(context, book);
@@ -127,7 +127,7 @@ public abstract class BaseRecordReader
             // We do NOT have a UUID.
             // Check if the book exists in our database by searching on ID.
             final long importedId = book.getId();
-            if (importedId > 0 && bookDao.bookExistsById(importedId)) {
+            if (importedId > 0 && bookDao.bookExists(importedId)) {
                 // The book ID already exists in our database.
                 // We will update/skip using the DataReader.Updates#updateOptions.
 

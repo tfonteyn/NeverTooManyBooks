@@ -121,7 +121,7 @@ public abstract class BaseDBTest {
                       .putString(ExtMenuButton.PK_MODE, "0")
                       .putString(FastScrollerMode.PK_OVERLAY, "3")
                       .putString(RebuildBooklist.PK_BOOKLIST_REBUILD_STATE, "0")
-                      .putString(EditBookViewModel.PK_EDIT_BOOK_ISBN_CHECKS, "1")
+                      .putString(EditBookViewModel.PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, "1")
                       .putString("search.siteOrder.data",
                                  "amazon,googlebooks,isfdb,bookfinder,openlibrary,stripinfo"
                                  + ",lastdodo,stripweb,bedetheque,kbnl,bol,dnb,douban")

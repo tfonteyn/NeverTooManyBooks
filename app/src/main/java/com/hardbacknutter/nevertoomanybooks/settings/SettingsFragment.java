@@ -257,7 +257,7 @@ public class SettingsFragment
                     // default 1: capitalize all words.
                     p.setSelectedIndex(1);
                 });
-        factory.singleChoice(EditBookViewModel.PK_EDIT_BOOK_ISBN_CHECKS,
+        factory.singleChoice(EditBookViewModel.PK_EDIT_BOOK_PRODUCT_CODE_CHECKS,
                              R.string.pt_edit_book_isbn_checks,
                              R.array.pe_edit_book_isbn_checks,
                              R.array.pv_edit_book_isbn_checks, null, p -> {

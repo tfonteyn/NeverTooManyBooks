@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLite;
@@ -122,7 +122,7 @@ public interface BookDao {
      * Non-present fields will not be touched. i.e. this is a delta operation.
      * <p>
      * TRIGGERS:
-     * - If the ISBN of a {@link Book} is changed, reset external ID's and sync dates.
+     * - If the Code of a {@link Book} is changed, reset external ID's and sync dates.
      *
      * @param context Current context
      * @param book    A collection with the columns to be set.
@@ -283,17 +283,16 @@ public interface BookDao {
     TypedCursor fetchForAutoUpdate(@NonNull List<Long> idList);
 
     /**
-     * Return a Cursor with all Books for the given list of ISBNs.
+     * Return a Cursor with all Books for the given list of Codes.
      *
-     * @param isbnList list of ISBNs; should not be empty!
+     * @param list list of Code; should not be empty!
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      *
      * @throws IllegalArgumentException if the list is empty
      */
     @NonNull
-    TypedCursor fetchByIsbn(@NonNull List<ISBN> isbnList);
-
+    TypedCursor fetch(@NonNull List<ProductCode> list);
 
     /**
      * Return a Cursor with all Books where the {@link Book} id > the given id.
@@ -306,7 +305,6 @@ public interface BookDao {
      */
     @NonNull
     TypedCursor fetchForAutoUpdateFromIdOnwards(@IntRange(from = 1) long id);
-
 
     /**
      * Can be called before {@link #fetchBooksForExport(LocalDateTime)} to count
@@ -373,33 +371,32 @@ public interface BookDao {
     long getBookIdByUuid(@NonNull String uuid);
 
     /**
-     * Get a list of book id/title's (most often just the one) for the given ISBN.
+     * Get a list of book id/title's (most often just the one) for the given Code.
      *
-     * @param isbn to search for; can be generic/non-valid
+     * @param productCode to search for
      *
      * @return list with book id/title
      */
     @NonNull
-    List<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull ISBN isbn);
+    List<Pair<Long, String>> getBookIdAndTitle(@NonNull ProductCode productCode);
 
     /**
      * Check that a book with the passed id exists.
      *
      * @param id of the book
      *
-     * @return {@code true} if exists
+     * @return {@code true} if it exists
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean bookExistsById(@IntRange(from = 1) long id);
+    boolean bookExists(@IntRange(from = 1) long id);
 
     /**
-     * Check that a book with the passed isbn exists.
+     * Check that a book with the passed code exists.
      *
-     * @param isbnStr of the book
+     * @param productCode of the book
      *
-     * @return {@code true} if exists
+     * @return {@code true} if it exists
      */
-    boolean bookExistsByIsbn(@NonNull String isbnStr);
+    boolean bookExists(@NonNull ProductCode productCode);
 
     /**
      * Get a unique list of all currencies for the specified domain (from the Books table).
@@ -409,7 +406,7 @@ public interface BookDao {
      * @return The list; values are always in uppercase.
      */
     @NonNull
-    List<String> getCurrencyCodes(@NonNull String key);
+    List<String> getCurrencies(@NonNull String key);
 
 
     /**
