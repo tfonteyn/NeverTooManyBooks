@@ -29,7 +29,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -622,49 +621,13 @@ public final class ISBN
         return false;
     }
 
-    /**
-     * Describes how we check for valid codes. This is a user-setting.
-     */
-    public enum Validity {
-        /** No checks are done, the code is used as-is. */
-        NoChecks(0),
-        /** Any type as long as it's NOT {@link CodeType#Invalid}. */
-        ValidCodes(1),
-        /**
-         * Must be either {@link CodeType#Isbn10} or {@link CodeType#Isbn13}
-         * (or auto-converted) to be considered valid.
-         */
-        Isbn(2);
-
-        private final int id;
-
-        Validity(final int id) {
-            this.id = id;
-        }
-
-        /**
-         * Lookup by id.
-         *
-         * @param id to lookup
-         *
-         * @return Validity level
-         */
-        @NonNull
-        public static Validity byId(final int id) {
-            return Arrays.stream(values())
-                         .filter(v -> v.id == id)
-                         .findFirst()
-                         .orElse(ValidCodes);
-        }
-    }
-
     public static class CleanupTextWatcher
             implements TextWatcher {
 
         @NonNull
         private final TextInputEditText editText;
         @NonNull
-        private Validity validity;
+        private CodeValidity validity;
 
         /**
          * Constructor.
@@ -673,7 +636,7 @@ public final class ISBN
          * @param validity validity check-level for codes
          */
         public CleanupTextWatcher(@NonNull final TextInputEditText editText,
-                                  @NonNull final Validity validity) {
+                                  @NonNull final CodeValidity validity) {
             this.editText = editText;
             this.validity = validity;
         }
@@ -683,7 +646,7 @@ public final class ISBN
          *
          * @param validity validity check-level for codes
          */
-        public void setValidityLevel(@NonNull final Validity validity) {
+        public void setValidityLevel(@NonNull final CodeValidity validity) {
             this.validity = validity;
             clean(editText.getEditableText());
         }
@@ -708,7 +671,7 @@ public final class ISBN
         }
 
         private void clean(@Nullable final Editable editable) {
-            if (validity == Validity.NoChecks
+            if (validity == CodeValidity.NoChecks
                 || editable == null || editable.length() == 0) {
                 return;
             }
@@ -718,7 +681,7 @@ public final class ISBN
                 return;
             }
 
-            if (validity == Validity.ValidCodes) {
+            if (validity == CodeValidity.ValidCodes) {
                 // Text representation of ISBN-13/10 string is often
                 // split in groups of digits with '-' in between.
                 // This is, as observed, usually 10 + 3 '-' (or 10 + 2 '-' + 'x'),
@@ -767,7 +730,7 @@ public final class ISBN
         @Nullable
         private String altIsbn;
         @NonNull
-        private Validity isbnValidityCheck;
+        private CodeValidity isbnValidityCheck;
 
         /**
          * Constructor.
@@ -778,7 +741,7 @@ public final class ISBN
          */
         public ValidationTextWatcher(@NonNull final TextInputLayout layoutView,
                                      @NonNull final TextInputEditText editText,
-                                     @NonNull final Validity isbnValidityCheck) {
+                                     @NonNull final CodeValidity isbnValidityCheck) {
             layout = layoutView;
             layout.setStartIconVisible(false);
 
@@ -791,7 +754,7 @@ public final class ISBN
          *
          * @param isbnValidityCheck validity check-level for ISBN codes
          */
-        public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
+        public void setValidityLevel(@NonNull final CodeValidity isbnValidityCheck) {
             this.isbnValidityCheck = isbnValidityCheck;
             validate(editText.getEditableText());
         }
@@ -848,7 +811,7 @@ public final class ISBN
 
             // Create it without forcing ISBN, we'll check the type in detail.
             final ISBN code = parse(str);
-            if (isbnValidityCheck == Validity.Isbn && code.getCodeType() == CodeType.Invalid) {
+            if (isbnValidityCheck == CodeValidity.Isbn && code.getCodeType() == CodeType.Invalid) {
                 // We're in strict mode, reject any invalid codes
                 invalidate();
                 return;
@@ -879,7 +842,7 @@ public final class ISBN
                 return;
             }
 
-            if (isbnValidityCheck == Validity.Isbn) {
+            if (isbnValidityCheck == CodeValidity.Isbn) {
                 // We're in strict mode, reject all other code (even when valid)
                 invalidate();
                 return;
