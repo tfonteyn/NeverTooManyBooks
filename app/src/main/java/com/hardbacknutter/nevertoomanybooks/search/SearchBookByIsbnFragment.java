@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +45,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.camera.core.CameraSelector;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
@@ -56,6 +59,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.Result;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -63,12 +68,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerResult;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ProductCodeValidity;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.IsbnTextInputEditText;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
@@ -83,7 +90,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
-import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -159,7 +165,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * Single scan:
  * <ol>
  *     <li>User scans a single code</li>
- *     <li>{@link #onBarcodeScanned(String)}</li>
+ *     <li>{@link #onBarcodeScanned(ScannerResult)}</li>
  *     <li>{@link #prepare(ProductCode)}</li>
  *     <li>... see Manual Entry</li>
  * </ol>
@@ -172,7 +178,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * Continuous scan:
  * <ol>
  *     <li>User scans a code</li>
- *     <li>{@link #onBarcodeScanned(String)}</li>
+ *     <li>{@link #onBarcodeScanned(ScannerResult)}</li>
  *     <li>{@link #prepare(ProductCode)}</li>
  *     <li>... see Manual Entry</li>
  * </ol>
@@ -187,7 +193,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * Batch scan:
  * <ol>
  *     <li>User scans a code</li>
- *     <li>{@link #onBarcodeScanned(String)}</li>
+ *     <li>{@link #onBarcodeScanned(ScannerResult)}</li>
  *     <li>{@link #preSearchBatch(ProductCode)}</li>
  *     <li>{@link QueueViewModel#add(QueuedItem, Function)}</li>
  *     <li>scanner starts again</li>
@@ -305,7 +311,7 @@ public class SearchBookByIsbnFragment
                              @Nullable final Bundle savedInstanceState) {
         vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
         if (BuildConfig.DEBUG /* always */) {
-            dbgAddScanButtons();
+            dbgAddScanButtons(vb.contentBody, vb.isbn);
         }
         return vb.getRoot();
     }
@@ -575,14 +581,14 @@ public class SearchBookByIsbnFragment
                       new DecoderResultListener() {
                           /** Prevent duplicate results. */
                           @Nullable
-                          private String lastCode;
+                          private Result lastResult;
 
                           @Override
                           public void onResult(@NonNull final Result result) {
-                              final String barCode = result.getText();
-                              if (!barCode.equals(lastCode)) {
-                                  lastCode = barCode;
-                                  onBarcodeScanned(barCode);
+                              if (!Objects.equals(result, lastResult)) {
+                                  lastResult = result;
+                                  ScannerResult.from(result).ifPresent(
+                                          SearchBookByIsbnFragment.this::onBarcodeScanned);
                               }
                           }
 
@@ -860,12 +866,20 @@ public class SearchBookByIsbnFragment
     /**
      * The scanner returned a barcode.
      *
-     * @param barCode as returned by the scanner
+     * @param scanResult to dissect
      */
-    private void onBarcodeScanned(@NonNull final String barCode) {
+    private void onBarcodeScanned(@NonNull final ScannerResult scanResult) {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "scanResult=" + scanResult);
+        }
+
+        final String barcode = scanResult.getText();
+        @Nullable
+        final Integer issueNumber = scanResult.getIssueNumber();
+
         final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
 
-        final ProductCode productCode = ISBN.parse(barCode, strictIsbn);
+        final ProductCode productCode = ISBN.parse(barcode, strictIsbn);
         if (productCode.isValid()) {
             if (strictIsbn) {
                 SoundManager.beepOnValidIsbn();
@@ -880,14 +894,14 @@ public class SearchBookByIsbnFragment
                 }
                 case Single: {
                     onScanningFinished(true);
-                    vm.setIsbnText(barCode);
+                    vm.setIsbnText(barcode);
                     modelToView();
                     prepare(productCode);
                     break;
                 }
                 case Continuous: {
                     onScanningFinished(false);
-                    vm.setIsbnText(barCode);
+                    vm.setIsbnText(barcode);
                     modelToView();
                     prepare(productCode);
                     break;
@@ -903,7 +917,7 @@ public class SearchBookByIsbnFragment
             } else {
                 // invalid code, always quit scanning and let the user edit the code
                 onScanningFinished(true);
-                vm.setIsbnText(barCode);
+                vm.setIsbnText(barcode);
                 modelToView();
                 vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
                                               productCode.asText()));
@@ -969,50 +983,93 @@ public class SearchBookByIsbnFragment
     /**
      * DEBUG only. Adds buttons to simulate the scanner in different modes.
      */
-    private void dbgAddScanButtons() {
-        if (vb.contentBody != null) {
-            final Button single = new Button(getContext());
-            final int singleButtonId = View.generateViewId();
-            single.setId(singleButtonId);
-            single.setText(R.string.option_fab_add_book_by_barcode_scan);
-            single.setOnClickListener(v -> {
-                //noinspection DataFlowIssue
-                final String s = vb.isbn.getText().toString().strip();
-                vb.isbn.setText("");
-                setScannerMode(ScanMode.Single);
-                onBarcodeScanned(s);
-            });
+    private void dbgAddScanButtons(@Nullable final ConstraintLayout container,
+                                   @NonNull final IsbnTextInputEditText isbnView) {
+        if (container != null) {
+            int btnId;
 
-            vb.contentBody.addView(single, 0);
-            ConstraintSet set = new ConstraintSet();
-            set.clone(vb.contentBody);
-            set.connect(singleButtonId, ConstraintSet.TOP,
-                        R.id.queue, ConstraintSet.BOTTOM);
-            set.connect(singleButtonId, ConstraintSet.START,
-                        R.id.queue, ConstraintSet.START);
-            set.applyTo(vb.contentBody);
+            btnId = dbgAddScanButton(container, R.id.queue, ScanMode.Single, isbnView,
+                                     getString(R.string.option_fab_add_book_by_barcode_scan));
 
-            final Button batch = new Button(getContext());
-            final int batchButtonId = View.generateViewId();
-            batch.setId(batchButtonId);
-            batch.setText(R.string.option_fab_add_book_by_barcode_scan_batch);
-            batch.setOnClickListener(v -> {
-                //noinspection DataFlowIssue
-                final String s = vb.isbn.getText().toString().strip();
-                vb.isbn.setText("");
-                setScannerMode(ScanMode.Batch);
-                onBarcodeScanned(s);
-            });
+            btnId = dbgAddScanButton(container, btnId, ScanMode.Batch, isbnView,
+                                     getString(R.string.option_fab_add_book_by_barcode_scan_batch));
 
-            vb.contentBody.addView(batch, 0);
-            set = new ConstraintSet();
-            set.clone(vb.contentBody);
-            set.connect(batchButtonId, ConstraintSet.TOP,
-                        singleButtonId, ConstraintSet.BOTTOM);
-            set.connect(batchButtonId, ConstraintSet.START,
-                        singleButtonId, ConstraintSet.START);
-            set.applyTo(vb.contentBody);
+            // text='9781935098553', barcodeFormat=EAN_13, issueNumber=null,
+            // suggestedPrice='$16.95', extension='51695'
+            btnId = dbgAddScanButton(container, btnId, "b1", "barcode1_isbn_add_5");
+            // text='9772652817008', barcodeFormat=EAN_13, issueNumber=1,
+            // suggestedPrice='null', extension='01'
+            btnId = dbgAddScanButton(container, btnId, "b2", "barcode2_issn13_add_2");
+            // text='9771234567898', barcodeFormat=EAN_13, issueNumber=1,
+            // suggestedPrice='null', extension='01'}
+            btnId = dbgAddScanButton(container, btnId, "b3", "barcode3_issn13_add_2");
         }
+    }
+
+    private int dbgAddScanButton(@NonNull final ConstraintLayout container,
+                                 final int anchor,
+                                 @NonNull final ScanMode scanMode,
+                                 @NonNull final IsbnTextInputEditText isbnView,
+                                 @NonNull final CharSequence text) {
+        final Button btn = new Button(getContext());
+        final int btnId = View.generateViewId();
+        btn.setId(btnId);
+        btn.setText(text);
+        btn.setOnClickListener(v -> {
+            //noinspection DataFlowIssue
+            final String s = isbnView.getText().toString().strip();
+            isbnView.setText("");
+            setScannerMode(scanMode);
+            onBarcodeScanned(new ScannerResult(s, null,
+                                               null, null, null));
+        });
+
+        container.addView(btn, 0);
+        final ConstraintSet set = new ConstraintSet();
+        set.clone(container);
+        set.connect(btnId, ConstraintSet.TOP, anchor, ConstraintSet.BOTTOM);
+        set.connect(btnId, ConstraintSet.START, anchor, ConstraintSet.START);
+        set.applyTo(container);
+        return btnId;
+    }
+
+    private int dbgAddScanButton(@NonNull final ConstraintLayout container,
+                                 final int anchor,
+                                 @NonNull final CharSequence text,
+                                 @NonNull final String barcodeFile) {
+        final Button btn = new Button(getContext());
+        final int btnId = View.generateViewId();
+        btn.setId(btnId);
+        btn.setText(text);
+        btn.setOnClickListener(v -> {
+            final int resId = getResources().getIdentifier(barcodeFile, "drawable",
+                                                           getContext().getPackageName());
+
+            final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
+            if (bitmap != null) {
+                final Optional<ScannerResult> scannerResult = BarcodeDecoder
+                        .decodeBarcodeFromBitmap(bitmap);
+                if (scannerResult.isPresent()) {
+                    setScannerMode(ScanMode.Single);
+                    onBarcodeScanned(scannerResult.get());
+                } else {
+                    Snackbar.make(v, "No barcode found in image.",
+                                  Snackbar.LENGTH_SHORT).show();
+                }
+            } else {
+                Snackbar.make(v, "Bitmap failure.",
+                              Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        container.addView(btn, 0);
+        final ConstraintSet set = new ConstraintSet();
+        set.clone(container);
+        set.connect(btnId, ConstraintSet.TOP, anchor, ConstraintSet.BOTTOM);
+        set.connect(btnId, ConstraintSet.START, anchor, ConstraintSet.START);
+        set.applyTo(container);
+
+        return btnId;
     }
 
     private final class ToolbarMenuProvider

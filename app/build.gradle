@@ -86,6 +86,12 @@ android {
         }
     }
 
+    sourceSets {
+        debug {
+            res.srcDirs += 'src/androidTest/res'
+        }
+    }
+
     defaultConfig {
         applicationId = "com.hardbacknutter.nevertoomanybooks"
         versionCode = 124

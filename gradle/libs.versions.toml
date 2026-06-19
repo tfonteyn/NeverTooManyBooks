@@ -61,7 +61,7 @@ apacheCommonsCompress = "1.28.0"
 # https://github.com/zxing/zxing
 zxingCore = "3.5.4"
 # CameraX based scanner code from https://github.com/tfonteyn/TinyZXingWrapper
-tinyzxingwrapper = "1.3.1"
+tinyzxingwrapper = "1.4.0"
 
 # https://github.com/Yalantis/uCrop
 ucrop = "2.2.11"
