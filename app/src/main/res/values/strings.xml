@@ -1373,8 +1373,18 @@
     <string name="lbl_series">Series</string>
     <!-- Multiple Series. -->
     <string name="lbl_series_multiple">Series</string>
-    <!-- The book's number in a series. Either a symbol (e.g. '#') or a very short label (e.g. 'Nr') -->
+    <!-- The book's number in a series.
+         Either a symbol (e.g. '#') or a very short label (e.g. 'Nr')
+         See also "lbl_magazine_issue_format"
+    -->
     <string name="lbl_series_num">#</string>
+    <!-- The format for a magazine title.
+         Param 1: actual title
+         Param 2: the sign/abbreviation as defined in "lbl_series_num"
+                  e.g. English "#", French "No" etc...
+         Param 3: the issue number
+    -->
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <!-- Series. Whether the user considers his collection of this Series to be complete. -->
     <string name="lbl_series_is_complete"
             translatable="false">@string/lbl_is_complete</string>

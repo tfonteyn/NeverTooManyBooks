@@ -477,6 +477,7 @@
     <string name="lbl_series">Bộ sách</string>
     <string name="lbl_series_multiple">Bộ sách</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_settings">Thiết đặt</string>
     <string name="lbl_tag">Nhãn</string>
     <string name="lbl_tags">Nhãn</string>

@@ -42,14 +42,15 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -273,14 +274,23 @@ class BookSearch {
         @Nullable
         final Integer issueNumber = barcode.getIssueNumber();
         if (issueNumber != null) {
+            // We have a magazine + the issue number.
+            // Add the issue number to the title, if it's not already there.
+            String title = book.getTitle();
+            final String issue = String.valueOf(issueNumber);
+            // This test is not fool proof... best effort.
+            if (!title.contains(issue)) {
+                title = context.getString(R.string.lbl_magazine_issue_format,
+                                          title,
+                                          context.getString(R.string.lbl_series_num),
+                                          String.valueOf(issueNumber));
+                book.setTitle(title);
+            }
 
             final List<Series> series = book.getSeries();
             if (series.isEmpty()) {
-                // We have a magazine + the issue number but the search
-                // did not assign a series.
-                // We've got two choices: add the issue number to the title,
-                // and/or create a series using the title + issue number.
-
+                // If there are no series, add one
+                book.add(Series.from(book.getTitle(), String.valueOf(issueNumber)));
             } else {
                 // This is bit paranoia/tricky... we MIGHT have multiple series,
                 // and those MIGHT already have a number.

@@ -457,6 +457,7 @@
     <string name="lbl_series">Série</string>
     <string name="lbl_series_multiple">Séries</string>
     <string name="lbl_series_num">No</string>
+    <string name="lbl_magazine_issue_format">%1$s, %2$s %3$s</string>
     <string name="lbl_settings">Paramètres</string>
     <string name="lbl_tag">Étiquette</string>
     <string name="lbl_tags">Étiquettes</string>

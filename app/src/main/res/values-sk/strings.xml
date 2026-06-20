@@ -371,6 +371,7 @@
     <string name="lbl_author_role">Rola autora</string>
     <string name="lbl_series">Séria</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_book">Kniha</string>
     <string name="lbl_books">Knihy</string>
     <string name="lbl_book_type">Typ knihy</string>

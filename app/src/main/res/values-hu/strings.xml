@@ -558,6 +558,7 @@
     <string name="lbl_series">Sorozat</string>
     <string name="lbl_series_multiple">Sorozatok</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_publishers">Kiadók</string>
     <string name="lbl_bookshelf">Könyvespolc</string>
     <string name="lbl_bookshelves">Könyvespolcok</string>

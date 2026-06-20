@@ -473,6 +473,7 @@
     <string name="lbl_series">Série</string>
     <string name="lbl_series_multiple">Série</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_settings">Nastavení</string>
     <string name="lbl_tag">Štítek</string>
     <string name="lbl_tags">Štítky</string>

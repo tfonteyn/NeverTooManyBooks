@@ -105,6 +105,7 @@
     <string name="lbl_series">தொடர்</string>
     <string name="lbl_series_multiple">தொடர்</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_publisher">வெளியீட்டாளர்</string>
     <string name="lbl_publishers">வெளியீட்டாளர்கள்</string>
     <string name="lbl_bookshelf">புத்தக அலமாரி</string>

@@ -473,6 +473,7 @@
     <string name="lbl_series">Серия</string>
     <string name="lbl_series_multiple">Серии</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_settings">Настройки</string>
     <string name="lbl_tag">Тег</string>
     <string name="lbl_tags">Теги</string>

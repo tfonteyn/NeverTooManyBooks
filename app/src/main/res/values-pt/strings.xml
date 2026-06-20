@@ -502,6 +502,7 @@
     <string name="lbl_search_isbn">Pesquisa ISBN</string>
     <string name="lbl_author_is_a_pen_name_of">Este é um pseudónimo de:</string>
     <string name="lbl_series_num">Nº</string>
+    <string name="lbl_magazine_issue_format">%1$s, %2$s%3$s</string>
     <string name="lbl_import_books">Importar Livros</string>
     <string name="lbl_covers_long">Imagens de capa</string>
     <string name="lbl_images">Imagens</string>

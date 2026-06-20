@@ -462,6 +462,7 @@
     <string name="lbl_series">系列</string>
     <string name="lbl_series_multiple">系列</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_settings">设置</string>
     <string name="lbl_tag">标签</string>
     <string name="lbl_tags">标签</string>

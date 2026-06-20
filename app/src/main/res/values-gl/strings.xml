@@ -541,6 +541,7 @@
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Series</string>
     <string name="lbl_series_num">nº</string>
+    <string name="lbl_magazine_issue_format">%1$s, %2$s %3$s</string>
     <string name="lbl_publisher">Editorial</string>
     <string name="lbl_publishers">Editoriais</string>
     <string name="lbl_bookshelf">Andel</string>

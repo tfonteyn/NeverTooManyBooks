@@ -445,6 +445,7 @@
     <string name="lbl_series">Dizi</string>
     <string name="lbl_series_multiple">Dizi</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_magazine_issue_format">%1$s %2$s%3$s</string>
     <string name="lbl_settings">Ayarlar</string>
     <string name="lbl_tag">Etiket</string>
     <string name="lbl_tags">Etiketler</string>
