@@ -31,6 +31,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
@@ -84,6 +85,8 @@ public class BookSearchCriteria {
     private String seriesNr = "";
     @NonNull
     private String publisher = "";
+    @Nullable
+    private Barcode scannedBarcode;
 
     /**
      * Constructor.
@@ -246,6 +249,10 @@ public class BookSearchCriteria {
         this.productCodeStr = productCode.asText();
         this.productCode = productCode;
         this.scanMode = scanMode;
+        // Preserve the barcode if there is one.
+        if (productCode instanceof ISBN) {
+            scannedBarcode = ((ISBN) productCode).getBarcode();
+        }
     }
 
     boolean hasValidProductCode() {
@@ -261,6 +268,18 @@ public class BookSearchCriteria {
         } else {
             return tmpProductCode.getType() != ProductCodeType.Invalid;
         }
+    }
+
+    /**
+     * Get the original barcode from the scanner if there is one.
+     * This can be used for post processing a book/magazine found
+     * adding the metadata from the barcode if applicable.
+     *
+     * @return barcode; can be {@code null}
+     */
+    @Nullable
+    Barcode getScannedBarcode() {
+        return scannedBarcode;
     }
 
     /**

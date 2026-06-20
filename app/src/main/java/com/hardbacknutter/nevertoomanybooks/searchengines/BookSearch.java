@@ -42,6 +42,10 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -174,6 +178,11 @@ class BookSearch {
         final long processTime = System.nanoTime();
 
         final Book book = accumulateResults(context, engineLocaleMap);
+
+        final Barcode barcode = criteria.getScannedBarcode();
+        if (barcode != null) {
+            applyBarcodeMetaData(context, barcode, book);
+        }
         final BookSearchResult result = new BookSearchResult(id, book, criteria.getScanMode(),
                                                              errorsByEngineId);
 
@@ -244,6 +253,40 @@ class BookSearch {
         }
 
         return book;
+    }
+
+    private void applyBarcodeMetaData(final Context context,
+                                      @NonNull final Barcode barcode,
+                                      @NonNull final Book book) {
+
+        @Nullable
+        final String suggestedPrice = barcode.getSuggestedPrice();
+        // if the book has no list-price set yet, use the suggested price if present
+        if (suggestedPrice != null && !book.contains(DBKey.PRICE_LISTED)) {
+            final List<Locale> userLocales = LocaleListUtils.asList(
+                    context.getResources().getConfiguration().getLocales());
+
+            final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
+            moneyParser.parse(suggestedPrice)
+                       .ifPresent(money -> book.putMoney(DBKey.PRICE_LISTED, money));
+        }
+
+        @Nullable
+        final Integer issueNumber = barcode.getIssueNumber();
+        if (issueNumber != null) {
+            // This is bit paranoia/tricky... we MIGHT have multiple series,
+            // and those MIGHT already have a number.
+            // In theory, when we have an issue number, this should be a magazine
+            // and as such there should only be one series.
+            final List<Series> series = book.getSeries();
+            if (!series.isEmpty()) {
+                // the safest we can do is check and apply to the FIRST series only
+                final Series series1 = series.get(0);
+                if (series1.getNumber().isBlank()) {
+                    series1.setNumber(String.valueOf(issueNumber));
+                }
+            }
+        }
     }
 
     /**
