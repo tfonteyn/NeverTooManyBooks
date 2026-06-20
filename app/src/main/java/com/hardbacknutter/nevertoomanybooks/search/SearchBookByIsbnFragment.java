@@ -65,10 +65,10 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerResult;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -165,7 +165,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * Single scan:
  * <ol>
  *     <li>User scans a single code</li>
- *     <li>{@link #onBarcodeScanned(ScannerResult)}</li>
+ *     <li>{@link #onBarcodeScanned(Barcode)}</li>
  *     <li>{@link #prepare(ProductCode)}</li>
  *     <li>... see Manual Entry</li>
  * </ol>
@@ -178,7 +178,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * Continuous scan:
  * <ol>
  *     <li>User scans a code</li>
- *     <li>{@link #onBarcodeScanned(ScannerResult)}</li>
+ *     <li>{@link #onBarcodeScanned(Barcode)}</li>
  *     <li>{@link #prepare(ProductCode)}</li>
  *     <li>... see Manual Entry</li>
  * </ol>
@@ -193,7 +193,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * Batch scan:
  * <ol>
  *     <li>User scans a code</li>
- *     <li>{@link #onBarcodeScanned(ScannerResult)}</li>
+ *     <li>{@link #onBarcodeScanned(Barcode)}</li>
  *     <li>{@link #preSearchBatch(ProductCode)}</li>
  *     <li>{@link QueueViewModel#add(QueuedItem, Function)}</li>
  *     <li>scanner starts again</li>
@@ -587,7 +587,7 @@ public class SearchBookByIsbnFragment
                           public void onResult(@NonNull final Result result) {
                               if (!Objects.equals(result, lastResult)) {
                                   lastResult = result;
-                                  ScannerResult.from(result).ifPresent(
+                                  Barcode.from(result).ifPresent(
                                           SearchBookByIsbnFragment.this::onBarcodeScanned);
                               }
                           }
@@ -866,16 +866,9 @@ public class SearchBookByIsbnFragment
     /**
      * The scanner returned a barcode.
      *
-     * @param scanResult to dissect
+     * @param barcode to dissect
      */
-    private void onBarcodeScanned(@NonNull final ScannerResult scanResult) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "scanResult=" + scanResult);
-        }
-
-        final String barcode = scanResult.getText();
-        @Nullable
-        final Integer issueNumber = scanResult.getIssueNumber();
+    private void onBarcodeScanned(@NonNull final Barcode barcode) {
 
         final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
 
@@ -894,14 +887,14 @@ public class SearchBookByIsbnFragment
                 }
                 case Single: {
                     onScanningFinished(true);
-                    vm.setIsbnText(barcode);
+                    vm.setIsbnText(productCode.asText());
                     modelToView();
                     prepare(productCode);
                     break;
                 }
                 case Continuous: {
                     onScanningFinished(false);
-                    vm.setIsbnText(barcode);
+                    vm.setIsbnText(productCode.asText());
                     modelToView();
                     prepare(productCode);
                     break;
@@ -917,7 +910,7 @@ public class SearchBookByIsbnFragment
             } else {
                 // invalid code, always quit scanning and let the user edit the code
                 onScanningFinished(true);
-                vm.setIsbnText(barcode);
+                vm.setIsbnText(productCode.asText());
                 modelToView();
                 vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
                                               productCode.asText()));
@@ -1020,8 +1013,8 @@ public class SearchBookByIsbnFragment
             final String s = isbnView.getText().toString().strip();
             isbnView.setText("");
             setScannerMode(scanMode);
-            onBarcodeScanned(new ScannerResult(s, null,
-                                               null, null, null));
+            onBarcodeScanned(new Barcode(s, null,
+                                         null, null, null));
         });
 
         container.addView(btn, 0);
@@ -1047,7 +1040,7 @@ public class SearchBookByIsbnFragment
 
             final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
             if (bitmap != null) {
-                final Optional<ScannerResult> scannerResult = BarcodeDecoder
+                final Optional<Barcode> scannerResult = BarcodeDecoder
                         .decodeBarcodeFromBitmap(bitmap);
                 if (scannerResult.isPresent()) {
                     setScannerMode(ScanMode.Single);

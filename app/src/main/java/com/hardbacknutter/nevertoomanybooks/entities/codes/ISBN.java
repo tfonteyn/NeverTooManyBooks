@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.entities.codes;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -130,7 +131,7 @@ public final class ISBN
 
     private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
             "X can only be at the end of an ISBN-10";
-    private static final String ERROR_ISBN_MUST_BE_VALID = "isbn must be valid";
+    /** debug. */
     private static final String ERROR_CODE_DIGITS_NULL = "codeDigits";
 
     static {
@@ -176,13 +177,40 @@ public final class ISBN
     /** The type of code, determined at creation time. */
     @NonNull
     private final ProductCodeType productCodeType;
-    /** The code as a pure text string. The raw input string for invalid codes. */
+    /**
+     * The parsed code as a text string,
+     * or the raw input string for invalid codes.
+     */
     @NonNull
     private final String codeText;
-    /** Kept for faster conversion between formats. {@code null} for invalid codes. */
+    /**
+     * The parsed code Kept for faster conversion between formats;
+     * {@code null} for invalid codes.
+     */
     @Nullable
     private final List<Integer> codeDigits;
+    /**
+     * Flag: when {@code true} all non-ISBN codes are rejected as invalid.
+     */
     private final boolean strictIsbn;
+    /**
+     * The optional barcode information if available.
+     */
+    @Nullable
+    private Barcode barcode;
+
+    /**
+     * Constructor.
+     *
+     * @param barcode    to parse
+     * @param strictIsbn {@code true} to strictly allow ISBN codes.
+     *                   {@code false} to also accept any other valid code.
+     */
+    private ISBN(@NonNull final Barcode barcode,
+                 final boolean strictIsbn) {
+        this(barcode.getText(), strictIsbn);
+        this.barcode = barcode;
+    }
 
     /**
      * Constructor.
@@ -223,7 +251,7 @@ public final class ISBN
      *  </ul>
      *
      * @param text       string to parse
-     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     * @param strictIsbn {@code true} to strictly allow ISBN codes.
      *                   {@code false} to also accept any other valid code.
      */
     private ISBN(@Nullable final String text,
@@ -312,15 +340,33 @@ public final class ISBN
      * Constructor.
      *
      * @param text       string to parse
-     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     * @param strictIsbn {@code true} to strictly allow ISBN codes.
      *                   {@code false} to also accept any other valid code.
      *
      * @return new instance
      */
     @NonNull
     public static ProductCode parse(@Nullable final String text,
-                             final boolean strictIsbn) {
+                                    final boolean strictIsbn) {
         return new ISBN(text, strictIsbn);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param barcode    to parse
+     * @param strictIsbn {@code true} to strictly allow ISBN codes.
+     *                   {@code false} to also accept any other valid code.
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static ProductCode parse(@NonNull final Barcode barcode,
+                                    final boolean strictIsbn) {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "barcode=" + barcode);
+        }
+        return new ISBN(barcode, strictIsbn);
     }
 
     /**
@@ -365,6 +411,54 @@ public final class ISBN
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Converts a string containing digits 0..9 and 'X'/'x' to a list of digits.
+     * <p>
+     * This method does NOT check on a specific length nor whether the input is a valid code.
+     * <p>
+     * As soon as an 'X' is found, we return the digits found up to then (including the 'X').
+     * <p>
+     * If an illegal character is found, we return the digits found up to then
+     * (excluding the illegal character).
+     *
+     * @param text       to convert
+     * @param strictIsbn enforces that the X character is only present at the end
+     *                   of a 10 character string; i.e. for ISBN10 codes.
+     *
+     * @return list of digits
+     *
+     * @throws NumberFormatException on failure
+     */
+    @NonNull
+    private static List<Integer> toDigits(@NonNull final CharSequence text,
+                                          final boolean strictIsbn)
+            throws NumberFormatException {
+
+        final List<Integer> digits = new ArrayList<>();
+
+        for (int i = 0; i < text.length(); i++) {
+            final char c = text.charAt(i);
+            if (Character.isDigit(c)) {
+                digits.add(Integer.parseInt(Character.toString(c)));
+
+            } else if (c == 'X' || c == 'x') {
+                digits.add(10);
+
+                if (strictIsbn && digits.size() != 10) {
+                    throw new NumberFormatException(ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10);
+                }
+                // an X is only allowed at the end of the text
+                // Whether we are at the end or not, just stop parsing here and return
+                return digits;
+
+            } else {
+                // Invalid character found: don't throw; just return whatever we got up to now.
+                return digits;
+            }
+        }
+        return digits;
     }
 
     /**
@@ -511,51 +605,13 @@ public final class ISBN
     }
 
     /**
-     * Converts a string containing digits 0..9 and 'X'/'x' to a list of digits.
-     * <p>
-     * This method does NOT check on a specific length nor whether the input is a valid code.
-     * <p>
-     * As soon as an 'X' is found, we return the digits found up to then (including the 'X').
-     * <p>
-     * If an illegal character is found, we return the digits found up to then
-     * (excluding the illegal character).
+     * The optional barcode information if available.
      *
-     * @param text       to convert
-     * @param strictIsbn enforces that the X character is only present at the end
-     *                   of a 10 character string; i.e. for ISBN10 codes.
-     *
-     * @return list of digits
-     *
-     * @throws NumberFormatException on failure
+     * @return barcode; or {@code null} when not available.
      */
-    @NonNull
-    private List<Integer> toDigits(@NonNull final CharSequence text,
-                                   final boolean strictIsbn)
-            throws NumberFormatException {
-
-        final List<Integer> digits = new ArrayList<>();
-
-        for (int i = 0; i < text.length(); i++) {
-            final char c = text.charAt(i);
-            if (Character.isDigit(c)) {
-                digits.add(Integer.parseInt(Character.toString(c)));
-
-            } else if (c == 'X' || c == 'x') {
-                digits.add(10);
-
-                if (strictIsbn && digits.size() != 10) {
-                    throw new NumberFormatException(ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10);
-                }
-                // an X is only allowed at the end of the text
-                // Whether we are at the end or not, just stop parsing here and return
-                return digits;
-
-            } else {
-                // Invalid character found: don't throw; just return whatever we got up to now.
-                return digits;
-            }
-        }
-        return digits;
+    @Nullable
+    public Barcode getBarcode() {
+        return barcode;
     }
 
     @Override
@@ -566,15 +622,22 @@ public final class ISBN
                + ", productCodeType=" + productCodeType
                + ", codeText=" + codeText
                + ", codeDigits=" + codeDigits
+               + ", barcode=" + barcode
                + '}';
     }
 
+    /**
+     * <strong>The barcode is not included</strong>.
+     */
     @Override
     public int hashCode() {
         // only use the 'codeText' if we have no digits!
         return Objects.hash(productCodeType, Objects.requireNonNullElse(codeDigits, codeText));
     }
 
+    /**
+     * <strong>The barcode is not included</strong>.
+     */
     @Override
     public boolean equals(@Nullable final Object o) {
         if (this == o) {

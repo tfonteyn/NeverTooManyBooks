@@ -36,6 +36,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
@@ -48,7 +49,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * </ul>
  */
 public class ScannerContract
-        extends ActivityResultContract<ScanOptions, Optional<ScannerResult>> {
+        extends ActivityResultContract<ScanOptions, Optional<Barcode>> {
 
     private static final String TAG = "ScannerContract";
 
@@ -100,8 +101,8 @@ public class ScannerContract
 
     @NonNull
     @Override
-    public Optional<ScannerResult> parseResult(final int resultCode,
-                                               @Nullable final Intent intent) {
+    public Optional<Barcode> parseResult(final int resultCode,
+                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
@@ -116,11 +117,11 @@ public class ScannerContract
 
         final String barcode = scanResult.getText();
         if (barcode != null) {
-            final ScannerResult value = new ScannerResult(barcode,
-                                                          scanResult.getFormat(),
-                                                          scanResult.getIssueNumber(),
-                                                          scanResult.getSuggestedPrice(),
-                                                          scanResult.getUpcEanExtension());
+            final Barcode value = new Barcode(barcode,
+                                              scanResult.getFormat(),
+                                              scanResult.getIssueNumber(),
+                                              scanResult.getSuggestedPrice(),
+                                              scanResult.getUpcEanExtension());
             return Optional.of(value);
         } else {
             return Optional.empty();

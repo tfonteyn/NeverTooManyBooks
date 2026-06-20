@@ -49,7 +49,8 @@ public interface ProductCode {
 
     /**
      * Check if the code <strong>is</strong> an {@link ProductCodeType#Isbn10},
-     * or an {@link ProductCodeType#Isbn13} which can be converted to an {@link ProductCodeType#Isbn10}.
+     * or an {@link ProductCodeType#Isbn13} which can be converted
+     * to an {@link ProductCodeType#Isbn10}.
      *
      * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
      */

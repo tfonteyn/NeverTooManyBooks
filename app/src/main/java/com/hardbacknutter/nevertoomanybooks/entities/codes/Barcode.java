@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.entities.codes;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +35,7 @@ import java.util.Optional;
  * A lightweight value class with the minimal info we might
  * need from a scanned barcode.
  */
-public final class ScannerResult {
+public final class Barcode {
     @NonNull
     private final String text;
     @Nullable
@@ -47,11 +47,11 @@ public final class ScannerResult {
     @Nullable
     private final String extension;
 
-    public ScannerResult(@NonNull final String text,
-                         @Nullable final BarcodeFormat barcodeFormat,
-                         @Nullable final Integer issueNumber,
-                         @Nullable final String suggestedPrice,
-                         @Nullable final String extension) {
+    public Barcode(@NonNull final String text,
+                   @Nullable final BarcodeFormat barcodeFormat,
+                   @Nullable final Integer issueNumber,
+                   @Nullable final String suggestedPrice,
+                   @Nullable final String extension) {
         this.text = text;
         this.barcodeFormat = barcodeFormat;
         this.issueNumber = issueNumber;
@@ -60,21 +60,21 @@ public final class ScannerResult {
     }
 
     @NonNull
-    public static Optional<ScannerResult> from(@NonNull final Result result) {
+    public static Optional<Barcode> from(@NonNull final Result result) {
         final String barcode = result.getText();
         if (barcode != null) {
-            final ScannerResult value;
+            final Barcode value;
             final Map<ResultMetadataType, Object> metadata = result.getResultMetadata();
             if (metadata != null) {
-                value = new ScannerResult(
+                value = new Barcode(
                         barcode,
                         result.getBarcodeFormat(),
                         (Integer) metadata.get(ResultMetadataType.ISSUE_NUMBER),
                         (String) metadata.get(ResultMetadataType.SUGGESTED_PRICE),
                         (String) metadata.get(ResultMetadataType.UPC_EAN_EXTENSION));
             } else {
-                value = new ScannerResult(barcode, result.getBarcodeFormat(),
-                                          null, null, null);
+                value = new Barcode(barcode, result.getBarcodeFormat(),
+                                    null, null, null);
             }
             return Optional.of(value);
         } else {
@@ -115,7 +115,7 @@ public final class ScannerResult {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final ScannerResult that = (ScannerResult) o;
+        final Barcode that = (Barcode) o;
         return Objects.equals(text, that.text)
                && barcodeFormat == that.barcodeFormat
                && Objects.equals(issueNumber, that.issueNumber)
@@ -131,7 +131,7 @@ public final class ScannerResult {
     @Override
     @NonNull
     public String toString() {
-        return "ScannerResult{"
+        return "Barcode{"
                + "text='" + text + '\''
                + ", barcodeFormat=" + barcodeFormat
                + ", issueNumber=" + issueNumber
