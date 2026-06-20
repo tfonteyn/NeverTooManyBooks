@@ -448,7 +448,7 @@ public final class ISBN
         // types not listed cannot be converted or would not make sense
         // e.g. we don't do isbn10 to ismn13 or similar non-sensical conversions.
         switch (productCodeType) {
-            case ProductCodeType.Isbn10: {
+            case Isbn10: {
                 if (toType == ProductCodeType.Asin) {
                     return codeText;
 
@@ -471,7 +471,7 @@ public final class ISBN
                 }
                 break;
             }
-            case ProductCodeType.Isbn13: {
+            case Isbn13: {
                 if ((toType == ProductCodeType.Isbn10 || toType == ProductCodeType.Asin)
                     && codeText.startsWith(L978)) {
                     Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
@@ -488,7 +488,7 @@ public final class ISBN
                 }
                 break;
             }
-            case ProductCodeType.Issn13: {
+            case Issn13: {
                 if (toType == ProductCodeType.Issn8) {
                     Objects.requireNonNull(codeDigits, ERROR_CODE_DIGITS_NULL);
                     // Drop the first 3 digits.

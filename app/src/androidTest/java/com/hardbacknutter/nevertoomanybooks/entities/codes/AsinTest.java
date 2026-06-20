@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.core.utils;
+package com.hardbacknutter.nevertoomanybooks.entities.codes;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,27 +26,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ISNITest {
+class AsinTest {
 
     @Test
-    void simple() {
-        final ISNI i1 = new ISNI("0000 0001 2146 438X");
-        assertTrue(i1.isValid());
-        assertEquals("000000012146438X", i1.asText());
+    void isbn10() {
+        final ProductCode asin = new ASIN("1529514371");
+        assertEquals("1529514371", asin.asText());
+        assertTrue(asin.isValid());
+    }
+
+    // Won't be seen in the wild, but paranoia...
+    @Test
+    void isbn13() {
+        final ProductCode asin = new ASIN("978-1529514377");
+        assertEquals("1529514371", asin.asText());
+        assertTrue(asin.isValid());
     }
 
     @Test
-    void simple2() {
-        final ISNI i1 = new ISNI("1 2146 438X");
-        assertTrue(i1.isValid());
-        assertEquals("000000012146438X", i1.asText());
+    void invalid() {
+        final ProductCode asin = new ASIN("1529514370");
+        assertEquals("1529514370", asin.asText());
+        assertFalse(asin.isValid());
     }
 
     @Test
-    void invalidChecksum() {
-        final ISNI i1 = new ISNI("2 2146 438X");
-        assertFalse(i1.isValid());
-        // The original string (stripped)
-        assertEquals("22146438X", i1.asText());
+    void alpha() {
+        final ProductCode asin = new ASIN("B0DGNTX32R");
+        assertEquals("B0DGNTX32R", asin.asText());
+        assertTrue(asin.isValid());
+    }
+
+    @Test
+    void invalidAlpha() {
+        final ProductCode asin = new ASIN("B0DGN_X32R");
+        assertEquals("B0DGN_X32R", asin.asText());
+        assertFalse(asin.isValid());
     }
 }

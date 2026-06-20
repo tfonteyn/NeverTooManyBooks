@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.core.utils;
+package com.hardbacknutter.nevertoomanybooks.entities.codes;
 
 import androidx.annotation.Nullable;
 
