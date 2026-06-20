@@ -1125,7 +1125,7 @@ public class IsfdbSearchEngine
 
         authorResolverHelper.resolve(context, this, book);
 
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
 
         // try to deduce the first publication date from the TOC
         if (toc.size() == 1) {

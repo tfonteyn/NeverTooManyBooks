@@ -273,12 +273,19 @@ class BookSearch {
         @Nullable
         final Integer issueNumber = barcode.getIssueNumber();
         if (issueNumber != null) {
-            // This is bit paranoia/tricky... we MIGHT have multiple series,
-            // and those MIGHT already have a number.
-            // In theory, when we have an issue number, this should be a magazine
-            // and as such there should only be one series.
+
             final List<Series> series = book.getSeries();
-            if (!series.isEmpty()) {
+            if (series.isEmpty()) {
+                // We have a magazine + the issue number but the search
+                // did not assign a series.
+                // We've got two choices: add the issue number to the title,
+                // and/or create a series using the title + issue number.
+
+            } else {
+                // This is bit paranoia/tricky... we MIGHT have multiple series,
+                // and those MIGHT already have a number.
+                // In theory, when we have an issue number, this should be a magazine
+                // and as such there should only be one series.
                 // the safest we can do is check and apply to the FIRST series only
                 final Series series1 = series.get(0);
                 if (series1.getNumber().isBlank()) {

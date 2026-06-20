@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 
@@ -404,7 +405,7 @@ public class DefaultBookCoder
             book.remove(DBKey.SERIES.BOOK_SERIES_NUMBER);
         }
 
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
 
         if (!list.isEmpty()) {
             book.setSeries(list);

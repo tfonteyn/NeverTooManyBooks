@@ -463,36 +463,6 @@ public class Series
         return number;
     }
 
-    /**
-     * Helper method.
-     * <p>
-     * Look for a book title; if present try to get a Series from it and clean the book title.
-     * <p>
-     * TODO: we probably call this from some SearchEngine's that don't need it.
-     *
-     * @param book to process
-     */
-    public static void checkForSeriesNameInTitle(@NonNull final Book book) {
-        final String fullTitle = book.getString(DBKey.TITLE, null);
-        if (fullTitle != null && !fullTitle.isEmpty()) {
-            final Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
-            if (matcher.find()) {
-                // the cleansed title
-                final String bookTitle = matcher.group(1);
-                if (bookTitle != null) {
-                    // the series title/number
-                    final String seriesTitleWithNumber = matcher.group(2);
-                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                        // add to the TOP of the list.
-                        book.add(0, from(seriesTitleWithNumber));
-                        // and store cleansed book title back
-                        book.setTitle(bookTitle);
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {

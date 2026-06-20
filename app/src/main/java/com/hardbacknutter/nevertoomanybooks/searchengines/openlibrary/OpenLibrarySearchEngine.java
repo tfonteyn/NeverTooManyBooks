@@ -310,7 +310,7 @@ public class OpenLibrarySearchEngine
             throw new SearchException(getEngineId(), e);
         }
 
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
         return book;
     }
 
@@ -451,7 +451,7 @@ public class OpenLibrarySearchEngine
             throw new SearchException(getEngineId(), e);
         }
 
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
     }
 
     /**

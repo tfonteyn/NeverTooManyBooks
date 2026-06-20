@@ -27,6 +27,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +67,7 @@ class SeriesTest
     void checkForSeriesNameInTitle01() {
         final Book book = new Book();
         book.setTitle("Isle of the Dead");
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
         assertEquals("Isle of the Dead", book.getString(DBKey.TITLE, null));
         final List<Series> allSeries = book.getSeries();
         assertTrue(allSeries.isEmpty());
@@ -76,7 +77,7 @@ class SeriesTest
     void checkForSeriesNameInTitle02() {
         final Book book = new Book();
         book.setTitle("The Last Colony (Old Man's War, #3)");
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
         assertEquals("The Last Colony", book.getString(DBKey.TITLE, null));
         final List<Series> allSeries = book.getSeries();
         assertEquals(1, allSeries.size());
@@ -89,7 +90,7 @@ class SeriesTest
     void checkForSeriesNameInTitle03() {
         final Book book = new Book();
         book.setTitle("Kip,Koek en Ei (Agent 212, #12)");
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
         assertEquals("Kip,Koek en Ei", book.getString(DBKey.TITLE, null));
         final List<Series> allSeries = book.getSeries();
         assertEquals(1, allSeries.size());
@@ -102,7 +103,7 @@ class SeriesTest
     void checkForSeriesNameInTitle04() {
         final Book book = new Book();
         book.setTitle("Behind the Walls of Terra (World of Tiers 4)");
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
         assertEquals("Behind the Walls of Terra", book.getString(DBKey.TITLE, null));
         final List<Series> allSeries = book.getSeries();
         assertEquals(1, allSeries.size());

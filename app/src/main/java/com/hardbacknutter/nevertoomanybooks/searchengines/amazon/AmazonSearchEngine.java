@@ -588,7 +588,7 @@ public class AmazonSearchEngine
             parseASIN(document, book);
         }
 
-        Series.checkForSeriesNameInTitle(book);
+        SearchEngineUtils.parseSeriesNameInTitle(book);
 
         if (isCancelled()) {
             return;

@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -149,7 +149,7 @@ public class GoodreadsBookCoder
                 }
                 case "title": {
                     book.setTitle(value);
-                    Series.checkForSeriesNameInTitle(book);
+                    SearchEngineUtils.parseSeriesNameInTitle(book);
                     break;
                 }
                 case "author l-f": {

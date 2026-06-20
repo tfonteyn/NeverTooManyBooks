@@ -26,6 +26,9 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 
@@ -74,6 +77,18 @@ public final class SearchEngineUtils {
 
     /** Keep only alpha/digit and space characters. */
     private static final Pattern KEEP_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
+
+    /**
+     * Used to parse a book title and derive a series name/number from it.
+     * <p>
+     * Parse "some text (some more text)" into "some text" and "some more text".
+     * Look for "some text" that does not START with a bracket!
+     * <p>
+     * The result is parsed a second time as "title" and "number" strings.
+     */
+    private static final Pattern SERIES_FROM_BOOK_TITLE_PATTERN =
+            Pattern.compile("([^(]+.*)\\s*\\((.*)\\).*",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     private SearchEngineUtils() {
     }
@@ -195,5 +210,44 @@ public final class SearchEngineUtils {
         } else {
             return productCode.asText();
         }
+    }
+
+    /**
+     * Look for a book title; if present try to get a {@link Series} from it
+     * and clean up the book title.
+     * <p>
+     * The pattern we look for:  "Book title (series and number)"
+     * as we've seen this used on a number of websites.
+     * <p>
+     * We do <strong>NOT</strong> look for "title #123" style pattern
+     * as this is typically used for a magazine and issue number.
+     * <p>
+     * TODO: we probably call this from some SearchEngine's that don't need it.
+     *
+     * @param book to process
+     */
+    public static void parseSeriesNameInTitle(@NonNull final Book book) {
+        final String fullTitle = book.getString(DBKey.TITLE, null);
+        if (fullTitle == null || fullTitle.isEmpty()) {
+            return;
+        }
+        final Matcher matcher = SERIES_FROM_BOOK_TITLE_PATTERN.matcher(fullTitle);
+        if (!matcher.find()) {
+            return;
+        }
+        // the cleansed title
+        final String bookTitle = matcher.group(1);
+        // the series title/number
+        final String seriesTitleWithNumber = matcher.group(2);
+        // Sanity check
+        if (bookTitle == null || seriesTitleWithNumber == null || seriesTitleWithNumber.isEmpty()) {
+            return;
+        }
+
+        // Set the cleansed book title
+        book.setTitle(bookTitle);
+        // and add the series to the TOP of the list.
+        book.add(0, Series.from(seriesTitleWithNumber));
+
     }
 }
