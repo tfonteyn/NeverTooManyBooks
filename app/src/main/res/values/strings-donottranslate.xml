@@ -31,6 +31,8 @@
     <!--  acronyms -->
     <string name="lbl_isbn"
             translatable="false">ISBN</string>
+    <string name="lbl_issn"
+            translatable="false">ISSN</string>
 
     <!-- region ========== {@link SearchEngine} names. -->
     <string name="site_amazon"

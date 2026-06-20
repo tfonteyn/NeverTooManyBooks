@@ -152,6 +152,13 @@ final class SearchTask
 
         final ProductCode productCode = criteria.getProductCode();
 
+        // Search by a VALID ISSN.
+        if (engineId.supports(SearchEngine.SearchBy.Issn) && productCode != null
+            && (productCode.getType() == ProductCodeType.Issn8
+                || productCode.getType() == ProductCodeType.Issn13)) {
+            return SearchEngine.SearchBy.Issn;
+        }
+
         // Search by a VALID code.
         if (engineId.supports(SearchEngine.SearchBy.Isbn) && productCode != null) {
             // Either strict ISBN, or any other valid code
@@ -247,6 +254,15 @@ final class SearchTask
                 }
                 book = ((SearchEngine.ByExternalId) searchEngine)
                         .searchByExternalId(context, oSid.get(), criteria.getFetchCovers());
+                break;
+            }
+            case Issn: {
+                final ProductCode productCode = criteria.getProductCode();
+                if (productCode == null) {
+                    throw new IllegalArgumentException(ERROR_PRODUCT_CODE_NOT_SET);
+                }
+                book = ((SearchEngine.ByIssn) searchEngine)
+                        .searchByIssn(context, productCode, criteria.getFetchCovers());
                 break;
             }
             case Isbn: {

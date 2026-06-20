@@ -259,6 +259,9 @@ public class SearchOrderFragment
                 if (engineId.supports(SearchEngine.SearchBy.Isbn)) {
                     capabilities.add(context.getString(R.string.lbl_isbn));
                 }
+                if (engineId.supports(SearchEngine.SearchBy.Issn)) {
+                    capabilities.add(context.getString(R.string.lbl_issn));
+                }
                 if (engineId.supports(SearchEngine.SearchBy.Barcode)) {
                     capabilities.add(context.getString(R.string.lbl_barcode));
                 }

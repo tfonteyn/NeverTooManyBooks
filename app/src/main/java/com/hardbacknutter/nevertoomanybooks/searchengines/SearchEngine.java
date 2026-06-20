@@ -39,13 +39,13 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 
 /**
  * The interface a search engine for an {@link EngineId} needs to implement.
@@ -162,16 +162,18 @@ public interface SearchEngine
          */
         ExternalId(ByExternalId.class),
         /**
-         * Search with a <strong>VALID</strong> ISBN.
-         *
-         * @see ProductCodeType
+         * Search with a <strong>VALID</strong>
+         * {@link ProductCodeType#Issn8} or {@link ProductCodeType#Issn13}.
+         */
+        Issn(ByIssn.class),
+        /**
+         * Search with a <strong>VALID</strong> {@link ProductCodeType}.
          */
         Isbn(ByIsbn.class),
         /**
-         * Search with an <strong>INVALID</strong> ISBN or actual barcode.
-         * i.e. a code which is specifically supported by the site.
-         *
-         * @see ProductCodeType
+         * Search with an <strong>INVALID</strong> {@link ProductCodeType} or actual barcode.
+         * i.e. a code which is specifically supported by the site,
+         * but is not the SID for that site.
          */
         Barcode(ByBarcode.class),
         /**
@@ -263,6 +265,43 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book searchByIsbn(@NonNull Context context,
+                          @NonNull ProductCode productCode,
+                          @NonNull boolean[] fetchCovers)
+                throws StorageException,
+                       SearchException,
+                       CredentialsException;
+    }
+
+    /**
+     * Optional.
+     *
+     * @see SearchBy#Issn
+     * @see ProductCodeType
+     */
+    interface ByIssn
+            extends SearchEngine {
+
+        /**
+         * Called by the {@link SearchCoordinator#search}.
+         * <p>
+         * If applicable, {@link Login} will be called upon before this method is called.
+         *
+         * @param context     Current context
+         * @param productCode to search for; will be an
+         *                    {@link ProductCodeType#Issn8} or {@link ProductCodeType#Issn13}
+         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+         *
+         * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @throws CredentialsException on authentication/login failures
+         * @throws StorageException     on storage related failures
+         * @throws SearchException      on generic exceptions (wrapped) during search
+         * @see ProductCodeType
+         */
+        @WorkerThread
+        @NonNull
+        Book searchByIssn(@NonNull Context context,
                           @NonNull ProductCode productCode,
                           @NonNull boolean[] fetchCovers)
                 throws StorageException,
