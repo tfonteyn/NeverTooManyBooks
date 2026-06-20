@@ -39,9 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -59,32 +59,35 @@ final class SearchTask
     private final int searchId;
     @NonNull
     private final SearchEngine searchEngine;
-    /** Search criteria. Usage depends on {@link #by}. */
+    /** Search criteria. Usage depends on {@link #searchBy}. */
     @NonNull
     private final BookSearchCriteria criteria;
     /** What criteria to search by. */
-    private SearchEngine.SearchBy by;
+    private final SearchEngine.SearchBy searchBy;
 
     /**
      * Constructor.
      *
      * @param context      Current context
-     * @param searchId     a unique search identifier, to which this task belongs
      * @param taskId       a unique task identifier, returned with each message
+     * @param searchId     a unique search identifier, to which this task belongs
      * @param searchEngine the search site engine
+     * @param searchBy     how to search
      * @param criteria     to use
      * @param taskListener for the results
      */
     private SearchTask(@NonNull final Context context,
-                       final int searchId,
                        final int taskId,
+                       final int searchId,
                        @NonNull final SearchEngine searchEngine,
+                       @NonNull final SearchEngine.SearchBy searchBy,
                        @NonNull final BookSearchCriteria criteria,
                        @NonNull final TaskListener<Book> taskListener) {
         super(taskId, TAG + ' ' + searchEngine.getName(context), taskListener);
         this.searchId = searchId;
         this.searchEngine = searchEngine;
         this.criteria = criteria;
+        this.searchBy = searchBy;
     }
 
     /**
@@ -97,7 +100,7 @@ final class SearchTask
      * </ol>
      *
      * @param context      Current context
-     * @param searchId     a unique search identifier, to which this task belongs
+     * @param searchId     a unique search identifier, to which this task will belong
      * @param searchEngine the search site engine
      * @param criteria     to use
      * @param taskListener for the results
@@ -112,21 +115,38 @@ final class SearchTask
                                        @NonNull final BookSearchCriteria criteria,
                                        @NonNull final TaskListener<Book> taskListener) {
 
-        final SearchTask task = new SearchTask(context, searchId,
-                                               TASK_ID.incrementAndGet(),
-                                               searchEngine, criteria,
-                                               taskListener);
+        final EngineId engineId = searchEngine.getEngineId();
 
-        searchEngine.setCaller(task);
+        final SearchEngine.SearchBy searchBy = determineSearchBy(engineId, criteria);
+        if (searchBy == null) {
+            return null;
+        }
+
+        final SearchTask task = new SearchTask(context, TASK_ID.incrementAndGet(),
+                                               searchId, searchEngine, searchBy, criteria,
+                                               taskListener);
         task.setExecutor(ASyncExecutor.NETWORK);
 
-        final EngineId engineId = searchEngine.getEngineId();
+        searchEngine.setCaller(task);
+        return task;
+    }
+
+    @Nullable
+    private static SearchEngine.SearchBy determineSearchBy(
+            @NonNull final EngineId engineId,
+            @NonNull final BookSearchCriteria criteria) {
+
+        // We seemingly do double-work here by first determning by which method we
+        // will search and then later on in doWork using that to decide to actual
+        // API method to call on the SearchEngine.
+        // The whole reason for this is, that we could end up NOT searching
+        // when there is no compatible engine/criteria combination.
+        // This way, we avoid starting a task which would decide it does not need to run.
 
         // Search by SID takes preference over all other criteria
         if (engineId.supports(SearchEngine.SearchBy.ExternalId)) {
             if (criteria.getSid(engineId).isPresent()) {
-                task.setSearchBy(SearchEngine.SearchBy.ExternalId);
-                return task;
+                return SearchEngine.SearchBy.ExternalId;
             }
         }
 
@@ -138,22 +158,19 @@ final class SearchTask
             // depending on the user criteria 'strict' flag.
             if (criteria.isStrictIsbn() ? productCode.isIsbn()
                                         : productCode.getType() != ProductCodeType.Invalid) {
-                task.setSearchBy(SearchEngine.SearchBy.Isbn);
-                return task;
+                return SearchEngine.SearchBy.Isbn;
             }
         }
 
         // Search by any code, including invalid ones
         if (engineId.supports(SearchEngine.SearchBy.Barcode) && productCode != null) {
-            task.setSearchBy(SearchEngine.SearchBy.Barcode);
-            return task;
+            return SearchEngine.SearchBy.Barcode;
         }
 
         // Search by anything which may be supported by the engine.
         // Check on empty criteria is paranoia...
         if (engineId.supports(SearchEngine.SearchBy.Text) && !criteria.isEmpty()) {
-            task.setSearchBy(SearchEngine.SearchBy.Text);
-            return task;
+            return SearchEngine.SearchBy.Text;
         }
 
         // search data and engine have nothing in common, abort.
@@ -171,11 +188,7 @@ final class SearchTask
 
     @NonNull
     SearchEngine.SearchBy getSearchBy() {
-        return by;
-    }
-
-    private void setSearchBy(@NonNull final SearchEngine.SearchBy by) {
-        this.by = by;
+        return searchBy;
     }
 
     void startSearch() {
@@ -226,7 +239,7 @@ final class SearchTask
                                              searchEngine.getName(context)));
 
         final Book book;
-        switch (by) {
+        switch (searchBy) {
             case ExternalId: {
                 final Optional<String> oSid = criteria.getSid(searchEngine.getEngineId());
                 if (oSid.isEmpty()) {
@@ -263,7 +276,7 @@ final class SearchTask
                 // we should never get here...
                 throw new IllegalArgumentException("SearchEngine "
                                                    + searchEngine.getName(context)
-                                                   + " does not implement By=" + by);
+                                                   + " does not implement " + searchBy);
             }
         }
 
@@ -276,7 +289,7 @@ final class SearchTask
         return "SearchTask{"
                + "searchEngine=" + searchEngine.getEngineId()
                + ", searchId=" + searchId
-               + ", by=" + by
+               + ", searchBy=" + searchBy
                + ", criteria=`" + criteria + '`'
                + '}';
     }
