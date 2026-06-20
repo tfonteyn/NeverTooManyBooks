@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,15 +17,12 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|«|»|‘|’)
      Using standard quotes instead of guillemets as per an Italian native user.
---><!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+--><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="n_books">
         <item quantity="one">%1$d libro</item>
         <item quantity="many">%1$d libri</item>
@@ -749,7 +745,7 @@
     <string name="warning_image_copy_failed">L’immagine non può essere copiata.</string>
     <string name="warning_image_not_found">L’immagine non è stata trovata.</string>
     <string name="warning_immediate_global_changes">ATTENZIONE: le modifiche salvate vengono applicate immediatamente a tutti i libri.</string>
-    <string name="warning_import_csv_bc">AVVERTENZA: L’importazione dei dati può aggiornare i record del libro esistenti con nuove informazioni se la colonna UUID non è presente e l’ID nel file di importazione è lo stesso di un ID esistente. Questo di solito va bene se si è modificato un campo in un file esportato. Se si è creato un nuovo record di libro o si stanno importando i libri di qualcun altro, assicurarsi che il campo UUID sia presente o che il campo ID sia vuoto.</string>
+    <string name="warning_import_csv_bc">AVVERTENZA: L’importazione dei dati può aggiornare i dati del libro già esistenti con nuove informazioni se la colonna UUID non è presente e l\'ID nel file di importazione è lo stesso di un ID esistente. Questo di solito va bene se si è modificato un campo in un file esportato. Se si è creato un nuovo record di libro o si stanno importando i libri di qualcun altro, assicurarsi che il campo UUID sia presente o che il campo ID sia vuoto.</string>
     <string name="warning_import_csv_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">e altri %1$d.</string>
     <string name="warning_import_failed_for_these_books">L’importazione non è riuscita per questi libri/rubriche:</string>
@@ -937,5 +933,5 @@
     <string name="pt_deduplication_title_matching_summary_on">Al momento del salvataggio, i titoli identici tranne che per la formattazione verranno uniti (es. “Il Signore degli Anelli” e “Signore degli Anelli, Il”).</string>
     <string name="pt_deduplication_title_matching_summary_off">Al momento del salvataggio, i titoli identici tranne che per la formattazione non verranno uniti (es. “Il Signore degli Anelli” e “Signore degli Anelli, Il”).</string>
     <string name="action_edit_with_ellipsis">Modifica con…</string>
-    <string name="warning_import_csv_calibre">La colonna “comments” delle versioni precedenti di Calibre può causare file CSV non validi. Se si verifica un errore, l’aggiornamento di Calibre alla versione 9.10 o successiva prima dell’esportazione di solito risolve il problema. In alternativa, puoi rimuovere la colonna “comments” dal file e riprovare ’importazione.</string>
+    <string name="warning_import_csv_calibre">La colonna “Commenti” delle versioni precedenti di Calibre può causare file CSV non validi. Se si verifica un errore, l’aggiornamento di Calibre alla versione 9.10 o successiva prima dell’esportazione di solito risolve il problema. In alternativa, puoi rimuovere la colonna “comments” dal file e riprovare ’importazione.</string>
 </resources>
