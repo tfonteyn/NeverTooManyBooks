@@ -21,9 +21,9 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
-        android:id="@id/SUBMENU_ISBN_VALIDITY"
+        android:id="@id/SUBMENU_PRODUCT_CODE_VALIDITY"
         android:checkableBehavior="single"
-        android:orderInCategory="@integer/MENU_ORDER_ISBN_VALIDITY">
+        android:orderInCategory="@integer/MENU_ORDER_PRODUCT_CODE_VALIDITY">
         <item
             android:id="@+id/sm_title_isbn_validity"
             android:checkable="false"
@@ -31,13 +31,13 @@
             android:title="@string/pt_edit_book_isbn_checks"
             />
         <item
-            android:id="@id/MENU_ISBN_VALIDITY_NONE"
+            android:id="@id/MENU_PRODUCT_CODE_VALIDITY_NONE"
             android:title="@string/none" />
         <item
-            android:id="@id/MENU_ISBN_VALIDITY_LOOSE"
+            android:id="@id/MENU_PRODUCT_CODE_VALIDITY_LOOSE"
             android:title="@string/loose" />
         <item
-            android:id="@id/MENU_ISBN_VALIDITY_STRICT"
+            android:id="@id/MENU_PRODUCT_CODE_VALIDITY_STRICT"
             android:title="@string/strict" />
 
     </group>

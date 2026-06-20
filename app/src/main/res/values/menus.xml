@@ -50,7 +50,7 @@
 
     <integer name="MENU_ORDER_MENU_SET_DEFAULT">530</integer>
 
-    <integer name="MENU_ORDER_ISBN_VALIDITY">550</integer>
+    <integer name="MENU_ORDER_PRODUCT_CODE_VALIDITY">550</integer>
 
     <integer name="MENU_ORDER_BARCODE_SETTINGS">560</integer>
 
@@ -357,14 +357,14 @@
     <item name="MENU_BARCODE_SETTINGS"
           type="id" />
 
-    <!-- Toolbar menu: enforce ISBN validity checks during input -->
-    <item name="SUBMENU_ISBN_VALIDITY"
+    <!-- Toolbar menu: enforce ProductCodeType validity checks during input. -->
+    <item name="SUBMENU_PRODUCT_CODE_VALIDITY"
           type="id" />
-    <item name="MENU_ISBN_VALIDITY_NONE"
+    <item name="MENU_PRODUCT_CODE_VALIDITY_NONE"
           type="id" />
-    <item name="MENU_ISBN_VALIDITY_LOOSE"
+    <item name="MENU_PRODUCT_CODE_VALIDITY_LOOSE"
           type="id" />
-    <item name="MENU_ISBN_VALIDITY_STRICT"
+    <item name="MENU_PRODUCT_CODE_VALIDITY_STRICT"
           type="id" />
 
     <!-- Toolbar menu: on the FTS search activity -->

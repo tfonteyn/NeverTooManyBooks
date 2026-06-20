@@ -1077,7 +1077,7 @@ public class SearchBookByIsbnFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
+            menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT)
                 .setChecked(BookSearchCriteria.isStrictIsbnGlobal());
         }
 
@@ -1100,7 +1100,7 @@ public class SearchBookByIsbnFragment
                 importFromFile();
                 return true;
 
-            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
                 BookSearchCriteria.setStrictIsbnDefault(checked);
 

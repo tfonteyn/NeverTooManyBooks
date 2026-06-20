@@ -89,8 +89,6 @@ public class EditBookFieldsFragment
     /** Watch and clean the text entered in the ISBN field. */
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
 
-    /** The level of checking the ISBN code. */
-    private ProductCodeValidity isbnValidityCheck;
     /** View Binding. */
     private FragmentEditBookFieldsBinding vb;
 
@@ -154,11 +152,11 @@ public class EditBookFieldsFragment
         vb.bookshelves.setOnClickListener(v -> editBookshelves());
 
         // ISBN: manual edit of the field, or click the end-icon to scan a barcode
-        isbnValidityCheck = vm.getLevel();
-        isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
+        final ProductCodeValidity validityCheck = vm.getProductCodeValidity();
+        isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, validityCheck);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
         isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
-                vb.lblIsbn, vb.isbn, isbnValidityCheck);
+                vb.lblIsbn, vb.isbn, validityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
         vb.lblIsbn.setEndIconOnClickListener(v -> scanLauncher.launch(
                 ScannerContract.createDefaultOptions(new CameraConfig(v.getContext()))));
@@ -255,18 +253,18 @@ public class EditBookFieldsFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            switch (isbnValidityCheck) {
+            switch (vm.getProductCodeValidity()) {
                 case Isbn:
-                    menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT).setChecked(true);
                     break;
 
                 case ValidCodes:
-                    menu.findItem(R.id.MENU_ISBN_VALIDITY_LOOSE).setChecked(true);
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_LOOSE).setChecked(true);
                     break;
 
                 case NoChecks:
                 default:
-                    menu.findItem(R.id.MENU_ISBN_VALIDITY_NONE).setChecked(true);
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_NONE).setChecked(true);
                     break;
             }
         }
@@ -275,20 +273,20 @@ public class EditBookFieldsFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final int menuItemId = menuItem.getItemId();
 
-            if (menuItemId == R.id.MENU_ISBN_VALIDITY_NONE) {
-                isbnValidityCheck = ProductCodeValidity.NoChecks;
+            if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_NONE) {
+                vm.setProductCodeValidity(ProductCodeValidity.NoChecks);
                 isbnCleanupTextWatcher.setValidityLevel(ProductCodeValidity.NoChecks);
                 isbnValidationTextWatcher.setValidityLevel(ProductCodeValidity.NoChecks);
                 return true;
 
-            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
-                isbnValidityCheck = ProductCodeValidity.ValidCodes;
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_LOOSE) {
+                vm.setProductCodeValidity(ProductCodeValidity.ValidCodes);
                 isbnCleanupTextWatcher.setValidityLevel(ProductCodeValidity.ValidCodes);
                 isbnValidationTextWatcher.setValidityLevel(ProductCodeValidity.ValidCodes);
                 return true;
 
-            } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-                isbnValidityCheck = ProductCodeValidity.Isbn;
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT) {
+                vm.setProductCodeValidity(ProductCodeValidity.Isbn);
                 isbnCleanupTextWatcher.setValidityLevel(ProductCodeValidity.Isbn);
                 isbnValidationTextWatcher.setValidityLevel(ProductCodeValidity.Isbn);
                 return true;

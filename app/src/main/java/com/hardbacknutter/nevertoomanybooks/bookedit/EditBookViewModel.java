@@ -65,10 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -95,6 +92,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.fields.AutoCompleteTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.BitmaskChipGroupField;
 import com.hardbacknutter.nevertoomanybooks.fields.CompoundButtonField;
@@ -243,19 +243,7 @@ public class EditBookViewModel
     private SeriesDao seriesDao;
     private TagDao tagDao;
     private TocEntryDao tocEntryDao;
-
-    /**
-     * Get the user preferred validity level check for (by the user) editing product codes.
-     *
-     * @return Validity level
-     */
-    @NonNull
-    ProductCodeValidity getLevel() {
-        // -1 default (i.e. invalid) will force the Validity default enum to be returned.
-        final int id = ServiceLocator.getInstance().getSharedPreferences()
-                                     .getIntFromString(PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, -1);
-        return ProductCodeValidity.byId(id);
-    }
+    private ProductCodeValidity productCodeValidity;
 
     int getCurrentTab() {
         return currentTab;
@@ -298,6 +286,11 @@ public class EditBookViewModel
             final String styleUuid = args != null ? args.getString(Style.BKEY_UUID) : null;
             final StylesHelper stylesHelper = serviceLocator.getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
+
+            // -1 default (i.e. invalid) will force the Validity default enum to be returned.
+            productCodeValidity = ProductCodeValidity.byId(
+                    ServiceLocator.getInstance().getSharedPreferences()
+                                  .getIntFromString(PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, -1));
 
             final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
             userLocales = LocaleListUtils.asList(
@@ -369,6 +362,27 @@ public class EditBookViewModel
     @NonNull
     List<MenuHandler<DataHolder>> getMenuHandlers() {
         return menuHandlers;
+    }
+
+    /**
+     * Get the user preferred validity level check for (by the user) editing product codes.
+     *
+     * @return Validity level
+     */
+    @NonNull
+    ProductCodeValidity getProductCodeValidity() {
+        return productCodeValidity;
+    }
+
+    /**
+     * Temporary set the Validity level for use during this session.
+     * This is not persisted..
+     * The user must access the global settings to make it permanent.
+     *
+     * @param level to use
+     */
+    public void setProductCodeValidity(@NonNull final ProductCodeValidity level) {
+        this.productCodeValidity = level;
     }
 
     /**

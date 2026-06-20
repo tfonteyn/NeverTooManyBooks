@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
  */
 public class BookSearchCriteria {
 
+    // FIXME: combine this with EditBookViewModel#PK_EDIT_BOOK_PRODUCT_CODE_CHECKS
     private static final String PK_SEARCH_STRICT_ISBN = "search.byIsbn.strict";
     /**
      * Site external id for search.
