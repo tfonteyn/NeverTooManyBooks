@@ -76,8 +76,8 @@
  *         all data and any errors.
  *     </li>
  *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult}
- *         The BookSearch transformed into a BookSearchResult with the date/errors
- *         accumulated and sorted redy for use by the UI.
+ *         The BookSearch transformed into a BookSearchResult with the data/errors
+ *         accumulated and ready to be edited/saved.
  *     </li>
  * </ul>
  */
