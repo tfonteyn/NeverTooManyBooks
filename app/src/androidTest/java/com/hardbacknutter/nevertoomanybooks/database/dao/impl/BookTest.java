@@ -75,7 +75,7 @@ class BookTest
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
-        book.putMoney(DBKey.PRICE_LISTED, money);
+        book.setPriceListed(money);
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
@@ -94,7 +94,7 @@ class BookTest
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(0d), "");
-        book.putMoney(DBKey.PRICE_LISTED, money);
+        book.setPriceListed(money);
 
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
@@ -148,7 +148,7 @@ class BookTest
         book.setLanguage("eng");
         final Optional<Money> money = moneyParser.parse("EUR 45");
         assertTrue(money.isPresent());
-        book.putMoney(DBKey.PRICE_LISTED, money.get());
+        book.setPriceListed(money.get());
 
         final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
         bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);

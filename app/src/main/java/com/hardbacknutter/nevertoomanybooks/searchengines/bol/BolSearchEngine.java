@@ -577,8 +577,7 @@ public class BolSearchEngine
                 // The currency is not part of the string,
                 // so we just parse it as a simple double and then add the EURO.
                 final double price = moneyParser.getRealNumberParser().parseDouble(priceStr);
-                book.putMoney(DBKey.PRICE_LISTED,
-                              new Money(BigDecimal.valueOf(price), Money.EURO));
+                book.setPriceListed(new Money(BigDecimal.valueOf(price), Money.EURO));
 
             } catch (@NonNull final IllegalArgumentException ignore) {
                 // ignore

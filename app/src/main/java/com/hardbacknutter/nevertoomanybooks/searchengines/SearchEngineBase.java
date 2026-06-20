@@ -69,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -610,14 +609,13 @@ public abstract class SearchEngineBase
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
 
-        // TODO: maybe move this logic to the MoneyParser class ?
         // First ignore the given currency string (if any) and try parsing
         final Optional<Money> oMoney = moneyParser.parse(priceStr);
         if (oMoney.isPresent()) {
             Money money = oMoney.get();
             if (money.getCurrency() != null) {
                 // We have parsed both the value and the currency from the input string.
-                book.putMoney(DBKey.PRICE_LISTED, money);
+                book.setPriceListed(money);
                 return;
 
             } else if (currencyStr != null && !currencyStr.isBlank()) {
@@ -625,7 +623,7 @@ public abstract class SearchEngineBase
                     // use the given currency string, and the value from the previous parse result
                     final Currency currency = Currency.getInstance(currencyStr);
                     money = new Money(money.getValue(), currency);
-                    book.putMoney(DBKey.PRICE_LISTED, money);
+                    book.setPriceListed(money);
                     return;
                 } catch (@NonNull final IllegalArgumentException ignore) {
                     // ignore
@@ -634,11 +632,7 @@ public abstract class SearchEngineBase
         }
 
         // Parsing failed, store the input string as-is.
-        book.putString(DBKey.PRICE_LISTED, priceStr);
-        // Add the default currency if any
-        if (currencyStr != null && !currencyStr.isBlank()) {
-            book.putString(DBKey.PRICE_LISTED_CURRENCY, currencyStr);
-        }
+        book.setPriceListed(priceStr, currencyStr);
 
         // Log this as we need to understand WHY it failed.
         LoggerFactory.getLogger().w(getName(context), "processPriceListed Failed to parse",

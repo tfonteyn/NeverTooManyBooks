@@ -168,8 +168,7 @@ class CollectionParser {
                         @NonNull final Book book) {
         // '0' is an acceptable value that should be stored.
         jSoupHelper.getPositiveOrZeroDouble(root, nameAttr).ifPresent(
-                value -> book.putMoney(DBKey.PRICE_PAID,
-                                       new Money(BigDecimal.valueOf(value), Money.EURO)));
+                value -> book.setPricePaid(new Money(BigDecimal.valueOf(value), Money.EURO)));
     }
 
     @AnyThread

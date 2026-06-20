@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
@@ -825,6 +826,57 @@ public class Book
         }
     }
 
+    /**
+     * Set the listed price.
+     *
+     * @param price to set; a {@code null} will remove the field
+     */
+    public void setPriceListed(@Nullable final Money price) {
+        if (price != null) {
+            putMoney(DBKey.PRICE_LISTED, price);
+        } else {
+            remove(DBKey.PRICE_LISTED);
+            remove(DBKey.PRICE_LISTED_CURRENCY);
+        }
+    }
+
+    /**
+     * Set the listed price. Both parameters are optional.
+     * A {@code null} or an empty string will remove the field
+     *
+     * @param price     to set
+     * @param currency  to set
+     *
+     * @see #setPriceListed(Money)
+     */
+    @Discouraged(message = "Use setPriceListed(Money) when possible")
+    public void setPriceListed(@Nullable final String price,
+                               @Nullable final String currency) {
+        if (price != null && !price.isBlank()) {
+            putString(DBKey.PRICE_LISTED, price);
+        } else {
+            remove(DBKey.PRICE_LISTED);
+        }
+        if (currency != null && !currency.isBlank()) {
+            putString(DBKey.PRICE_LISTED_CURRENCY, currency);
+        } else {
+            remove(DBKey.PRICE_LISTED_CURRENCY);
+        }
+    }
+
+    /**
+     * Set the paid price.
+     *
+     * @param price to set; a {@code null} will remove the field
+     */
+    public void setPricePaid(@Nullable final Money price) {
+        if (price != null) {
+            putMoney(DBKey.PRICE_PAID, price);
+        } else {
+            remove(DBKey.PRICE_PAID);
+            remove(DBKey.PRICE_PAID_CURRENCY);
+        }
+    }
     /**
      * Get the language.
      *

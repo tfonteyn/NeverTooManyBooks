@@ -500,7 +500,7 @@ public class GoogleBooksSearchEngine
             if (currencyCode != null && !currencyCode.isEmpty()
                 && !Double.isNaN(amount)) {
                 final Money money = MoneyParser.parse(BigDecimal.valueOf(amount), currencyCode);
-                book.putMoney(DBKey.PRICE_LISTED, money);
+                book.setPriceListed(money);
             }
         }
     }

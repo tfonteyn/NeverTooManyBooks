@@ -267,8 +267,7 @@ class BookSearch {
                     context.getResources().getConfiguration().getLocales());
 
             final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), userLocales);
-            moneyParser.parse(suggestedPrice)
-                       .ifPresent(money -> book.putMoney(DBKey.PRICE_LISTED, money));
+            moneyParser.parse(suggestedPrice).ifPresent(book::setPriceListed);
         }
 
         @Nullable
