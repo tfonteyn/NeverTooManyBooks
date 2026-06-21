@@ -1,0 +1,49 @@
+{
+  "head" : {
+    "vars" : [ "item", "itemLabel", "title", "newsPaperFormat", "newsPaperFormatLabel", "publisher", "publisherLabel", "pubAmount", "pubUnitQ", "langCode", "identifiers" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q937202"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "The Magazine of Fantasy & Science Fiction"
+      },
+      "title" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "The Magazine of Fantasy & Science Fiction"
+      },
+      "newsPaperFormat" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q2480302"
+      },
+      "newsPaperFormatLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "digest size"
+      },
+      "pubAmount" : {
+        "datatype" : "http://www.w3.org/2001/XMLSchema#decimal",
+        "type" : "literal",
+        "value" : "2"
+      },
+      "pubUnitQ" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q5151"
+      },
+      "langCode" : {
+        "type" : "literal",
+        "value" : "eng"
+      },
+      "identifiers" : {
+        "type" : "literal",
+        "value" : "P12048:e33af626-c9ba-4649-86b0-d8403f706841|P8189:987007406505005171|P5396:magoffandsf|P5357:fsf|P3417:The-Magazine-of-Fantasy-Science-Fiction|P2735:FantasySF|P2163:1359328|P1695:a0000001839514|P1417:topic/The-Magazine-of-Fantasy-andand-Science-Fiction|P1235:20325|P724:fantasyandsciencefiction|P646:/m/024c8c|P409:35802831|P244:n80014289|P243:18737979|P236:1095-8258|P236:0024-984X|P227:4678619-3|P214:179825835|P214:156462380"
+      }
+    } ]
+  }
+}

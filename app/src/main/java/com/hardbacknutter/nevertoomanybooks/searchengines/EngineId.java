@@ -357,6 +357,8 @@ public enum EngineId
                 if (!isFrench) {
                     type.addSite(Bnf, false);
                 }
+
+                type.addSite(Wikidata, true);
                 break;
             }
             case Covers: {
