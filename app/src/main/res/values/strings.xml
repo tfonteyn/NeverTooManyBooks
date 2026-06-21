@@ -104,7 +104,6 @@
         <item quantity="other">%1$s stars</item>
     </plurals>
 
-
     <!-- A request for confirmation in a dialog asking the user to "Remove" or "Search"
          a list of ISBN number previously scanned.
 
@@ -2504,4 +2503,27 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="vldt_exact_length_required"
             translatable="false">Empty value or exact length of %1$d characters required.</string>
+
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <plurals name="publication_frequency_daily"
+             translatable="false">
+        <item quantity="one">Daily</item>
+        <item quantity="other">%1$s daily</item>
+    </plurals>
+    <plurals name="publication_frequency_weekly"
+             translatable="false">
+        <item quantity="one">Weekly</item>
+        <item quantity="other">%1$s weekly</item>
+    </plurals>
+    <plurals name="publication_frequency_monthly"
+             translatable="false">
+        <item quantity="one">Monthly</item>
+        <item quantity="other">%1$s monthly</item>
+    </plurals>
+    <plurals name="publication_frequency_yearly"
+             translatable="false">
+        <item quantity="one">Yearly</item>
+        <item quantity="other">%1$s yearly</item>
+    </plurals>
+
 </resources>
