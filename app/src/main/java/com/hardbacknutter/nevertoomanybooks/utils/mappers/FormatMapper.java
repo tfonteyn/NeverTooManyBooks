@@ -36,6 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
  * System-wide book format representation.
+ * This really should be in a database table, but we then have to start
+ * maintaining the table content between upgrades...
+ * For now, hardcoding a map is just far easier.
  * <p>
  * Good description at
  * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format">isfdb</a>
@@ -150,9 +153,13 @@ public final class FormatMapper
         // Czech
         MAPPINGS.put("audiokniha", R.string.book_format_audiobook);
 
+        // ################## Digest ##################
+        // English - WikiData - news paper format
+        MAPPINGS.put("digest size", R.string.book_format_digest);
+
+        MAPPINGS.put("digest", R.string.book_format_digest);
 
         // ################## Special ##################
-        MAPPINGS.put("digest", R.string.book_format_digest);
         MAPPINGS.put("unknown", R.string.book_format_unknown);
         // English - GoogleBooks
         MAPPINGS.put("dimensions", R.string.book_format_dimensions);
