@@ -388,7 +388,7 @@ public class AmazonSearchEngine
                                name,
                                null,
                                null,
-                               null),
+                               "P5749"),
                 new Identifier(Identifier.EntityType.Author,
                                Identifier.Type.Text,
                                Identifier.SID_ASIN,
