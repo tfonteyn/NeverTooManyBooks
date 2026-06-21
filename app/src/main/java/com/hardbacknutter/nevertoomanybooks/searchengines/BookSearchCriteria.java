@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -207,6 +208,7 @@ public class BookSearchCriteria {
      *
      * @return raw product-code text
      */
+    @Discouraged(message = "Use hasValidProductCode() / getProductCode() by preference")
     @NonNull
     String getRawProductCode() {
         return productCodeStr;

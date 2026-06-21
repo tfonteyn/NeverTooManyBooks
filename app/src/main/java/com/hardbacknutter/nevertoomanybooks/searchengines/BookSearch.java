@@ -218,7 +218,8 @@ class BookSearch {
             sitesInOrder = determineBestOrder(completedOrder);
             // Add the ISBN we initially searched for.
             // This avoids overwriting with a potentially different isbn from the sites
-            book.setIsbn(criteria.getRawProductCode());
+            //noinspection DataFlowIssue
+            book.setIsbn(criteria.getProductCode().asText());
         } else {
             // We did not have an ISBN as a search criteria; use the default order
             sitesInOrder = new ArrayList<>(completedOrder);
@@ -244,7 +245,10 @@ class BookSearch {
         // If we did not get an ISBN, use the one we originally searched for.
         final String isbnStr = book.getString(DBKey.ISBN, null);
         if (isbnStr == null || isbnStr.isEmpty()) {
-            book.setIsbn(criteria.getRawProductCode());
+            if (criteria.hasValidProductCode()) {
+                //noinspection DataFlowIssue
+                book.setIsbn(criteria.getProductCode().asText());
+            }
         }
 
         // If we did not get a title, use the one we originally searched for.
