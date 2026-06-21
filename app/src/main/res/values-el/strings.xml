@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -742,7 +739,7 @@ A question mark is written as the character semicolon: ';'
     <string name="warning_image_copy_failed">Δεν ήταν δυνατή η αντιγραφή της εικόνας.</string>
     <string name="warning_image_not_found">Δεν βρέθηκε εικόνα.</string>
     <string name="warning_immediate_global_changes">ΠΡΟΣΟΧΗ: Οι αποθηκευμένες αλλαγές εφαρμόζονται αμέσως σε όλα τα βιβλία.</string>
-    <string name="warning_import_csv_bc">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η εισαγωγή δεδομένων ενδέχεται να ενημερώσει τις υπάρχουσες εγγραφές βιβλίων με νέες πληροφορίες, εάν η στήλη UUID δεν υπάρχει και το αναγνωριστικό στο αρχείο εισαγωγής (ID) είναι το ίδιο με ένα υπάρχον αναγνωριστικό. Αυτό είναι συνήθως εντάξει αν αλλάξατε ένα πεδίο σε ένα εξαγόμενο αρχείο. Εάν δημιουργήσατε μία νέα εγγραφή βιβλίου ή εισάγετε τα βιβλία κάποιου άλλου, βεβαιωθείτε ότι το πεδίο UUID είναι παρόν ή ότι το πεδίο ID είναι κενό.</string>
+    <string name="warning_import_csv_bc">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η εισαγωγή δεδομένων ενδέχεται να ενημερώσει τις υπάρχουσες εγγραφές βιβλίων με νέες πληροφορίες, αν η στήλη UUID δεν υπάρχει και το αναγνωριστικό (ID) στο αρχείο εισαγωγής είναι ίδιο με κάποιο υπάρχον αναγνωριστικό. Αυτό συνήθως δεν αποτελεί πρόβλημα αν αλλάξατε ένα πεδίο σε ένα εξαγόμενο αρχείο. Αν δημιουργήσατε μία νέα εγγραφή βιβλίου ή εισάγετε τα βιβλία κάποιου άλλου, βεβαιωθείτε ότι το πεδίο UUID υπάρχει ή ότι το πεδίο ID είναι κενό.</string>
     <string name="warning_import_csv_unescaped_quote">Μη έγκυρο εισαγωγικό στη γραμμή %1$d, θέση %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">και %1$d ακόμη.</string>
     <string name="warning_import_failed_for_these_books">Η εισαγωγή απέτυχε για αυτά τα βιβλία/γραμμές:</string>
@@ -926,5 +923,5 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_deduplication_title_matching_summary_on">Κατά την αποθήκευση, οι τίτλοι που είναι πανομοιότυποι εκτός από τη μορφοποίηση θα συγχωνεύονται (π.χ. «Ο Άρχοντας των Δαχτυλιδιών» και «Άρχοντας των Δαχτυλιδιών, Ο»).</string>
     <string name="pt_deduplication_title_matching_summary_off">Κατά την αποθήκευση, οι τίτλοι που είναι πανομοιότυποι εκτός από τη μορφοποίηση δεν θα συγχωνεύονται (π.χ. «Ο Άρχοντας των Δαχτυλιδιών» και «Άρχοντας των Δαχτυλιδιών, Ο»).</string>
     <string name="action_edit_with_ellipsis">Επεξεργασία με…</string>
-    <string name="warning_import_csv_calibre">Η στήλη «comments» (σχόλια) από παλαιότερες εκδόσεις του Calibre μπορεί να δημιουργήσει μη έγκυρα αρχεία CSV. Εάν αντιμετωπίσετε σφάλμα, η αναβάθμιση του Calibre στην έκδοση 9.10 ή μεταγενέστερη πριν από την εξαγωγή συνήθως το διορθώνει. Εναλλακτικά, μπορείτε να αφαιρέσετε τη στήλη «comments» από το αρχείο σας και να δοκιμάσετε ξανά την εισαγωγή.</string>
+    <string name="warning_import_csv_calibre">Η στήλη «comments» (σχόλια) από παλαιότερες εκδόσεις του Calibre μπορεί να δημιουργήσει μη έγκυρα αρχεία CSV. Αν εμφανιστεί κάποιο σφάλμα, η αναβάθμιση του Calibre στην έκδοση 9.10 ή μεταγενέστερη πριν από την εξαγωγή συνήθως το διορθώνει. Εναλλακτικά, μπορείτε να αφαιρέσετε τη στήλη «comments» από το αρχείο σας και να δοκιμάσετε ξανά την εισαγωγή.</string>
 </resources>
