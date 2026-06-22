@@ -293,7 +293,8 @@ public class WikidataSearchEngine
                    @NonNull final Book book)
             throws JSONException {
 
-        LoggerFactory.getLogger().d(TAG, document.toString());
+        // we don't get it from the site, just add it
+        book.setIsbn(productCode.asText());
 
         // We expect one result, just throw otherwise
         final JSONObject item = document.getJSONObject("results")
