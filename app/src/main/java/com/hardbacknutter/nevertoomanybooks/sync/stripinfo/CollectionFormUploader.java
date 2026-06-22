@@ -25,6 +25,7 @@ import android.os.LocaleList;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.math.MathUtils;
 
@@ -34,7 +35,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.OptionalLong;
 
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -47,11 +49,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * <strong>Used by the synchronisation logic, i.e. the {@link StripInfoWriter}.</strong>
@@ -85,14 +93,17 @@ class CollectionFormUploader {
     private final JSoupHelper jSoupHelper = new JSoupHelper();
 
     @NonNull
-    private final FutureHttp<Document> httpPost;
-    @NonNull
     private final String postUrl;
 
     @NonNull
     private final RealNumberParser ratingNumberParser;
     @NonNull
     private final MoneyParser moneyParser;
+    @NonNull
+    private final OkHttpClient httpClient;
+    private final boolean logEnabled;
+    @Nullable
+    private HttpCall httpCall;
 
     /**
      * Constructor.
@@ -102,13 +113,16 @@ class CollectionFormUploader {
     @AnyThread
     CollectionFormUploader(@NonNull final Context context) {
 
+        final StripInfoSearchEngine searchEngine =
+                (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
+        httpClient = searchEngine.createHttpClient();
+        final SearchEngineConfig config = searchEngine.getEngineId().getConfig();
+        //noinspection DataFlowIssue
+        logEnabled = config.isLogHttpGetRequests();
+
         //noinspection DataFlowIssue
         postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
                   + StripInfoSearchEngine.COLLECTION_FORM_URL;
-
-        httpPost = HttpCallFactory.create(EngineId.StripInfoBe);
-        httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                    HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED_UTF8);
 
         final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
@@ -131,12 +145,11 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     public void setOwned(@NonNull final Book book,
                          @NonNull final StripInfoCollectionData collectionData)
-            throws IOException, IllegalArgumentException, StorageException {
+            throws IOException, IllegalArgumentException {
 
         setBooleanByMode(book, collectionData,
                          collectionData.isOwned() ? "inBezit" : "notInBezit");
@@ -156,12 +169,11 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     public void setRead(@NonNull final Book book,
                         @NonNull final StripInfoCollectionData collectionData)
-            throws IOException, IllegalArgumentException, StorageException {
+            throws IOException, IllegalArgumentException {
 
         setBooleanByMode(book, collectionData,
                          book.isRead() ? "gelezen" : "notGelezen");
@@ -180,12 +192,11 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     public void setWanted(@NonNull final Book book,
                           @NonNull final StripInfoCollectionData collectionData)
-            throws IOException, IllegalArgumentException, StorageException {
+            throws IOException, IllegalArgumentException {
 
         setBooleanByMode(book, collectionData,
                          collectionData.isWanted() ? "inWishlist" : "notInWishlist");
@@ -219,15 +230,13 @@ class CollectionFormUploader {
             setOwned(book, collectionData);
         }
 
-        final String postBody = new Uri.Builder()
-                .appendQueryParameter(FF_SCORE, ratingToSite(book))
-                .appendQueryParameter(FF_STRIP_ID, externalId)
-                .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
-                .appendQueryParameter(FORM_NAME, "collScore")
-                .build()
-                .getEncodedQuery();
-        //noinspection DataFlowIssue
+        final RequestBody postBody = new FormBody.Builder()
+                .add(FF_SCORE, ratingToSite(book))
+                .add(FF_STRIP_ID, externalId)
+                .add(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                .add(FORM_MODE, MODE_SEND_FORM)
+                .add(FORM_NAME, "collScore")
+                .build();
         doPost(postBody);
     }
 
@@ -313,14 +322,12 @@ class CollectionFormUploader {
         builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKey.LOCATION));
         builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.PERSONAL_NOTES));
 
-        final String postBody =
-                builder.appendQueryParameter(FF_STRIP_ID, externalId)
-                       .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                       .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
-                       .appendQueryParameter(FORM_NAME, "collDetail")
-                       .build()
-                       .getEncodedQuery();
-        //noinspection DataFlowIssue
+        final RequestBody postBody = new FormBody.Builder()
+                .add(FF_STRIP_ID, externalId)
+                .add(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                .add(FORM_MODE, MODE_SEND_FORM)
+                .add(FORM_NAME, "collDetail")
+                .build();
         doPost(postBody);
     }
 
@@ -349,31 +356,29 @@ class CollectionFormUploader {
 
         // We first get the delete-form to make sure the server still has our book
         // (and to mimic the browser work flow).
-        String postBody = new Uri.Builder()
-                .appendQueryParameter(FF_STRIP_ID, externalId)
-                .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(FORM_MODE, "delete")
-                // no "frmName" used here
-                .build()
-                .getEncodedQuery();
+        RequestBody postBody;
 
-        //noinspection DataFlowIssue
+        postBody = new FormBody.Builder()
+                .add(FF_STRIP_ID, externalId)
+                .add(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                .add(FORM_MODE, "delete")
+                // no "frmName" used here
+                .build();
+
         final Document form = doPost(postBody);
 
         final OptionalLong siteExtId = jSoupHelper.getPositiveLong(form, FF_STRIP_ID);
         final OptionalLong siteCollId = jSoupHelper.getPositiveLong(form, FF_STRIP_COLLECTIE_ID);
         if (siteExtId.isPresent() && externalId.equals(String.valueOf(siteExtId.getAsLong()))
             && siteCollId.isPresent() && collectionId == siteCollId.getAsLong()) {
-            postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, externalId)
-                    .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                    .appendQueryParameter(FORM_MODE, "deleteConfirmation")
-                    .appendQueryParameter(FORM_NAME, "collDelete")
-                    .build()
-                    .getEncodedQuery();
+            postBody = new FormBody.Builder()
+                    .add(FF_STRIP_ID, externalId)
+                    .add(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                    .add(FORM_MODE, "deleteConfirmation")
+                    .add(FORM_NAME, "collDelete")
+                    .build();
 
             //TODO: should parse the response to check delete went ok.
-            //noinspection DataFlowIssue
             doPost(postBody);
         }
     }
@@ -387,26 +392,23 @@ class CollectionFormUploader {
      *
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
-     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     private void setBooleanByMode(@NonNull final Book book,
                                   @NonNull final StripInfoCollectionData collectionData,
                                   @NonNull final String mode)
-            throws IOException, IllegalArgumentException, StorageException {
+            throws IOException, IllegalArgumentException {
 
         final String externalId = book.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
         final long collectionId = collectionData.getCollectionId();
         if (collectionId == 0) {
             // Not in the collection yet, send a request to add it while setting the mode
-            final String postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, externalId)
-                    .appendQueryParameter(FF_STRIP_COLLECTIE_ID, "")
-                    .appendQueryParameter(FORM_MODE, mode)
-                    .build()
-                    .getEncodedQuery();
-            //noinspection DataFlowIssue
+            final RequestBody postBody = new FormBody.Builder()
+                    .add(FF_STRIP_ID, externalId)
+                    .add(FF_STRIP_COLLECTIE_ID, "")
+                    .add(FORM_MODE, mode)
+                    .build();
             final Document responseForm = doPost(postBody);
 
             jSoupHelper.getPositiveLong(responseForm, FF_STRIP_COLLECTIE_ID).ifPresent(id -> {
@@ -415,13 +417,11 @@ class CollectionFormUploader {
             });
         } else {
             // Already in our collection, send a request to set the mode
-            final String postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, externalId)
-                    .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                    .appendQueryParameter(FORM_MODE, mode)
-                    .build()
-                    .getEncodedQuery();
-            //noinspection DataFlowIssue
+            final RequestBody postBody = new FormBody.Builder()
+                    .add(FF_STRIP_ID, externalId)
+                    .add(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                    .add(FORM_MODE, mode)
+                    .build();
             doPost(postBody);
         }
     }
@@ -433,15 +433,24 @@ class CollectionFormUploader {
      *
      * @return the JSoup parsed Document
      *
-     * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     @NonNull
-    private Document doPost(@NonNull final String postBody)
-            throws IOException, StorageException {
+    private Document doPost(@NonNull final RequestBody postBody)
+            throws IOException {
 
-        return Objects.requireNonNull(httpPost.post(postUrl, postBody, bis ->
+        httpCall = HttpCallFactory.create(httpClient, R.string.site_stripinfo_be, logEnabled);
+        final Request request = new Request.Builder()
+                .url(postUrl)
+                .post(postBody)
+                .header(HttpConstants.ACCEPT_ENCODING,
+                        HttpConstants.ACCEPT_ENCODING_GZIP)
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE)
+                .build();
+
+        return Objects.requireNonNull(httpCall.post(request, (response, bis) ->
                 Jsoup.parse(bis, null, postUrl)));
     }
 
@@ -449,6 +458,10 @@ class CollectionFormUploader {
      * Request to cancel an ongoing post (to the site).
      */
     public void cancel() {
-        httpPost.cancel();
+        synchronized (this) {
+            if (httpCall != null) {
+                httpCall.cancel();
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,17 +20,18 @@
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -41,6 +42,11 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * <strong>Used by the {@link StripInfoSearchEngine} </strong>
@@ -81,30 +87,32 @@ public class CollectionFormParser {
     private static final String SIDE_FF_STRIP_COLLECTIE_ID = "stripCollectieId";
 
     @NonNull
-    private final FutureHttp<Document> httpPost;
+    private final OkHttpClient httpClient;
     @NonNull
     private final String postUrl;
 
     @NonNull
     private final CollectionParser formParser;
+    @Nullable
+    private HttpCall httpCall;
 
     /**
      * Constructor.
      *
      * @param context         Current context
+     * @param httpClient      to use
      * @param bookshelfMapper mapper for the wishlist/owned flags
      */
     @AnyThread
     public CollectionFormParser(@NonNull final Context context,
+                                @NonNull final OkHttpClient httpClient,
                                 @NonNull final BookshelfMapper bookshelfMapper) {
+
+        this.httpClient = httpClient;
 
         //noinspection DataFlowIssue
         postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
                   + StripInfoSearchEngine.COLLECTION_FORM_URL;
-
-        httpPost = HttpCallFactory.create(EngineId.StripInfoBe);
-        httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                    HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED_UTF8);
 
         formParser = new CollectionParser(context, bookshelfMapper);
     }
@@ -128,17 +136,26 @@ public class CollectionFormParser {
             throws IOException,
                    StorageException {
 
-        final String postBody = new Uri.Builder()
-                .appendQueryParameter(SIDE_FF_STRIP_ID, String.valueOf(externalId))
-                .appendQueryParameter(SIDE_FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(SIDE_FF_FORM_MODE, "detail")
+        final RequestBody postBody = new FormBody.Builder()
+                .add(SIDE_FF_STRIP_ID, String.valueOf(externalId))
+                .add(SIDE_FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                .add(SIDE_FF_FORM_MODE, "detail")
                 // no "frmName" used here
-                .build()
-                .getEncodedQuery();
+                .build();
 
-        //noinspection DataFlowIssue
-        final Document response = Objects.requireNonNull(
-                httpPost.post(postUrl, postBody, bis -> Jsoup.parse(bis, null, postUrl)));
+        httpCall = HttpCallFactory.create(httpClient, R.string.site_stripinfo_be, false);
+        final Request request = new Request.Builder()
+                .url(postUrl)
+                .post(postBody)
+                .header(HttpConstants.ACCEPT_ENCODING,
+                        HttpConstants.ACCEPT_ENCODING_GZIP)
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE)
+                .build();
+
+        final Document document = Objects.requireNonNull(
+                httpCall.post(request, (response, bis) -> Jsoup.parse(bis, null, postUrl)));
+        httpCall = null;
 
         final StripInfoCollectionData collectionData =
                 book.getStripInfoCollectionData().orElseGet(StripInfoCollectionData::new);
@@ -151,20 +168,24 @@ public class CollectionFormParser {
         formParser.parseReadFlag(root, ROW_FF_READ + externalId, book);
 
         // The other fields come from an ajax fetched side-panel
-        formParser.parseDigitalFlag(response, SIDE_FF_DIGITAL, book, collectionData);
-        formParser.parseAmount(response, SIDE_FF_AMOUNT, collectionData);
+        formParser.parseDigitalFlag(document, SIDE_FF_DIGITAL, book, collectionData);
+        formParser.parseAmount(document, SIDE_FF_AMOUNT, collectionData);
 
-        formParser.parseDateAcquired(response, SIDE_FF_DATE_ACQUIRED, book);
-        formParser.parseEdition(response, SIDE_FF_EDITION, book);
-        formParser.parseLocation(response, SIDE_FF_LOCATION, book);
-        formParser.parseNotes(response, SIDE_FF_PERSONAL_NOTES, book);
-        formParser.parsePricePaid(response, SIDE_FF_PRICE_PAID, book);
-        formParser.parseRating(response, SIDE_FF_RATING, book);
+        formParser.parseDateAcquired(document, SIDE_FF_DATE_ACQUIRED, book);
+        formParser.parseEdition(document, SIDE_FF_EDITION, book);
+        formParser.parseLocation(document, SIDE_FF_LOCATION, book);
+        formParser.parseNotes(document, SIDE_FF_PERSONAL_NOTES, book);
+        formParser.parsePricePaid(document, SIDE_FF_PRICE_PAID, book);
+        formParser.parseRating(document, SIDE_FF_RATING, book);
 
         book.setStripInfoCollectionData(collectionData);
     }
 
     public void cancel() {
-        httpPost.cancel();
+        synchronized (this) {
+            if (httpCall != null) {
+                httpCall.cancel();
+            }
+        }
     }
 }

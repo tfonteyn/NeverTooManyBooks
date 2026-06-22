@@ -292,7 +292,8 @@ public class StripInfoSearchEngine
         }
 
         // Recreate every time we load a doc; the user could have changed the preferences.
-        collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
+        collectionFormParser = new CollectionFormParser(context, createHttpClient(),
+                                                        new BookshelfMapper());
     }
 
     @Override
