@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrar
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zdbkatalog.ZdbKatalogSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -151,7 +152,8 @@ public enum EngineId
     OpenLibrary(OpenLibrarySearchEngine.class, true),
     StripInfoBe(StripInfoSearchEngine.class, true),
     StripWebBe(StripWebSearchEngine.class, true),
-    Wikidata(WikidataSearchEngine.class, true);
+    Wikidata(WikidataSearchEngine.class, true),
+    ZdbKatalog(ZdbKatalogSearchEngine.class, true);
 
     /** {@link Parcelable}. */
     public static final Creator<EngineId> CREATOR = new Creator<>() {
@@ -359,6 +361,7 @@ public enum EngineId
                 }
 
                 type.addSite(Wikidata, true);
+                type.addSite(ZdbKatalog, true);
                 break;
             }
             case Covers: {

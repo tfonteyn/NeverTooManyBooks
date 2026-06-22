@@ -77,6 +77,8 @@
             translatable="false">StripWeb</string>
     <string name="site_wikidata"
             translatable="false">Wikidata</string>
+    <string name="site_zdbkatalog"
+            translatable="false">ZDB katalog</string>
 
     <!-- Synchronization provider.
      https://calibre-ebook.com -->
