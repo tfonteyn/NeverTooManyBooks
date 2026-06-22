@@ -364,7 +364,7 @@ public abstract class SearchEngineBase
      */
     @NonNull
     @EmptySuper
-    protected OkHttpClient createHttpClient() {
+    public OkHttpClient createHttpClient() {
         final Throttler throttler = config.getThrottler();
         final boolean enableLog = config.isLogHttpGetRequests();
 

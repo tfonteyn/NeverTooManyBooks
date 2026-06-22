@@ -268,7 +268,7 @@ public class DnbSearchEngine
 
     @NonNull
     @Override
-    protected OkHttpClient createHttpClient() {
+    public OkHttpClient createHttpClient() {
         final SearchEngineConfig config = getEngineId().getConfig();
         //noinspection DataFlowIssue
         final Throttler throttler = config.getThrottler();
