@@ -371,7 +371,7 @@ public class BedethequeSearchEngine
      * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
      *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param searchedCode which the user searched for;
-     *                     Will be {@code null} if the search was done by SID
+     *                     can be {@code null} if the search used different criteria
      * @param book         to update
      *
      * @throws StorageException     on storage related failures

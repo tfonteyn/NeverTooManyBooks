@@ -691,7 +691,7 @@ public class StripInfoSearchEngine
      * as present of the physical book,
      * while the barcode field will (usually) contain the correct ISBN.
      *
-     * @param searchedCode the ProductCode which we searched for
+     * @param searchedCode which the user searched for
      * @param book         to update
      */
     @VisibleForTesting
