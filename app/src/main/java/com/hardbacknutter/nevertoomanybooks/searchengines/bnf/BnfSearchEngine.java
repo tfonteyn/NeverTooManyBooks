@@ -103,6 +103,15 @@ public class BnfSearchEngine
 
     private static final String ARK_12148 = "/ark:/12148/";
 
+    /**
+     * We're using the general search here. We could use their advanced search
+     * and specify 'what' we're searching, e.g. ISBN/ISSN versus general-text.
+     * But the results at least for ISBN make no real difference.
+     * ISSN is trickier:
+     * searching on an Issn8 finds individual entries instead of a series.
+     * and Issn13 codes return no result.
+     * 2026-06-23: not going to support ISSN specifically, no point...
+     */
     private static final String SEARCH = "/rechercher.do?motRecherche=%1$s"
                                          + "&critereRecherche=0"
                                          + "&depart=0"
