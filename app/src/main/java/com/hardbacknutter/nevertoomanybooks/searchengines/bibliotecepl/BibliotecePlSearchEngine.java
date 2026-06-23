@@ -43,9 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -54,6 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -72,6 +72,7 @@ import org.jsoup.select.Elements;
 public class BibliotecePlSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
+                   SearchEngine.ByIssn,
                    SearchEngine.ByExternalId,
                    SearchEngine.ByText {
 
@@ -135,7 +136,8 @@ public class BibliotecePlSearchEngine
     private static final String SPAN_DATA_IPUB_SEARCH_W = "span[data-ipub-search=w]";
 
     // The ISBN prefix also works for ISSN numbers.
-    private static final String SEARCH_PREFIX_ISBN_OR_ISSN = "isbn:";
+    private static final String SEARCH_PREFIX_ISBN = "isbn:";
+    private static final String SEARCH_PREFIX_ISSN = "issn:";
     private static final String SEARCH_PREFIX_TITLE = "t:";
     private static final String SEARCH_PREFIX_PERSON = "o:";
     private static final String SEARCH_PREFIX_PUBLISHER = "w:";
@@ -222,18 +224,35 @@ public class BibliotecePlSearchEngine
 
     @NonNull
     @Override
+    public Book searchByIssn(@NonNull final Context context,
+                             @NonNull final ProductCode productCode,
+                             @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        return search(context, SEARCH_PREFIX_ISSN, productCode, fetchCovers);
+    }
+
+    @NonNull
+    @Override
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
+        return search(context, SEARCH_PREFIX_ISBN, productCode, fetchCovers);
+    }
 
+    @NonNull
+    private Book search(@NonNull final Context context,
+                        @NonNull final String searchPrefix,
+                        @NonNull final ProductCode productCode,
+                        @NonNull final boolean[] fetchCovers)
+            throws SearchException, CredentialsException, StorageException {
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
-        final String url = getHostUrl() + SEARCH + SEARCH_PREFIX_ISBN_OR_ISSN + codeStr;
+        final String url = getHostUrl() + SEARCH + searchPrefix + codeStr;
         final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
-        // force the isbn here as the result (single book) can contain multiple isbn
+        // force the product code  here as the result (single book) can contain multiple
         book.setIsbn(codeStr);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -269,9 +288,12 @@ public class BibliotecePlSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
-                words.add(SEARCH_PREFIX_ISBN_OR_ISSN).add(codeStr);
+            if (productCode.getType() == ProductCodeType.Issn8
+                || productCode.getType() == ProductCodeType.Issn13) {
+                words.add(SEARCH_PREFIX_ISSN).add(productCode.asText());
+            } else {
+                final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+                words.add(SEARCH_PREFIX_ISBN).add(codeStr);
             }
         }
 
