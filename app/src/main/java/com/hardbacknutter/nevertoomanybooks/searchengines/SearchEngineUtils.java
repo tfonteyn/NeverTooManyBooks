@@ -20,12 +20,15 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -89,6 +92,8 @@ public final class SearchEngineUtils {
     private static final Pattern SERIES_FROM_BOOK_TITLE_PATTERN =
             Pattern.compile("([^(]+.*)\\s*\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    private static final String ERROR_FAILED_TO_CONVERT_TO_ISSN_8 = "Failed to convert to Issn8: ";
 
     private SearchEngineUtils() {
     }
@@ -210,6 +215,40 @@ public final class SearchEngineUtils {
         } else {
             return productCode.asText();
         }
+    }
+
+    /**
+     * Most (not all) sites want the ISSN formatted as "XXXX-XXXX".
+     *
+     * @param context     Current context
+     * @param engineId    for the required format
+     * @param productCode to format
+     *
+     * @return formatted product code text
+     *
+     * @throws SearchException if the product code was not an Issn8/compatible
+     */
+    public static String formatIssn8(@NonNull final Context context,
+                                     @NonNull final EngineId engineId,
+                                     @NonNull final ProductCode productCode)
+            throws SearchException {
+        final String codeStr;
+        try {
+            codeStr = productCode.asText(ProductCodeType.Issn8);
+        } catch (@NonNull final NumberFormatException e) {
+            // We should never get here... flw
+            throw new SearchException(engineId,
+                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
+                                      context.getString(R.string.error_unexpected));
+        }
+        if (codeStr.length() != 8) {
+            // We should never get here... flw
+            throw new SearchException(engineId,
+                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
+                                      context.getString(R.string.error_unexpected));
+        }
+
+        return codeStr.substring(0, 4) + "-" + codeStr.substring(4);
     }
 
     /**

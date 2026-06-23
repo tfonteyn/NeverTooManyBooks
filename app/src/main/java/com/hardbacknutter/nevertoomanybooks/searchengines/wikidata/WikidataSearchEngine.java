@@ -41,18 +41,17 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -71,8 +70,6 @@ public class WikidataSearchEngine
     private static final String SERIES_URL = "https://www.wikidata.org/wiki/%s";
 
     private static final String PREFERENCE_KEY = "wikidata";
-
-    private static final String ERROR_FAILED_TO_CONVERT_TO_ISSN_8 = "Failed to convert to Issn8: ";
 
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
@@ -235,23 +232,9 @@ public class WikidataSearchEngine
     public Book searchByIssn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException {
 
-        String codeStr;
-        try {
-            codeStr = productCode.asText(ProductCodeType.Issn8);
-        } catch (@NonNull final NumberFormatException e) {
-            // We should never get here... flw
-            throw new SearchException(getEngineId(),
-                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
-                                      context.getString(R.string.error_unexpected));
-        }
-        if (codeStr.length() != 8) {
-            // We should never get here... flw
-            throw new SearchException(getEngineId(),
-                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
-                                      context.getString(R.string.error_unexpected));
-        }
+        final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         String lang = userLocale.getLanguage();
@@ -260,8 +243,6 @@ public class WikidataSearchEngine
         }
         final String serviceLang = "en".equals(lang) ? "en,*" : lang + ",en,*";
 
-        // Format as XXXX-XXXX
-        codeStr = codeStr.substring(0, 4) + "-" + codeStr.substring(4);
         final String sparql = String.format(ISSN_SPARQL, codeStr, serviceLang);
 
         final Book book = new Book();

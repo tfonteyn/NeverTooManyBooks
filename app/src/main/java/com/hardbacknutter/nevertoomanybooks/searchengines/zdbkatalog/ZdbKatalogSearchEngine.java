@@ -47,12 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.Jsoup;
@@ -68,7 +68,6 @@ public class ZdbKatalogSearchEngine
 
     private static final String SITE_URL = "https://zdb-katalog.de";
     private static final String PREFERENCE_KEY = "zdbkatalog";
-    private static final String ERROR_FAILED_TO_CONVERT_TO_ISSN_8 = "Failed to convert to Issn8: ";
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
 
@@ -127,24 +126,7 @@ public class ZdbKatalogSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        String codeStr;
-        try {
-            codeStr = productCode.asText(ProductCodeType.Issn8);
-        } catch (@NonNull final NumberFormatException e) {
-            // We should never get here... flw
-            throw new SearchException(getEngineId(),
-                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
-                                      context.getString(R.string.error_unexpected));
-        }
-        if (codeStr.length() != 8) {
-            // We should never get here... flw
-            throw new SearchException(getEngineId(),
-                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
-                                      context.getString(R.string.error_unexpected));
-        }
-        //0176-8824
-        // Format as XXXX-XXXX
-        codeStr = codeStr.substring(0, 4) + "-" + codeStr.substring(4);
+        final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
 
         final String viewState = getFacesViewState(context);
         if (viewState == null || viewState.isEmpty()) {
