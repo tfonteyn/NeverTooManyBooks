@@ -196,6 +196,7 @@ public class WikidataSearchEngine
                                     "https://www.wikidata.org",
                                     Locale.US)
                 .setIdentifierKeys(Identifier.SID_WIKIDATA)
+                .setPreferenceFragmentClazz(WikidataPreferencesFragment.class)
                 .setAuthorResolverSupplier(WikidataAuthorResolver::create);
     }
 

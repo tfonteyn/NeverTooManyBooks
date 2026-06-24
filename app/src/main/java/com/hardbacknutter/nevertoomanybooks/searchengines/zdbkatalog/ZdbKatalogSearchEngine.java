@@ -116,7 +116,8 @@ public class ZdbKatalogSearchEngine
                                     SITE_URL,
                                     Locale.GERMANY)
                 // It shared the DNB identifier!
-                .setIdentifierKeys(Identifier.SID_DNB);
+                .setIdentifierKeys(Identifier.SID_DNB)
+                .setPreferenceFragmentClazz(ZdbKatalogPreferencesFragment.class);
     }
 
     @NonNull
