@@ -216,7 +216,11 @@ public class FutureHttpImpl<R>
                                                     request.getURL(),
                                                     location);
             }
-            case HttpURLConnection.HTTP_FORBIDDEN: {
+            // 403 if we're 100% blocked.
+            // 405 if we hit a wall like
+            // https://anubis.techaro.lol/docs/design/how-anubis-works/
+            case HttpURLConnection.HTTP_FORBIDDEN:
+            case HttpURLConnection.HTTP_BAD_METHOD: {
                 throw new HttpForbiddenException(siteResId,
                                                  request.getResponseMessage(),
                                                  request.getURL(),
