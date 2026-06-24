@@ -152,13 +152,16 @@ public class ZdbKatalogSearchEngine
         try {
             httpPost = HttpCallFactory.create(getEngineId());
             final Document document = httpPost
-                    .setRequestProperty(HttpConstants.USER_AGENT,
-                                        ZDB_USER_AGENT)
+                    // Override Mozilla!
+                    .setRequestProperty(HttpConstants.USER_AGENT, ZDB_USER_AGENT)
+
                     .setRequestProperty(HttpConstants.ACCEPT_ENCODING,
                                         HttpConstants.ACCEPT_ENCODING_GZIP)
                     .setRequestProperty(HttpConstants.CONNECTION,
                                         HttpConstants.CONNECTION_KEEP_ALIVE)
-                    .post(SITE_URL + "/xindex.html", postBody,
+                    .setRequestProperty(HttpConstants.CONTENT_TYPE,
+                                        HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
+                    .post(SITE_URL + "/index.xhtml", postBody,
                           is -> Jsoup.parse(is, CHARSET, SITE_URL)
                     );
             if (document != null) {
@@ -266,7 +269,7 @@ public class ZdbKatalogSearchEngine
 
         final Document document = loadDocument(context, SITE_URL,
                                                Map.of(HttpConstants.USER_AGENT, ZDB_USER_AGENT));
-        final Element vse = document.selectFirst("input[name=javax.faces.ViewState]");
+        final Element vse = document.selectFirst("input[name='javax.faces.ViewState']");
         if (vse == null) {
             return null;
         }
