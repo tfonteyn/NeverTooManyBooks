@@ -44,6 +44,12 @@ public final class HttpConstants {
 
     /**
      * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin">
+     * Origin</a>
+     */
+    public static final String ORIGIN = "Origin";
+    /**
+     * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection">
      * Connection</a>
      */
@@ -219,6 +225,18 @@ public final class HttpConstants {
      * DNT</a>
      */
     public static final String DNT = "DNT";
+    /**
+     * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie">
+     * Cookie</a>
+     */
+    public static final String COOKIE = "Cookie";
+    /**
+     * HTTP Response Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie">
+     * Set-Cookie</a>
+     */
+    public static final String RESPONSE_HEADER_SET_COOKIE = "Set-Cookie";
 
     /**
      * HTTP Response Header.
@@ -234,9 +252,6 @@ public final class HttpConstants {
      */
     public static final String RESPONSE_HEADER_CONTENT_ENCODING = "Content-Encoding";
 
-    private HttpConstants() {
-    }
-
     /**
      * HTTP Response Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Length">
@@ -250,4 +265,7 @@ public final class HttpConstants {
      * Retry-After</a>
      */
     public static final String RESPONSE_HEADER_RETRY_AFTER = "Retry-After";
+
+    private HttpConstants() {
+    }
 }
