@@ -29,15 +29,18 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -80,8 +83,18 @@ public class ZdbKatalogSearchEngine
             Map.entry("OCLC-Nr.", Identifier.SID_OCLC)
     );
 
+    private static final String COOKIE_NAME = "JSESSIONID";
+    /**
+     * This is NOT the domain assigned to the cookie by the server.
+     * We get the Cookie without domain. Out cookie store will
+     * automatically assign the url as the domain.
+     */
+    private static final String COOKIE_DOMAIN = "zdb-katalog.de";
+
     @Nullable
     private FutureHttp<Document> httpPost;
+    @Nullable
+    private HttpCookie sessionCookie;
 
     /**
      * Constructor.
@@ -96,6 +109,9 @@ public class ZdbKatalogSearchEngine
     public ZdbKatalogSearchEngine(@NonNull final Context appContext,
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+        // We MUST bootstrap it here to ensure it's active before the first http request send
+        // No further interaction with it is needed.
+        ServiceLocator.getInstance().getCookieManager();
     }
 
     /**
@@ -129,28 +145,14 @@ public class ZdbKatalogSearchEngine
 
         final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
 
-        final String viewState = getFacesViewState(context);
-        if (viewState == null || viewState.isEmpty()) {
-            throw new SearchException(getEngineId(),
-                                      "No viewState",
-                                      context.getString(R.string.error_unexpected));
-        }
-
-        final String postBody = new StringJoiner("&")
-                .add("mainForm=mainForm")
-                .add("mainForm:searchTermFilter:searchTerm="
-                     + URLEncoder.encode(codeStr, StandardCharsets.UTF_8))
-                .add("mainForm:searchTermFilter:searchKey:select=iss")
-                .add("mainForm:searchTermFilter:j_idt68:searchBtn=Search")
-                .add("mainForm:yearFrom=1500")
-                .add("mainForm:yearTo=2026")
-                .add("javax.faces.ViewState=" + viewState)
-                .toString();
+        final String postBody = createPostBody(context, codeStr);
 
         final Book book = new Book();
 
         try {
             httpPost = HttpCallFactory.create(getEngineId());
+            final String urlStr = SITE_URL + "/index.xhtml";
+            //noinspection DataFlowIssue
             final Document document = httpPost
                     // Override Mozilla!
                     .setRequestProperty(HttpConstants.USER_AGENT, ZDB_USER_AGENT)
@@ -161,9 +163,14 @@ public class ZdbKatalogSearchEngine
                                         HttpConstants.CONNECTION_KEEP_ALIVE)
                     .setRequestProperty(HttpConstants.CONTENT_TYPE,
                                         HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
-                    .post(SITE_URL + "/index.xhtml", postBody,
-                          is -> Jsoup.parse(is, CHARSET, SITE_URL)
-                    );
+                    .setRequestProperty(HttpConstants.REFERER, urlStr)
+                    .setRequestProperty(HttpConstants.ORIGIN, SITE_URL)
+                    // manually add the cookie
+                    .setRequestProperty(HttpConstants.COOKIE,
+                                        COOKIE_NAME + "=" + sessionCookie.getValue())
+                    .post(urlStr, postBody,
+                          (con, is) -> Jsoup.parse(is, CHARSET, SITE_URL));
+
             if (document != null) {
                 parseIssn(context, document, productCode, book);
             }
@@ -172,8 +179,71 @@ public class ZdbKatalogSearchEngine
             throw new SearchException(getEngineId(), e);
         }
 
-
         return book;
+    }
+
+    @NonNull
+    private String createPostBody(@NonNull final Context context,
+                                  @NonNull final String codeStr)
+            throws SearchException, CredentialsException {
+        String viewState = null;
+
+        final Document document = loadDocument(context, SITE_URL,
+                                               Map.of(HttpConstants.USER_AGENT, ZDB_USER_AGENT));
+
+        // The cookie comes it WITHOUT a domain name (but does get once assigned
+        // by the local CookieStore). Hence, it will not be resend automatically.
+        // We store it in this instance and will manually add it.
+        final Optional<HttpCookie> oCookie =
+                ServiceLocator.getInstance()
+                              .getCookieManager()
+                              .getCookieStore()
+                              .getCookies()
+                              .stream()
+                              .filter(c -> COOKIE_NAME.equals(c.getName())
+                                           && COOKIE_DOMAIN.equals(c.getDomain()))
+                              .findFirst();
+
+        if (oCookie.isEmpty()) {
+            throw new SearchException(getEngineId(),
+                                      "No JSESSIONID cookie",
+                                      context.getString(R.string.error_unexpected));
+        }
+
+        sessionCookie = oCookie.get();
+
+        final Element vse = document.selectFirst("input[name='javax.faces.ViewState']");
+        if (vse != null) {
+            viewState = vse.attr("value");
+        }
+        if (viewState == null || viewState.isEmpty()) {
+            throw new SearchException(getEngineId(),
+                                      "No viewState",
+                                      context.getString(R.string.error_unexpected));
+        }
+
+        final Element searchBtn = document.selectFirst("input[name$=':searchBtn']");
+        if (searchBtn == null) {
+            throw new SearchException(getEngineId(),
+                                      "no searchBtn",
+                                      context.getString(R.string.error_unexpected));
+        }
+        // The name has an id in it which changes....
+        final String searchButtonName = searchBtn.attr("name");
+
+        return new StringJoiner("&")
+                .add("mainForm=mainForm")
+                .add("mainForm:searchTermFilter:searchTerm="
+                     + URLEncoder.encode(codeStr, StandardCharsets.UTF_8)
+                                 // javax.faces expects RFC 3986 space -> %20
+                                 // while standard encode would give us a "+"
+                                 .replace("+", "%20"))
+                .add("mainForm:searchTermFilter:searchKey:select=iss")
+                .add(searchButtonName + "=Search")
+                .add("mainForm:yearFrom=1500")
+                .add("mainForm:yearTo=2026")
+                .add("javax.faces.ViewState=" + viewState)
+                .toString();
     }
 
     @VisibleForTesting
@@ -261,19 +331,6 @@ public class ZdbKatalogSearchEngine
         if (!book.hasIsbn()) {
             book.setIsbn(productCode.asText());
         }
-    }
-
-    @Nullable
-    private String getFacesViewState(@NonNull final Context context)
-            throws SearchException, CredentialsException {
-
-        final Document document = loadDocument(context, SITE_URL,
-                                               Map.of(HttpConstants.USER_AGENT, ZDB_USER_AGENT));
-        final Element vse = document.selectFirst("input[name='javax.faces.ViewState']");
-        if (vse == null) {
-            return null;
-        }
-        return vse.attr("value");
     }
 
     @Override
