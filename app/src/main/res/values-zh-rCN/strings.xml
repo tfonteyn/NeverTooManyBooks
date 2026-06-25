@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|»|「|」) --><!--suppress LongLine --><resources>
@@ -916,4 +913,6 @@
     <string name="pt_deduplication_title_matching_summary_off">仅适用于使用冠词的语言。英语示例：“The Lord of The Rings”和“Lord of The Rings, The”。</string>
     <string name="action_edit_with_ellipsis">编辑于…</string>
     <string name="warning_import_csv_calibre">来自旧版本 Calibre 的“comments”（评论）列可能会导致 CSV 文件无效。如果遇到错误，通常在导出前将 Calibre 更新到 9.10 或更高版本即可解决。或者，您也可以删除文件中的“comments”列，然后重试导入。</string>
+    <string name="book_format_newspaper">报纸</string>
+    <string name="book_format_periodical">定期刊物</string>
 </resources>
