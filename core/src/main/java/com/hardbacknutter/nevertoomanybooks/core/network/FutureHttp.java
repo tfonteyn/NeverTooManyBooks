@@ -239,7 +239,7 @@ public interface FutureHttp<R> {
     @Nullable
     R post(@NonNull String urlStr,
            @NonNull String postBody,
-           @Nullable ActionFunction<InputStream, R> responseProcessor)
+           @Nullable ResponseProcessor<InputStream, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,

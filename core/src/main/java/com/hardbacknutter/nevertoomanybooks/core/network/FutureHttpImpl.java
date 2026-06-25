@@ -792,7 +792,7 @@ public class FutureHttpImpl<R>
     @Override
     public R post(@NonNull final String urlStr,
                   @NonNull final String postBody,
-                  @Nullable final ActionFunction<InputStream, R> responseProcessor)
+                  @Nullable final ResponseProcessor<InputStream, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
@@ -824,10 +824,10 @@ public class FutureHttpImpl<R>
                              BufferedInputStream bis = new BufferedInputStream(is, bufferSize)) {
                             if (isZipped(request)) {
                                 try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                                    return responseProcessor.apply(gzs);
+                                    return responseProcessor.apply(request, gzs);
                                 }
                             } else {
-                                return responseProcessor.apply(bis);
+                                return responseProcessor.apply(request, bis);
                             }
                         }
                     }
