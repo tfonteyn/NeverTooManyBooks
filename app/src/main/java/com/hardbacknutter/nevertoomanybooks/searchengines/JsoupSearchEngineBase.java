@@ -35,10 +35,12 @@ import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoup.parser.Parser;
 
 /**
  * A thin layer between the {@link SearchEngineBase} and the actual engine implementation.
- * This class provides {@link #loadDocument(Context, String, Map)} for JSoup based engines.
+ * This class provides {@link #loadDocument(Context, String, Map)} for Jsoup based engines
+ * and some cleaner methods which accept Jsoup objects.
  */
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
@@ -75,6 +77,14 @@ public abstract class JsoupSearchEngineBase
         this.charSetName = charSetName;
     }
 
+    private void ensureLoader(@NonNull final Context context) {
+        if (jsoupLoader == null) {
+            jsoupLoader = new JsoupLoader(createGetDocumentRequest(context));
+            jsoupLoader.setCharSetName(charSetName);
+            jsoupLoader.setSslContext(getSslContext());
+        }
+    }
+
     /**
      * Load the url into a parsed {@link org.jsoup.nodes.Document}.
      *
@@ -94,12 +104,27 @@ public abstract class JsoupSearchEngineBase
                                  @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
         try {
-            if (jsoupLoader == null) {
-                jsoupLoader = new JsoupLoader(createGetDocumentRequest(context));
-                jsoupLoader.setCharSetName(charSetName);
-                jsoupLoader.setSslContext(getSslContext());
-            }
-            return jsoupLoader.loadDocument(context, url, requestProperties);
+            ensureLoader(context);
+            //noinspection DataFlowIssue
+            return jsoupLoader.loadDocument(context, Parser.htmlParser(), url, requestProperties);
+
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getEngineId(), e);
+        }
+    }
+
+
+
+    @WorkerThread
+    @NonNull
+    public Document loadXMLDocument(final Context context,
+                                     final String url,
+                                    @Nullable final Map<String, String> requestProperties)
+            throws SearchException, CredentialsException {
+        try {
+            ensureLoader(context);
+            //noinspection DataFlowIssue
+            return jsoupLoader.loadDocument(context, Parser.xmlParser(), url, requestProperties);
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);

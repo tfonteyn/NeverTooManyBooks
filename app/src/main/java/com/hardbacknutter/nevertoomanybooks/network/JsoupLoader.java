@@ -42,6 +42,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 
 /**
  * Provide a more or less robust base to load a url and parse the HTML with Jsoup.
@@ -100,6 +101,22 @@ public class JsoupLoader {
         document = null;
     }
 
+    @WorkerThread
+    @NonNull
+    public Document loadDocument(@NonNull final Context context,
+                                 @NonNull final String url,
+                                 @Nullable final Map<String, String> requestProperties)
+            throws IOException {
+
+        // are we requesting the same url again ?
+        if (document != null && url.equals(requestUrl)) {
+            // return the previously parsed doc
+            return document;
+        }
+
+        return loadDocument(context, Parser.htmlParser(), url, requestProperties);
+    }
+
     /**
      * Fetch the URL and parse it into {@link #document}.
      * Will silently return if it has downloaded the document before.
@@ -108,6 +125,7 @@ public class JsoupLoader {
      * The content encoding is: "Accept-Encoding", "gzip"
      *
      * @param context           Current context
+     * @param parser            to use
      * @param url               to fetch
      * @param requestProperties optional
      *
@@ -118,6 +136,7 @@ public class JsoupLoader {
     @WorkerThread
     @NonNull
     public Document loadDocument(@NonNull final Context context,
+                                 @NonNull final Parser parser,
                                  @NonNull final String url,
                                  @Nullable final Map<String, String> requestProperties)
             throws IOException {
@@ -154,7 +173,8 @@ public class JsoupLoader {
                     requestProperties.forEach(httpGet::setRequestProperty);
                 }
 
-                document = httpGet.get(requestUrl, this::processResponse);
+                document = httpGet.get(requestUrl, (response, is) ->
+                        processResponse(response, is, parser));
                 // Should never be null, as processResponse is never null
                 // but the 'get' contract is @Nullable.
                 if (document != null) {
@@ -219,7 +239,8 @@ public class JsoupLoader {
 
     @NonNull
     private Document processResponse(@NonNull final HttpURLConnection response,
-                                     @NonNull final InputStream is)
+                                     @NonNull final InputStream is,
+                                     @NonNull final Parser parser)
             throws IOException {
         // the original url will change after a redirect.
         // We need the actual url for further processing.
@@ -257,7 +278,7 @@ public class JsoupLoader {
         However, that is WRONG (org.jsoup:jsoup:1.11.3)
         It will NOT resolve the redirect itself and 'location' == 'baseUri'
         */
-        final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader);
+        final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader, parser);
         if (httpGet.isLoggingEnabled()) {
             LoggerFactory.getLogger()
                          .d(TAG, "processResponse|disconnect",
