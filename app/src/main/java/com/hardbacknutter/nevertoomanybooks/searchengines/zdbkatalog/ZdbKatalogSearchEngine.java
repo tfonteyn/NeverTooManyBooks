@@ -22,35 +22,29 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.zdbkatalog;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.io.IOException;
-import java.net.HttpCookie;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -58,11 +52,18 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
+/**
+ * German language magazines and newspapers.
+ * <p>
+ * <a href="https://zdb-katalog.de">Deutsche Nationalbibliothek (ZDB)</a>
+ * <a href="https://zdb-katalog.de">Germany's National Library (ZDB)</a>
+ *
+ * @see <a href="https://www.dnb.de/EN/Professionell/Metadatendienste/Datenbezug/SRU/sru_node.html#doc250692bodyText1">
+ *         DNB sru searches</a>
+ */
 public class ZdbKatalogSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIssn {
@@ -71,30 +72,31 @@ public class ZdbKatalogSearchEngine
 
     private static final String SITE_URL = "https://zdb-katalog.de";
     private static final String PREFERENCE_KEY = "zdbkatalog";
-    /** Website character encoding. */
-    private static final String CHARSET = "UTF-8";
-
-    private static final String ZDB_USER_AGENT =
-            "NTMB/8.0 (Android; Gentle-Scraper; throttled to max 1 req/second)";
 
     // 2026-06-21
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
-            Map.entry("OCLC number", Identifier.SID_OCLC),
-            Map.entry("OCLC-Nr.", Identifier.SID_OCLC)
+            Map.entry("OCoLC", Identifier.SID_OCLC),
+            Map.entry("Be", Identifier.SID_KBR),
+            Map.entry("NL-HaKB", Identifier.SID_KBNL),
+            Map.entry("DLC", Identifier.SID_LCCN),
+            Map.entry("US-dlc", Identifier.SID_LCCN),
+            Map.entry("DE-599", Identifier.SID_ZDB_KATALOG),
+            Map.entry("PoLiBN", Identifier.SID_PORBASE),
+            Map.entry("SE-LIBR", Identifier.SID_LIBRIS)
     );
 
-    private static final String COOKIE_NAME = "JSESSIONID";
-    /**
-     * This is NOT the domain assigned to the cookie by the server.
-     * We get the Cookie without domain. Out cookie store will
-     * automatically assign the url as the domain.
-     */
-    private static final String COOKIE_DOMAIN = "zdb-katalog.de";
+    private static final Pattern IDENT_PATTERN = Pattern.compile("^\\(([^)]+)\\)(.+)$");
+    private static final Pattern DIGITS_PATTERN = Pattern.compile("[^0-9]");
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+    private static final Pattern M21_CTRL_PATTERN = Pattern.compile("[\\u0080-\\u009F]");
 
-    @Nullable
-    private FutureHttp<Document> httpPost;
-    @Nullable
-    private HttpCookie sessionCookie;
+    private static final String ISSN_URL = "https://services.dnb.de/sru/zdb?"
+                                           + "version=1.1"
+                                           + "&operation=searchRetrieve"
+                                           // escape and encode the '=' as %%3D
+                                           + "&query=iss%%3D%1$s"
+                                           + "&recordSchema=MARC21-xml"
+                                           + "&maximumRecords=1";
 
     /**
      * Constructor.
@@ -141,206 +143,175 @@ public class ZdbKatalogSearchEngine
     public Book searchByIssn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws SearchException, CredentialsException {
 
         final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
 
-        final String postBody = createPostBody(context, codeStr);
+        final String url = String.format(ISSN_URL, codeStr);
+        final Document document = loadXMLDocument(context, url, null);
 
         final Book book = new Book();
 
-        try {
-            httpPost = HttpCallFactory.create(getEngineId());
-            final String urlStr = SITE_URL + "/index.xhtml";
-            //noinspection DataFlowIssue
-            final Document document = httpPost
-                    // Override Mozilla!
-                    .setRequestProperty(HttpConstants.USER_AGENT, ZDB_USER_AGENT)
-
-                    .setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-                                        HttpConstants.ACCEPT_ENCODING_GZIP)
-                    .setRequestProperty(HttpConstants.CONNECTION,
-                                        HttpConstants.CONNECTION_KEEP_ALIVE)
-                    .setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                        HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
-                    .setRequestProperty(HttpConstants.REFERER, urlStr)
-                    .setRequestProperty(HttpConstants.ORIGIN, SITE_URL)
-                    // manually add the cookie
-                    .setRequestProperty(HttpConstants.COOKIE,
-                                        COOKIE_NAME + "=" + sessionCookie.getValue())
-                    .post(urlStr, postBody,
-                          (con, is) -> Jsoup.parse(is, CHARSET, SITE_URL));
-
-            if (document != null) {
-                parseIssn(context, document, productCode, book);
-            }
-
-        } catch (@NonNull final IOException e) {
-            throw new SearchException(getEngineId(), e);
+        if (!isCancelled()) {
+            parseIssnMARC21xml(context, document, productCode, book);
         }
 
         return book;
     }
 
-    @NonNull
-    private String createPostBody(@NonNull final Context context,
-                                  @NonNull final String codeStr)
-            throws SearchException, CredentialsException {
-        String viewState = null;
-
-        final Document document = loadDocument(context, SITE_URL,
-                                               Map.of(HttpConstants.USER_AGENT, ZDB_USER_AGENT));
-
-        // The cookie comes it WITHOUT a domain name (but does get once assigned
-        // by the local CookieStore). Hence, it will not be resend automatically.
-        // We store it in this instance and will manually add it.
-        final Optional<HttpCookie> oCookie =
-                ServiceLocator.getInstance()
-                              .getCookieManager()
-                              .getCookieStore()
-                              .getCookies()
-                              .stream()
-                              .filter(c -> COOKIE_NAME.equals(c.getName())
-                                           && COOKIE_DOMAIN.equals(c.getDomain()))
-                              .findFirst();
-
-        if (oCookie.isEmpty()) {
-            throw new SearchException(getEngineId(),
-                                      "No JSESSIONID cookie",
-                                      context.getString(R.string.error_unexpected));
-        }
-
-        sessionCookie = oCookie.get();
-
-        final Element vse = document.selectFirst("input[name='javax.faces.ViewState']");
-        if (vse != null) {
-            viewState = vse.attr("value");
-        }
-        if (viewState == null || viewState.isEmpty()) {
-            throw new SearchException(getEngineId(),
-                                      "No viewState",
-                                      context.getString(R.string.error_unexpected));
-        }
-
-        final Element searchBtn = document.selectFirst("input[name$=':searchBtn']");
-        if (searchBtn == null) {
-            throw new SearchException(getEngineId(),
-                                      "no searchBtn",
-                                      context.getString(R.string.error_unexpected));
-        }
-        // The name has an id in it which changes....
-        final String searchButtonName = searchBtn.attr("name");
-
-        return new StringJoiner("&")
-                .add("mainForm=mainForm")
-                .add("mainForm:searchTermFilter:searchTerm="
-                     + URLEncoder.encode(codeStr, StandardCharsets.UTF_8)
-                                 // javax.faces expects RFC 3986 space -> %20
-                                 // while standard encode would give us a "+"
-                                 .replace("+", "%20"))
-                .add("mainForm:searchTermFilter:searchKey:select=iss")
-                .add(searchButtonName + "=Search")
-                .add("mainForm:yearFrom=1500")
-                .add("mainForm:yearTo=2026")
-                .add("javax.faces.ViewState=" + viewState)
-                .toString();
-    }
-
+    // WARNING:  USE element.wholeText() AND NOT text() ... we want all strings as-is
+    // and not cleaned up by jsoup.
     @VisibleForTesting
-    void parseIssn(@NonNull final Context context,
-                   @NonNull final Document document,
-                   @NonNull final ProductCode productCode,
-                   @NonNull final Book book) {
+    void parseIssnMARC21xml(@NonNull final Context context,
+                            @NonNull final Document document,
+                            @NonNull final ProductCode productCode,
+                            @NonNull final Book book) {
 
-        final Element panel = document.selectFirst("div#titleDetailsPanel");
-        if (panel == null) {
-            return;
-        }
         final List<Identifier.Value> ivs = new ArrayList<>();
 
-        final Elements rows = panel.select("div.row");
-        for (final Element row :rows) {
-            final Element label = row.selectFirst("div.td-key");
-            final Element value = row.selectFirst("div.td-val");
-            if (label != null && value != null) {
-                final String labelText = label.text();
-                // The site exists in English and German, check for both labels.
-                switch (labelText) {
-                    // Note we ignore the ZDB-ID in favour of the IDN; the latter is used in links.
-                    case "IDN": {
-                        ivs.add(new Identifier.Value(Identifier.SID_DNB, value.text()));
-                        break;
-                    }
-                    case "Title":
-                    case "Titel": {
-                        book.setTitle(value.text());
-                        break;
-                    }
-                    case "Published":
-                    case "Erschienen": {
-                        book.add(Publisher.from(value.text()));
-                        break;
-                    }
-                    case "Standard numbers":
-                    case "Standardnummern": {
-                        value.select("p")
-                             .stream()
-                             .map(Element::text)
-                             .map(entry -> entry.split(":"))
-                             // paranoia
-                             .filter(id -> id.length == 2)
-                                .forEach(id -> {
-                                    final String idv = id[1].strip();
+        Element x, a, b;
+        char pubType = 0;
 
-                                    if ("Authorised ISSN".equals(id[0])
-                                        || "Autorisierte ISSN".equals(id[0])) {
-                                        book.setIsbn(ISBN.cleanText(idv));
-                                    } else if ("ISSN".equals(id[0]) && !book.hasIsbn()) {
-                                        book.setIsbn(ISBN.cleanText(idv));
-                                    } else {
-                                        String key = IDENTIFIER_MAPPING.get(id[0]);
-                                        if (key == null) {
-                                            key = id[0];
-                                        }
-                                        ivs.add(new Identifier.Value(key, idv));
-                                    }
-                                });
+        x = document.selectFirst("controlfield[tag='001']");
+        if (x != null) {
+            ivs.add(new Identifier.Value(Identifier.SID_DNB, normalize(x)));
+        }
 
-                        break;
-                    }
-                    case "Manifestation":
-                    case "Erscheinungsform": {
-                        book.setFormat(value.text());
-                        break;
-                    }
-                    case "Language":
-                    case "Sprache": {
-                        final Element a = value.selectFirst("a");
-                        if (a != null) {
-                            book.setLanguage(a.text());
+        x = document.selectFirst("controlfield[tag='008']");
+        if (x != null) {
+            final String text = normalize(x);
+            // sanity check
+            if (text.length() == 40) {
+                pubType = text.charAt(21);
+            }
+        }
+
+        // Issn8
+        x = document.selectFirst("datafield[tag='022'] subfield[code='a']");
+        if (x != null) {
+            book.setIsbn(ISBN.cleanText(normalize(x)));
+        }
+        // EAN code, i.e. Issn13 - it's unlikely but we might as well try
+        x = document.selectFirst("datafield[tag='024'][ind1='3'] subfield[code='a']");
+        if (x != null) {
+            // overwrite !
+            book.setIsbn(ISBN.cleanText(normalize(x)));
+        }
+
+        // Identifiers
+        document.select("datafield[tag='035']")
+                .stream()
+                .map(df -> df.selectFirst("subfield[code='a']"))
+                .filter(Objects::nonNull)
+                .forEach(sf -> {
+                    //noinspection DataFlowIssue
+                    final Matcher matcher = IDENT_PATTERN.matcher(normalize(sf));
+                    if (matcher.find()) {
+                        String key = matcher.group(1);
+                        final String value = matcher.group(2);
+                        if (key != null && value != null) {
+                            final String tmp = IDENTIFIER_MAPPING.get(key);
+                            if (tmp != null) {
+                                key = tmp;
+                            }
+                            ivs.add(new Identifier.Value(key, value));
                         }
                     }
+                });
+
+        x = document.selectFirst("datafield[tag='041'] subfield[code='a']");
+        if (x != null) {
+            book.setLanguage(normalize(x));
+        }
+
+        x = document.selectFirst("datafield[tag='245']");
+        if (x != null) {
+            a = x.selectFirst("subfield[code='a']");
+            b = x.selectFirst("subfield[code='b']");
+            if (a != null) {
+                if (b == null) {
+                    book.setTitle(normalize(a));
+                } else {
+                    book.setTitle(context.getString(R.string.name_colon_value,
+                                                    normalize(a), normalize(b)));
                 }
+            }
+        }
+
+        // Publisher
+        x = document.selectFirst("datafield[tag='264']");
+        if (x != null) {
+            // place
+            a = x.selectFirst("subfield[code='a']");
+            // name
+            b = x.selectFirst("subfield[code='b']");
+            if (b != null) {
+                book.add(Publisher.from(normalize(b)));
+            } else if (a != null) {
+                book.add(Publisher.from(normalize(a)));
+            }
+        }
+
+        final Element sizeField = document.selectFirst("datafield[tag='300'] subfield[code='c']");
+        switch (pubType) {
+            case 'n': {
+                book.setFormat(context.getString(R.string.book_format_newspaper));
+                break;
+            }
+            case 'p': {
+                int formatResId = R.string.book_format_periodical;
+                if (sizeField != null && parseHeightInCm(normalize(sizeField)) <= 21) {
+                    formatResId = R.string.book_format_digest;
+                }
+                book.setFormat(context.getString(formatResId));
+                break;
             }
         }
 
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
-        // unlikely, but if we did not one from the site, use the one we searched for.
+
+        // We don't get an author, use the publisher if we have one...
+        book.getPrimaryPublisher()
+            .ifPresent(p -> book.add(Author.from(p.getName())));
+
         if (!book.hasIsbn()) {
             book.setIsbn(productCode.asText());
         }
     }
 
-    @Override
-    @AnyThread
-    public void cancel() {
-        synchronized (this) {
-            super.cancel();
-            if (httpPost != null) {
-                httpPost.cancel();
-            }
+    @NonNull
+    private String normalize(@NonNull final Element element) {
+        // Some elements can contain MARC21 control characters.
+        // e.g. <subfield code="a">&#152;Der&#156; Spiegel online Themen</subfield>
+        // Strip those out.
+        final String s = M21_CTRL_PATTERN.matcher(element.wholeText()).replaceAll("");
+        return Normalizer.normalize(s, Normalizer.Form.NFC);
+    }
+
+    private int parseHeightInCm(@Nullable final String rawSizeText) {
+        if (rawSizeText == null || rawSizeText.isEmpty()) {
+            return 0;
         }
+
+        @SuppressWarnings("StringToUpperCaseOrToLowerCaseWithoutLocale")
+        final String cleanText = WHITESPACE_PATTERN.matcher(rawSizeText.toLowerCase())
+                                                   .replaceAll("");
+
+        // Extract the numeric value
+        final String digits = DIGITS_PATTERN.matcher(cleanText).replaceAll("");
+        if (digits.isEmpty()) {
+            return 0;
+        }
+
+        final int value = Integer.parseInt(digits);
+
+        // If it's explicitly marked as mm, normalize it to cm
+        if (cleanText.contains("mm")) {
+            return (int) Math.ceil(value / 10.0);
+        }
+
+        return value;
     }
 }

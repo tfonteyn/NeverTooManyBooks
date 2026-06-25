@@ -153,6 +153,8 @@ public class Identifier
     public static final String SID_URI = "uri";
     public static final String SID_URN = "urn";
     public static final String SID_WIKIDATA = "wikidata";
+    // This is a secondary sid for ZDB whose primary sid is SID_DNB
+    public static final String SID_ZDB_KATALOG = "zdbkatalog";
 
     /** {@link com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI}. */
     public static final String SID_ISNI = "isni";

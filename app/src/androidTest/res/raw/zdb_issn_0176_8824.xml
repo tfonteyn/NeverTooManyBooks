@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/"><version>1.1</version><numberOfRecords>1</numberOfRecords><records><record><recordSchema>MARC21-xml</recordSchema><recordPacking>xml</recordPacking><recordData><record xmlns="http://www.loc.gov/MARC21/slim" type="Bibliographic">
+    <leader>00000nas a2200000 c 4500</leader>
+    <controlfield tag="001">010441638</controlfield>
+    <controlfield tag="003">DE-101</controlfield>
+    <controlfield tag="005">20240430230531.0</controlfield>
+    <controlfield tag="007">tu</controlfield>
+    <controlfield tag="008">991118d19841996gw u||p|  ||| 0||||1ger c</controlfield>
+    <datafield tag="015" ind1=" " ind2=" ">
+      <subfield code="a">01,A49,0829</subfield>
+      <subfield code="2">dnb</subfield>
+    </datafield>
+    <datafield tag="016" ind1="7" ind2=" ">
+      <subfield code="2">DE-600</subfield>
+      <subfield code="a">50387-3</subfield>
+    </datafield>
+    <datafield tag="016" ind1="7" ind2=" ">
+      <subfield code="2">DE-101</subfield>
+      <subfield code="a">010441638</subfield>
+    </datafield>
+    <datafield tag="022" ind1=" " ind2=" ">
+      <subfield code="a">0176-8824</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="a">(DE-599)ZDB50387-3</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="a">(OCoLC)85119872</subfield>
+    </datafield>
+    <datafield tag="040" ind1=" " ind2=" ">
+      <subfield code="a">9001</subfield>
+      <subfield code="b">ger</subfield>
+      <subfield code="c">DE-600</subfield>
+      <subfield code="d">9999</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">ger</subfield>
+    </datafield>
+    <datafield tag="042" ind1=" " ind2=" ">
+      <subfield code="a">zdb</subfield>
+    </datafield>
+    <datafield tag="044" ind1=" " ind2=" ">
+      <subfield code="c">XA-DE</subfield>
+    </datafield>
+    <datafield tag="082" ind1="7" ind2="4">
+      <subfield code="8">2\p</subfield>
+      <subfield code="a">004</subfield>
+      <subfield code="q">DE-101</subfield>
+      <subfield code="2">22sdnb</subfield>
+    </datafield>
+    <datafield tag="083" ind1="7" ind2=" ">
+      <subfield code="a">004</subfield>
+      <subfield code="q">DE-600</subfield>
+      <subfield code="2">22sdnb</subfield>
+    </datafield>
+    <datafield tag="084" ind1=" " ind2=" ">
+      <subfield code="a">DAT 125z</subfield>
+      <subfield code="2">stub</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="0">
+      <subfield code="a">64er</subfield>
+      <subfield code="b">das Magazin für Computer-Fans</subfield>
+    </datafield>
+    <datafield tag="246" ind1="3" ind2=" ">
+      <subfield code="a">Vierundsechziger</subfield>
+    </datafield>
+    <datafield tag="264" ind1="3" ind2="1">
+      <subfield code="a">Haar b. München</subfield>
+      <subfield code="b">Markt &amp; Technik Verl. AG</subfield>
+      <subfield code="c">1984-1996</subfield>
+    </datafield>
+    <datafield tag="336" ind1=" " ind2=" ">
+      <subfield code="a">Text</subfield>
+      <subfield code="b">txt</subfield>
+      <subfield code="2">rdacontent</subfield>
+    </datafield>
+    <datafield tag="337" ind1=" " ind2=" ">
+      <subfield code="a">ohne Hilfsmittel zu benutzen</subfield>
+      <subfield code="b">n</subfield>
+      <subfield code="2">rdamedia</subfield>
+    </datafield>
+    <datafield tag="338" ind1=" " ind2=" ">
+      <subfield code="a">Band</subfield>
+      <subfield code="b">nc</subfield>
+      <subfield code="2">rdacarrier</subfield>
+    </datafield>
+    <datafield tag="362" ind1="0" ind2=" ">
+      <subfield code="a">Nachgewiesen 1984 - 1996,11</subfield>
+    </datafield>
+    <datafield tag="363" ind1="0" ind2="0">
+      <subfield code="8">1.1\x</subfield>
+      <subfield code="i">1984</subfield>
+    </datafield>
+    <datafield tag="363" ind1="1" ind2="0">
+      <subfield code="8">1.2\x</subfield>
+      <subfield code="b">11</subfield>
+      <subfield code="i">1996</subfield>
+    </datafield>
+    <datafield tag="365" ind1=" " ind2=" ">
+      <subfield code="b">: DM 9.80 (Einzelh.), S 80.00 (Einzelh.), sfr 9.80 (Einzelh.), DM 105.00 (jährl.), S 864.00 (jährl.), sfr 105.00 (jährl.)</subfield>
+    </datafield>
+    <datafield tag="591" ind1=" " ind2=" ">
+      <subfield code="a">14!C!NA für Internetausg.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="7">
+      <subfield code="0">(DE-588)4009265-3</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4009265-3</subfield>
+      <subfield code="0">(DE-101)040092658</subfield>
+      <subfield code="a">Commodore 64</subfield>
+      <subfield code="9">rswk-swf</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="7">
+      <subfield code="0">(DE-588)4067488-5</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4067488-5</subfield>
+      <subfield code="0">(DE-101)040674886</subfield>
+      <subfield code="a">Zeitschrift</subfield>
+      <subfield code="9">rswk-swf</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="7">
+      <subfield code="0">(DE-588)4113233-6</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4113233-6</subfield>
+      <subfield code="0">(DE-101)041132335</subfield>
+      <subfield code="a">Commodore 128</subfield>
+      <subfield code="9">rswk-swf</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="7">
+      <subfield code="0">(DE-588)4009265-3</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4009265-3</subfield>
+      <subfield code="0">(DE-101)040092658</subfield>
+      <subfield code="a">Commodore 64</subfield>
+      <subfield code="9">rswk-swf</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="0">(DE-588)4067488-5</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4067488-5</subfield>
+      <subfield code="0">(DE-101)040674886</subfield>
+      <subfield code="a">Zeitschrift</subfield>
+      <subfield code="2">gnd-content</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Zeitschrift</subfield>
+      <subfield code="9">rswk-swf</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Zeitschrift</subfield>
+      <subfield code="9">rswk-swf</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="689" ind1="0" ind2="0">
+      <subfield code="0">(DE-588)4009265-3</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4009265-3</subfield>
+      <subfield code="0">(DE-101)040092658</subfield>
+      <subfield code="D">s</subfield>
+      <subfield code="a">Commodore 64</subfield>
+    </datafield>
+    <datafield tag="689" ind1="0" ind2="1">
+      <subfield code="0">(DE-588)4067488-5</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4067488-5</subfield>
+      <subfield code="0">(DE-101)040674886</subfield>
+      <subfield code="D">s</subfield>
+      <subfield code="a">Zeitschrift</subfield>
+    </datafield>
+    <datafield tag="689" ind1="0" ind2=" ">
+      <subfield code="5">DE-600</subfield>
+      <subfield code="5">DE-600</subfield>
+    </datafield>
+    <datafield tag="689" ind1="1" ind2="0">
+      <subfield code="0">(DE-588)4113233-6</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4113233-6</subfield>
+      <subfield code="0">(DE-101)041132335</subfield>
+      <subfield code="D">s</subfield>
+      <subfield code="a">Commodore 128</subfield>
+    </datafield>
+    <datafield tag="689" ind1="1" ind2="1">
+      <subfield code="A">f</subfield>
+      <subfield code="a">Zeitschrift</subfield>
+    </datafield>
+    <datafield tag="689" ind1="1" ind2=" ">
+      <subfield code="5">DE-600</subfield>
+      <subfield code="5">DE-600</subfield>
+    </datafield>
+    <datafield tag="689" ind1="2" ind2="0">
+      <subfield code="0">(DE-588)4009265-3</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4009265-3</subfield>
+      <subfield code="0">(DE-101)040092658</subfield>
+      <subfield code="D">s</subfield>
+      <subfield code="a">Commodore 64</subfield>
+    </datafield>
+    <datafield tag="689" ind1="2" ind2="1">
+      <subfield code="A">f</subfield>
+      <subfield code="a">Zeitschrift</subfield>
+    </datafield>
+    <datafield tag="689" ind1="2" ind2=" ">
+      <subfield code="5">DE-600</subfield>
+      <subfield code="5">DE-600</subfield>
+    </datafield>
+    <datafield tag="785" ind1="0" ind2="0">
+      <subfield code="i">Forts.:</subfield>
+      <subfield code="t">64er</subfield>
+      <subfield code="d">[Erscheinungsort nicht ermittelbar] : Franzis', 1996-</subfield>
+      <subfield code="h">Online-Ressource</subfield>
+      <subfield code="w">(DE-600)1468336-2</subfield>
+      <subfield code="w">(DE-101)019615280</subfield>
+    </datafield>
+    <datafield tag="850" ind1=" " ind2=" ">
+      <subfield code="a">DE-101a</subfield>
+      <subfield code="a">DE-101b</subfield>
+    </datafield>
+    <datafield tag="883" ind1="2" ind2=" ">
+      <subfield code="8">2\p</subfield>
+      <subfield code="a">dnb</subfield>
+      <subfield code="d">20260311</subfield>
+      <subfield code="q">DE-101</subfield>
+      <subfield code="u">https://d-nb.info/provenance/plan#dnb</subfield>
+    </datafield>
+    <datafield tag="889" ind1=" " ind2=" ">
+      <subfield code="w">(DE-101)551004924</subfield>
+    </datafield>
+    <datafield tag="925" ind1="r" ind2=" ">
+      <subfield code="a">ra</subfield>
+    </datafield>
+  </record></recordData><recordPosition>1</recordPosition></record></records><echoedSearchRetrieveRequest><version>1.1</version><query>iss=0176-8824</query><xQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/><maximumRecords>1</maximumRecords><recordSchema>MARC21-xml</recordSchema></echoedSearchRetrieveRequest></searchRetrieveResponse>

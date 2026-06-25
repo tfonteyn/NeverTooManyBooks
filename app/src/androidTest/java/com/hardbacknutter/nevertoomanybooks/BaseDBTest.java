@@ -57,6 +57,7 @@ import com.hardbacknutter.org.json.JSONObject;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -186,12 +187,22 @@ public abstract class BaseDBTest {
                                     @Nullable final String charset,
                                     @NonNull final String locationHeader)
             throws IOException {
+        return loadDocument(resId, charset, locationHeader, Parser.htmlParser());
+    }
+
+    @NonNull
+    protected Document loadDocument(final int resId,
+                                    @Nullable final String charset,
+                                    @NonNull final String locationHeader,
+                                    @NonNull final Parser parser)
+            throws IOException {
         final Document document;
         // getContext(): we want the "androidTest" context which is where our test resources live
         try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
                                                      .getResources().openRawResource(resId)) {
             assertNotNull(is);
-            document = Jsoup.parse(is, charset, locationHeader);
+
+            document = Jsoup.parse(is, charset, locationHeader, parser);
             assertNotNull(document);
             assertTrue(document.hasText());
         }

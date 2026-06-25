@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -69,21 +70,20 @@ class IisnParseTest
             throws IOException {
         final ProductCode pc = ISBN.parse("0176-8824");
 
-        final String locationHeader = "https://zdb-katalog.de";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.zdb_issn_0176_8824;
 
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Document document = loadDocument(resId, UTF_8, "", Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parseIssn(context, document, pc, book);
+        searchEngine.parseIssnMARC21xml(context, document, pc, book);
 
         Log.d(TAG, book.toString());
 
-        assertEquals("64er : das Magazin für Computer-Fans",
+        assertEquals("64er: das Magazin für Computer-Fans",
                      book.getString(DBKey.TITLE, null));
-        assertEquals("German",
+        assertEquals("ger",
                      book.getString(DBKey.LANGUAGE, null));
-        assertEquals("journal",
+        assertEquals("Periodical",
                      book.getString(DBKey.FORMAT, null));
         assertEquals("01768824",
                      book.getString(DBKey.ISBN, null));
@@ -91,7 +91,7 @@ class IisnParseTest
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());
 
-        assertEquals("Haar b. München : Markt & Technik Verl. AG", publishers.get(0).getName());
+        assertEquals("Markt & Technik Verl. AG", publishers.get(0).getName());
 
         assertEquals("010441638", book.getIdentifierValue(Identifier.SID_DNB).orElse(null));
         assertEquals("85119872", book.getIdentifierValue(Identifier.SID_OCLC).orElse(null));
