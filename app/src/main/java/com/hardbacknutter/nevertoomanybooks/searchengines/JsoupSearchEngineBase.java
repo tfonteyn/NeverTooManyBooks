@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -43,6 +44,9 @@ public abstract class JsoupSearchEngineBase
 
     @Nullable
     private final String charSetName;
+    /** Responsible for loading and parsing the web page. */
+    @Nullable
+    private JsoupLoader jsoupLoader;
 
     /**
      * Constructor.
@@ -100,8 +104,8 @@ public abstract class JsoupSearchEngineBase
                                  @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
         try {
-            final JsoupLoader jsoupLoader = new JsoupLoader(createGetDocumentRequest(context),
-                                                            getEngineId());
+            jsoupLoader = new JsoupLoader(createGetDocumentRequest(context),
+                                          getEngineId());
             jsoupLoader.setCharSetName(charSetName);
             jsoupLoader.setSslContext(getSslContext());
 
@@ -109,6 +113,19 @@ public abstract class JsoupSearchEngineBase
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
+        } finally {
+            jsoupLoader = null;
+        }
+    }
+
+    @Override
+    @AnyThread
+    public void cancel() {
+        super.cancel();
+        synchronized (this) {
+            if (jsoupLoader != null) {
+                jsoupLoader.cancel();
+            }
         }
     }
 }
