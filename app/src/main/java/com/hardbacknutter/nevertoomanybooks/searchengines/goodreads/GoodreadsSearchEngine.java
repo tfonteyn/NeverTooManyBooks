@@ -810,10 +810,11 @@ public class GoodreadsSearchEngine
     @Override
     @AnyThread
     public void cancel() {
-        super.cancel();
-
-        if (httpGet != null) {
-            httpGet.cancel();
+        synchronized (this) {
+            super.cancel();
+            if (httpGet != null) {
+                httpGet.cancel();
+            }
         }
     }
 }
