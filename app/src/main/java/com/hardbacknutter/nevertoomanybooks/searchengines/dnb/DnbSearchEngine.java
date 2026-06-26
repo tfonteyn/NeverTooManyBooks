@@ -268,32 +268,6 @@ public class DnbSearchEngine
 
     @NonNull
     @Override
-    public OkHttpClient createHttpClient() {
-        final SearchEngineConfig config = getEngineId().getConfig();
-        //noinspection DataFlowIssue
-        final Throttler throttler = config.getThrottler();
-        final boolean enableLog = config.isLogHttpGetRequests();
-
-        final OkHttpClient.Builder builder = ServiceLocator
-                .getInstance()
-                .getOkHttpClient()
-                .newBuilder()
-                .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .addInterceptor(new ThrottlingInterceptor(throttler))
-                .addInterceptor(new RateLimitInterceptor(throttler, enableLog));
-
-        if (enableLog) {
-            // use the app context, it's the non-translatable name used as a log tag
-            final String tag = getName(ServiceLocator.getInstance().getAppContext());
-            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(tag));
-        }
-
-        return builder.build();
-    }
-
-    @NonNull
-    @Override
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
