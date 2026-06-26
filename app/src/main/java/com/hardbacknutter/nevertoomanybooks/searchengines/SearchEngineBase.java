@@ -45,7 +45,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.net.ssl.SSLContext;
@@ -55,9 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpLanguageHeader;
-import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
-import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -76,7 +72,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
-import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import okhttp3.OkHttpClient;
@@ -365,29 +360,7 @@ public abstract class SearchEngineBase
     @NonNull
     @EmptySuper
     public OkHttpClient createHttpClient() {
-        final Throttler throttler = config.getThrottler();
-        final boolean enableLog = config.isLogHttpGetRequests();
-
-        final OkHttpClient.Builder builder = ServiceLocator
-                .getInstance()
-                .getOkHttpClient()
-                .newBuilder()
-                .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS)
-                .addInterceptor(new ThrottlingInterceptor(throttler))
-                .addInterceptor(new RateLimitInterceptor(throttler, enableLog));
-
-        if (sslContext != null) {
-            builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
-        }
-
-        if (enableLog) {
-            // use the app context, it's the non-translatable name used as a log tag
-            final String tag = getName(ServiceLocator.getInstance().getAppContext());
-            builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(tag));
-        }
-
-        return builder.build();
+        return HttpCallFactory.createHttpClient(getEngineId(), sslContext);
     }
 
     /**
