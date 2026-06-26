@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.OptionalLong;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -49,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 
@@ -101,7 +99,6 @@ class CollectionFormUploader {
     private final MoneyParser moneyParser;
     @NonNull
     private final OkHttpClient httpClient;
-    private final boolean logEnabled;
     @Nullable
     private HttpCall httpCall;
 
@@ -116,9 +113,6 @@ class CollectionFormUploader {
         final StripInfoSearchEngine searchEngine =
                 (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
         httpClient = searchEngine.createHttpClient();
-        final SearchEngineConfig config = searchEngine.getEngineId().getConfig();
-        //noinspection DataFlowIssue
-        logEnabled = config.isLogHttpGetRequests();
 
         //noinspection DataFlowIssue
         postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
@@ -440,7 +434,7 @@ class CollectionFormUploader {
     private Document doPost(@NonNull final RequestBody postBody)
             throws IOException {
 
-        httpCall = HttpCallFactory.create(httpClient, R.string.site_stripinfo_be, logEnabled);
+        httpCall = HttpCallFactory.create(httpClient, EngineId.StripInfoBe);
         final Request request = new Request.Builder()
                 .url(postUrl)
                 .post(postBody)

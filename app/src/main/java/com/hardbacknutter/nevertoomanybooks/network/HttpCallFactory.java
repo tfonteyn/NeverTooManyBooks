@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.network;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.net.CookieStore;
 import java.util.concurrent.TimeUnit;
@@ -127,24 +126,5 @@ public final class HttpCallFactory {
         return new HttpCall(httpClient, cookieStore,
                             engineId.getLabelResId(),
                             config.isLogHttpGetRequests());
-    }
-
-    /**
-     * Create a basic {@link HttpCall}.
-     *
-     * @param httpClient the client
-     * @param labelResId string resource representing the caller
-     * @param logEnabled flag
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static HttpCall create(@NonNull final OkHttpClient httpClient,
-                                  @StringRes final int labelResId,
-                                  final boolean logEnabled) {
-        final CookieStore cookieStore = ServiceLocator.getInstance()
-                                                      .getCookieManager()
-                                                      .getCookieStore();
-        return new HttpCall(httpClient, cookieStore, labelResId, logEnabled);
     }
 }

@@ -143,7 +143,7 @@ public class CollectionFormParser {
                 // no "frmName" used here
                 .build();
 
-        httpCall = HttpCallFactory.create(httpClient, R.string.site_stripinfo_be, false);
+        httpCall = HttpCallFactory.create(httpClient, EngineId.StripInfoBe);
         final Request request = new Request.Builder()
                 .url(postUrl)
                 .post(postBody)
