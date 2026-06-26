@@ -250,7 +250,6 @@ public class WikidataSearchEngine
         final JSONObject document;
         try {
             final String url = String.format(ISSN_SEARCH_URL, URLEncoder.encode(sparql, CHARSET));
-            LoggerFactory.getLogger().d(TAG, url);
 
             final FutureHttp<String> httpGet = createGetDocumentRequest(context);
             final String response = httpGet.getAsString(url, (con, s) -> s);
