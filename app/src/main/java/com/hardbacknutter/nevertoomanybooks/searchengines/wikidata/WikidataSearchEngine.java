@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.wikidata;
 import android.content.Context;
 import android.content.res.Resources;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,12 +42,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -55,8 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
+import okhttp3.OkHttpClient;
 
 public class WikidataSearchEngine
         extends SearchEngineBase
@@ -163,6 +164,9 @@ public class WikidataSearchEngine
 
     private static final Pattern IDENT_SPLIT_PATTERN = Pattern.compile("\\|");
 
+    @Nullable
+    private HttpCall httpCall;
+
     /**
      * Constructor.
      * <p>
@@ -251,15 +255,16 @@ public class WikidataSearchEngine
         try {
             final String url = String.format(ISSN_SEARCH_URL, URLEncoder.encode(sparql, CHARSET));
 
-            final FutureHttp<String> httpGet = createGetDocumentRequest(context);
-            final String response = httpGet.getAsString(url, (con, s) -> s);
+            final OkHttpClient httpClient = createHttpClient();
+            httpCall = HttpCallFactory.create(httpClient, getEngineId());
+            final String response = httpCall.getAsString(url, getLocale(context), userLocale, null);
             document = new JSONObject(response);
 
             if (!isCancelled()) {
                 parseIssn(context, document, productCode, book);
             }
 
-        } catch (@NonNull final StorageException | IOException | JSONException e) {
+        } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
         }
 
@@ -432,5 +437,16 @@ public class WikidataSearchEngine
             return null;
         }
         return url.substring(url.lastIndexOf('/') + 1);
+    }
+
+    @Override
+    @AnyThread
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (httpCall != null) {
+                httpCall.cancel();
+            }
+        }
     }
 }
