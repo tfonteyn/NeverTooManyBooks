@@ -117,6 +117,73 @@ public abstract class SearchEngineBase
     }
 
     @NonNull
+    private static Map<String, String> createHeadersForGET(@NonNull final Locale siteLocale,
+                                                           @NonNull final Locale userLocale) {
+        final String acceptLanguageHeader = HttpLanguageHeader.create(siteLocale, userLocale);
+        // Improve compatibility by sending standard headers.
+
+        // Host & User-Agent are set in {@link FutureHttp#execute}
+        // but can be overridden as needed.
+
+        // Example of a Firefox request to https://developer.android.com
+
+        //Host: developer.android.com
+        //User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+        //Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        //Accept-Language: en-GB,en;q=0.8,nl-BE;q=0.5,de-DE;q=0.3
+        //Accept-Encoding: gzip, deflate, br, zstd
+        //DNT: 1
+        //Sec-GPC: 1
+        //Upgrade-Insecure-Requests: 1
+        //Sec-Fetch-Dest: document
+        //Sec-Fetch-Mode: navigate
+        //Sec-Fetch-Site: none
+        //Sec-Fetch-User: ?1
+        //Connection: keep-alive
+
+        // The "Sec-GPC" header above is documented as EXPERIMENTAL at
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-GPC
+        // It seems only firefox is sending it, and it's not used by any other browser.
+        // We're not sending it for now.
+
+        final Map<String, String> headers = new HashMap<>();
+
+        headers.put(HttpConstants.ACCEPT,
+                    HttpConstants.ACCEPT_KITCHEN_SINK);
+        headers.put(HttpConstants.ACCEPT_LANGUAGE,
+                    acceptLanguageHeader);
+        headers.put(HttpConstants.ACCEPT_ENCODING,
+                    HttpConstants.ACCEPT_ENCODING_GZIP);
+
+        headers.put(HttpConstants.CONNECTION,
+                    HttpConstants.CONNECTION_KEEP_ALIVE);
+
+        // Deprecated but Firefox/Chrome are still sending it by default.
+        headers.put(HttpConstants.DNT, "1");
+
+        headers.put(HttpConstants.UPGRADE_INSECURE_REQUESTS,
+                    HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
+
+        // We want a generic document, e.g. html, xml, json, ...
+        headers.put(HttpConstants.SEC_FETCH_DEST,
+                    HttpConstants.SEC_FETCH_DEST_DOCUMENT);
+        // The request is initiated by navigation between HTML documents.
+        headers.put(HttpConstants.SEC_FETCH_MODE,
+                    HttpConstants.SEC_FETCH_MODE_NAVIGATE);
+
+        // The request was sent by a "user" (our app) and not some auto/link/etc...
+        headers.put(HttpConstants.SEC_FETCH_SITE,
+                    HttpConstants.SEC_FETCH_SITE_NONE);
+        headers.put(HttpConstants.SEC_FETCH_USER, "?1");
+
+        // TODO: could add Platform in combo with the Randomizer
+        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
+        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
+
+        return headers;
+    }
+
+    @NonNull
     @Override
     public EngineId getEngineId() {
         return config.getEngineId();
@@ -285,68 +352,14 @@ public abstract class SearchEngineBase
     @NonNull
     public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
 
-        // Improve compatibility by sending standard headers.
+        final Locale siteLocale = getLocale(context);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        // Host & User-Agent are set in {@link FutureHttp#execute}
-        // but can be overridden as needed.
-
-        // Example of a Firefox request to https://developer.android.com
-
-        //Host: developer.android.com
-        //User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
-        //Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-        //Accept-Language: en-GB,en;q=0.8,nl-BE;q=0.5,de-DE;q=0.3
-        //Accept-Encoding: gzip, deflate, br, zstd
-        //DNT: 1
-        //Sec-GPC: 1
-        //Upgrade-Insecure-Requests: 1
-        //Sec-Fetch-Dest: document
-        //Sec-Fetch-Mode: navigate
-        //Sec-Fetch-Site: none
-        //Sec-Fetch-User: ?1
-        //Connection: keep-alive
-
-        // The "Sec-GPC" header above is documented as EXPERIMENTAL at
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-GPC
-        // It seems only firefox is sending it, and it's not used by any other browser.
-        // We're not sending it for now.
-
-        final Map<String, String> headers = new HashMap<>();
-        headers.put(HttpConstants.ACCEPT,
-                HttpConstants.ACCEPT_KITCHEN_SINK);
-        headers.put(HttpConstants.ACCEPT_LANGUAGE,
-                createAcceptLanguageHeader(context));
-        headers.put(HttpConstants.ACCEPT_ENCODING,
-                HttpConstants.ACCEPT_ENCODING_GZIP);
-
-        headers.put(HttpConstants.CONNECTION,
-                HttpConstants.CONNECTION_KEEP_ALIVE);
-
-        // Deprecated but Firefox/Chrome are still sending it by default.
-        headers.put(HttpConstants.DNT, "1");
-
-        headers.put(HttpConstants.UPGRADE_INSECURE_REQUESTS,
-                HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
-
-        // We want a generic document, e.g. html, xml, json, ...
-        headers.put(HttpConstants.SEC_FETCH_DEST,
-                HttpConstants.SEC_FETCH_DEST_DOCUMENT);
-        // The request is initiated by navigation between HTML documents.
-        headers.put(HttpConstants.SEC_FETCH_MODE,
-                HttpConstants.SEC_FETCH_MODE_NAVIGATE);
-
-        // The request was sent by a "user" (our app) and not some auto/link/etc...
-        headers.put(HttpConstants.SEC_FETCH_SITE,
-                HttpConstants.SEC_FETCH_SITE_NONE);
-        headers.put(HttpConstants.SEC_FETCH_USER, "?1");
+        final Map<String, String> headers = createHeadersForGET(siteLocale, userLocale);
 
         final FutureHttp<T> httpGet = HttpCallFactory.create(config.getEngineId());
         httpGet.setSSLContext(sslContext);
         httpGet.setHeaders(headers);
-
-        // TODO: could add Platform in combo with the Randomizer
-        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
-        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
 
         return httpGet;
     }
