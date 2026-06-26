@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.CookieStore;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -100,7 +101,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
@@ -319,8 +319,12 @@ public final class CalibreContentServer
 
     @NonNull
     private final OkHttpClient httpClient;
+    @NonNull
+    private final CookieStore cookieStore;
+
     private final BookshelfDao bookshelfDao;
     private final CalibreLibraryDao calibreLibraryDao;
+    private final boolean httpLogEnabled;
     @Nullable
     private ImageDownloader imageDownloader;
     /** As read from the Content Server. */
@@ -361,15 +365,28 @@ public final class CalibreContentServer
                 PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
+        bookshelfDao = serviceLocator.getBookshelfDao();
+        calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
+
+        final List<CalibreCustomField> customFields =
+                serviceLocator.getCalibreCustomFieldDao().getCustomFields();
+        calibreCustomFields = new HashSet<>(customFields);
+
+        cookieStore = serviceLocator.getCookieManager().getCookieStore();
+
+        httpLogEnabled = serviceLocator.getSharedPreferences()
+                                       .getBoolean(PK_ENABLE_HTTP_LOGGING, false);
+
         final Throttler throttler = new Throttler(THROTTLER_DELAY_IN_MILLIS);
-        final OkHttpClient.Builder builder = ServiceLocator
-                .getInstance()
+        final OkHttpClient.Builder builder = serviceLocator
                 .getOkHttpClient()
                 .newBuilder()
                 .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
                 .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS)
                 .addInterceptor(new ThrottlingInterceptor(throttler))
-                .addInterceptor(new RateLimitInterceptor(throttler, isLogHttpGetRequests()));
+                .addInterceptor(new RateLimitInterceptor(throttler, httpLogEnabled));
 
         if (sslContext != null && x509TrustManager != null) {
             builder.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager);
@@ -411,19 +428,11 @@ public final class CalibreContentServer
             builder.addInterceptor(authCacheInterceptor);
         }
 
-        if (isLogHttpGetRequests()) {
+        if (httpLogEnabled) {
             builder.addNetworkInterceptor(OkHttpLoggerFactory.getLogger(TAG));
         }
 
         httpClient = builder.build();
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        bookshelfDao = serviceLocator.getBookshelfDao();
-        calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
-
-        final List<CalibreCustomField> customFields =
-                serviceLocator.getCalibreCustomFieldDao().getCustomFields();
-        calibreCustomFields = new HashSet<>(customFields);
     }
 
     /**
@@ -591,11 +600,6 @@ public final class CalibreContentServer
             // loaded in the Android system keystore.
             return null;
         }
-    }
-
-    private static boolean isLogHttpGetRequests() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(PK_ENABLE_HTTP_LOGGING, false);
     }
 
     @NonNull
@@ -1439,7 +1443,8 @@ public final class CalibreContentServer
                          final int buffer)
             throws IOException {
 
-        jsonFetchCall = HttpCallFactory.create(httpClient, R.string.site_calibre, false);
+        jsonFetchCall = new HttpCall(httpClient, cookieStore, R.string.site_calibre,
+                                     httpLogEnabled);
         jsonFetchCall.setBufferSize(buffer);
         return jsonFetchCall.getAsString(createGetRequest(url));
     }
@@ -1484,7 +1489,8 @@ public final class CalibreContentServer
 
         final Uri destUri = destFile.getUri();
 
-        fileFetchCall = HttpCallFactory.create(httpClient, R.string.site_calibre, false);
+        fileFetchCall = new HttpCall(httpClient, cookieStore, R.string.site_calibre,
+                                     httpLogEnabled);
         fileFetchCall.setBufferSize(BUFFER_FILE);
         final Uri uri = fileFetchCall.get(createGetRequest(url), (response, is) -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
@@ -1652,7 +1658,8 @@ public final class CalibreContentServer
                 jsonBody,
                 MediaType.parse("application/json; charset=utf-8"));
 
-        postCall = HttpCallFactory.create(httpClient, R.string.site_calibre, false);
+        postCall = new HttpCall(httpClient, cookieStore, R.string.site_calibre,
+                                httpLogEnabled);
         postCall.post(createPostRequest(url, body), null);
     }
 
