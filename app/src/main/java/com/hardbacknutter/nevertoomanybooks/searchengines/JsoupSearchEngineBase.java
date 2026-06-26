@@ -79,15 +79,6 @@ public abstract class JsoupSearchEngineBase
         return loadDocument(context, Parser.htmlParser(), url, requestProperties);
     }
 
-    @WorkerThread
-    @NonNull
-    public Document loadXMLDocument(@NonNull final Context context,
-                                    @NonNull final String url,
-                                    @Nullable final Map<String, String> requestProperties)
-            throws SearchException, CredentialsException {
-        return loadDocument(context, Parser.xmlParser(), url, requestProperties);
-    }
-
     /**
      * Load the url into a parsed {@link org.jsoup.nodes.Document}.
      *

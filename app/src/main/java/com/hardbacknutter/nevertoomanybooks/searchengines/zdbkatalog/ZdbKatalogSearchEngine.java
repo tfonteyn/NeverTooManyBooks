@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 
 /**
  * German language magazines and newspapers.
@@ -148,7 +149,7 @@ public class ZdbKatalogSearchEngine
         final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
 
         final String url = String.format(ISSN_URL, codeStr);
-        final Document document = loadXMLDocument(context, url, null);
+        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 
         final Book book = new Book();
 
