@@ -201,8 +201,8 @@ public class OpenLibraryAuth
                 .toString();
 
         httpPost = HttpCallFactory.create(EngineId.OpenLibrary);
-        httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                    HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
+        httpPost.setHeader(HttpConstants.CONTENT_TYPE,
+                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
                 .post(url, postBody, null);
 
         userId = getUserId().orElseThrow(

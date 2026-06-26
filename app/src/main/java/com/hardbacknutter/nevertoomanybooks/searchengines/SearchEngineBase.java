@@ -40,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -283,8 +284,6 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpGet = HttpCallFactory.create(config.getEngineId());
-        httpGet.setSSLContext(sslContext);
 
         // Improve compatibility by sending standard headers.
 
@@ -312,33 +311,38 @@ public abstract class SearchEngineBase
         // It seems only firefox is sending it, and it's not used by any other browser.
         // We're not sending it for now.
 
-        httpGet.setRequestProperty(HttpConstants.ACCEPT,
-                                   HttpConstants.ACCEPT_KITCHEN_SINK);
-        httpGet.setRequestProperty(HttpConstants.ACCEPT_LANGUAGE,
-                                   createAcceptLanguageHeader(context));
-        httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-                                   HttpConstants.ACCEPT_ENCODING_GZIP);
+        final Map<String, String> headers = new HashMap<>();
+        headers.put(HttpConstants.ACCEPT,
+                HttpConstants.ACCEPT_KITCHEN_SINK);
+        headers.put(HttpConstants.ACCEPT_LANGUAGE,
+                createAcceptLanguageHeader(context));
+        headers.put(HttpConstants.ACCEPT_ENCODING,
+                HttpConstants.ACCEPT_ENCODING_GZIP);
 
-        httpGet.setRequestProperty(HttpConstants.CONNECTION,
-                                   HttpConstants.CONNECTION_KEEP_ALIVE);
+        headers.put(HttpConstants.CONNECTION,
+                HttpConstants.CONNECTION_KEEP_ALIVE);
 
         // Deprecated but Firefox/Chrome are still sending it by default.
-        httpGet.setRequestProperty(HttpConstants.DNT, "1");
+        headers.put(HttpConstants.DNT, "1");
 
-        httpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
-                                   HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
+        headers.put(HttpConstants.UPGRADE_INSECURE_REQUESTS,
+                HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
 
         // We want a generic document, e.g. html, xml, json, ...
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
-                                   HttpConstants.SEC_FETCH_DEST_DOCUMENT);
+        headers.put(HttpConstants.SEC_FETCH_DEST,
+                HttpConstants.SEC_FETCH_DEST_DOCUMENT);
         // The request is initiated by navigation between HTML documents.
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE,
-                                   HttpConstants.SEC_FETCH_MODE_NAVIGATE);
+        headers.put(HttpConstants.SEC_FETCH_MODE,
+                HttpConstants.SEC_FETCH_MODE_NAVIGATE);
 
         // The request was sent by a "user" (our app) and not some auto/link/etc...
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
-                                   HttpConstants.SEC_FETCH_SITE_NONE);
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
+        headers.put(HttpConstants.SEC_FETCH_SITE,
+                HttpConstants.SEC_FETCH_SITE_NONE);
+        headers.put(HttpConstants.SEC_FETCH_USER, "?1");
+
+        final FutureHttp<T> httpGet = HttpCallFactory.create(config.getEngineId());
+        httpGet.setSSLContext(sslContext);
+        httpGet.setHeaders(headers);
 
         // TODO: could add Platform in combo with the Randomizer
         // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".

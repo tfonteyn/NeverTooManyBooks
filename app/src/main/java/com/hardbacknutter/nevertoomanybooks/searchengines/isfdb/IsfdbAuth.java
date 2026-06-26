@@ -214,8 +214,8 @@ public class IsfdbAuth
                 .toString();
 
         httpPost = HttpCallFactory.create(EngineId.Isfdb);
-        httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                    HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
+        httpPost.setHeader(HttpConstants.CONTENT_TYPE,
+                           HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
                 .post(url, postBody, null);
 
         userId = getUserId().orElseThrow(

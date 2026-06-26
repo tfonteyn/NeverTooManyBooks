@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.util.Map;
 import java.util.concurrent.CancellationException;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -139,7 +140,7 @@ public interface FutureHttp<R> {
     boolean isLoggingEnabled();
 
     /**
-     * Add a connection request property.
+     * Add a request header.
      *
      * @param key   to set
      * @param value to set; use {@code null} to remove instead of add the property
@@ -148,8 +149,23 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setRequestProperty(@NonNull String key,
-                                     @Nullable String value);
+    FutureHttp<R> setHeader(@NonNull String key,
+                            @Nullable String value);
+
+    /**
+     * Add request headers.
+     *
+     * @param headers to add; use a value of {@code null} to remove instead of add the property
+     *
+     * @return {@code this} (for chaining)
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    default FutureHttp<R> setHeaders(@NonNull final Map<String, String> headers) {
+        // One-by-one, so null values DELETE a header!
+        headers.forEach(this::setHeader);
+        return this;
+    }
 
     /**
      * Send a {@code HEAD} request.

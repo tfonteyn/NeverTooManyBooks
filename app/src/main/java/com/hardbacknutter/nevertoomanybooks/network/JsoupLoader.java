@@ -180,7 +180,7 @@ public class JsoupLoader {
                 httpGet.setSSLContext(sslContext);
 
                 if (headers != null) {
-                    headers.forEach(httpGet::setRequestProperty);
+                    httpGet.setHeaders(headers);
                 }
 
                 document = httpGet.get(requestUrl, (response, is) ->

@@ -319,8 +319,8 @@ public class FutureHttpImpl<R>
 
     @NonNull
     @Override
-    public FutureHttp<R> setRequestProperty(@NonNull final String key,
-                                            @Nullable final String value) {
+    public FutureHttp<R> setHeader(@NonNull final String key,
+                                   @Nullable final String value) {
         if (value != null) {
             requestProperties.put(key, value);
         } else {
