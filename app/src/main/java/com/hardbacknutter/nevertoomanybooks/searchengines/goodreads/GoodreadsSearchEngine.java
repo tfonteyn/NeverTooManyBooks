@@ -539,7 +539,7 @@ public class GoodreadsSearchEngine
         }
         s = details.optString("publisher", null);
         if (s != null && !s.isBlank()) {
-            s = cleanName(s);
+            s = SearchEngineUtils.cleanName(s);
             if (!s.isBlank()) {
                 book.add(Publisher.from(s));
             }
@@ -670,7 +670,7 @@ public class GoodreadsSearchEngine
             return;
         }
 
-        final String name = cleanName(refObj.optString("name"));
+        final String name = SearchEngineUtils.cleanName(refObj.optString("name"));
         if (name.isBlank()) {
             return;
         }
@@ -724,7 +724,7 @@ public class GoodreadsSearchEngine
         if (refObj == null) {
             return;
         }
-        final String title = cleanName(refObj.optString("title"));
+        final String title = SearchEngineUtils.cleanName(refObj.optString("title"));
         if (title.isBlank()) {
             return;
         }

@@ -386,7 +386,7 @@ public class BolSearchEngine
             // The site simply does not list the title... anywhere! ... ouch...
             return;
         }
-        book.setTitle(cleanText(titleElement));
+        book.setTitle(SearchEngineUtils.cleanText(titleElement));
 
         final Elements specs = document.select("div.specs > dl.specs__list");
         if (specs.isEmpty()) {
@@ -409,20 +409,20 @@ public class BolSearchEngine
                     case "Langue": {
                         // the first occurrence uses the iso abbreviation
                         if (!book.contains(DBKey.LANGUAGE)) {
-                            book.setLanguage(cleanText(value));
+                            book.setLanguage(SearchEngineUtils.cleanText(value));
                         }
                         break;
                     }
                     case "Bindwijze":
                     case "Binding": {
                         if (!book.contains(DBKey.FORMAT)) {
-                            book.setFormat(cleanText(value));
+                            book.setFormat(SearchEngineUtils.cleanText(value));
                         }
                         break;
                     }
                     case "Oorspronkelijke releasedatum":
                     case "Date de sortie initiale": {
-                        final String text = cleanText(value);
+                        final String text = SearchEngineUtils.cleanText(value);
                         // can be empty!
                         if (!text.isBlank()) {
                             addPublicationDate(context, siteLocale, text, book);
@@ -432,7 +432,7 @@ public class BolSearchEngine
                     case "Aantal pagina's":
                     case "Nombre de pages": {
                         if (!book.contains(DBKey.PAGES)) {
-                            book.setPages(cleanText(value));
+                            book.setPages(SearchEngineUtils.cleanText(value));
                         }
                         break;
                     }
@@ -471,7 +471,7 @@ public class BolSearchEngine
                     }
                     case "Originele titel":
                     case "Titre original": {
-                        book.setTranslatedFromTitle(cleanText(value));
+                        book.setTranslatedFromTitle(SearchEngineUtils.cleanText(value));
                         break;
                     }
                     case "Serie": {
@@ -479,7 +479,7 @@ public class BolSearchEngine
                         // but without any specific structure to it.
                         final Element a = value.selectFirst("a");
                         if (a != null) {
-                            final String text = cleanName(a);
+                            final String text = SearchEngineUtils.cleanName(a);
                             if (!text.isBlank()) {
                                 book.add(Series.from(text));
                             }
@@ -491,7 +491,7 @@ public class BolSearchEngine
                     case "Editeur principal": {
                         final Element a = value.selectFirst("a");
                         if (a != null) {
-                            final String s = cleanName(a);
+                            final String s = SearchEngineUtils.cleanName(a);
                             if (!s.isBlank()) {
                                 book.add(Publisher.from(s));
                             }
@@ -501,7 +501,7 @@ public class BolSearchEngine
                     case "EAN": {
                         // useful for audiobooks
                         if (!book.contains(DBKey.ISBN)) {
-                            book.setIsbn(cleanText(value));
+                            book.setIsbn(SearchEngineUtils.cleanText(value));
                         }
                         break;
                     }
@@ -530,7 +530,7 @@ public class BolSearchEngine
                              @NonNull final Book book) {
         final Element a = value.selectFirst("a");
         if (a != null) {
-            final String s = cleanName(a);
+            final String s = SearchEngineUtils.cleanName(a);
             if (!s.isBlank()) {
                 addAuthor(Author.from(s), type, book);
             }
@@ -541,7 +541,7 @@ public class BolSearchEngine
                                   @NonNull final Book book) {
         final Element descrElement = document.selectFirst("div.product-description");
         if (descrElement != null) {
-            final String s = cleanText(descrElement);
+            final String s = SearchEngineUtils.cleanText(descrElement);
             if (!s.isBlank()) {
                 book.setDescription(s);
             }

@@ -538,7 +538,7 @@ public class DoubanSearchEngine
                             // sorting on author names to work.
                             text = matcher.group(2) + " [" + matcher.group(1) + "]";
                         }
-                        text = cleanName(text);
+                        text = SearchEngineUtils.cleanName(text);
                         if (!text.isBlank()) {
                             final Author author = Author.from(text);
 
@@ -560,7 +560,7 @@ public class DoubanSearchEngine
                     // Publisher
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        final String text = cleanName(a);
+                        final String text = SearchEngineUtils.cleanName(a);
                         if (!text.isBlank()) {
                             book.add(Publisher.from(text));
                         }
@@ -587,7 +587,7 @@ public class DoubanSearchEngine
                     // Translator
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        final String s = cleanName(a);
+                        final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
                             addAuthor(Author.from(s), AuthorRole.TRANSLATOR, book);
                         }
@@ -634,7 +634,7 @@ public class DoubanSearchEngine
                     // Series
                     final Element a = label.nextElementSibling();
                     if (a != null && "a".equals(a.tagName())) {
-                        final String s = cleanName(a);
+                        final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
                             final String url = a.attr("href");
                             final Matcher matcher = SERIES_ID.matcher(url);
@@ -771,7 +771,7 @@ public class DoubanSearchEngine
                     && introElements.size() > 1) {
                     intro = introElements.get(1);
                 }
-                final String desc = cleanText(intro.html());
+                final String desc = SearchEngineUtils.cleanText(intro.html());
                 if (!desc.isBlank()) {
                     book.setDescription(desc);
                 }

@@ -32,14 +32,11 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.parser.Parser;
 
 /**
  * A thin layer between the {@link SearchEngineBase} and the actual engine implementation.
- * This class provides {@link #loadDocument} for Jsoup based engines
- * and some cleaner methods which accept Jsoup objects.
+ * This class provides methods to load an html or xml document for Jsoup based engines.
  */
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
@@ -122,30 +119,5 @@ public abstract class JsoupSearchEngineBase
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         }
-    }
-
-    @NonNull
-    protected String cleanText(@NonNull final String s) {
-        return SearchEngineUtils.cleanText(s);
-    }
-
-    @NonNull
-    protected String cleanText(@NonNull final Node node) {
-        return SearchEngineUtils.cleanText(node.toString());
-    }
-
-    @NonNull
-    protected String cleanText(@NonNull final Element element) {
-        return SearchEngineUtils.cleanText(element.text());
-    }
-
-    @NonNull
-    protected String cleanName(@NonNull final String s) {
-        return SearchEngineUtils.cleanName(s);
-    }
-
-    @NonNull
-    protected String cleanName(@NonNull final Element element) {
-        return SearchEngineUtils.cleanName(element.text());
     }
 }

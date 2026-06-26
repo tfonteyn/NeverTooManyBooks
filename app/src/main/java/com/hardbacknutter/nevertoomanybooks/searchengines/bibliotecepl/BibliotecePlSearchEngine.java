@@ -669,7 +669,7 @@ public class BibliotecePlSearchEngine
         if (matcher.find()) {
             final String g1 = matcher.group(1);
             if (g1 != null) {
-                final String s = cleanName(g1);
+                final String s = SearchEngineUtils.cleanName(g1);
                 if (!s.isBlank()) {
                     addAuthor(Author.from(s), type, book);
                 }
@@ -681,7 +681,7 @@ public class BibliotecePlSearchEngine
                              @NonNull final Book book) {
         td.select(SPAN_DATA_IPUB_SEARCH_T)
           .stream()
-          .map(this::cleanName)
+          .map(SearchEngineUtils::cleanName)
           .filter(name -> !name.isBlank())
           .map(Series::from)
           .filter(series -> !book.getSeries().contains(series))
@@ -697,7 +697,7 @@ public class BibliotecePlSearchEngine
         // and let the user sort them out manually.
         bookData.select(SPAN_DATA_IPUB_SEARCH_W)
                 .stream()
-                .map(this::cleanName)
+                .map(SearchEngineUtils::cleanName)
                 .filter(name -> !name.isBlank())
                 .map(Publisher::from)
                 .filter(publisher -> !book.getPublishers().contains(publisher))
@@ -762,7 +762,7 @@ public class BibliotecePlSearchEngine
         final Element element = loadDocument(context, url, null)
                 .selectFirst("div.summary");
         if (element != null) {
-            final String text = cleanText(element);
+            final String text = SearchEngineUtils.cleanText(element);
             if (!text.isBlank()) {
                 book.setDescription(text);
             }

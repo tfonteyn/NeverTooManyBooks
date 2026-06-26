@@ -361,7 +361,7 @@ public class DatabazeKnihSearchEngine
 
         element = bDetails.selectFirst("a[href^=/serie/]");
         if (element != null) {
-            final String seriesName = cleanName(element);
+            final String seriesName = SearchEngineUtils.cleanName(element);
             if (!seriesName.isEmpty()) {
                 // some series will parse wrong.
                 // Example "Lucky Luke (Crew)"
@@ -421,7 +421,7 @@ public class DatabazeKnihSearchEngine
                 // Publishing house
                 element = detailsDesc.selectFirst("a[href^=/nakladatelstvi/]");
                 if (element != null) {
-                    final String name = cleanName(element);
+                    final String name = SearchEngineUtils.cleanName(element);
                     if (!name.isBlank()) {
                         book.add(Publisher.from(name));
                     }
@@ -436,7 +436,7 @@ public class DatabazeKnihSearchEngine
             // bit tricky, there is no verification possible that this is a title
             textNode = element.nextSibling();
             if (textNode != null) {
-                final String text = cleanText(textNode);
+                final String text = SearchEngineUtils.cleanText(textNode);
                 if (!text.isBlank()) {
                     book.setTranslatedFromTitle(text);
                 }
@@ -447,7 +447,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 textNode = element.nextSibling();
                 if (textNode != null) {
-                    final String text = cleanText(textNode);
+                    final String text = SearchEngineUtils.cleanText(textNode);
                     if (!text.isBlank()) {
                         partialDateParser.parse(text).ifPresent(book::setFirstPublicationDate);
                     }
@@ -744,7 +744,7 @@ public class DatabazeKnihSearchEngine
                              @NonNull final String text,
                              @AuthorRole.Role final int type,
                              @NonNull final Book book) {
-        final String s = cleanName(text);
+        final String s = SearchEngineUtils.cleanName(text);
         if (s.isBlank()) {
             return;
         }

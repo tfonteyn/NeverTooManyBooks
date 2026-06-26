@@ -378,7 +378,7 @@ public class KbNlHtmlSearchEngine
             final String title = book.getString(DBKey.TITLE, null);
             // should never happen, but paranoia...
             if (title != null && !title.isBlank()) {
-                final String s = cleanName(title);
+                final String s = SearchEngineUtils.cleanName(title);
                 if (!s.isBlank()) {
                     book.add(Series.from(s, tmpSeriesNr));
                 }
@@ -399,7 +399,7 @@ public class KbNlHtmlSearchEngine
             return;
         }
         final String[] cleanedData = a.text().split("/");
-        final String s = cleanText(cleanedData[0]);
+        final String s = SearchEngineUtils.cleanText(cleanedData[0]);
         if (!s.isBlank()) {
             book.setTitle(s);
         }
@@ -422,7 +422,7 @@ public class KbNlHtmlSearchEngine
                 return;
             }
 
-            s = cleanName(s);
+            s = SearchEngineUtils.cleanName(s);
             if (!s.isBlank()) {
                 addAuthor(Author.from(s), type, book);
             }
@@ -436,7 +436,7 @@ public class KbNlHtmlSearchEngine
             return;
         }
         // Note how this is different from the psi result
-        final String s = cleanName(span);
+        final String s = SearchEngineUtils.cleanName(span);
         if (!s.isBlank()) {
             book.add(Series.from(s, tmpSeriesNr));
         }
@@ -499,7 +499,7 @@ public class KbNlHtmlSearchEngine
         if (text.contains(":")) {
             text = text.split(":")[1].strip();
         }
-        text = cleanName(text);
+        text = SearchEngineUtils.cleanName(text);
         if (!text.isBlank()) {
             book.add(Publisher.from(text));
         }

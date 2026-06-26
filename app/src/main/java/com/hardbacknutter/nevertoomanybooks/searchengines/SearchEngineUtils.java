@@ -35,6 +35,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+
 public final class SearchEngineUtils {
 
     /** All non-rendering characters to REMOVE. */
@@ -161,6 +164,16 @@ public final class SearchEngineUtils {
         return text.strip();
     }
 
+    @NonNull
+    public static String cleanText(@NonNull final Node node) {
+        return cleanText(node.toString());
+    }
+
+    @NonNull
+    public static String cleanText(@NonNull final Element element) {
+        return cleanText(element.text());
+    }
+
     /**
      * Variant of {@link #cleanText(String)} which does additional clean-up
      * specific to author names and titles.
@@ -174,6 +187,11 @@ public final class SearchEngineUtils {
         final String text = cleanText(s);
         // remove any junk characters from the end of the string
         return END_PUNCTUATION_PATTERN.matcher(text).replaceAll("").strip();
+    }
+
+    @NonNull
+    public static String cleanName(@NonNull final Element element) {
+        return cleanName(element.text());
     }
 
     /**

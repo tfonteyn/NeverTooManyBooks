@@ -273,7 +273,7 @@ public class BertrandPtSearchEngine
             return;
         }
 
-        final String title = cleanText(titleElement);
+        final String title = SearchEngineUtils.cleanText(titleElement);
         if (title.isBlank()) {
             return;
         }
@@ -292,7 +292,7 @@ public class BertrandPtSearchEngine
         final Elements authorElements = bookInfo.select(
                 "div#productPageSectionDetails-collapseDetalhes-content-author > a");
         authorElements.stream()
-                      .map(this::cleanName)
+                      .map(SearchEngineUtils::cleanName)
                       .filter(name -> !name.isBlank())
                       .map(Author::from)
                       .forEach(author -> addAuthor(author, AuthorRole.UNKNOWN, book));
@@ -327,7 +327,7 @@ public class BertrandPtSearchEngine
         // The "Editor", i.e. the publisher is a pain... it does not have an easy div id
         element = bookInfo.selectFirst(":containsOwn(Editor:) > div.info");
         if (element != null) {
-            final String s = cleanName(element);
+            final String s = SearchEngineUtils.cleanName(element);
             if (!s.isBlank()) {
                 book.add(Publisher.from(s));
             }
@@ -368,7 +368,7 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-collection > div.info");
         if (element != null) {
-            final String s = cleanName(element);
+            final String s = SearchEngineUtils.cleanName(element);
             if (!s.isBlank()) {
                 book.add(Series.from(s));
             }

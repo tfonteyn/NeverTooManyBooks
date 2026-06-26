@@ -439,7 +439,7 @@ public class BedethequeSearchEngine
 
         final Element description = document.selectFirst("span[itemprop='description']");
         if (description != null) {
-            final String s = cleanText(description);
+            final String s = SearchEngineUtils.cleanText(description);
             if (!s.isBlank()) {
                 book.setDescription(s);
             }
@@ -477,7 +477,7 @@ public class BedethequeSearchEngine
             if (matcher.find()) {
                 final String s = matcher.group(2);
                 if (s != null) {
-                    final String title = cleanText(s);
+                    final String title = SearchEngineUtils.cleanText(s);
                     if (!title.isBlank()) {
                         book.setTitle(title);
                         final String nrInSeries = matcher.group(1);
@@ -787,7 +787,7 @@ public class BedethequeSearchEngine
                 case "Editeur :": {
                     String text = parseLabelText(labelElement);
                     if (text != null) {
-                        text = cleanName(text);
+                        text = SearchEngineUtils.cleanName(text);
                         if (!text.isBlank()) {
                             book.add(Publisher.from(text));
                         }
@@ -901,7 +901,7 @@ public class BedethequeSearchEngine
             }
             case "Collectif":
             default: {
-                final String s = cleanName(names);
+                final String s = SearchEngineUtils.cleanName(names);
                 if (!s.isBlank()) {
                     final Author author = Author.from(s);
                     if (sid != null) {
@@ -950,7 +950,7 @@ public class BedethequeSearchEngine
         // Series names can be formatted in a LOT of ways.
         // We're not going to try and capture each and every special format
         // but stick to the most common ones.
-        String seriesName = cleanName(text);
+        String seriesName = SearchEngineUtils.cleanName(text);
 
         Matcher matcher;
 

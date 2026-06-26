@@ -498,7 +498,7 @@ public class DnbSearchEngine
                         case "Work": {
                             // The original title for a translated book
                             // Can have Series/nr prefixed; let the user clean that up.
-                            book.setTranslatedFromTitle(cleanName(td));
+                            book.setTranslatedFromTitle(SearchEngineUtils.cleanName(td));
                             break;
                         }
                         case "Teil von":
@@ -593,7 +593,7 @@ public class DnbSearchEngine
             text = PATTERN_BAR.split(text)[0];
         }
 
-        text = cleanName(text);
+        text = SearchEngineUtils.cleanName(text);
         for (final String suffix : TITLE_SUFFIXES) {
             if (text.endsWith(suffix)) {
                 text = text.substring(0, text.length() - suffix.length() - 1).strip();
@@ -641,7 +641,7 @@ public class DnbSearchEngine
             Element e = it.next();
 
             while (e != null && e.nameIs("a")) {
-                final String name = cleanName(e);
+                final String name = SearchEngineUtils.cleanName(e);
                 final Author author = Author.from(name);
                 final String url = e.attr("href");
                 final Matcher matcher = AUTHOR_ID.matcher(url);
@@ -713,7 +713,7 @@ public class DnbSearchEngine
         if (a == null) {
             return;
         }
-        final String title = cleanName(a);
+        final String title = SearchEngineUtils.cleanName(a);
         if (title.isBlank()) {
             return;
         }
@@ -749,12 +749,12 @@ public class DnbSearchEngine
         final String text = td.text();
         if (text.contains(" ; ")) {
             final String[] split = PATTERN_SERIES_NR.split(text);
-            final String title = cleanName(split[0]);
+            final String title = SearchEngineUtils.cleanName(split[0]);
             final Series series = Series.from(title);
             series.setNumber(split[1].strip());
             book.add(series);
         } else {
-            final String title = cleanName(text);
+            final String title = SearchEngineUtils.cleanName(text);
             if (!title.isBlank()) {
                 book.add(Series.from(title));
             }
@@ -801,9 +801,9 @@ public class DnbSearchEngine
         final String name;
         if (brSplit[0].contains(":")) {
             final String[] parts = brSplit[0].split(":", 2);
-            name = cleanName(parts[parts.length - 1]);
+            name = SearchEngineUtils.cleanName(parts[parts.length - 1]);
         } else {
-            name = cleanName(brSplit[0]);
+            name = SearchEngineUtils.cleanName(brSplit[0]);
         }
 
         if (!name.isBlank()) {
@@ -834,7 +834,7 @@ public class DnbSearchEngine
         final String[] split = td.text().split(",");
         final List<String> tagNames = Arrays
                 .stream(split)
-                .map(this::cleanText)
+                .map(s -> SearchEngineUtils.cleanText(s))
                 .filter(name -> !name.isBlank())
                 .collect(Collectors.toList());
         setTags(tagNames, book);
