@@ -155,7 +155,8 @@ class UserCollection {
                    @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
         this.searchEngine = searchEngine;
-        jsoupLoader = new JsoupLoader(this.searchEngine.createGetDocumentRequest(context));
+        jsoupLoader = new JsoupLoader(this.searchEngine.createGetDocumentRequest(context),
+                                      this.searchEngine.getEngineId());
         formParser = new CollectionParser(context, bookshelfMapper);
     }
 

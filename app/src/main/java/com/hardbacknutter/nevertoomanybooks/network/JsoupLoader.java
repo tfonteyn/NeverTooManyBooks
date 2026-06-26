@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.Jsoup;
@@ -52,8 +53,12 @@ public class JsoupLoader {
 
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
+
     @NonNull
     private final FutureHttp<Document> httpGet;
+    @NonNull
+    private final EngineId engineId;
+    private final boolean logEnabled;
     /** The downloaded and parsed web page. */
     @Nullable
     private Document document;
@@ -69,10 +74,15 @@ public class JsoupLoader {
     /**
      * Constructor.
      *
-     * @param httpGet to use
+     * @param httpGet  to use
+     * @param engineId to use
      */
-    public JsoupLoader(@NonNull final FutureHttp<Document> httpGet) {
+    public JsoupLoader(@NonNull final FutureHttp<Document> httpGet,
+                       @NonNull final EngineId engineId) {
         this.httpGet = httpGet;
+        this.engineId = engineId;
+        //noinspection DataFlowIssue
+        this.logEnabled = engineId.getConfig().isLogHttpGetRequests();
     }
 
     /**
@@ -105,7 +115,7 @@ public class JsoupLoader {
     @NonNull
     public Document loadDocument(@NonNull final Context context,
                                  @NonNull final String url,
-                                 @Nullable final Map<String, String> requestProperties)
+                                 @Nullable final Map<String, String> headers)
             throws IOException {
 
         // are we requesting the same url again ?
@@ -114,7 +124,7 @@ public class JsoupLoader {
             return document;
         }
 
-        return loadDocument(context, Parser.htmlParser(), url, requestProperties);
+        return loadDocument(context, Parser.htmlParser(), url, headers);
     }
 
     /**
@@ -124,10 +134,10 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param context           Current context
-     * @param parser            to use
-     * @param url               to fetch
-     * @param requestProperties optional
+     * @param context Current context
+     * @param parser  to use
+     * @param url     to fetch
+     * @param headers optional
      *
      * @return the parsed Document
      *
@@ -138,7 +148,7 @@ public class JsoupLoader {
     public Document loadDocument(@NonNull final Context context,
                                  @NonNull final Parser parser,
                                  @NonNull final String url,
-                                 @Nullable final Map<String, String> requestProperties)
+                                 @Nullable final Map<String, String> headers)
             throws IOException {
 
         // are we requesting the same url again ?
@@ -160,7 +170,7 @@ public class JsoupLoader {
         int attemptsLeft = 2;
 
         while (attemptsLeft > 0) {
-            if (httpGet.isLoggingEnabled()) {
+            if (logEnabled) {
                 LoggerFactory.getLogger().d(TAG, "loadDocument|get",
                                             "attemptsLeft=" + attemptsLeft,
                                             "requestUrl=`" + requestUrl + '`');
@@ -169,17 +179,15 @@ public class JsoupLoader {
             try {
                 httpGet.setSSLContext(sslContext);
 
-                if (requestProperties != null) {
-                    requestProperties.forEach(httpGet::setRequestProperty);
+                if (headers != null) {
+                    headers.forEach(httpGet::setRequestProperty);
                 }
 
                 document = httpGet.get(requestUrl, (response, is) ->
                         processResponse(response, is, parser));
-                // Should never be null, as processResponse is never null
-                // but the 'get' contract is @Nullable.
-                if (document != null) {
-                    return document;
-                }
+                //noinspection DataFlowIssue
+                return document;
+
             } catch (@NonNull final SSLProtocolException | EOFException e) {
                 document = null;
 
@@ -199,7 +207,7 @@ public class JsoupLoader {
                 // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
                 // 2025-04-13: not seen for quite some time now.
                 // ...
-                if (httpGet.isLoggingEnabled()) {
+                if (logEnabled) {
                     LoggerFactory.getLogger().w(TAG, "loadDocument",
                                                 "e=" + e.getMessage(),
                                                 "requestUrl=\"" + requestUrl + '\"');
@@ -226,7 +234,7 @@ public class JsoupLoader {
             } catch (@NonNull final IOException e) {
                 document = null;
 
-                if (httpGet.isLoggingEnabled()) {
+                if (logEnabled) {
                     LoggerFactory.getLogger().e(TAG, e, "loadDocument",
                                                 "requestUrl=" + requestUrl);
                 }
@@ -245,16 +253,17 @@ public class JsoupLoader {
         // the original url will change after a redirect.
         // We need the actual url for further processing.
         String locationHeader = response.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
+        final String url = response.getURL().toString();
 
-        if (httpGet.isLoggingEnabled()) {
+        if (logEnabled) {
             LoggerFactory.getLogger().d(TAG, "processResponse",
-                                        "response.getURL()=" + response.getURL()
+                                        "response.getURL()=" + url
                                         + "\nlocation  =" + locationHeader);
         }
 
         if (locationHeader == null || locationHeader.isEmpty()) {
-            locationHeader = response.getURL().toString();
-            if (httpGet.isLoggingEnabled()) {
+            locationHeader = url;
+            if (logEnabled) {
                 LoggerFactory.getLogger().d(TAG, "processResponse",
                                             "location header not set, using url");
             }
@@ -279,7 +288,7 @@ public class JsoupLoader {
         It will NOT resolve the redirect itself and 'location' == 'baseUri'
         */
         final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader, parser);
-        if (httpGet.isLoggingEnabled()) {
+        if (logEnabled) {
             LoggerFactory.getLogger()
                          .d(TAG, "processResponse|disconnect",
                             "AFTER parsing|document.location()="
