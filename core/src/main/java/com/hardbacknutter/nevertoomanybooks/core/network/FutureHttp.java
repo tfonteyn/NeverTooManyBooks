@@ -22,21 +22,235 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.xml.sax.SAXException;
 
-public interface FutureHttp<R> {
+/**
+ * {@code HEAD}, {@code GET} and {@code POST} support.
+ *
+ * @param <R> the type of the return value for the request
+ */
+public class FutureHttp<R> {
+
+    private static final String HEAD = "HEAD";
+    private static final String GET = "GET";
+    private static final String POST = "POST";
+
+    /** The default number of times we try to connect. */
+    private static final int RETRY_COUNT = 3;
+
+    private static final String TAG = "FutureHttp";
+    private static final String LOG_ATTEMPT = "attempt=";
+    private static final String LOG_REQUEST_URL = "requestUrlStr=";
+    private static final String LOG_REDIRECT_COUNT = "redirectCount=";
+    private static final String LOG_CHECK_RESPONSE_CODE = "checkResponseCode";
+    private static final String LOG_REQUEST_URL_STR = "requestUrlStr=`";
+    private static final String LOG_RECOVERABLE_ERROR = "doGetConnect|recoverable error";
+
+    /** timeout for opening a connection to a website. */
+    private static final int CONNECT_TIMEOUT_MS = 10_000;
+    /** timeout for requests to website. */
+    private static final int READ_TIMEOUT_MS = 10_000;
+    /** {@code GET}. */
+    private static final int MAX_REDIRECTS = 5;
+
+    /** InputStream buffer size. Used by {@code GET} and {@code POST}. */
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
+
+    @StringRes
+    private final int siteResId;
+
+    /** LinkedHashMap so the order we use is preserved. */
+    private final Map<String, String> requestProperties = new LinkedHashMap<>();
+    @NonNull
+    private final Throttler throttler;
+    @Nullable
+    private final RateLimitInterceptor rateLimiter;
+    /** Log {@code GET} and {@code HEAD} related url,responseCode and redirects. */
+    private final boolean enableLog;
+    /** InputStream buffer size. Used by {@code GET} and {@code POST}. */
+    private int bufferSize = DEFAULT_BUFFER_SIZE;
+    /** {@code GET}. */
+    private boolean enable404Redirect;
+    /** {@code GET}. */
+    private int redirectCount;
+    @Nullable
+    private Future<R> futureHttp;
+    /** {@code GET}. */
+    private int retryCount = RETRY_COUNT;
+    @Nullable
+    private SSLContext sslContext;
+    @Nullable
+    private HostnameVerifier hostnameVerifier;
+    @Nullable
+    private Boolean followRedirects;
+    /** -1: use the static default. */
+    private int connectTimeoutInMs = -1;
+    /** -1: use the static default. */
+    private int readTimeoutInMs = -1;
+
+    /**
+     * Constructor.
+     *
+     * @param siteResId for logging
+     * @param throttler to use
+     * @param enableLog flag
+     */
+    public FutureHttp(@StringRes final int siteResId,
+                      @NonNull final Throttler throttler,
+                      final boolean enableLog) {
+        this.siteResId = siteResId;
+        this.throttler = throttler;
+        this.enableLog = enableLog;
+
+        rateLimiter = new RateLimitInterceptor(throttler, enableLog);
+    }
+
+    /**
+     * Check if the response headers indicate the encoding is gzip.
+     *
+     * @param response connection to check
+     *
+     * @return {@code true} if the content-encoding was "gzip"
+     */
+    private static boolean isZipped(@NonNull final HttpURLConnection response) {
+        return HttpConstants.ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
+                response.getHeaderField(HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
+    }
+
+    /**
+     * If already connected, simply check the response code.
+     * Otherwise, implicitly connect by getting the response code.
+     *
+     * @param request to check
+     *
+     * @throws IOException                  on connect
+     * @throws HttpUnauthorizedException    401: Unauthorized.
+     * @throws HttpForbiddenException       403: Forbidden
+     * @throws HttpNotFoundException        404: Not Found.
+     * @throws SocketTimeoutException       408: Request Time-Out.
+     * @throws HttpTooManyRequestsException 429: Too Many Requests.
+     * @throws HttpStatusException          on any other HTTP failures
+     */
+    @WorkerThread
+    private void checkResponseCode(@NonNull final HttpURLConnection request)
+            throws IOException,
+                   HttpUnauthorizedException,
+                   HttpNotFoundException,
+                   SocketTimeoutException,
+                   HttpTooManyRequestsException,
+                   HttpStatusException {
+
+        final int responseCode = request.getResponseCode();
+
+        if (isLoggingEnabled()) {
+            LoggerFactory.getLogger().d(TAG, LOG_CHECK_RESPONSE_CODE,
+                                        responseCode + " " + request.getURL().toString());
+        }
+
+        if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+            return;
+        }
+
+        if (isLoggingEnabled()) {
+            final String msg = request
+                    .getHeaderFields()
+                    .entrySet()
+                    .stream()
+                    .map(es -> "Response Header: " + es.getKey() + '='
+                               + String.join("|", es.getValue()))
+                    .collect(Collectors.joining("\n"));
+
+            LoggerFactory.getLogger().d(TAG, LOG_CHECK_RESPONSE_CODE, "\n" + msg);
+        }
+
+        @Nullable
+        final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
+
+        switch (responseCode) {
+            case HttpURLConnection.HTTP_UNAUTHORIZED: {
+                throw new HttpUnauthorizedException(siteResId,
+                                                    request.getResponseMessage(),
+                                                    request.getURL(),
+                                                    location);
+            }
+            // 403 if we're 100% blocked.
+            // 405 if we hit a wall like
+            // https://anubis.techaro.lol/docs/design/how-anubis-works/
+            case HttpURLConnection.HTTP_FORBIDDEN:
+            case HttpURLConnection.HTTP_BAD_METHOD: {
+                throw new HttpForbiddenException(siteResId,
+                                                 request.getResponseMessage(),
+                                                 request.getURL(),
+                                                 location);
+            }
+            case HttpURLConnection.HTTP_NOT_FOUND: {
+                throw new HttpNotFoundException(siteResId,
+                                                request.getResponseMessage(),
+                                                request.getURL(),
+                                                location);
+            }
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT: {
+                // for easier reporting issues to the user, map a 408 to an STE
+                throw new SocketTimeoutException("408 " + request.getResponseMessage());
+            }
+            case HttpTooManyRequestsException.HTTP_TOO_MANY_REQUESTS: {
+                throw new HttpTooManyRequestsException(
+                        siteResId,
+                        request.getHeaderField(HttpConstants.RESPONSE_HEADER_RETRY_AFTER),
+                        request.getResponseMessage(),
+                        request.getURL(),
+                        location);
+            }
+            default: {
+                throw new HttpStatusException(siteResId,
+                                              responseCode,
+                                              request.getResponseMessage(),
+                                              request.getURL(),
+                                              location);
+            }
+        }
+    }
 
     /**
      * Set the optional connect-timeout.
@@ -47,7 +261,10 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setConnectTimeout(@IntRange(from = 0) int timeoutInMs);
+    public FutureHttp<R> setConnectTimeout(@IntRange(from = 0) final int timeoutInMs) {
+        connectTimeoutInMs = timeoutInMs;
+        return this;
+    }
 
     /**
      * Set the optional read-timeout.
@@ -58,7 +275,10 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setReadTimeout(@IntRange(from = 0) int timeoutInMs);
+    public FutureHttp<R> setReadTimeout(@IntRange(from = 0) final int timeoutInMs) {
+        readTimeoutInMs = timeoutInMs;
+        return this;
+    }
 
     /**
      * Set whether redirects should be followed.
@@ -71,7 +291,10 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setInstanceFollowRedirects(boolean followRedirects);
+    public FutureHttp<R> setInstanceFollowRedirects(final boolean followRedirects) {
+        this.followRedirects = followRedirects;
+        return this;
+    }
 
     /**
      * <a href="https://developer.android.com/reference/java/net/HttpURLConnection.html#response-handling">HttpURLConnection</a>
@@ -88,14 +311,19 @@ public interface FutureHttp<R> {
      *
      * @param enable404Redirect flag
      */
-    void setEnable404Redirect(boolean enable404Redirect);
+    public void setEnable404Redirect(final boolean enable404Redirect) {
+        this.enable404Redirect = enable404Redirect;
+        redirectCount = 0;
+    }
 
     /**
      * Set the buffer size to use for the input stream.
      *
      * @param bufferSize in bytes
      */
-    void setBufferSize(int bufferSize);
+    public void setBufferSize(final int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
 
     /**
      * Override the default retry count.
@@ -106,7 +334,11 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setRetryCount(@IntRange(from = 1) int retryCount);
+    public FutureHttp<R> setRetryCount(@IntRange(from = 1) final int retryCount) {
+        // Sanity check
+        this.retryCount = retryCount >= 1 ? retryCount : RETRY_COUNT;
+        return this;
+    }
 
     /**
      * For secure connections.
@@ -117,7 +349,10 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setSSLContext(@Nullable SSLContext sslContext);
+    public FutureHttp<R> setSSLContext(@Nullable final SSLContext sslContext) {
+        this.sslContext = sslContext;
+        return this;
+    }
 
     /**
      * For secure connections.
@@ -130,14 +365,19 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setHostnameVerifier(@Nullable HostnameVerifier verifier);
+    public FutureHttp<R> setHostnameVerifier(@Nullable final HostnameVerifier verifier) {
+        this.hostnameVerifier = verifier;
+        return this;
+    }
 
     /**
      * Is logging enabled.
      *
      * @return flag
      */
-    boolean isLoggingEnabled();
+    public boolean isLoggingEnabled() {
+        return enableLog;
+    }
 
     /**
      * Add a request header.
@@ -149,8 +389,15 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    FutureHttp<R> setHeader(@NonNull String key,
-                            @Nullable String value);
+    public FutureHttp<R> setHeader(@NonNull final String key,
+                                   @Nullable final String value) {
+        if (value != null) {
+            requestProperties.put(key, value);
+        } else {
+            requestProperties.remove(key);
+        }
+        return this;
+    }
 
     /**
      * Add request headers.
@@ -161,10 +408,147 @@ public interface FutureHttp<R> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    default FutureHttp<R> setHeaders(@NonNull final Map<String, String> headers) {
+    public FutureHttp<R> setHeaders(@NonNull final Map<String, String> headers) {
         // One-by-one, so null values DELETE a header!
         headers.forEach(this::setHeader);
         return this;
+    }
+
+    private int getFutureTimeout() {
+        return connectTimeoutInMs + readTimeoutInMs + 10;
+    }
+
+    /**
+     * Create a new unconnected {@link HttpURLConnection}.
+     *
+     * @param url    to connect to
+     * @param method one of {@link #GET} or {@link #HEAD}.
+     *
+     * @return request
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    @NonNull
+    private HttpURLConnection createRequest(@NonNull final URL url,
+                                            @NonNull final String method)
+            throws IOException {
+
+        final HttpURLConnection request = (HttpURLConnection) url.openConnection();
+
+        request.setRequestMethod(method);
+        request.setDoOutput(POST.equals(method));
+
+        // Don't trust the caches; they have proven to be cumbersome.
+        request.setUseCaches(false);
+
+        if (followRedirects != null) {
+            request.setInstanceFollowRedirects(followRedirects);
+        }
+
+        request.setRequestProperty(HttpConstants.HOST, url.getHost());
+        request.setRequestProperty(HttpConstants.USER_AGENT,
+                                   HttpConstants.BROWSER_USER_AGENT);
+
+        requestProperties.forEach(request::setRequestProperty);
+
+        if (connectTimeoutInMs >= 0) {
+            request.setConnectTimeout(connectTimeoutInMs);
+        } else {
+            request.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        }
+
+        if (readTimeoutInMs >= 0) {
+            request.setReadTimeout(readTimeoutInMs);
+        } else {
+            request.setReadTimeout(READ_TIMEOUT_MS);
+        }
+
+        if (sslContext != null) {
+            final HttpsURLConnection con = (HttpsURLConnection) request;
+            con.setSSLSocketFactory(sslContext.getSocketFactory());
+            // the hostnameVerifier is normally only set from tests
+            if (hostnameVerifier != null) {
+                con.setHostnameVerifier(hostnameVerifier);
+            }
+        }
+
+        if (isLoggingEnabled()) {
+            final String msg = request
+                    .getRequestProperties()
+                    .entrySet()
+                    .stream()
+                    .map(es -> "Request Header: " + es.getKey() + "="
+                               + String.join("|", es.getValue()))
+                    .collect(Collectors.joining("\n"));
+
+            LoggerFactory.getLogger().d(TAG, "createRequest", "\n" + msg);
+        }
+
+        return request;
+    }
+
+    private void unpackExecutionException(@NonNull final ExecutionException e)
+            throws StorageException, IOException {
+        // TODO: maybe move away from this early interception? and let the ExecutionException
+        //  go all the way up and decode it in ExMsg ?
+
+        // TODO: in theory we no longer receive the Unchecked variants
+        //  due to using ActionFunction
+
+        final Throwable cause = e.getCause();
+
+        if (cause instanceof UncheckedStorageException) {
+            //noinspection DataFlowIssue
+            throw (StorageException) cause.getCause();
+
+        } else if (cause instanceof StorageException) {
+            throw (StorageException) cause;
+
+        } else if (cause instanceof UncheckedIOException) {
+            //noinspection DataFlowIssue
+            throw (IOException) cause.getCause();
+
+        } else if (cause instanceof IOException) {
+            throw (IOException) cause;
+
+        } else if (cause instanceof UncheckedSAXException) {
+            final SAXException saxException = Objects.requireNonNull(
+                    ((UncheckedSAXException) cause).getCause());
+            unpackSAXException(saxException);
+
+        } else if (cause instanceof SAXException) {
+            final SAXException saxException = (SAXException) cause;
+            unpackSAXException(saxException);
+        }
+
+        // An unexpected exception, let the caller deal with it.
+        throw new IOException(cause);
+    }
+
+    private void unpackSAXException(@NonNull final SAXException saxException)
+            throws IOException, StorageException {
+        // First try unwrapping with SAXException#getException() !
+        Throwable saxCause = saxException.getException();
+        if (saxCause == null) {
+            // try the standard getCause() instead
+            saxCause = saxException.getCause();
+        }
+        if (saxCause == null) {
+            // We have an actual SAXException which is not wrapping anything.
+            // This indicates a parser failure somewhere usually caused
+            // by the server response not matching the expectations.
+            // Wrap it into an IOException and let the caller deal with it.
+            throw new IOException(saxException);
+        }
+
+        // The SAXException was caused by a wrapped exception. Unwrap if we can.
+        if (saxCause instanceof IOException) {
+            throw (IOException) saxCause;
+        } else if (saxCause instanceof StorageException) {
+            throw (StorageException) saxCause;
+        }
+        // Some other wrapped exception, re-wrap and let the caller deal with it.
+        throw new IOException(saxCause);
     }
 
     /**
@@ -182,12 +566,15 @@ public interface FutureHttp<R> {
      * @throws StorageException       The covers directory is not available
      */
     @NonNull
-    R head(@NonNull String url,
-           @NonNull ActionFunction<HttpURLConnection, R> responseProcessor)
+    public R head(@NonNull final String url,
+                  @NonNull final ActionFunction<HttpURLConnection, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
-                   IOException;
+                   IOException {
+
+        return Objects.requireNonNull(doGetExecute(url, HEAD, responseProcessor));
+    }
 
     /**
      * Send the GET and use the given {@link ResponseProcessor} to handle the response.
@@ -206,12 +593,26 @@ public interface FutureHttp<R> {
      * @throws StorageException       The covers directory is not available
      */
     @Nullable
-    R get(@NonNull String url,
-          @NonNull ResponseProcessor<InputStream, R> responseProcessor)
+    public R get(@NonNull final String url,
+                 @NonNull final ResponseProcessor<InputStream, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
-                   IOException;
+                   IOException {
+
+        return Objects.requireNonNull(doGetExecute(url, GET, connection -> {
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    connection.getInputStream(), bufferSize)) {
+                if (isZipped(connection)) {
+                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                        return responseProcessor.apply(connection, gzs);
+                    }
+                } else {
+                    return responseProcessor.apply(connection, bis);
+                }
+            }
+        }));
+    }
 
     /**
      * Send the GET and use the given {@link ResponseProcessor} to handle the response.
@@ -230,12 +631,290 @@ public interface FutureHttp<R> {
      * @throws StorageException       The covers directory is not available
      */
     @NonNull
-    R getAsString(@NonNull String url,
-                  @NonNull ResponseProcessor<String, R> responseProcessor)
+    public R getAsString(@NonNull final String url,
+                         @NonNull final ResponseProcessor<String, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
-                   IOException;
+                   IOException {
+
+        return Objects.requireNonNull(doGetExecute(url, GET, connection -> {
+
+            try (InputStream is = connection.getInputStream()) {
+                final String page;
+                if (isZipped(connection)) {
+                    try (GZIPInputStream gzs = new GZIPInputStream(is)) {
+                        try (Reader isr = new InputStreamReader(gzs, StandardCharsets.UTF_8)) {
+                            try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
+                                page = reader.lines().collect(Collectors.joining());
+                            }
+                        }
+                        return responseProcessor.apply(connection, page);
+                    }
+                } else {
+                    try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                        try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
+                            page = reader.lines().collect(Collectors.joining());
+                        }
+                    }
+                    return responseProcessor.apply(connection, page);
+                }
+            }
+        }));
+    }
+
+    /**
+     * Create a request and execute it using a {@link Future} so we can use a timeout.
+     *
+     * @param urlStr to connect to
+     * @param method {@code GET}, {@code POST}, {@code HEAD}
+     * @param action callback to give the request to
+     *
+     * @return result of the callback method
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       The covers directory is not available
+     */
+    @Nullable
+    private R doGetExecute(@NonNull final String urlStr,
+                           @NonNull final String method,
+                           @NonNull final ActionFunction<HttpURLConnection, R> action)
+            throws StorageException,
+                   CancellationException,
+                   SocketTimeoutException,
+                   IOException {
+        try {
+            futureHttp = ASyncExecutor.NETWORK.submit(() -> {
+                HttpURLConnection request = null;
+                try {
+                    final URL url = new URL(urlStr);
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "doGetExecute|doGetConnect");
+                    }
+                    request = doGetConnect(url, method);
+                    return action.apply(request);
+                } finally {
+                    if (request != null) {
+                        if (isLoggingEnabled()) {
+                            LoggerFactory.getLogger().d(TAG, "doGetExecute|disconnect");
+                        }
+                        request.disconnect();
+                    }
+                }
+            });
+            return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
+
+        } catch (@NonNull final ExecutionException e) {
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "doGetExecute: " + e);
+            }
+            unpackExecutionException(e);
+            return null;
+
+        } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
+            throw new IOException(e);
+
+        } catch (@NonNull final TimeoutException e) {
+            // re-throw as if it's coming from the network call.
+            throw new SocketTimeoutException(e.getMessage());
+
+        } finally {
+            futureHttp = null;
+        }
+    }
+
+    /**
+     * Perform the actual opening of the connection.
+     * <p>
+     * If the site fails to connect, we will attempt up to {@link #RETRY_COUNT}.
+     * This is always enabled.
+     * <p>
+     * If the site sends a redirect which Android (in its mysterious ways...) interprets
+     * as a {@code 404}, we will try to follow it manually up to {@link #MAX_REDIRECTS}.
+     * To enable this, set {@link #setEnable404Redirect(boolean)} to {@code true}.
+     * The default is {@code false}.
+     *
+     * @param url    to connect to
+     * @param method one of {@link #GET} or {@link #HEAD}.
+     *
+     * @return the request which was successful
+     *
+     * @throws IOException      on generic/other IO failures
+     * @throws NetworkException on fatal error / giving up
+     */
+    @NonNull
+    private HttpURLConnection doGetConnect(@NonNull final URL url,
+                                           @NonNull final String method)
+            throws IOException {
+
+        // start at 1 to make the logs clear.
+        int attempt = 1;
+
+        final HttpURLConnection initialRequest = createRequest(url, method);
+        // Preserve for a potential manual redirect
+        String requestUrlStr = initialRequest.getURL().toString();
+
+        HttpURLConnection request = initialRequest;
+
+        while (attempt <= retryCount) {
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "doGetConnect|connect",
+                                            LOG_ATTEMPT + attempt,
+                                            LOG_REQUEST_URL + requestUrlStr);
+            }
+
+            //noinspection OverlyBroadCatchBlock
+            try {
+                throttler.waitUntilRequestAllowed();
+                request.connect();
+
+                redirectCount = 0;
+                while (enable404Redirect && redirectCount < MAX_REDIRECTS
+                       && request.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+
+                    final URL responseUrl = request.getURL();
+                    final String responseUrlStr = responseUrl.toString();
+
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger()
+                                     .d(TAG, "doGetConnect|response",
+                                        LOG_ATTEMPT + attempt,
+                                        LOG_REQUEST_URL + requestUrlStr,
+                                        LOG_REDIRECT_COUNT + redirectCount,
+                                        "responseCode=" + request.getResponseCode(),
+                                        "responseUrlStr=" + responseUrlStr);
+                    }
+
+                    if (requestUrlStr.equals(responseUrlStr)) {
+                        // Request and response URL are the same, it's a genuine 404
+                        // Force-quit the loop.
+                        redirectCount = MAX_REDIRECTS;
+                    } else {
+                        // follow the redirect
+                        redirectCount++;
+                        request.disconnect();
+                        request = createRequest(responseUrl, request.getRequestMethod());
+                        // Preserve for potential retry
+                        requestUrlStr = responseUrlStr;
+
+                        if (isLoggingEnabled()) {
+                            LoggerFactory.getLogger()
+                                         .d(TAG, "doGetConnect|redirect",
+                                            LOG_ATTEMPT + attempt,
+                                            LOG_REDIRECT_COUNT + redirectCount,
+                                            "new requestUrlStr=" + requestUrlStr);
+                        }
+                        // Note we are NOT using the throttler here,
+                        // Android was SUPPOSED to redirect immediately.
+                        request.connect();
+                    }
+                }
+
+                checkResponseCode(request);
+                // all fine, we're connected
+                return request;
+
+            } catch (@NonNull final HttpForbiddenException e) {
+                // 2025: the below was solved by using OkHttp for all images;
+                //       but leaving this comment as a cautionary tale.
+                // 2024-11-07: There are ongoing issues with OpenLibrary fetching cover images.
+                // The issues seem to be limited to running in AndroidTest
+                // (i.e. the ParseTest class) and do not seem to happen when doing a manual
+                // search in the emulator or on a real device.
+                //
+                // This "catch" code is mainly meant for those test cases:
+                // OpenLibrary is returning a 403 upon the first request to the cover api url:
+                //
+                // example:  ISBN: 9780141346830 => OL28508809M
+                // https://openlibrary.org/books/OL28508809M.json
+                // contains:
+                //   "covers": [
+                //    14615097,
+                //    14615096,
+                //    13011694
+                //  ],
+                // and using the API:
+                // https://openlibrary.org/dev/docs/api/covers
+                // we access:
+                // https://covers.openlibrary.org/b/id/14615097-L.jpg?default=false
+                // ==> IMMEDIATELY a 403....
+                // but using that last url in a browser or with wget will return a 302
+                if (isLoggingEnabled()) {
+                    LoggerFactory.getLogger().e(TAG, e, "doGetConnect|disconnecting",
+                                                "e.url=" + e.getUrl(),
+                                                "e.location=" + e.getLocation());
+                }
+
+                request.disconnect();
+                // Cannot recover from this, just quit
+                throw e;
+
+            } catch (@NonNull final HttpTooManyRequestsException e) {
+                if (isLoggingEnabled()) {
+                    LoggerFactory.getLogger()
+                                 .e(TAG, e, LOG_RECOVERABLE_ERROR,
+                                    LOG_ATTEMPT + attempt,
+                                    "retryAfter=" + e.getRetryAfter(),
+                                    LOG_REQUEST_URL_STR + requestUrlStr + '`');
+                }
+
+                attempt++;
+                checkAttempt(attempt, request, e);
+                throttler.onTooManyRequests(calculateRetryAfterInMs(attempt, e.getRetryAfter()));
+
+            } catch (@NonNull final InterruptedIOException
+                                    | FileNotFoundException
+                                    | UnknownHostException e) {
+                // These exceptions CAN be retried:
+                // InterruptedIOException / SocketTimeoutException: connection timeout
+                // UnknownHostException: DNS or other low-level network issue
+                // FileNotFoundException: seen on some sites. A retry and the site was OK.
+                if (isLoggingEnabled()) {
+                    LoggerFactory.getLogger()
+                                 .e(TAG, e, LOG_RECOVERABLE_ERROR,
+                                    LOG_ATTEMPT + attempt,
+                                    LOG_REQUEST_URL_STR + requestUrlStr + '`');
+                }
+
+                attempt++;
+                checkAttempt(attempt, request, e);
+                throttler.onTooManyRequests(calculateRetryAfterInMs(attempt, null));
+            }
+        }
+
+        final String message = "doGetConnect|Giving up|initialRequestUrl=`"
+                               + initialRequest.getURL() + '`';
+        if (isLoggingEnabled()) {
+            LoggerFactory.getLogger().d(TAG, message);
+        }
+        throw new NetworkException(message);
+    }
+
+    private void checkAttempt(@IntRange(from = 1) final int attempt,
+                              @NonNull final HttpURLConnection request,
+                              @NonNull final IOException e)
+            throws IOException {
+        if (attempt > retryCount) {
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "doGetConnect|all attempts failed|disconnecting");
+            }
+            request.disconnect();
+            throw e;
+        }
+    }
+
+    private int calculateRetryAfterInMs(final int attempt,
+                                        @Nullable final String retryHeader) {
+        if (rateLimiter != null) {
+            return rateLimiter.getRetryAfterInMs(attempt, retryHeader);
+        } else {
+            return 2 * throttler.getDelayInMillis();
+        }
+    }
 
     /**
      * Send the POST.
@@ -253,30 +932,102 @@ public interface FutureHttp<R> {
      * @throws StorageException       The covers directory is not available
      */
     @Nullable
-    R post(@NonNull String urlStr,
-           @NonNull String postBody,
-           @Nullable ResponseProcessor<InputStream, R> responseProcessor)
+    public R post(@NonNull final String urlStr,
+                  @NonNull final String postBody,
+                  @Nullable final ResponseProcessor<InputStream, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
-                   IOException;
+                   IOException {
+
+        // a POST is never retried!
+        try {
+            futureHttp = ASyncExecutor.NETWORK.submit(() -> {
+                HttpURLConnection request = null;
+                try {
+                    final URL url = new URL(urlStr);
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "post|createRequest");
+                    }
+                    request = createRequest(url, POST);
+
+                    throttler.waitUntilRequestAllowed();
+                    try (OutputStream os = request.getOutputStream();
+                         Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                         Writer writer = new BufferedWriter(osw)) {
+                        writer.write(postBody);
+                        writer.flush();
+                    }
+
+                    checkResponseCode(request);
+
+                    if (responseProcessor != null) {
+                        try (InputStream is = request.getInputStream();
+                             BufferedInputStream bis = new BufferedInputStream(is, bufferSize)) {
+                            if (isZipped(request)) {
+                                try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                                    return responseProcessor.apply(request, gzs);
+                                }
+                            } else {
+                                return responseProcessor.apply(request, bis);
+                            }
+                        }
+                    }
+                    //noinspection ReturnOfNull
+                    return null;
+                } finally {
+                    if (request != null) {
+                        if (isLoggingEnabled()) {
+                            LoggerFactory.getLogger().d(TAG, "post|disconnect");
+                        }
+                        request.disconnect();
+                    }
+                }
+            });
+            return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
+
+        } catch (@NonNull final ExecutionException e) {
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "post: " + e);
+            }
+            unpackExecutionException(e);
+            return null;
+
+        } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
+            throw new IOException(e);
+
+        } catch (@NonNull final TimeoutException e) {
+            // re-throw as if it's coming from the network call.
+            throw new SocketTimeoutException(e.getMessage());
+
+        } finally {
+            futureHttp = null;
+        }
+    }
 
     /**
      * Request to cancel an ongoing http request.
      */
-    void cancel();
+    public void cancel() {
+        synchronized (this) {
+            if (futureHttp != null) {
+                futureHttp.cancel(true);
+            }
+        }
+    }
 
     /**
      * Same as {@code java.util.function.Function} but with checked exceptions
      * thus avoiding packing/unpacking.
      *
-     * @param <T> input
-     *            Typically the actual {@link HttpURLConnection}
-     *            or a preprocessed {@link InputStream} from that connection
-     * @param <R> output
+     * @param <T>  input
+     *             Typically the actual {@link HttpURLConnection}
+     *             or a preprocessed {@link InputStream} from that connection
+     * @param <R2> output
      */
     @FunctionalInterface
-    interface ActionFunction<T, R> {
+    public
+    interface ActionFunction<T, R2> {
         /**
          * Applies this function to the given argument.
          *
@@ -288,7 +1039,7 @@ public interface FutureHttp<R> {
          * @throws StorageException The covers directory is not available
          * @throws SAXException     on parser problems if a SAX parser was used
          */
-        R apply(T t)
+        R2 apply(T t)
                 throws IOException,
                        StorageException,
                        SAXException;

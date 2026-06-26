@@ -29,7 +29,6 @@ import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpImpl;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
 import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
@@ -60,8 +59,8 @@ public final class HttpCallFactory {
         final Throttler throttler = config.getThrottler();
         final boolean enableLog = config.isLogHttpGetRequests();
 
-        final FutureHttp<R> request = new FutureHttpImpl<>(engineId.getLabelResId(),
-                                                           throttler, enableLog);
+        final FutureHttp<R> request = new FutureHttp<>(engineId.getLabelResId(),
+                                                       throttler, enableLog);
         request.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs());
 
