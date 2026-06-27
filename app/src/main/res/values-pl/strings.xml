@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -949,4 +946,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Dotyczy tylko języków używających przedimków. Angielski przykład: „The Lord of The Rings” i „Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Edytuj za pomocą…</string>
     <string name="warning_import_csv_calibre">Kolumna „comments” ze starszych wersji programu Calibre może powodować powstawanie nieprawidłowych plików CSV. W przypadku wystąpienia błędu, aktualizacja programu Calibre do wersji 9.10 lub nowszej przed eksportem zazwyczaj rozwiązuje problem. Alternatywnie możesz usunąć kolumnę „comments” ze swojego pliku i spróbować ponownie zaimportować.</string>
+    <string name="book_format_newspaper">Gazeta</string>
+    <string name="book_format_periodical">Czasopismo</string>
 </resources>
