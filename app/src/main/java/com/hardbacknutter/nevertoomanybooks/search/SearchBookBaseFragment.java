@@ -82,7 +82,7 @@ public abstract class SearchBookBaseFragment
     private ProgressDelegate progressDelegate;
     private boolean enableProgressMessages = true;
 
-    protected void explainSitesSupport(@Nullable final List<Site> sites) {
+    protected void explainSitesSupport() {
         // override as needed, e.g. SearchBookByTextFragment
     }
 
@@ -117,7 +117,7 @@ public abstract class SearchBookBaseFragment
                 new SearchSitesSingleListContract(),
                 o -> o.ifPresent(sites -> {
                     coordinator.setSiteList(sites);
-                    explainSitesSupport(sites);
+                    explainSitesSupport();
                 }));
     }
 

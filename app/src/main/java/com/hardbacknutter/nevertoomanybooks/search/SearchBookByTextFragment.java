@@ -123,7 +123,7 @@ public class SearchBookByTextFragment
         populateAdapters();
 
         vb.btnSearch.setOnClickListener(v -> startSearch());
-        explainSitesSupport(coordinator.getSiteList());
+        explainSitesSupport();
     }
 
     private void autoRemoveError(@NonNull final TextInputLayout til,
@@ -144,8 +144,9 @@ public class SearchBookByTextFragment
         });
     }
 
-    protected void explainSitesSupport(@Nullable final List<Site> sites) {
+    protected void explainSitesSupport() {
         final Context context = getContext();
+        final List<Site> sites = coordinator.getSiteList();
 
         if (sites != null) {
             //noinspection DataFlowIssue
@@ -168,6 +169,7 @@ public class SearchBookByTextFragment
                 return;
             }
         }
+
         // There are no sites which support searching by Text
         vb.btnSearch.setEnabled(false);
         // don't use android.R.attr.colorError which is API 29+ only
