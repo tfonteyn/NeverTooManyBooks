@@ -944,4 +944,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Platí len pre jazyky, ktoré používajú členy. Anglický príklad: „The Lord of The Rings“ a „Lord of The Rings, The“.</string>
     <string name="action_edit_with_ellipsis">Upraviť pomocou…</string>
     <string name="warning_import_csv_calibre">Stĺpec „comments“ zo starších verzií programu Calibre môže spôsobiť neplatnosť súborov CSV. Ak narazíte na chybu, zvyčajne pomôže aktualizácia programu Calibre na verziu 9.10 alebo novšiu pred exportom. Prípadne môžete stĺpec „comments“ zo svojho súboru odstrániť a skúsiť import znova.</string>
+    <string name="book_format_newspaper">Noviny</string>
+    <string name="book_format_periodical">Časopis</string>
 </resources>
