@@ -61,11 +61,14 @@ import com.google.zxing.Result;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
@@ -87,6 +90,8 @@ import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
@@ -351,10 +356,58 @@ public class SearchBookByIsbnFragment
      * @see #onViewCreated(View, Bundle)
      */
     private void afterOnViewCreated() {
+        explainSitesSupport();
         vb.isbn.requestFocus();
         if (vm.isStartScanner()) {
             startScanner();
         }
+    }
+
+    @Override
+    protected void explainSitesSupport() {
+        final Context context = getContext();
+
+        final Set<SearchEngine.SearchBy> searchBy = Set.of(SearchEngine.SearchBy.Isbn,
+                                                           SearchEngine.SearchBy.Issn,
+                                                           SearchEngine.SearchBy.Barcode);
+
+        //noinspection DataFlowIssue
+        final List<String> engines = coordinator
+                .getSiteList()
+                .stream()
+                .filter(Site::isActive)
+                .map(Site::getEngineId)
+                .filter(engineId -> searchBy.stream().anyMatch(engineId::supports))
+                .map(engineId -> engineId.getName(context))
+                .collect(Collectors.toList());
+
+        if (!engines.isEmpty()) {
+            // Explicitly let the user known which sites will be searched.
+            vb.keypad.btnSearch.setEnabled(true);
+            final int textColor = AttrUtils
+                    .getColorInt(context, com.google.android.material.R.attr.colorOnBackground);
+            vb.txtLimitations.setTextColor(textColor);
+            vb.txtLimitations.setText(getString(R.string.info_site_list,
+                                                String.join(", ", engines)));
+            return;
+        }
+
+        // There are no sites which support searching by Text
+        vb.keypad.btnSearch.setEnabled(false);
+        // don't use android.R.attr.colorError which is API 29+ only
+        //noinspection DataFlowIssue
+        final int textColor = AttrUtils
+                .getColorInt(context, androidx.appcompat.R.attr.colorError);
+        vb.txtLimitations.setTextColor(textColor);
+
+        final String methods = new StringJoiner(", ")
+            .add(getString(R.string.lbl_isbn))
+            .add(getString(R.string.lbl_issn))
+            .add(getString(R.string.lbl_barcode))
+                .toString();
+        vb.txtLimitations.setText(getString(R.string.warning_no_site_supports_this_method,
+                                            methods));
+        vb.txtLimitations.setVisibility(View.VISIBLE);
     }
 
     /**

@@ -32,6 +32,25 @@
         style="@style/FragmentRoot.ConstraintLayout"
         >
 
+        <!-- This field is used for a number of messages indicating
+             there might be some limitations during the search
+             depending on the list of enabled sites.
+             text and text-color is set from code. -->
+        <com.hardbacknutter.nevertoomanybooks.widgets.DismissibleBanner
+            android:id="@+id/txt_limitations"
+            style="@style/Banner"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/container_margin"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="@dimen/container_margin"
+            android:textIsSelectable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/warning_no_site_supports_this_method"
+            tools:visibility="visible"
+            />
+
         <FrameLayout
             android:id="@+id/barcode_scanner"
             android:layout_width="0dp"
@@ -40,7 +59,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/keypad"
             app:layout_constraintStart_toStartOf="@id/keypad"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_limitations"
             app:layout_constraintWidth_max="@dimen/camera_preview_width"
             tools:visibility="visible"
             >
