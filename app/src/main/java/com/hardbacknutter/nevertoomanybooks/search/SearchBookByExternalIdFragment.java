@@ -135,13 +135,13 @@ public class SearchBookByExternalIdFragment
         modelToView();
 
         vb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
-        vb.btnSearch.setOnClickListener(v -> prepareCriteria());
+        vb.btnSearch.setOnClickListener(v -> startSearch());
 
         autoRemoveError(vb.externalId, vb.lblExternalId);
         vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 hideKeyboard(v);
-                prepareCriteria();
+                startSearch();
                 return true;
             }
             return false;
@@ -231,11 +231,12 @@ public class SearchBookByExternalIdFragment
     }
 
     /**
-     * Prepare the criteria object to use for the search.
+     * Prepare the criteria object to use and start a search.
+     * <p>
      * This method can interact with the user,
      * and can reject starting a search.
      */
-    private void prepareCriteria() {
+    private void startSearch() {
         viewToModel();
 
         // check if we have an active search, if so, quit silently.
@@ -254,25 +255,20 @@ public class SearchBookByExternalIdFragment
         //noinspection DataFlowIssue
         criteria.addSid(engineId, sid);
 
-        final int searchId = startSearch(criteria);
-        if (searchId == 0) {
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_book_search_failed,
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    int startSearch(@NonNull final BookSearchCriteria criteria) {
         // Warn the user, AND abort.
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
-            return 0;
+            return;
         }
-        //noinspection DataFlowIssue
-        return coordinator.searchByExternalId(engineId, criteria);
+
+        final int searchId = coordinator.searchByExternalId(engineId, criteria);
+        if (searchId == 0) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_book_search_failed,
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override

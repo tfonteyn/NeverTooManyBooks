@@ -33,7 +33,6 @@ import android.widget.EditText;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
-import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
@@ -54,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -183,30 +181,6 @@ public abstract class SearchBookBaseFragment
 
     boolean isSearchActive() {
         return coordinator.isSearchActive();
-    }
-
-    /**
-     * Start the actual search with the {@link SearchCoordinator} in the background.
-     * The results come back in {@link #onSearchResults(BookSearchResult)}.
-     * <p>
-     * Override to customise which search function is called.
-     * The default implementation starts the generic
-     * {@link SearchCoordinator#search(BookSearchCriteria)}.
-     *
-     * @param criteria to search for
-     *
-     * @return the search-id, or {@code 0} if no search was started
-     */
-    @EmptySuper
-    int startSearch(@NonNull final BookSearchCriteria criteria) {
-        // Warn the user, AND abort.
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_network_please_connect,
-                          Snackbar.LENGTH_LONG).show();
-            return 0;
-        }
-        return coordinator.search(criteria);
     }
 
     private void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignoreAlwaysTrue) {

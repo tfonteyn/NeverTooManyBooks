@@ -42,6 +42,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
@@ -121,7 +122,7 @@ public class SearchBookByTextFragment
 
         populateAdapters();
 
-        vb.btnSearch.setOnClickListener(v -> prepareCriteria());
+        vb.btnSearch.setOnClickListener(v -> startSearch());
         explainSitesSupport(coordinator.getSiteList());
     }
 
@@ -184,7 +185,7 @@ public class SearchBookByTextFragment
                                    @Nullable final KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
             hideKeyboard(view);
-            prepareCriteria();
+            startSearch();
             return true;
         }
         return false;
@@ -235,11 +236,12 @@ public class SearchBookByTextFragment
     }
 
     /**
-     * Prepare the criteria object to use for the search.
+     * Prepare the criteria object to use and start a search.
+     * <p>
      * This method can interact with the user,
      * and can reject starting a search.
      */
-    private void prepareCriteria() {
+    private void startSearch() {
         viewToModel();
 
         // check if we have an active search, if so, quit silently.
@@ -293,7 +295,15 @@ public class SearchBookByTextFragment
             return;
         }
 
-        final int searchId = startSearch(criteria);
+        // Warn the user, AND abort.
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_network_please_connect,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        }
+
+        final int searchId = coordinator.search(criteria);
         if (searchId == 0) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_book_search_failed,

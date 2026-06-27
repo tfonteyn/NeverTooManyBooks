@@ -65,6 +65,7 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
@@ -845,22 +846,19 @@ public class SearchBookByIsbnFragment
                 .show();
     }
 
-    /**
-     * Sits between {@link #prepare(ProductCode)} and {@link #startSearch(BookSearchCriteria)}
-     * Needed to:
-     * - support {@link ScanMode#Batch} mode.
-     * - allow starting with or without calling {@link #onBookAlreadyPresent}
-     *
-     * @param productCode to search for
-     *
-     * @return the search-id, or {@code 0} if no search was started
-     */
     @Override
     protected int startSearch(@NonNull final ProductCode productCode) {
+        // Warn the user, AND abort.
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_network_please_connect,
+                          Snackbar.LENGTH_LONG).show();
+            return 0;
+        }
+
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setProductCodeFromScan(productCode, vm.getScannerMode());
-
-        return startSearch(criteria);
+        return coordinator.search(criteria);
     }
 
     /**
