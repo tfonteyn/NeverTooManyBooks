@@ -502,7 +502,7 @@ public class SearchCoordinator
     /**
      * Get the <strong>current</strong> preferred search sites.
      *
-     * @return list with all sites <strong>active and disabled</strong>
+     * @return list with all sites <strong>both active and non-active</strong>
      */
     @NonNull
     public List<Site> getSiteList() {
