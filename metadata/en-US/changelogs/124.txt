@@ -1,0 +1,3 @@
+FIXES:
+
+- #244 Regression where editing the bookshelves a book is assigned to was partially failing
