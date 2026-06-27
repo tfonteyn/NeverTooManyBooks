@@ -39,10 +39,10 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
@@ -144,30 +144,31 @@ public class SearchBookByTextFragment
         });
     }
 
+    @Override
     protected void explainSitesSupport() {
         final Context context = getContext();
-        final List<Site> sites = coordinator.getSiteList();
 
-        if (sites != null) {
-            //noinspection DataFlowIssue
-            final List<String> engines = sites
-                    .stream()
-                    .filter(Site::isActive)
-                    .map(Site::getEngineId)
-                    .filter(engineId -> engineId.supports(SearchEngine.SearchBy.Text))
-                    .map(engineId -> engineId.getName(context))
-                    .collect(Collectors.toList());
+        final Set<SearchEngine.SearchBy> searchBy = Set.of(SearchEngine.SearchBy.Text);
 
-            if (!engines.isEmpty()) {
-                // Explicitly let the user known which sites will be searched.
-                vb.btnSearch.setEnabled(true);
-                final int textColor = AttrUtils
-                        .getColorInt(context, com.google.android.material.R.attr.colorOnBackground);
-                vb.txtLimitations.setTextColor(textColor);
-                vb.txtLimitations.setText(getString(R.string.info_site_list,
-                                                    String.join(", ", engines)));
-                return;
-            }
+        //noinspection DataFlowIssue
+        final List<String> engines = coordinator
+                .getSiteList()
+                .stream()
+                .filter(Site::isActive)
+                .map(Site::getEngineId)
+                .filter(engineId -> searchBy.stream().anyMatch(engineId::supports))
+                .map(engineId -> engineId.getName(context))
+                .collect(Collectors.toList());
+
+        if (!engines.isEmpty()) {
+            // Explicitly let the user known which sites will be searched.
+            vb.btnSearch.setEnabled(true);
+            final int textColor = AttrUtils
+                    .getColorInt(context, com.google.android.material.R.attr.colorOnBackground);
+            vb.txtLimitations.setTextColor(textColor);
+            vb.txtLimitations.setText(getString(R.string.info_site_list,
+                                                String.join(", ", engines)));
+            return;
         }
 
         // There are no sites which support searching by Text
@@ -178,8 +179,10 @@ public class SearchBookByTextFragment
                 .getColorInt(context, androidx.appcompat.R.attr.colorError);
         vb.txtLimitations.setTextColor(textColor);
         vb.txtLimitations.setText(getString(R.string.warning_no_site_supports_this_method,
+                                            // TODO: support RTL
                                             getString(R.string.lbl_author)
                                             + " / " + getString(R.string.lbl_title)));
+        vb.txtLimitations.setVisibility(View.VISIBLE);
     }
 
     private boolean onEditorAction(@NonNull final View view,

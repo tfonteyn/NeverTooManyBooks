@@ -53,10 +53,10 @@
         <!-- This field is used for a number of messages indicating
              there might be some limitations during the search
              depending on the list of enabled sites.
-             Style/color of the text is adjusted as needed from code. -->
-        <TextView
+             text and text-color is set from code. -->
+        <com.hardbacknutter.nevertoomanybooks.widgets.DismissibleBanner
             android:id="@+id/txt_limitations"
-            style="@style/Text.Body"
+            style="@style/Banner"
             android:layout_width="0dp"
             android:layout_marginStart="@dimen/container_margin"
             android:layout_marginTop="24dp"
@@ -67,7 +67,6 @@
             app:layout_constraintTop_toBottomOf="@id/txt_warning"
             tools:text="@string/warning_no_site_supports_this_method"
             />
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
