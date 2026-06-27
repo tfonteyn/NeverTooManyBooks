@@ -70,11 +70,13 @@ public class MultiChoiceViewModel
     }
 
     void add(@NonNull final Long value) {
-        this.preferenceChanged = this.preferenceChanged || currentSelection.add(value);
+        // duh... FIRST add, THEN 'or'...
+        this.preferenceChanged = currentSelection.add(value) || this.preferenceChanged;
     }
 
     void remove(@NonNull final Long value) {
-        this.preferenceChanged = this.preferenceChanged || currentSelection.remove(value);
+        // duh... FIRST remove, THEN 'or'...
+        this.preferenceChanged = currentSelection.remove(value) || this.preferenceChanged;
     }
 
     boolean isModified() {
