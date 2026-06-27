@@ -41,4 +41,8 @@
               format="string" />
     </declare-styleable>
 
+    <declare-styleable name="DismissibleBanner">
+        <attr name="android:text" />
+    </declare-styleable>
+
 </resources>
