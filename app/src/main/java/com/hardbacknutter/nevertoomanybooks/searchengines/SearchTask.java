@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -92,35 +90,23 @@ final class SearchTask
 
     /**
      * Constructor. Will search according to passed {@link BookSearchCriteria}.
-     * <ol>
-     *      <li>external id</li>
-     *      <li>valid ISBN</li>
-     *      <li>valid barcode</li>
-     *      <li>text</li>
-     * </ol>
      *
      * @param context      Current context
      * @param searchId     a unique search identifier, to which this task will belong
      * @param searchEngine the search site engine
+     * @param searchBy     how to search
      * @param criteria     to use
      * @param taskListener for the results
      *
-     * @return task; will be {@code null} if the given criteria don't match up with the given
-     *         SearchEngine
+     * @return task
      */
-    @Nullable
+    @NonNull
     static SearchTask createSearchTask(@NonNull final Context context,
                                        final int searchId,
                                        @NonNull final SearchEngine searchEngine,
+                                       @NonNull final SearchEngine.SearchBy searchBy,
                                        @NonNull final BookSearchCriteria criteria,
                                        @NonNull final TaskListener<Book> taskListener) {
-
-        final EngineId engineId = searchEngine.getEngineId();
-
-        final SearchEngine.SearchBy searchBy = determineSearchBy(engineId, criteria);
-        if (searchBy == null) {
-            return null;
-        }
 
         final SearchTask task = new SearchTask(context, TASK_ID.incrementAndGet(),
                                                searchId, searchEngine, searchBy, criteria,
@@ -131,58 +117,6 @@ final class SearchTask
         return task;
     }
 
-    @Nullable
-    private static SearchEngine.SearchBy determineSearchBy(
-            @NonNull final EngineId engineId,
-            @NonNull final BookSearchCriteria criteria) {
-
-        // We seemingly do double-work here by first determning by which method we
-        // will search and then later on in doWork using that to decide to actual
-        // API method to call on the SearchEngine.
-        // The whole reason for this is, that we could end up NOT searching
-        // when there is no compatible engine/criteria combination.
-        // This way, we avoid starting a task which would decide it does not need to run.
-
-        // Search by SID takes preference over all other criteria
-        if (engineId.supports(SearchEngine.SearchBy.ExternalId)) {
-            if (criteria.getSid(engineId).isPresent()) {
-                return SearchEngine.SearchBy.ExternalId;
-            }
-        }
-
-        final ProductCode productCode = criteria.getProductCode();
-
-        // Search by a VALID ISSN.
-        if (engineId.supports(SearchEngine.SearchBy.Issn) && productCode != null
-            && (productCode.getType() == ProductCodeType.Issn8
-                || productCode.getType() == ProductCodeType.Issn13)) {
-            return SearchEngine.SearchBy.Issn;
-        }
-
-        // Search by a VALID code.
-        if (engineId.supports(SearchEngine.SearchBy.Isbn) && productCode != null) {
-            // Either strict ISBN, or any other valid code
-            // depending on the user criteria 'strict' flag.
-            if (criteria.isStrictIsbn() ? productCode.isIsbn()
-                                        : productCode.getType() != ProductCodeType.Invalid) {
-                return SearchEngine.SearchBy.Isbn;
-            }
-        }
-
-        // Search by any code, including invalid ones
-        if (engineId.supports(SearchEngine.SearchBy.Barcode) && productCode != null) {
-            return SearchEngine.SearchBy.Barcode;
-        }
-
-        // Search by anything which may be supported by the engine.
-        // Check on empty criteria is paranoia...
-        if (engineId.supports(SearchEngine.SearchBy.Text) && !criteria.isEmpty()) {
-            return SearchEngine.SearchBy.Text;
-        }
-
-        // search data and engine have nothing in common, abort.
-        return null;
-    }
 
     public int getSearchId() {
         return searchId;

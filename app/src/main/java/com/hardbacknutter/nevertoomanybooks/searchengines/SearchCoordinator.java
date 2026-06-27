@@ -52,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -705,6 +707,7 @@ public class SearchCoordinator
      * @param waitForIsbnOrCode flag
      *
      * @return {@code true} if the search was started.
+     *         {@code false} if the criteria and the active engines had nothing in common
      */
     private synchronized boolean startSearch(@NonNull final Context context,
                                              @NonNull final EngineId engineId,
@@ -735,16 +738,19 @@ public class SearchCoordinator
         }
 
         @Nullable
+        final SearchEngine.SearchBy searchBy = determineSearchBy(engineId,
+                                                                 bookSearch.getCriteria());
+        if (searchBy == null) {
+            // search data and engine have nothing in common, abort
+            return false;
+        }
+
         final SearchTask task = SearchTask.createSearchTask(context,
                                                             bookSearch.getId(),
                                                             searchEngine,
+                                                            searchBy,
                                                             bookSearch.getCriteria(),
                                                             searchTaskListener);
-
-        if (task == null) {
-            // search data and engine have nothing in common, abort silently.
-            return false;
-        }
 
         if (BuildConfig.DEBUG) {
             bookSearch.debugSearchTaskStarting(engineId, task.getTaskId(), waitForIsbnOrCode);
@@ -760,6 +766,74 @@ public class SearchCoordinator
 
         task.startSearch();
         return true;
+    }
+
+    /**
+     * Determine what criteria to search on.
+     * The order we check:
+     * <ol>
+     *      <li>external id</li>
+     *      <li>valid ISSN</li>
+     *      <li>valid ISBN</li>
+     *      <li>valid barcode</li>
+     *      <li>text</li>
+     * </ol>
+     *
+     * @param engineId to use
+     * @param criteria to search for
+     *
+     * @return SearchBy enum
+     */
+    @Nullable
+    private SearchEngine.SearchBy determineSearchBy(@NonNull final EngineId engineId,
+                                                    @NonNull final BookSearchCriteria criteria) {
+
+        // We seemingly do double-work here by first determning by which method we
+        // will search and then later on in doWork using that to decide to actual
+        // API method to call on the SearchEngine.
+        // The whole reason for this is, that we could end up NOT searching
+        // when there is no compatible engine/criteria combination.
+        // This way, we avoid starting a task which would decide it does not need to run.
+
+        // Search by SID takes preference over all other criteria
+        if (engineId.supports(SearchEngine.SearchBy.ExternalId)) {
+            if (criteria.getSid(engineId).isPresent()) {
+                return SearchEngine.SearchBy.ExternalId;
+            }
+        }
+
+        final ProductCode productCode = criteria.getProductCode();
+
+        // Search by a VALID ISSN.
+        if (engineId.supports(SearchEngine.SearchBy.Issn) && productCode != null
+            && (productCode.getType() == ProductCodeType.Issn8
+                || productCode.getType() == ProductCodeType.Issn13)) {
+            return SearchEngine.SearchBy.Issn;
+        }
+
+        // Search by a VALID code.
+        if (engineId.supports(SearchEngine.SearchBy.Isbn) && productCode != null) {
+            // Either strict ISBN, or any other valid code
+            // depending on the user criteria 'strict' flag.
+            if (criteria.isStrictIsbn() ? productCode.isIsbn()
+                                        : productCode.getType() != ProductCodeType.Invalid) {
+                return SearchEngine.SearchBy.Isbn;
+            }
+        }
+
+        // Search by any code, including invalid ones
+        if (engineId.supports(SearchEngine.SearchBy.Barcode) && productCode != null) {
+            return SearchEngine.SearchBy.Barcode;
+        }
+
+        // Search by anything which may be supported by the engine.
+        // Check on empty criteria is paranoia...
+        if (engineId.supports(SearchEngine.SearchBy.Text) && !criteria.isEmpty()) {
+            return SearchEngine.SearchBy.Text;
+        }
+
+        // search data and engine have nothing in common, abort.
+        return null;
     }
 
     /**
