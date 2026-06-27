@@ -407,8 +407,9 @@
     <string name="warning_toc_confirm">Please confirm that these titles are (mostly) correct.</string>
     <!-- Periodic reminder to make a backup -->
     <string name="warning_backup_request">Would you like to back up your database to your sdcard?</string>
-    <!-- If the user has enabled/disabled  website to search on and for example disabled 
-         ALL sites which can search by ISBN, and then the user tries to search by ISBN.
+    <!-- The user can enabled/disabled the websites to search on.
+         This message is show if they happen to have disabled all sites which
+         can search by the method the user wants to search on.
          Param 1: 'ISBN', 'Author', 'Publisher'  etc... -->
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <string name="warning_restart_required">App restart required</string>
