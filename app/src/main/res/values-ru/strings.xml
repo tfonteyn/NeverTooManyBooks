@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -956,4 +953,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Применимо только к языкам, использующим артикли. Английский пример: «The Lord of The Rings» и «Lord of The Rings, The».</string>
     <string name="action_edit_with_ellipsis">Изменить с помощью…</string>
     <string name="warning_import_csv_calibre">Колонка «comments» из старых версий Calibre может привести к созданию некорректных файлов CSV. Если вы столкнулись с ошибкой, обновление Calibre до версии 9.10 или более поздней перед экспортом обычно решает проблему. Кроме того, вы можете удалить колонку «comments» из своего файла и повторить импорт.</string>
+    <string name="book_format_newspaper">Газета</string>
+    <string name="book_format_periodical">Журнал</string>
 </resources>
