@@ -848,14 +848,6 @@ public class SearchBookByIsbnFragment
 
     @Override
     protected int startSearch(@NonNull final ProductCode productCode) {
-        // Warn the user, AND abort.
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_network_please_connect,
-                          Snackbar.LENGTH_LONG).show();
-            return 0;
-        }
-
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setProductCodeFromScan(productCode, vm.getScannerMode());
         return coordinator.search(criteria);

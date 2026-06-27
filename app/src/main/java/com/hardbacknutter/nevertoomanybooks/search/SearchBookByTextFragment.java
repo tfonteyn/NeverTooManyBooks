@@ -295,14 +295,6 @@ public class SearchBookByTextFragment
             return;
         }
 
-        // Warn the user, AND abort.
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_network_please_connect,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        }
-
         final int searchId = coordinator.search(criteria);
         if (searchId == 0) {
             //noinspection DataFlowIssue

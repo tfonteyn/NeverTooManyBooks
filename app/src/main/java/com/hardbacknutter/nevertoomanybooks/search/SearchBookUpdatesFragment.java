@@ -195,13 +195,6 @@ public class SearchBookUpdatesFragment
             return;
         }
 
-        // Warn the user, AND abort.
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
-            Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        }
-
         // If the user has selected to overwrite thumbnails...
         if (vm.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
