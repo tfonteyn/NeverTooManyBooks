@@ -209,12 +209,24 @@ public abstract class SearchBookBaseFragment
     }
 
     /**
-     * This is the base method which will interact with the user as needed.
-     * Override as needed, call super <strong>only if in an interactive mode</strong>.
+     * This is the base method.
+     * The default is to interact with the user as needed.
+     * Override as needed.
+     *
+     * @param result from a search
+     *
+     * @see #onSearchFinishedInteractively(BookSearchResult)
+     */
+    void onSearchFinished(@NonNull final BookSearchResult result) {
+        onSearchFinishedInteractively(result);
+    }
+
+    /**
+     * FINAL, override {@link #onSearchFinished(LiveDataEvent)} instead.
      *
      * @param result from a search
      */
-    void onSearchFinished(@NonNull final BookSearchResult result) {
+    protected final void onSearchFinishedInteractively(@NonNull final BookSearchResult result) {
         final Runnable proceed = () -> onSearchResults(result);
 
         // when there are any issues, talk to the user, then when applicable, proceed

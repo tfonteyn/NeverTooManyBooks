@@ -526,7 +526,7 @@ public abstract class QueueFragment
             && (result.getScanMode() == ScanMode.Off
                 || result.getScanMode() == ScanMode.Continuous)) {
             // user interactive; we'll end up in #onSearchResults
-            super.onSearchFinished(result);
+            onSearchFinishedInteractively(result);
         } else {
             // we'll end up in #onQueueUpdated
             qvm.onResult(result);
