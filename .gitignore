@@ -4,7 +4,8 @@
 .externalNativeBuild
 
 /local.properties
-/build
+# Ignore all build directories anywhere in the project tree
+**/build/
 /captures
 
 /.idea/androidTestResultsUserPreferences.xml
