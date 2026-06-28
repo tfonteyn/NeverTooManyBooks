@@ -68,23 +68,23 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.IsbnTextInputEditText;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -105,23 +105,21 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
  * <p>
  * - start batch scan
  * - disable progress
- * - queue items populated by scanner
- * - queue can be cleared using button
- * - scanner delivers item to be added:
+ * - scanner delivers a product-code, or the user enters one manually
  * - search started, added to the queue (wil have searchId)
- * - starting search fails, ask user to:
- * - stop scanning
- * - restart scanner
+ * - queue can be cleared using button
+ * - starting search fails, ask user to to either stop scanning or restart the scanner
+ * - results arrive and the queue chips get updated.
  * <p>
  * - user clicks on queue item:
  * - item has searchId (always)
  * - dialog title/msg depending on what we can show
  * - result present:
- * - user can delete item
- * - user can edit book
- * - must be deleted from the queue before edit starts
- * - no result
- * - user can delete item
+ *    - user can delete item
+ *    - user can edit book
+ *    - must be deleted from the queue before edit starts
+ *    - no result
+ *    - user can delete item
  * <p>
  * - user stops scanning
  * - progress STILL disabled
@@ -902,7 +900,7 @@ public class SearchBookByIsbnFragment
     @Override
     protected int startSearch(@NonNull final ProductCode productCode) {
         final BookSearchCriteria criteria = new BookSearchCriteria();
-        criteria.setProductCodeFromScan(productCode, vm.getScannerMode());
+        criteria.setProductCode(productCode, vm.getScannerMode());
         return coordinator.search(criteria);
     }
 

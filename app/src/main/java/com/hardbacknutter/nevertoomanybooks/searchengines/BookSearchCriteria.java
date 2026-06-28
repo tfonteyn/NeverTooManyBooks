@@ -244,11 +244,12 @@ public class BookSearchCriteria {
     /**
      * Set the {@link ProductCode} criteria.
      *
-     * @param productCode     to search for
-     * @param scanMode will be returned with the result
+     * @param productCode to search for
+     * @param scanMode    the mode used which produced <strong>this</strong> product-code.
+     *                    It will be returned with the result for routing purposes.
      */
-    public void setProductCodeFromScan(@NonNull final ProductCode productCode,
-                                       @NonNull final ScanMode scanMode) {
+    public void setProductCode(@NonNull final ProductCode productCode,
+                               @NonNull final ScanMode scanMode) {
         this.productCodeStr = productCode.asText();
         this.productCode = productCode;
         this.scanMode = scanMode;
