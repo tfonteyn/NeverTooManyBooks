@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -74,13 +71,11 @@
         <item quantity="one">%1$s zvaigzne</item>
         <item quantity="other">%1$s zvaigznes</item>
     </plurals>
-
     <plurals name="confirm_queue_has_x_items">
         <item quantity="zero">Ievadīti %1$d ISBN kodi.</item>
         <item quantity="one">Ievadīts %1$d iepriekšējais ISBN kods. Vai vēlaties sākt meklēšanu, vai arī to noņemt?</item>
         <item quantity="other">Ievadīti %1$d iepriekšējie ISBN kodi. Vai vēlaties sākt meklēšanu, vai arī tos noņemt?</item>
     </plurals>
-
     <string name="lbl_year">Gads</string>
     <string name="lbl_month">Mēnesis</string>
     <string name="lbl_day">Diena</string>
@@ -165,7 +160,8 @@
     <string name="ps_show_titles_reordered_on">Pārvietot artikulu no nosaukuma sākuma uz beigām,\npiemēram, “Lord of The Rings, The”</string>
     <string name="pt_deduplication_title_matching">Nosaukumu salīdzināšana</string>
     <string name="pt_deduplication_title_matching_summary_on">Saglabājot, nosaukumi, kas ir identiski, izņemot formatējumu, tiks apvienoti. Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>
-    <string name="pt_deduplication_title_matching_summary_off">Saglabājot, nosaukumi, kas ir identiski, izņemot formatējumu, netiks apvienoti. Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>    <string name="pt_capitalize_title">Lielo burtu lietojums nosaukumos</string>
+    <string name="pt_deduplication_title_matching_summary_off">Saglabājot, nosaukumi, kas ir identiski, izņemot formatējumu, netiks apvienoti. Attiecas tikai uz valodām, kurās izmanto artikulus. Angļu valodas piemērs: “The Lord of The Rings” un “Lord of The Rings, The”.</string>
+    <string name="pt_capitalize_title">Lielo burtu lietojums nosaukumos</string>
     <string name="lbl_capitalize_none">Bez izmaiņām</string>
     <string name="lbl_capitalize_words">Vārdu sākumburti</string>
     <string name="lbl_capitalize_sentence">Teikumu sākumburti</string>
@@ -202,15 +198,11 @@
     <string name="pe_bob_row_menu_button_when_space">Rādīt pogu, ja ir vieta; citādi izmantot garo klikšķi.</string>
     <string name="pe_bob_row_menu_long_click">Vienmēr izmantot turot nospiestu.</string>
     <string name="pt_fast_scroller_overlay">Teksta burbulis ritināšanas laikā.</string>
-
     <string name="pe_fast_scroller_overlay_static">Statisks</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamisks</string>
     <string name="lbl_fastscroller_draghandle">Ritinjoslas slīdnis</string>
-
-
     <string name="pt_thumbnails_rotate_auto">Pagriezt attēlus</string>
     <string name="camera_next_action">Darbība pēc attēla uzņemšanas</string>
-
     <string name="pt_camera_auto_focus">Automātiskā fokusēšana</string>
     <string name="pe_camera_front">Priekšējā kamera</string>
     <string name="pe_camera_back">Aizmugurējā kamera</string>
@@ -232,11 +224,9 @@
     <string name="pe_option_bottom_sheet">Vienmēr ekrāna apakšā</string>
     <string name="pt_ui_dialogs_mode">Dialoglodziņi</string>
     <string name="pe_ui_dialog_mode_classic">Vienmēr kā klasisku dialoglodziņu</string>
-
     <string name="pe_ui_dialog_mode_by_screen_size">Mazākos ekrānos rādīt dialoglodziņus ekrāna apakšā.\nLielākos ekrānos, piemēram, planšetdatoros, vienmēr izmantot klasiskos dialoglodziņus.</string>
     <string name="pc_context_menus">Konteksta un rindu izvēlnes</string>
     <string name="pe_ui_context_menu_mode_classic">Vienmēr kā klasisku konteksta izvēlni</string>
-
     <string name="pe_ui_context_menu_mode_by_size">Mazākos ekrānos garas izvēlnes rādīt ekrāna apakšā, bet īsas izvēlnes — kā klasiskas konteksta izvēlnes.\nLielākos ekrānos, piemēram, planšetdatoros, vienmēr izmantot klasiskas konteksta izvēlnes.</string>
     <string name="info_cleanup_files">Dzēšamie faili SD kartē pašlaik aizņem %1$s. Žurnālfaili un citi dati SD kartē tiek saglabāti katrā jaunināšanas reizē, veidojot datubāzes dublējumkopiju vai lietotnes avārijas gadījumā. Pieskarieties zemāk esošajai pogai, lai neatgriezeniski dzēstu šos failus no SD kartes. Ja esat saskāries ar avārijām vai citām kļūdām, lūdzu, vispirms apsveriet iespēju izmantot pogu “%2$s”.</string>
     <string name="option_purge_image_cache">Iztīrīt attēlu kešatmiņu</string>
@@ -293,7 +283,7 @@
     <string name="ps_sort_author_name_family_first">Kārtot vispirms pēc uzvārda,\npiem., “Willis, Connie”</string>
     <string name="ps_show_author_name_given_first">Rādīt vispirms ar vārdu,\npiem., “Connie Willis”</string>
     <string name="ps_show_author_name_family_first">Rādīt vispirms ar uzvārdu,\npiem., “Willis, Connie”</string>
-    <string name="pt_bob_show_group_book_count">Rādīt grāmatu skaitu katrā grupā</string>
+    <string name="pt_bob_show_group_book_count">Rādīt grāmatu skaitu katrā grupā.</string>
     <string name="pt_bob_books_under_multiple_authors">Rādīt grāmatas ar vairākiem autoriem</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">tikai zem to galvenā autora</string>
     <string name="ps_bob_books_under_multiple_authors_each">zem katra autora</string>
@@ -303,12 +293,12 @@
     <string name="pt_bob_books_under_multiple_publishers">Rādīt grāmatas ar vairākiem izdevējiem</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">tikai zem to galvenā izdevēja</string>
     <string name="ps_bob_books_under_multiple_publishers_each">zem katra izdevēja</string>
-    <string name="pt_bob_cover_click">Pieskaršanās vāka attēlam</string>
-    <string name="pe_bob_cover_click_zoom">Tuvināt vāka attēlu</string>
-    <string name="pe_bob_cover_click_details">Atvērt grāmatas informācijas lapu</string>
-    <string name="pt_bob_cover_long_click">Grāmatas izvēlnes atvēršana</string>
-    <string name="pe_bob_cover_long_click_ignore">Pieskaroties pogai</string>
-    <string name="pe_bob_cover_long_click_popupmenu">Ar garo klikšķi uz vāka attēla</string>
+    <string name="pt_bob_cover_click">Pieskaršanās vāka attēlam.</string>
+    <string name="pe_bob_cover_click_zoom">Tuvināt vāka attēlu.</string>
+    <string name="pe_bob_cover_click_details">Atvērt grāmatas informācijas lapu.</string>
+    <string name="pt_bob_cover_long_click">Grāmatas izvēlnes atvēršana.</string>
+    <string name="pe_bob_cover_long_click_ignore">Pieskaroties pogai.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Ar garo klikšķi uz vāka attēla.</string>
     <string name="citation_share_book_im_reading">Es lasu grāmatu “%1$s” %2$s, autors: %3$s %4$s</string>
     <string name="lbl_filters">Filtri</string>
     <string name="lbl_filter">Filtrs</string>
@@ -428,7 +418,7 @@
     <string name="lbl_image_2">3. attēls</string>
     <string name="lbl_image_3">4. attēls</string>
     <string name="lbl_pages">Lappuses</string>
-    <string name="info_x_pages">%1$d lpp.</string>
+    <string name="info_x_pages">%1$d lpp</string>
     <string name="lbl_country">Valsts</string>
     <string name="lbl_group">Grupa</string>
     <string name="lbl_currency">Valūta</string>
@@ -582,7 +572,7 @@
     <string name="option_fab_add_book_by_isbn">Meklēt pēc ISBN</string>
     <string name="option_fab_add_book_by_internet_search">Meklēt pēc nosaukuma</string>
     <string name="option_fab_add_book_manually">Pievienot manuāli</string>
-    <string name="option_fab_add_book_by_external_id">Tīmekļa vietnes grāmatas ID</string>
+    <string name="option_fab_add_book_by_external_id">Tīmekļa vietnes grāmatas id</string>
     <string name="option_select_all">Atlasīt visu</string>
     <string name="option_select_none">Atcelt visu atlasi</string>
     <string name="lbl_all_bookshelves">Visi grāmatu plaukti</string>
@@ -698,7 +688,8 @@
     <string name="tip_view_only_help">Varat vilkt pa kreisi vai pa labi, lai pārietu uz citām grāmatām.</string>
     <string name="tip_book_list">Pieskaroties grāmatai, tiks parādīta informācija par to. Ilgi nospiežot uz vienuma sarakstā, tiks piedāvātas papildu opcijas.</string>
     <string name="tip_configure_sites">Atsevišķas vietnes var konfigurēt, izmantojot iestatījumu ikonu ekrāna augšdaļā.</string>
-    <string name="tip_bookshelf_management">Izceltā rinda norāda tavu pašreizējo grāmatplauktu.\n\nNoklusējuma grāmatplaukts (atzīmēts ar *) tiks izmantots automātiski, ja pašreizējais kāda iemesla dēļ nav pieejams.</string>    <string name="tip_authors_works">Izmantotās ikonas</string>
+    <string name="tip_bookshelf_management">Izceltā rinda norāda tavu pašreizējo grāmatplauktu.\n\nNoklusējuma grāmatplaukts (atzīmēts ar *) tiks izmantots automātiski, ja pašreizējais kāda iemesla dēļ nav pieejams.</string>
+    <string name="tip_authors_works">Izmantotās ikonas</string>
     <string name="tip_authors_works_book">Grāmata.</string>
     <string name="tip_authors_works_multiple_books">Virsraksts ir iekļauts vairākās grāmatās.</string>
     <string name="tip_authors_works_single_book">Virsraksts ir iekļauts vienā grāmatā.</string>
@@ -722,7 +713,8 @@
     <string name="info_tap_to_select">Pieskarieties, lai atlasītu.</string>
     <string name="info_tap_to_move_tag">Pieskarieties tagam, lai pievienotu vai noņemtu to no grāmatas.</string>
     <string name="lbl_add_or_edit_substitution">Pievienot/rediģēt aizstāšanas nosacījumu</string>
-    <string name="info_substitutions_one_per_line">Pievieno vienu aizstājēju katrā rindā vai atstāj tukšu, lai dzēstu tagu</string>    <string name="info_download_successful">Lejupielāde veiksmīga</string>
+    <string name="info_substitutions_one_per_line">Pievieno vienu aizstājēju katrā rindā vai atstāj tukšu, lai dzēstu tagu</string>
+    <string name="info_download_successful">Lejupielāde veiksmīga</string>
     <string name="info_calibre_content_server_extension">Calibre Content Server paplašinājums nav instalēts. Virtuālās bibliotēkas nebūs pieejamas.</string>
     <string name="cd_btn_drag_handle">Velciet, lai pārkārtotu šo sarakstu</string>
     <string name="cd_clear_text_end_icon">Notīrīt tekstu</string>
@@ -787,21 +779,21 @@
     <string name="error_unexpected">Radusies neparedzēta kļūda.</string>
     <string name="error_unexpected_long">Radusies neparedzēta kļūda. Ja problēma nepazūd, sazinieties ar atbalsta dienestu, izmantojot opciju “%1$s” iestatījumu lapas apakšā.</string>
     <string name="error_upgrade_not_supported">Jaunināšana no versijām, kas vecākas par %1$s, netiek atbalstīta.</string>
-    <string name="error_updates_aborted">Atjaunināšana pārtraukta.</string>
+    <string name="error_updates_aborted">Atjaunināšana pārtraukta</string>
     <string name="error_network_please_connect">Lūdzu, izveidojiet savienojumu ar internetu.</string>
     <string name="error_network_site_access_failed">Piekļūstot %1$s, radās tīkla problēma. Lūdzu, pārbaudiet, vai vietne darbojas, un, ja problēma nepazūd, sazinieties ar atbalsta dienestu.</string>
     <string name="error_network_failed_try_again">Pārbaudiet savienojumu un mēģiniet vēlreiz.</string>
     <string name="error_site_access_blocked">Vietne ir bloķējusi piekļuvi.</string>
-    <string name="error_http_401_authorization_failed">Autorizācija neizdevās.</string>
+    <string name="error_http_401_authorization_failed">Autorizācija neizdevās</string>
     <string name="error_http_401_site_authorization_failed">Autorizācija vietnē %1$s neizdevās.</string>
-    <string name="error_site_authentication_failed">Autentifikācija vietnē %1$s neizdevās.</string>
+    <string name="error_site_authentication_failed">Autentifikācija vietnē %1$s neizdevās</string>
     <string name="error_http_403_site_forbidden">Vietne %1$s ir bloķējusi piekļuvi.</string>
     <string name="error_http_403_forbidden">Vietne ir bloķējusi piekļuvi.</string>
     <string name="error_storage_not_accessible">Lūdzu, pārbaudiet, vai krātuve ir pieejama.</string>
     <string name="error_storage_not_writable">Lūdzu, pārbaudiet, vai krātuvē var rakstīt un vai tajā ir pietiekami daudz vietas.</string>
     <string name="error_search_x_failed_y">Meklēšana vietnē %1$s neizdevās: %2$s</string>
     <string name="error_book_search_failed">Grāmatu meklēšana neizdevās.</string>
-    <string name="error_search_failed_network">Lūdzu, atveriet iestatījumus un pārbaudiet tīkla un meklēšanas vietņu preferences. Tāpat pārbaudiet savas ierīces tīkla iestatījumus.</string>
+    <string name="error_search_failed_network">Lūdzu, atveriet iestatījumus un pārbaudiet tīkla un meklēšanas vietņu preferences. \nTāpat pārbaudiet savas ierīces tīkla iestatījumus.</string>
     <string name="error_unknown_host">Radās problēma ar savienojumu ar pakalpojumu “%1$s”.</string>
     <string name="error_auto_toc_population_failed">Automātiskā satura rādītāja izveide neizdevās.</string>
     <string name="error_no_image_editor">Nav atrasta neviena attēlu rediģēšanas lietotne.</string>
@@ -887,7 +879,8 @@
     <string name="unknown_currency">%1$.2f ¤</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
-    <string name="warning_import_csv_calibre">Calibre vecāko versiju “comments” kolonna var izraisīt nederīgus CSV failus. Ja rodas kļūda, Calibre atjaunināšana uz 9.10 vai jaunāku versiju pirms eksportēšanas parasti to novērš. Alternatīvi varat noņemt “comments” kolonnu no faila un mēģināt importēt vēlreiz.</string>    <string name="warning_cannot_delete_only_bookshelf">Tev ir tikai viens grāmatplaukts, tāpēc to nevar izdzēst.</string>
+    <string name="warning_import_csv_calibre">Calibre vecāko versiju “comments” kolonna var izraisīt nederīgus CSV failus. Ja rodas kļūda, Calibre atjaunināšana uz 9.10 vai jaunāku versiju pirms eksportēšanas parasti to novērš. Alternatīvi varat noņemt “comments” kolonnu no faila un mēģināt importēt vēlreiz.</string>
+    <string name="warning_cannot_delete_only_bookshelf">Tev ir tikai viens grāmatplaukts, tāpēc to nevar izdzēst.</string>
     <string name="warning_image_invalid">Nederīgs vai trūkstošs attēls.</string>
     <string name="option_bug_report">Kļūdu ziņojums</string>
     <string name="lbl_tab_notes">Piezīmes</string>
@@ -915,7 +908,7 @@
     <string name="warning_requires_at_least_1_field">Vismaz vienam laukam jābūt aizpildītam.</string>
     <string name="warning_missing_title_or_author">Jānorāda nosaukums un/vai autors.</string>
     <string name="warning_requires_isbn">Šai darbībai ir nepieciešams derīgs ISBN.</string>
-    <string name="warning_requires_site_and_id">Atlasiet vietni un ievadiet ID.</string>
+    <string name="warning_requires_site_and_id">Atlasiet vietni un ievadiet id.</string>
     <string name="warning_already_in_list">Jau ir sarakstā!</string>
     <string name="warning_no_matching_book_found">Nav atrasta neviena atbilstoša grāmata</string>
     <string name="warning_no_extra_info_found">Nav atrasta (papildu) informācija</string>
