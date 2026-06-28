@@ -573,7 +573,7 @@
     <string name="lbl_add_filter">Pridať filter</string>
     <string name="option_bob_filter_signed_yes">Podpísané knihy</string>
     <string name="option_bob_filter_signed_no">Nepodpísané knihy</string>
-    <string name="option_bob_filter_lend_out_yes">Požičané knihy</string>
+    <string name="option_bob_filter_lent_out_yes">Požičané knihy</string>
     <string name="menu_update_fields">Aktualizovať polia</string>
     <string name="menu_update_books">Aktualizovať knihy</string>
     <string name="info_select_fields_to_update">Vybraté polia budú aktualizované z internetu. Nevybraté polia zostanú nezmenené.</string>
@@ -581,7 +581,7 @@
     <string name="option_field_usage_copy_if_blank">Kopírovať, ak je prázdne</string>
     <string name="option_field_usage_overwrite">Prepíše existujúce dáta</string>
     <string name="lbl_lend_book_to_colon">Požičať túto knihu komu:</string>
-    <string name="lbl_lend_out">Požičaná</string>
+    <string name="lbl_lent_out">Požičaná</string>
     <string name="lbl_lending">Požičanie</string>
     <string name="ps_use_read_progress_off">Použiť jednoduchý stav Prečítané/Neprečítané.</string>
     <string name="lbl_track_progress_long">Sledovať svoj pokrok</string>
@@ -606,7 +606,7 @@
     <string name="btn_this_book">Len táto kniha</string>
     <string name="btn_all_books">Všetky knihy</string>
     <string name="lbl_name">Meno</string>
-    <string name="lbl_number">Počet</string>
+    <string name="lbl_amount">Počet</string>
     <string name="lbl_owned">Vlastnené</string>
     <string name="lbl_table_of_content_short">Obsah</string>
     <string name="lbl_table_of_content">Prehľad obsahu</string>
@@ -850,7 +850,7 @@
     <string name="pt_bob_books_under_multiple_authors">Zobraziť knihy s viacerými autormi</string>
     <string name="info_bulk_set_bookshelves">Vyberte knižnice, ktoré chcete priradiť všetkým knihám uvedeným pod vybratým uzlom.</string>
     <string name="lbl_filters">Filtre</string>
-    <string name="option_bob_filter_lend_out_no">Dostupné knihy</string>
+    <string name="option_bob_filter_lent_out_no">Dostupné knihy</string>
     <string name="option_bob_filter_isbn_no">Bez ISBN</string>
     <string name="option_import_books_option_new_only">Iba nové knihy</string>
     <string name="info_bulk_set_location">Vyberte umiestnenie, ktoré chcete priradiť všetkým knihám uvedeným pod vybratým uzlom.</string>

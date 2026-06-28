@@ -390,7 +390,7 @@
     <string name="lbl_keywords">Anahtar kelimeler</string>
     <string name="lbl_language">Dil</string>
     <string name="lbl_lend_book_to_colon">Şuna ödünç ver:</string>
-    <string name="lbl_lend_out">Ödünç verilen</string>
+    <string name="lbl_lent_out">Ödünç verilen</string>
     <string name="lbl_lend_out_to_name">%1$s kişisine ödünç verilmiş</string>
     <string name="lbl_lending">Ödünç verilmiş</string>
     <string name="option_level_collapse">Hepsini gizle</string>
@@ -407,7 +407,7 @@
     <string name="lbl_moving_data">Veriler taşınıyor</string>
     <string name="lbl_name">Ad</string>
     <string name="option_goto_next_book_without_cover">Kapaksız bir sonraki kitaba geç</string>
-    <string name="lbl_number">Numarası</string>
+    <string name="lbl_amount">Numarası</string>
     <string name="lbl_owned">Sahip olunan</string>
     <string name="lbl_images">Resimler</string>
     <string name="lbl_image_3">Resim 4</string>
@@ -548,8 +548,8 @@
     <string name="password">şifre</string>
     <string name="option_bob_filter_isbn_no">ISBN’siz</string>
     <string name="option_bob_filter_isbn_yes">ISBN ile</string>
-    <string name="option_bob_filter_lend_out_no">Mevcut kitaplar</string>
-    <string name="option_bob_filter_lend_out_yes">Ödünç verilen kitaplar</string>
+    <string name="option_bob_filter_lent_out_no">Mevcut kitaplar</string>
+    <string name="option_bob_filter_lent_out_yes">Ödünç verilen kitaplar</string>
     <string name="option_bob_filter_signed_no">İmzasız kitaplar</string>
     <string name="option_bob_filter_signed_yes">İmzalanan kitaplar</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Tümünü katla</string>

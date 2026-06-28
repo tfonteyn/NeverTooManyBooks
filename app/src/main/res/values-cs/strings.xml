@@ -418,7 +418,7 @@
     <string name="lbl_keywords">Klíčová slova</string>
     <string name="lbl_language">Jazyk</string>
     <string name="lbl_lend_book_to_colon">Půjčit tuto knihu komu:</string>
-    <string name="lbl_lend_out">Půjčená</string>
+    <string name="lbl_lent_out">Půjčená</string>
     <string name="lbl_lend_out_to_name">Půjčená komu %1$s</string>
     <string name="lbl_lending">Půjčení</string>
     <string name="option_level_collapse">Sbalit vše</string>
@@ -435,7 +435,7 @@
     <string name="lbl_moving_data">Probíhá přesun dat</string>
     <string name="lbl_name">Jméno</string>
     <string name="option_goto_next_book_without_cover">Přeskočit na další knihu bez obálky</string>
-    <string name="lbl_number">Počet</string>
+    <string name="lbl_amount">Počet</string>
     <string name="lbl_owned">Vlastněno</string>
     <string name="lbl_images">Obrázky</string>
     <string name="lbl_image_3">Obrázek 4</string>
@@ -576,8 +576,8 @@
     <string name="password">Heslo</string>
     <string name="option_bob_filter_isbn_no">Bez ISBN</string>
     <string name="option_bob_filter_isbn_yes">S ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Dostupné knihy</string>
-    <string name="option_bob_filter_lend_out_yes">Půjčené knihy</string>
+    <string name="option_bob_filter_lent_out_no">Dostupné knihy</string>
+    <string name="option_bob_filter_lent_out_yes">Půjčené knihy</string>
     <string name="option_bob_filter_signed_no">Nepodepsané knihy</string>
     <string name="option_bob_filter_signed_yes">Podepsané knihy</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Vždy spouštět sbalené</string>

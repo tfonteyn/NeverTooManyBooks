@@ -389,7 +389,7 @@
     <string name="lbl_keywords">Schlüsselwörter</string>
     <string name="lbl_language">Sprache</string>
     <string name="lbl_lend_book_to_colon">Verleihe dieses Buch an:</string>
-    <string name="lbl_lend_out">Verliehen</string>
+    <string name="lbl_lent_out">Verliehen</string>
     <string name="lbl_lend_out_to_name">Leihgabe an %1$s</string>
     <string name="lbl_lending">Leihgabe</string>
     <string name="option_level_collapse">Alles minimieren</string>
@@ -406,7 +406,7 @@
     <string name="lbl_moving_data">Daten werden verschoben</string>
     <string name="lbl_name">Name</string>
     <string name="option_goto_next_book_without_cover">Nächstes Buch ohne Cover</string>
-    <string name="lbl_number">Nummer</string>
+    <string name="lbl_amount">Nummer</string>
     <string name="lbl_owned">Im Besitz</string>
     <string name="lbl_images">Bilder</string>
     <string name="lbl_image_3">Bild 4</string>
@@ -547,8 +547,8 @@
     <string name="password">Passwort</string>
     <string name="option_bob_filter_isbn_no">Ohne ISBN</string>
     <string name="option_bob_filter_isbn_yes">Mit ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Verfügbare Bücher</string>
-    <string name="option_bob_filter_lend_out_yes">Verliehene Bücher</string>
+    <string name="option_bob_filter_lent_out_no">Verfügbare Bücher</string>
+    <string name="option_bob_filter_lent_out_yes">Verliehene Bücher</string>
     <string name="option_bob_filter_signed_no">Bücher unsigniert</string>
     <string name="option_bob_filter_signed_yes">Bücher signiert</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Stets eingeklappt beginnen</string>

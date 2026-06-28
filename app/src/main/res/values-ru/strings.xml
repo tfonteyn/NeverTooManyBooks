@@ -415,7 +415,7 @@
     <string name="lbl_keywords">Ключевые слова</string>
     <string name="lbl_language">Язык</string>
     <string name="lbl_lend_book_to_colon">Одолжите эту книгу:</string>
-    <string name="lbl_lend_out">Одолжено</string>
+    <string name="lbl_lent_out">Одолжено</string>
     <string name="lbl_lend_out_to_name">Дана вдолг: %1$s</string>
     <string name="lbl_lending">кредитование</string>
     <string name="option_level_collapse">Свернуть всё</string>
@@ -432,7 +432,7 @@
     <string name="lbl_moving_data">Перенос данных</string>
     <string name="lbl_name">Имя</string>
     <string name="option_goto_next_book_without_cover">Перейти к следующей книге без обложки</string>
-    <string name="lbl_number">Количество</string>
+    <string name="lbl_amount">Количество</string>
     <string name="lbl_owned">В собственности</string>
     <string name="lbl_images">Изображения</string>
     <string name="lbl_image_3">Изображение 4</string>
@@ -573,8 +573,8 @@
     <string name="password">Пароль</string>
     <string name="option_bob_filter_isbn_no">Без ISBN</string>
     <string name="option_bob_filter_isbn_yes">С ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Книги доступны</string>
-    <string name="option_bob_filter_lend_out_yes">Книги в долг</string>
+    <string name="option_bob_filter_lent_out_no">Книги доступны</string>
+    <string name="option_bob_filter_lent_out_yes">Книги в долг</string>
     <string name="option_bob_filter_signed_no">Книги без подписи</string>
     <string name="option_bob_filter_signed_yes">Книги подписаны</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Всегда запускать упакованные</string>

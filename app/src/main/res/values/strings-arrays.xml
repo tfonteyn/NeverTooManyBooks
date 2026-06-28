@@ -37,8 +37,8 @@
     <!--  Booklist Filter - the [0] value is a fallback and not normally shown.-->
     <string-array name="lbl_bob_filter_lending">
         <item>@string/btn_all_books</item>
-        <item>@string/option_bob_filter_lend_out_no</item>
-        <item>@string/option_bob_filter_lend_out_yes</item>
+        <item>@string/option_bob_filter_lent_out_no</item>
+        <item>@string/option_bob_filter_lent_out_yes</item>
     </string-array>
 
     <!-- Booklist Filter - the [0] value is a fallback and not normally shown.-->

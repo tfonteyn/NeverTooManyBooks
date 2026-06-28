@@ -802,8 +802,8 @@
     <string name="lbl_add_filter">Engadir filtro</string>
     <string name="option_bob_filter_signed_yes">Libros asinados</string>
     <string name="option_bob_filter_signed_no">Libros sen asinar</string>
-    <string name="option_bob_filter_lend_out_yes">Libros emprestados</string>
-    <string name="option_bob_filter_lend_out_no">Libros dispoñibles</string>
+    <string name="option_bob_filter_lent_out_yes">Libros emprestados</string>
+    <string name="option_bob_filter_lent_out_no">Libros dispoñibles</string>
     <string name="option_bob_filter_isbn_yes">Con ISBN</string>
     <string name="option_bob_filter_isbn_no">Sen ISBN</string>
     <string name="lbl_search_filtered_by_x">Filtrado por: %1$s</string>
@@ -816,7 +816,7 @@
     <string name="option_field_usage_overwrite">Substituír os datos existentes</string>
     <string name="lbl_lending">Emprestados</string>
     <string name="lbl_lend_book_to_colon">Emprestar o libro a:</string>
-    <string name="lbl_lend_out">Emprestado</string>
+    <string name="lbl_lent_out">Emprestado</string>
     <string name="ps_use_read_progress_off">Usar un estado simple de lido/non lido.</string>
     <string name="lbl_track_progress_long">Sigue o teu progreso</string>
     <string name="lbl_track_progress">Progreso</string>
@@ -845,7 +845,7 @@
     <string name="btn_all_books">Todos os libros</string>
     <string name="unknown_title">[Título descoñecido]</string>
     <string name="anonymous_author">[Anónimo]</string>
-    <string name="lbl_number">Número</string>
+    <string name="lbl_amount">Número</string>
     <string name="lbl_owned">En propiedade</string>
     <string name="lbl_table_of_content">Índice</string>
     <string name="lbl_table_of_content_short">Contido</string>

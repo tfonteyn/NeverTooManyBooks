@@ -418,7 +418,7 @@ public final class GroupKeyFactory {
             }
             case BooklistGroup.LENDING: {
                 // This will be a LEFT OUTER JOIN, so COALESCE nulls to ''
-                return new GroupKey(id, R.string.lbl_lend_out, "l",
+                return new GroupKey(id, R.string.lbl_lent_out, "l",
                                     new DomainExpression(
                                             DOM_LOANEE,
                                             "COALESCE("

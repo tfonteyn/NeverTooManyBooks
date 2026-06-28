@@ -414,7 +414,7 @@
     <string name="lbl_keywords">关键词</string>
     <string name="lbl_language">语言</string>
     <string name="lbl_lend_book_to_colon">将这本书借给：</string>
-    <string name="lbl_lend_out">已借出</string>
+    <string name="lbl_lent_out">已借出</string>
     <string name="lbl_lend_out_to_name">已借给 %1$s</string>
     <string name="lbl_lending">租借</string>
     <string name="lbl_library">书架</string>
@@ -426,7 +426,7 @@
     <string name="lbl_month">月</string>
     <string name="lbl_moving_data">迁移数据</string>
     <string name="lbl_name">姓名</string>
-    <string name="lbl_number">数目</string>
+    <string name="lbl_amount">数目</string>
     <string name="lbl_original_title">原标题</string>
     <string name="X_lbl_original_title_long">原标题（此书为翻译）</string>
     <string name="lbl_owned">已拥有</string>
@@ -532,8 +532,8 @@
     <string name="option_barcode_scan_mode_manual">手动</string>
     <string name="option_bob_filter_isbn_no">没有 ISBN</string>
     <string name="option_bob_filter_isbn_yes">有 ISBN</string>
-    <string name="option_bob_filter_lend_out_no">可用图书</string>
-    <string name="option_bob_filter_lend_out_yes">已借出图书</string>
+    <string name="option_bob_filter_lent_out_no">可用图书</string>
+    <string name="option_bob_filter_lent_out_yes">已借出图书</string>
     <string name="option_bob_filter_signed_no">未签名图书</string>
     <string name="option_bob_filter_signed_yes">已签名图书</string>
     <string name="option_book_sync_list_with_details">同步/定位列表</string>

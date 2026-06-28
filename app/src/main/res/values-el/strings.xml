@@ -395,7 +395,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_keywords">Λέξεις κλειδιά</string>
     <string name="lbl_language">Γλώσσα</string>
     <string name="lbl_lend_book_to_colon">Δανείστε αυτό το βιβλίο:</string>
-    <string name="lbl_lend_out">Δανεισμένο</string>
+    <string name="lbl_lent_out">Δανεισμένο</string>
     <string name="lbl_lend_out_to_name">Δανεισμένο στον/στην %1$s</string>
     <string name="lbl_lending">Δανεισμός</string>
     <string name="option_level_collapse">Σύμπτυξη όλων</string>
@@ -412,7 +412,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_moving_data">Μετακίνηση δεδομένων</string>
     <string name="lbl_name">Όνομα</string>
     <string name="option_goto_next_book_without_cover">Μετάβαση στο επόμενο βιβλίο χωρίς εξώφυλλο</string>
-    <string name="lbl_number">Αντίγραφα</string>
+    <string name="lbl_amount">Αντίγραφα</string>
     <string name="lbl_owned">Σε κατοχή</string>
     <string name="lbl_images">Εικόνες</string>
     <string name="lbl_image_3">Εικόνα 4</string>
@@ -553,8 +553,8 @@ A question mark is written as the character semicolon: ';'
     <string name="password">Κωδικός πρόσβασης</string>
     <string name="option_bob_filter_isbn_no">Χωρίς ISBN</string>
     <string name="option_bob_filter_isbn_yes">Με ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Διαθέσιμα βιβλία</string>
-    <string name="option_bob_filter_lend_out_yes">Δανεισμένα βιβλία</string>
+    <string name="option_bob_filter_lent_out_no">Διαθέσιμα βιβλία</string>
+    <string name="option_bob_filter_lent_out_yes">Δανεισμένα βιβλία</string>
     <string name="option_bob_filter_signed_no">Μη υπογεγραμμένα βιβλία</string>
     <string name="option_bob_filter_signed_yes">Υπογεγραμμένα βιβλία</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Έναρξη σε κατάσταση σύμπτυξης</string>

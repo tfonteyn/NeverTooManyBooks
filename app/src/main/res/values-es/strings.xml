@@ -401,7 +401,7 @@
     <string name="lbl_keywords">Palabras clave</string>
     <string name="lbl_language">Idioma</string>
     <string name="lbl_lend_book_to_colon">Presta este libro a:</string>
-    <string name="lbl_lend_out">Prestado</string>
+    <string name="lbl_lent_out">Prestado</string>
     <string name="lbl_lend_out_to_name">Prestado a %1$s</string>
     <string name="lbl_lending">Préstamo</string>
     <string name="option_level_collapse">Comprimir todo</string>
@@ -418,7 +418,7 @@
     <string name="lbl_moving_data">Moviendo datos</string>
     <string name="lbl_name">Nombre</string>
     <string name="option_goto_next_book_without_cover">Pase al siguiente libro sin tapa</string>
-    <string name="lbl_number">Número</string>
+    <string name="lbl_amount">Número</string>
     <string name="lbl_owned">Propios</string>
     <string name="lbl_images">Imágenes</string>
     <string name="lbl_image_3">Imagen 4</string>
@@ -558,8 +558,8 @@
     <string name="password">contraseña</string>
     <string name="option_bob_filter_isbn_no">Sin ISBN</string>
     <string name="option_bob_filter_isbn_yes">Con ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Libros disponibles</string>
-    <string name="option_bob_filter_lend_out_yes">Libros prestados</string>
+    <string name="option_bob_filter_lent_out_no">Libros disponibles</string>
+    <string name="option_bob_filter_lent_out_yes">Libros prestados</string>
     <string name="option_bob_filter_signed_no">Libros sin firmar</string>
     <string name="option_bob_filter_signed_yes">Libros firmados</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Doblar todo</string>

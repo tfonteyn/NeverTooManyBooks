@@ -432,7 +432,7 @@
     <string name="lbl_keywords">Từ khóa</string>
     <string name="lbl_language">Ngôn ngữ</string>
     <string name="lbl_lend_book_to_colon">Cho mượn cuốn sách này:</string>
-    <string name="lbl_lend_out">Cho mượn</string>
+    <string name="lbl_lent_out">Cho mượn</string>
     <string name="lbl_lend_out_to_name">Cho %1$s mượn</string>
     <string name="lbl_lending">Cho mượn</string>
     <string name="lbl_library">Thư viện</string>
@@ -444,7 +444,7 @@
     <string name="lbl_month">Tháng</string>
     <string name="lbl_moving_data">Di chuyển dữ liệu</string>
     <string name="lbl_name">Tên</string>
-    <string name="lbl_number">Số</string>
+    <string name="lbl_amount">Số</string>
     <string name="lbl_original_title">Nhan đề gốc</string>
     <string name="X_lbl_original_title_long">Nhan đề gốc nếu cuốn sách này là bản dịch</string>
     <string name="lbl_owned">Sở hữu</string>
@@ -550,8 +550,8 @@
     <string name="option_barcode_scan_mode_manual">Hướng dẫn sử dụng</string>
     <string name="option_bob_filter_isbn_no">Không có ISBN</string>
     <string name="option_bob_filter_isbn_yes">Với ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Sách có sẵn</string>
-    <string name="option_bob_filter_lend_out_yes">Sách cho mượn</string>
+    <string name="option_bob_filter_lent_out_no">Sách có sẵn</string>
+    <string name="option_bob_filter_lent_out_yes">Sách cho mượn</string>
     <string name="option_bob_filter_signed_no">Sách chưa được ký</string>
     <string name="option_bob_filter_signed_yes">Sách đã ký</string>
     <string name="option_book_sync_list_with_details">Đồng bộ hóa/định vị danh sách</string>

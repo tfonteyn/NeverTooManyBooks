@@ -409,7 +409,7 @@
     <string name="lbl_keywords">Słowa kluczowe</string>
     <string name="lbl_language">Język</string>
     <string name="lbl_lend_book_to_colon">Pożycz tę książkę:</string>
-    <string name="lbl_lend_out">W wypożyczeniu</string>
+    <string name="lbl_lent_out">W wypożyczeniu</string>
     <string name="lbl_lend_out_to_name">Pożyczona komu %1$s</string>
     <string name="lbl_lending">Pożyczanie</string>
     <string name="option_level_collapse">Zwiń wszystko</string>
@@ -426,7 +426,7 @@
     <string name="lbl_moving_data">Przenoszę dane</string>
     <string name="lbl_name">Nazwa</string>
     <string name="option_goto_next_book_without_cover">Przejdź do następnej książki bez okładki</string>
-    <string name="lbl_number">Liczba</string>
+    <string name="lbl_amount">Liczba</string>
     <string name="lbl_owned">Posiadane</string>
     <string name="lbl_images">Obrazy</string>
     <string name="lbl_image_3">Obraz 4</string>
@@ -567,8 +567,8 @@
     <string name="password">Hasło</string>
     <string name="option_bob_filter_isbn_no">Bez numeru ISBN</string>
     <string name="option_bob_filter_isbn_yes">Z ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Książki dostępne</string>
-    <string name="option_bob_filter_lend_out_yes">Książki wypożyczone</string>
+    <string name="option_bob_filter_lent_out_no">Książki dostępne</string>
+    <string name="option_bob_filter_lent_out_yes">Książki wypożyczone</string>
     <string name="option_bob_filter_signed_no">Książki niepodpisane</string>
     <string name="option_bob_filter_signed_yes">Podpisane książki</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Zawsze uruchamiaj spakowane</string>

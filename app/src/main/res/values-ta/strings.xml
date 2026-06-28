@@ -787,8 +787,8 @@
     <string name="lbl_add_filter">வடிகட்டியைச் சேர்க்கவும்</string>
     <string name="option_bob_filter_signed_yes">கையொப்பமிடப்பட்ட புத்தகங்கள்</string>
     <string name="option_bob_filter_signed_no">கையொப்பமிடாத புத்தகங்கள்</string>
-    <string name="option_bob_filter_lend_out_yes">புத்தகங்கள் கடன் வழங்குகின்றன</string>
-    <string name="option_bob_filter_lend_out_no">புத்தகங்கள் கிடைக்கின்றன</string>
+    <string name="option_bob_filter_lent_out_yes">புத்தகங்கள் கடன் வழங்குகின்றன</string>
+    <string name="option_bob_filter_lent_out_no">புத்தகங்கள் கிடைக்கின்றன</string>
     <string name="option_bob_filter_isbn_yes">ISBN உடன்</string>
     <string name="option_bob_filter_isbn_no">ஐ.எச்.பி.என் இல்லாமல்</string>
     <string name="lbl_search_filtered_by_x">வடிகட்டப்பட்டது: %1$s</string>
@@ -804,7 +804,7 @@
     <string name="option_field_usage_overwrite">இருக்கும் தரவை மேலெழுதும்</string>
     <string name="lbl_lending">கடன்</string>
     <string name="lbl_lend_book_to_colon">இந்த புத்தகத்தை இதற்கு கடன் கொடுங்கள்:</string>
-    <string name="lbl_lend_out">கடன் வழங்கவும்</string>
+    <string name="lbl_lent_out">கடன் வழங்கவும்</string>
     <string name="lbl_available">கிடைக்கிறது</string>
     <string name="ps_use_read_progress_off">எளிய வாசிப்பு/படிக்காத நிலையைப் பயன்படுத்தவும்.</string>
     <string name="ps_use_read_progress_on">விழுக்காடு அல்லது பக்க எண்ணில் முன்னேற்றத்தைக் கண்காணிக்கவும்.</string>
@@ -849,7 +849,7 @@
     <string name="unknown_author">[அறியப்படாத ஆசிரியர்]</string>
     <string name="anonymous_author">[அநாமதேய]</string>
     <string name="lbl_name">பெயர்</string>
-    <string name="lbl_number">எண்</string>
+    <string name="lbl_amount">எண்</string>
     <string name="lbl_owned">சொந்தமானது</string>
     <string name="lbl_table_of_content">உள்ளடக்க அட்டவணை</string>
     <string name="lbl_table_of_content_short">உள்ளடக்கம்</string>

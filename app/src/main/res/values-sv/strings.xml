@@ -455,7 +455,7 @@
     <string name="lbl_keywords">Nyckelord</string>
     <string name="lbl_language">Språk</string>
     <string name="lbl_lend_book_to_colon">Låna ut den här boken till:</string>
-    <string name="lbl_lend_out">Utlånad</string>
+    <string name="lbl_lent_out">Utlånad</string>
     <string name="lbl_lend_out_to_name">Utlånad till %1$s</string>
     <string name="lbl_lending">Utlåning</string>
     <string name="lbl_library">Bibliotek</string>
@@ -468,7 +468,7 @@
     <string name="lbl_month">Månad</string>
     <string name="lbl_moving_data">Flyttar data</string>
     <string name="lbl_name">Namn</string>
-    <string name="lbl_number">Antal</string>
+    <string name="lbl_amount">Antal</string>
     <string name="lbl_original_language">Originalspråk</string>
     <string name="lbl_original_title">Originaltitel</string>
     <string name="X_lbl_original_title_long">Originaltitel om boken är en översättning</string>
@@ -577,8 +577,8 @@
     <string name="option_barcode_scan_mode_manual">Handbok</string>
     <string name="option_bob_filter_isbn_no">Utan ISBN</string>
     <string name="option_bob_filter_isbn_yes">Med ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Tillgängliga böcker</string>
-    <string name="option_bob_filter_lend_out_yes">Utlånade böcker</string>
+    <string name="option_bob_filter_lent_out_no">Tillgängliga böcker</string>
+    <string name="option_bob_filter_lent_out_yes">Utlånade böcker</string>
     <string name="option_bob_filter_signed_no">Osignerade böcker</string>
     <string name="option_bob_filter_signed_yes">Signerade böcker</string>
     <string name="option_book_sync_list_with_details">Synkronisera/positionera listan</string>

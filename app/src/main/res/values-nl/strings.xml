@@ -395,7 +395,7 @@
     <string name="lbl_keywords">Trefwoorden</string>
     <string name="lbl_language">Taal</string>
     <string name="lbl_lend_book_to_colon">Leen dit boek uit aan:</string>
-    <string name="lbl_lend_out">Uitgeleend</string>
+    <string name="lbl_lent_out">Uitgeleend</string>
     <string name="lbl_lend_out_to_name">Uitgeleend aan %1$s</string>
     <string name="lbl_lending">Uitlenen</string>
     <string name="lbl_library">Bibliotheek</string>
@@ -407,7 +407,7 @@
     <string name="lbl_month">Maand</string>
     <string name="lbl_moving_data">Gegevens verplaatsen</string>
     <string name="lbl_name">Naam</string>
-    <string name="lbl_number">Aantal</string>
+    <string name="lbl_amount">Aantal</string>
     <string name="lbl_owned">In bezit</string>
     <string name="lbl_images">Afbeeldingen</string>
     <string name="lbl_image_3">Afbeelding 4</string>
@@ -505,8 +505,8 @@
     <string name="option_barcode_scan_mode_continuous">Continu scannen</string>
     <string name="option_bob_filter_isbn_no">Zonder ISBN</string>
     <string name="option_bob_filter_isbn_yes">Met ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Niet Uitgeleende boeken</string>
-    <string name="option_bob_filter_lend_out_yes">Uitgeleende boeken</string>
+    <string name="option_bob_filter_lent_out_no">Niet Uitgeleende boeken</string>
+    <string name="option_bob_filter_lent_out_yes">Uitgeleende boeken</string>
     <string name="option_bob_filter_signed_no">Niet Gesigneerd boeken</string>
     <string name="option_bob_filter_signed_yes">Gesigneerd boeken</string>
     <string name="option_book_sync_list_with_details">Synchroniseer/positioneer de lijst</string>

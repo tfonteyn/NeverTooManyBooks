@@ -70,7 +70,7 @@ public final class FilterFactory {
             Map.entry(DBKey.ISBN, context -> context.getString(R.string.lbl_isbn)),
             Map.entry(DBKey.LANGUAGE, context -> context.getString(R.string.lbl_language)),
             Map.entry(DBKey.LOCATION, context -> context.getString(R.string.lbl_location)),
-            Map.entry(DBKey.LOANEE_NAME, context -> context.getString(R.string.lbl_lend_out)),
+            Map.entry(DBKey.LOANEE_NAME, context -> context.getString(R.string.lbl_lent_out)),
             Map.entry(DBKey.READ__BOOL, context -> context.getString(R.string.lbl_read)),
             Map.entry(DBKey.SIGNED__BOOL, context -> context.getString(R.string.lbl_signed))
     );

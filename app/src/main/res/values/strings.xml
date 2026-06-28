@@ -2230,8 +2230,8 @@
 
     <string name="option_bob_filter_signed_yes">Books Signed</string>
     <string name="option_bob_filter_signed_no">Books Unsigned</string>
-    <string name="option_bob_filter_lend_out_yes">Books lend out</string>
-    <string name="option_bob_filter_lend_out_no">Books available</string>
+    <string name="option_bob_filter_lent_out_yes">Books lent out</string>
+    <string name="option_bob_filter_lent_out_no">Books available</string>
     <string name="option_bob_filter_isbn_yes">With ISBN</string>
     <string name="option_bob_filter_isbn_no">Without ISBN</string>
 
@@ -2273,7 +2273,7 @@
     <!-- a header, with a text field below where the user can type in a name -->
     <string name="lbl_lend_book_to_colon">Lend this book to:</string>
     <!-- lending status for a book -->
-    <string name="lbl_lend_out">Lend out</string>
+    <string name="lbl_lent_out">Lent out</string>
     <!-- [VERIFIED] - lending status for a book -->
     <string name="lbl_available">Available</string>
     <!-- endregion -->
@@ -2411,10 +2411,10 @@
          Examples: https://www.gutenberg.org/ebooks/author/216
          Translations must add the [] around the string. -->
     <string name="anonymous_author">[Anonymous]</string>
-    <!-- Default 'name' for anything that has a name -->
+    <!-- Default 'name' for anything that has a name (author, publisher, ...) -->
     <string name="lbl_name">Name</string>
     <!-- The number (how many) of books. -->
-    <string name="lbl_number">Number</string>
+    <string name="lbl_amount">Number</string>
     <!-- "I own this book"; or "the number of books I own" -->
     <string name="lbl_owned">Owned</string>
     <!-- Label. -->

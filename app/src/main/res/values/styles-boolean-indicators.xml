@@ -57,7 +57,7 @@
     <!-- A book has been lent out. -->
     <style name="Flag.LendOut"
            parent="Base.Flag">
-        <item name="android:contentDescription">@string/lbl_lend_out</item>
+        <item name="android:contentDescription">@string/lbl_lent_out</item>
         <item name="android:src">@drawable/do_not_touch_24px</item>
         <item name="android:tint">?attr/colorError</item>
     </style>

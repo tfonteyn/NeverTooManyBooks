@@ -112,7 +112,7 @@ public class StyleBooklistBookLevelFieldsFragment
         factory.bool(StyleDataStore.VIS_PREFIX + "edition",
                      R.string.lbl_edition, true);
         factory.bool(StyleDataStore.VIS_PREFIX + "loanee",
-                     R.string.lbl_lend_out, true);
+                     R.string.lbl_lent_out, true);
         factory.bool(StyleDataStore.VIS_PREFIX + "reading.progress",
                      R.string.lbl_track_progress, false);
         factory.bool(StyleDataStore.VIS_PREFIX + "read",

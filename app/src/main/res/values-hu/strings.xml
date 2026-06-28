@@ -823,8 +823,8 @@
     <string name="lbl_add_filter">Szűrő hozzáadása</string>
     <string name="option_bob_filter_signed_yes">Aláírt könyvek</string>
     <string name="option_bob_filter_signed_no">Aláíratlan könyvek</string>
-    <string name="option_bob_filter_lend_out_yes">Kölcsönadott könyvek</string>
-    <string name="option_bob_filter_lend_out_no">Elérhető könyvek</string>
+    <string name="option_bob_filter_lent_out_yes">Kölcsönadott könyvek</string>
+    <string name="option_bob_filter_lent_out_no">Elérhető könyvek</string>
     <string name="option_bob_filter_isbn_yes">ISBN-nel</string>
     <string name="option_bob_filter_isbn_no">ISBN nélkül</string>
     <string name="lbl_search_filtered_by_x">Szűrés: %1$s</string>
@@ -840,7 +840,7 @@
     <string name="option_field_usage_append">Extra adatokat ad hozzá</string>
     <string name="lbl_lending">Kölcsönadás</string>
     <string name="lbl_lend_book_to_colon">Könyv kölcsönadása neki:</string>
-    <string name="lbl_lend_out">Kölcsönadva</string>
+    <string name="lbl_lent_out">Kölcsönadva</string>
     <string name="ps_use_read_progress_off">Egyszerű Olvasott/Olvasatlan állapot használata.</string>
     <string name="ps_use_read_progress_on">Haladás követése százalékban vagy oldalszámban.</string>
     <string name="lbl_track_progress_long">Haladás követése</string>
@@ -864,7 +864,7 @@
     <string name="btn_this_book">Csak ez a könyv</string>
     <string name="btn_all_books">Összes könyv</string>
     <string name="anonymous_author">[Anonymus]</string>
-    <string name="lbl_number">Szám</string>
+    <string name="lbl_amount">Szám</string>
     <string name="lbl_owned">Saját</string>
     <string name="lbl_table_of_content">Tartalomjegyzék</string>
     <string name="lbl_table_of_content_short">Tartalom</string>
