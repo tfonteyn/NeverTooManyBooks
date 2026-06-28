@@ -603,7 +603,7 @@ public class SearchBookByIsbnFragment
      * @see #startScannerActivity()
      */
     private void startScanner() {
-        setEnableProgressMessages(!isQueuePopulated()
+        setEnableProgressMessages(getQueueSize() == 0
                                   && vm.getScannerMode() != ScanMode.Batch);
 
         if (useEmbeddedScanner) {
@@ -751,7 +751,7 @@ public class SearchBookByIsbnFragment
      * @param productCode to search for
      */
     private void prepare(@NonNull final ProductCode productCode) {
-        if (isQueuePopulated() || vm.getScannerMode() == ScanMode.Batch) {
+        if (getQueueSize() > 0 || vm.getScannerMode() == ScanMode.Batch) {
             preSearchBatch(productCode);
         } else {
             preSearchInteractively(productCode);

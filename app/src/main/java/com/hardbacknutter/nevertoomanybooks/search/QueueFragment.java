@@ -290,13 +290,8 @@ public abstract class QueueFragment
      */
     abstract void inputFieldSetError();
 
-    /**
-     * Check if the queue has any elements.
-     *
-     * @return {@code true} if there is at least one item in the queue
-     */
-    boolean isQueuePopulated() {
-        return qvm.getSize() > 0;
+    protected int getQueueSize() {
+        return qvm.getSize();
     }
 
     /**
@@ -331,7 +326,7 @@ public abstract class QueueFragment
         }
 
         // TODO: this can cause flicker if the updates comes too fast
-        if (isQueuePopulated()) {
+        if (qvm.getSize() > 0) {
             vbQueue.removeAllViews();
         }
 
@@ -611,7 +606,7 @@ public abstract class QueueFragment
      * Common code to update the visibility of the UI queue.
      */
     private void updateQueueViewsVisibility() {
-        vbQueueGroup.setVisibility(isQueuePopulated() ? View.VISIBLE : View.GONE);
+        vbQueueGroup.setVisibility(qvm.getSize() > 0 ? View.VISIBLE : View.GONE);
 
         final boolean searching = qvm.isSearching();
         if (searching) {
