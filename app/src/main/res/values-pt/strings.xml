@@ -935,4 +935,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Ao salvar, os títulos que sejam idênticos, exceto pela formatação, não serão mesclados (ex: “O Senhor dos Anéis” e “Senhor dos Anéis, O”).</string>
     <string name="action_edit_with_ellipsis">Editar com…</string>
     <string name="warning_import_csv_calibre">A coluna “comments” de versões mais antigas do Calibre pode originar ficheiros CSV inválidos. Se deparar com um erro, atualizar o Calibre para a versão 9.10 ou posterior antes de exportar costuma resolver o problema. Alternativamente, pode remover a coluna “comments” do seu ficheiro e tentar a importação novamente.</string>
+    <string name="book_format_newspaper">Jornal</string>
+    <string name="book_format_periodical">Revista</string>
 </resources>

@@ -937,4 +937,6 @@
     <string name="warning_import_csv_calibre">La colonna “comments” (Commenti) delle versioni precedenti di Calibre può causare file CSV non validi. Se si verifica un errore, l’aggiornamento di Calibre alla versione 9.10 o successiva prima dell’esportazione di solito risolve il problema. In alternativa, puoi rimuovere la colonna “comments” dal file e riprovare ’importazione.</string>
     <string name="book_format_newspaper">Quotidiano</string>
     <string name="book_format_periodical">Periodico</string>
+    <string name="book_format_newspaper">Quotidiano</string>
+    <string name="book_format_periodical">Rivista</string>
 </resources>

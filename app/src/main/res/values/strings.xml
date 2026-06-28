@@ -702,7 +702,7 @@
     <string name="book_format_softcover_oblong">Softcover - Oblong</string>
     <!-- -book format - The typical american/british size of a comic. -->
     <string name="book_format_comic">Comic</string>
-    <!-- -book format - Daily/weekly news prints. -->
+    <!-- -book format - Daily newspaper. -->
     <string name="book_format_newspaper">Newspaper</string>
     <!-- -book format - any type of magazine which is not a traditional/standard newspaper-->
     <string name="book_format_periodical">Periodical</string>

@@ -927,4 +927,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Yalnızca tanımlayıcı kullanan diller için geçerlidir. İngilizce örneği: “The Lord of The Rings” ve “Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Birlikte düzenle…</string>
     <string name="warning_import_csv_calibre">Calibre’nin eski sürümlerindeki “comments” sütunu geçersiz CSV dosyalarına neden olabilir. Bir hatayla karşılaşırsanız, dışa aktarmadan önce Calibre’yi 9.10 veya daha yeni bir sürüme güncellemek genellikle sorunu çözer. Alternatif olarak, dosyanızdaki “comments” sütununu kaldırıp içe aktarmayı tekrar deneyebilirsiniz.</string>
+    <string name="book_format_newspaper">Gazete</string>
+    <string name="book_format_periodical">Dergi</string>
 </resources>

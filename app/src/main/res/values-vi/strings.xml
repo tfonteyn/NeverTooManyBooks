@@ -914,4 +914,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Chỉ áp dụng cho các ngôn ngữ sử dụng mạo từ. Ví dụ tiếng Anh: “The Lord of The Rings” và “Lord of The Rings, The”.</string>
     <string name="action_edit_with_ellipsis">Chỉnh sửa bằng…</string>
     <string name="warning_import_csv_calibre">Cột “comments” từ các phiên bản Calibre cũ có thể tạo ra các tệp CSV không hợp lệ. Nếu bạn gặp lỗi, việc cập nhật Calibre lên phiên bản 9.10 hoặc mới hơn trước khi xuất thường sẽ khắc phục được sự cố. Bạn có thể xóa cột “comments” khỏi tệp của mình và thử nhập lại.</string>
+    <string name="book_format_newspaper">Báo</string>
+    <string name="book_format_periodical">Tạp chí</string>
 </resources>

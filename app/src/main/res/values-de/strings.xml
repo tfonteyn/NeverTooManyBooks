@@ -924,4 +924,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Beim Speichern werden Titel, die bis auf die Formatierung identisch sind, nicht zusammengeführt (z. B. „Der Herr der Ringe“ und „Herr der Ringe, Der“).</string>
     <string name="action_edit_with_ellipsis">Bearbeiten mit…</string>
     <string name="warning_import_csv_calibre">Die Spalte „comments“ aus älteren Calibre-Versionen kann zu ungültigen CSV-Dateien führen. Wenn ein Fehler auftritt, lässt sich dies meist beheben, indem Sie Calibre vor dem Exportieren auf Version 9.10 oder neuer aktualisieren. Alternativ können Sie die Spalte „comments“ aus Ihrer Datei entfernen und den Import erneut versuchen.</string>
+    <string name="book_format_newspaper">Zeitung</string>
+    <string name="book_format_periodical">Zeitschrift</string>
 </resources>
