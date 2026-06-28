@@ -726,7 +726,7 @@
     <string name="book_color_black_and_white">Black &amp; white</string>
     <!-- uncolored, but with 1 or 2 support-colors.
          e.g. black and white, but additional red for emphasis -->
-    <string name="book_color_support_color">Bicolored</string>
+    <string name="book_color_support_color">Two-color</string>
     <!-- endregion -->
     <!-- region ========== Names of built-in styles. -->
     <!-- built-in style name -->

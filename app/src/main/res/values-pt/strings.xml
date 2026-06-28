@@ -395,7 +395,7 @@
     <string name="book_format_dimensions">Dimensões</string>
     <string name="book_color_full_color">Colorido</string>
     <string name="book_color_black_and_white">Preto e branco</string>
-    <string name="book_color_support_color">Duas Cores</string>
+    <string name="book_color_support_color">Bicolor</string>
     <string name="style_builtin_author_series">Autor, Série</string>
     <string name="style_builtin_author_year">Autor, Ano</string>
     <string name="lbl_author_role_editor">Editor</string>

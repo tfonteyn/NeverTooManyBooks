@@ -181,4 +181,5 @@
     <string name="warning_import_csv_calibre">Teigurin „comments“ frá eldri útgávum av Calibre kann elva til ógildugar CSV-fílur. Um tú fært eitt lýti, hjálpir tað vanliga at dagføra Calibre til útgávu 9.10 ella nýggjari áðrenn útflyting. Annars kanst tú taka „comments“ teigin úr fíluni og royna at flyta inn aftur.</string>
     <string name="book_format_newspaper">Avis</string>
     <string name="book_format_periodical">Tíðarrit</string>
+    <string name="book_color_support_color">Tvey-litur</string>
 </resources>

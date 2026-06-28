@@ -23,7 +23,7 @@
 <!--suppress LongLine -->
 <resources>
     <string name="book_color_full_color">Coloured</string>
-    <string name="book_color_support_color">Bicoloured</string>
+    <string name="book_color_support_color">Two-colour</string>
     <string name="lbl_author_role_colorist">Colourist</string>
     <string name="lbl_author_role_cover_colorist">Cover colourist</string>
     <string name="lbl_color">Colour</string>

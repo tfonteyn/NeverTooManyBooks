@@ -323,7 +323,7 @@
     <string name="book_format_dimensions">பரிமாணங்கள்</string>
     <string name="book_color_full_color">வண்ணம்</string>
     <string name="book_color_black_and_white">கருப்பு &amp; வெள்ளை</string>
-    <string name="book_color_support_color">பிகோலர்</string>
+    <string name="book_color_support_color">இரு-நிறம்</string>
     <string name="style_builtin_author_series">ஆசிரியர், தொடர்</string>
     <string name="style_builtin_author_year">ஆசிரியர், ஆண்டு</string>
     <string name="lbl_style">சூல் தண்டு</string>
