@@ -2131,9 +2131,9 @@
     <string name="lbl_citation_type_default">I’m reading…</string>
     <!-- The default 'share' message.
          Param 1: book title.
-         Param 2: series.
+         Param 2: series (can be empty!)
          Param 3: author.
-         Param 4: rating; e.g. "4/5"
+         Param 4: rating; e.g. "4/5" (can be empty!)
     -->
     <string name="citation_share_book_im_reading">I’m reading “%1$s” %2$s by %3$s %4$s</string>
 
