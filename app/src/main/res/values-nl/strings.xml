@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2026 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -924,4 +921,6 @@
     <string name="pt_deduplication_title_matching_summary_off">Bij het opslaan worden titels die identiek zijn, afgezien van de opmaak, niet samengevoegd (bijv. „De schat van Beersel” en „schat van Beersel, De”).</string>
     <string name="action_edit_with_ellipsis">Bewerken met…</string>
     <string name="warning_import_csv_calibre">De kolom „comments” uit oudere versies van Calibre kan ongeldige CSV-bestanden veroorzaken. Als u een foutmelding krijgt, lost het bijwerken van Calibre naar versie 9.10 of nieuwer vóór het exporteren dit meestal op. Als alternatief kunt u de kolom „comments” uit uw bestand verwijderen en de import opnieuw proberen.</string>
+    <string name="book_format_newspaper">Krant</string>
+    <string name="book_format_periodical">Magazine</string>
 </resources>
