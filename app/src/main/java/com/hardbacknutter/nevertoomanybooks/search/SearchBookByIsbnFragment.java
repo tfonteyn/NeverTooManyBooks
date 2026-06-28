@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -1016,6 +1017,9 @@ public class SearchBookByIsbnFragment
 
     /**
      * DEBUG only. Adds buttons to simulate the scanner in different modes.
+     *
+     * @param container to add the buttons to
+     * @param isbnView reference to the input field; will be auto-populated
      */
     private void dbgAddScanButtons(@Nullable final ConstraintLayout container,
                                    @NonNull final IsbnTextInputEditText isbnView) {
@@ -1036,7 +1040,7 @@ public class SearchBookByIsbnFragment
             btnId = dbgAddScanButton(container, btnId, "b2", "barcode2_issn13_add_2");
             // text='9771234567898', barcodeFormat=EAN_13, issueNumber=1,
             // suggestedPrice='null', extension='01'}
-            btnId = dbgAddScanButton(container, btnId, "b3", "barcode3_issn13_add_2");
+            dbgAddScanButton(container, btnId, "b3", "barcode3_issn13_add_2");
         }
     }
 
@@ -1076,6 +1080,8 @@ public class SearchBookByIsbnFragment
         btn.setId(btnId);
         btn.setText(text);
         btn.setOnClickListener(v -> {
+            //noinspection DataFlowIssue
+            @SuppressLint("DiscouragedApi")
             final int resId = getResources().getIdentifier(barcodeFile, "drawable",
                                                            getContext().getPackageName());
 
