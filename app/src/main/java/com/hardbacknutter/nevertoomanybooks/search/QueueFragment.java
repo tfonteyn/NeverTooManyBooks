@@ -523,15 +523,20 @@ public abstract class QueueFragment<CODE extends Code>
                                         result);
         }
 
-        if (qvm.getSize() == 0
+        if (qvm.getSize() > 0
             // Check the scan-mode as it was used for **this** scan-result!
-            && (result.getScanMode() == ScanMode.Off
-                || result.getScanMode() == ScanMode.Continuous)) {
-            // user interactive; we'll end up in #onSearchResults
-            super.onSearchFinished(result);
-        } else {
-            // we'll end up in #onQueueUpdated
+            || result.getScanMode() == ScanMode.Batch) {
+            // For whatever reason we have a populated queue,
+            // or we're explicitly in batch mode.
+            // i.e. we're NOT (going to be) interactive
+            // We'll end up in #onQueueUpdated
             qvm.onResult(result);
+        } else {
+            // We have nothing in the queue and the user
+            // is manually entering code or using single/continous scan,
+            // i.e. we're in fully interactive mode.
+            // We'll end up in #onSearchResults
+            super.onSearchFinished(result);
         }
     }
 
