@@ -248,6 +248,8 @@ public abstract class QueueFragment
 
     /**
      * Start searching the given list (coming from prefs or a file).
+     * This method does <strong>NOT</strong> change the scan mode,
+     * but merely adds all item to the queue and start searches for them.
      *
      * @param items to search for
      */
