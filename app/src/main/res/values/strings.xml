@@ -105,9 +105,9 @@
     </plurals>
 
     <!-- A request for confirmation in a dialog asking the user to "Remove" or "Search"
-         a list of ISBN number previously scanned.
+         a list of barcodes previously scanned.
 
-        Param 1: the amount of ISBN numbers in the queue.
+        Param 1: the amount of barcodes in the queue.
     -->
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">There is %1$d previously entered ISBN code. Would you like to start a search for it, or should it be removed?</item>
@@ -1277,7 +1277,8 @@
     <string name="action_duplicate">Duplicate</string>
     <!-- [VERIFIED] -->
     <string name="action_show_options">Options</string>
-    <!-- Button text. During barcode scanning-in-batch the user can clear all current isbn's in the queue. -->
+    <!-- Button text. During barcode scanning-in-batch the user can
+         clear all searches/results in the queue. -->
     <string name="action_clear_queue">Clear queue</string>
     <!-- Button text. -->
     <string name="action_stop_scanning">Stop scanning</string>
