@@ -294,6 +294,7 @@
     <string name="cd_btn_drag_handle">Arrastra para reordenar esta lista</string>
     <string name="cd_clear_text_end_icon">Borrar texto</string>
     <string name="info_site_list">As buscas limítanse a: %1$s</string>
+    <string name="info_sites_active">Sitios activos: %1$s</string>
     <string name="info_site_search_field_optional">Opcional. Non todos os sitios web son compatibles con isto.</string>
     <string name="info_identifier_editor"><![CDATA[Por favor, le a <a href="%1$s">documentación</a> sobre identificadores antes de editar.]]></string>
     <string name="site_description_various_languages">Varios idiomas</string>

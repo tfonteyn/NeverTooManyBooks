@@ -289,6 +289,7 @@
     <string name="lbl_citation_type_default">Tôi đang đọc…</string>
     <string name="citation_share_book_im_reading">Tôi đang đọc “%1$s” %2$s của %3$s %4$s</string>
     <string name="info_site_list">Tìm kiếm bị giới hạn ở: %1$s</string>
+    <string name="info_sites_active">Trang web hoạt động: %1$s</string>
     <string name="info_site_search_field_optional">Tùy chọn. Không được hỗ trợ bởi tất cả các trang web.</string>
     <string name="info_read_contacts_permission">Quyền truy cập danh bạ là tùy chọn, nhưng cho phép bạn dễ dàng chọn người đang mượn cuốn sách.</string>
     <string name="info_story_in_multiple_books">“%1$s” hiện diện trong nhiều sách:\n\n%2$s</string>

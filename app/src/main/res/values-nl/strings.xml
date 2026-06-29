@@ -790,6 +790,7 @@
     <string name="error_site_access_blocked">De toegang werd geblokkeerd door de website.</string>
     <string name="pt_scan_mode">Scanmodus</string>
     <string name="option_sync_deleted_book_records">Verwijderde boeken synchroniseren</string>
+    <string name="info_sites_active">Actieve sites: %1$s</string>
     <string name="info_site_search_field_optional">Optioneel. Niet ondersteund door alle websites.</string>
     <string name="site_description_catalog">Catalogus</string>
     <string name="site_description_czech">Tsjechisch en meer</string>

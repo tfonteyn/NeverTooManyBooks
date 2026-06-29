@@ -297,6 +297,7 @@
     <string name="info_rebuild_scheduled">Ombyggnad planerad</string>
     <string name="info_select_fields_to_update">Valda fält kommer att uppdateras från internet. Ofelade fält förblir oförändrade.</string>
     <string name="info_site_list">Sökningar är begränsade till: %1$s</string>
+    <string name="info_sites_active">Aktiva webbplatser: %1$s</string>
     <string name="info_site_search_field_optional">Valfritt. Stöds inte av alla webbplatser.</string>
     <string name="info_story_in_multiple_books">”%1$s” finns i flera böcker:\n\n%2$s</string>
     <string name="info_story_in_single_book">”%1$s” finns i en enda bok:\n\n%2$s</string>

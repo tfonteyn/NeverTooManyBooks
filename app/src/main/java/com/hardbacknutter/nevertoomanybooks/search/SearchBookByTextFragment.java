@@ -166,7 +166,7 @@ public class SearchBookByTextFragment
             final int textColor = AttrUtils
                     .getColorInt(context, com.google.android.material.R.attr.colorOnBackground);
             vb.txtLimitations.setTextColor(textColor);
-            vb.txtLimitations.setText(getString(R.string.info_site_list,
+            vb.txtLimitations.setText(getString(R.string.info_sites_active,
                                                 String.join(", ", engines)));
             return;
         }

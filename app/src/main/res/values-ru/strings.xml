@@ -812,6 +812,7 @@
     <string name="error_site_access_blocked">Доступ был заблокирован сайтом.</string>
     <string name="pt_scan_mode">Режим сканирования</string>
     <string name="option_sync_deleted_book_records">Синхронизация удаленных книг</string>
+    <string name="info_sites_active">Активные сайты: %1$s</string>
     <string name="info_site_search_field_optional">Необязательно. Поддерживается не всеми сайтами.</string>
     <string name="site_description_catalog">Каталог</string>
     <string name="site_description_czech">Чешский язык и многое другое</string>

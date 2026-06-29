@@ -255,6 +255,7 @@
     <string name="cd_btn_drag_handle">இந்த பட்டியலை மறுதொடக்கம் செய்ய இழுக்கவும்</string>
     <string name="cd_clear_text_end_icon">உரையை அழிக்கவும்</string>
     <string name="info_site_list">தேடல்கள் மட்டுப்படுத்தப்பட்டவை: %1$s</string>
+    <string name="info_sites_active">செயலில் உள்ள தளங்கள்: %1$s</string>
     <string name="info_site_search_field_optional">விரும்பினால். எல்லா வலைத்தளங்களும் ஆதரிக்கவில்லை.</string>
     <string name="site_description_various_languages">பல்வேறு மொழிகள்</string>
     <string name="site_description_chinese">சீன</string>

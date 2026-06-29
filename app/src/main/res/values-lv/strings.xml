@@ -728,6 +728,7 @@
     <string name="cd_clear_text_end_icon">Notīrīt tekstu</string>
     <string name="info_partial_date_picker">Pieskarieties iepriekš atlasītajam mēnesim vai dienai, lai atceltu atlasi.</string>
     <string name="info_site_list">Meklēšana tiek veikta tikai: %1$s</string>
+    <string name="info_sites_active">Aktīvās vietnes: %1$s</string>
     <string name="info_site_search_field_optional">Neobligāti. Netiek atbalstīts visās vietnēs.</string>
     <string name="info_identifier_editor"><![CDATA[Pirms rediģēšanas, lūdzu, izlasiet <a href="%1$s">dokumentāciju</a> par identifikatoriem.]]></string>
     <string name="site_description_various_languages">Dažādas valodas</string>

@@ -792,6 +792,7 @@
     <string name="error_site_access_blocked">Der Zugang wurde von der Website blockiert.</string>
     <string name="pt_scan_mode">Scan-Modus</string>
     <string name="option_sync_deleted_book_records">Gelöschte Bücher synchronisieren</string>
+    <string name="info_sites_active">Aktive Seiten: %1$s</string>
     <string name="info_site_search_field_optional">Optional. Wird nicht von allen Websites unterstützt.</string>
     <string name="site_description_catalog">Katalog</string>
     <string name="site_description_czech">Tschechisch und mehr</string>

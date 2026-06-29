@@ -366,9 +366,14 @@ public class SearchBookByIsbnFragment
     protected void explainSitesSupport() {
         final Context context = getContext();
 
-        final Set<SearchEngine.SearchBy> searchBy = Set.of(SearchEngine.SearchBy.Isbn,
-                                                           SearchEngine.SearchBy.Issn,
-                                                           SearchEngine.SearchBy.Barcode);
+        final Set<SearchEngine.SearchBy> searchBy;
+        if (BookSearchCriteria.isStrictIsbnGlobal()) {
+            searchBy = Set.of(SearchEngine.SearchBy.Isbn);
+        } else {
+            searchBy = Set.of(SearchEngine.SearchBy.Isbn,
+                              SearchEngine.SearchBy.Issn,
+                              SearchEngine.SearchBy.Barcode);
+        }
 
         //noinspection DataFlowIssue
         final List<String> engines = coordinator
@@ -386,7 +391,7 @@ public class SearchBookByIsbnFragment
             final int textColor = AttrUtils
                     .getColorInt(context, com.google.android.material.R.attr.colorOnBackground);
             vb.txtLimitations.setTextColor(textColor);
-            vb.txtLimitations.setText(getString(R.string.info_site_list,
+            vb.txtLimitations.setText(getString(R.string.info_sites_active,
                                                 String.join(", ", engines)));
             return;
         }

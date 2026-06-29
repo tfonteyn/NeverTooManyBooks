@@ -182,4 +182,5 @@
     <string name="book_format_newspaper">Avis</string>
     <string name="book_format_periodical">Tíðarrit</string>
     <string name="book_color_support_color">Tvey-litur</string>
+    <string name="info_sites_active">Virknar síður: %1$s</string>
 </resources>

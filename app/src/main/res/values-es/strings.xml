@@ -883,6 +883,7 @@
     <string name="ok">Aceptar</string>
     <string name="dialog_alert_title">Atención</string>
     <string name="warning_missing_title_or_author">Debe especificarse el título y/o el autor.</string>
+    <string name="info_sites_active">Sitios activos: %1$s</string>
     <string name="info_site_search_field_optional">Opcional. No es compatible con todos las páginas web.</string>
     <string name="progress_msg_authenticating_to_site">Autentificándose en %1$s</string>
     <string name="lbl_capitalize_full">Todo en mayúsculas</string>

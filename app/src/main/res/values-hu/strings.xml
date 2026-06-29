@@ -321,6 +321,7 @@
     <string name="cd_clear_text_end_icon">Szöveg törlése</string>
     <string name="info_partial_date_picker">Érintsen meg egy korábban kiválasztott hónapot vagy napot a kijelölés megszüntetéséhez.</string>
     <string name="info_site_list">A keresések a következőre korlátozódnak: %1$s</string>
+    <string name="info_sites_active">Aktív oldalak: %1$s</string>
     <string name="info_site_search_field_optional">Opcionális. Nem minden weboldal támogatja.</string>
     <string name="site_description_various_languages">Különféle nyelvek</string>
     <string name="site_description_chinese">Kínai</string>

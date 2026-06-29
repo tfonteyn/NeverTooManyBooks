@@ -552,9 +552,16 @@
     <string name="info_partial_date_picker">Tap a previously selected month or day to unselect it.</string>
 
     <!-- Searching books by "text":
-         Information on which websites will be searched.
+         The websites which will be searched,
+         i.e. the active sites which support
+         searching by "text".
          Param 1: list of website names. -->
     <string name="info_site_list">Searches are limited to: %1$s</string>
+    <!-- Searching books - informational banner.
+         Lists the websites which will be searched, i.e. all active sites as per user settings
+         which support the chosen search method.
+         Param 1: list of website names. -->
+    <string name="info_sites_active">Sites active: %1$s</string>
 
     <!-- Searching books by "text":
          Not all sites will support all search-fields. -->

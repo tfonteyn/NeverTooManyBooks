@@ -803,6 +803,7 @@
     <string name="error_site_access_blocked">O acesso foi bloqueado pelo sítio Web.</string>
     <string name="pt_scan_mode">Modo de leitura</string>
     <string name="option_sync_deleted_book_records">Sincronizar livros eliminados</string>
+    <string name="info_sites_active">Sítios ativos: %1$s</string>
     <string name="info_site_search_field_optional">Opcional. Não é suportado por todos os sítios Web.</string>
     <string name="site_description_catalog">Catálogo</string>
     <string name="site_description_czech">Checo e mais</string>

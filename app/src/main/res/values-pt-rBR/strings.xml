@@ -317,4 +317,5 @@
     <string name="action_sync_pull">Puxar alterações</string>
     <string name="action_sync_push">Enviar alterações</string>
     <string name="warning_import_csv_calibre">A coluna “comments” de versões mais antigas do Calibre pode gerar arquivos CSV inválidos. Se você encontrar um erro, atualizar o Calibre para a versão 9.10 ou posterior antes de exportar geralmente resolve o problema. Como alternativa, você pode remover a coluna “comments” do seu arquivo e tentar a importação novamente.</string>
+    <string name="info_sites_active">Sites ativos: %1$s</string>
 </resources>
