@@ -752,7 +752,7 @@ public class SearchCoordinator
                                                             bookSearch.getCriteria(),
                                                             searchTaskListener);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             bookSearch.debugSearchTaskStarting(engineId, task.getTaskId(), waitForIsbnOrCode);
         }
 
