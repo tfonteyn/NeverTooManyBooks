@@ -496,7 +496,7 @@ public class DatabazeKnihSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getIsbn(), 0).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -624,12 +624,12 @@ public class DatabazeKnihSearchEngine
         }
 
         // there can be more than one isbn. First one "wins"
-        if (!book.hasIsbn()) {
+        if (!book.hasProductCode()) {
             element = root.selectFirst("span:contains(ISBN:)");
             if (element != null) {
                 element = element.nextElementSibling();
                 if (element != null) {
-                    book.setIsbn(ISBN.cleanText(element.text()));
+                    book.setRawProductCode(ISBN.cleanText(element.text()));
                 }
             }
         }

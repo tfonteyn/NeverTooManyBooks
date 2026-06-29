@@ -346,7 +346,7 @@ public class StripWebSearchEngine
             if (th != null && td != null) {
                 switch (th.text()) {
                     case "ISBN nummer": {
-                        book.setIsbn(ISBN.cleanText(td.text()));
+                        book.setRawProductCode(ISBN.cleanText(td.text()));
                         break;
                     }
                     case "Pagina's":
@@ -458,7 +458,7 @@ public class StripWebSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getIsbn();
+            final String isbn = book.getRawProductCode();
             // start from 'main' !
             parseCover(context, main, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));

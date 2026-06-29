@@ -1262,13 +1262,13 @@ public class OpenLibrarySearchEngine
         JSONArray a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
             // Overwrite
-            book.setIsbn(a.getString(0));
+            book.setRawProductCode(a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
                 // Do NOT overwrite
-                if (!book.hasIsbn()) {
-                    book.setIsbn(a.getString(0));
+                if (!book.hasProductCode()) {
+                    book.setRawProductCode(a.getString(0));
                 }
             }
         }

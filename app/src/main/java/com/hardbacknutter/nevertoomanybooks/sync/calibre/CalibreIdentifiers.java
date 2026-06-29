@@ -74,7 +74,7 @@ public final class CalibreIdentifiers {
                                          @NonNull final String sid,
                                          @NonNull final List<Identifier.Value> ivs) {
         if (IDENTIFIER_ISBN.equals(calKey)) {
-            book.setIsbn(sid);
+            book.setRawProductCode(sid);
 
         } else if (calKey.length() > 6 && calKey.startsWith(AMAZON)) {
             // Other than strict "amazon", there are variants

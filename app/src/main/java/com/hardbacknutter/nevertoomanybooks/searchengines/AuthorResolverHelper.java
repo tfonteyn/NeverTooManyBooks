@@ -172,7 +172,7 @@ public final class AuthorResolverHelper {
             // Avoid cluttering the logfile.
             if (e.getCause() instanceof HttpNotFoundException) {
                 // Simple warn msg for a 404
-                final String isbn = book.getIsbn();
+                final String isbn = book.getRawProductCode();
                 final String info = isbn.isEmpty() ? book.getTitle() : isbn;
                 LoggerFactory.getLogger().w(TAG, "404|Failed to resolve authors for book=" + info);
             } else {

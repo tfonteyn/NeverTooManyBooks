@@ -412,7 +412,7 @@ public class CalibreContentServerWriter
         });
 
         // add the ISBN which Calibre treats as just another identifier
-        final String isbn = localBook.getIsbn();
+        final String isbn = localBook.getRawProductCode();
         if (!isbn.isEmpty()) {
             localIdentifiers.put(CalibreIdentifiers.IDENTIFIER_ISBN, isbn);
         }

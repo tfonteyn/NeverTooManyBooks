@@ -510,7 +510,7 @@ public class GoodreadsSearchEngine
         if (fetchCovers[0]) {
             final String url = o.optString("imageUrl");
             if (!url.isBlank()) {
-                saveImage(context, url, null, book.getIsbn(), 0, null).ifPresent(
+                saveImage(context, url, null, book.getRawProductCode(), 0, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }
         }
@@ -546,11 +546,11 @@ public class GoodreadsSearchEngine
         }
         s = details.optString("isbn13", null);
         if (s != null && !s.isBlank()) {
-            book.setIsbn(s);
+            book.setRawProductCode(s);
         } else {
             s = ISBN.cleanText(details.optString("isbn", null));
             if (!s.isBlank()) {
-                book.setIsbn(s);
+                book.setRawProductCode(s);
             }
         }
         final JSONObject lang = details.optJSONObject("language", null);

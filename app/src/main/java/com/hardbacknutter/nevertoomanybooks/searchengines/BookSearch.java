@@ -219,7 +219,7 @@ class BookSearch {
             // Add the ISBN we initially searched for.
             // This avoids overwriting with a potentially different isbn from the sites
             //noinspection DataFlowIssue
-            book.setIsbn(criteria.getProductCode().asText());
+            book.setRawProductCode(criteria.getProductCode().asText());
         } else {
             // We did not have an ISBN as a search criteria; use the default order
             sitesInOrder = new ArrayList<>(completedOrder);
@@ -247,7 +247,7 @@ class BookSearch {
         if (isbnStr == null || isbnStr.isEmpty()) {
             if (criteria.hasValidProductCode()) {
                 //noinspection DataFlowIssue
-                book.setIsbn(criteria.getProductCode().asText());
+                book.setRawProductCode(criteria.getProductCode().asText());
             }
         }
 
@@ -361,9 +361,9 @@ class BookSearch {
                         // so we SHOULD be pretty sure about the data...
                         sitesInOrder.add(engineId);
 
-                    } else if (result.hasIsbn()) {
+                    } else if (result.hasProductCode()) {
                         // We did a general search with an ISBN; check if it matches
-                        final String isbnFoundStr = result.getIsbn();
+                        final String isbnFoundStr = result.getRawProductCode();
                         if (!isbnFoundStr.isEmpty()
                             && productCode != null && productCode.equals(ISBN.parse(isbnFoundStr, strictIsbn))) {
                             sitesInOrder.add(engineId);

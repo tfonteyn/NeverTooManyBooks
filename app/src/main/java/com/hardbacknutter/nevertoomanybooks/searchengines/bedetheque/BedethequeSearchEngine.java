@@ -507,7 +507,7 @@ public class BedethequeSearchEngine
                 .map(element -> element.attr("href"))
                 .collect(Collectors.toList());
 
-        final String isbn = book.getIsbn();
+        final String isbn = book.getRawProductCode();
 
         if (fetchCovers[0]) {
             final String url = coverUrls.get(0);
@@ -531,7 +531,7 @@ public class BedethequeSearchEngine
                                  @NonNull final Book book)
             throws StorageException {
 
-        final String isbn = book.getIsbn();
+        final String isbn = book.getRawProductCode();
 
         if (fetchCovers[0]) {
             final Element a = document.selectFirst("div.bandeau-principal > div.bandeau-image > a");
@@ -805,7 +805,7 @@ public class BedethequeSearchEngine
                 case "EAN/ISBN :": {
                     final String text = parseLabelText(labelElement);
                     if (text != null) {
-                        book.setIsbn(ISBN.cleanText(text));
+                        book.setRawProductCode(ISBN.cleanText(text));
                     }
                     break;
                 }

@@ -227,12 +227,12 @@ public class SearchCoordinator
 
             // Start new search(es) as needed/allowed.
             if (currentSearch.isWaitingForProductCode()) {
-                if (result != null && result.hasIsbn()) {
+                if (result != null && result.hasProductCode()) {
                     // Start the remaining searches, even if they have run before.
                     // They will redo the search WITH the ISBN/code.
                     // Replace the search text with the (we hope) exact ISBN/code we just found.
                     // Worst case, explicitly use an empty string.
-                    currentSearch.getCriteria().setRawProductCode(result.getIsbn());
+                    currentSearch.getCriteria().setRawProductCode(result.getRawProductCode());
                     searchStarted = startConcurrentSearch(context, currentSearch);
                 } else {
                     // sequentially start the next search which has not run yet.

@@ -165,8 +165,8 @@ public class GoodreadsBookCoder
                 }
                 case "isbn": {
                     // ISBN-10
-                    if (!book.hasIsbn()) {
-                        book.setIsbn(ISBN.cleanText(value));
+                    if (!book.hasProductCode()) {
+                        book.setRawProductCode(ISBN.cleanText(value));
                     }
                     break;
                 }
@@ -175,7 +175,7 @@ public class GoodreadsBookCoder
                     //     "=""9789027409294"""  and "="""""
                     // Note that we clean the string, but do NOT check on the length here.
                     // We want non-isbn string with simple values to pass through
-                    book.setIsbn(ISBN.cleanText(value));
+                    book.setRawProductCode(ISBN.cleanText(value));
                     break;
                 }
                 case "my rating": {

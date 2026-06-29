@@ -473,7 +473,7 @@ public class EditBookTocFragment
             return;
         }
 
-        final String isbnStr = book.getIsbn();
+        final String isbnStr = book.getRawProductCode();
         if (!isbnStr.isEmpty()) {
             final ProductCode productCode = ISBN.parseISBN(isbnStr);
             if (productCode.isIsbn()) {

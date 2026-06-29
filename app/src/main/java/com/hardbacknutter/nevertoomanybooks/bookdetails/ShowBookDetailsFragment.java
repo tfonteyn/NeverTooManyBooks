@@ -365,7 +365,7 @@ public class ShowBookDetailsFragment
                             .setImageOwner(() -> vm.getBook())
                             .setOnReloadImage(this::reloadImage)
                             .setCoverBrowserTitleSupplier(() -> vm.getBook().getTitle())
-                            .setCoverBrowserIsbnSupplier(() -> vm.getBook().getIsbn())
+                            .setCoverBrowserIsbnSupplier(() -> vm.getBook().getRawProductCode())
                             .build();
                 }
             }

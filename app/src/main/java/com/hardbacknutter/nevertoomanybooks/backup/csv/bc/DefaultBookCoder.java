@@ -280,9 +280,9 @@ public class DefaultBookCoder
      * @param book to process
      */
     private void processIsbn(@NonNull final Book book) {
-        if (book.hasIsbn()) {
+        if (book.hasProductCode()) {
             // ALWAYS try to clean the ISBN.
-            final String raw = book.getIsbn();
+            final String raw = book.getRawProductCode();
 
             // We have seen the string:  "9.78E+12"
             // The original writer must have been writing isbn numbers as floating-point values.
@@ -296,7 +296,7 @@ public class DefaultBookCoder
             //     "=""9789027409294"""  and "="""""
             // Note that we clean the string, but do NOT check on the length here.
             // We want non-isbn string with simple values to pass through
-            book.setIsbn(ISBN.cleanText(raw));
+            book.setRawProductCode(ISBN.cleanText(raw));
         }
     }
 

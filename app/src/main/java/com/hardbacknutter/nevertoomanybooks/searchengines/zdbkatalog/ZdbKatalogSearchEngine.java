@@ -190,13 +190,13 @@ public class ZdbKatalogSearchEngine
         // Issn8
         x = document.selectFirst("datafield[tag='022'] subfield[code='a']");
         if (x != null) {
-            book.setIsbn(ISBN.cleanText(normalize(x)));
+            book.setRawProductCode(ISBN.cleanText(normalize(x)));
         }
         // EAN code, i.e. Issn13 - it's unlikely but we might as well try
         x = document.selectFirst("datafield[tag='024'][ind1='3'] subfield[code='a']");
         if (x != null) {
             // overwrite !
-            book.setIsbn(ISBN.cleanText(normalize(x)));
+            book.setRawProductCode(ISBN.cleanText(normalize(x)));
         }
 
         // Identifiers
@@ -277,8 +277,8 @@ public class ZdbKatalogSearchEngine
         book.getPrimaryPublisher()
             .ifPresent(p -> book.add(Author.from(p.getName())));
 
-        if (!book.hasIsbn()) {
-            book.setIsbn(productCode.asText());
+        if (!book.hasProductCode()) {
+            book.setRawProductCode(productCode.asText());
         }
     }
 

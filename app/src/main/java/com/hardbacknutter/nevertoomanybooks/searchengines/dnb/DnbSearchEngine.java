@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,9 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.core.network.RateLimitInterceptor;
-import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.core.network.ThrottlingInterceptor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -73,15 +69,12 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.OkHttpLoggerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorRoleMapper;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
-
-import okhttp3.OkHttpClient;
 
 /**
  * German language books & comics.
@@ -521,10 +514,10 @@ public class DnbSearchEngine
         if (fetchCovers[0]) {
             if (ServiceLocator.getInstance().getSharedPreferences()
                               .getBoolean(PK_COVERS_FROM_PORTAL, false)) {
-                final String url = HIRES_IMAGE_SEARCH + book.getIsbn();
+                final String url = HIRES_IMAGE_SEARCH + book.getRawProductCode();
                 // No referer
                 final Optional<String> fileSpec = saveImage(
-                        context, url, null, book.getIsbn(), 0, null);
+                        context, url, null, book.getRawProductCode(), 0, null);
                 if (fileSpec.isPresent()) {
                     CoverFileSpecArray.setFileSpec(book, 0, fileSpec.get());
                     // success, we're done here
@@ -532,7 +525,7 @@ public class DnbSearchEngine
                 }
             }
             // Standard parsing, also used as fallback if the hires/portal call fails.
-            parseCover(context, document, book.getIsbn(), 0).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -595,13 +588,13 @@ public class DnbSearchEngine
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
         // Only add if not already there
-        if (!book.hasIsbn()) {
+        if (!book.hasProductCode()) {
             // grab first ISBN only
             final String text = PATTERN_BR.split(td.text())[0];
             final String isbnText = ISBN.cleanText(text);
             // (don't do a full ISBN test here, no need)
             if (isbnText.length() == 10 || isbnText.length() == 13) {
-                book.setIsbn(isbnText);
+                book.setRawProductCode(isbnText);
             }
         }
     }

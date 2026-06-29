@@ -595,7 +595,7 @@ public class AmazonSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getIsbn(), 0).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
 
         }
@@ -725,17 +725,17 @@ public class AmazonSearchEngine
                         final ASIN asin = new ASIN(SearchEngineUtils.cleanText(text[1]));
                         book.setIdentifierValue(Identifier.SID_ASIN, asin.asText());
 
-                        if (!book.hasIsbn()) {
+                        if (!book.hasProductCode()) {
                             // Set as ISBN if we don't have one yet.
                             // If the book has a real ISBN-13 it will overwrite this
                             // when we get to parsing the ISBN.
-                            book.setIsbn(asin.asText());
+                            book.setRawProductCode(asin.asText());
                         }
                     } else if (LABEL_ISBN_13.equals(lcLabel)) {
-                        book.setIsbn(ISBN.cleanText(text[1]));
+                        book.setRawProductCode(ISBN.cleanText(text[1]));
 
-                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.hasIsbn()) {
-                        book.setIsbn(ISBN.cleanText(text[1]));
+                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.hasProductCode()) {
+                        book.setRawProductCode(ISBN.cleanText(text[1]));
 
                     } else if (LABEL_FORMAT.contains(lcLabel)) {
                         // we might already have the format, but we'll overwrite it - that's OK.

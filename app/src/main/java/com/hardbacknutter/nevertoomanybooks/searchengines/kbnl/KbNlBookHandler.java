@@ -553,12 +553,12 @@ class KbNlBookHandler
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
             if (Character.isDigit(text.charAt(0))) {
-                if (!book.hasIsbn()) {
+                if (!book.hasProductCode()) {
                     final String isbnText = ISBN.cleanText(text.split(":")[0]);
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)
                     if (isbnText.length() == 10 || isbnText.length() == 13) {
-                        book.setIsbn(isbnText);
+                        book.setRawProductCode(isbnText);
                     }
                 }
             } else if (text.charAt(0) == '(') {

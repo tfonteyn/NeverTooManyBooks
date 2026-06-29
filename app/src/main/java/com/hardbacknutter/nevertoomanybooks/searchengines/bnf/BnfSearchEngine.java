@@ -348,7 +348,7 @@ public class BnfSearchEngine
 
         // We should now have the isbn, go parse the cover
         if (fetchCovers[0]) {
-            parseCovers(context, pubDocument, book.getIsbn(), 0).ifPresent(
+            parseCovers(context, pubDocument, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -535,10 +535,10 @@ public class BnfSearchEngine
         String s;
         final Map<Character, String> fields = parseUnimarcField(text);
         // Only grab the first should there be multiple
-        if (!book.hasIsbn()) {
+        if (!book.hasProductCode()) {
             s = ISBN.cleanText(fields.get('a'));
             if (!s.isEmpty()) {
-                book.setIsbn(s);
+                book.setRawProductCode(s);
             }
             s = fields.get('b');
             if (s != null && !s.isEmpty()) {

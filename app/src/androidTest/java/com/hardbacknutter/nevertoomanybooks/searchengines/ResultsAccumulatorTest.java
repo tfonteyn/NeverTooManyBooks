@@ -129,7 +129,7 @@ class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.putString(IsfdbSearchEngine.SiteField.BOOK_TYPE, "NOVEL");
-        book.setIsbn("9780552574471");
+        book.setRawProductCode("9780552574471");
         book.setPages(332);
         book.setTitle("The Shepherd's Crown");
         book.putString(DBKey.PRICE_LISTED, "7.99");
@@ -179,7 +179,7 @@ class ResultsAccumulatorTest
         book.setSeries(List.of(new Series("Discworld Novels")));
         book.setLanguage("English");
         book.setFormat("Paperback");
-        book.setIsbn("978-0552574471");
+        book.setRawProductCode("978-0552574471");
         book.setPages(336);
         book.setTitle("The Shepherd's Crown: A Discworld Novel, Volume 41");
         book.putString(DBKey.PRICE_LISTED, "7.29");
@@ -252,7 +252,7 @@ class ResultsAccumulatorTest
 //                "/storage/emulated/0/Android/data/com.hardbacknutter.nevertoomanybooks.debug/files/Pictures/tmp/1701443226896_bol_9780552574471_0_.jpg");
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
-        book.setIsbn("9780552574471");
+        book.setRawProductCode("9780552574471");
         book.setPages(335);
         book.setTitle("Shepherds Crown");
         book.putString(DBKey.PRICE_LISTED, "8.87");
@@ -373,7 +373,7 @@ class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.putString(IsfdbSearchEngine.SiteField.BOOK_TYPE, "NOVEL");
-        book.setIsbn("9780552574471");
+        book.setRawProductCode("9780552574471");
         book.setPages(332);
         book.setTitle("The Shepherd's Crown");
         book.putDouble(DBKey.PRICE_LISTED, 7.99);
@@ -419,7 +419,7 @@ class ResultsAccumulatorTest
         results.add(create03());
 
         final Book book = new Book();
-        book.setIsbn(SEARCH_ISBN);
+        book.setRawProductCode(SEARCH_ISBN);
 
         resultsAccumulator.process(context, results, book);
 

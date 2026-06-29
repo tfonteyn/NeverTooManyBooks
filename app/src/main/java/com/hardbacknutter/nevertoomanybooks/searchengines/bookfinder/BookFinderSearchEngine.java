@@ -215,7 +215,7 @@ public class BookFinderSearchEngine
                         case "ISBN:": {
                             final String[] s = value.split("/");
                             if (s.length > 0 && !s[0].isBlank()) {
-                                book.setIsbn(s[0].strip());
+                                book.setRawProductCode(s[0].strip());
                             }
                             break;
                         }
@@ -250,7 +250,7 @@ public class BookFinderSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getIsbn(), 0).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }

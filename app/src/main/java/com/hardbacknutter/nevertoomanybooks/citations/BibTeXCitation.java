@@ -105,7 +105,7 @@ class BibTeXCitation
         sj.add(String.format(NAME_VALUE, TITLE, escape(book.getTitle())));
         sj.add(String.format(NAME_VALUE, AUTHOR, formatAuthors(book.getAuthors())));
 
-        final String isbn = book.getIsbn();
+        final String isbn = book.getRawProductCode();
         if (!isbn.isEmpty()) {
             sj.add(String.format(NAME_VALUE, ISBN, escape(isbn)));
         }

@@ -676,7 +676,7 @@ public class DoubanSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getIsbn(), 0).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -725,7 +725,7 @@ public class DoubanSearchEngine
                     break;
 
                 case "book:isbn":
-                    book.setIsbn(content);
+                    book.setRawProductCode(content);
                     break;
 
                 case "og:description":

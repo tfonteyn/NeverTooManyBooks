@@ -559,7 +559,7 @@ public abstract class QueueFragment
         book.ensureBookshelf();
 
         // check for duplicates
-        final String isbnStr = book.getIsbn();
+        final String isbnStr = book.getRawProductCode();
         if (!isbnStr.isEmpty()) {
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             // all codes accepted, including invalid ones

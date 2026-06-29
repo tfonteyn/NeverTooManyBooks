@@ -99,7 +99,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
-        book.setIsbn("9788321331966");
+        book.setRawProductCode("9788321331966");
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -117,7 +117,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
-        book.setIsbn("9788384252963");
+        book.setRawProductCode("9788384252963");
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -183,7 +183,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
-        book.setIsbn("9788380837744");
+        book.setRawProductCode("9788380837744");
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -258,7 +258,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
-        book.setIsbn("9788367023290");
+        book.setRawProductCode("9788367023290");
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -380,7 +380,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
-        book.setIsbn("9788328172241");
+        book.setRawProductCode("9788328172241");
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -524,7 +524,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         // emulate searchEngine#searchByIsbn behaviour
-        book.setIsbn("9788377052730");
+        book.setRawProductCode("9788377052730");
         searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 

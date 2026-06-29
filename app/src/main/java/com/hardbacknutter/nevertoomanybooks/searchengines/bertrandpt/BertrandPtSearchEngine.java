@@ -304,7 +304,7 @@ public class BertrandPtSearchEngine
         if (element != null) {
             final String isbn = ISBN.cleanText(element.text().strip());
             if (!isbn.isBlank()) {
-                book.setIsbn(isbn);
+                book.setRawProductCode(isbn);
             }
         }
 
@@ -423,7 +423,7 @@ public class BertrandPtSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCovers(context, document, book.getIsbn(), 0).ifPresent(
+            parseCovers(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }

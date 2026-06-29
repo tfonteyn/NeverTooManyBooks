@@ -631,7 +631,7 @@ class ParseTest
         assertSame(ProductCodeType.Invalid, productCode.getType());
 
         final Book book = new Book();
-        book.setIsbn(incorrectBarcode);
+        book.setRawProductCode(incorrectBarcode);
         book.putString(StripInfoSearchEngine.SiteField.BARCODE, correctBarcode);
         searchEngine.processBarcode(barcode, book);
 

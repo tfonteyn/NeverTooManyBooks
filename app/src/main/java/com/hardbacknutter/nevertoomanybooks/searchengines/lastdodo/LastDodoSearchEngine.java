@@ -640,7 +640,7 @@ public class LastDodoSearchEngine
                     case "ISBN": {
                         tmpString = td.text();
                         if (!"Geen".equals(tmpString)) {
-                            book.setIsbn(ISBN.cleanText(tmpString));
+                            book.setRawProductCode(ISBN.cleanText(tmpString));
                         }
                         break;
                     }
@@ -723,7 +723,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            parseCovers(context, document, book.getIsbn(), fetchCovers, book);
+            parseCovers(context, document, book.getRawProductCode(), fetchCovers, book);
         }
     }
 

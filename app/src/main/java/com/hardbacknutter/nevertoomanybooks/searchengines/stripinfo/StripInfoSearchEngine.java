@@ -544,7 +544,7 @@ public class StripInfoSearchEngine
                                 case "ISBN": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        book.setIsbn(text);
+                                        book.setRawProductCode(text);
                                         i++;
                                     }
                                     break;
@@ -665,7 +665,7 @@ public class StripInfoSearchEngine
             return;
         }
 
-        final String isbn = book.getIsbn();
+        final String isbn = book.getRawProductCode();
 
         // front cover
         if (fetchCovers[0]) {
@@ -708,7 +708,7 @@ public class StripInfoSearchEngine
                 || productCode.equals(searchedCode)) {
 
                 // then the barcode always replaces the ISBN from the site!
-                book.setIsbn(productCode.asText());
+                book.setRawProductCode(productCode.asText());
                 book.remove(SiteField.BARCODE);
             }
         }

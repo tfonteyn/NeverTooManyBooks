@@ -501,7 +501,7 @@ public class BolSearchEngine
                     case "EAN": {
                         // useful for audiobooks
                         if (!book.contains(DBKey.ISBN)) {
-                            book.setIsbn(SearchEngineUtils.cleanText(value));
+                            book.setRawProductCode(SearchEngineUtils.cleanText(value));
                         }
                         break;
                     }
@@ -678,7 +678,7 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
-        final String isbn = book.getIsbn();
+        final String isbn = book.getRawProductCode();
 
         final Element imageSlotConfig = document.selectFirst(
                 "section[data-group-name='product-images'] script");

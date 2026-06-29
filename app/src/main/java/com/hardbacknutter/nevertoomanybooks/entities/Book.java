@@ -417,7 +417,7 @@ public class Book
         // //NEWTHINGS: new fields
 
         duplicate.setTitle(getString(DBKey.TITLE, null));
-        duplicate.setIsbn(getString(DBKey.ISBN, null));
+        duplicate.setRawProductCode(getString(DBKey.ISBN, null));
 
         if (duplicate.contains(BKEY_BOOKSHELF_LIST)) {
             duplicate.setBookshelves(getBookshelves());
@@ -710,33 +710,34 @@ public class Book
     }
 
     /**
-     * Check if this Book contains a non-blank ISBN string. Does not check if the ISBN is valid.
+     * Check if this Book contains a non-blank product-code string.
+     * Does not check if the product-code is valid.
      *
      * @return {@code true} if present
      */
-    public boolean hasIsbn() {
-        final String isbnStr = getString(DBKey.ISBN, null);
-        return isbnStr != null && !isbnStr.isEmpty();
+    public boolean hasProductCode() {
+        final String codeStr = getString(DBKey.ISBN, null);
+        return codeStr != null && !codeStr.isEmpty();
     }
 
     /**
-     * Get the ISBN as a raw {@code String}.
+     * Get the product-code as a raw {@code String}.
      *
-     * @return isbn; can be empty but never {@code null}
+     * @return product-code as a raw {@code String}; can be empty but never {@code null}
      */
     @NonNull
-    public String getIsbn() {
+    public String getRawProductCode() {
         return getString(DBKey.ISBN);
     }
 
     /**
-     * Set the ISBN with a raw {@code String}.
+     * Set the product-code with a raw {@code String}.
      *
-     * @param isbnStr to set; a {@code null} or an empty string will remove the field
+     * @param codeStr to set; a {@code null} or an empty string will remove the field
      */
-    public void setIsbn(@Nullable final String isbnStr) {
-        if (isbnStr != null && !isbnStr.isEmpty()) {
-            putString(DBKey.ISBN, isbnStr);
+    public void setRawProductCode(@Nullable final String codeStr) {
+        if (codeStr != null && !codeStr.isEmpty()) {
+            putString(DBKey.ISBN, codeStr);
         } else {
             remove(DBKey.ISBN);
         }

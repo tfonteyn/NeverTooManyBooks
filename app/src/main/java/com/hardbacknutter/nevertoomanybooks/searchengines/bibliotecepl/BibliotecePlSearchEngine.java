@@ -253,7 +253,7 @@ public class BibliotecePlSearchEngine
 
         final Book book = new Book();
         // force the product code  here as the result (single book) can contain multiple
-        book.setIsbn(codeStr);
+        book.setRawProductCode(codeStr);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);
@@ -426,7 +426,7 @@ public class BibliotecePlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCovers(context, work, book.getIsbn(), 0).ifPresent(
+            parseCovers(context, work, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -465,10 +465,10 @@ public class BibliotecePlSearchEngine
 
         if (isbnElements.size() == 1) {
             final String isbnStr = ISBN.cleanText(isbnElements.get(0).text());
-            if (book.hasIsbn()) {
+            if (book.hasProductCode()) {
                 // If it's an isbn-10 equal to the one we searched for, grab it.
                 final ProductCode productCodeFromSite = ISBN.parseISBN(isbnStr);
-                final ProductCode productCodeSearched = ISBN.parseISBN(book.getIsbn());
+                final ProductCode productCodeSearched = ISBN.parseISBN(book.getRawProductCode());
 
                 // If the user searched for an isbn-13,
                 // and the website returned an isbn-10
@@ -476,15 +476,15 @@ public class BibliotecePlSearchEngine
                 if (productCodeSearched.getType() == ProductCodeType.Isbn13
                     && productCodeFromSite.getType() == ProductCodeType.Isbn10
                     && productCodeFromSite.equals(productCodeSearched)) {
-                    book.setIsbn(isbnStr);
+                    book.setRawProductCode(isbnStr);
                 }
             } else {
                 // we got here searching-by-text, grab it
-                book.setIsbn(isbnStr);
+                book.setRawProductCode(isbnStr);
             }
-        } else if (!book.hasIsbn()) {
+        } else if (!book.hasProductCode()) {
             // if we don't have an isbn already, simply grab the first
-            book.setIsbn(ISBN.cleanText(isbnElements.get(0).text()));
+            book.setRawProductCode(ISBN.cleanText(isbnElements.get(0).text()));
         }
     }
 
@@ -520,9 +520,9 @@ public class BibliotecePlSearchEngine
                     break;
                 }
                 case "books:isbn": {
-                    if (!book.hasIsbn()) {
+                    if (!book.hasProductCode()) {
                         // there might be multiple, separated by a space; grab the first
-                        book.setIsbn(ISBN.cleanText(content.split(" ")[0]));
+                        book.setRawProductCode(ISBN.cleanText(content.split(" ")[0]));
                     }
                     break;
                 }

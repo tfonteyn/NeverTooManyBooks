@@ -459,7 +459,7 @@ public class KbNlHtmlSearchEngine
 
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
-        if (book.hasIsbn()) {
+        if (book.hasProductCode()) {
             return;
         }
         final Elements spans = td.select("span");
@@ -472,7 +472,7 @@ public class KbNlHtmlSearchEngine
         // so we do a crude test on the length and hope for the best
         // (don't do a full ISBN test here, no need)
         if (isbnText.length() == 10 || isbnText.length() == 13) {
-            book.setIsbn(isbnText);
+            book.setRawProductCode(isbnText);
         }
         if (spans.size() > 1) {
             if (!book.contains(DBKey.FORMAT)) {

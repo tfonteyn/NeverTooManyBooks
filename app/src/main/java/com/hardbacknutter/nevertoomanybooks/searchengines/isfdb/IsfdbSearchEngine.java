@@ -1145,7 +1145,7 @@ public class IsfdbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCover(context, document, book.getIsbn(), 0).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -1269,7 +1269,7 @@ public class IsfdbSearchEngine
         if (data != null) {
             // we use them in the order found here.
             // <b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
-            book.setIsbn(ISBN.cleanText(data.toString().strip()));
+            book.setRawProductCode(ISBN.cleanText(data.toString().strip()));
 
             final Element nextElementSibling = labelElement.nextElementSibling();
             if (nextElementSibling != null) {

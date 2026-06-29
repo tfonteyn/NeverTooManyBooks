@@ -298,7 +298,7 @@ public class BiblionetGrSearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCovers(context, document, book.getIsbn(), 0).ifPresent(
+            parseCovers(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }
@@ -532,7 +532,7 @@ public class BiblionetGrSearchEngine
                     break;
                 }
                 case "ISBN": {
-                    book.setIsbn(ISBN.cleanText(text));
+                    book.setRawProductCode(ISBN.cleanText(text));
                     break;
                 }
                 case "Τιμη":

@@ -607,7 +607,7 @@ public class EditBookViewModel
      */
     boolean bookExists() {
         if (book.isNew()) {
-            final String isbnStr = book.getIsbn();
+            final String isbnStr = book.getRawProductCode();
             if (!isbnStr.isEmpty()) {
                 // all codes accepted, including invalid ones
                 return bookDao.bookExists(ISBN.parse(isbnStr));

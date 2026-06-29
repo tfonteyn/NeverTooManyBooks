@@ -213,7 +213,7 @@ public class CalibreBookCoder
                         break;
                     }
                     case "isbn": {
-                        book.setIsbn(ISBN.cleanText(value));
+                        book.setRawProductCode(ISBN.cleanText(value));
                         break;
                     }
                     case "languages": {

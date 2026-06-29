@@ -280,7 +280,7 @@ public class WikidataSearchEngine
             throws JSONException {
 
         // we don't get it from the site, just add it
-        book.setIsbn(productCode.asText());
+        book.setRawProductCode(productCode.asText());
 
         // We expect one result, just throw otherwise
         final JSONObject item = document.getJSONObject("results")

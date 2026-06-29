@@ -49,7 +49,7 @@ class RISCitationTest
     void cite() {
         final Book book = new Book();
         book.setTitle("The Deeper Meaning of Liff");
-        book.setIsbn("1234567890123");
+        book.setRawProductCode("1234567890123");
         book.setPublicationDate(1990);
 
         book.setAuthors(List.of(Author.from("Douglas Adams"),

@@ -69,7 +69,7 @@ public class RISCitation
         book.getAuthors().forEach(author -> sj
                 .add("A1  - " + author.getFormattedName(false)));
 
-        final String isbn = book.getIsbn();
+        final String isbn = book.getRawProductCode();
         if (!isbn.isEmpty()) {
             sj.add("SN  - " + isbn);
         }

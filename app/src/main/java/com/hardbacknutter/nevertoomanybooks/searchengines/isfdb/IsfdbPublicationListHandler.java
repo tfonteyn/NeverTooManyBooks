@@ -343,13 +343,13 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_ISBN: {
-                    book.setIsbn(ISBN.cleanText(builder.toString().strip()));
+                    book.setRawProductCode(ISBN.cleanText(builder.toString().strip()));
                     break;
                 }
                 case XML_CATALOG: {
                     // keep the ISBN if we have one, otherwise add the catalog id
                     if (!book.contains(DBKey.ISBN)) {
-                        book.setIsbn(builder.toString().strip());
+                        book.setRawProductCode(builder.toString().strip());
                     }
                     break;
                 }
@@ -407,7 +407,7 @@ class IsfdbPublicationListHandler
                             imageUrl = "https:" + imageUrl.substring(5);
                         }
                         try {
-                            searchEngine.saveImage(context, imageUrl, null, book.getIsbn(), 0, null)
+                            searchEngine.saveImage(context, imageUrl, null, book.getRawProductCode(), 0, null)
                                         .ifPresent(fileSpec -> CoverFileSpecArray
                                                 .setFileSpec(book, 0, fileSpec));
 
