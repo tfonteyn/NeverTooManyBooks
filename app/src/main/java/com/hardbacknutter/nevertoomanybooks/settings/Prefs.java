@@ -19,7 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,6 +62,20 @@ public class Prefs
      */
     public Prefs(@NonNull final SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+    }
+
+    /**
+     * Check the global device flag whether the user prefers animations to be on or off.
+     *
+     * @param context Current context
+     *
+     * @return flag
+     */
+    public static boolean isAnimationEnabled(@NonNull final Context context) {
+        final float durationScale = Settings.Global.getFloat(
+                context.getContentResolver(),
+                Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+        return durationScale != 0.0f;
     }
 
     @Override

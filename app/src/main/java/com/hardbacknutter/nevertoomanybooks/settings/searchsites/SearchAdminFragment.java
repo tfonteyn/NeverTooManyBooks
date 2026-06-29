@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
@@ -147,7 +148,9 @@ public class SearchAdminFragment
         viewPager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
         viewPager.setAdapter(tabAdapter);
-        new TabLayoutMediator(tabPanel, viewPager, (tab, position) -> {
+        //noinspection DataFlowIssue
+        final boolean animationEnabled = Prefs.isAnimationEnabled(getContext());
+        new TabLayoutMediator(tabPanel, viewPager, false, animationEnabled, (tab, position) -> {
             if (ScreenSize.compute(getActivity()).getWidth() == ScreenSize.Value.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {
@@ -160,7 +163,6 @@ public class SearchAdminFragment
         }).attach();
 
         if (savedInstanceState == null) {
-            //noinspection DataFlowIssue
             TipManager.getInstance().show(getContext(), Tip.CONFIGURE_SITES);
         }
     }

@@ -40,6 +40,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
@@ -97,7 +98,9 @@ public class IdentifiersAdminFragment
         viewPager.setOffscreenPageLimit(tabAdapter.getItemCount());
         viewPager.setAdapter(tabAdapter);
 
-        new TabLayoutMediator(tabPanel, viewPager, (tab, position)
+        //noinspection DataFlowIssue
+        final boolean animationEnabled = Prefs.isAnimationEnabled(getContext());
+        new TabLayoutMediator(tabPanel, viewPager, false, animationEnabled, (tab, position)
                 -> tab.setText(getString(tabAdapter.getTabTitle(position)))).attach();
     }
 

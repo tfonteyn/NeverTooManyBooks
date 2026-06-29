@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
@@ -53,11 +54,9 @@ public class TagAdminFragment
 
     /** View Binding with the ViewPager2. */
     private ViewPager2 viewPager;
-    /** View Binding. */
-    @SuppressWarnings("FieldCanBeLocal")
-    private TabLayout tabPanel;
 
     private TabAdapter tabAdapter;
+    private boolean animationEnabled;
 
     private TagAdminViewModel vm;
 
@@ -118,15 +117,16 @@ public class TagAdminFragment
         toolbar.setSubtitle("");
 
         tabAdapter = new TabAdapter(getActivity());
-        tabPanel = getActivity().findViewById(R.id.tab_panel);
+        final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         viewPager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
         viewPager.setAdapter(tabAdapter);
-        new TabLayoutMediator(tabPanel, viewPager, (tab, position) ->
+        //noinspection DataFlowIssue
+        animationEnabled = Prefs.isAnimationEnabled(getContext());
+        new TabLayoutMediator(tabPanel, viewPager, false, animationEnabled, (tab, position) ->
                 tab.setText(getString(tabAdapter.getTabTitle(position)))).attach();
-
     }
 
     /**
@@ -135,7 +135,7 @@ public class TagAdminFragment
      * @param tag for we want to create a new mapping (or edit existing).
      */
     void editOrCreateMapping(@NonNull final Tag tag) {
-        viewPager.setCurrentItem(1);
+        viewPager.setCurrentItem(1, animationEnabled);
 
         getParentFragmentManager()
                 .getFragments()

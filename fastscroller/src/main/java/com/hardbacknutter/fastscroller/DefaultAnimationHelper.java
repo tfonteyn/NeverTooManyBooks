@@ -36,6 +36,7 @@
 package com.hardbacknutter.fastscroller;
 
 import android.animation.TimeInterpolator;
+import android.provider.Settings;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -49,11 +50,12 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
  * Not all methods here as used, but for now keeping this class as-is allowing future
  * use of all features.
  */
-public class DefaultAnimationHelper
+class DefaultAnimationHelper
         implements FastScrollerOverlay.AnimationHelper {
 
     private static final int SHOW_DURATION_MILLIS = 150;
     private static final int HIDE_DURATION_MILLIS = 200;
+
     private static final TimeInterpolator SHOW_SCROLLBAR_INTERPOLATOR =
             new LinearOutSlowInInterpolator();
     private static final TimeInterpolator HIDE_SCROLLBAR_INTERPOLATOR =
@@ -61,36 +63,45 @@ public class DefaultAnimationHelper
     private static final int AUTO_HIDE_SCROLLBAR_DELAY_MILLIS = 1500;
 
     @NonNull
-    private final View mView;
+    private final View view;
+    private final long showDurationInMilli;
+    private final long hideDurationInMilli;
 
-    private boolean mScrollbarAutoHideEnabled = true;
+    private boolean scrollbarAutoHideEnabled = true;
 
-    private boolean mShowingScrollbar = true;
-    private boolean mShowingPopup;
+    private boolean showingScrollbar = true;
+    private boolean showingPopup;
 
     DefaultAnimationHelper(@NonNull final View view) {
-        mView = view;
+        this.view = view;
+
+        final float durationScale = Settings.Global.getFloat(
+                view.getContext().getContentResolver(),
+                Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+
+        showDurationInMilli = (long) (SHOW_DURATION_MILLIS * durationScale);
+        hideDurationInMilli = (long) (HIDE_DURATION_MILLIS * durationScale);
     }
 
     @Override
     public void showScrollbar(@NonNull final View trackView,
                               @NonNull final View thumbView) {
 
-        if (mShowingScrollbar) {
+        if (showingScrollbar) {
             return;
         }
-        mShowingScrollbar = true;
+        showingScrollbar = true;
 
         trackView.animate()
                  .alpha(1)
                  .translationX(0)
-                 .setDuration(SHOW_DURATION_MILLIS)
+                 .setDuration(showDurationInMilli)
                  .setInterpolator(SHOW_SCROLLBAR_INTERPOLATOR)
                  .start();
         thumbView.animate()
                  .alpha(1)
                  .translationX(0)
-                 .setDuration(SHOW_DURATION_MILLIS)
+                 .setDuration(showDurationInMilli)
                  .setInterpolator(SHOW_SCROLLBAR_INTERPOLATOR)
                  .start();
     }
@@ -99,40 +110,40 @@ public class DefaultAnimationHelper
     public void hideScrollbar(@NonNull final View trackView,
                               @NonNull final View thumbView) {
 
-        if (!mShowingScrollbar) {
+        if (!showingScrollbar) {
             return;
         }
-        mShowingScrollbar = false;
+        showingScrollbar = false;
 
-        final boolean isLayoutRtl = mView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        final boolean isLayoutRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         final int width = Math.max(trackView.getWidth(), thumbView.getWidth());
         final float translationX;
         if (isLayoutRtl) {
             translationX = trackView.getLeft() == 0 ? -width : 0;
         } else {
-            translationX = trackView.getRight() == mView.getWidth() ? width : 0;
+            translationX = trackView.getRight() == view.getWidth() ? width : 0;
         }
         trackView.animate()
                  .alpha(0)
                  .translationX(translationX)
-                 .setDuration(HIDE_DURATION_MILLIS)
+                 .setDuration(hideDurationInMilli)
                  .setInterpolator(HIDE_SCROLLBAR_INTERPOLATOR)
                  .start();
         thumbView.animate()
                  .alpha(0)
                  .translationX(translationX)
-                 .setDuration(HIDE_DURATION_MILLIS)
+                 .setDuration(hideDurationInMilli)
                  .setInterpolator(HIDE_SCROLLBAR_INTERPOLATOR)
                  .start();
     }
 
     @Override
     public boolean isScrollbarAutoHideEnabled() {
-        return mScrollbarAutoHideEnabled;
+        return scrollbarAutoHideEnabled;
     }
 
     public void setScrollbarAutoHideEnabled(final boolean enabled) {
-        mScrollbarAutoHideEnabled = enabled;
+        scrollbarAutoHideEnabled = enabled;
     }
 
     @Override
@@ -143,28 +154,28 @@ public class DefaultAnimationHelper
     @Override
     public void showPopup(@NonNull final View popupView) {
 
-        if (mShowingPopup) {
+        if (showingPopup) {
             return;
         }
-        mShowingPopup = true;
+        showingPopup = true;
 
         popupView.animate()
                  .alpha(1)
-                 .setDuration(SHOW_DURATION_MILLIS)
+                 .setDuration(showDurationInMilli)
                  .start();
     }
 
     @Override
     public void hidePopup(@NonNull final View popupView) {
 
-        if (!mShowingPopup) {
+        if (!showingPopup) {
             return;
         }
-        mShowingPopup = false;
+        showingPopup = false;
 
         popupView.animate()
                  .alpha(0)
-                 .setDuration(HIDE_DURATION_MILLIS)
+                 .setDuration(hideDurationInMilli)
                  .start();
     }
 }

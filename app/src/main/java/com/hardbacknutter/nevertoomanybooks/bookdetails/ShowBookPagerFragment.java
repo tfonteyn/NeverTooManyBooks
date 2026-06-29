@@ -109,6 +109,7 @@ public class ShowBookPagerFragment
 
         final ShowBookPagerAdapter adapter = new ShowBookPagerAdapter(this);
         viewPager.setAdapter(adapter);
+        // Don't animate/softscroll, always jump.
         viewPager.setCurrentItem(vm.getInitialPagerPosition(), false);
 
         if (savedInstanceState == null) {

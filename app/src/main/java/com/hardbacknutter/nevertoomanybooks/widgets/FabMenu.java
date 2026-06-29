@@ -45,6 +45,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class FabMenu {
 
@@ -234,6 +235,7 @@ public class FabMenu {
 
         final Resources res = fabButton.getResources();
 
+        final boolean animationEnabled = Prefs.isAnimationEnabled(fabButton.getContext());
         // try-with-res requires Android 13
         final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX);
         final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY);
@@ -242,14 +244,20 @@ public class FabMenu {
                 final ExtendedFloatingActionButton fab = fabMenuItems[i];
                 // allow for null items
                 if (fab != null && fab.isEnabled()) {
+                    final int targetX = show ? baseX.getDimensionPixelSize(i, 0) : 0;
+                    final int targetY = show ? baseY.getDimensionPixelSize(i, 0) : 0;
                     if (show) {
                         fab.show();
-                        fab.animate().translationX(baseX.getDimensionPixelSize(i, 0));
-                        fab.animate().translationY(baseY.getDimensionPixelSize(i, 0));
                     } else {
-                        fab.animate().translationX(0);
-                        fab.animate().translationY(0);
                         fab.hide();
+                    }
+                    if (animationEnabled) {
+                        fab.animate()
+                           .translationX(targetX)
+                           .translationY(targetY);
+                    } else {
+                        fab.setTranslationX(targetX);
+                        fab.setTranslationY(targetY);
                     }
                 }
             }

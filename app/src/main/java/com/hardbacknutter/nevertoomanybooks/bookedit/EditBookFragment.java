@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -70,12 +71,18 @@ public class EditBookFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
+
     /** Host for the tabbed fragments. */
     private TabAdapter tabAdapter;
+
+    private boolean animationEnabled;
+
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
+
     /** View Binding with the ViewPager2. */
     private ViewPager2 viewPager;
+
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -92,6 +99,7 @@ public class EditBookFragment
                     setResultsAndFinish();
                 }
             };
+
     private final ViewPager2.OnPageChangeCallback pageChange =
             new ViewPager2.OnPageChangeCallback() {
                 @Override
@@ -140,7 +148,12 @@ public class EditBookFragment
 
         viewPager.registerOnPageChangeCallback(pageChange);
 
-        new TabLayoutMediator(tabPanel, viewPager, (tab, position) -> {
+        // Using it for the TabLayoutMediator means it's static for the life-time of this page
+        //noinspection DataFlowIssue
+        animationEnabled = Prefs.isAnimationEnabled(getContext());
+
+        // autoRefresh==true: rotating a device can change the number of tabs shown
+        new TabLayoutMediator(tabPanel, viewPager, true, animationEnabled, (tab, position) -> {
             final TabAdapter.TabInfo tabInfo = tabAdapter.getTabInfo(position);
             tab.setText(tabInfo.getTitleId());
             tab.setContentDescription(tabInfo.getContentDescriptionId());
@@ -152,13 +165,12 @@ public class EditBookFragment
         super.onResume();
 
         int currentTab = vm.getCurrentTab();
-        // rotating a device can change the number of tabs shown (i.e. some tabs get combined)
+        // rotating a device can change the number of tabs shown
         if (currentTab >= tabAdapter.getItemCount()) {
             currentTab = 0;
             vm.setCurrentTab(0);
         }
-        viewPager.setCurrentItem(currentTab);
-
+        viewPager.setCurrentItem(currentTab, animationEnabled);
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         viewPager.setOffscreenPageLimit(tabAdapter.getItemCount());
     }
@@ -213,7 +225,7 @@ public class EditBookFragment
                     && checkUnfinishedEdits
                     && unfinishedEdits.contains(dataEditor.getFragmentId())) {
                     // bring it to the front; i.e. resume it; the user will see it below the dialog.
-                    viewPager.setCurrentItem(i);
+                    viewPager.setCurrentItem(i, animationEnabled);
                     StandardDialogs.unsavedEdits(context,
                                                  () -> prepareSave(false),
                                                  this::setResultsAndFinish);
@@ -229,7 +241,7 @@ public class EditBookFragment
                 if (dataEditor.isResumed()) {
                     dataEditor.onSaveFields(book);
                     if (checkUnfinishedEdits && dataEditor.hasUnfinishedEdits()) {
-                        viewPager.setCurrentItem(i);
+                        viewPager.setCurrentItem(i, animationEnabled);
                         StandardDialogs.unsavedEdits(context,
                                                      () -> prepareSave(false),
                                                      this::setResultsAndFinish);
