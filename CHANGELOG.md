@@ -1,3 +1,11 @@
+### 7.16.2
+
+FIXES:
+
+- #244 Regression where editing the bookshelves a book is assigned to was partially failing
+- #245: manual entry during single-scan mode was being treated as batch-mode instead of interactive.
+
+---
 ### 7.16.1
 
 FIXES:
