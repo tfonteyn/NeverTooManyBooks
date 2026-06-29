@@ -412,7 +412,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_moving_data">Μετακίνηση δεδομένων</string>
     <string name="lbl_name">Όνομα</string>
     <string name="option_goto_next_book_without_cover">Μετάβαση στο επόμενο βιβλίο χωρίς εξώφυλλο</string>
-    <string name="lbl_amount">Αντίγραφα</string>
+    <string name="lbl_amount">Αντίτυπα</string>
     <string name="lbl_owned">Σε κατοχή</string>
     <string name="lbl_images">Εικόνες</string>
     <string name="lbl_image_3">Εικόνα 4</string>
