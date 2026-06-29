@@ -200,7 +200,7 @@ public class ImageFileInfo {
     @Override
     public String toString() {
         return "ImageFileInfo{"
-               + "isbn=`" + edition + '`'
+               + "edition=`" + edition + '`'
                + ", size=" + size
                + ", engineId=" + engineId
                + ", fileSpec=`"

@@ -1398,24 +1398,10 @@ public class OpenLibrarySearchEngine
     }
 
     /**
-     * {@code https://openlibrary.org/isbn/9780141339092.json}
-     * => redirects to: {@code https://openlibrary.org/books/OL27104332M.json}
-     * <pre>
-     *     {
-     *      ...
-     *      "works": [
-     *          {
-     *              "key": "/works/OL5725956W"
-     *          }
-     *      ],
-     *   ...
-     *   }
-     * </pre>
-     * Now issue: {@code https://openlibrary.org/works/OL5725956W/editions.json}
-     * and continue in {@link #parseEditions(JSONObject)}.
+     * Search for edition data.
      *
      * @param context     Current context
-     * @param productCode to search for, <strong>must</strong> be valid.
+     * @param productCode to search for, <strong>must</strong> be a valid ISBN.
      */
     @NonNull
     @Override
@@ -1423,15 +1409,32 @@ public class OpenLibrarySearchEngine
                                                                  @NonNull final ProductCode productCode)
             throws SearchException {
 
+        if (!productCode.isIsbn()) {
+            return List.of();
+        }
+
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
+        // https://openlibrary.org/isbn/9780141339092.json
+        // => redirects to: https://openlibrary.org/books/OL27104332M.json
         String url = getHostUrl() + "/isbn/" + codeStr + ".json";
         try {
+            // and we get:
+            // {
+            //   ...
+            //   "works": [
+            //     {
+            //       "key": "/works/OL5725956W"
+            //     }
+            //   ],
+            //   ...
+            // }
             String response = loadDocument(context, url);
 
             final JSONObject jsonObject = new JSONObject(response);
             final JSONArray works = jsonObject.optJSONArray("works");
             if (works != null && !works.isEmpty()) {
+                // Now fetch: https://openlibrary.org/works/OL5725956W/editions.json
                 final String worksKey = works.getJSONObject(0).optString("key");
                 url = getHostUrl() + worksKey + "/editions.json";
                 response = loadDocument(context, url);
@@ -1445,7 +1448,8 @@ public class OpenLibrarySearchEngine
     }
 
     /**
-     * Parse the edition data as retrieved by {@link #searchAlternativeEditions(Context, ProductCode)}.
+     * Parse the edition data as retrieved by
+     * {@link #searchAlternativeEditions(Context, ProductCode)}.
      * <pre>
      * {
      *   "links": {

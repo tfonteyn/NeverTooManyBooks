@@ -487,6 +487,8 @@ public interface SearchEngine
          *
          * @param context     Current context
          * @param productCode to search for, <strong>must</strong> be valid.
+         *                    An implementation may check validity and reject the code
+         *                    by simply returning an empty list.
          *
          * @return a list of {@link T} alternative editions, can be empty.
          *

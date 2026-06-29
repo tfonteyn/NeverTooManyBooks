@@ -197,11 +197,9 @@ public class LibraryThingSearchEngine
 
     /**
      * Search for edition data.
-     * <p>
-     * <strong>Note:</strong> we assume the ISBNs retrieved from the site are valid.
-     * No extra checks are made.
      *
-     * <br>{@inheritDoc}
+     * @param context     Current context
+     * @param productCode to search for, <strong>must</strong> be a valid ISBN.
      */
     @WorkerThread
     @NonNull
@@ -209,6 +207,10 @@ public class LibraryThingSearchEngine
     public List<AltEditionProductCode> searchAlternativeEditions(@NonNull final Context context,
                                                                  @NonNull final ProductCode productCode)
             throws SearchException, CredentialsException {
+
+        if (!productCode.isIsbn()) {
+            return List.of();
+        }
 
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 

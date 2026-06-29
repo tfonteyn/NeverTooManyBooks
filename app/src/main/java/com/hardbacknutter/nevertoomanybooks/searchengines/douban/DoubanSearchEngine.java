@@ -815,6 +815,14 @@ public class DoubanSearchEngine
         return saveImage(context, src, null, bookId, cIdx, null);
     }
 
+    /**
+     * Search for edition data.
+     * <p>
+     * This implementation is a text search. Hence, ALL productCodes are acceptable.
+     *
+     * @param context     Current context
+     * @param productCode to search for, <strong>must</strong> be valid.
+     */
     @NonNull
     @Override
     public List<AltEditionDouban> searchAlternativeEditions(@NonNull final Context context,

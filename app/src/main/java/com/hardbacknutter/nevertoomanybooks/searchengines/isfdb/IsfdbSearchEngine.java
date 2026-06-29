@@ -525,17 +525,19 @@ public class IsfdbSearchEngine
 
     /**
      * Search for edition data.
-     * <p>
-     * <strong>Note:</strong> we assume the ISBNs retrieved from the site are valid.
-     * No extra checks are made at this point.
      *
-     * <br>{@inheritDoc}
+     * @param context     Current context
+     * @param productCode to search for, <strong>must</strong> be a valid ISBN.
      */
     @NonNull
     @Override
     public List<AltEditionIsfdb> searchAlternativeEditions(@NonNull final Context context,
                                                            @NonNull final ProductCode productCode)
             throws SearchException, CredentialsException {
+
+        if (!productCode.isIsbn()) {
+            return List.of();
+        }
 
         final List<AltEditionIsfdb> list = fetchEditionsByIsbn(context, productCode);
         // We strip the potential document (which can be large)
@@ -1401,7 +1403,7 @@ public class IsfdbSearchEngine
     }
 
     /**
-     * Get the list with {@link AltEditionIsfdb}s for the given isbn.
+     * Get the list with {@link AltEditionIsfdb}s for the given ISBN.
      *
      * @param context     Current context
      * @param productCode to get editions for. MUST be valid.

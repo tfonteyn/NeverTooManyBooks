@@ -179,7 +179,7 @@ public class EditBookFieldsFragment
                             .setImageOwner(() -> vm.getBook())
                             .setOnReloadImage(idx -> imageHandler[idx].onBindView())
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
-                            .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
+                            .setCoverBrowserCodeSupplier(() -> vb.isbn.getText().toString())
                             .build();
                 } else {
                     coverViews[cIdx].setVisibility(View.GONE);

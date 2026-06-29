@@ -165,8 +165,8 @@ public final class ImageHandler {
         reloadImageCallback = builder.reloadImage;
         placeholderDrawable = builder.placeholderDrawable;
         coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
-        coverBrowserCodeSupplier = builder.coverBrowserIsbnSupplier;
-        // Minor hack...  if we have a title/isbn supplier, then we have a Book
+        coverBrowserCodeSupplier = builder.coverBrowserCodeSupplier;
+        // Minor hack...  if we have a title/product-code supplier, then we have a Book
         // and will need a coverBrowserLauncher.
         if (coverBrowserTitleSupplier != null) {
             coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onPictureSelected);
@@ -399,23 +399,31 @@ public final class ImageHandler {
     }
 
     /**
-     * Use the isbn to fetch other possible images from the internet
+     * Use the product-code to fetch other possible images from the internet
      * and present to the user to choose one.
      * <p>
      * The results come back in {@link #onPictureSelected(String)}
      */
     private void startBookCoverBrowser() {
-        Objects.requireNonNull(coverBrowserCodeSupplier, "coverBrowserIsbnSupplier");
+        Objects.requireNonNull(coverBrowserCodeSupplier, "coverBrowserCodeSupplier");
         Objects.requireNonNull(coverBrowserTitleSupplier, "coverBrowserTitleSupplier");
 
         final String codeStr = coverBrowserCodeSupplier.get();
         if (!codeStr.isEmpty()) {
+            // FORCE a parse, to get a correctly cleaned up string
             final ProductCode productCode = ISBN.parseISBN(codeStr);
+            final String text = productCode.asText();
+
+            // 2026-06-29: we reviewed the individual implementations of
+            // AlternativeEditions#searchAlternativeEditions
+            // and with the exception of Douban, all of them require a valid ISBN
+            // Doing explicit tests on Douban is very difficult due to the language barier.
+            // So... we're sticking with the requirement of it being a valid ISBN
             if (productCode.isIsbn()) {
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),
                                             coverBrowserTitleSupplier.get(),
-                                            productCode.asText(), cIdx);
+                                            text, cIdx);
                 return;
             }
         }
@@ -612,7 +620,7 @@ public final class ImageHandler {
         private Consumer<Integer> reloadImage;
         private Supplier<ImageOwner> imageSupplier;
         @Nullable
-        private Supplier<String> coverBrowserIsbnSupplier;
+        private Supplier<String> coverBrowserCodeSupplier;
         @Nullable
         private Supplier<String> coverBrowserTitleSupplier;
 
@@ -715,17 +723,17 @@ public final class ImageHandler {
         /**
          * <strong>Mandatory if the {@link #setImageOwner} supplier returns a book</strong>.
          * <p>
-         * Tell the handler where it can get the current ISBN from.
+         * Tell the handler where it can get the current product-code from.
          * This can either be directly from the book,
          * or via a Supplier which reads it from a TextView on the screen.
          *
-         * @param supplier which can provide the current ISBN
+         * @param supplier which can provide the current product-code
          *
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder setCoverBrowserIsbnSupplier(@Nullable final Supplier<String> supplier) {
-            this.coverBrowserIsbnSupplier = supplier;
+        public Builder setCoverBrowserCodeSupplier(@Nullable final Supplier<String> supplier) {
+            this.coverBrowserCodeSupplier = supplier;
             return this;
         }
 
