@@ -157,6 +157,10 @@
             translatable="false">Wikidata</string>
     <string name="identifier_worldcat"
             translatable="false">WorldCat</string>
+
+    <!-- field label only -->
+    <string name="identifier_url"
+            translatable="false">URL</string>
     <!-- endregion -->
 
     <!-- region ========== Citation format. -->
