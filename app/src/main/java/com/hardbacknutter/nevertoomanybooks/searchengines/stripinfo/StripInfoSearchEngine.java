@@ -55,9 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -66,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -315,7 +316,7 @@ public class StripInfoSearchEngine
     public Book searchByExternalId(@NonNull final Context context,
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
 
@@ -337,7 +338,7 @@ public class StripInfoSearchEngine
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
@@ -357,7 +358,7 @@ public class StripInfoSearchEngine
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
         if (isMultiResult(document)) {
             parseMultiResult(context, document, fetchCovers, book);
         } else {
@@ -383,16 +384,16 @@ public class StripInfoSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws StorageException     on storage related failures
+     * @throws CredentialsException  on authentication/login failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     public void parseMultiResult(@NonNull final Context context,
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -436,11 +437,11 @@ public class StripInfoSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
-     *                              This should only occur if the engine calls/relies on
-     *                              secondary sites.
+     * @throws CoverStorageException on storage related failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CredentialsException  on authentication/login failures
+     *                               This should only occur if the engine calls/relies on
+     *                               secondary sites.
      */
     @VisibleForTesting
     @WorkerThread
@@ -448,7 +449,7 @@ public class StripInfoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         // Title is extracted from the page header.
         // Number will be extracted from the book title section.
@@ -665,11 +666,9 @@ public class StripInfoSearchEngine
             return;
         }
 
-        final String isbn = book.getRawProductCode();
-
         // front cover
         if (fetchCovers[0]) {
-            parseCover(context, document, isbn, 0).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
 
@@ -679,7 +678,7 @@ public class StripInfoSearchEngine
 
         // back cover
         if (fetchCovers[1]) {
-            parseCover(context, document, isbn, 1).ifPresent(
+            parseCover(context, document, book.getRawProductCode(), 1).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 1, fileSpec));
         }
     }
@@ -725,7 +724,7 @@ public class StripInfoSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -734,7 +733,7 @@ public class StripInfoSearchEngine
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                         @IntRange(from = 0, to = 1) final int cIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         String url = null;
         if (cIdx == 0) {
@@ -767,7 +766,7 @@ public class StripInfoSearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -775,7 +774,7 @@ public class StripInfoSearchEngine
                                        @NonNull final String url,
                                        @Nullable final String bookId,
                                        @IntRange(from = 0, to = 1) final int cIdx)
-            throws StorageException {
+            throws CoverStorageException {
 
         // if the site has no image: https://www.stripinfo.be/image.php?i=0
         // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
@@ -847,34 +846,7 @@ public class StripInfoSearchEngine
                         // the div elements inside 'row' should now contain the TOC.
                         final List<TocEntry> toc = new ArrayList<>();
                         for (final Element entry : sectionContent.select("div div")) {
-                            String number = null;
-                            String title = null;
-
-                            final Element a = entry.selectFirst(A_HREF_STRIP);
-                            if (a != null) {
-                                final Node nrNode = a.previousSibling();
-                                if (nrNode != null) {
-                                    number = nrNode.toString().strip();
-                                }
-
-                                // the number is not used in the TOC as we don't support
-                                // linking a TOC entry to another book.
-                                // Instead, prepend it to the title as a reference.
-                                if (number != null) {
-                                    title = number + ' ' + a.text();
-                                } else {
-                                    title = a.text();
-                                }
-                            }
-
-                            if (title != null && !title.isEmpty()) {
-                                // always use the first author only for TOC entries.
-                                Author tocAuthor = book.getPrimaryAuthor();
-                                if (tocAuthor == null) {
-                                    tocAuthor = Author.createUnknownAuthor(context);
-                                }
-                                toc.add(new TocEntry(tocAuthor, title));
-                            }
+                            parseTocEntry(context, entry, toc, book);
                         }
                         if (toc.size() > 1) {
                             return toc;
@@ -884,6 +856,40 @@ public class StripInfoSearchEngine
             }
         }
         return List.of();
+    }
+
+    private void parseTocEntry(@NonNull final Context context,
+                               @NonNull final Element entry,
+                               @NonNull final List<TocEntry> toc,
+                               @NonNull final Book book) {
+        String number = null;
+        String title = null;
+
+        final Element a = entry.selectFirst(A_HREF_STRIP);
+        if (a != null) {
+            final Node nrNode = a.previousSibling();
+            if (nrNode != null) {
+                number = nrNode.toString().strip();
+            }
+
+            // the number is not used in the TOC as we don't support
+            // linking a TOC entry to another book.
+            // Instead, prepend it to the title as a reference.
+            if (number != null) {
+                title = number + ' ' + a.text();
+            } else {
+                title = a.text();
+            }
+        }
+
+        if (title != null && !title.isEmpty()) {
+            // always use the first author only for TOC entries.
+            Author tocAuthor = book.getPrimaryAuthor();
+            if (tocAuthor == null) {
+                tocAuthor = Author.createUnknownAuthor(context);
+            }
+            toc.add(new TocEntry(tocAuthor, title));
+        }
     }
 
     /**
@@ -997,7 +1003,7 @@ public class StripInfoSearchEngine
      * Extract the series from the header.
      *
      * @param document to parse
-     * @param book to update
+     * @param book     to update
      *
      * @return series, or {@code null} for none
      */
