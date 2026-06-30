@@ -473,15 +473,12 @@ public class EditBookTocFragment
             return;
         }
 
-        final String isbnStr = book.getRawProductCode();
-        if (!isbnStr.isEmpty()) {
-            final ProductCode productCode = ISBN.parseISBN(isbnStr);
-            if (productCode.isIsbn()) {
-                Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
-                              Snackbar.LENGTH_LONG).show();
-                isfdbTocSearchVm.searchByProductCode(productCode);
-                return;
-            }
+        final ProductCode productCode = book.getProductCode();
+        if (productCode != null && productCode.isIsbn()) {
+            Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
+                          Snackbar.LENGTH_LONG).show();
+            isfdbTocSearchVm.searchByProductCode(productCode);
+            return;
         }
 
         Snackbar.make(vb.getRoot(), R.string.warning_requires_isbn,
