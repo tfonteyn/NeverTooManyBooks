@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
@@ -387,7 +388,7 @@ public class BedethequeSearchEngine
                       @NonNull final boolean[] fetchCovers,
                       @Nullable final ProductCode searchedCode,
                       @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         // The main book.
         // If we searched by SID, this will be the exact edition we wanted.
@@ -498,7 +499,7 @@ public class BedethequeSearchEngine
                                     @NonNull final Element edition,
                                     @NonNull final boolean[] fetchCovers,
                                     @NonNull final Book book)
-            throws StorageException {
+            throws CoverStorageException {
 
         // contains "front-cover" + "extra-images" + "back-cover"
         List<String> coverUrls = edition
@@ -507,11 +508,9 @@ public class BedethequeSearchEngine
                 .map(element -> element.attr("href"))
                 .collect(Collectors.toList());
 
-        final String isbn = book.getRawProductCode();
-
         if (fetchCovers[0]) {
             final String url = coverUrls.get(0);
-            fetchCover(context, url, 0, isbn, book);
+            fetchCover(context, url, 0, book);
         }
 
         if (isCancelled()) {
@@ -521,7 +520,7 @@ public class BedethequeSearchEngine
         if (coverUrls.size() > 1) {
             // Drop the front-cover
             coverUrls = coverUrls.subList(1, coverUrls.size());
-            handleExtraImagesAndBackCover(context, coverUrls, fetchCovers, book, isbn);
+            handleExtraImagesAndBackCover(context, coverUrls, fetchCovers, book);
         }
     }
 
@@ -529,15 +528,13 @@ public class BedethequeSearchEngine
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws StorageException {
-
-        final String isbn = book.getRawProductCode();
+            throws CoverStorageException {
 
         if (fetchCovers[0]) {
             final Element a = document.selectFirst("div.bandeau-principal > div.bandeau-image > a");
             if (a != null) {
                 final String url = a.attr("href");
-                fetchCover(context, url, 0, isbn, book);
+                fetchCover(context, url, 0, book);
             }
         }
 
@@ -552,7 +549,7 @@ public class BedethequeSearchEngine
                 .stream()
                 .map(e -> e.attr("href"))
                 .collect(Collectors.toList());
-        handleExtraImagesAndBackCover(context, coverUrls, fetchCovers, book, isbn);
+        handleExtraImagesAndBackCover(context, coverUrls, fetchCovers, book);
     }
 
     /**
@@ -563,16 +560,13 @@ public class BedethequeSearchEngine
      * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
-     * @param isbn        of the book
-     *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     private void handleExtraImagesAndBackCover(@NonNull final Context context,
                                                @NonNull final List<String> coverUrls,
                                                @NonNull final boolean[] fetchCovers,
-                                               @NonNull final Book book,
-                                               @NonNull final String isbn)
-            throws StorageException {
+                                               @NonNull final Book book)
+            throws CoverStorageException {
         // sanity check
         if (coverUrls.isEmpty()) {
             return;
@@ -581,7 +575,7 @@ public class BedethequeSearchEngine
         if (fetchCovers[1]) {
             // The last one is the back-cover.
             // If a book has extra images, but NO back-cover... we pick the wrong one here.
-            fetchCover(context, coverUrls.get(coverUrls.size() - 1), 1, isbn, book);
+            fetchCover(context, coverUrls.get(coverUrls.size() - 1), 1, book);
         }
 
         if (isCancelled()) {
@@ -596,7 +590,7 @@ public class BedethequeSearchEngine
             final int maxCovers = Math.min(extraImageUrls.size(), DBKey.NR_OF_BOOK_COVERS - 2);
             for (int cIdx = 0; cIdx < maxCovers; cIdx++) {
                 if (fetchCovers[cIdx + 1]) {
-                    fetchCover(context, extraImageUrls.get(cIdx), cIdx + 2, isbn, book);
+                    fetchCover(context, extraImageUrls.get(cIdx), cIdx + 2, book);
                 }
             }
         }
@@ -605,11 +599,10 @@ public class BedethequeSearchEngine
     private void fetchCover(@NonNull final Context context,
                             @Nullable final String url,
                             @IntRange(from = 0, to = 3) final int cIdx,
-                            @NonNull final String isbn,
                             @NonNull final Book book)
-            throws StorageException {
+            throws CoverStorageException {
         if (url != null && !url.isBlank()) {
-            saveImage(context, url, null, isbn, cIdx, null).ifPresent(
+            saveImage(context, url, null, book.getRawProductCode(), cIdx, null).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, cIdx, fileSpec));
         }
     }
