@@ -56,13 +56,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookFoundBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
@@ -559,11 +557,9 @@ public abstract class QueueFragment
         book.ensureBookshelf();
 
         // check for duplicates
-        final String isbnStr = book.getRawProductCode();
-        if (!isbnStr.isEmpty()) {
-            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
-            // all codes accepted, including invalid ones
-            if (bookDao.bookExists(ISBN.parse(isbnStr))) {
+        final ProductCode productCode = book.getProductCode();
+        if (productCode != null) {
+            if (ServiceLocator.getInstance().getBookDao().bookExists(productCode)) {
                 //noinspection DataFlowIssue
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.warning_24px)
