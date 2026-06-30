@@ -903,8 +903,8 @@
     <string name="action_restore_default_identifiers">Ripristinare gli identificatori predefiniti</string>
     <string name="X_lbl_select_style">Seleziona Stile</string>
     <string name="vldt_blank_or_valid_url_required">È richiesto un valore vuoto o un URL valido</string>
-    <string name="lbl_book_uri">URL del libro</string>
-    <string name="lbl_author_uri">URL dell’autore</string>
+    <string name="X_lbl_book_uri">URL del libro</string>
+    <string name="X_lbl_author_uri">URL dell’autore</string>
     <string name="info_identifier_editor"><![CDATA[Leggere la <a href="%1$s">documentazione</a> sugli identificatori prima di modificarla.]]></string>
     <string name="lbl_date_born">Nato</string>
     <string name="pt_fetch_author_info">Recuperare le informazioni sull’autore</string>

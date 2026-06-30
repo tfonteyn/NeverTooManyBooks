@@ -337,7 +337,8 @@
     <string name="lbl_author_role_storyboard">Bildmanus</string>
     <string name="lbl_author_role_translator">Översättare</string>
     <string name="lbl_author_role_writer">Författare</string>
-    <string name="lbl_author_uri">Författarens URL</string>
+    <string name="X_lbl_book_uri">Bokens URL</string>
+    <string name="X_lbl_author_uri">Författarens URL</string>
     <string name="lbl_authors">Författare</string>
     <string name="lbl_available">Tillgängligt</string>
     <string name="lbl_backup">Säkerhetskopia</string>
@@ -346,7 +347,6 @@
     <string name="lbl_book_type">Boktyp</string>
     <string name="lbl_book_type_anthology">Antologi</string>
     <string name="lbl_book_type_collection">Samling</string>
-    <string name="lbl_book_uri">Bokens URL</string>
     <string name="lbl_books">Böcker</string>
     <string name="lbl_bookshelf">Bokhylla</string>
     <string name="lbl_bookshelves">Bokhyllor</string>

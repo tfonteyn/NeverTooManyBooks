@@ -895,8 +895,8 @@
     <string name="action_restore_default_identifiers">Varsayılan Tanımlayıcıları geri yükleme</string>
     <string name="X_lbl_select_style">Biçem seç</string>
     <string name="vldt_blank_or_valid_url_required">Boş değer veya geçerli URL gerekli</string>
-    <string name="lbl_book_uri">Kitap URL’si</string>
-    <string name="lbl_author_uri">Yazar URL’si</string>
+    <string name="X_lbl_book_uri">Kitap URL’si</string>
+    <string name="X_lbl_author_uri">Yazar URL’si</string>
     <string name="info_identifier_editor"><![CDATA[Düzenlemeden önce Tanımlayıcılar hakkındaki <a href="%1$s">dokümantasyonu</a> okuyun.]]></string>
     <string name="lbl_date_born">Doğdu</string>
     <string name="pt_fetch_author_info">Yazar bilgilerini getir</string>

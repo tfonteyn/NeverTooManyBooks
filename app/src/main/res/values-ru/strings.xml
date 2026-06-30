@@ -918,8 +918,8 @@
     <string name="info_partial_date_picker">Нажмите на ранее выбранный месяц или день, чтобы снять выделение.</string>
     <string name="action_restore_default_identifiers">Восстановите идентификаторы по умолчанию</string>
     <string name="X_lbl_select_style">Выбрать стиль</string>
-    <string name="lbl_book_uri">URL-адрес книги</string>
-    <string name="lbl_author_uri">URL автора</string>
+    <string name="X_lbl_book_uri">URL-адрес книги</string>
+    <string name="X_lbl_author_uri">URL автора</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Требуется пустое значение или действительный URL-адрес «https» с единственным идентификатором «%s»</string>
     <string name="vldt_blank_or_valid_url_required">Требуется пустое значение или действительный URL-адрес</string>
     <string name="info_identifier_editor"><![CDATA[Пожалуйста, прочитайте <a href="%1$s">документацию</a> по идентификаторам перед редактированием.]]></string>

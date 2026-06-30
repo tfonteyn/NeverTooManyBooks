@@ -891,8 +891,8 @@
     <string name="action_restore_default_identifiers">Standard-Bezeichner wiederherstellen</string>
     <string name="X_lbl_select_style">Stil wählen</string>
     <string name="vldt_blank_or_valid_url_required">Leerer Wert oder gültige URL erforderlich</string>
-    <string name="lbl_book_uri">Buch-URL</string>
-    <string name="lbl_author_uri">Autor-URL</string>
+    <string name="X_lbl_book_uri">Buch-URL</string>
+    <string name="X_lbl_author_uri">Autor-URL</string>
     <string name="info_identifier_editor"><![CDATA[Lese vor der Bearbeitung die <a href="%1$s">Dokumentation</a> zu Bezeichnern.]]></string>
     <string name="lbl_date_born">Geboren</string>
     <string name="pt_fetch_author_info">Autoreninformationen abrufen</string>

@@ -883,8 +883,8 @@
     <string name="info_partial_date_picker">Nhấn vào tháng hoặc ngày đã chọn trước đó để bỏ chọn.</string>
     <string name="action_restore_default_identifiers">Khôi phục lại Mã định danh mặc định</string>
     <string name="vldt_blank_or_valid_url_required">Giá trị trống hoặc URL hợp lệ là bắt buộc</string>
-    <string name="lbl_book_uri">URL sách</string>
-    <string name="lbl_author_uri">URL tác giả</string>
+    <string name="X_lbl_book_uri">URL sách</string>
+    <string name="X_lbl_author_uri">URL tác giả</string>
     <string name="info_identifier_editor"><![CDATA[Đọc <a href="%1$s">tài liệu</a> về Mã định danh trước khi chỉnh sửa.]]></string>
     <string name="lbl_date_born">Sinh</string>
     <string name="pt_fetch_author_info">Lấy thông tin tác giả</string>

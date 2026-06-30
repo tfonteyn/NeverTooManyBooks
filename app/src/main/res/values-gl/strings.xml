@@ -631,7 +631,8 @@
     <string name="confirm_merge_tags">A etiqueta que estás a modificar xa existe. Queres fusionalas?</string>
     <string name="confirm_registration_benefits">Esta función benefíciase do rexistro en %1$s. Queres ver máis información, ou desactivar esta mensaxe?\nPosteriormente podes atopar esta información na sección «%2$s» dos axustes.</string>
     <string name="lbl_date_acquired_as_single_char">🏠</string>
-    <string name="lbl_author_uri">URL da autoría</string>
+    <string name="X_lbl_book_uri">URL do libro</string>
+    <string name="X_lbl_author_uri">URL da autoría</string>
     <string name="lbl_titles">Títulos</string>
     <string name="lbl_description">Descrición</string>
     <string name="lbl_location_long">Localización do libro</string>
@@ -648,7 +649,6 @@
     <string name="lbl_date_last_updated_as_single_char">🔄</string>
     <string name="lbl_date_last_updated_month">Mes da actualización</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
-    <string name="lbl_book_uri">URL do libro</string>
     <string name="lbl_cover_back">Contraportada</string>
     <string name="lbl_personal_notes">Notas persoais</string>
     <string name="lbl_date_read">Data da lectura</string>

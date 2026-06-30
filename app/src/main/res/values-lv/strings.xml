@@ -464,8 +464,8 @@
     <string name="lbl_identifier">Identifikators</string>
     <string name="lbl_identifiers">Identifikatori</string>
     <string name="X_lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_book_uri">Grāmatas URL</string>
-    <string name="lbl_author_uri">Autora URL</string>
+    <string name="X_lbl_book_uri">Grāmatas URL</string>
+    <string name="X_lbl_author_uri">Autora URL</string>
     <string name="lbl_wikidata_claim_author_id">Wikidata “claim/P” kods autora id</string>
     <string name="lbl_print_run">Tirāža</string>
     <string name="lbl_search_isbn">ISBN meklēšana</string>

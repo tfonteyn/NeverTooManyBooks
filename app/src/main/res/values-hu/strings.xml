@@ -893,8 +893,8 @@
     <string name="X_info_site_authorization_successful">%1$s hitelesítés sikeres</string>
     <string name="X_info_tap_on_image_to_select">Érintse meg a nagyobb képet a kiválasztásához.</string>
     <string name="action_restore_default_identifiers">Alapértelmezett azonosítók visszaállítása</string>
-    <string name="lbl_book_uri">Könyv URL</string>
-    <string name="lbl_author_uri">Szerző URL</string>
+    <string name="X_lbl_book_uri">Könyv URL</string>
+    <string name="X_lbl_author_uri">Szerző URL</string>
     <string name="pv_reformat_titles_prefixes">a|A|az|Az|egy|Egy</string>
     <string name="lbl_date_born">Született</string>
     <string name="pt_fetch_author_info">Szerzői információk lekérése</string>
