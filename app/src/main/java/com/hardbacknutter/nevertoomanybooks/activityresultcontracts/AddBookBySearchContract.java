@@ -51,7 +51,7 @@ public class AddBookBySearchContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
         switch (input.by) {
-            case Isbn:
+            case ProductCode:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid);
@@ -101,7 +101,7 @@ public class AddBookBySearchContract
     }
 
     public enum By {
-        Isbn,
+        ProductCode,
         Scan,
         ScanBatch,
         Text,

@@ -607,10 +607,10 @@ public class EditBookViewModel
      */
     boolean bookExists() {
         if (book.isNew()) {
-            final String isbnStr = book.getRawProductCode();
-            if (!isbnStr.isEmpty()) {
+            final String codeStr = book.getRawProductCode();
+            if (!codeStr.isEmpty()) {
                 // all codes accepted, including invalid ones
-                return bookDao.bookExists(ISBN.parse(isbnStr));
+                return bookDao.bookExists(ISBN.parse(codeStr));
             }
         }
 

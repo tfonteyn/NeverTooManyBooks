@@ -1398,7 +1398,7 @@ public class BooksOnBookshelf
 
         } else if (menuItemId == R.id.fab1_search_isbn) {
             addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
-                    AddBookBySearchContract.By.Isbn,
+                    AddBookBySearchContract.By.ProductCode,
                     vm.getStyle()));
 
         } else if (menuItemId == R.id.fab2_search_text) {

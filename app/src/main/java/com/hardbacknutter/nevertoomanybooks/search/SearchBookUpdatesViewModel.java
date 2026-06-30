@@ -431,9 +431,9 @@ public class SearchBookUpdatesViewModel
                     searchCriteria.reset();
                     boolean canSearch = false;
 
-                    final String isbnStr = currentBook.getRawProductCode();
-                    if (!isbnStr.isEmpty()) {
-                        searchCriteria.setRawProductCode(isbnStr);
+                    final String codeStr = currentBook.getRawProductCode();
+                    if (!codeStr.isEmpty()) {
+                        searchCriteria.setRawProductCode(codeStr);
                         canSearch = true;
                     }
 
@@ -486,7 +486,7 @@ public class SearchBookUpdatesViewModel
                         if (search(searchCriteria) > 0) {
                             // Update the progress base message.
                             if (title.isEmpty()) {
-                                setBaseMessage(isbnStr);
+                                setBaseMessage(codeStr);
                             } else {
                                 setBaseMessage(title);
                             }
