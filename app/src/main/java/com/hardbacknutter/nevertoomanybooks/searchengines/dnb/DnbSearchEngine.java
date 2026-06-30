@@ -801,7 +801,7 @@ public class DnbSearchEngine
         final String[] split = td.text().split(",");
         final List<String> tagNames = Arrays
                 .stream(split)
-                .map(s -> SearchEngineUtils.cleanText(s))
+                .map(SearchEngineUtils::cleanText)
                 .filter(name -> !name.isBlank())
                 .collect(Collectors.toList());
         setTags(tagNames, book);

@@ -589,7 +589,7 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .map(s -> SearchEngineUtils.cleanName(s))
+                  .map(SearchEngineUtils::cleanName)
                   .filter(name -> !name.isBlank())
                   .forEach(name -> parseAuthor(name, type, book));
         } else {
@@ -639,7 +639,7 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .map(s -> SearchEngineUtils.cleanText(s))
+                  .map(SearchEngineUtils::cleanText)
                   .filter(name -> !name.isBlank())
                   .map(Series::from)
                   .forEach(series -> {
@@ -676,7 +676,7 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = td.text().split(",");
             Arrays.stream(names)
-                  .map(s -> SearchEngineUtils.cleanName(s))
+                  .map(SearchEngineUtils::cleanName)
                   .filter(name -> !name.isBlank())
                   .map(Publisher::from)
                   .forEach(book::add);
