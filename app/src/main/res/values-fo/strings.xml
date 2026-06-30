@@ -183,4 +183,11 @@
     <string name="book_format_periodical">Tíðarrit</string>
     <string name="book_color_support_color">Tvey-litur</string>
     <string name="info_sites_active">Virknar síður: %1$s</string>
+    <string name="warning_x_is_not_a_valid_isbn">”%1$s” er eitt ógilt ISBN-tal</string>
+    <string name="warning_x_is_not_a_valid_code">”%1$s” er ein ógilt bókstavarøð</string>
+    <string name="pt_edit_book_isbn_checks">Váttan av ISBN- og kotuinnslagi</string>
+    <string name="menu_code_validity_title">ISBN/Kotu-eftirlit</string>
+    <string name="option_code_validity_strict_isbn">Fast ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN og onnur</string>
+    <string name="option_code_validity_no_checks">Einki eftirlit</string>
 </resources>

@@ -28,17 +28,17 @@
             android:id="@+id/sm_title_isbn_validity"
             android:checkable="false"
             android:enabled="false"
-            android:title="@string/pt_edit_book_isbn_checks"
+            android:title="@string/menu_code_validity_title"
             />
         <item
             android:id="@id/MENU_PRODUCT_CODE_VALIDITY_NONE"
-            android:title="@string/none" />
+            android:title="@string/option_code_validity_no_checks" />
         <item
             android:id="@id/MENU_PRODUCT_CODE_VALIDITY_LOOSE"
-            android:title="@string/loose" />
+            android:title="@string/option_code_validity_valid_codes" />
         <item
             android:id="@id/MENU_PRODUCT_CODE_VALIDITY_STRICT"
-            android:title="@string/strict" />
+            android:title="@string/option_code_validity_strict_isbn" />
 
     </group>
 </menu>

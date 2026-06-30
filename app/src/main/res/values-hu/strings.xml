@@ -255,6 +255,7 @@
     <string name="warning_already_in_list">Már szerepel a listán!</string>
     <string name="warning_no_matching_book_found">Nem található egyező könyv</string>
     <string name="warning_no_extra_info_found">Nincs (további) információ</string>
+    <string name="warning_x_is_not_a_valid_isbn">„%1$s” érvénytelen ISBN</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s” érvénytelen kód</string>
     <string name="warning_image_not_found">A kép nem található.</string>
     <string name="warning_image_copy_failed">A kép nem másolható.</string>
@@ -478,7 +479,6 @@
     <string name="option_apply_to_all_related_books">Összes kapcsolódó könyv</string>
     <string name="pt_scan_mode">Beolvasás mód</string>
     <string name="option_barcode_scan_mode_continuous">Folyamatos beolvasás</string>
-    <string name="option_isbn_strict">Szigorú ISBN</string>
     <string name="option_isfdb_menu_populate_toc">Címek feltöltése (csak ISFDB)</string>
     <string name="pt_search_result_order">A keresések a legutóbbi vagy az első megtalált könyvet jelenítik meg.</string>
     <string name="pe_search_result_order_most_recent">Legutóbbi megtalált könyv</string>
@@ -708,7 +708,7 @@
     <string name="pe_bob_cover_long_click_ignore">Gomb megérintésével.</string>
     <string name="lbl_about_contact">Kapcsolat:</string>
     <string name="lbl_select_website">Webhely kiválasztása:</string>
-    <string name="loose">Laza</string>
+    <string name="X_loose">Laza</string>
     <string name="lbl_database">Adatbázis</string>
     <string name="unknown_title">[Ismeretlen cím]</string>
     <string name="X_tip_update_fields_from_internet">A külső hivatkozások csak tényleges kapcsolat mellett kerülnek feldolgozásra. Ennek eredményeként a „Megtekintés itt…” menü csak azt mutatja, ami elérhető.</string>
@@ -722,7 +722,6 @@
     <string name="pt_fetch_author_info_using_site_x">Szerzői információk lekérése %1$s-ből</string>
     <string name="pt_bedetheque_search_resolve_formats">A Bedetheque (francia) formátum megőrzése</string>
     <string name="pt_main_author_type">Elsődleges szerzőtípus</string>
-    <string name="pt_edit_book_isbn_checks">ISBN érvényesség ellenőrzés</string>
     <string name="pt_bob_list_rebuild_state">Könyvlista indulási állapot</string>
     <string name="pe_bob_list_rebuild_state_preferred">Preferált kibontás használata</string>
     <string name="pe_bob_list_rebuild_state_preserve">Jelenlegi állapot megőrzése</string>
@@ -858,7 +857,7 @@
     <string name="lbl_tab_alternative_editions_long">Alternatív kiadások</string>
     <string name="lbl_tab_alternative_editions">Alt. kiad.</string>
     <string name="enabled">Bekapcsolva</string>
-    <string name="strict">Szigorú</string>
+    <string name="X_strict">Szigorú</string>
     <string name="list_and">%1$s és %2$s</string>
     <string name="lbl_local_search">Helyi keresés</string>
     <string name="lbl_keywords">Kulcsszavak</string>
@@ -928,4 +927,9 @@
     <string name="warning_import_csv_calibre">A Calibre régebbi verzióiból származó „comments” oszlop érvénytelen CSV-fájlokat eredményezhet. Ha hibába ütközik, a Calibre frissítése a 9.10-es vagy újabb verzióra az exportálás előtt általában megoldja a problémát. Alternatív megoldásként eltávolíthatja a „comments” oszlopot a fájlból, és próbálkozhat újra az importálással.</string>
     <string name="book_format_newspaper">Újság</string>
     <string name="book_format_periodical">Folyóirat</string>
+    <string name="pt_edit_book_isbn_checks">ISBN és kód beviteli ellenőrzése</string>
+    <string name="menu_code_validity_title">ISBN/Kód ellenőrzése</string>
+    <string name="option_code_validity_strict_isbn">Szigorú ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN és egyéb</string>
+    <string name="option_code_validity_no_checks">Nincs ellenőrzés</string>
 </resources>

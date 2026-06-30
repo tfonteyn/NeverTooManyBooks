@@ -374,7 +374,6 @@
     <string name="option_storage_edit_settings">Editar configurações</string>
     <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
-    <string name="option_isbn_strict">ISBN estrito</string>
     <string name="confirm_leave_code_search">Existem pesquisas em curso e/ou resultados não guardados.</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
     <string name="confirm_delete_style">Excluir o estilo “%1$s”?</string>
@@ -401,7 +400,8 @@
     <string name="lbl_author_role_editor">Editor</string>
     <string name="option_image_rotate">Rodar…</string>
     <string name="warning_no_extra_info_found">Não foram encontradas informações (adicionais)</string>
-    <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
+    <string name="warning_x_is_not_a_valid_isbn">«%1$s»: ISBN inválido</string>
+    <string name="warning_x_is_not_a_valid_code">«%1$s»: Código inválido</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se um dia for especificado, então o mês e o ano também devem ser especificados.</string>
     <string name="progress_msg_optimizing">A optimizar…</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d livros, em %2$d entradas</string>
@@ -523,7 +523,7 @@
     <string name="ps_manage_fields">Os campos selecionados são visíveis nos ecrãs de adicionar/editar livros. Os campos não selecionados ficam ocultos.</string>
     <string name="pt_search_prefer_isbn10">Use o ISBN-10 sempre que possível</string>
     <string name="pt_main_author_type">Tipo de autor principal</string>
-    <string name="loose">Solto</string>
+    <string name="X_loose">Solto</string>
     <string name="pe_bob_list_rebuild_state_preferred">Use a expansão preferida</string>
     <string name="pe_bob_list_rebuild_state_expanded">Começar sempre expandido</string>
     <string name="pe_bob_row_menu_button_when_space">Mostre um botão se houver espaço, caso contrário, use o clique longo.</string>
@@ -719,7 +719,7 @@
     <string name="info_bulk_set_location">Selecione a localização que pretende atribuir a todos os livros listados no nó selecionado.</string>
     <string name="menu_update_fields">Atualizar campos</string>
     <string name="option_field_usage_overwrite">Substitui os dados existentes</string>
-    <string name="strict">Estrito</string>
+    <string name="X_strict">Estrito</string>
     <string name="list_and">%1$s e %2$s</string>
     <string name="btn_this_book">Apenas este livro</string>
     <string name="lbl_local_search">Pesquisa Local</string>
@@ -782,7 +782,6 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Apenas importar livros modificados desde</string>
     <string name="ps_show_titles_reordered_off">Apresentar como indicado,\npor exemplo, “O Senhor dos Anéis“</string>
     <string name="pv_reformat_titles_prefixes">o|O|a|A|os|Os|as|As|um|Um|uma|Uma|uns|Uns|umas|Umas</string>
-    <string name="pt_edit_book_isbn_checks">Verificações de validade do ISBN</string>
     <string name="pt_thumbnails_rotate_auto">Rodar imagens</string>
     <string name="pe_camera_back">Câmera traseira</string>
     <string name="option_purge_bedetheque_authors_cache">Limpar cache de autores do Bedetheque</string>
@@ -938,4 +937,9 @@
     <string name="warning_import_csv_calibre">A coluna “comments” de versões mais antigas do Calibre pode originar ficheiros CSV inválidos. Se deparar com um erro, atualizar o Calibre para a versão 9.10 ou posterior antes de exportar costuma resolver o problema. Alternativamente, pode remover a coluna “comments” do seu ficheiro e tentar a importação novamente.</string>
     <string name="book_format_newspaper">Jornal</string>
     <string name="book_format_periodical">Revista</string>
+    <string name="pt_edit_book_isbn_checks">Validação de introdução de ISBN e códigos</string>
+    <string name="menu_code_validity_title">Verificação de ISBN/código</string>
+    <string name="option_code_validity_strict_isbn">ISBN estrito</string>
+    <string name="option_code_validity_valid_codes">ISBN e outros</string>
+    <string name="option_code_validity_no_checks">Sem validação</string>
 </resources>

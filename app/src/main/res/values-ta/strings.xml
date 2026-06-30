@@ -93,7 +93,8 @@
     <string name="list_semicolon">"; "</string>
     <string name="warning_no_matching_book_found">பொருந்தக்கூடிய நூல் எதுவும் கிடைக்கவில்லை</string>
     <string name="warning_no_extra_info_found">(கூடுதல்) தகவல் எதுவும் கிடைக்கவில்லை.</string>
-    <string name="warning_x_is_not_a_valid_code">“%1$s” சரியான குறியீடு அல்ல</string>
+    <string name="warning_x_is_not_a_valid_isbn">“%1$s” என்பது தவறான ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s” என்பது தவறான குறியீடு</string>
     <string name="warning_image_not_found">படத்தைக் கண்டுபிடிக்க முடியவில்லை.</string>
     <string name="warning_image_copy_failed">படத்தை நகலெடுக்க முடியவில்லை.</string>
     <string name="warning_image_invalid">தவறான அல்லது காணவில்லை படம்.</string>
@@ -422,7 +423,6 @@
     <string name="pt_scan_mode">ச்கேன் பயன்முறை</string>
     <string name="option_barcode_scan_mode_manual">கையேடு</string>
     <string name="option_barcode_scan_mode_continuous">தொடர்ந்து ச்கேன் செய்யுங்கள்</string>
-    <string name="option_isbn_strict">கண்டிப்பான ஐ.எச்.பி.என்</string>
     <string name="option_isfdb_menu_populate_toc">பிரபலமான தலைப்புகள் (ISFDB மட்டும்)</string>
     <string name="pt_search_result_order">தேடல்கள் மிகச் அண்மைக் கால புத்தகத்தை அல்லது முதல் ஒன்றைக் கண்டன.</string>
     <string name="pe_search_result_order_most_recent">மிக அண்மைக் கால நூல் காணப்பட்டது</string>
@@ -676,7 +676,6 @@
     <string name="pt_fetch_author_info_using_site_x">%1$s இலிருந்து ஆசிரியர் தகவலைப் பெறுக</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (பிரெஞ்சு) வடிவப் பெயரிடலைப் பாதுகாக்கவும்.</string>
     <string name="pt_main_author_type">முதன்மை ஆசிரியர் வகை</string>
-    <string name="pt_edit_book_isbn_checks">ஐ.எச்.பி.என் செல்லுபடியாகும் காசோலைகள்</string>
     <string name="pt_bob_list_rebuild_state">புத்தக பட்டியல் தொடக்க நிலை</string>
     <string name="pe_bob_list_rebuild_state_preferred">விருப்பமான விரிவாக்கத்தைப் பயன்படுத்தவும்</string>
     <string name="pe_bob_list_rebuild_state_preserve">தற்போதைய நிலையைப் பாதுகாக்கவும்</string>
@@ -835,8 +834,8 @@
     <string name="enabled">இயக்கப்பட்டது</string>
     <string name="disabled">முடக்கப்பட்டது</string>
     <string name="none">எதுவுமில்லை</string>
-    <string name="strict">கண்டிப்பான</string>
-    <string name="loose">தளர்வான</string>
+    <string name="X_strict">கண்டிப்பான</string>
+    <string name="X_loose">தளர்வான</string>
     <string name="list_and">%1$s மற்றும் %2$s</string>
     <string name="lbl_local_search">உள்ளக தேடல்</string>
     <string name="lbl_local_search_long">மேம்பட்ட உள்ளக தேடல்</string>
@@ -927,4 +926,9 @@
     <string name="warning_import_csv_calibre">Calibre பழைய பதிப்புகளிலிருந்து வரும் “comments” நெடுவரிசை செல்லாத CSV கோப்புகளை உருவாக்கலாம். பிழை ஏற்பட்டால், ஏற்றுமதி செய்வதற்கு முன் Calibre-ஐ 9.10 அல்லது அதற்குப் பிந்தைய பதிப்பிற்குப் புதுப்பிப்பது வழக்கமாக அதைச் சரிசெய்யும். மாற்றாக, உங்கள் கோப்பிலிருந்து “comments” நெடுவரிசையை அகற்றிவிட்டு மீண்டும் இறக்குமதி செய்ய முயலலாம்.</string>
     <string name="book_format_newspaper">நாளிதழ்</string>
     <string name="book_format_periodical">இதழ்</string>
+    <string name="pt_edit_book_isbn_checks">ISBN மற்றும் குறியீட்டு உள்ளீட்டு சரிபார்ப்பு</string>
+    <string name="menu_code_validity_title">ISBN/குறியீடு சரிபார்ப்பு</string>
+    <string name="option_code_validity_strict_isbn">கண்டிப்பான ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN மற்றும் பிற</string>
+    <string name="option_code_validity_no_checks">சரிபார்ப்பு இல்லை</string>
 </resources>

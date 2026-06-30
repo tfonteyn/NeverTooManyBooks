@@ -26,8 +26,8 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 
 @SuppressWarnings("WeakerAccess")
 public class IsbnQueueViewModel
@@ -49,7 +49,7 @@ public class IsbnQueueViewModel
         private final boolean strictIsbn;
 
         IsbnFactory() {
-            strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
+            strictIsbn = ProductCodeValidity.getPreferredLevel() == ProductCodeValidity.Isbn;
         }
 
         @Override

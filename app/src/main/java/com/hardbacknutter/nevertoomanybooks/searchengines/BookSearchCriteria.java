@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 
 /**
@@ -49,8 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
  */
 public class BookSearchCriteria {
 
-    // FIXME: combine this with EditBookViewModel#PK_EDIT_BOOK_PRODUCT_CODE_CHECKS
-    private static final String PK_SEARCH_STRICT_ISBN = "search.byIsbn.strict";
     /**
      * Site external id for search.
      *
@@ -98,31 +97,7 @@ public class BookSearchCriteria {
         for (int cIdx = 0; cIdx < fetchCovers.length; cIdx++) {
             fetchCovers[cIdx] = serviceLocator.isFieldEnabled(DBKey.COVER[cIdx]);
         }
-        strictIsbn = isStrictIsbnGlobal();
-    }
-
-    /**
-     * Get the global user-settings strictIsbn flag.
-     *
-     * @return {@code true} for strict ISBN checking,
-     *         {@code false} for allowing other valid generic codes.
-     */
-    public static boolean isStrictIsbnGlobal() {
-        return ServiceLocator.getInstance().getSharedPreferences()
-                             .getBoolean(PK_SEARCH_STRICT_ISBN, true);
-    }
-
-    /**
-     * Set the global user-settings strictIsbn flag.
-     *
-     * @param strictIsbn {@code true} for strict ISBN checking,
-     *                   {@code false} for allowing other valid generic codes.
-     */
-    public static void setStrictIsbnDefault(final boolean strictIsbn) {
-        ServiceLocator.getInstance().getSharedPreferences()
-                      .edit()
-                      .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
-                      .apply();
+        strictIsbn = ProductCodeValidity.getPreferredLevel() == ProductCodeValidity.Isbn;
     }
 
     @Nullable
@@ -368,7 +343,7 @@ public class BookSearchCriteria {
         seriesNr = "";
         publisher = "";
         productCodeStr = "";
-        strictIsbn = isStrictIsbnGlobal();
+        strictIsbn = ProductCodeValidity.getPreferredLevel() == ProductCodeValidity.Isbn;
         sids.clear();
     }
 
@@ -432,6 +407,7 @@ public class BookSearchCriteria {
                + ", productCodeStr=`" + productCodeStr + '`'
                + ", productCode=" + productCode
                + ", strictIsbn=" + strictIsbn
+               + ", scannedBarcode=" + scannedBarcode
                + ", sidSearchText=`" + sids + '`'
                + ", fetchCovers=" + Arrays.toString(fetchCovers)
                + '}';

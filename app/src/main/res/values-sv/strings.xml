@@ -552,7 +552,7 @@
     <string name="submenu_title">"   ➥ %1$s"</string>
     <string name="list_element">• %s</string>
     <string name="list_semicolon">"; "</string>
-    <string name="loose">Lös</string>
+    <string name="X_loose">Lös</string>
     <string name="X_menu_search_updates">Sök efter uppdateringar</string>
     <string name="menu_update_books">Uppdatera böcker</string>
     <string name="menu_update_fields">Uppdatera fält</string>
@@ -625,7 +625,6 @@
     <string name="option_info_import_books_option_new_only">Importera endast nya böcker. Uppdateringar på befintliga böcker ignoreras.</string>
     <string name="option_info_lbl_archive_is_export_only">Endast export, import stöds ej.</string>
     <string name="option_info_lbl_archive_type_backup">Full säkerhetskopiering / återställning</string>
-    <string name="option_isbn_strict">Strikt ISBN</string>
     <string name="option_isfdb_menu_populate_toc">Fyll i titlar (endast ISFDB)</string>
     <string name="option_lend_out_book">Låna ut till…</string>
     <string name="option_lend_return_book">Bok återlämnad</string>
@@ -758,7 +757,6 @@
     <string name="pt_capitalize_title">Titelversalisering</string>
     <string name="pt_collect_series_info_from_toc">Hämta serier från innehållsförteckning</string>
     <string name="pt_cover_undo_enabled">Ångra ändringar på bokomslag</string>
-    <string name="pt_edit_book_isbn_checks">ISBN-validitetskontroller</string>
     <string name="pt_enable_extra_logging">Aktivera extra loggning</string>
     <string name="pt_fast_scroller_overlay">Textbubbla vid scrollning.</string>
     <string name="pt_fetch_author_info">Hämta författarinformation</string>
@@ -814,7 +812,7 @@
     <string name="size_small">Liten</string>
     <string name="size_x_large">Mycket stor</string>
     <string name="size_x_small">Mycket liten</string>
-    <string name="strict">Strikt</string>
+    <string name="X_strict">Strikt</string>
     <string name="style_builtin_author_series">Författare, Serie</string>
     <string name="style_builtin_author_year">Författare, År</string>
     <string name="style_type_builtin">Inbyggd</string>
@@ -891,7 +889,8 @@
     <string name="warning_select_at_least_1_group">Välj minst en grupp.</string>
     <string name="warning_toc_confirm">Bekräfta att dessa titlar är (för det mesta) korrekta.</string>
     <string name="warning_x_already_exists">%1$s finns redan.</string>
-    <string name="warning_x_is_not_a_valid_code">”%1$s” är inte en giltig kod</string>
+    <string name="warning_x_is_not_a_valid_isbn">”%1$s” är ett ogiltigt ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">”%1$s” är en ogiltig kod</string>
     <string name="whichEditApplication">Redigera med</string>
     <string name="whichSendApplication">Dela</string>
     <string name="lbl_calibre_content_server">Calibre-innehållsservern</string>
@@ -930,4 +929,9 @@
     <string name="warning_import_csv_calibre">Kolumnen ”comments” från äldre versioner av Calibre kan orsaka ogiltiga CSV-filer. Om du stöter på ett fel löser det sig oftast genom att uppdatera Calibre till version 9.10 eller senare innan du exporterar. Alternativt kan du ta bort kolumnen ”comments” från din fil och försöka importera igen.</string>
     <string name="book_format_newspaper">Tidning</string>
     <string name="book_format_periodical">Tidskrift</string>
+    <string name="pt_edit_book_isbn_checks">Validering av ISBN- och kodinmatning</string>
+    <string name="menu_code_validity_title">ISBN/kod-kontroll</string>
+    <string name="option_code_validity_strict_isbn">Strikt ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN och andra</string>
+    <string name="option_code_validity_no_checks">Ingen validering</string>
 </resources>

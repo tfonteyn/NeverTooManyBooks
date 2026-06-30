@@ -117,6 +117,7 @@ public final class PreferenceKeyMigration {
               .remove("isfdb.search.uses.publisher")
               .remove("librarything.dev_key")
               .remove("scanner.preferred")
+              .remove("search.byIsbn.strict")
               .remove("search.form.advanced")
               .remove("search.site.goodreads.covers.enabled")
               .remove("search.site.goodreads.data.enabled")

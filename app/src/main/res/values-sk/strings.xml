@@ -142,7 +142,8 @@
     <string name="warning_missing_title_or_author">Musí byť zadaný názov a/alebo autor.</string>
     <string name="warning_requires_isbn">Táto akcia vyžaduje platné ISBN.</string>
     <string name="warning_no_extra_info_found">Nenašli sa žiadne (dodatočné) informácie</string>
-    <string name="warning_x_is_not_a_valid_code">„%1$s“ nie je platný kód</string>
+    <string name="warning_x_is_not_a_valid_isbn">„%1$s“ – neplatné ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">„%1$s“ – neplatný kód</string>
     <string name="warning_image_not_found">Obrázok sa nenašiel.</string>
     <string name="warning_image_copy_failed">Obrázok sa nepodarilo skopírovať.</string>
     <string name="warning_image_invalid">Neplatný alebo chýbajúci obrázok.</string>
@@ -287,7 +288,6 @@
     <string name="pt_scan_mode">Režim skenovania</string>
     <string name="option_barcode_scan_mode_manual">Manuálny</string>
     <string name="option_barcode_scan_mode_continuous">Skenovať nepretržite</string>
-    <string name="option_isbn_strict">Prísne ISBN</string>
     <string name="option_isfdb_menu_populate_toc">Vyplniť názvy (iba ISFDB)</string>
     <string name="pt_search_result_order">Vyhľadávania vracajú najnovšiu knihu alebo prvú nájdenú.</string>
     <string name="pe_search_result_order_most_recent">Nájdená najnovšia kniha</string>
@@ -491,7 +491,6 @@
     <string name="pt_fetch_author_info_using_site_x">Získanie informácií o autorovi z %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovať názvoslovie (francúzskeho) formátu Bedetheque</string>
     <string name="pt_main_author_type">Typ hlavného autora</string>
-    <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
     <string name="pe_bob_list_rebuild_state_preferred">Použiť preferované rozbalenie</string>
     <string name="pe_bob_list_rebuild_state_expanded">Vždy spustiť rozbalené</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Vždy spustiť zbalené</string>
@@ -596,7 +595,7 @@
     <string name="password">Heslo</string>
     <string name="enabled">Zapnuté</string>
     <string name="disabled">Vypnuté</string>
-    <string name="loose">Voľné</string>
+    <string name="X_loose">Voľné</string>
     <string name="lbl_local_search">Lokálne vyhľadávanie</string>
     <string name="lbl_local_search_long">Rozšírené lokálne vyhľadávanie</string>
     <string name="lbl_keywords">Kľúčové slová</string>
@@ -903,7 +902,7 @@
     <string name="lbl_tab_alternative_editions">Alt. vyd.</string>
     <string name="lbl_tab_alternative_editions_long">Alternatívne vydania</string>
     <string name="none">Nič</string>
-    <string name="strict">Prísne</string>
+    <string name="X_strict">Prísne</string>
     <string name="X_error_authentication_failed">Autentifikácia zlyhala</string>
     <string name="unknown_author">[Neznámý autor]</string>
     <string name="site_description_czech">Čeština a ďalšie</string>
@@ -947,4 +946,9 @@
     <string name="warning_import_csv_calibre">Stĺpec „comments“ zo starších verzií programu Calibre môže spôsobiť neplatnosť súborov CSV. Ak narazíte na chybu, zvyčajne pomôže aktualizácia programu Calibre na verziu 9.10 alebo novšiu pred exportom. Prípadne môžete stĺpec „comments“ zo svojho súboru odstrániť a skúsiť import znova.</string>
     <string name="book_format_newspaper">Noviny</string>
     <string name="book_format_periodical">Časopis</string>
+    <string name="pt_edit_book_isbn_checks">Kontrola zadávania ISBN a kódov</string>
+    <string name="menu_code_validity_title">Kontrola ISBN/kódov</string>
+    <string name="option_code_validity_strict_isbn">Prísne ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN a ostatné</string>
+    <string name="option_code_validity_no_checks">Bez kontroly</string>
 </resources>

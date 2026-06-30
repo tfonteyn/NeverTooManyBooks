@@ -388,8 +388,10 @@
     <string name="warning_no_matching_book_found">No matching book found</string>
     <!-- result of a search. -->
     <string name="warning_no_extra_info_found">No (additional) info found</string>
-    <!-- the ISBN (or similar codes) entered is not valid -->
-    <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
+    <!-- The user entered an ISBN which is not valid -->
+    <string name="warning_x_is_not_a_valid_isbn">“%1$s” is an invalid ISBN</string>
+    <!-- The user entered a code (ISBN, ISSN, other) which is not valid -->
+    <string name="warning_x_is_not_a_valid_code">“%1$s” is an invalid code</string>
     <!-- When searching for an image on an external website, none were found. -->
     <string name="warning_image_not_found">Image could not be found.</string>
     <!-- The user attempted to edit/copy an image, but the device or external editor refused for an unknown reason. -->
@@ -1042,8 +1044,6 @@
     <!-- Setting option; whether barcode scans will be one at a time, or one after the other. -->
     <string name="option_barcode_scan_mode_continuous">Scan continuously</string>
 
-    <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
-    <string name="option_isbn_strict">Strict ISBN</string>
     <!-- ISFDB specific - used in the "book edit / toc" menu -->
     <string name="option_isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
 
@@ -1888,7 +1888,7 @@
     <!-- MultiSelectListPreference title -->
     <string name="pt_main_author_type">Primary author type</string>
     <!-- ListPreference title: option title -->
-    <string name="pt_edit_book_isbn_checks">ISBN validity checks</string>
+    <string name="pt_edit_book_isbn_checks">ISBN and code input validation</string>
     <!-- ListPreference title: Booklist startup-state preferences -->
     <string name="pt_bob_list_rebuild_state">Booklist startup state</string>
     <!-- ListPreference value: Booklist tree-view expansion -->
@@ -2391,10 +2391,17 @@
     <string name="disabled">Disabled</string>
     <!-- [VERIFIED] e.g. indicates nothing was selected; nothing was found; .... -->
     <string name="none">None</string>
+
+    <string name="menu_code_validity_title">ISBN/Code checking</string>
+    <!-- Whether to enforce strict ISBN numbers when searching etc...  -->
+    <string name="option_code_validity_strict_isbn">Strict ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN and others</string>
+    <string name="option_code_validity_no_checks">No validation</string>
+
     <!-- Certain checks are strictly enforced. Opposite of 'Loose' -->
-    <string name="strict">Strict</string>
+    <string name="X_strict">Strict</string>
     <!-- Certain checks are only loosely enforced. Opposite of 'Strict' -->
-    <string name="loose">Loose</string>
+    <string name="X_loose">Loose</string>
     <!-- endregion -->
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
     <string name="lbl_add_book_by_external_id"

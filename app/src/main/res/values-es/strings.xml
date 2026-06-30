@@ -472,7 +472,6 @@
     <string name="pt_storage_volume">Volumen de almacenamiento</string>
     <string name="info_read_contacts_permission">El acceso a tus contactos es opcional, pero te permite seleccionar fácilmente a quién prestas un libro.</string>
     <string name="info_story_in_multiple_books">«%1$s» está presente en múltiples libros:\n\n%2$s</string>
-    <string name="option_isbn_strict">ISBN estricto</string>
     <string name="lbl_style">Estilo</string>
     <string name="lbl_styles">Estilos</string>
     <string name="lbl_styles_long">Estilo estantería</string>
@@ -566,7 +565,7 @@
     <string name="pe_bob_list_rebuild_state_expanded">Expandir todo</string>
     <string name="pe_bob_list_rebuild_state_preferred">Usar estado preferido</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preservar el estado actual</string>
-    <string name="loose">Libre</string>
+    <string name="X_loose">Libre</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensionar cada vez que se necesitan (se utiliza menos almacenamiento, el desplazamiento será más lento)</string>
     <string name="pe_thumbnails_cache_resized_stored">Miniaturas redimensionadas en caché (usa más almacenamiento, desplazamiento más rápido)</string>
     <string name="pe_ui_theme_dark">Oscuro</string>
@@ -623,7 +622,6 @@
     <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
     <string name="pt_bob_list_state_expansion_level">Nivel de expansión predeterminado</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de la tabla de contenido</string>
-    <string name="pt_edit_book_isbn_checks">Comprobaciones de validez de ISBN</string>
     <string name="pt_bob_row_menu">Menú contextual de fila</string>
     <string name="pe_bob_row_menu_button">Mostrar siempre un botón.</string>
     <string name="pe_bob_row_menu_button_when_space">Muestre un botón si hay espacio, de lo contrario, haga clic largo.</string>
@@ -670,7 +668,7 @@
     <string name="size_x_large">X-Grande</string>
     <string name="size_x_small">X-Pequeño</string>
     <string name="pe_fast_scroller_overlay_static">Estático</string>
-    <string name="strict">Estricto</string>
+    <string name="X_strict">Estricto</string>
     <string name="style_builtin_author_series">Primero Autor después Serie</string>
     <string name="style_builtin_author_year">Autor y Año</string>
     <string name="lbl_date_read">Fecha de lectura</string>
@@ -761,7 +759,8 @@
     <string name="warning_toc_confirm">Por favor, confirme que los títulos de la antología son (en su mayoría) correctos.</string>
     <string name="warning_x_already_exists">%1$s ya existe.</string>
     <string name="warning_no_extra_info_found">No se ha encontrado información (adicional)</string>
-    <string name="warning_x_is_not_a_valid_code">«%1$s» no es un código válido</string>
+    <string name="warning_x_is_not_a_valid_isbn">«%1$s»: ISBN non válido</string>
+    <string name="warning_x_is_not_a_valid_code">«%1$s»: Código non válido</string>
     <string name="whichEditApplication">Editar con</string>
     <string name="whichSendApplication">Compartir</string>
     <string name="whichViewApplication">Abrir con</string>
@@ -938,4 +937,9 @@
     <string name="warning_import_csv_calibre">La columna «comments» de las versiones antiguas de Calibre puede generar archivos CSV no válidos. Si experimenta un error, actualizar Calibre a la versión 9.10 o posterior antes de exportar suele solucionarlo. Como alternativa, puede eliminar la columna «comments» de su archivo e intentar la importación de nuevo.</string>
     <string name="book_format_newspaper">Periódico</string>
     <string name="book_format_periodical">Revista</string>
+    <string name="pt_edit_book_isbn_checks">Validación de entrada de ISBN y códigos</string>
+    <string name="menu_code_validity_title">Comprobación de ISBN/código</string>
+    <string name="option_code_validity_strict_isbn">ISBN estricto</string>
+    <string name="option_code_validity_valid_codes">ISBN y otros</string>
+    <string name="option_code_validity_no_checks">Sin validación</string>
 </resources>

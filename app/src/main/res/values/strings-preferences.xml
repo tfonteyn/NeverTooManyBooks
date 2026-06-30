@@ -59,9 +59,9 @@
     <!-- ListPreference - the level of validity checking of ISBN numbers while editing
          (by the user) of a book. -->
     <string-array name="pe_edit_book_isbn_checks">
-        <item>@string/none</item>
-        <item>@string/loose</item>
-        <item>@string/strict</item>
+        <item>@string/option_code_validity_no_checks</item>
+        <item>@string/option_code_validity_valid_codes</item>
+        <item>@string/option_code_validity_strict_isbn</item>
     </string-array>
     <string-array name="pv_edit_book_isbn_checks">
         <item>0</item>

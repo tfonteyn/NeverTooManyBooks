@@ -507,7 +507,7 @@
     <string name="list_semicolon">"； "</string>
     <string name="submenu_title">"   ➥ %1$s"</string>
     <string name="list_element">• %s</string>
-    <string name="loose">宽松</string>
+    <string name="X_loose">宽松</string>
     <string name="menu_update_books">更新图书</string>
     <string name="menu_update_fields">更新字段</string>
     <string name="name_colon_value">%1$s：%2$s</string>
@@ -579,7 +579,6 @@
     <string name="option_info_import_books_option_new_only">仅导入新图书。将忽略已有图书更新。</string>
     <string name="option_info_lbl_archive_is_export_only">仅用于数据导出；不支持导入。</string>
     <string name="option_info_lbl_archive_type_backup">完整备份/恢复压缩文件</string>
-    <string name="option_isbn_strict">严格 ISBN 匹配</string>
     <string name="option_isfdb_menu_populate_toc">填入标题（仅 ISFDB）</string>
     <string name="option_lend_out_book">借出给…</string>
     <string name="option_lend_return_book">借书已还</string>
@@ -711,7 +710,6 @@
     <string name="pt_capitalize_title">书名大写</string>
     <string name="pt_collect_series_info_from_toc">从目录收集系列信息</string>
     <string name="pt_cover_undo_enabled">撤销图书封面操作</string>
-    <string name="pt_edit_book_isbn_checks">ISBN 有效性检查</string>
     <string name="pt_enable_extra_logging">启用附加日志</string>
     <string name="pt_fast_scroller_overlay">滚动时的文本气泡。</string>
     <string name="pt_field_visibility">字段可见性</string>
@@ -764,7 +762,7 @@
     <string name="size_small">较小</string>
     <string name="size_x_large">极大</string>
     <string name="size_x_small">极小</string>
-    <string name="strict">严格</string>
+    <string name="X_strict">严格</string>
     <string name="style_builtin_author_series">作者，系列</string>
     <string name="style_builtin_author_year">作者，年</string>
     <string name="style_type_builtin">自带</string>
@@ -843,7 +841,8 @@
     <string name="warning_toc_confirm">请确认这些标题（大部分）是正确的。</string>
     <string name="warning_x_already_exists">%1$s已存在。</string>
     <string name="warning_no_extra_info_found">未找到（其他）信息</string>
-    <string name="warning_x_is_not_a_valid_code">“%1$s”不是有效代码</string>
+    <string name="warning_x_is_not_a_valid_isbn">“%1$s”不是有效的 ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s”不是有效的代码</string>
     <string name="whichEditApplication">编辑方式</string>
     <string name="whichSendApplication">分享</string>
     <string name="whichViewApplication">打开方式</string>
@@ -916,4 +915,9 @@
     <string name="warning_import_csv_calibre">来自旧版本 Calibre 的“comments”（评论）列可能会导致 CSV 文件无效。如果遇到错误，通常在导出前将 Calibre 更新到 9.10 或更高版本即可解决。或者，您也可以删除文件中的“comments”列，然后重试导入。</string>
     <string name="book_format_newspaper">报纸</string>
     <string name="book_format_periodical">定期刊物</string>
+    <string name="pt_edit_book_isbn_checks">ISBN 和代码输入验证</string>
+    <string name="menu_code_validity_title">ISBN/代码檢查</string>
+    <string name="option_code_validity_strict_isbn">严格 ISBN 匹配</string>
+    <string name="option_code_validity_valid_codes">ISBN 及其他</string>
+    <string name="option_code_validity_no_checks">不检查</string>
 </resources>

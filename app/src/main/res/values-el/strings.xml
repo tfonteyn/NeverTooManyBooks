@@ -466,7 +466,6 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_storage_volume">Χώρος αποθήκευσης</string>
     <string name="info_read_contacts_permission">Η πρόσβαση στις επαφές είναι προαιρετική, αλλά σας επιτρέπει να επιλέγετε εύκολα σε ποιον δανείζετε ένα βιβλίο.</string>
     <string name="info_story_in_multiple_books">Το «%1$s» υπάρχει σε πολλά βιβλία:\n\n%2$s</string>
-    <string name="option_isbn_strict">Έγκυρο ISBN</string>
     <string name="lbl_style">Στυλ</string>
     <string name="lbl_styles">Στυλ</string>
     <string name="lbl_styles_long">Στυλ βιβλιοθήκης</string>
@@ -561,7 +560,7 @@ A question mark is written as the character semicolon: ';'
     <string name="pe_bob_list_rebuild_state_expanded">Έναρξη σε κατάσταση ανάπτυξης</string>
     <string name="pe_bob_list_rebuild_state_preferred">Χρήση προτιμώμενης ανάπτυξης</string>
     <string name="pe_bob_list_rebuild_state_preserve">Διατήρηση της τρέχουσας κατάστασης</string>
-    <string name="loose">Χαλαρό</string>
+    <string name="X_loose">Χαλαρό</string>
     <string name="pe_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους εικόνων όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργή κύλιση)</string>
     <string name="pe_thumbnails_cache_resized_stored">Αποθήκευση αλλαγμένων σε μέγεθος εικόνων (πιο γρήγορη κύλιση, μεγαλύτερη χρήση αποθηκευτικού χώρου)</string>
     <string name="pe_ui_theme_dark">Σκούρο θέμα</string>
@@ -620,7 +619,6 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_bob_list_rebuild_state">Αρχική κατάσταση λίστας βιβλίων</string>
     <string name="pt_bob_list_state_expansion_level">Προεπιλεγμένο επίπεδο ανάπτυξης</string>
     <string name="pt_collect_series_info_from_toc">Συλλογή πληροφοριών σειράς από τον πίνακα περιεχομένων</string>
-    <string name="pt_edit_book_isbn_checks">Έλεγχοι εγκυρότητας ISBN</string>
     <string name="pt_bob_row_menu">Μενού περιβάλλοντος γραμμής</string>
     <string name="pe_bob_row_menu_button">Να εμφανίζεται πάντα ένα κουμπί.</string>
     <string name="pe_bob_row_menu_button_when_space">Εμφάνιση κουμπιού αν υπάρχει χώρος, αλλιώς χρήση παρατεταμένου πατήματος.</string>
@@ -667,7 +665,7 @@ A question mark is written as the character semicolon: ';'
     <string name="size_x_large">Πολύ μεγάλο</string>
     <string name="size_x_small">Πολύ μικρό</string>
     <string name="pe_fast_scroller_overlay_static">Στατικό</string>
-    <string name="strict">Αυστηρό</string>
+    <string name="X_strict">Αυστηρό</string>
     <string name="style_builtin_author_series">Συγγραφέας, Σειρά</string>
     <string name="style_builtin_author_year">Συγγραφέας, Χρονιά</string>
     <string name="lbl_date_read">Ημερομηνία ανάγνωσης</string>
@@ -758,7 +756,8 @@ A question mark is written as the character semicolon: ';'
     <string name="warning_toc_confirm">Παρακαλώ επιβεβαιώστε ότι οι τίτλοι περιεχομένων είναι κατά βάση σωστοί.</string>
     <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη.</string>
     <string name="warning_no_extra_info_found">Δεν βρέθηκαν (πρόσθετες) πληροφορίες</string>
-    <string name="warning_x_is_not_a_valid_code">Το «%1$s» δεν είναι έγκυρος κωδικός</string>
+    <string name="warning_x_is_not_a_valid_isbn">«%1$s»: Μη έγκυρο ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">«%1$s»: Μη έγκυρος κωδικός</string>
     <string name="whichEditApplication">Επεξεργασία με</string>
     <string name="whichSendApplication">Κοινοποίηση</string>
     <string name="whichViewApplication">Άνοιγμα με</string>
@@ -927,4 +926,9 @@ A question mark is written as the character semicolon: ';'
     <string name="warning_import_csv_calibre">Η στήλη «comments» (σχόλια) από παλαιότερες εκδόσεις του Calibre μπορεί να δημιουργήσει μη έγκυρα αρχεία CSV. Αν εμφανιστεί κάποιο σφάλμα, η αναβάθμιση του Calibre στην έκδοση 9.10 ή μεταγενέστερη πριν από την εξαγωγή συνήθως το διορθώνει. Εναλλακτικά, μπορείτε να αφαιρέσετε τη στήλη «comments» από το αρχείο σας και να δοκιμάσετε ξανά την εισαγωγή.</string>
     <string name="book_format_newspaper">Εφημερίδα</string>
     <string name="book_format_periodical">Περιοδικό</string>
+    <string name="pt_edit_book_isbn_checks">Έλεγχος εισαγωγής ISBN και κωδικών</string>
+    <string name="menu_code_validity_title">Έλεγχος ISBN/κωδικού</string>
+    <string name="option_code_validity_strict_isbn">Αυστηρό ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN και άλλα</string>
+    <string name="option_code_validity_no_checks">Χωρίς έλεγχο</string>
 </resources>

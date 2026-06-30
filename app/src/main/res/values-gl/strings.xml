@@ -248,7 +248,8 @@
     <string name="whichViewApplication">Abrir con</string>
     <string name="yes">Si</string>
     <string name="warning_no_extra_info_found">Non se atopou información (adicional)</string>
-    <string name="warning_x_is_not_a_valid_code">«%1$s» non é un código válido</string>
+    <string name="warning_x_is_not_a_valid_isbn">«%1$s»: ISBN inválido</string>
+    <string name="warning_x_is_not_a_valid_code">«%1$s»: Código inválido</string>
     <string name="warning_image_copy_failed">Non se puido copiar a imaxe.</string>
     <string name="warning_if_day_set_month_and_year_must_be">De especificarse un día, tamén debe facerse co mes e o ano.</string>
     <string name="warning_backup_request">Queres facer una copia da base de datos á tarxeta SD?</string>
@@ -473,7 +474,6 @@
     <string name="option_moving_covers_from_x_to_y">Mover todas as cubertas de «%1$s» a «%2$s»</string>
     <string name="option_book_sync_list_with_details">Sincronizar/posicionar a lista</string>
     <string name="option_search_books_on">Buscar en…</string>
-    <string name="option_isbn_strict">ISBN estrito</string>
     <string name="option_barcode_scan_mode_continuous">Escanear continuamente</string>
     <string name="option_search_books_by_author_in_series">Libros por autoría/serie</string>
     <string name="pt_search_result_order">As buscas devolven o libro máis recente ou o primeiro atopado.</string>
@@ -686,7 +686,6 @@
     <string name="ps_cover_undo_disabled">A edición ou substitución de cubertas non pode desfacerse (utiliza menos almacenamento)</string>
     <string name="pt_bedetheque_search_resolve_formats">Conservar a nomenclatura do formato Bedetheque (francés)</string>
     <string name="pt_main_author_type">Tipo de autoría principal</string>
-    <string name="pt_edit_book_isbn_checks">Control de validez dos ISBN</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicio da lista de libros</string>
     <string name="pe_bob_list_rebuild_state_preferred">Usar a expansión preferida</string>
     <string name="pt_bob_row_menu">Menú contextual de fila</string>
@@ -834,8 +833,8 @@
     <string name="lbl_tab_alternative_editions">Ed. Alt.</string>
     <string name="lbl_tab_alternative_editions_long">Edicións alternativas</string>
     <string name="enabled">Activado</string>
-    <string name="strict">Estrito</string>
-    <string name="loose">Laxo</string>
+    <string name="X_strict">Estrito</string>
+    <string name="X_loose">Laxo</string>
     <string name="list_and">%1$s e %2$s</string>
     <string name="lbl_local_search">Busca local</string>
     <string name="lbl_local_search_long">Busca local avanzada</string>
@@ -928,4 +927,9 @@
     <string name="warning_import_csv_calibre">A columna «comments» das versións antigas de Calibre pode causar arquivos CSV non válidos. Se se produce un erro, actualice Calibre á versión 9.10 o posterior antes de exportar para practicalo solución. Como alternativa, pode retirar a columna «comments» do seu arquivo e tentar a importación de novo.</string>
     <string name="book_format_newspaper">Xornal</string>
     <string name="book_format_periodical">Revista</string>
+    <string name="pt_edit_book_isbn_checks">Validación de entrada de ISBN e códigos</string>
+    <string name="menu_code_validity_title">Comprobación de ISBN/código</string>
+    <string name="option_code_validity_strict_isbn">ISBN estrito</string>
+    <string name="option_code_validity_valid_codes">ISBN e outros</string>
+    <string name="option_code_validity_no_checks">Sen validación</string>
 </resources>

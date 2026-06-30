@@ -550,7 +550,6 @@
     <string name="option_info_import_books_option_new_only">Importeer alleen nieuwe boeken. Updates van bestaande boeken worden genegeerd.</string>
     <string name="option_info_lbl_archive_is_export_only">Dit is alleen voor het exporteren van gegevens; importeren wordt niet ondersteund.</string>
     <string name="option_info_lbl_archive_type_backup">Volledig back-up- / herstelarchief</string>
-    <string name="option_isbn_strict">Strikt ISBN</string>
     <string name="option_isfdb_menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
     <string name="option_lend_out_book">Boek uitlenen…</string>
     <string name="option_lend_return_book">Uitgeleend boek is terug</string>
@@ -596,7 +595,7 @@
     <string name="pt_camera_auto_focus">Autofocus</string>
     <string name="pe_camera_front">Camera aan de voorzijde</string>
     <string name="X_pe_camera_other">Overig</string>
-    <string name="loose">Ruim</string>
+    <string name="X_loose">Ruim</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamisch</string>
     <string name="pe_fast_scroller_overlay_static">Statisch</string>
     <string name="pe_thumbnails_cache_resized_each_time">Herschaal elke keer als ze nodig zijn (gebruikt minder opslagruimte, scrollen zal langzamer gaan)</string>
@@ -658,7 +657,6 @@
     <string name="pt_bob_row_menu">Context-menu van een lijn</string>
     <string name="pt_bob_show_details">Boekdetails weergegeven in de lijst</string>
     <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>
-    <string name="pt_edit_book_isbn_checks">ISBN geldigheidscontroles</string>
     <string name="pt_fast_scroller_overlay">Tekstballon tijdens het scrollen.</string>
     <string name="pt_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="pt_line_spacing">Regelafstand</string>
@@ -695,7 +693,7 @@
     <string name="size_small">Klein</string>
     <string name="size_x_large">X-Groot</string>
     <string name="size_x_small">X-Klein</string>
-    <string name="strict">Strikt</string>
+    <string name="X_strict">Strikt</string>
     <string name="style_builtin_author_series">Auteur daarna Reeks</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
     <string name="lbl_defaults">Standaardinstellingen</string>
@@ -773,7 +771,8 @@
     <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn.</string>
     <string name="warning_x_already_exists">%1$s bestaat al.</string>
     <string name="warning_no_extra_info_found">Geen (extra) info gevonden</string>
-    <string name="warning_x_is_not_a_valid_code">„%1$s” is geen geldige code</string>
+    <string name="warning_x_is_not_a_valid_isbn">‘%1$s’ is een ongeldig ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">‘%1$s’ is een ongeldige code</string>
     <string name="whichEditApplication">Bewerken met</string>
     <string name="whichSendApplication">Delen</string>
     <string name="whichViewApplication">Openen met</string>
@@ -924,4 +923,9 @@
     <string name="warning_import_csv_calibre">De kolom „comments” uit oudere versies van Calibre kan ongeldige CSV-bestanden veroorzaken. Als u een foutmelding krijgt, lost het bijwerken van Calibre naar versie 9.10 of nieuwer vóór het exporteren dit meestal op. Als alternatief kunt u de kolom „comments” uit uw bestand verwijderen en de import opnieuw proberen.</string>
     <string name="book_format_newspaper">Krant</string>
     <string name="book_format_periodical">Tijdschrift</string>
+    <string name="pt_edit_book_isbn_checks">ISBN- en code-invoervalidatie</string>
+    <string name="menu_code_validity_title">ISBN/code-controle</string>
+    <string name="option_code_validity_strict_isbn">Strikt ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN en andere</string>
+    <string name="option_code_validity_no_checks">Geen controle</string>
 </resources>

@@ -221,7 +221,6 @@
     <string name="warning_import_csv_bc">AVISO: A importação de dados pode atualizar registros de livros existentes com novas informações se a coluna UUID não estiver presente e o ID no arquivo de importação for o mesmo que um ID existente. Isso geralmente é bom se você alterou um campo em um arquivo exportado. Se você criou um novo registro de livro ou está importando os livros de outra pessoa, certifique-se de que o campo UUID esteja presente ou que o campo ID esteja em branco.</string>
     <string name="warning_select_at_least_1_field">Selecione pelo menos um campo para atualizar.</string>
     <string name="warning_no_extra_info_found">Nenhuma informação (adicional) encontrada</string>
-    <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
     <string name="vldt_read_start_after_end">A data de início da leitura é posterior à data de término</string>
     <string name="warning_toc_confirm">Por favor, confirme se esses títulos estão (na maioria) corretos.</string>
     <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites selecionados atualmente suporta busca por %1$s. Use o menu do site para habilitar sites alternativos ou use um método de busca diferente.</string>
@@ -318,4 +317,5 @@
     <string name="action_sync_push">Enviar alterações</string>
     <string name="warning_import_csv_calibre">A coluna “comments” de versões mais antigas do Calibre pode gerar arquivos CSV inválidos. Se você encontrar um erro, atualizar o Calibre para a versão 9.10 ou posterior antes de exportar geralmente resolve o problema. Como alternativa, você pode remover a coluna “comments” do seu arquivo e tentar a importação novamente.</string>
     <string name="info_sites_active">Sites ativos: %1$s</string>
+    <string name="pt_edit_book_isbn_checks">Validação de entrada de ISBN e códigos</string>
 </resources>

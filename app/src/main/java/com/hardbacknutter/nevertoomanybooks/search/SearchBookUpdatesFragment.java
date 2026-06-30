@@ -51,7 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncfieldConfigBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesSingleListContract;
@@ -320,12 +321,27 @@ public class SearchBookUpdatesFragment
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.search_for_updates, menu);
+            menuInflater.inflate(R.menu.sm_isbn_validity, menu);
+            //noinspection DataFlowIssue
+            MenuUtils.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
         }
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT)
-                .setChecked(BookSearchCriteria.isStrictIsbnGlobal());
+            switch (ProductCodeValidity.getPreferredLevel()) {
+                case Isbn:
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT).setChecked(true);
+                    break;
+
+                case ValidCodes:
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_LOOSE).setChecked(true);
+                    break;
+
+                case NoChecks:
+                default:
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_NONE).setChecked(true);
+                    break;
+            }
         }
 
         @Override
@@ -336,9 +352,17 @@ public class SearchBookUpdatesFragment
                 editSitesLauncher.launch(vm.getSiteList());
                 return true;
 
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_NONE) {
+                ProductCodeValidity.setPreferredLevel(ProductCodeValidity.NoChecks);
+                return true;
+
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_LOOSE) {
+                ProductCodeValidity.setPreferredLevel(ProductCodeValidity.ValidCodes);
+                return true;
+
             } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT) {
-                final boolean checked = !menuItem.isChecked();
-                BookSearchCriteria.setStrictIsbnDefault(checked);
+                ProductCodeValidity.setPreferredLevel(ProductCodeValidity.Isbn);
+                return true;
 
             } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
                 vm.setSyncAction(SyncAction.Skip);

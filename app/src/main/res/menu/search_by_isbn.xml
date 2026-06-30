@@ -48,16 +48,6 @@
         android:title="@string/option_import"
         app:showAsAction="never" />
 
-    <group
-        android:id="@id/SUBMENU_PRODUCT_CODE_VALIDITY"
-        android:orderInCategory="@integer/MENU_ORDER_PRODUCT_CODE_VALIDITY">
-        <item
-            android:id="@id/MENU_PRODUCT_CODE_VALIDITY_STRICT"
-            android:checkable="true"
-            android:title="@string/option_isbn_strict"
-            app:showAsAction="never" />
-    </group>
-
     <item
         android:id="@id/MENU_BARCODE_SETTINGS"
         android:orderInCategory="@integer/MENU_ORDER_BARCODE_SETTINGS"

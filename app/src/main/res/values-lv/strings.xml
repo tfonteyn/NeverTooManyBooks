@@ -191,7 +191,6 @@
     <string name="pt_fetch_author_info_using_site_x">Iegūt autora informāciju no %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Saglabāt Bedetheque (franču) formātu nosaukumus</string>
     <string name="pt_main_author_type">Galvenais autora tips</string>
-    <string name="pt_edit_book_isbn_checks">ISBN derīguma pārbaudes</string>
     <string name="pt_bob_list_rebuild_state">Grāmatu saraksta sākuma stāvoklis</string>
     <string name="pe_bob_list_rebuild_state_preferred">Izmantot izvēlēto izvēršanu</string>
     <string name="pe_bob_list_rebuild_state_preserve">Saglabāt pašreizējo stāvokli</string>
@@ -202,15 +201,11 @@
     <string name="pe_bob_row_menu_button_when_space">Rādīt pogu, ja ir vieta; citādi izmantot garo klikšķi.</string>
     <string name="pe_bob_row_menu_long_click">Vienmēr izmantot turot nospiestu.</string>
     <string name="pt_fast_scroller_overlay">Teksta burbulis ritināšanas laikā.</string>
-
     <string name="pe_fast_scroller_overlay_static">Statisks</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamisks</string>
     <string name="lbl_fastscroller_draghandle">Ritinjoslas slīdnis</string>
-
-
     <string name="pt_thumbnails_rotate_auto">Pagriezt attēlus</string>
     <string name="camera_next_action">Darbība pēc attēla uzņemšanas</string>
-
     <string name="pt_camera_auto_focus">Automātiskā fokusēšana</string>
     <string name="pe_camera_front">Priekšējā kamera</string>
     <string name="pe_camera_back">Aizmugurējā kamera</string>
@@ -232,11 +227,9 @@
     <string name="pe_option_bottom_sheet">Vienmēr ekrāna apakšā</string>
     <string name="pt_ui_dialogs_mode">Dialoglodziņi</string>
     <string name="pe_ui_dialog_mode_classic">Vienmēr kā klasisku dialoglodziņu</string>
-
     <string name="pe_ui_dialog_mode_by_screen_size">Mazākos ekrānos rādīt dialoglodziņus ekrāna apakšā.\nLielākos ekrānos, piemēram, planšetdatoros, vienmēr izmantot klasiskos dialoglodziņus.</string>
     <string name="pc_context_menus">Konteksta un rindu izvēlnes</string>
     <string name="pe_ui_context_menu_mode_classic">Vienmēr kā klasisku konteksta izvēlni</string>
-
     <string name="pe_ui_context_menu_mode_by_size">Mazākos ekrānos garas izvēlnes rādīt ekrāna apakšā, bet īsas izvēlnes — kā klasiskas konteksta izvēlnes.\nLielākos ekrānos, piemēram, planšetdatoros, vienmēr izmantot klasiskas konteksta izvēlnes.</string>
     <string name="info_cleanup_files">Dzēšamie faili SD kartē pašlaik aizņem %1$s. Žurnālfaili un citi dati SD kartē tiek saglabāti katrā jaunināšanas reizē, veidojot datubāzes dublējumkopiju vai lietotnes avārijas gadījumā. Pieskarieties zemāk esošajai pogai, lai neatgriezeniski dzēstu šos failus no SD kartes. Ja esat saskāries ar avārijām vai citām kļūdām, lūdzu, vispirms apsveriet iespēju izmantot pogu “%2$s”.</string>
     <string name="option_purge_image_cache">Iztīrīt attēlu kešatmiņu</string>
@@ -362,8 +355,8 @@
     <string name="enabled">Iespējots</string>
     <string name="disabled">Atspējots</string>
     <string name="none">Nav</string>
-    <string name="strict">Stingrs</string>
-    <string name="loose">Brīvs</string>
+    <string name="X_strict">Stingrs</string>
+    <string name="X_loose">Brīvs</string>
     <string name="lbl_local_search">Vietējā meklēšana</string>
     <string name="lbl_local_search_long">Paplašinātā vietējā meklēšana</string>
     <string name="lbl_keywords">Atslēgvārdi</string>
@@ -593,7 +586,6 @@
     <string name="pt_scan_mode">Skenēšanas režīms</string>
     <string name="option_barcode_scan_mode_manual">Manuāls</string>
     <string name="option_barcode_scan_mode_continuous">Skenēt nepārtraukti</string>
-    <string name="option_isbn_strict">Stingrs ISBN</string>
     <string name="option_isfdb_menu_populate_toc">Aizpildīt nosaukumus (tikai ISFDB)</string>
     <string name="pt_search_result_order">Meklēšanā atgriež jaunāko grāmatu vai pirmo atrasto.</string>
     <string name="pe_search_result_order_most_recent">Jaunākā atrastā grāmata</string>
@@ -920,7 +912,8 @@
     <string name="warning_already_in_list">Jau ir sarakstā!</string>
     <string name="warning_no_matching_book_found">Nav atrasta neviena atbilstoša grāmata</string>
     <string name="warning_no_extra_info_found">Nav atrasta (papildu) informācija</string>
-    <string name="warning_x_is_not_a_valid_code">“%1$s” nav derīgs kods</string>
+    <string name="warning_x_is_not_a_valid_isbn">“%1$s” – nederīgs ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s” – nederīgs kods</string>
     <string name="warning_image_not_found">Attēlu neizdevās atrast.</string>
     <string name="warning_image_copy_failed">Attēlu neizdevās kopēt.</string>
     <string name="warning_no_editions">Nav pieejama papildu izdevuma informācija.</string>
@@ -942,4 +935,9 @@
     <string name="X_info_site_authorization_successful">%1$s autorizācija sekmīga</string>
     <string name="X_info_tap_on_image_to_select">Pieskarieties lielākajam attēlam, lai to atlasītu.</string>
     <string name="X_tip_update_fields_from_internet">Ārējās saites tiek apstrādātas tikai tad, ja tiek izveidots savienojums ar vietni. Līdz ar to izvēlne “Skatīt vietnē…” rādīs tikai pieejamo informāciju.</string>
+    <string name="pt_edit_book_isbn_checks">ISBN un kodu ievades validācija</string>
+    <string name="menu_code_validity_title">ISBN/kodu pārbaude</string>
+    <string name="option_code_validity_strict_isbn">Stingrs ISBN</string>
+    <string name="option_code_validity_valid_codes">ISBN un citi</string>
+    <string name="option_code_validity_no_checks">Bez pārbaudes</string>
 </resources>

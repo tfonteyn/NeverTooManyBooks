@@ -86,6 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -367,7 +368,7 @@ public class SearchBookByIsbnFragment
         final Context context = getContext();
 
         final Set<SearchEngine.SearchBy> searchBy;
-        if (BookSearchCriteria.isStrictIsbnGlobal()) {
+        if (ProductCodeValidity.getPreferredLevel() == ProductCodeValidity.Isbn) {
             searchBy = Set.of(SearchEngine.SearchBy.Isbn);
         } else {
             searchBy = Set.of(SearchEngine.SearchBy.Isbn,
@@ -486,10 +487,7 @@ public class SearchBookByIsbnFragment
     private void initInputField() {
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
-        // The search preference determines the level here; NOT the 'edit book'
-        final ProductCodeValidity validity = BookSearchCriteria.isStrictIsbnGlobal()
-                                       ? ProductCodeValidity.Isbn
-                                       : ProductCodeValidity.NoChecks;
+        final ProductCodeValidity validity = ProductCodeValidity.getPreferredLevel();
 
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, validity);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
@@ -540,16 +538,35 @@ public class SearchBookByIsbnFragment
 
             viewToModel();
 
-            final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
-            final ProductCode productCode = ISBN.parse(vm.getIsbnText(), strictIsbn);
-            if (!productCode.isValid()) {
-                final String text = productCode.asText();
-                if (text.isEmpty()) {
-                    vb.lblIsbn.setError(getString(R.string.vldt_non_blank_required));
-                } else {
-                    vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, text));
-                }
+            final ProductCodeValidity validityLevel = ProductCodeValidity.getPreferredLevel();
+            final ProductCode productCode = ISBN.parse(
+                    vm.getIsbnText(), validityLevel == ProductCodeValidity.Isbn);
+
+            final String text = productCode.asText();
+            if (text.isEmpty()) {
+                vb.lblIsbn.setError(getString(R.string.vldt_non_blank_required));
                 return;
+            }
+
+            switch (validityLevel) {
+                case Isbn: {
+                    if (!productCode.isIsbn()) {
+                        vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_isbn,
+                                                      text));
+                        return;
+                    }
+                    break;
+                }
+                case ValidCodes: {
+                    if (!productCode.isValid()) {
+                        vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
+                                                      text));
+                        return;
+                    }
+                    break;
+                }
+                case NoChecks:
+                    break;
             }
 
             prepare(productCode);
@@ -917,7 +934,8 @@ public class SearchBookByIsbnFragment
      */
     private void onBarcodeScanned(@NonNull final Barcode barcode) {
 
-        final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
+        final boolean strictIsbn = ProductCodeValidity.getPreferredLevel()
+                                   == ProductCodeValidity.Isbn;
 
         final ProductCode productCode = ISBN.parse(barcode, strictIsbn);
         if (productCode.isValid()) {
@@ -1125,12 +1143,27 @@ public class SearchBookByIsbnFragment
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.search_by_isbn, menu);
+            menuInflater.inflate(R.menu.sm_isbn_validity, menu);
+            //noinspection DataFlowIssue
+            MenuUtils.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
         }
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT)
-                .setChecked(BookSearchCriteria.isStrictIsbnGlobal());
+            switch (ProductCodeValidity.getPreferredLevel()) {
+                case Isbn:
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT).setChecked(true);
+                    break;
+
+                case ValidCodes:
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_LOOSE).setChecked(true);
+                    break;
+
+                case NoChecks:
+                default:
+                    menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_NONE).setChecked(true);
+                    break;
+            }
         }
 
         @Override
@@ -1152,14 +1185,16 @@ public class SearchBookByIsbnFragment
                 importFromFile();
                 return true;
 
-            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT) {
-                final boolean checked = !menuItem.isChecked();
-                BookSearchCriteria.setStrictIsbnDefault(checked);
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_NONE) {
+                setValidity(ProductCodeValidity.NoChecks);
+                return true;
 
-                final ProductCodeValidity validity = checked ? ProductCodeValidity.Isbn
-                                                             : ProductCodeValidity.NoChecks;
-                isbnCleanupTextWatcher.setValidityLevel(validity);
-                isbnValidationTextWatcher.setValidityLevel(validity);
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_LOOSE) {
+                setValidity(ProductCodeValidity.ValidCodes);
+                return true;
+
+            } else if (menuItemId == R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT) {
+                setValidity(ProductCodeValidity.Isbn);
                 return true;
 
             } else if (menuItemId == R.id.MENU_BARCODE_SETTINGS) {
@@ -1174,6 +1209,14 @@ public class SearchBookByIsbnFragment
             }
 
             return false;
+        }
+
+        private void setValidity(@NonNull final ProductCodeValidity validity) {
+            ProductCodeValidity.setPreferredLevel(validity);
+            isbnCleanupTextWatcher.setValidityLevel(validity);
+            isbnValidationTextWatcher.setValidityLevel(validity);
+            // Clear any previous validity errors
+            vb.isbn.setError(null);
         }
     }
 }

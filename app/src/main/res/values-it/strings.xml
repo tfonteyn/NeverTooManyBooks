@@ -471,7 +471,6 @@
     <string name="pt_storage_volume">Volume di archiviazione</string>
     <string name="info_read_contacts_permission">L’accesso ai contatti è facoltativo, ma ti consente di selezionare facilmente a chi presti un libro.</string>
     <string name="info_story_in_multiple_books">“%1$s” è presente in più libri:\n\n%2$s</string>
-    <string name="option_isbn_strict">ISBN rigoroso</string>
     <string name="lbl_style">Stile</string>
     <string name="lbl_styles">Stili</string>
     <string name="lbl_styles_long">Stile della libreria</string>
@@ -566,7 +565,7 @@
     <string name="pe_bob_list_rebuild_state_expanded">Espandi tutto</string>
     <string name="pe_bob_list_rebuild_state_preferred">Usa lo stato preferito</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preserva lo stato corrente</string>
-    <string name="loose">Libero</string>
+    <string name="X_loose">Libero</string>
     <string name="pe_thumbnails_cache_resized_each_time">Ridimensiona ogni volta (richiede meno spazio di memorizzazione, ma lo scorrimento sarà più lento)</string>
     <string name="pe_thumbnails_cache_resized_stored">Memorizza le miniature ridimensionate (richiede più spazio di memorizzazione, ma gli elenchi scorreranno più velocemente)</string>
     <string name="pe_ui_theme_dark">Scura</string>
@@ -625,7 +624,6 @@
     <string name="pt_bob_list_rebuild_state">Stato di avvio dell’elenco libri</string>
     <string name="pt_bob_list_state_expansion_level">Livello di espansione predefinito</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie dalla tabella dei contenuti</string>
-    <string name="pt_edit_book_isbn_checks">Controlli di validità del codice ISBN</string>
     <string name="pt_bob_row_menu">Menu contestuale riga</string>
     <string name="pe_bob_row_menu_button">Mostra sempre un pulsante.</string>
     <string name="pe_bob_row_menu_button_when_space">Mostra un pulsante se c’è spazio, altrimenti usa il clic lungo.</string>
@@ -673,7 +671,7 @@
     <string name="size_x_large">X-Grande</string>
     <string name="size_x_small">X-Piccolo</string>
     <string name="pe_fast_scroller_overlay_static">Statico</string>
-    <string name="strict">Rigoroso</string>
+    <string name="X_strict">Rigoroso</string>
     <string name="style_builtin_author_series">Autore e Collana</string>
     <string name="style_builtin_author_year">Autore ed Anno</string>
     <string name="lbl_date_read">Lettura Data</string>
@@ -765,7 +763,8 @@
     <string name="warning_toc_confirm">Conferma che i titoli di queste antologie sono in genere corretti.</string>
     <string name="warning_x_already_exists">%1$s già presente in elenco.</string>
     <string name="warning_no_extra_info_found">Nessuna informazione (aggiuntiva) trovata</string>
-    <string name="warning_x_is_not_a_valid_code">“%1$s” non è un codice valido</string>
+    <string name="warning_x_is_not_a_valid_isbn">«%1$s»: ISBN non valido</string>
+    <string name="warning_x_is_not_a_valid_code">«%1$s»: Codice non valido</string>
     <string name="whichEditApplication">Modifica con</string>
     <string name="whichSendApplication">Condividi</string>
     <string name="whichViewApplication">Apri con</string>
@@ -938,4 +937,9 @@
     <string name="warning_import_csv_calibre">La colonna “comments” (Commenti) delle versioni precedenti di Calibre può causare file CSV non validi. Se si verifica un errore, l’aggiornamento di Calibre alla versione 9.10 o successiva prima dell’esportazione di solito risolve il problema. In alternativa, puoi rimuovere la colonna “comments” dal file e riprovare ’importazione.</string>
     <string name="book_format_newspaper">Quotidiano</string>
     <string name="book_format_periodical">Periodico</string>
+    <string name="pt_edit_book_isbn_checks">Validazione input ISBN e codici</string>
+    <string name="menu_code_validity_title">Controllo ISBN/codice</string>
+    <string name="option_code_validity_strict_isbn">ISBN rigoroso</string>
+    <string name="option_code_validity_valid_codes">ISBN e altri</string>
+    <string name="option_code_validity_no_checks">Nessuna validazione</string>
 </resources>
