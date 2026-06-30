@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -45,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
@@ -122,7 +122,8 @@ public abstract class BaseDBTest {
                       .putString(ExtMenuButton.PK_MODE, "0")
                       .putString(FastScrollerMode.PK_OVERLAY, "3")
                       .putString(RebuildBooklist.PK_BOOKLIST_REBUILD_STATE, "0")
-                      .putString(EditBookViewModel.PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, "1")
+                      .putString(ProductCodeValidity.PK_EDIT_BOOK_PRODUCT_CODE_CHECKS,
+                                 String.valueOf(ProductCodeValidity.ValidCodes.getId()))
                       .putString("search.siteOrder.data",
                                  "amazon,googlebooks,isfdb,bookfinder,openlibrary,stripinfo"
                                  + ",lastdodo,stripweb,bedetheque,kbnl,bol,dnb,douban")

@@ -684,10 +684,6 @@ public class Series
 
     /**
      * Enhanced {@link #equals(Object)}.
-     * <p>
-     * <strong>Includes</strong>: user fields.
-     * <p>
-     * <strong>Excludes</strong>: book fields.
      *
      * @param that to compare to
      *
@@ -696,6 +692,7 @@ public class Series
     public boolean isIdentical(@Nullable final Series that) {
         return equals(that)
                && complete == that.complete
+               && number.equals(that.number)
                && identifiers.equals(that.identifiers);
     }
 

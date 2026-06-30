@@ -317,7 +317,7 @@ public class SeriesDaoImpl
                         final Series found = oFound.get();
                         // always merge, but no need to check if modified or not
                         series.merge(found, true);
-                        // Check for the name AND user fields being equals.
+                        // Check for the name AND user/book fields being equals.
                         if (!found.isIdentical(series)) {
                             update(context, series, locale);
                         }

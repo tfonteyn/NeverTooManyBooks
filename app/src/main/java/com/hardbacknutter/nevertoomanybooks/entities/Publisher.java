@@ -209,10 +209,6 @@ public class Publisher
 
     /**
      * Enhanced {@link #equals(Object)}.
-     * <p>
-     * <strong>Includes</strong>: user fields.
-     * <p>
-     * <strong>Excludes</strong>: book fields.
      *
      * @param that to compare to
      *

@@ -93,8 +93,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.fields.AutoCompleteTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.BitmaskChipGroupField;
 import com.hardbacknutter.nevertoomanybooks.fields.CompoundButtonField;
@@ -121,14 +119,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 public class EditBookViewModel
         extends ViewModel
         implements BookReadStatusViewModel {
-
-    /**
-     * {@link ProductCode} Validity level.
-     * Type: int
-     *
-     * @see ProductCodeValidity
-     */
-    public static final String PK_EDIT_BOOK_PRODUCT_CODE_CHECKS = "edit.book.isbn.checks";
 
     /**
      * The {@link Identifier} keys we allow the user to edit.
@@ -243,7 +233,6 @@ public class EditBookViewModel
     private SeriesDao seriesDao;
     private TagDao tagDao;
     private TocEntryDao tocEntryDao;
-    private ProductCodeValidity productCodeValidity;
 
     int getCurrentTab() {
         return currentTab;
@@ -286,11 +275,6 @@ public class EditBookViewModel
             final String styleUuid = args != null ? args.getString(Style.BKEY_UUID) : null;
             final StylesHelper stylesHelper = serviceLocator.getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
-
-            // -1 default (i.e. invalid) will force the Validity default enum to be returned.
-            productCodeValidity = ProductCodeValidity.byId(
-                    ServiceLocator.getInstance().getSharedPreferences()
-                                  .getIntFromString(PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, -1));
 
             final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
             userLocales = LocaleListUtils.asList(
@@ -362,27 +346,6 @@ public class EditBookViewModel
     @NonNull
     List<MenuHandler<DataHolder>> getMenuHandlers() {
         return menuHandlers;
-    }
-
-    /**
-     * Get the user preferred validity level check for (by the user) editing product codes.
-     *
-     * @return Validity level
-     */
-    @NonNull
-    ProductCodeValidity getProductCodeValidity() {
-        return productCodeValidity;
-    }
-
-    /**
-     * Temporary set the Validity level for use during this session.
-     * This is not persisted..
-     * The user must access the global settings to make it permanent.
-     *
-     * @param level to use
-     */
-    public void setProductCodeValidity(@NonNull final ProductCodeValidity level) {
-        this.productCodeValidity = level;
     }
 
     /**

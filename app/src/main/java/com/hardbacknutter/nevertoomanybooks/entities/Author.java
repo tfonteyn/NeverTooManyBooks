@@ -1387,10 +1387,6 @@ public class Author
 
     /**
      * Enhanced {@link #equals(Object)}.
-     * <p>
-     * <strong>Includes</strong>: user fields.
-     * <p>
-     * <strong>Excludes</strong>: book fields.
      *
      * @param that to compare to
      *
@@ -1399,12 +1395,13 @@ public class Author
     public boolean isIdentical(@Nullable final Author that) {
         return equals(that)
                && complete == that.complete
+               && role == that.role
                && identifiers.equals(that.identifiers);
     }
 
     /**
-     * Equality: <strong>id, family and given-names,
-     * realAuthorId, realAuthor(id,names), image</strong>
+     * Equality: <strong>id, family and given-names, birth/dead dates, image,
+     * realAuthorId, realAuthor(id,names)</strong>
      * (see code for details on the image).
      * <ul>
      *   <li>'complete' is a user setting and is ignored here.</li>
