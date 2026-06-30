@@ -87,6 +87,9 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -718,6 +721,21 @@ public class Book
     public boolean hasProductCode() {
         final String codeStr = getString(DBKey.ISBN, null);
         return codeStr != null && !codeStr.isEmpty();
+    }
+
+    /**
+     * Get the product-code.
+     *
+     * @return product-code object. The code itself can be <strong>any type</strong>,
+     *         including {@link ProductCodeType#Invalid}
+     */
+    @Nullable
+    public ProductCode getProductCode() {
+        final String codeStr = getString(DBKey.ISBN, null);
+        if (codeStr != null && !codeStr.isEmpty()) {
+            return ISBN.parse(codeStr);
+        }
+        return null;
     }
 
     /**
