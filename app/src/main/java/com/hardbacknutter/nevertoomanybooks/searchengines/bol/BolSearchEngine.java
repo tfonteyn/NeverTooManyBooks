@@ -55,13 +55,14 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -244,7 +245,7 @@ public class BolSearchEngine
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
@@ -273,7 +274,7 @@ public class BolSearchEngine
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
                        @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
@@ -315,9 +316,9 @@ public class BolSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException  on authentication/login failures
+     * @throws CoverStorageException on storage related failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
      */
     @VisibleForTesting
     @WorkerThread
@@ -325,7 +326,7 @@ public class BolSearchEngine
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
         final String aHref = String.format("a[href^=/%1$s/nl/p/]", getCountry());
@@ -364,11 +365,11 @@ public class BolSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
-     *                              This should only occur if the engine calls/relies on
-     *                              secondary sites.
+     * @throws CoverStorageException on storage related failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CredentialsException  on authentication/login failures
+     *                               This should only occur if the engine calls/relies on
+     *                               secondary sites.
      */
     @VisibleForTesting
     @WorkerThread
@@ -376,7 +377,7 @@ public class BolSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         final Element titleElement = document.selectFirst("span[data-test='title']");
         if (titleElement == null || titleElement.text().isEmpty()) {
@@ -671,14 +672,13 @@ public class BolSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     private void parseCovers(@NonNull final Context context,
                              @NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
-            throws StorageException {
-        final String isbn = book.getRawProductCode();
+            throws CoverStorageException {
 
         final Element imageSlotConfig = document.selectFirst(
                 "section[data-group-name='product-images'] script");
@@ -696,7 +696,7 @@ public class BolSearchEngine
                     final JSONArray objects = new JSONArray(text);
                     final JSONObject currentItem = objects.optJSONObject(0);
                     if (currentItem != null) {
-                        parseCovers(context, currentItem, isbn, fetchCovers, book);
+                        parseCovers(context, currentItem, fetchCovers, book);
                     }
                 } else {
                     // TEST: This 'else' branch can likely be removed.
@@ -705,7 +705,7 @@ public class BolSearchEngine
                     if (imageSlotSlider != null) {
                         final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
                         if (currentItem != null) {
-                            parseCovers(context, currentItem, isbn, fetchCovers, book);
+                            parseCovers(context, currentItem, fetchCovers, book);
                         }
                     }
                 }
@@ -719,16 +719,16 @@ public class BolSearchEngine
 
     private void parseCovers(@NonNull final Context context,
                              @NonNull final JSONObject currentItem,
-                             @NonNull final String bookId,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
-            throws StorageException {
+            throws CoverStorageException {
         // The site uses several possible keys, loop until found or exhausted
         for (final String key : FRONT_COVER_KEYS) {
             final String coverUrl = currentItem.optString(key);
             if (!coverUrl.isEmpty()) {
-                final Optional<String> oFileSpec = saveImage(context, coverUrl, null, bookId, 0,
-                                                             null);
+                final String codeStr = book.getRawProductCode();
+                final Optional<String> oFileSpec =
+                        saveImage(context, coverUrl, null, codeStr, 0, null);
                 if (oFileSpec.isPresent()) {
                     CoverFileSpecArray.setFileSpec(book, 0, oFileSpec.get());
                     // only attempt to get the back-cover if we got a front-cover
@@ -736,7 +736,7 @@ public class BolSearchEngine
                     if (fetchCovers[1]) {
                         final String url = currentItem.optString("backImageUrl");
                         if (!url.isEmpty()) {
-                            saveImage(context, url, null, bookId, 1, null).ifPresent(
+                            saveImage(context, url, null, codeStr, 1, null).ifPresent(
                                     fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
                         }
                     }
