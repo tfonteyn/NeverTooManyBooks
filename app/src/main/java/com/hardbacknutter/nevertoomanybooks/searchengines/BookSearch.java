@@ -362,21 +362,22 @@ class BookSearch {
                         sitesInOrder.add(engineId);
 
                     } else if (result.hasProductCode()) {
-                        // We did a general search with an ISBN; check if it matches
-                        final String isbnFoundStr = result.getRawProductCode();
-                        if (!isbnFoundStr.isEmpty()
-                            && productCode != null && productCode.equals(ISBN.parse(isbnFoundStr, strictIsbn))) {
+                        // We did a general search with a product-code; check if it matches
+                        final String foundCodeStr = result.getRawProductCode();
+                        if (!foundCodeStr.isEmpty()
+                            && productCode != null
+                            && productCode.equals(ISBN.parse(foundCodeStr, strictIsbn))) {
                             sitesInOrder.add(engineId);
                         } else {
-                            // The ISBN found does not match the ISBN we searched for;
+                            // The product-code found does not match the one we searched for;
                             // 2023-05-30: don't just skip; add it to the lesser reliables
                             sitesWithoutIsbn.add(engineId);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                                 LoggerFactory.getLogger()
                                              .d(TAG, "accumulateResults",
-                                                "productCode=" + productCode,
-                                                "isbnFound=" + isbnFoundStr);
+                                                "foundCodeStr=" + foundCodeStr,
+                                                "productCode=" + productCode);
                             }
                         }
                     } else {
