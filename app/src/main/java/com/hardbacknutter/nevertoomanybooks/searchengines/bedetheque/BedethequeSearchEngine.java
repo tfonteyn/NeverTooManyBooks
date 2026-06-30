@@ -50,10 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -61,6 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -315,7 +315,7 @@ public class BedethequeSearchEngine
     public Book searchByExternalId(@NonNull final Context context,
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws CoverStorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
@@ -375,11 +375,11 @@ public class BedethequeSearchEngine
      *                     can be {@code null} if the search used different criteria
      * @param book         to update
      *
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
-     *                              This should only occur if the engine calls/relies on
-     *                              secondary sites.
+     * @throws CoverStorageException on storage related failures
+     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CredentialsException  on authentication/login failures
+     *                               This should only occur if the engine calls/relies on
+     *                               secondary sites.
      */
     @VisibleForTesting
     @WorkerThread
@@ -423,7 +423,7 @@ public class BedethequeSearchEngine
                     if (albumMain != null) {
                         final Element infos = albumMain.selectFirst("div.album-main > ul.infos");
                         if (infos != null && matches(infos, searchedCode)) {
-                            parseEditionDetails(context, mainSection, albumMain, infos, book);
+                            parseEditionDetails(context, albumMain, infos, book);
                             parseEditionCovers(context, edition, fetchCovers, book);
                             // quit the for-loop
                             isMainEdition = false;
@@ -463,7 +463,6 @@ public class BedethequeSearchEngine
     }
 
     private void parseEditionDetails(@NonNull final Context context,
-                                     @NonNull final Element mainSection,
                                      @NonNull final Element albumMain,
                                      @NonNull final Element infos,
                                      @NonNull final Book book) {
@@ -607,14 +606,21 @@ public class BedethequeSearchEngine
         }
     }
 
+    /**
+     * Check if the ISBN from the page section matches the one we searched for.
+     *
+     * @param section      to parse/check
+     * @param searchedCode code
+     *
+     * @return {@code true} if it matches
+     */
     private boolean matches(@NonNull final Element section,
                             @NonNull final ProductCode searchedCode) {
-        final Element isbnLabel = section.selectFirst("li > label:contains(EAN/ISBN :)");
-        if (isbnLabel != null) {
-            final String isbnStr = parseLabelText(isbnLabel);
-            if (isbnStr != null) {
-                final ProductCode productCode = ISBN.parseISBN(isbnStr);
-                return productCode.equals(searchedCode);
+        final Element element = section.selectFirst("li > label:contains(EAN/ISBN :)");
+        if (element != null) {
+            final String codeStr = parseLabelText(element);
+            if (codeStr != null) {
+                return ISBN.parseISBN(codeStr).equals(searchedCode);
             }
         }
         return false;
@@ -656,23 +662,7 @@ public class BedethequeSearchEngine
                     break;
                 }
                 case "Tome :": {
-                    //FIXME: some books (non-french only?) have two numbers
-                    // which the site concatenates.
-                    // e.g. the series "Lucky Luke (en anglais)":
-                    // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
-                    // have BOTH "1" and "48" ... and we end up with "148"
-                    // The "1" is the number in the original series.
-                    // The "48" is the number of the actual book in this specific series.
-                    // i.o.w. this specific series published the books in a new/different order.
-                    // This is clearly a bug on the site... not much we can do about that.
-                    // The only solution... never parse the mainSection,
-                    // but always parse the edition-section...  to be decided later...
-                    final Node textNode = labelElement.nextSibling();
-                    final List<Series> seriesList = book.getSeries();
-                    if (textNode != null && !seriesList.isEmpty()) {
-                        seriesList.get(seriesList.size() - 1)
-                                  .setNumber(textNode.toString().strip());
-                    }
+                    parseTome(labelElement, book);
                     break;
                 }
                 case "Identifiant :": {
@@ -762,18 +752,7 @@ public class BedethequeSearchEngine
                 case "Dépot légal :": {
                     final Node textNode = labelElement.nextSibling();
                     if (textNode != null) {
-                        String date = textNode.toString().strip();
-                        if (!date.isBlank()) {
-                            if (PUB_DATE.matcher(date).matches()) {
-                                // Flip to "YYYY-MM" (or use as-is)
-                                date = date.substring(3) + "-" + date.substring(0, 2);
-                                book.setPublicationDate(date);
-                            } else {
-                                // we should never get here unless the site changes
-                                dateParser.parse(date).ifPresent(book::setPublicationDate);
-                            }
-                        }
-
+                        parsePublicationDate(textNode, book);
                     }
                     break;
                 }
@@ -824,6 +803,42 @@ public class BedethequeSearchEngine
 
                 // Collection : publisher collection
             }
+        }
+    }
+
+    private void parsePublicationDate(@NonNull final Node textNode,
+                                      @NonNull final Book book) {
+        String date = textNode.toString().strip();
+        if (!date.isBlank()) {
+            if (PUB_DATE.matcher(date).matches()) {
+                // Flip to "YYYY-MM" (or use as-is)
+                date = date.substring(3) + "-" + date.substring(0, 2);
+                book.setPublicationDate(date);
+            } else {
+                // we should never get here unless the site changes
+                dateParser.parse(date).ifPresent(book::setPublicationDate);
+            }
+        }
+    }
+
+    private void parseTome(@NonNull final Element labelElement,
+                           @NonNull final Book book) {
+        //FIXME: some books (non-french only?) have two numbers
+        // which the site concatenates.
+        // e.g. the series "Lucky Luke (en anglais)":
+        // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
+        // have BOTH "1" and "48" ... and we end up with "148"
+        // The "1" is the number in the original series.
+        // The "48" is the number of the actual book in this specific series.
+        // i.o.w. this specific series published the books in a new/different order.
+        // This is clearly a bug on the site... not much we can do about that.
+        // The only solution... never parse the mainSection,
+        // but always parse the edition-section...  to be decided later...
+        final Node textNode = labelElement.nextSibling();
+        final List<Series> seriesList = book.getSeries();
+        if (textNode != null && !seriesList.isEmpty()) {
+            seriesList.get(seriesList.size() - 1)
+                      .setNumber(textNode.toString().strip());
         }
     }
 
