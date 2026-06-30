@@ -99,7 +99,6 @@ public class MaintenanceViewModel
     protected void onCleared() {
         calculateUsedSpaceTask.cancel();
         debugWriterTask.cancel();
-        super.onCleared();
     }
 
     @NonNull

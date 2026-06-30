@@ -55,7 +55,6 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     protected void onCleared() {
         metaDataTask.cancel();
         readerTask.cancel();
-        super.onCleared();
     }
 
     /**

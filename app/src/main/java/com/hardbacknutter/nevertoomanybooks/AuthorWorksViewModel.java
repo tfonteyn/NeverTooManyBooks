@@ -114,7 +114,6 @@ public class AuthorWorksViewModel
     @Override
     protected void onCleared() {
         authorResolverTask.cancel();
-        super.onCleared();
     }
 
     @NonNull

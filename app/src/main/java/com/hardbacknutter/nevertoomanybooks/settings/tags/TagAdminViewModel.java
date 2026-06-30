@@ -57,7 +57,6 @@ public class TagAdminViewModel
     @Override
     protected void onCleared() {
         mapperTask.cancel();
-        super.onCleared();
     }
 
     void init() {

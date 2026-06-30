@@ -42,7 +42,6 @@ public class ConnectionValidatorViewModel
         if (validatorTask != null) {
             validatorTask.cancel();
         }
-        super.onCleared();
     }
 
     /**

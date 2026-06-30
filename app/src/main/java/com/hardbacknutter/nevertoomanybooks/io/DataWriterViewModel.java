@@ -52,7 +52,6 @@ public abstract class DataWriterViewModel<RESULTS>
     @Override
     protected void onCleared() {
         writerTask.cancel();
-        super.onCleared();
     }
 
     /**
