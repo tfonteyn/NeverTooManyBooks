@@ -89,7 +89,7 @@ public class SingleChoiceDialogFragment
             final MaterialRadioButton rb = new MaterialRadioButton(context);
             // setOnCheckedChangeListener needs IDs to function
             rb.setId(View.generateViewId());
-            rb.setHeight(heightPx);
+            rb.setMinimumHeight(heightPx);
             rb.setText(entries[i]);
             if (i == setting.getSelectedIndex()) {
                 rb.setChecked(true);

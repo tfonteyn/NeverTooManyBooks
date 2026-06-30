@@ -98,7 +98,7 @@ public class MultiChoiceDialogFragment
 
         for (int i = 0; i < entries.length; i++) {
             final MaterialCheckBox cb = new MaterialCheckBox(context);
-            cb.setHeight(heightPx);
+            cb.setMinimumHeight(heightPx);
             cb.setText(entries[i]);
             cb.setChecked(selectedItems[i]);
             cb.setTag(entryValues[i]);

@@ -130,13 +130,22 @@
         <item name="android:textAppearance">?android:attr/textAppearanceListItem</item>
     </style>
 
+    <style name="PrefsLib.Dialog.RootScroller"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fillViewport">true</item>
+        <item name="android:fadeScrollbars">false</item>
+        <item name="android:scrollbarFadeDuration">0</item>
+        <item name="android:scrollbars">vertical</item>
+    </style>
 
     <style name="PrefsLib.Dialog.Container"
            parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">48dp</item>
-        <item name="android:layout_marginBottom">48dp</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginBottom">24dp</item>
     </style>
 
     <style name="PrefsLib.Dialog.Message"
