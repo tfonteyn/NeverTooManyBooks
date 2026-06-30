@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -60,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
@@ -254,15 +254,15 @@ public class SettingsFragment
                              R.array.pe_edit_capitalize,
                              R.array.pv_edit_capitalize, null, p -> {
                     p.setIcon(R.drawable.titlecase_24px);
-                    // default 1: capitalize all words.
+                    // default 1: 'title': capitalize all words.
                     p.setSelectedIndex(1);
                 });
-        factory.singleChoice(EditBookViewModel.PK_EDIT_BOOK_PRODUCT_CODE_CHECKS,
+        factory.singleChoice(ProductCodeValidity.PK_EDIT_BOOK_PRODUCT_CODE_CHECKS,
                              R.string.pt_edit_book_isbn_checks,
                              R.array.pe_edit_book_isbn_checks,
                              R.array.pv_edit_book_isbn_checks, null, p -> {
                     p.setIcon(R.drawable.check_24px);
-                    // default 1: Loose
+                    // default 1: ProductCodeValidity.ValidCodes
                     p.setSelectedIndex(1);
                 });
 

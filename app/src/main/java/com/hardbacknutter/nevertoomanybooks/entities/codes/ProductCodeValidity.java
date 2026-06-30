@@ -24,6 +24,8 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 /**
  * Describes how we check for valid codes. This is a user-setting.
  */
@@ -38,10 +40,22 @@ public enum ProductCodeValidity {
      */
     Isbn(2);
 
+    /**
+     * {@link ProductCode} Validity level.
+     * Type: int
+     *
+     * @see ProductCodeValidity
+     */
+    public static final String PK_EDIT_BOOK_PRODUCT_CODE_CHECKS = "edit.book.isbn.checks";
+
     private final int id;
 
     ProductCodeValidity(final int id) {
         this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     /**
@@ -56,6 +70,31 @@ public enum ProductCodeValidity {
         return Arrays.stream(values())
                      .filter(v -> v.id == id)
                      .findFirst()
-                     .orElse(ValidCodes);
+                     .orElse(Isbn);
+    }
+
+    /**
+     * Get the users preferred level of validity checking.
+     *
+     * @return level
+     */
+    @NonNull
+    public static ProductCodeValidity getPreferredLevel() {
+        return byId(
+                // def==-1 to make byId return the enum default.
+                ServiceLocator.getInstance().getSharedPreferences()
+                              .getIntFromString(PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, -1));
+    }
+
+    /**
+     * Set the users preferred level of validity checking.
+     *
+     * @param validity level
+     */
+    public static void setPreferredLevel(@NonNull final ProductCodeValidity validity) {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(PK_EDIT_BOOK_PRODUCT_CODE_CHECKS, String.valueOf(validity.id))
+                      .apply();
     }
 }

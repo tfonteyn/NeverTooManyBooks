@@ -152,7 +152,7 @@ public class EditBookFieldsFragment
         vb.bookshelves.setOnClickListener(v -> editBookshelves());
 
         // ISBN: manual edit of the field, or click the end-icon to scan a barcode
-        final ProductCodeValidity validityCheck = ProductCodeValidity.getPreferredCodeValidity();
+        final ProductCodeValidity validityCheck = ProductCodeValidity.getPreferredLevel();
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, validityCheck);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
         isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
@@ -252,7 +252,7 @@ public class EditBookFieldsFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            switch (ProductCodeValidity.getPreferredCodeValidity()) {
+            switch (ProductCodeValidity.getPreferredLevel()) {
                 case Isbn:
                     menu.findItem(R.id.MENU_PRODUCT_CODE_VALIDITY_STRICT).setChecked(true);
                     break;
@@ -289,7 +289,7 @@ public class EditBookFieldsFragment
         }
 
         private void setValidity(@NonNull final ProductCodeValidity validity) {
-            ProductCodeValidity.setPreferredCodeValidity(validity);
+            ProductCodeValidity.setPreferredLevel(validity);
             isbnCleanupTextWatcher.setValidityLevel(validity);
             isbnValidationTextWatcher.setValidityLevel(validity);
         }
