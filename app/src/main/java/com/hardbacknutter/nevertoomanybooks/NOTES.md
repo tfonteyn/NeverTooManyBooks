@@ -40,7 +40,12 @@ Tried it out for the ViewPager2 usage:
 
 <hr style="border:1px solid blue;">
 
-ENHANCE: ISSN (serials) lookups?
+ENHANCE: ISSN (serials) lookups
+- already using: ZDB, Wikidata
+- potential:
+  - scientific journals: https://api.openalex.org/sources/issn:0140-6736 
+- useless for our purposes:
+  - https://api.crossref.org/journals/0140-6736
 
 ENHANCE: https://www.belgischebibliografie.be
 
