@@ -188,4 +188,10 @@
     <dimen name="startup_splash_min_width">300dp</dimen>
     <dimen name="startup_splash_max_width">340dp</dimen>
 
+    <!--
+        Make sure a 13-digit ISBN field is not wrapped/cut-off.
+        Use with: layout_constraintWidth_min
+    -->
+    <dimen name="book_details_publication_layout_min_width">160dp</dimen>
+
 </resources>

@@ -27,14 +27,12 @@
     android:id="@+id/ns_content_body"
     style="@style/FragmentRoot.NestedScroller"
     tools:context=".FragmentHostActivity"
-    tools:viewBindingIgnore="true"
-    >
+    tools:viewBindingIgnore="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_body"
         style="@style/FragmentRoot.ConstraintLayout"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/col2"
@@ -194,7 +192,7 @@
             app:layout_constraintEnd_toEndOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/series_title"
-            >
+            app:layout_constraintWidth_min="@dimen/book_details_publication_layout_min_width">
 
             <include
                 android:id="@+id/publication_content"
@@ -209,8 +207,7 @@
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
-            >
+            app:layout_constraintTop_toBottomOf="@id/series_title">
 
             <include
                 android:id="@+id/personal_data_content"
