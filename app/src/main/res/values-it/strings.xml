@@ -565,7 +565,7 @@
     <string name="pe_bob_list_rebuild_state_expanded">Espandi tutto</string>
     <string name="pe_bob_list_rebuild_state_preferred">Usa lo stato preferito</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preserva lo stato corrente</string>
-    <string name="X_loose">Libero</string>
+    <string name="X_loose">Approssimativo</string>
     <string name="pe_thumbnails_cache_resized_each_time">Ridimensiona ogni volta (richiede meno spazio di memorizzazione, ma lo scorrimento sarà più lento)</string>
     <string name="pe_thumbnails_cache_resized_stored">Memorizza le miniature ridimensionate (richiede più spazio di memorizzazione, ma gli elenchi scorreranno più velocemente)</string>
     <string name="pe_ui_theme_dark">Scura</string>
