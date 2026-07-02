@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -321,24 +322,25 @@ public class IdentifierDaoImpl
         }
 
         final Set<String> keysFound = new HashSet<>();
-        final List<Identifier.Value> result = new ArrayList<>();
-        list.forEach(iv -> {
-            if (!keysFound.contains(iv.getKey())) {
-                final String sid = iv.getSid();
-                // Not just a sanity check: we MUST check for null!
-                //noinspection ConstantValue
-                if (sid != null && !sid.isEmpty() && !"0".equals(sid)) {
-                    keysFound.add(iv.getKey());
-                    result.add(iv);
-                }
-            }
-        });
+        final List<Identifier.Value> result =
+                list.stream()
+                    .filter(this::isValidIdentifier)
+                    .filter(iv -> keysFound.add(iv.getKey()))
+                    .collect(Collectors.toList());
+
         if (list.equals(result)) {
             return false;
         }
         list.clear();
         list.addAll(result);
         return true;
+    }
+
+    private boolean isValidIdentifier(@NonNull final Identifier.Value iv) {
+        final String sid = iv.getSid();
+        // Not just a sanity check: we MUST check for null!
+        //noinspection ConstantValue
+        return sid != null && !sid.isEmpty() && !"0".equals(sid);
     }
 
     @Override

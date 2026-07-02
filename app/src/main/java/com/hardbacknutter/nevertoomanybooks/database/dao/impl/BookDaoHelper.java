@@ -96,8 +96,8 @@ public class BookDaoHelper {
     /**
      * Constructor.
      *
-     * @param tableInfo      of the {@link DBDefinitions#TBL_BOOKS} table
-     * @param userLocales    Current Locales
+     * @param tableInfo   of the {@link DBDefinitions#TBL_BOOKS} table
+     * @param userLocales Current Locales
      */
     public BookDaoHelper(@NonNull final TableInfo tableInfo,
                          @NonNull final List<Locale> userLocales) {
@@ -299,29 +299,28 @@ public class BookDaoHelper {
     @VisibleForTesting
     public void processDates(@NonNull final Book book) {
         // Partial/Full Date strings
-        dateDomainNames.stream()
-                       .filter(book::contains)
-                       .forEach(key -> {
-                           final String date = book.getString(key);
-                           // This is very crude... we simply truncate to 10 characters maximum
-                           // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date.
-                           if (date.length() > 10) {
-                               book.putString(key, date.substring(0, 10));
-                           }
-                       });
+        for (final String dateDomainName : dateDomainNames) {
+            if (book.contains(dateDomainName)) {
+                final String date = book.getString(dateDomainName);
+                // This is very crude... we simply truncate to 10 characters maximum
+                // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date.
+                if (date.length() > 10) {
+                    book.putString(dateDomainName, date.substring(0, 10));
+                }
+            }
+        }
 
         // Full UTC based DateTime strings
-        dateTimeDomainNames
-                .stream()
-                .filter(book::contains)
-                .forEach(key -> {
-                    final String date = book.getString(key);
-                    // Again, very crude logic... we simply check for the 11th char being a 'T'
-                    // and if so, replace it with a space
-                    if (date.length() > 10 && date.charAt(10) == 'T') {
-                        book.putString(key, T.matcher(date).replaceFirst(" "));
-                    }
-                });
+        for (final String key : dateTimeDomainNames) {
+            if (book.contains(key)) {
+                final String date = book.getString(key);
+                // Again, very crude logic... we simply check for the 11th char being a 'T'
+                // and if so, replace it with a space
+                if (date.length() > 10 && date.charAt(10) == 'T') {
+                    book.putString(key, T.matcher(date).replaceFirst(" "));
+                }
+            }
+        }
     }
 
     /**
@@ -350,29 +349,15 @@ public class BookDaoHelper {
         identifierDao.pruneList(ivsIn);
 
         ivsIn.stream()
-             .filter(iv -> {
-                 final Identifier.Type type = map.get(iv.getKey());
-                 // Identifier.Type.Number identifiers MUST exist
-                 return type == Identifier.Type.Number;
-             })
-             .forEach(iv -> {
-                 try {
-                     final long v = Long.parseLong(iv.getSid());
-                     if (v > 0) {
-                         ivsOut.add(iv);
-                     }
-                 } catch (@NonNull final NumberFormatException e) {
-                     if (BuildConfig.DEBUG /* always */) {
-                         LoggerFactory.getLogger().d(TAG, "preprocessExternalIds",
-                                                     "NumberFormatException|iv=" + iv);
-                     }
-                 }
-             });
+             // Identifier.Type.Number identifiers MUST exist
+             .filter(iv -> map.get(iv.getKey()) == Identifier.Type.Number)
+             .filter(this::isPositiveNumber)
+             .forEach(ivsOut::add);
 
         ivsIn.stream()
+             // Identifier.Type.Text identifiers are optional
              .filter(iv -> {
                  final Identifier.Type type = map.get(iv.getKey());
-                 // Identifier.Type.Text identifiers are optional
                  return type == null || type == Identifier.Type.Text;
              })
              .forEach(ivsOut::add);
@@ -380,6 +365,18 @@ public class BookDaoHelper {
         // always write, even when empty. The latter would be the result
         // of the above code and means we want to delete all identifiers.
         book.setIdentifiers(ivsOut);
+    }
+
+    private boolean isPositiveNumber(@NonNull final Identifier.Value iv) {
+        try {
+            return Long.parseLong(iv.getSid()) > 0;
+        } catch (@NonNull final NumberFormatException e) {
+            if (BuildConfig.DEBUG) {
+                LoggerFactory.getLogger().d(TAG, "preprocessExternalIds",
+                                            "NumberFormatException|iv=" + iv);
+            }
+            return false;
+        }
     }
 
     /**
@@ -398,28 +395,27 @@ public class BookDaoHelper {
     @VisibleForTesting
     public void processNullsAndBlanks(@NonNull final Book book,
                                       final boolean isNew) {
-        tableDomains
-                .stream()
-                .filter(domain -> book.contains(domain.getName()) && domain.hasDefault())
-                .forEach(domain -> {
-                    // We don't care about Money here. Value/Currency are treated as Number/String
-                    final Object o = book.get(domain.getName());
-                    if (
-                        // Fields which are null but not allowed to be null
-                            o == null && domain.isNotNull()
-                            ||
-                            // Fields which are null/empty (i.e. blank) but not allowed to be blank
-                            (o == null || o.toString().isEmpty()) && domain.isNotBlank()
-                    ) {
-                        if (isNew) {
-                            book.remove(domain.getName());
-                        } else {
-                            // restore the column to its default value.
-                            //noinspection DataFlowIssue
-                            book.putString(domain.getName(), domain.getDefault());
-                        }
+        for (final Domain domain : tableDomains) {
+            if (book.contains(domain.getName()) && domain.hasDefault()) {
+                // We don't care about Money here. Value/Currency are treated as Number/String
+                final Object o = book.get(domain.getName());
+                if (
+                    // Fields which are null but not allowed to be null
+                        o == null && domain.isNotNull()
+                        ||
+                        // Fields which are null/empty (i.e. blank) but not allowed to be blank
+                        (o == null || o.toString().isEmpty()) && domain.isNotBlank()
+                ) {
+                    if (isNew) {
+                        book.remove(domain.getName());
+                    } else {
+                        // restore the column to its default value.
+                        //noinspection DataFlowIssue
+                        book.putString(domain.getName(), domain.getDefault());
                     }
-                });
+                }
+            }
+        }
     }
 
     /**
@@ -439,100 +435,98 @@ public class BookDaoHelper {
      *
      * @throws IllegalArgumentException if a {@code null} is set for a not-nullable column
      */
-    @VisibleForTesting
     @NonNull
-    public ContentValues filterValues(@NonNull final Book book,
-                                      @NonNull final RealNumberParser realNumberParser) {
+    private ContentValues filterValues(@NonNull final Book book,
+                                       @NonNull final RealNumberParser realNumberParser) {
         final ContentValues cv = new ContentValues();
 
-        book.keySet()
-            .stream()
+        for (final String key : book.keySet()) {
             // We've seen empty keys in old BC imports - this is likely due to a csv column
             // not being properly escaped, i.e. the data itself containing a comma.
             // Not much we can do about that, so skip if encountered.
-            .filter(key -> !key.isEmpty())
-            .forEach(key -> {
-                // Get column info for this column.
-                final ColumnInfo columnInfo = tableInfo.getColumn(key);
-                // Check if we actually have a matching column, and never update a PK.
-                if (columnInfo != null && !columnInfo.isPrimaryKey()) {
+            if (key.isEmpty()) {
+                continue;
+            }
 
-                    // We don't care about Money here. Value/Currency are treated as Number/String
-                    final Object entry = book.get(key);
-                    if (entry == null) {
-                        if (columnInfo.isNullable()) {
-                            cv.putNull(key);
-                        } else {
-                            throw new IllegalArgumentException(
-                                    "NULL on a non-nullable column|key=" + key);
-                        }
+            final ColumnInfo columnInfo = tableInfo.getColumn(key);
+            // Check if we actually have a matching column, and never update a PK.
+            if (columnInfo != null && !columnInfo.isPrimaryKey()) {
+                // We don't care about Money here. Value/Currency are treated as Number/String
+                final Object entry = book.get(key);
+                if (entry == null) {
+                    if (columnInfo.isNullable()) {
+                        cv.putNull(key);
                     } else {
-                        final String columnName = columnInfo.getName();
-                        switch (columnInfo.getCursorFieldType()) {
-                            case Cursor.FIELD_TYPE_STRING: {
-                                if (entry instanceof String) {
-                                    cv.put(columnName, (String) entry);
-                                } else {
-                                    cv.put(columnName, entry.toString());
-                                }
-                                break;
+                        throw new IllegalArgumentException(
+                                "NULL on a non-nullable column|key=" + key);
+                    }
+                } else {
+                    final String columnName = columnInfo.getName();
+                    switch (columnInfo.getCursorFieldType()) {
+                        case Cursor.FIELD_TYPE_STRING: {
+                            if (entry instanceof String) {
+                                cv.put(columnName, (String) entry);
+                            } else {
+                                cv.put(columnName, entry.toString());
                             }
-                            case Cursor.FIELD_TYPE_INTEGER: {
-                                if (entry instanceof Boolean) {
-                                    cv.put(columnName, (Boolean) entry ? 1 : 0);
-                                } else {
-                                    try {
-                                        cv.put(columnName, NumberParser.toInt(entry));
-                                    } catch (@NonNull final NumberFormatException e) {
-                                        // We do NOT want to fail at this point.
-                                        // Log, but skip this field.
-                                        LoggerFactory.getLogger()
-                                                     .w(TAG, e.getMessage(),
-                                                        "columnName(int)=" + columnName,
-                                                        "entry=" + entry,
-                                                        "book=" + book);
-                                    }
-                                }
-                                break;
-                            }
-                            case Cursor.FIELD_TYPE_FLOAT: {
+                            break;
+                        }
+                        case Cursor.FIELD_TYPE_INTEGER: {
+                            if (entry instanceof Boolean) {
+                                cv.put(columnName, (Boolean) entry ? 1 : 0);
+                            } else {
                                 try {
-                                    cv.put(columnName, realNumberParser.toDouble(entry));
+                                    cv.put(columnName, NumberParser.toInt(entry));
                                 } catch (@NonNull final NumberFormatException e) {
                                     // We do NOT want to fail at this point.
-                                    // Although the conclusion cannot be 100%, we're
-                                    // very likely looking at a "list price" field coming
-                                    // from an import which cannot be parsed.
                                     // Log, but skip this field.
-                                    // This does mean that sentiments like:
-                                    // list_price="a lot of money" will NOT be preserved!
                                     LoggerFactory.getLogger()
-                                                 .w(TAG, "columnName(float)=" + columnName,
+                                                 .w(TAG, e.getMessage(),
+                                                    "columnName(int)=" + columnName,
                                                     "entry=" + entry,
-                                                    e.getMessage(),
                                                     "book=" + book);
                                 }
-                                break;
                             }
-                            case Cursor.FIELD_TYPE_BLOB: {
-                                if (entry instanceof byte[]) {
-                                    cv.put(columnName, (byte[]) entry);
-                                } else {
-                                    throw new IllegalArgumentException(
-                                            "non-null Blob but not a byte[] ?"
-                                            + "|columnName(blob)=" + columnName
-                                            + "|key=" + key);
-                                }
-                                break;
-                            }
-                            case Cursor.FIELD_TYPE_NULL:
-                            default:
-                                // ignore
-                                break;
+                            break;
                         }
+                        case Cursor.FIELD_TYPE_FLOAT: {
+                            try {
+                                cv.put(columnName, realNumberParser.toDouble(entry));
+                            } catch (@NonNull final NumberFormatException e) {
+                                // We do NOT want to fail at this point.
+                                // Although the conclusion cannot be 100%, we're
+                                // very likely looking at a "list price" field coming
+                                // from an import which cannot be parsed.
+                                // Log, but skip this field.
+                                // This does mean that sentiments like:
+                                // list_price="a lot of money" will NOT be preserved!
+                                LoggerFactory.getLogger()
+                                             .w(TAG, "columnName(float)=" + columnName,
+                                                "entry=" + entry,
+                                                e.getMessage(),
+                                                "book=" + book);
+                            }
+                            break;
+                        }
+                        case Cursor.FIELD_TYPE_BLOB: {
+                            if (entry instanceof byte[]) {
+                                cv.put(columnName, (byte[]) entry);
+                            } else {
+                                throw new IllegalArgumentException(
+                                        "non-null Blob but not a byte[] ?"
+                                        + "|columnName(blob)=" + columnName
+                                        + "|key=" + key);
+                            }
+                            break;
+                        }
+                        case Cursor.FIELD_TYPE_NULL:
+                        default:
+                            // ignore
+                            break;
                     }
                 }
-            });
+            }
+        }
         return cv;
     }
 
