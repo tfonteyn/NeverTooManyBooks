@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -51,10 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ASIN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -64,6 +61,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ASIN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
@@ -709,88 +710,91 @@ public class AmazonSearchEngine
                               @NonNull final Document document,
                               @NonNull final Book book) {
 
-        document.select("div#detailBulletsWrapper_feature_div > div > ul > li")
+        final List<String[]> labelValuePairs = document
+                .select("div#detailBulletsWrapper_feature_div > div > ul > li")
                 .stream()
                 .map(li -> li.text().strip().split(":", 2))
-                .filter(text -> text.length == 2)
-                .forEach(text -> {
+                .filter(text1 -> text1.length == 2)
+                .collect(Collectors.toList());
 
-                    final String label = SearchEngineUtils.cleanText(text[0]);
-                    final String lcLabel = label.toLowerCase(siteLocale);
+        for (final String[] text : labelValuePairs) {
+            final String label = SearchEngineUtils.cleanText(text[0]);
+            final String lcLabel = label.toLowerCase(siteLocale);
+            final String value = text[1];
 
-                    if (LABEL_ASIN.contains(lcLabel)) {
-                        // Not checking validity, this is straight from Amazon after all.
-                        // But do clean the string, as the website often contains invisible
-                        // unicode characters.
-                        final ASIN asin = new ASIN(SearchEngineUtils.cleanText(text[1]));
-                        book.setIdentifierValue(Identifier.SID_ASIN, asin.asText());
+            if (LABEL_ASIN.contains(lcLabel)) {
+                // Not checking validity, this is straight from Amazon after all.
+                // But do clean the string, as the website often contains invisible
+                // unicode characters.
+                final ASIN asin = new ASIN(SearchEngineUtils.cleanText(value));
+                book.setIdentifierValue(Identifier.SID_ASIN, asin.asText());
 
-                        if (!book.hasProductCode()) {
-                            // Set as ISBN if we don't have one yet.
-                            // If the book has a real ISBN-13 it will overwrite this
-                            // when we get to parsing the ISBN.
-                            book.setRawProductCode(asin.asText());
-                        }
-                    } else if (LABEL_ISBN_13.equals(lcLabel)) {
-                        book.setRawProductCode(ISBN.cleanText(text[1]));
+                if (!book.hasProductCode()) {
+                    // Set as ISBN if we don't have one yet.
+                    // If the book has a real ISBN-13 it will overwrite this
+                    // when we get to parsing the ISBN.
+                    book.setRawProductCode(asin.asText());
+                }
+            } else if (LABEL_ISBN_13.equals(lcLabel)) {
+                book.setRawProductCode(ISBN.cleanText(value));
 
-                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.hasProductCode()) {
-                        book.setRawProductCode(ISBN.cleanText(text[1]));
+            } else if (LABEL_ISBN_10.equals(lcLabel) && !book.hasProductCode()) {
+                book.setRawProductCode(ISBN.cleanText(value));
 
-                    } else if (LABEL_FORMAT.contains(lcLabel)) {
-                        // we might already have the format, but we'll overwrite it - that's OK.
-                        book.setFormat(label);
-                        // 2025-06-01: we can likely remove this, as there is now LABEL_PAGES
-                        final String data = SearchEngineUtils.cleanText(text[1]);
-                        parsePages(data, book);
+            } else if (LABEL_FORMAT.contains(lcLabel)) {
+                // we might already have the format, but we'll overwrite it - that's OK.
+                book.setFormat(label);
+                // 2025-06-01: we can likely remove this, as there is now LABEL_PAGES
+                final String data = SearchEngineUtils.cleanText(value);
+                parsePages(data, book);
 
-                    } else if (LABEL_PAGES.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
-                        parsePages(data, book);
+            } else if (LABEL_PAGES.contains(lcLabel)) {
+                final String data = SearchEngineUtils.cleanText(value);
+                parsePages(data, book);
 
-                    } else if (LABEL_LANGUAGE.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
-                        book.setLanguage(data);
+            } else if (LABEL_LANGUAGE.contains(lcLabel)) {
+                final String data = SearchEngineUtils.cleanText(value);
+                book.setLanguage(data);
 
-                    } else if (LABEL_PUBLISHER.contains(lcLabel)) {
-                        boolean publisherWasAdded = false;
-                        final String data = SearchEngineUtils.cleanName(text[1]);
-                        final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
-                        if (matcher.find()) {
-                            final String pubName = matcher.group(1);
-                            if (pubName != null) {
-                                final Publisher publisher = Publisher.from(pubName.strip());
-                                book.add(publisher);
-                                publisherWasAdded = true;
-                            }
-
-                            final String pubDate = matcher.group(2);
-                            if (pubDate != null) {
-                                addPublicationDate(context, siteLocale, pubDate.strip(), book);
-                            }
-                        }
-
-                        if (!publisherWasAdded) {
-                            final Publisher publisher = Publisher.from(data);
-                            book.add(publisher);
-                        }
-                    } else if (LABEL_PUBLICATION_DATE.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
-                        addPublicationDate(context, siteLocale, data, book);
-
-                    } else if (LABEL_SERIES.contains(lcLabel)) {
-                        final String data = SearchEngineUtils.cleanText(text[1]);
-                        book.add(Series.from(data));
-
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            if (!LABEL_IGNORED.contains(lcLabel)) {
-                                LoggerFactory.getLogger().d(TAG, getHostUrl(),
-                                                            "parse", "label=" + label);
-                            }
-                        }
+            } else if (LABEL_PUBLISHER.contains(lcLabel)) {
+                boolean publisherWasAdded = false;
+                final String data = SearchEngineUtils.cleanName(value);
+                final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
+                if (matcher.find()) {
+                    final String pubName = matcher.group(1);
+                    if (pubName != null) {
+                        final Publisher publisher = Publisher.from(pubName.strip());
+                        book.add(publisher);
+                        publisherWasAdded = true;
                     }
-                });
+
+                    final String pubDate = matcher.group(2);
+                    if (pubDate != null) {
+                        addPublicationDate(context, siteLocale, pubDate.strip(), book);
+                    }
+                }
+
+                if (!publisherWasAdded) {
+                    final Publisher publisher = Publisher.from(data);
+                    book.add(publisher);
+                }
+            } else if (LABEL_PUBLICATION_DATE.contains(lcLabel)) {
+                final String data = SearchEngineUtils.cleanText(value);
+                addPublicationDate(context, siteLocale, data, book);
+
+            } else if (LABEL_SERIES.contains(lcLabel)) {
+                final String data = SearchEngineUtils.cleanText(value);
+                book.add(Series.from(data));
+
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    if (!LABEL_IGNORED.contains(lcLabel)) {
+                        LoggerFactory.getLogger().d(TAG, getHostUrl(),
+                                                    "parse", "label=" + label);
+                    }
+                }
+            }
+        }
     }
 
     private void parsePages(@NonNull final CharSequence data,

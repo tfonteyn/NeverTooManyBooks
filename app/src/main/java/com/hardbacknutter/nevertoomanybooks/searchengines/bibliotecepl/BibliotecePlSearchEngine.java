@@ -545,109 +545,108 @@ public class BibliotecePlSearchEngine
         // These spans are inside a div with an itemprop set to one of these values:
         //    creator, contributor
         // But the actual type can only be derived from the label.
-        bookData.select("th")
-                .forEach(th -> {
-                    final Element td = th.nextElementSibling();
-                    if (td != null && "td".equals(td.tagName())) {
-                        final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
-                        switch (lcLabel) {
-                            case LABEL_AUTHOR:
-                            case LABEL_AUTHORS: {
-                                parseAuthor(td, AUTHOR_IS_CREATOR,
-                                            AuthorRole.WRITER, book);
-                                break;
-                            }
-                            case LABEL_CONTRIBUTOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.CONTRIBUTOR,
-                                            book);
-                                break;
-                            }
-                            case LABEL_FOREWORD: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.FOREWORD, book);
-                                break;
-                            }
-                            case LABEL_AFTERWORD: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.AFTERWORD, book);
-                                break;
-                            }
-                            case LABEL_INTRODUCTION: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.INTRODUCTION,
-                                            book);
-                                break;
-                            }
-                            case LABEL_ILLUSTRATOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.ARTIST, book);
-                                break;
-                            }
-                            case LABEL_EDITOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.EDITOR, book);
-                                break;
-                            }
-                            case LABEL_NARRATOR:
-                            case LABEL_NARRATORS: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.NARRATOR, book);
-                                break;
-                            }
-                            case LABEL_SCENARIST: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.WRITER, book);
-                                break;
-                            }
-                            case LABEL_TRANSLATOR:
-                            case LABEL_TRANSLATORS: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
-                                            AuthorRole.TRANSLATOR, book);
-                                break;
-                            }
-
-                            case LABEL_SUBTITLE: {
-                                parseSubtitle(td, SPAN_DATA_IPUB_SEARCH_T, book);
-                                break;
-                            }
-                            case LABEL_PUBLISHER:
-                            case LABEL_PUBLISHERS: {
-                                parsePublishers(td, book);
-                                break;
-                            }
-                            case LABEL_SERIES: {
-                                parseSeries(td, book);
-                                break;
-                            }
-                            case LABEL_TAGS: {
-                                parseTags(td, "div", book);
-                                break;
-                            }
-
-                            // Do NOT add the below to parseAuthors2(..)
-                            case LABEL_ORIGINAL_TITLE: {
-                                final Element element = td.selectFirst(SPAN_DATA_IPUB_SEARCH_T);
-                                if (element != null) {
-                                    final String text = element.text();
-                                    if (!text.isEmpty()) {
-                                        book.setTranslatedFromTitle(text);
-                                    }
-                                }
-                                break;
-                            }
-
-                            case LABEL_FIRST_PUB_DATE: {
-                                parsePublicationDate(td, book);
-                                break;
-                            }
-
-                            // Other labels we know about, but ignore
-                            // "Źródło opisu" -> Source of description
-
-                        }
+        for (final Element th : bookData.select("th")) {
+            final Element td = th.nextElementSibling();
+            if (td != null && "td".equals(td.tagName())) {
+                final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
+                switch (lcLabel) {
+                    case LABEL_AUTHOR:
+                    case LABEL_AUTHORS: {
+                        parseAuthor(td, AUTHOR_IS_CREATOR,
+                                    AuthorRole.WRITER, book);
+                        break;
                     }
-                });
+                    case LABEL_CONTRIBUTOR: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.CONTRIBUTOR,
+                                    book);
+                        break;
+                    }
+                    case LABEL_FOREWORD: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.FOREWORD, book);
+                        break;
+                    }
+                    case LABEL_AFTERWORD: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.AFTERWORD, book);
+                        break;
+                    }
+                    case LABEL_INTRODUCTION: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.INTRODUCTION,
+                                    book);
+                        break;
+                    }
+                    case LABEL_ILLUSTRATOR: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.ARTIST, book);
+                        break;
+                    }
+                    case LABEL_EDITOR: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.EDITOR, book);
+                        break;
+                    }
+                    case LABEL_NARRATOR:
+                    case LABEL_NARRATORS: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.NARRATOR, book);
+                        break;
+                    }
+                    case LABEL_SCENARIST: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.WRITER, book);
+                        break;
+                    }
+                    case LABEL_TRANSLATOR:
+                    case LABEL_TRANSLATORS: {
+                        parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                    AuthorRole.TRANSLATOR, book);
+                        break;
+                    }
+
+                    case LABEL_SUBTITLE: {
+                        parseSubtitle(td, SPAN_DATA_IPUB_SEARCH_T, book);
+                        break;
+                    }
+                    case LABEL_PUBLISHER:
+                    case LABEL_PUBLISHERS: {
+                        parsePublishers(td, book);
+                        break;
+                    }
+                    case LABEL_SERIES: {
+                        parseSeries(td, book);
+                        break;
+                    }
+                    case LABEL_TAGS: {
+                        parseTags(td, "div", book);
+                        break;
+                    }
+
+                    // Do NOT add the below to parseAuthors2(..)
+                    case LABEL_ORIGINAL_TITLE: {
+                        final Element element = td.selectFirst(SPAN_DATA_IPUB_SEARCH_T);
+                        if (element != null) {
+                            final String text = element.text();
+                            if (!text.isEmpty()) {
+                                book.setTranslatedFromTitle(text);
+                            }
+                        }
+                        break;
+                    }
+
+                    case LABEL_FIRST_PUB_DATE: {
+                        parsePublicationDate(td, book);
+                        break;
+                    }
+
+                    // Other labels we know about, but ignore
+                    // "Źródło opisu" -> Source of description
+
+                }
+            }
+        }
     }
 
     private void parseAuthor(@NonNull final Element td,
@@ -785,75 +784,74 @@ public class BibliotecePlSearchEngine
 
     private void parseSecondary(@NonNull final Element bookDetails,
                                 @NonNull final Book book) {
-        bookDetails.select("th")
-                   .forEach(th -> {
-                       final Element td = th.nextElementSibling();
-                       if (td != null) {
-                           // Keep in sync with parseAuthors(..)
-                           final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
-                           switch (lcLabel) {
-                               case LABEL_AUTHOR:
-                               case LABEL_AUTHORS:
-                               case LABEL_SCENARIST: {
-                                   parseAuthor2(td, AuthorRole.WRITER, book);
-                                   break;
-                               }
-                               case LABEL_CONTRIBUTOR: {
-                                   parseAuthor2(td, AuthorRole.CONTRIBUTOR, book);
-                                   break;
-                               }
-                               case LABEL_FOREWORD: {
-                                   parseAuthor2(td, AuthorRole.FOREWORD, book);
-                                   break;
-                               }
-                               case LABEL_AFTERWORD: {
-                                   parseAuthor2(td, AuthorRole.AFTERWORD, book);
-                                   break;
-                               }
-                               case LABEL_INTRODUCTION: {
-                                   parseAuthor2(td, AuthorRole.INTRODUCTION, book);
-                                   break;
-                               }
-                               case LABEL_ILLUSTRATOR: {
-                                   parseAuthor2(td, AuthorRole.ARTIST, book);
-                                   break;
-                               }
-                               case LABEL_EDITOR: {
-                                   parseAuthor2(td, AuthorRole.EDITOR, book);
-                                   break;
-                               }
-                               case LABEL_NARRATOR:
-                               case LABEL_NARRATORS: {
-                                   parseAuthor2(td, AuthorRole.NARRATOR, book);
-                                   break;
-                               }
-                               case LABEL_TRANSLATOR:
-                               case LABEL_TRANSLATORS: {
-                                   parseAuthor2(td, AuthorRole.TRANSLATOR, book);
-                                   break;
-                               }
+        for (final Element th : bookDetails.select("th")) {
+            final Element td = th.nextElementSibling();
+            if (td != null) {
+                // Keep in sync with parseAuthors(..)
+                final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
+                switch (lcLabel) {
+                    case LABEL_AUTHOR:
+                    case LABEL_AUTHORS:
+                    case LABEL_SCENARIST: {
+                        parseAuthor2(td, AuthorRole.WRITER, book);
+                        break;
+                    }
+                    case LABEL_CONTRIBUTOR: {
+                        parseAuthor2(td, AuthorRole.CONTRIBUTOR, book);
+                        break;
+                    }
+                    case LABEL_FOREWORD: {
+                        parseAuthor2(td, AuthorRole.FOREWORD, book);
+                        break;
+                    }
+                    case LABEL_AFTERWORD: {
+                        parseAuthor2(td, AuthorRole.AFTERWORD, book);
+                        break;
+                    }
+                    case LABEL_INTRODUCTION: {
+                        parseAuthor2(td, AuthorRole.INTRODUCTION, book);
+                        break;
+                    }
+                    case LABEL_ILLUSTRATOR: {
+                        parseAuthor2(td, AuthorRole.ARTIST, book);
+                        break;
+                    }
+                    case LABEL_EDITOR: {
+                        parseAuthor2(td, AuthorRole.EDITOR, book);
+                        break;
+                    }
+                    case LABEL_NARRATOR:
+                    case LABEL_NARRATORS: {
+                        parseAuthor2(td, AuthorRole.NARRATOR, book);
+                        break;
+                    }
+                    case LABEL_TRANSLATOR:
+                    case LABEL_TRANSLATORS: {
+                        parseAuthor2(td, AuthorRole.TRANSLATOR, book);
+                        break;
+                    }
 
-                               case LABEL_SUBTITLE: {
-                                   parseSubtitle(td, SPAN_DATA_IPUB_SEARCH_T, book);
-                                   break;
-                               }
-                               case LABEL_PUBLISHER:
-                               case LABEL_PUBLISHERS: {
-                                   parsePublishers(td, book);
-                                   break;
-                               }
-                               // label: Serie wydawnicze
-                               // The publication series... and it's a mess.
-                               // Some of the entries are genuine, but others are totally
-                               // generic (e.g. 'Audiobook'). Ignore for now...
+                    case LABEL_SUBTITLE: {
+                        parseSubtitle(td, SPAN_DATA_IPUB_SEARCH_T, book);
+                        break;
+                    }
+                    case LABEL_PUBLISHER:
+                    case LABEL_PUBLISHERS: {
+                        parsePublishers(td, book);
+                        break;
+                    }
+                    // label: Serie wydawnicze
+                    // The publication series... and it's a mess.
+                    // Some of the entries are genuine, but others are totally
+                    // generic (e.g. 'Audiobook'). Ignore for now...
 
-                               case LABEL_TAGS: {
-                                   parseTags(td, "span", book);
-                                   break;
-                               }
-                           }
-                       }
-                   });
+                    case LABEL_TAGS: {
+                        parseTags(td, "span", book);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private void parseAuthor2(@NonNull final Element td,

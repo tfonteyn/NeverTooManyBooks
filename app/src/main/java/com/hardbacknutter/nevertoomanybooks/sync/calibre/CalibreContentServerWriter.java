@@ -404,10 +404,9 @@ public class CalibreContentServerWriter
         final JSONObject localIdentifiers = new JSONObject();
         localBook.getIdentifiers().forEach(iv -> {
             // Map our key to the calibre key, or if not found, just use the key itself
-            String calKey = CalibreIdentifiers.IDENTIFIER_MAPPING_WRITER.get(iv.getKey());
-            if (calKey == null) {
-                calKey = iv.getKey();
-            }
+            final String calKey = CalibreIdentifiers.IDENTIFIER_MAPPING_WRITER
+                    .getOrDefault(iv.getKey(), iv.getKey());
+            //noinspection DataFlowIssue
             localIdentifiers.put(calKey, iv.getSid());
         });
 

@@ -87,10 +87,8 @@ public final class CalibreIdentifiers {
         } else {
             // Map the calKey to our key, or if not found,
             // just use the calKey itself
-            String key = IDENTIFIER_MAPPING_READER.get(calKey);
-            if (key == null) {
-                key = calKey;
-            }
+            final String key = IDENTIFIER_MAPPING_READER.getOrDefault(calKey, calKey);
+            //noinspection DataFlowIssue
             ivs.add(new Identifier.Value(key, sid));
         }
     }

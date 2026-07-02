@@ -334,23 +334,23 @@ public class WikidataSearchEngine
     private void parseIdentifiers(@NonNull final JSONObject o,
                                   @NonNull final List<Identifier.Value> ivs) {
         final String s = o.optString(VALUE, null);
-        if (s != null && !s.isBlank()) {
-            // Avoid duplicates overwriting
-            final Set<String> keys = new HashSet<>();
-            Arrays.stream(IDENT_SPLIT_PATTERN.split(s))
-                  .map(entry -> entry.split(":"))
-                  // paranoia
-                  .filter(id -> id.length == 2)
-                  .forEach(id -> {
-                      String key = IDENTIFIER_MAPPING.get(id[0]);
-                      if (key == null) {
-                          key = id[0];
-                      }
-                      if (!keys.contains(key)) {
-                          keys.add(key);
-                          ivs.add(new Identifier.Value(key, id[1]));
-                      }
-                  });
+        if (s == null || s.isBlank()) {
+            return;
+        }
+        // Avoid duplicates overwriting
+        final Set<String> keys = new HashSet<>();
+
+        for (final String entry : IDENT_SPLIT_PATTERN.split(s)) {
+            final String[] id = entry.split(":");
+            // paranoia
+            if (id.length == 2) {
+                final String key = IDENTIFIER_MAPPING.getOrDefault(id[0], id[0]);
+                if (!keys.contains(key)) {
+                    keys.add(key);
+                    //noinspection DataFlowIssue
+                    ivs.add(new Identifier.Value(key, id[1]));
+                }
+            }
         }
     }
 

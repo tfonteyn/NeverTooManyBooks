@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -347,12 +348,12 @@ public class BiblionetGrSearchEngine
      *    }
      * </pre>
      *
-     * @param lis  to parse
+     * @param list  to parse
      * @param book to update
      */
-    private void processAuthors(@NonNull final Elements lis,
+    private void processAuthors(@NonNull final Collection<Element> list,
                                 @NonNull final Book book) {
-        lis.forEach(li -> {
+        for (final Element li : list) {
             final String label = stripLabel(li);
             switch (label) {
                 case "Συγγραφέας":
@@ -462,7 +463,7 @@ public class BiblionetGrSearchEngine
                                                 "Label: " + label);
                 }
             }
-        });
+        }
     }
 
     private void processAuthor(@AuthorRole.Role final int type,

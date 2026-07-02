@@ -846,7 +846,7 @@ public class CalibreContentServerReader
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBookJsonKey.USER_METADATA);
         if (userMetaData != null && library != null) {
             final CalibreCustomFieldDecoder decoder = new CalibreCustomFieldDecoder(dateParser);
-            library.getCustomFields().forEach(cf -> {
+            for (final CalibreCustomField cf : library.getCustomFields()) {
                 final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
                 if (data != null && cf.getType().equals(data.getString(
                         CalibreCustomField.METADATA_DATATYPE))) {
@@ -855,7 +855,7 @@ public class CalibreContentServerReader
                         decoder.decode(cf, data, book);
                     }
                 }
-            });
+            }
         }
     }
 

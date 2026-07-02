@@ -1197,7 +1197,7 @@ public class IsfdbSearchEngine
 
     private void parsePublicationSeries(@NonNull final Element li,
                                         @NonNull final Book book) {
-        li.select("a").forEach(a -> {
+        for (final Element a : li.select("a")) {
             final String href = a.attr("href");
             final String name = SearchEngineUtils.cleanName(a);
             if (!name.isBlank()) {
@@ -1211,7 +1211,7 @@ public class IsfdbSearchEngine
                 }
                 book.add(series);
             }
-        });
+        }
     }
 
     private void parsePublicationSeriesNumber(@NonNull final Element labelElement,

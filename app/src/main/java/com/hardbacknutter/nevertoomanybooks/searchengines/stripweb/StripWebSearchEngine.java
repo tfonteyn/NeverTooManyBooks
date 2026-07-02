@@ -582,22 +582,14 @@ public class StripWebSearchEngine
     private void parseAuthor(@NonNull final Element td,
                              @AuthorRole.Role final int type,
                              @NonNull final Book book) {
-
         // Most books list the authors as "a" elements
         final Elements aas = td.select("a");
-        if (aas.isEmpty()) {
-            // but some are plain text separated by commas
-            final String[] names = td.text().split(",");
-            Arrays.stream(names)
-                  .map(SearchEngineUtils::cleanName)
-                  .filter(name -> !name.isBlank())
-                  .forEach(name -> parseAuthor(name, type, book));
-        } else {
-            aas.stream()
-               .map(SearchEngineUtils::cleanName)
-               .filter(name -> !name.isBlank())
-               .forEach(name -> parseAuthor(name, type, book));
-        }
+        // but some are plain text separated by commas
+        (aas.isEmpty() ? Arrays.stream(td.text().split(","))
+                       : aas.stream().map(Element::text))
+                .map(SearchEngineUtils::cleanName)
+                .filter(name -> !name.isBlank())
+                .forEach(name -> parseAuthor(name, type, book));
     }
 
     private void parseAuthor(@NonNull final String name,
@@ -635,31 +627,14 @@ public class StripWebSearchEngine
                              @NonNull final Book book) {
         // Most books list the series as "a" elements
         final Elements aas = td.select("a");
-        if (aas.isEmpty()) {
-            // but some are plain text separated by commas
-            final String[] names = td.text().split(",");
-            Arrays.stream(names)
-                  .map(SearchEngineUtils::cleanText)
-                  .filter(name -> !name.isBlank())
-                  .map(Series::from)
-                  .forEach(series -> {
-                      // Add if not already present.
-                      if (book.getSeries().stream().noneMatch(series1 -> series1.equals(series))) {
-                          book.add(series);
-                      }
-                  });
-        } else {
-            aas.stream()
-               .map(SearchEngineUtils::cleanText)
-               .filter(name -> !name.isBlank())
-               .map(Series::from)
-               .forEach(series -> {
-                   // Add if not already present.
-                   if (book.getSeries().stream().noneMatch(series1 -> series1.equals(series))) {
-                       book.add(series);
-                   }
-               });
-        }
+        // but some are plain text separated by commas
+        (aas.isEmpty() ? Arrays.stream(td.text().split(","))
+                       : aas.stream().map(Element::text))
+                .map(SearchEngineUtils::cleanText)
+                .filter(name -> !name.isBlank())
+                .map(Series::from)
+                .filter(series -> book.getSeries().stream().noneMatch(series::equals))
+                .forEach(book::add);
     }
 
     /**
@@ -672,21 +647,13 @@ public class StripWebSearchEngine
                                 @NonNull final Book book) {
         // Most books list the publishers as "a" elements
         final Elements aas = td.select("a");
-        if (aas.isEmpty()) {
-            // but some are plain text separated by commas
-            final String[] names = td.text().split(",");
-            Arrays.stream(names)
-                  .map(SearchEngineUtils::cleanName)
-                  .filter(name -> !name.isBlank())
-                  .map(Publisher::from)
-                  .forEach(book::add);
-        } else {
-            aas.stream()
-               .map(SearchEngineUtils::cleanName)
-               .filter(name -> !name.isBlank())
-               .map(Publisher::from)
-               .forEach(book::add);
-        }
+        // but some are plain text separated by commas
+        (aas.isEmpty() ? Arrays.stream(td.text().split(","))
+                       : aas.stream().map(Element::text))
+                .map(SearchEngineUtils::cleanName)
+                .filter(name -> !name.isBlank())
+                .map(Publisher::from)
+                .forEach(book::add);
     }
 
     /**

@@ -200,25 +200,24 @@ public class ZdbKatalogSearchEngine
         }
 
         // Identifiers
-        document.select("datafield[tag='035']")
-                .stream()
+        //noinspection DataFlowIssue
+        document.select("datafield[tag='035']").stream()
                 .map(df -> df.selectFirst("subfield[code='a']"))
                 .filter(Objects::nonNull)
-                .forEach(sf -> {
-                    //noinspection DataFlowIssue
-                    final Matcher matcher = IDENT_PATTERN.matcher(normalize(sf));
-                    if (matcher.find()) {
-                        String key = matcher.group(1);
-                        final String value = matcher.group(2);
-                        if (key != null && value != null) {
-                            final String tmp = IDENTIFIER_MAPPING.get(key);
-                            if (tmp != null) {
-                                key = tmp;
-                            }
-                            ivs.add(new Identifier.Value(key, value));
-                        }
+                .map(sf -> IDENT_PATTERN.matcher(normalize(sf)))
+                .filter(Matcher::find)
+                .map(matcher -> {
+                    String key = matcher.group(1);
+                    final String value = matcher.group(2);
+                    if (key == null || value == null) {
+                        return null;
                     }
-                });
+
+                    key = IDENTIFIER_MAPPING.getOrDefault(key, key);
+                    return new Identifier.Value(key, value);
+                })
+                .filter(Objects::nonNull)
+                .forEach(ivs::add);
 
         x = document.selectFirst("datafield[tag='041'] subfield[code='a']");
         if (x != null) {

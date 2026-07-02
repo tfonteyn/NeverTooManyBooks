@@ -981,7 +981,7 @@ public class StripInfoSearchEngine
         if (dataElement == null) {
             return 0;
         }
-        dataElement.select("a").forEach(a -> {
+        for (final Element a : dataElement.select("a")) {
             final String name = SearchEngineUtils.cleanName(a);
             final Author author = Author.from(name);
 
@@ -995,7 +995,7 @@ public class StripInfoSearchEngine
             }
 
             addAuthor(author, type, book);
-        });
+        }
         return 1;
     }
 
