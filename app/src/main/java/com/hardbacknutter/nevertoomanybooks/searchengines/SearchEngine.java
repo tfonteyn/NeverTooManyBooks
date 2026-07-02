@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
  * <ul>
  *      <li>{@link ByExternalId}</li>
  *      <li>{@link ByIsbn}</li>
+ *      <li>{@link ByIssn}</li>
  *      <li>{@link ByText}</li>
  * </ul>
  * and if the site supports fetching images by {@link AltEdition}: {@link CoverByEdition}.
@@ -404,6 +405,7 @@ public interface SearchEngine
                        CredentialsException;
     }
 
+    /** Optional. */
     interface Login
             extends SearchEngine {
 
