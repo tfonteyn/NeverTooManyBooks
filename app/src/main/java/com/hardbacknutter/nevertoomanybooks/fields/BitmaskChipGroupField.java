@@ -98,7 +98,10 @@ public class BitmaskChipGroupField
             final Context context = chipGroup.getContext();
 
             final int bits = getValue();
-            mapSupplier.get().forEach((key, resId) -> {
+            for (final Map.Entry<Integer, Integer> entry : mapSupplier.get().entrySet()) {
+                final Integer key = entry.getKey();
+                final Integer resId = entry.getValue();
+
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
                 chip.setChecked((key & bits) != 0);
                 chip.setOnClickListener(editChipListener);
@@ -110,7 +113,7 @@ public class BitmaskChipGroupField
                 chip.setText(resId);
 
                 chipGroup.addView(chip);
-            });
+            }
         }
     }
 

@@ -79,7 +79,7 @@ public class SiteSearchMenuHandler
             menuIdsByAuthorAndSeries.clear();
             menuIdsBySeries.clear();
 
-            EngineId.getSearchOnSite().forEach(engineId -> {
+            for (final EngineId engineId : EngineId.getSearchOnSite()) {
                 final String menuTitle = context.getString(
                         R.string.ellipsize, context.getString(engineId.getLabelResId()));
                 @IdRes
@@ -108,7 +108,7 @@ public class SiteSearchMenuHandler
                 engineMenu.add(0, midBySeries, 0,
                                R.string.option_search_books_in_series)
                           .setIcon(R.drawable.search_24px);
-            });
+            }
         }
     }
 

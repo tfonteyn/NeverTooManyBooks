@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -109,22 +110,22 @@ abstract class ViewOnSiteMenuHandler<T>
         parent.clear();
 
         // add to the menu if the Identifier has a valid url
-        getSids(data)
-                .stream()
-                .map(Identifier.Value::getKey)
-                .map((String key) -> dao.find(key, entityType))
-                .flatMap(Optional::stream)
-                .filter(identifier -> identifier.getUri().isPresent())
-                .forEach(identifier -> {
-                             // generate a random id, and map it to the key
-                             final int menuItemId = View.generateViewId();
-                             menuIds.put(menuItemId, identifier.getKey());
+        final List<Identifier> validIdentifiers =
+                getSids(data).stream()
+                             .map(Identifier.Value::getKey)
+                             .map(key -> dao.find(key, entityType))
+                             .flatMap(Optional::stream)
+                             .filter(id -> id.getUri().isPresent())
+                             .collect(Collectors.toList());
 
-                             parent.add(menuGroupResId, menuItemId, 0,
-                                        identifier.getName())
-                                   .setIcon(R.drawable.link_24px);
-                         }
-                );
+        for (final Identifier identifier : validIdentifiers) {
+            // generate a random id, and map it to the key
+            final int menuItemId = View.generateViewId();
+            menuIds.put(menuItemId, identifier.getKey());
+
+            parent.add(menuGroupResId, menuItemId, 0, identifier.getName())
+                  .setIcon(R.drawable.link_24px);
+        }
 
         final boolean visible = subMenuItem.getSubMenu().size() > 0;
         subMenuItem.setVisible(visible);
