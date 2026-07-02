@@ -28,6 +28,8 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -86,31 +88,34 @@ public class SearchEditionsTask
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 
-        Site.Type.AltEditions
-                .getSites()
-                .stream()
-                .filter(Site::isActive)
-                .map(site -> site.getEngineId().createSearchEngine(context))
-                .map(se -> (SearchEngine.AlternativeEditions<? extends AltEdition>) se)
-                .forEach(searchEngine -> {
-                    searchEngine.setCaller(this);
-                    //noinspection CheckStyle
-                    try {
-                        // can we reach the site ?
-                        searchEngine.ping();
-                        // search for and add the editions
-                        editions.addAll(searchEngine.searchAlternativeEditions(context, productCode));
+        final List<SearchEngine.AlternativeEditions<? extends AltEdition>> engines =
+                Site.Type.AltEditions
+                        .getSites()
+                        .stream()
+                        .filter(Site::isActive)
+                        .map(site -> site.getEngineId().createSearchEngine(context))
+                        .map(se -> (SearchEngine.AlternativeEditions<? extends AltEdition>) se)
+                        .collect(Collectors.toList());
 
-                    } catch (@NonNull final IOException
-                                            | CredentialsException
-                                            | SearchException
-                                            | RuntimeException e) {
-                        // Silently ignore individual failures,
-                        // we'll return what we get from the sites that worked.
-                        LoggerFactory.getLogger().e(TAG, e, "searchEngine="
-                                                            + searchEngine.getName(context));
-                    }
-                });
+        for (final SearchEngine.AlternativeEditions<? extends AltEdition> searchEngine : engines) {
+            searchEngine.setCaller(this);
+            //noinspection CheckStyle
+            try {
+                // can we reach the site ?
+                searchEngine.ping();
+                // search for and add the editions
+                editions.addAll(searchEngine.searchAlternativeEditions(context, productCode));
+
+            } catch (@NonNull final IOException
+                                    | CredentialsException
+                                    | SearchException
+                                    | RuntimeException e) {
+                // Silently ignore individual failures,
+                // we'll return what we get from the sites that worked.
+                LoggerFactory.getLogger().e(TAG, e, "searchEngine="
+                                                    + searchEngine.getName(context));
+            }
+        }
         return editions;
     }
 }

@@ -138,7 +138,7 @@ class ResultsAccumulator {
 
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
 
-        results.forEach(localeBookPair -> {
+        for (final Pair<Locale, Book> localeBookPair : results) {
             final Locale locale = localeBookPair.first;
             final Book result = localeBookPair.second;
             final List<Locale> allLocales = LocaleListUtils.asList(locale, userLocales);
@@ -147,7 +147,7 @@ class ResultsAccumulator {
             final DateParser<LocalDateTime> dateParser =
                     new FullDateParser(isoDateParser, allLocales);
 
-            result.keySet().forEach(key -> {
+            for (final String key : result.keySet()) {
                 if (DBKey.getDateKeys().contains(key)) {
                     processDate(key, result, book, dateParser);
 
@@ -171,8 +171,8 @@ class ResultsAccumulator {
                     // when we get here, we should only have String, int, or long data
                     processGenericKey(key, result, book, realNumberParser);
                 }
-            });
-        });
+            }
+        }
 
         // run the mappers
         mappers.forEach(mapper -> mapper.map(context, book));

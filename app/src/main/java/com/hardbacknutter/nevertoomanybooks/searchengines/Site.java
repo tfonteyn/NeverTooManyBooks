@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -361,7 +362,6 @@ public final class Site
 
         /**
          * Load the site settings and the order of the list.
-         *
          */
         @VisibleForTesting
         void loadPrefs() {
@@ -370,29 +370,31 @@ public final class Site
             final String order = ServiceLocator.getInstance().getSharedPreferences()
                                                .getString(PREFS_ORDER_PREFIX + key, null);
             if (order != null) {
-                final List<EngineId> list = new ArrayList<>();
-                Arrays.stream(order.split(","))
-                      .forEach(prefKey -> Arrays
-                              .stream(EngineId.values())
-                              .filter(engineId -> engineId.getPreferenceKey().equals(prefKey))
-                              .findFirst()
-                              .ifPresent(list::add));
+                // quick lookups
+                final Map<EngineId, Site> siteMap = siteList
+                        .stream()
+                        .collect(Collectors.toMap(site -> site.engineId,
+                                                  site -> site));
 
                 // Reorder keeping the original list members.
                 final List<Site> reorderedList = new ArrayList<>();
-                list.forEach(
-                        id -> siteList.stream()
-                                      .filter(site -> site.engineId == id)
-                                      .findFirst()
-                                      .ifPresent(reorderedList::add));
 
-                if (reorderedList.size() < siteList.size()) {
-                    // This is a fringe case: a new engine was added, and the user upgraded
-                    // this app. The stored order will lack the new engine.
-                    // Add any sites not added yet to the end of the list
-                    siteList.stream()
-                            .filter(site -> !reorderedList.contains(site))
-                            .forEach(reorderedList::add);
+                // Process the stored preference keys to match and pull sites
+                for (final String prefKey : order.split(",")) {
+                    // Find the EngineId matching this preference key
+                    Arrays.stream(EngineId.values())
+                          .filter(id -> id.getPreferenceKey().equals(prefKey))
+                          .findFirst()
+                          // Get and remove the site out of the map if it matches
+                          .map(siteMap::remove)
+                          .ifPresent(reorderedList::add);
+                }
+
+                // Ifa new engine was added, and the user upgraded this app,
+                // then the stored order will lack the new engine.
+                // Add any sites not added yet to the end of the list.
+                if (!siteMap.isEmpty()) {
+                    reorderedList.addAll(siteMap.values());
                     savePrefs();
                 }
 

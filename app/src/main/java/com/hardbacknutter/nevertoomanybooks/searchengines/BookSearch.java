@@ -349,7 +349,7 @@ class BookSearch {
         final boolean strictIsbn = criteria.isStrictIsbn();
         final ProductCode productCode = criteria.getProductCode();
 
-        activeEngines.forEach(engineId -> {
+        for (final EngineId engineId : activeEngines) {
             // no synchronisation needed, at this point all other threads have finished.
             final SearchTaskResult siteData = resultsByEngineId.get(engineId);
             if (siteData != null) {
@@ -386,7 +386,7 @@ class BookSearch {
                     }
                 });
             }
-        });
+        }
 
         // finally add the less reliable ones at the end of the list.
         sitesInOrder.addAll(sitesWithoutIsbn);
