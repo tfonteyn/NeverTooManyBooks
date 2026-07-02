@@ -42,8 +42,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -115,6 +117,9 @@ public class SearchBookUpdatesViewModel
 
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
     private long lastBookIdProcessed;
+
+    /** Set when the search is started. */
+    private Set<EngineId> activeEngines;
 
     /** The (subset) of fields relevant to the current book. */
     private Map<String, SyncField> currentFieldsWanted;
@@ -393,6 +398,11 @@ public class SearchBookUpdatesViewModel
             return false;
         }
 
+        // collect SID keys for all active engines.
+        activeEngines = Arrays.stream(EngineId.values())
+                              .filter(EngineId::isEnabled)
+                              .collect(Collectors.toSet());
+
         // kick off the first book
         return nextBook(context);
     }
@@ -414,10 +424,9 @@ public class SearchBookUpdatesViewModel
 
                 currentProgressCounter++;
 
-                //read the book ID
+                // Read the book ID
                 currentBookId = currentCursor.getLong(idCol);
-
-                // and populate the actual book based on the cursor data
+                // Clear previous data and populate with the new cursor row
                 currentBook.load(currentBookId, currentCursor);
 
                 // Check which fields this book needs.
@@ -427,7 +436,7 @@ public class SearchBookUpdatesViewModel
                 final String title = currentBook.getTitle();
 
                 if (!currentFieldsWanted.isEmpty()) {
-                    // reset all criteria (this is CRUCIAL)
+                    // Reset all criteria (this is CRUCIAL)
                     searchCriteria.reset();
                     boolean canSearch = false;
 
@@ -451,12 +460,11 @@ public class SearchBookUpdatesViewModel
                     // In other words, the Identifiers for the EngineId !
                     // We'll use the Identifier value to ask the engine to fetch the book.
                     final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
-                    Arrays.stream(EngineId.values())
-                          .filter(EngineId::isEnabled)
-                          .forEach(engineId -> engineId
-                                  .getBookIdentifierKey()
-                                  .flatMap(currentBook::getIdentifierValue)
-                                  .ifPresent(sid -> externalIds.put(engineId, sid)));
+                    for (final EngineId engineId : activeEngines) {
+                        engineId.getBookIdentifierKey()
+                                .flatMap(currentBook::getIdentifierValue)
+                                .ifPresent(sid -> externalIds.put(engineId, sid));
+                    }
 
                     if (!externalIds.isEmpty()) {
                         searchCriteria.setSids(externalIds);
