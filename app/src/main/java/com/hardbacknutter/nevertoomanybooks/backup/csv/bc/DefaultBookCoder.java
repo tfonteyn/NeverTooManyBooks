@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -347,11 +347,11 @@ public class DefaultBookCoder
                 // Do not add if already there.
                 // We need to do this here (before going to the database)
                 // so we can keep them in the exact order as they come in.
-                authorCoder.decodeList(encodedList).forEach(author -> {
-                    if (list.stream().noneMatch(a -> a.isSameName(author))) {
-                        list.add(author);
-                    }
-                });
+                authorCoder.decodeList(encodedList)
+                           .stream()
+                           .filter(author -> list.stream().noneMatch(
+                                   a -> a.isSameName(author)))
+                           .forEach(list::add);
                 // In addition, we can have the following duplicates:
                 //
                 // Author,Author l-f,Additional Authors
@@ -421,13 +421,12 @@ public class DefaultBookCoder
 
             if (encodedList != null && !encodedList.isEmpty()) {
                 // Weeding out duplicates here is likely overkill but oh well.
-                seriesCoder.decodeList(encodedList).forEach(series -> {
-                    if (list.stream().noneMatch(bs -> bs.isSameName(series)
-                                                      && bs.getNumber()
-                                                           .equals(series.getNumber()))) {
-                        list.add(series);
-                    }
-                });
+                seriesCoder.decodeList(encodedList)
+                           .stream()
+                           .filter(series -> list.stream().noneMatch(
+                                   bs -> bs.isSameName(series)
+                                         && bs.getNumber().equals(series.getNumber())))
+                           .forEach(list::add);
             }
         }
     }
@@ -459,11 +458,11 @@ public class DefaultBookCoder
 
             if (encodedList != null && !encodedList.isEmpty()) {
                 // Weeding out duplicates here is likely overkill but oh well.
-                publisherCoder.decodeList(encodedList).forEach(publisher -> {
-                    if (list.stream().noneMatch(bs -> bs.isSameName(publisher))) {
-                        list.add(publisher);
-                    }
-                });
+                publisherCoder.decodeList(encodedList)
+                              .stream()
+                              .filter(publisher -> list.stream().noneMatch(
+                                      bs -> bs.isSameName(publisher)))
+                              .forEach(list::add);
             }
         }
     }
@@ -497,11 +496,11 @@ public class DefaultBookCoder
 
             if (encodedList != null && !encodedList.isEmpty()) {
                 // Weeding out duplicates here is likely overkill but oh well.
-                tocCoder.decodeList(encodedList).forEach(tocEntry -> {
-                    if (list.stream().noneMatch(bs -> bs.isSameName(tocEntry))) {
-                        list.add(tocEntry);
-                    }
-                });
+                tocCoder.decodeList(encodedList)
+                        .stream()
+                        .filter(tocEntry -> list.stream().noneMatch(
+                                bs -> bs.isSameName(tocEntry)))
+                        .forEach(list::add);
             }
         }
     }
@@ -537,11 +536,11 @@ public class DefaultBookCoder
                 // We need to do this here (before going to the database)
                 // so we can keep them in the exact order as they come in.
                 // This is particularly important for Goodreads imports
-                bookshelfCoder.decodeList(encodedList).forEach(bookshelf -> {
-                    if (list.stream().noneMatch(bs -> bs.isSameName(bookshelf))) {
-                        list.add(bookshelf);
-                    }
-                });
+                bookshelfCoder.decodeList(encodedList)
+                              .stream()
+                              .filter(bookshelf -> list.stream().noneMatch(
+                                      bs -> bs.isSameName(bookshelf)))
+                              .forEach(list::add);
             }
         }
     }
@@ -553,10 +552,9 @@ public class DefaultBookCoder
             if (calibreLibraryStr2IdMap == null) {
                 calibreLibraryStr2IdMap = new HashMap<>();
 
-                ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries()
-                              .forEach(library -> calibreLibraryStr2IdMap.put(
+                ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries().forEach(
+                        library -> calibreLibraryStr2IdMap.put(
                                       library.getLibraryStringId(), library.getId()));
-
             }
             final Long id = calibreLibraryStr2IdMap.get(stringId);
             if (id != null) {
@@ -621,18 +619,20 @@ public class DefaultBookCoder
                                                .stream()
                                                .map(Identifier::getKey)
                                                .collect(Collectors.toSet());
-        final List<Identifier.Value> ivs = new ArrayList<>();
-        book.keySet().forEach(key -> {
-            if (known.contains(key)) {
-                final String sid = book.getString(key);
-                if (!sid.isEmpty() && !"0".equals(sid)) {
-                    ivs.add(new Identifier.Value(key, sid));
-                }
-                book.remove(key);
-            }
-        });
+        // Collect the valid identifiers
+        final List<Identifier.Value> ivs =
+                book.keySet()
+                    .stream()
+                    .filter(known::contains)
+                    .filter(key -> !book.getString(key).isEmpty()
+                                   && !"0".equals(book.getString(key)))
+                    .map(key -> new Identifier.Value(key, book.getString(key)))
+                    .collect(Collectors.toList());
+
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
+            // Remove keys which were transformed to identifiers
+            ivs.forEach(iv -> book.remove(iv.getKey()));
         }
     }
 

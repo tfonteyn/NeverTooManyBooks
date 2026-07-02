@@ -52,27 +52,29 @@ public class DateVerifier {
                        @NonNull final Set<String> keys,
                        final boolean partialDate,
                        final boolean keepTime) {
-        keys.stream().filter(book::contains).forEach(key -> {
-            final String s = book.getString(key);
-            final Optional<LocalDateTime> date = dateParser.parse(s);
-            if (date.isPresent()) {
-                String iso = SqlEncode.dateTime(date.get());
+        for (final String key : keys) {
+            if (book.contains(key)) {
+                final String s = book.getString(key);
+                final Optional<LocalDateTime> date = dateParser.parse(s);
+                if (date.isPresent()) {
+                    String iso = SqlEncode.dateTime(date.get());
 
-                // cut off the time if present & required
-                if (!keepTime && iso.length() > 10) {
-                    iso = iso.substring(0, 10);
-                }
-
-                // Cut 'YYYY-MM-DD' down to month or year if possible & required
-                if (partialDate && iso.length() > 4) {
-                    while (iso.endsWith("-01")) {
-                        iso = iso.substring(0, iso.length() - 3);
+                    // cut off the time if present & required
+                    if (!keepTime && iso.length() > 10) {
+                        iso = iso.substring(0, 10);
                     }
+
+                    // Cut 'YYYY-MM-DD' down to month or year if possible & required
+                    if (partialDate && iso.length() > 4) {
+                        while (iso.endsWith("-01")) {
+                            iso = iso.substring(0, iso.length() - 3);
+                        }
+                    }
+                    book.putString(key, iso);
+                } else {
+                    book.remove(key);
                 }
-                book.putString(key, iso);
-            } else {
-                book.remove(key);
             }
-        });
+        }
     }
 }

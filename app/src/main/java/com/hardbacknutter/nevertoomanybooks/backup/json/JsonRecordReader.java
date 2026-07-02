@@ -73,13 +73,18 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
 import com.hardbacknutter.nevertoomanybooks.database.updates.IdentifierMigration;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -355,9 +360,8 @@ public class JsonRecordReader
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
         if (jsonRoot != null) {
-            new StyleCoder()
-                    .decode(jsonRoot)
-                    .forEach(style -> stylesHelper.insertOrUpdate(context, style));
+            new StyleCoder().decode(jsonRoot).forEach(
+                    style -> stylesHelper.insertOrUpdate(context, style));
             results.styles = jsonRoot.length();
         }
     }
@@ -410,37 +414,42 @@ public class JsonRecordReader
 
             new BookshelfCoder(defaultStyle)
                     .decode(jsonRoot)
-                    .forEach(bookshelf -> {
-                        // If we ever make the mistake of backing up the 'All Books' again
-                        // (or any other special negative-id shelf, ... prevent crashing
-                        if (bookshelf.getId() < 0) {
-                            return;
-                        }
-                        bookshelfDao.fixId(context, bookshelf, locale);
-                        if (bookshelf.getId() > 0) {
-                            // The shelf already exists
-                            switch (getUpdateOption()) {
-                                case Overwrite: {
-                                    try {
-                                        bookshelfDao.update(context, bookshelf, locale);
-                                    } catch (@NonNull final DaoWriteException e) {
-                                        throw new UncheckedDaoWriteException(e);
-                                    }
-                                    break;
-                                }
-                                case OnlyNewer:
-                                case Skip:
-                                    break;
-                            }
-                        } else {
-                            try {
-                                bookshelfDao.insert(context, bookshelf, locale);
-                                results.bookshelves++;
-                            } catch (@NonNull final DaoWriteException e) {
-                                throw new UncheckedDaoWriteException(e);
-                            }
-                        }
-                    });
+                    .stream()
+                    // If we ever make the mistake of backing up the 'All Books' again
+                    // (or any other special negative-id shelf, ... prevent crashing
+                    .filter(bookshelf -> bookshelf.getId() >= 0)
+                    .forEach(bookshelf -> processBookshelf(context, bookshelfDao, locale,
+                                                           bookshelf));
+        }
+    }
+
+    private void processBookshelf(@NonNull final Context context,
+                                  @NonNull final BookshelfDao bookshelfDao,
+                                  @NonNull final Locale locale,
+                                  @NonNull final Bookshelf bookshelf) {
+        bookshelfDao.fixId(context, bookshelf, locale);
+        if (bookshelf.getId() > 0) {
+            // The shelf already exists
+            switch (getUpdateOption()) {
+                case Overwrite: {
+                    try {
+                        bookshelfDao.update(context, bookshelf, locale);
+                    } catch (@NonNull final DaoWriteException e) {
+                        throw new UncheckedDaoWriteException(e);
+                    }
+                    break;
+                }
+                case OnlyNewer:
+                case Skip:
+                    break;
+            }
+        } else {
+            try {
+                bookshelfDao.insert(context, bookshelf, locale);
+                results.bookshelves++;
+            } catch (@NonNull final DaoWriteException e) {
+                throw new UncheckedDaoWriteException(e);
+            }
         }
     }
 
@@ -452,36 +461,37 @@ public class JsonRecordReader
 
         final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreLibraries.getName());
         if (jsonRoot != null) {
-            final CalibreLibraryDao libraryDao = ServiceLocator.getInstance()
-                                                               .getCalibreLibraryDao();
+            final CalibreLibraryDao dao = ServiceLocator.getInstance().getCalibreLibraryDao();
+            new CalibreLibraryCoder(context, defaultStyle).decode(jsonRoot).forEach(
+                    library -> processCalibreLibrary(context, dao, library));
+        }
+    }
 
-            new CalibreLibraryCoder(context, defaultStyle)
-                    .decode(jsonRoot)
-                    .forEach(library -> {
-                        libraryDao.fixId(context, library);
-                        if (library.getId() > 0) {
-                            // The library already exists
-                            switch (getUpdateOption()) {
-                                case Overwrite: {
-                                    try {
-                                        libraryDao.update(library);
-                                    } catch (@NonNull final DaoWriteException e) {
-                                        throw new UncheckedDaoWriteException(e);
-                                    }
-                                    break;
-                                }
-                                case OnlyNewer:
-                                case Skip:
-                                    break;
-                            }
-                        } else {
-                            try {
-                                libraryDao.insert(library);
-                            } catch (@NonNull final DaoWriteException e) {
-                                throw new UncheckedDaoWriteException(e);
-                            }
-                        }
-                    });
+    private void processCalibreLibrary(@NonNull final Context context,
+                                       @NonNull final CalibreLibraryDao dao,
+                                       @NonNull final CalibreLibrary library) {
+        dao.fixId(context, library);
+        if (library.getId() > 0) {
+            // The library already exists
+            switch (getUpdateOption()) {
+                case Overwrite: {
+                    try {
+                        dao.update(library);
+                    } catch (@NonNull final DaoWriteException e) {
+                        throw new UncheckedDaoWriteException(e);
+                    }
+                    break;
+                }
+                case OnlyNewer:
+                case Skip:
+                    break;
+            }
+        } else {
+            try {
+                dao.insert(library);
+            } catch (@NonNull final DaoWriteException e) {
+                throw new UncheckedDaoWriteException(e);
+            }
         }
     }
 
@@ -493,34 +503,35 @@ public class JsonRecordReader
         if (jsonRoot != null) {
             final CalibreCustomFieldDao dao =
                     ServiceLocator.getInstance().getCalibreCustomFieldDao();
+            new CalibreCustomFieldCoder().decode(jsonRoot).forEach(
+                    field -> processCalibreCustomField(dao, field));
+        }
+    }
 
-            new CalibreCustomFieldCoder()
-                    .decode(jsonRoot)
-                    .forEach(calibreCustomField -> {
-                        dao.fixId(calibreCustomField);
-                        if (calibreCustomField.getId() > 0) {
-                            // The field already exists
-                            switch (getUpdateOption()) {
-                                case Overwrite: {
-                                    try {
-                                        dao.update(calibreCustomField);
-                                    } catch (@NonNull final DaoWriteException e) {
-                                        throw new UncheckedDaoWriteException(e);
-                                    }
-                                    break;
-                                }
-                                case OnlyNewer:
-                                case Skip:
-                                    break;
-                            }
-                        } else {
-                            try {
-                                dao.insert(calibreCustomField);
-                            } catch (@NonNull final DaoWriteException e) {
-                                throw new UncheckedDaoWriteException(e);
-                            }
-                        }
-                    });
+    private void processCalibreCustomField(final CalibreCustomFieldDao dao,
+                                           final CalibreCustomField field) {
+        dao.fixId(field);
+        if (field.getId() > 0) {
+            // The field already exists
+            switch (getUpdateOption()) {
+                case Overwrite: {
+                    try {
+                        dao.update(field);
+                    } catch (@NonNull final DaoWriteException e) {
+                        throw new UncheckedDaoWriteException(e);
+                    }
+                    break;
+                }
+                case OnlyNewer:
+                case Skip:
+                    break;
+            }
+        } else {
+            try {
+                dao.insert(field);
+            } catch (@NonNull final DaoWriteException e) {
+                throw new UncheckedDaoWriteException(e);
+            }
         }
     }
 
@@ -540,34 +551,35 @@ public class JsonRecordReader
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Identifiers.getName());
         if (jsonRoot != null) {
             final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
+            new IdentifierCoder().decode(jsonRoot).forEach(
+                    identifier -> processIdentifier(dao, identifier));
+        }
+    }
 
-            new IdentifierCoder()
-                    .decode(jsonRoot)
-                    .forEach(identifier -> {
-                        dao.fixId(identifier);
-                        if (identifier.getId() > 0) {
-                            // The field already exists
-                            switch (getUpdateOption()) {
-                                case Overwrite: {
-                                    try {
-                                        dao.update(identifier);
-                                    } catch (@NonNull final DaoWriteException e) {
-                                        throw new UncheckedDaoWriteException(e);
-                                    }
-                                    break;
-                                }
-                                case OnlyNewer:
-                                case Skip:
-                                    break;
-                            }
-                        } else {
-                            try {
-                                dao.insert(identifier);
-                            } catch (@NonNull final DaoWriteException e) {
-                                throw new UncheckedDaoWriteException(e);
-                            }
-                        }
-                    });
+    private void processIdentifier(@NonNull final IdentifierDao dao,
+                                   @NonNull final Identifier identifier) {
+        dao.fixId(identifier);
+        if (identifier.getId() > 0) {
+            // The field already exists
+            switch (getUpdateOption()) {
+                case Overwrite: {
+                    try {
+                        dao.update(identifier);
+                    } catch (@NonNull final DaoWriteException e) {
+                        throw new UncheckedDaoWriteException(e);
+                    }
+                    break;
+                }
+                case OnlyNewer:
+                case Skip:
+                    break;
+            }
+        } else {
+            try {
+                dao.insert(identifier);
+            } catch (@NonNull final DaoWriteException e) {
+                throw new UncheckedDaoWriteException(e);
+            }
         }
     }
 
@@ -588,35 +600,36 @@ public class JsonRecordReader
         final JSONArray elements = root.optJSONArray(DBKey.TAGS.TAG_MAPPING);
         if (elements != null) {
             final TagMappingDao dao = ServiceLocator.getInstance().getTagMappingDao();
+            new TagMappingCoder().decode(elements).forEach(
+                    tagMapping -> processTagMapping(dao, tagMapping));
 
-            new TagMappingCoder()
-                    .decode(elements)
-                    .forEach(tagMapping -> {
-                        dao.fixId(tagMapping);
-                        if (tagMapping.getId() > 0) {
-                            // The field already exists
-                            switch (getUpdateOption()) {
-                                case Overwrite: {
-                                    try {
-                                        dao.update(tagMapping);
-                                    } catch (@NonNull final DaoWriteException e) {
-                                        throw new UncheckedDaoWriteException(e);
-                                    }
-                                    break;
-                                }
-                                case OnlyNewer:
-                                case Skip:
-                                    break;
-                            }
-                        } else {
-                            try {
-                                dao.insert(tagMapping);
-                            } catch (@NonNull final DaoWriteException e) {
-                                throw new UncheckedDaoWriteException(e);
-                            }
-                        }
-                    });
+        }
+    }
 
+    private void processTagMapping(@NonNull final TagMappingDao dao,
+                                   @NonNull final TagMapping tagMapping) {
+        dao.fixId(tagMapping);
+        if (tagMapping.getId() > 0) {
+            // The field already exists
+            switch (getUpdateOption()) {
+                case Overwrite: {
+                    try {
+                        dao.update(tagMapping);
+                    } catch (@NonNull final DaoWriteException e) {
+                        throw new UncheckedDaoWriteException(e);
+                    }
+                    break;
+                }
+                case OnlyNewer:
+                case Skip:
+                    break;
+            }
+        } else {
+            try {
+                dao.insert(tagMapping);
+            } catch (@NonNull final DaoWriteException e) {
+                throw new UncheckedDaoWriteException(e);
+            }
         }
     }
 

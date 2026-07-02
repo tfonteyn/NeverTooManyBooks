@@ -57,16 +57,16 @@ class IdentifierTest
     @Test
     void createInitialList() {
         final Set<String> keys = new HashSet<>();
-        Identifier.createInitialList(context).forEach(i -> {
-            final String key = i.getKey();
+        for (final Identifier identifier : Identifier.createInitialList(context)) {
+            final String key = identifier.getKey();
             assertFalse(keys.contains(key), "Duplicate key: " + key);
             keys.add(key);
 
-            i.getUri().ifPresent(uri -> assertEquals(
+            identifier.getUri().ifPresent(uri -> assertEquals(
                     1,
                     PLACEHOLDER.split(uri, -1).length - 1,
                     "Invalid uri key: " + key));
-        });
+        }
     }
 
     /** Test the site Uri, using the utility class. */

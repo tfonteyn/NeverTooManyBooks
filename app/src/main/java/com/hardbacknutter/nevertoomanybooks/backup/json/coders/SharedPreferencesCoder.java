@@ -104,7 +104,7 @@ public final class SharedPreferencesCoder
 
         final JSONObject encoded = new JSONObject();
         element.getAll().forEach((key, value) -> {
-            if (include(key) && value != null) {
+            if (value != null && include(key)) {
                 encoded.put(key, value);
             }
         });

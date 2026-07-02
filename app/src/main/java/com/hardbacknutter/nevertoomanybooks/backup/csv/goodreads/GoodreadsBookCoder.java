@@ -315,11 +315,10 @@ public class GoodreadsBookCoder
         // Do not add if already there.
         // We need to do this here (before going to the database)
         // so we can keep them in the exact order as they come in.
-        authorCoder.decodeList(value).forEach(author -> {
-            if (list.stream().noneMatch(a -> a.isSameName(author))) {
-                list.add(author);
-            }
-        });
+        authorCoder.decodeList(value)
+                   .stream()
+                   .filter(author -> list.stream().noneMatch(a -> a.isSameName(author)))
+                   .forEach(list::add);
 
         book.setAuthors(list);
 
@@ -359,11 +358,10 @@ public class GoodreadsBookCoder
         final List<Publisher> list = book.getPublishers();
 
         // Weeding out duplicates here is likely overkill but oh well.
-        publisherCoder.decodeList(value).forEach(publisher -> {
-            if (list.stream().noneMatch(bs -> bs.isSameName(publisher))) {
-                list.add(publisher);
-            }
-        });
+        publisherCoder.decodeList(value)
+                      .stream()
+                      .filter(publisher -> list.stream().noneMatch(bs -> bs.isSameName(publisher)))
+                      .forEach(list::add);
 
         book.setPublishers(list);
     }
@@ -389,11 +387,10 @@ public class GoodreadsBookCoder
         // We need to do this here (before going to the database)
         // so we can keep them in the exact order as they come in.
         // This is particularly important for Goodreads imports
-        bookshelfCoder.decodeList(value).forEach(bookshelf -> {
-            if (list.stream().noneMatch(bs -> bs.isSameName(bookshelf))) {
-                list.add(bookshelf);
-            }
-        });
+        bookshelfCoder.decodeList(value)
+                      .stream()
+                      .filter(bookshelf -> list.stream().noneMatch(bs -> bs.isSameName(bookshelf)))
+                      .forEach(list::add);
 
         if (list.stream().anyMatch(bookshelf -> "read".equals(bookshelf.getName()))) {
             // DO NOT use book.setRead(true) as that will set related fields

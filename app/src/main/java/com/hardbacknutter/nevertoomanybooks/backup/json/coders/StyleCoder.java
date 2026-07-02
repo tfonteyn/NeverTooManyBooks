@@ -203,12 +203,12 @@ public class StyleCoder
     private JSONArray encodeBookLevelFieldsOrderBy(@NonNull final Style style)
             throws JSONException {
         final JSONArray columns = new JSONArray();
-        style.getBookLevelFieldsOrderBy().forEach((columnName, sort) -> {
+        for (final Map.Entry<String, Sort> entry : style.getBookLevelFieldsOrderBy().entrySet()) {
             final JSONObject column = new JSONObject();
-            column.put(COLUMN_NAME, columnName);
-            column.put(COLUMN_SORT, sort.name());
+            column.put(COLUMN_NAME, entry.getKey());
+            column.put(COLUMN_SORT, entry.getValue().name());
             columns.put(column);
-        });
+        }
 
         return columns;
     }

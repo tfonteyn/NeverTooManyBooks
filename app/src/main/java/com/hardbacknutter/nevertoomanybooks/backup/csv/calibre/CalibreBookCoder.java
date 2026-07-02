@@ -357,11 +357,10 @@ public class CalibreBookCoder
         // Do not add if already there.
         // We need to do this here (before going to the database)
         // so we can keep them in the exact order as they come in.
-        authorCoder.decodeList(value).forEach(author -> {
-            if (list.stream().noneMatch(a -> a.isSameName(author))) {
-                list.add(author);
-            }
-        });
+        authorCoder.decodeList(value)
+                   .stream()
+                   .filter(author -> list.stream().noneMatch(a -> a.isSameName(author)))
+                   .forEach(list::add);
 
         book.setAuthors(list);
     }
