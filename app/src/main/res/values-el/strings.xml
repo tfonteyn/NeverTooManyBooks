@@ -794,7 +794,7 @@ A question mark is written as the character semicolon: ';'
     <string name="error_site_access_blocked">Η πρόσβαση αποκλείστηκε από τον ιστότοπο.</string>
     <string name="pt_scan_mode">Λειτουργία σάρωσης</string>
     <string name="option_sync_deleted_book_records">Συγχρονισμός διαγραμμένων βιβλίων</string>
-    <string name="info_sites_active">Ενεργές τοποθεσίες: %1$s</string>
+    <string name="info_sites_active">Ενεργοί ιστότοποι: %1$s</string>
     <string name="info_site_search_field_optional">Προαιρετικά. Δεν υποστηρίζεται από όλους τους ιστότοπους.</string>
     <string name="site_description_various_languages">Διάφορες γλώσσες</string>
     <string name="site_description_polish">Πολωνικά</string>
