@@ -29,9 +29,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
@@ -461,24 +459,27 @@ public abstract class StyleBaseFragment
     private void updateGroupSettings() {
         final SettingsManager settingsManager = getSettingsManager();
         final Style style = vm.getStyle();
-        // Not all groups have settings
+
         BooklistGroup.getAllGroups(style).forEach(group -> {
             final GroupSettings groupSettings = group.getGroupSettings();
             if (groupSettings == null) {
+                // Not all groups have settings
                 return;
             }
+
             final boolean hasGroup = style.hasGroup(group.getId());
             final String headerKey = groupSettings.getHeaderKey();
-            final Set<String> currentlyVisible = new HashSet<>(
-                    settingsManager.getVisibleChildren(headerKey));
             final Map<String, Boolean> updates = new HashMap<>();
-            groupSettings.getKeys().forEach(k -> {
-                updates.put(k, hasGroup);
-                if (!hasGroup) {
-                    currentlyVisible.remove(k);
-                }
-            });
-            updates.put(headerKey, !currentlyVisible.isEmpty());
+
+            // Individual options visibility
+            for (final String key : groupSettings.getKeys()) {
+                updates.put(key, hasGroup);
+            }
+
+            final boolean headerVisible = hasGroup || groupSettings.getKeys().stream().anyMatch(
+                    k -> settingsManager.getVisibleChildren(headerKey).contains(k));
+
+            updates.put(headerKey, headerVisible);
             settingsManager.setVisible(updates);
         });
 
