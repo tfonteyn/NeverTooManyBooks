@@ -1,0 +1,4 @@
+FIXES:
+
+- #244 Regression where editing the bookshelves a book is assigned to was partially failing
+- #245: manual entry during single-scan mode was being treated as batch-mode instead of interactive.
