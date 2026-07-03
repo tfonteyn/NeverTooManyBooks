@@ -3,8 +3,11 @@ NEW:
 - The old side-menu was replaced by a menu that follows the user preferred menu-style.
 - Series now also support Identifiers.
 - Identifiers are now split according to item type (book, author, series).
+- ISSN support; GitHub #243
 - Support for importing Calibre CSV files.
 - upgraded to Material3Expressive.
+- supports/tested on Android 17
+- Added UI language: Latvian
 
 FIXES:
 - many smaller issues
