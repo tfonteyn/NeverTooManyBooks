@@ -73,7 +73,7 @@ acra = "5.13.1"
 # https://junit.org/junit5/docs/current/user-guide/#overview
 # Android/mannodermaus does not support junit 6
 #noinspection NewerVersionAvailable
-jupiter = "5.14.3"
+jupiter = "5.14.4"
 
 # https://developer.android.com/jetpack/androidx/releases/test
 androidxTestCore = '1.7.0'
