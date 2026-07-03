@@ -28,6 +28,12 @@
 # used by acra
 -dontwarn com.google.auto.service.AutoService
 
+# 2026-07-03: not sure if we actually need this, but no harm.
+# https://github.com/Yalantis/uCrop
+-dontwarn com.yalantis.ucrop**
+-keep class com.yalantis.ucrop** { *; }
+-keep interface com.yalantis.ucrop** { *; }
+
 # The below and more is now done with the "@Keep" annotation.
 # Keeping for reference for now.
 
