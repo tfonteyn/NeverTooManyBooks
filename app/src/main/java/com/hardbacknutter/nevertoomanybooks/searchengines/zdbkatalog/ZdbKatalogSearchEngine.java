@@ -188,11 +188,30 @@ public class ZdbKatalogSearchEngine
             ivs.add(new Identifier.Value(Identifier.SID_DNB, normalize(x)));
         }
 
+        // position 35-37 provides the language, but so does tag 041; we're ONLY using the latter
         x = document.selectFirst("controlfield[tag='008']");
         if (x != null) {
             final String text = normalize(x);
             // sanity check
             if (text.length() == 40) {
+                // Type of continuing resource
+                //    # - None of the following
+                //    a - Activity report
+                //    d - Updating database
+                //    g - Magazine
+                //    h - Blog
+                //    i - Serial zine
+                //    j - Journal
+                //    l - Updating loose-leaf
+                //    m - Monographic series
+                //    n - Newspaper
+                //    p - Periodical
+                //    q - Serial podcast
+                //    r - Repository
+                //    s - Newsletter
+                //    t - Directory
+                //    w - Updating Web site
+                //    | - No attempt to code
                 pubType = text.charAt(21);
             }
         }
@@ -264,10 +283,14 @@ public class ZdbKatalogSearchEngine
 
         final Element sizeField = document.selectFirst("datafield[tag='300'] subfield[code='c']");
         switch (pubType) {
+            // n - Newspaper
             case 'n': {
                 book.setFormat(context.getString(R.string.book_format_newspaper));
                 break;
             }
+            // g - Magazine
+            // p - Periodical
+            case 'g':
             case 'p': {
                 int formatResId = R.string.book_format_periodical;
                 if (sizeField != null && parseHeightInCm(normalize(sizeField)) <= 21) {
