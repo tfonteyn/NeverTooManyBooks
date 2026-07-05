@@ -64,6 +64,8 @@ import org.jsoup.parser.Parser;
  *
  * @see <a href="https://www.dnb.de/EN/Professionell/Metadatendienste/Datenbezug/SRU/sru_node.html#doc250692bodyText1">
  *         DNB sru searches</a>
+ * @see <a href="https://services.dnb.de/sru/zdb?operation=explain&version=1.1">
+ *     SRU explain record</a>
  */
 public class ZdbKatalogSearchEngine
         extends JsoupSearchEngineBase
@@ -91,6 +93,13 @@ public class ZdbKatalogSearchEngine
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     private static final Pattern M21_CTRL_PATTERN = Pattern.compile("[\\u0080-\\u009F]");
 
+    // See the "explain" record; we're using the index
+    // <ns:index search="true" scan="false" sort="false" id="dnb.iss">
+    //   <ns:title lang="de" primary="true">ISSN [ZDB]</ns:title>
+    //   <ns:map>
+    //     <ns:name set="dnb">iss</ns:name>
+    //   </ns:map>
+    // </ns:index>
     private static final String ISSN_URL = "https://services.dnb.de/sru/zdb?"
                                            + "version=1.1"
                                            + "&operation=searchRetrieve"
