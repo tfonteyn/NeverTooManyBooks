@@ -60,6 +60,7 @@ public class AuthorRoleMapper {
         MAPPINGS.put("illuminator", AuthorRole.ARTIST);
         MAPPINGS.put("illustrator", AuthorRole.ARTIST);
         MAPPINGS.put("illustrations", AuthorRole.ARTIST);
+        MAPPINGS.put("drawings", AuthorRole.ARTIST);
 
         MAPPINGS.put("coverart", AuthorRole.COVER_ARTIST);
         MAPPINGS.put("cover art", AuthorRole.COVER_ARTIST);
