@@ -118,8 +118,8 @@ public class LibraryThingSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.librarything.com",
                                     Locale.US)
-                .setIdentifierKeys(Identifier.SID_LIBRARY_THING, null)
-                .setPreferenceFragmentClazz(LibraryThingPreferencesFragment.class);
+                .setPreferenceFragmentClazz(LibraryThingPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_LIBRARY_THING);
     }
 
     @NonNull

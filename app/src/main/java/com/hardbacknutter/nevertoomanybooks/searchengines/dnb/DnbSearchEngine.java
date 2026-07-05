@@ -230,8 +230,9 @@ public class DnbSearchEngine
                                             R.string.site_description_catalog),
                                     KATALOG_DNB_DE,
                                     new Locale("de", "DE"))
-                .setIdentifierKeys(Identifier.SID_DNB)
                 .setPreferenceFragmentClazz(DnbPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_DNB)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_DNB)
                 .setAuthorResolverSupplier(DnbAuthorResolver::create)
                 .setConfig(cb -> cb
                         .setThrottlerDelayInMs(THROTTLER_DELAY_IN_MS)

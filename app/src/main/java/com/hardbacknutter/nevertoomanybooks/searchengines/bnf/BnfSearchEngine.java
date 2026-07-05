@@ -184,8 +184,9 @@ public class BnfSearchEngine
                                             R.string.site_description_catalog),
                                     "https://catalogue.bnf.fr",
                                     SITE_LOCALE)
-                .setIdentifierKeys(Identifier.SID_BNF)
                 .setPreferenceFragmentClazz(BnfPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_BNF)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_BNF)
                 .setAuthorResolverSupplier(BnfAuthorResolver::create)
                 .setConfig(cb -> cb
                         .build(SearchEngineConfig::new));

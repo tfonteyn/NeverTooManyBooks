@@ -33,8 +33,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -197,10 +199,8 @@ public enum EngineId
     private final boolean enabled;
     /** {@link SearchEngine.CoverByEdition} only. */
     private final boolean multipleCoverSizes;
-    @Nullable
-    private final String bookIdentifierKey;
-    @Nullable
-    private final String authorIdentifierKey;
+    @NonNull
+    private final Map<Identifier.EntityType, String> identifierKeys;
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private final Function<SearchEngineConfig.Builder, SearchEngineConfig> configSupplier;
@@ -245,8 +245,7 @@ public enum EngineId
         this.defaultUrl = builder.defaultSearchUrl;
         this.defaultLocale = builder.defaultLocale;
 
-        this.bookIdentifierKey = builder.bookIdentifierKey;
-        this.authorIdentifierKey = builder.authorIdentifierKey;
+        this.identifierKeys = builder.identifierKeys;
         this.multipleCoverSizes = builder.multipleCoverSizes;
 
         this.authorResolverSupplier = builder.authorResolverSupplier;
@@ -518,29 +517,28 @@ public enum EngineId
         return defaultUrl;
     }
 
+    /**
+     * The <strong>DEFAULT</strong> locale.
+     * Use {@link SearchEngine#getLocale(Context)} instead for all normal usage!
+     *
+     * @return default/hardcoded locale for the site.
+     */
     @NonNull
     public Locale getDefaultLocale() {
         return defaultLocale;
     }
 
     /**
-     * Get the book {@link Identifier} key.
+     * Get the {@link Identifier} key for the given type.
+     *
+     * @param type of key to get
      *
      * @return key
      */
     @NonNull
-    public Optional<String> getBookIdentifierKey() {
-        return bookIdentifierKey == null ? Optional.empty() : Optional.of(bookIdentifierKey);
-    }
-
-    /**
-     * Get the author {@link Identifier} key.
-     *
-     * @return key
-     */
-    @NonNull
-    public Optional<String> getAuthorIdentifierKey() {
-        return authorIdentifierKey == null ? Optional.empty() : Optional.of(authorIdentifierKey);
+    public Optional<String> getIdentifierKey(@NonNull final Identifier.EntityType type) {
+        final String k = identifierKeys.get(type);
+        return k == null ? Optional.empty() : Optional.of(k);
     }
 
     @NonNull
@@ -642,8 +640,7 @@ public enum EngineId
                + ", defaultUrl=`" + defaultUrl + '`'
                + ", locale=" + defaultLocale
                + ", multipleCoverSizes=" + multipleCoverSizes
-               + ", bookIdentifierKey=" + bookIdentifierKey
-               + ", authorIdentifierKey=" + authorIdentifierKey
+               + ", identifierKeys=" + identifierKeys
                + ", clazz=" + clazz.getName()
                + ", preferenceFragmentClazz=" + preferenceFragmentClazz
                + '}';
@@ -671,10 +668,9 @@ public enum EngineId
 
         private boolean multipleCoverSizes;
 
-        @Nullable
-        private String bookIdentifierKey;
-        @Nullable
-        private String authorIdentifierKey;
+        private final Map<Identifier.EntityType, String> identifierKeys =
+                new EnumMap<>(Identifier.EntityType.class);
+
         @Nullable
         private Class<? extends Fragment> preferenceFragmentClazz;
         @Nullable
@@ -716,26 +712,18 @@ public enum EngineId
         }
 
 
-        @NonNull
-        public Builder setIdentifierKeys(@NonNull final String identifierKey) {
-            return setIdentifierKeys(identifierKey, identifierKey);
-        }
-
         /**
-         * Set the {@link Identifier} for the website specific identifier for a book and an author.
-         * <p>
-         * FIXME: remove the need for authorIdentifierKey. We should that from the resolver supplier
+         * Set the {@link Identifier} key for the website specific identifier.
          *
-         * @param bookIdentifierKey   key
-         * @param authorIdentifierKey key
+         * @param type to set
+         * @param key  key
          *
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder setIdentifierKeys(@NonNull final String bookIdentifierKey,
-                                         @Nullable final String authorIdentifierKey) {
-            this.bookIdentifierKey = bookIdentifierKey;
-            this.authorIdentifierKey = authorIdentifierKey;
+        public Builder setIdentifierKey(@NonNull final Identifier.EntityType type,
+                                        @NonNull final String key) {
+            this.identifierKeys.put(type, key);
             return this;
         }
 

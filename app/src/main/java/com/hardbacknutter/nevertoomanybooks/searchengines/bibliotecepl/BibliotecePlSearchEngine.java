@@ -183,8 +183,9 @@ public class BibliotecePlSearchEngine
                                             R.string.site_description_catalog),
                                     SITE_URL,
                                     SITE_LOCALE)
-                .setIdentifierKeys(Identifier.SID_BIBLIOTECE_PL)
                 .setPreferenceFragmentClazz(BibliotecePlPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_BIBLIOTECE_PL)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_BIBLIOTECE_PL)
                 .setAuthorResolverSupplier(BibliotecePlAuthorResolver::create)
                 .setConfig(cb -> cb
                         // "books"

@@ -214,8 +214,9 @@ public class StripInfoSearchEngine
                                             R.string.site_description_eu_comics),
                                     "https://www.stripinfo.be",
                                     new Locale("nl", "BE"))
-                .setIdentifierKeys(Identifier.SID_STRIP_INFO)
                 .setPreferenceFragmentClazz(StripInfoBePreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_STRIP_INFO)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_STRIP_INFO)
                 .setAuthorResolverSupplier(StripInfoAuthorResolver::create)
                 .setConfig(cb -> cb
                         // default timeouts based on limited testing

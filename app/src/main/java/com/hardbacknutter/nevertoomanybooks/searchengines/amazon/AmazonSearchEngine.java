@@ -351,16 +351,17 @@ public class AmazonSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
+        // amazon.com, amazon.ca : blocked by captcha
+        // The Locale will be dynamically set depending on the country
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_amazon,
                                     List.of(R.string.site_description_various_languages,
                                             R.string.site_description_shop),
-                // amazon.com, amazon.ca : blocked by captcha
                                     "https://www.amazon.co.uk",
-                // The Locale will be dynamically set depending on the country
-                                    Locale.US)
-                .setIdentifierKeys(Identifier.SID_ASIN)
-                .setPreferenceFragmentClazz(AmazonPreferencesFragment.class);
+                                    Locale.UK)
+                .setPreferenceFragmentClazz(AmazonPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_ASIN)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_ASIN);
     }
 
     /**

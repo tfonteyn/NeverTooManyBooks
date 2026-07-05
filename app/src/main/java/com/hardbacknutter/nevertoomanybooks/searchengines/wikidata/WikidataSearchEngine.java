@@ -32,7 +32,6 @@ import androidx.annotation.VisibleForTesting;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -199,8 +198,9 @@ public class WikidataSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.wikidata.org",
                                     Locale.US)
-                .setIdentifierKeys(Identifier.SID_WIKIDATA)
                 .setPreferenceFragmentClazz(WikidataPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_WIKIDATA)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_WIKIDATA)
                 .setAuthorResolverSupplier(WikidataAuthorResolver::create);
     }
 

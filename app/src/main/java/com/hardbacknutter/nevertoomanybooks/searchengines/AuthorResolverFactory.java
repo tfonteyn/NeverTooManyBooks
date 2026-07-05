@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+
 public final class AuthorResolverFactory {
 
     private AuthorResolverFactory() {
@@ -70,7 +72,7 @@ public final class AuthorResolverFactory {
                           EngineId.Goodreads)
                       .filter(AuthorResolverHelper::isEnabled)
                       .filter(engineId -> engineId
-                              .getAuthorIdentifierKey()
+                              .getIdentifierKey(Identifier.EntityType.Author)
                               .map(sidKeys::contains)
                               .orElse(false))
                       .collect(Collectors.toList());

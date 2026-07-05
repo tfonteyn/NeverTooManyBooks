@@ -180,8 +180,9 @@ public class GoodreadsSearchEngine
                                             R.string.site_description_catalog),
                                     "https://www.goodreads.com",
                                     Locale.US)
-                .setIdentifierKeys(Identifier.SID_GOODREADS)
                 .setPreferenceFragmentClazz(GoodreadsPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_GOODREADS)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_GOODREADS)
                 .setAuthorResolverSupplier(GoodreadsAuthorResolver::create);
     }
 

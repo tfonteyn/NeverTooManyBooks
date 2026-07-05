@@ -128,15 +128,16 @@ public class ZdbKatalogSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
+        // Shares the DNB identifier!
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_zdbkatalog,
                                     List.of(R.string.site_description_german,
                                             R.string.site_description_catalog),
                                     SITE_URL,
                                     Locale.GERMANY)
-                // It shared the DNB identifier!
-                .setIdentifierKeys(Identifier.SID_DNB)
-                .setPreferenceFragmentClazz(ZdbKatalogPreferencesFragment.class);
+                .setPreferenceFragmentClazz(ZdbKatalogPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_DNB)
+                .setIdentifierKey(Identifier.EntityType.Author, Identifier.SID_DNB);
     }
 
     @NonNull

@@ -461,7 +461,7 @@ public class SearchBookUpdatesViewModel
                     // We'll use the Identifier value to ask the engine to fetch the book.
                     final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
                     for (final EngineId engineId : activeEngines) {
-                        engineId.getBookIdentifierKey()
+                        engineId.getIdentifierKey(Identifier.EntityType.Book)
                                 .flatMap(currentBook::getIdentifierValue)
                                 .ifPresent(sid -> externalIds.put(engineId, sid));
                     }

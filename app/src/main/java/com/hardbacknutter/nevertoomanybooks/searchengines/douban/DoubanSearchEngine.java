@@ -165,8 +165,8 @@ public class DoubanSearchEngine
                                             R.string.site_description_catalog),
                                     "https://search.douban.com",
                                     SITE_LOCALE)
-                .setIdentifierKeys(Identifier.SID_DOUBAN, null)
-                .setPreferenceFragmentClazz(DoubanPreferencesFragment.class);
+                .setPreferenceFragmentClazz(DoubanPreferencesFragment.class)
+                .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_DOUBAN);
     }
 
     @NonNull
