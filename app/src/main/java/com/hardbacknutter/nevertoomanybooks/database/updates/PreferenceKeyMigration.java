@@ -106,6 +106,7 @@ public final class PreferenceKeyMigration {
               .remove("camera.id.scan.barcode")
               .remove("compat.booklist.mode")
               .remove("compat.image.cropper.viewlayertype")
+              .remove("dnb.covers.from.portal")
               .remove("edit.book.tab.authSer")
               .remove("edit.book.tab.nativeId")
               .remove("goodreads.AccessToken.Secret")
@@ -114,8 +115,10 @@ public final class PreferenceKeyMigration {
               .remove("goodreads.search.collect.genre")
               .remove("goodreads.showMenu")
               .remove("image.cropper.frame.whole")
+              .remove("isfdb.host.url")
               .remove("isfdb.search.uses.publisher")
               .remove("librarything.dev_key")
+              .remove("librarything.host.url")
               .remove("scanner.preferred")
               .remove("search.byIsbn.strict")
               .remove("search.form.advanced")
@@ -128,10 +131,6 @@ public final class PreferenceKeyMigration {
               .remove("stripweb.search.byIsbn.prefer.10")
               .remove("tmp.edit.book.tab.authSer")
               .remove("ui.messages.use")
-
-              // Editing the URL for these sites has been removed.
-              .remove("isfdb.host.url")
-              .remove("librarything.host.url")
 
               .apply();
     }

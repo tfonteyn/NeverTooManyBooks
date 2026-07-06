@@ -26,14 +26,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -44,51 +43,34 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
-/**
- * FIXME: we're a bit [bleeped] here due to using the beta website.
- * The author permalink takes us to the old site which we don't parse
- * because we mistakenly believed that DNB would actually finish
- * the work on the beta in a reasonable timeframe...
- * <p>
- * Available:
- * - Birthdate
- * - Deathdate
- * - Birthplace
- * - gender
- * - Akademischer Grad bzw. Titel
- * - Profession
- * - info
- */
 public final class DnbAuthorResolver
         implements AuthorResolver {
 
-    /**
-     * {@code <p>1920-1992 <small>(Lebensdaten)</small></p>}
-     * {@code <p>1972- <small>(Lebensdaten)</small></p>}
-     */
-    private static final Pattern BIRTH_DEATH_DATE_PATTERN = Pattern.compile(
-            "(\\d\\d\\d\\d)-(\\d\\d\\d\\d|)\\s*\\(Lebensdaten\\)");
-
     @NonNull
     private final DnbSearchEngine searchEngine;
-    @Nullable
-    private final String authorUri;
+    /**
+     * Param 1: SRU query.
+     * <p>
+     * Hardcoded to return a single result for now.
+     */
+    private static final String SRU_URL = "https://services.dnb.de/sru/authorities?"
+                                          + "version=1.1"
+                                          + "&operation=searchRetrieve"
+                                          + "&query=%1$s"
+                                          + "&recordSchema=MARC21-xml"
+                                          + "&maximumRecords=1";
 
     /**
      * Private Constructor.
      *
-     * @param context      Current context
      * @param searchEngine the engine
      */
     @VisibleForTesting
-    DnbAuthorResolver(@NonNull final Context context,
-                      @NonNull final DnbSearchEngine searchEngine) {
+    DnbAuthorResolver(@NonNull final DnbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        // hardcoded to the beta website
-        authorUri = DnbSearchEngine.KATALOG_DNB_DE + "/DE/resource.html?id=%s";
     }
 
     /**
@@ -101,7 +83,7 @@ public final class DnbAuthorResolver
     @VisibleForTesting
     private DnbAuthorResolver(@NonNull final Context context,
                               @Nullable final Cancellable caller) {
-        this(context, (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context));
+        this((DnbSearchEngine) EngineId.Dnb.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
 
@@ -120,7 +102,7 @@ public final class DnbAuthorResolver
         if (AuthorResolverHelper.isEnabled(EngineId.Dnb)) {
             final AuthorResolver ar;
             if (searchEngine instanceof DnbSearchEngine) {
-                ar = new DnbAuthorResolver(context, (DnbSearchEngine) searchEngine);
+                ar = new DnbAuthorResolver((DnbSearchEngine) searchEngine);
             } else {
                 ar = new DnbAuthorResolver(context, searchEngine);
             }
@@ -133,33 +115,22 @@ public final class DnbAuthorResolver
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
-        // the user can delete it...
-        if (authorUri == null) {
-            return false;
-        }
 
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_DNB);
         // no id, give up
         if (oIv.isEmpty()) {
             return false;
         }
-        // We investigated searching by author name, but this seems hard to achieve.
-        // e.g. a search for "Isaac Asimov" returned:
-        // Ihre Suchanfrage ergab 528 Treffer.
-        //   506 Treffer in Medien
-        //   und 22 Treffer im Wissensnetz
-        // => the Wissensnetz list of links does contain an entry "Person" as the 4th or 5th
-        // element (the link does NOT have the author id) which we then need to follow
-        // to get to the author page. The request/response and parsing overhead is just
-        // too large.
 
-        final String url = String.format(authorUri, oIv.get());
+        final String query = "nid=" + oIv.get();
+        final String url = String.format(SRU_URL, URLEncoder
+                .encode(query, StandardCharsets.UTF_8)
+                .replace("+", "%20"));
 
-        final Document document = searchEngine.loadDocument(context, url, Map.of(
-                HttpConstants.REFERER, DnbSearchEngine.KATALOG_DNB_DE));
+        final Document document = searchEngine.loadDocument(context, Parser.xmlParser(), url, null);
 
         if (!searchEngine.isCancelled()) {
-            final Author found = parse(context, document);
+            final Author found = parse(document);
             if (found != null) {
                 boolean modified = author.merge(found, true);
                 if (author.isSameName(found) && !author.isIdenticalName(found)) {
@@ -176,109 +147,31 @@ public final class DnbAuthorResolver
 
     @VisibleForTesting
     @Nullable
-    Author parse(@NonNull final Context context,
-                 @NonNull final Document document)
-            throws SearchException, CredentialsException {
+    Author parse(@NonNull final Document document) {
 
-        Author author = null;
-        // relative url
-        String realAuthorUrl = null;
-        boolean isPseudonym = false;
+        final DnbParser parser = new DnbParser(document);
 
-        final Element tableElement = document.selectFirst("table.c-catalog-table__table");
-        // We could collapse the above select with the select for the tr's
-        // But there is a tbody in between, let's take the safe route for now
-        if (tableElement != null) {
-            final Elements trs = tableElement.select("tr.c-catalog-table__row");
-            for (final Element tr : trs) {
-                final Element label = tr.selectFirst("th.c-catalog-table__head > p");
-                if (label != null) {
-                    final Element td = tr.selectFirst("td.c-catalog-table__content > p");
-                    if (td != null) {
-                        final String s = label.text();
-                        // We should get the german labels, but it seems we might get the
-                        // English ones despite the "DE" in the url. So... check on both!
-                        switch (s) {
-                            case "Name": {
-                                author = Author.from(td.text());
-                                break;
-                            }
-                            case "Wirklicher Name":
-                            case "Real name": {
-                                final Element a = td.selectFirst("a");
-                                if (a != null) {
-                                    realAuthorUrl = a.attr("href");
-                                }
-                                break;
-                            }
-                            case "Zeit":
-                            case "Time": {
-                                final Matcher matcher = BIRTH_DEATH_DATE_PATTERN.matcher(td.text());
-                                if (matcher.find()) {
-                                    final String birthYear = matcher.group(1);
-                                    if (birthYear != null && !birthYear.isEmpty()) {
-                                        //noinspection DataFlowIssue
-                                        author.setBirthDate(birthYear);
-                                    }
-                                    final String deathYear = matcher.group(2);
-                                    if (deathYear != null && !deathYear.isEmpty()) {
-                                        //noinspection DataFlowIssue
-                                        author.setDeathDate(deathYear);
-                                    }
-                                }
-                                break;
-                            }
-                            case "Ort":
-                            case "Place": {
-                                break;
-                            }
-                            case "Geschlecht":
-                            case "Gender": {
-                                // männlich
-                                // weiblich
-                                break;
-                            }
-                            case "Akademischer Grad bzw. Titel":
-                            case "Academic degree": {
-                                break;
-                            }
-                            case "Weitere Angaben":
-                            case "Further information": {
-                                break;
-                            }
-                            case "Datensatztyp":
-                            case "Record type": {
-                                // can be one of:
-                                // Person
-                                // Pseudonym
-                                isPseudonym = "Pseudonym".equals(td.text());
-                                break;
-                            }
-                            case "Datensatz-ID":
-                            case "Record ID": {
-                                if (author != null) {
-                                    author.setIdentifierValue(Identifier.SID_DNB, td.text());
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+        // There will only be one or none
+        final Elements tags = document.select("datafield[tag='100']");
+        final List<Author> authors = parser.author(tags);
+        if (authors.isEmpty()) {
+            return null;
         }
 
-        if (author != null && isPseudonym && realAuthorUrl != null) {
-            final String url = searchEngine.getHostUrl() + '/' + realAuthorUrl;
-            final Document raDoc = searchEngine.loadDocument(context, url, Map.of(
-                    HttpConstants.REFERER, document.location()));
-            if (!searchEngine.isCancelled()) {
-                final Author realAuthor = parse(context, raDoc);
-                if (realAuthor != null) {
-                    author.setRealAuthor(realAuthor);
-                }
-            }
+        final Author author = authors.get(0);
+
+        final List<Identifier.Value> ivs = parser.identifiers();
+
+        // add the DNB one to the front of the list
+        final Identifier.Value value = parser.cf001();
+        if (value != null) {
+            ivs.add(0, value);
         }
 
+        ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
+        if (!ivs.isEmpty()) {
+            author.setIdentifiers(ivs);
+        }
         return author;
     }
 }

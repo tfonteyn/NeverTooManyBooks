@@ -24,17 +24,12 @@ import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.text.Normalizer;
-import java.util.ArrayList;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -42,8 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -51,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbBookParser;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbParser;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -71,42 +66,20 @@ public class ZdbKatalogSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIssn {
 
-    private static final String TAG = "ZdbKatalogSearchEngine";
-
     private static final String SITE_URL = "https://zdb-katalog.de";
     private static final String PREFERENCE_KEY = "zdbkatalog";
 
-    // 2026-06-21
-    private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
-            Map.entry("OCoLC", Identifier.SID_OCLC),
-            Map.entry("Be", Identifier.SID_KBR),
-            Map.entry("NL-HaKB", Identifier.SID_KBNL),
-            Map.entry("DLC", Identifier.SID_LCCN),
-            Map.entry("US-dlc", Identifier.SID_LCCN),
-            Map.entry("DE-599", Identifier.SID_ZDB_KATALOG),
-            Map.entry("PoLiBN", Identifier.SID_PORBASE),
-            Map.entry("SE-LIBR", Identifier.SID_LIBRIS)
-    );
-
-    private static final Pattern IDENT_PATTERN = Pattern.compile("^\\(([^)]+)\\)(.+)$");
-    private static final Pattern DIGITS_PATTERN = Pattern.compile("[^0-9]");
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
-    private static final Pattern M21_CTRL_PATTERN = Pattern.compile("[\\u0080-\\u009F]");
-
-    // See the "explain" record; we're using the index
-    // <ns:index search="true" scan="false" sort="false" id="dnb.iss">
-    //   <ns:title lang="de" primary="true">ISSN [ZDB]</ns:title>
-    //   <ns:map>
-    //     <ns:name set="dnb">iss</ns:name>
-    //   </ns:map>
-    // </ns:index>
-    private static final String ISSN_URL = "https://services.dnb.de/sru/zdb?"
-                                           + "version=1.1"
-                                           + "&operation=searchRetrieve"
-                                           // escape and encode the '=' as %%3D
-                                           + "&query=iss%%3D%1$s"
-                                           + "&recordSchema=MARC21-xml"
-                                           + "&maximumRecords=1";
+    /**
+     * Param 1: SRU query
+     * <p>
+     * Hardcoded to return a single result for now.
+     */
+    private static final String SRU_URL = "https://services.dnb.de/sru/zdb?"
+                                          + "version=1.1"
+                                          + "&operation=searchRetrieve"
+                                          + "&query=%1$s"
+                                          + "&recordSchema=MARC21-xml"
+                                          + "&maximumRecords=1";
 
     /**
      * Constructor.
@@ -158,193 +131,93 @@ public class ZdbKatalogSearchEngine
 
         final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
 
-        final String url = String.format(ISSN_URL, codeStr);
+        final String query = "iss=" + codeStr;
+        final String url = String.format(SRU_URL, URLEncoder
+                .encode(query, StandardCharsets.UTF_8)
+                .replace("+", "%20"));
+
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 
         final Book book = new Book();
 
         if (!isCancelled()) {
-            parseIssnMARC21xml(context, document, productCode, book);
+            parse(context, document, productCode, book);
         }
 
         return book;
     }
 
-    // WARNING:  USE element.wholeText() AND NOT text() ... we want all strings as-is
-    // and not cleaned up by jsoup.
     @VisibleForTesting
-    void parseIssnMARC21xml(@NonNull final Context context,
-                            @NonNull final Document document,
-                            @NonNull final ProductCode productCode,
-                            @NonNull final Book book) {
+    void parse(@NonNull final Context context,
+               @NonNull final Document document,
+               @NonNull final ProductCode productCode,
+               @NonNull final Book book) {
 
-        final List<Identifier.Value> ivs = new ArrayList<>();
+        final DnbBookParser parser = new DnbBookParser(context, document, book);
+        parser.sidDnb();
 
-        Element x, a, b;
-        char pubType = 0;
-
-        x = document.selectFirst("controlfield[tag='001']");
-        if (x != null) {
-            ivs.add(new Identifier.Value(Identifier.SID_DNB, normalize(x)));
-        }
-
+        // Specific for magazines
+        // Type of continuing resource
+        //    # - None of the following
+        //    a - Activity report
+        //    d - Updating database
+        //    g - Magazine
+        //    h - Blog
+        //    i - Serial zine
+        //    j - Journal
+        //    l - Updating loose-leaf
+        //    m - Monographic series
+        //    n - Newspaper
+        //    p - Periodical
+        //    q - Serial podcast
+        //    r - Repository
+        //    s - Newsletter
+        //    t - Directory
+        //    w - Updating Web site
+        //    | - No attempt to code
         // position 35-37 provides the language, but so does tag 041; we're ONLY using the latter
-        x = document.selectFirst("controlfield[tag='008']");
-        if (x != null) {
-            final String text = normalize(x);
+        final Element cf008 = document.selectFirst("controlfield[tag='008']");
+        if (cf008 != null) {
+            final String text = DnbParser.normalise(cf008);
             // sanity check
             if (text.length() == 40) {
-                // Type of continuing resource
-                //    # - None of the following
-                //    a - Activity report
-                //    d - Updating database
-                //    g - Magazine
-                //    h - Blog
-                //    i - Serial zine
-                //    j - Journal
-                //    l - Updating loose-leaf
-                //    m - Monographic series
-                //    n - Newspaper
-                //    p - Periodical
-                //    q - Serial podcast
-                //    r - Repository
-                //    s - Newsletter
-                //    t - Directory
-                //    w - Updating Web site
-                //    | - No attempt to code
-                pubType = text.charAt(21);
-            }
-        }
-
-        // Issn8
-        x = document.selectFirst("datafield[tag='022'] subfield[code='a']");
-        if (x != null) {
-            book.setRawProductCode(ISBN.cleanText(normalize(x)));
-        }
-        // EAN code, i.e. Issn13 - it's unlikely but we might as well try
-        x = document.selectFirst("datafield[tag='024'][ind1='3'] subfield[code='a']");
-        if (x != null) {
-            // overwrite !
-            book.setRawProductCode(ISBN.cleanText(normalize(x)));
-        }
-
-        // Identifiers
-        //noinspection DataFlowIssue
-        document.select("datafield[tag='035']").stream()
-                .map(df -> df.selectFirst("subfield[code='a']"))
-                .filter(Objects::nonNull)
-                .map(sf -> IDENT_PATTERN.matcher(normalize(sf)))
-                .filter(Matcher::find)
-                .map(matcher -> {
-                    String key = matcher.group(1);
-                    final String value = matcher.group(2);
-                    if (key == null || value == null) {
-                        return null;
+                switch (text.charAt(21)) {
+                    // n - Newspaper
+                    case 'n': {
+                        book.setFormat(context.getString(R.string.book_format_newspaper));
+                        break;
                     }
-
-                    key = IDENTIFIER_MAPPING.getOrDefault(key, key);
-                    return new Identifier.Value(key, value);
-                })
-                .filter(Objects::nonNull)
-                .forEach(ivs::add);
-
-        x = document.selectFirst("datafield[tag='041'] subfield[code='a']");
-        if (x != null) {
-            book.setLanguage(normalize(x));
-        }
-
-        x = document.selectFirst("datafield[tag='245']");
-        if (x != null) {
-            a = x.selectFirst("subfield[code='a']");
-            b = x.selectFirst("subfield[code='b']");
-            if (a != null) {
-                if (b == null) {
-                    book.setTitle(normalize(a));
-                } else {
-                    book.setTitle(context.getString(R.string.name_colon_value,
-                                                    normalize(a), normalize(b)));
+                    // g - Magazine
+                    // j - Journal
+                    // p - Periodical
+                    case 'g':
+                    case 'j':
+                    case 'p': {
+                        book.setFormat(context.getString(R.string.book_format_periodical));
+                        break;
+                    }
                 }
             }
         }
+        parser.issn();
 
-        // Publisher
-        x = document.selectFirst("datafield[tag='264']");
-        if (x != null) {
-            // place
-            a = x.selectFirst("subfield[code='a']");
-            // name
-            b = x.selectFirst("subfield[code='b']");
-            if (b != null) {
-                book.add(Publisher.from(normalize(b)));
-            } else if (a != null) {
-                book.add(Publisher.from(normalize(a)));
-            }
-        }
+        parser.identifiers();
+        parser.languages();
 
-        final Element sizeField = document.selectFirst("datafield[tag='300'] subfield[code='c']");
-        switch (pubType) {
-            // n - Newspaper
-            case 'n': {
-                book.setFormat(context.getString(R.string.book_format_newspaper));
-                break;
-            }
-            // g - Magazine
-            // p - Periodical
-            case 'g':
-            case 'p': {
-                int formatResId = R.string.book_format_periodical;
-                if (sizeField != null && parseHeightInCm(normalize(sizeField)) <= 21) {
-                    formatResId = R.string.book_format_digest;
-                }
-                book.setFormat(context.getString(formatResId));
-                break;
-            }
-        }
+        parser.authors();
+        parser.publishers();
+        parser.series();
 
-        if (!ivs.isEmpty()) {
-            book.setIdentifiers(ivs);
-        }
+        parser.originalTitle();
+        parser.title();
+        parser.description();
+        parser.physicalDescription();
+        parser.genreTags();
 
-        // We don't get an author, use the publisher if we have one...
+        // We don't get an author for magazines, use the publisher if we have one...
         book.getPrimaryPublisher()
             .ifPresent(p -> book.add(Author.from(p.getName())));
 
-        if (!book.hasProductCode()) {
-            book.setRawProductCode(productCode.asText());
-        }
-    }
-
-    @NonNull
-    private String normalize(@NonNull final Element element) {
-        // Some elements can contain MARC21 control characters.
-        // e.g. <subfield code="a">&#152;Der&#156; Spiegel online Themen</subfield>
-        // Strip those out.
-        final String s = M21_CTRL_PATTERN.matcher(element.wholeText()).replaceAll("");
-        return Normalizer.normalize(s, Normalizer.Form.NFC);
-    }
-
-    private int parseHeightInCm(@Nullable final String rawSizeText) {
-        if (rawSizeText == null || rawSizeText.isEmpty()) {
-            return 0;
-        }
-
-        @SuppressWarnings("StringToUpperCaseOrToLowerCaseWithoutLocale")
-        final String cleanText = WHITESPACE_PATTERN.matcher(rawSizeText.toLowerCase())
-                                                   .replaceAll("");
-
-        // Extract the numeric value
-        final String digits = DIGITS_PATTERN.matcher(cleanText).replaceAll("");
-        if (digits.isEmpty()) {
-            return 0;
-        }
-
-        final int value = Integer.parseInt(digits);
-
-        // If it's explicitly marked as mm, normalize it to cm
-        if (cleanText.contains("mm")) {
-            return (int) Math.ceil(value / 10.0);
-        }
-
-        return value;
+        parser.finish(productCode);
     }
 }

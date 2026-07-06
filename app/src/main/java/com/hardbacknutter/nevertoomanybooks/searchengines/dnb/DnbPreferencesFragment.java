@@ -59,11 +59,6 @@ public class DnbPreferencesFragment
                     p.setChecked(true);
                 });
 
-        factory.bool(DnbSearchEngine.PK_COVERS_FROM_PORTAL,
-                     R.string.pt_fetch_hires_images,  null, p -> {
-                    p.setIcon(R.drawable.image_24px);
-                });
-
         CommonSettingsFactory.timeouts(factory, pk);
         CommonSettingsFactory.troubleshoot(factory, pk);
 

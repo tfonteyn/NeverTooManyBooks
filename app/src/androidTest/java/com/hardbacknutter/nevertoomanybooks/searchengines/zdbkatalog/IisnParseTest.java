@@ -75,7 +75,7 @@ class IisnParseTest
 
         final Document document = loadDocument(resId, UTF_8, "", Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parseIssnMARC21xml(context, document, pc, book);
+        searchEngine.parse(context, document, pc, book);
 
         Log.d(TAG, book.toString());
 
