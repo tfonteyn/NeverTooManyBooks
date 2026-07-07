@@ -121,6 +121,8 @@
             translatable="false">The Internet Speculative Fiction Database</string>
     <string name="identifier_isni"
             translatable="false">International Standard Name Identifier</string>
+    <string name="identifier_issn"
+            translatable="false">International Standard Serial Number</string>
     <string name="identifier_kb_nl"
             translatable="false">De nationale bibliotheek van Nederland</string>
     <string name="identifier_lastdodo_nl"

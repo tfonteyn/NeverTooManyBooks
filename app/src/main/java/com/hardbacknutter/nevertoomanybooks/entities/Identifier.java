@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.DOI;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.ISNI;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.ISSN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.KBR;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Lccn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.LibrisSE;
@@ -124,6 +125,7 @@ public class Identifier
     public static final String SID_BNF = "bnf";
     public static final String SID_BRITISH_LIBRARY = "bl";
     public static final String SID_DATABAZE_KNIH = "databazeknih";
+    /** DE-101. */
     public static final String SID_DNB = "dnb";
     public static final String SID_DOI = "doi";
     public static final String SID_DOUBAN = "douban";
@@ -153,11 +155,17 @@ public class Identifier
     public static final String SID_URI = "uri";
     public static final String SID_URN = "urn";
     public static final String SID_WIKIDATA = "wikidata";
-    // This is a secondary sid for ZDB whose primary sid is SID_DNB
-    public static final String SID_ZDB_KATALOG = "zdbkatalog";
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI}. */
+
+    /**
+     * Used for Authors only.
+     * {@link com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI}.
+     */
     public static final String SID_ISNI = "isni";
+
+    /** Used for Series only. */
+    public static final String SID_ISSN = "issn";
+
     /** <a href="https://viaf.org">viaf</a>. */
     public static final String SID_VIAF = "viaf";
 
@@ -329,6 +337,7 @@ public class Identifier
         all.addAll(GoogleBooksSearchEngine.createIdentifiers(context));
         all.addAll(IsfdbSearchEngine.createIdentifiers(context));
         all.addAll(ISNI.createIdentifiers(context));
+        all.addAll(ISSN.createIdentifiers(context));
         all.addAll(KbNlSearchEngine.createIdentifiers(context));
         all.addAll(KBR.createIdentifiers(context));
         all.addAll(LastDodoSearchEngine.createIdentifiers(context));
