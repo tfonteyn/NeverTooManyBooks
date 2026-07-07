@@ -183,7 +183,7 @@ public class FutureHttp<R> {
 
         final int responseCode = request.getResponseCode();
 
-        if (isLoggingEnabled()) {
+        if (enableLog) {
             LoggerFactory.getLogger().d(TAG, LOG_CHECK_RESPONSE_CODE,
                                         responseCode + " " + request.getURL().toString());
         }
@@ -192,7 +192,7 @@ public class FutureHttp<R> {
             return;
         }
 
-        if (isLoggingEnabled()) {
+        if (enableLog) {
             final String msg = request
                     .getHeaderFields()
                     .entrySet()
@@ -371,15 +371,6 @@ public class FutureHttp<R> {
     }
 
     /**
-     * Is logging enabled.
-     *
-     * @return flag
-     */
-    public boolean isLoggingEnabled() {
-        return enableLog;
-    }
-
-    /**
      * Add a request header.
      *
      * @param key   to set
@@ -472,7 +463,7 @@ public class FutureHttp<R> {
             }
         }
 
-        if (isLoggingEnabled()) {
+        if (enableLog) {
             final String msg = request
                     .getRequestProperties()
                     .entrySet()
@@ -691,14 +682,14 @@ public class FutureHttp<R> {
                 HttpURLConnection request = null;
                 try {
                     final URL url = new URL(urlStr);
-                    if (isLoggingEnabled()) {
+                    if (enableLog) {
                         LoggerFactory.getLogger().d(TAG, "doGetExecute|doGetConnect");
                     }
                     request = doGetConnect(url, method);
                     return action.apply(request);
                 } finally {
                     if (request != null) {
-                        if (isLoggingEnabled()) {
+                        if (enableLog) {
                             LoggerFactory.getLogger().d(TAG, "doGetExecute|disconnect");
                         }
                         request.disconnect();
@@ -708,7 +699,7 @@ public class FutureHttp<R> {
             return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
 
         } catch (@NonNull final ExecutionException e) {
-            if (isLoggingEnabled()) {
+            if (enableLog) {
                 LoggerFactory.getLogger().d(TAG, "doGetExecute: " + e);
             }
             unpackExecutionException(e);
@@ -760,7 +751,7 @@ public class FutureHttp<R> {
         HttpURLConnection request = initialRequest;
 
         while (attempt <= retryCount) {
-            if (isLoggingEnabled()) {
+            if (enableLog) {
                 LoggerFactory.getLogger().d(TAG, "doGetConnect|connect",
                                             LOG_ATTEMPT + attempt,
                                             LOG_REQUEST_URL + requestUrlStr);
@@ -778,7 +769,7 @@ public class FutureHttp<R> {
                     final URL responseUrl = request.getURL();
                     final String responseUrlStr = responseUrl.toString();
 
-                    if (isLoggingEnabled()) {
+                    if (enableLog) {
                         LoggerFactory.getLogger()
                                      .d(TAG, "doGetConnect|response",
                                         LOG_ATTEMPT + attempt,
@@ -800,7 +791,7 @@ public class FutureHttp<R> {
                         // Preserve for potential retry
                         requestUrlStr = responseUrlStr;
 
-                        if (isLoggingEnabled()) {
+                        if (enableLog) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "doGetConnect|redirect",
                                             LOG_ATTEMPT + attempt,
@@ -842,7 +833,7 @@ public class FutureHttp<R> {
                 // https://covers.openlibrary.org/b/id/14615097-L.jpg?default=false
                 // ==> IMMEDIATELY a 403....
                 // but using that last url in a browser or with wget will return a 302
-                if (isLoggingEnabled()) {
+                if (enableLog) {
                     LoggerFactory.getLogger().e(TAG, e, "doGetConnect|disconnecting",
                                                 "e.url=" + e.getUrl(),
                                                 "e.location=" + e.getLocation());
@@ -853,7 +844,7 @@ public class FutureHttp<R> {
                 throw e;
 
             } catch (@NonNull final HttpTooManyRequestsException e) {
-                if (isLoggingEnabled()) {
+                if (enableLog) {
                     LoggerFactory.getLogger()
                                  .e(TAG, e, LOG_RECOVERABLE_ERROR,
                                     LOG_ATTEMPT + attempt,
@@ -872,7 +863,7 @@ public class FutureHttp<R> {
                 // InterruptedIOException / SocketTimeoutException: connection timeout
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. A retry and the site was OK.
-                if (isLoggingEnabled()) {
+                if (enableLog) {
                     LoggerFactory.getLogger()
                                  .e(TAG, e, LOG_RECOVERABLE_ERROR,
                                     LOG_ATTEMPT + attempt,
@@ -887,7 +878,7 @@ public class FutureHttp<R> {
 
         final String message = "doGetConnect|Giving up|initialRequestUrl=`"
                                + initialRequest.getURL() + '`';
-        if (isLoggingEnabled()) {
+        if (enableLog) {
             LoggerFactory.getLogger().d(TAG, message);
         }
         throw new NetworkException(message);
@@ -898,7 +889,7 @@ public class FutureHttp<R> {
                               @NonNull final IOException e)
             throws IOException {
         if (attempt > retryCount) {
-            if (isLoggingEnabled()) {
+            if (enableLog) {
                 LoggerFactory.getLogger()
                              .d(TAG, "doGetConnect|all attempts failed|disconnecting");
             }
@@ -946,7 +937,7 @@ public class FutureHttp<R> {
                 HttpURLConnection request = null;
                 try {
                     final URL url = new URL(urlStr);
-                    if (isLoggingEnabled()) {
+                    if (enableLog) {
                         LoggerFactory.getLogger().d(TAG, "post|createRequest");
                     }
                     request = createRequest(url, POST);
@@ -977,7 +968,7 @@ public class FutureHttp<R> {
                     return null;
                 } finally {
                     if (request != null) {
-                        if (isLoggingEnabled()) {
+                        if (enableLog) {
                             LoggerFactory.getLogger().d(TAG, "post|disconnect");
                         }
                         request.disconnect();
@@ -987,7 +978,7 @@ public class FutureHttp<R> {
             return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
 
         } catch (@NonNull final ExecutionException e) {
-            if (isLoggingEnabled()) {
+            if (enableLog) {
                 LoggerFactory.getLogger().d(TAG, "post: " + e);
             }
             unpackExecutionException(e);
