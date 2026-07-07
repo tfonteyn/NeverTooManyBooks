@@ -100,7 +100,7 @@ public class DnbParser {
     private static final Pattern DESC_PREFIX_PATTERN =
             Pattern.compile("(?i)^(Inhalt|Rezension|Zusammenfassung):\\s*");
 
-    // Matches an optional date/year, a mandatory hyphen, and an optional date/year
+    // Matches an optional date/year, a mandatory hyphen, and an optional date/year.
     // YYYY-YYYY
     // DD.MM.YYYY-DD.MM.YYYY
     // with either of the pre-dash, or post-dash parts missing.
@@ -278,7 +278,7 @@ public class DnbParser {
     }
 
     /**
-     * Parse tag 100 and/or 700
+     * Parse tag 100 and/or 700.
      *
      * @param tags to parse
      *
@@ -716,10 +716,11 @@ public class DnbParser {
             return null;
         }
 
+        // https://sta.dnb.de/doc/GND-DF-BEZIEHUNG-ZU-PERSON-FAMILIE#Beziehungskennzeichnung
         for (final Element code4 : tag.select(SUBFIELD_CODE_4)) {
             final String text = normalise(code4);
             // modern: a schema url ending in realIdentity
-            // older: nawi
+            // older: nawi (Wirklicher Name == Real name)
             // very old: "pisa"
             if ("nawi".equals(text) || "pisa".equals(text) || text.contains("realIdentity")) {
                 final Element a = tag.selectFirst(SUBFIELD_CODE_A);

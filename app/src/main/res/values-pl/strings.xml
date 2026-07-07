@@ -947,6 +947,7 @@
     <string name="action_edit_with_ellipsis">Edytuj za pomocą…</string>
     <string name="warning_import_csv_calibre">Kolumna „comments” ze starszych wersji programu Calibre może powodować powstawanie nieprawidłowych plików CSV. W przypadku wystąpienia błędu, aktualizacja programu Calibre do wersji 9.10 lub nowszej przed eksportem zazwyczaj rozwiązuje problem. Alternatywnie możesz usunąć kolumnę „comments” ze swojego pliku i spróbować ponownie zaimportować.</string>
     <string name="book_format_newspaper">Gazeta</string>
+    <string name="book_format_journal">Czasopismo naukowe</string>
     <string name="book_format_periodical">Czasopismo</string>
     <string name="pt_edit_book_isbn_checks">Walidacja wprowadzania ISBN i kodów</string>
     <string name="menu_code_validity_title">Sprawdzanie ISBN/kodu</string>

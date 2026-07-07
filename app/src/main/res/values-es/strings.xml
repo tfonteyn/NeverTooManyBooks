@@ -933,6 +933,7 @@
     <string name="action_edit_with_ellipsis">Editar con…</string>
     <string name="warning_import_csv_calibre">La columna «comments» de las versiones antiguas de Calibre puede generar archivos CSV no válidos. Si experimenta un error, actualizar Calibre a la versión 9.10 o posterior antes de exportar suele solucionarlo. Como alternativa, puede eliminar la columna «comments» de su archivo e intentar la importación de nuevo.</string>
     <string name="book_format_newspaper">Periódico</string>
+    <string name="book_format_journal">Revista científica</string>
     <string name="book_format_periodical">Revista</string>
     <string name="pt_edit_book_isbn_checks">Validación de entrada de ISBN y códigos</string>
     <string name="menu_code_validity_title">Comprobación de ISBN/código</string>

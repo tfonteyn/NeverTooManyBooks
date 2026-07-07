@@ -923,6 +923,7 @@
     <string name="action_edit_with_ellipsis">Szerkesztés ezzel…</string>
     <string name="warning_import_csv_calibre">A Calibre régebbi verzióiból származó „comments” oszlop érvénytelen CSV-fájlokat eredményezhet. Ha hibába ütközik, a Calibre frissítése a 9.10-es vagy újabb verzióra az exportálás előtt általában megoldja a problémát. Alternatív megoldásként eltávolíthatja a „comments” oszlopot a fájlból, és próbálkozhat újra az importálással.</string>
     <string name="book_format_newspaper">Újság</string>
+    <string name="book_format_journal">Tudományos folyóirat</string>
     <string name="book_format_periodical">Folyóirat</string>
     <string name="pt_edit_book_isbn_checks">ISBN és kód beviteli ellenőrzése</string>
     <string name="menu_code_validity_title">ISBN/Kód ellenőrzése</string>

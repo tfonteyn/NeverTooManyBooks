@@ -925,6 +925,7 @@ A question mark is written as the character semicolon: ';'
     <string name="action_edit_with_ellipsis">Επεξεργασία με…</string>
     <string name="warning_import_csv_calibre">Η στήλη «comments» (σχόλια) από παλαιότερες εκδόσεις του Calibre μπορεί να δημιουργήσει μη έγκυρα αρχεία CSV. Αν εμφανιστεί κάποιο σφάλμα, η αναβάθμιση του Calibre στην έκδοση 9.10 ή μεταγενέστερη πριν από την εξαγωγή συνήθως το διορθώνει. Εναλλακτικά, μπορείτε να αφαιρέσετε τη στήλη «comments» από το αρχείο σας και να δοκιμάσετε ξανά την εισαγωγή.</string>
     <string name="book_format_newspaper">Εφημερίδα</string>
+    <string name="book_format_journal">Επιστημονικό περιοδικό</string>
     <string name="book_format_periodical">Περιοδικό</string>
     <string name="pt_edit_book_isbn_checks">Έλεγχος εισαγωγής ISBN και κωδικών</string>
     <string name="menu_code_validity_title">Έλεγχος ISBN/κωδικού</string>

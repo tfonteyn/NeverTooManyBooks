@@ -650,6 +650,7 @@
     <string name="book_format_softcover">Mīkstie vāki (brošūra)</string>
     <string name="book_format_comic">Komikss</string>
     <string name="book_format_newspaper">Laikraksts</string>
+    <string name="book_format_journal">Zinātniskais žurnāls</string>
     <string name="book_format_periodical">Periodika</string>
     <string name="book_format_other">Cits</string>
     <string name="book_format_unknown">Nezināms</string>

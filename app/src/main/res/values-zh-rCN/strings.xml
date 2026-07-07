@@ -914,6 +914,7 @@
     <string name="action_edit_with_ellipsis">编辑于…</string>
     <string name="warning_import_csv_calibre">来自旧版本 Calibre 的“comments”（评论）列可能会导致 CSV 文件无效。如果遇到错误，通常在导出前将 Calibre 更新到 9.10 或更高版本即可解决。或者，您也可以删除文件中的“comments”列，然后重试导入。</string>
     <string name="book_format_newspaper">报纸</string>
+    <string name="book_format_journal">学术期刊</string>
     <string name="book_format_periodical">定期刊物</string>
     <string name="pt_edit_book_isbn_checks">ISBN 和代码输入验证</string>
     <string name="menu_code_validity_title">ISBN/代码檢查</string>

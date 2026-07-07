@@ -922,6 +922,7 @@
     <string name="action_edit_with_ellipsis">Bearbeiten mit…</string>
     <string name="warning_import_csv_calibre">Die Spalte „comments“ aus älteren Calibre-Versionen kann zu ungültigen CSV-Dateien führen. Wenn ein Fehler auftritt, lässt sich dies meist beheben, indem Sie Calibre vor dem Exportieren auf Version 9.10 oder neuer aktualisieren. Alternativ können Sie die Spalte „comments“ aus Ihrer Datei entfernen und den Import erneut versuchen.</string>
     <string name="book_format_newspaper">Zeitung</string>
+    <string name="book_format_journal">Fachzeitschrift</string>
     <string name="book_format_periodical">Zeitschrift</string>
     <string name="pt_edit_book_isbn_checks">ISBN- und Code-Eingabeprüfung</string>
     <string name="menu_code_validity_title">ISBN/Code-Prüfung</string>

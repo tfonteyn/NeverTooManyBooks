@@ -925,6 +925,7 @@
     <string name="action_edit_with_ellipsis">இதன் மூலம் திருத்தவும்…</string>
     <string name="warning_import_csv_calibre">Calibre பழைய பதிப்புகளிலிருந்து வரும் “comments” நெடுவரிசை செல்லாத CSV கோப்புகளை உருவாக்கலாம். பிழை ஏற்பட்டால், ஏற்றுமதி செய்வதற்கு முன் Calibre-ஐ 9.10 அல்லது அதற்குப் பிந்தைய பதிப்பிற்குப் புதுப்பிப்பது வழக்கமாக அதைச் சரிசெய்யும். மாற்றாக, உங்கள் கோப்பிலிருந்து “comments” நெடுவரிசையை அகற்றிவிட்டு மீண்டும் இறக்குமதி செய்ய முயலலாம்.</string>
     <string name="book_format_newspaper">நாளிதழ்</string>
+    <string name="book_format_journal">ஆய்விதழ்</string>
     <string name="book_format_periodical">இதழ்</string>
     <string name="pt_edit_book_isbn_checks">ISBN மற்றும் குறியீட்டு உள்ளீட்டு சரிபார்ப்பு</string>
     <string name="menu_code_validity_title">ISBN/குறியீடு சரிபார்ப்பு</string>

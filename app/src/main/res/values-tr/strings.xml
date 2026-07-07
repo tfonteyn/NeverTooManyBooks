@@ -928,6 +928,7 @@
     <string name="action_edit_with_ellipsis">Birlikte düzenle…</string>
     <string name="warning_import_csv_calibre">Calibre’nin eski sürümlerindeki “comments” sütunu geçersiz CSV dosyalarına neden olabilir. Bir hatayla karşılaşırsanız, dışa aktarmadan önce Calibre’yi 9.10 veya daha yeni bir sürüme güncellemek genellikle sorunu çözer. Alternatif olarak, dosyanızdaki “comments” sütununu kaldırıp içe aktarmayı tekrar deneyebilirsiniz.</string>
     <string name="book_format_newspaper">Gazete</string>
+    <string name="book_format_journal">Akademik dergi</string>
     <string name="book_format_periodical">Dergi</string>
     <string name="pt_edit_book_isbn_checks">ISBN ve kod giriş doğrulaması</string>
     <string name="menu_code_validity_title">ISBN/Kod kontrolü</string>

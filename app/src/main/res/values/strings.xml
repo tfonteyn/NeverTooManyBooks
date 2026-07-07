@@ -697,23 +697,32 @@
     <string name="size_x_large">X-Large</string>
     <!-- endregion -->
     <!-- region ========== List values used to unify terminology from internet websites. -->
-    <!--  book format - traditional 'hardcover' (US) also known as 'hardback' (UK) -->
+    <!-- book format - traditional 'hardcover' (US) also known as 'hardback' (UK) -->
     <string name="book_format_hardcover">Hardcover</string>
-    <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
+    <!-- book format - traditional 'paperback' also known as 'pocketbook' -->
     <string name="book_format_paperback">Paperback</string>
-    <!--  book format - a large format paperback -->
+    <!-- book format - a large format paperback -->
     <string name="book_format_paperback_large">Trade Paperback</string>
     <!-- book format - A Softcover is not necessarily a paperback - mostly used by comics -->
     <string name="book_format_softcover">Softcover</string>
-    <!-- -book format - oblong, landscape, A l'italienne -->
+    <!-- book format - oblong, landscape, A l'italienne -->
     <string name="book_format_hardcover_oblong">Hardcover - Oblong</string>
-    <!-- -book format - oblong, landscape, A l'italienne -->
+    <!-- book format - oblong, landscape, A l'italienne -->
     <string name="book_format_softcover_oblong">Softcover - Oblong</string>
-    <!-- -book format - The typical american/british size of a comic. -->
+    <!-- book format - The typical american/british size of a comic. -->
     <string name="book_format_comic">Comic</string>
-    <!-- -book format - Daily newspaper. -->
+    <!-- book format - Daily newspaper.
+         As defined in MARC21 cf008, char21 == 'n')
+    -->
     <string name="book_format_newspaper">Newspaper</string>
-    <!-- -book format - any type of magazine which is not a traditional/standard newspaper-->
+    <!-- book format - Scholarly/Academic Journals.
+         As defined in MARC21 cf008, char21 == 'j'
+    -->
+    <string name="book_format_journal">Journal</string>
+    <!-- book format - any type of magazine which is
+         not a traditional newspaper or academic journal.
+         As defined in MARC21 cf008, char21 == g - Magazine, i - Serial zine, p - Periodical.
+    -->->
     <string name="book_format_periodical">Periodical</string>
     <!-- -book format -->
     <string name="book_format_other">Other</string>

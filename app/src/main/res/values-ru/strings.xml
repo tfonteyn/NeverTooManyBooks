@@ -954,6 +954,7 @@
     <string name="action_edit_with_ellipsis">Изменить с помощью…</string>
     <string name="warning_import_csv_calibre">Колонка «comments» из старых версий Calibre может привести к созданию некорректных файлов CSV. Если вы столкнулись с ошибкой, обновление Calibre до версии 9.10 или более поздней перед экспортом обычно решает проблему. Кроме того, вы можете удалить колонку «comments» из своего файла и повторить импорт.</string>
     <string name="book_format_newspaper">Газета</string>
+    <string name="book_format_journal">Научный журнал</string>
     <string name="book_format_periodical">Журнал</string>
     <string name="pt_edit_book_isbn_checks">Проверка ввода ISBN и кодов</string>
     <string name="menu_code_validity_title">Проверка ISBN/кода</string>

@@ -956,6 +956,7 @@
     <string name="action_edit_with_ellipsis">Upravit v aplikaci…</string>
     <string name="warning_import_csv_calibre">Sloupec „comments“ (komentáře) ze starších verzí programu Calibre může způsobit neplatnost souborů CSV. Pokud narazíte na chybu, obvykle pomůže aktualizace programu Calibre na verzi 9.10 nebo novější před exportem. Případně můžete sloupec „comments“ ze souboru odebrat a zkusit import opakovat.</string>
     <string name="book_format_newspaper">Noviny</string>
+    <string name="book_format_journal">Odborný časopis</string>
     <string name="book_format_periodical">Časopis</string>
     <string name="pt_edit_book_isbn_checks">Kontrola zadávání ISBN a kódů</string>
     <string name="menu_code_validity_title">Kontrola ISBN/kódů</string>

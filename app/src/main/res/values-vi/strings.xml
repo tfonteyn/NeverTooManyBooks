@@ -912,6 +912,7 @@
     <string name="action_edit_with_ellipsis">Chỉnh sửa bằng…</string>
     <string name="warning_import_csv_calibre">Cột “comments” từ các phiên bản Calibre cũ có thể tạo ra các tệp CSV không hợp lệ. Nếu bạn gặp lỗi, việc cập nhật Calibre lên phiên bản 9.10 hoặc mới hơn trước khi xuất thường sẽ khắc phục được sự cố. Bạn có thể xóa cột “comments” khỏi tệp của mình và thử nhập lại.</string>
     <string name="book_format_newspaper">Báo</string>
+    <string name="book_format_journal">Tạp chí khoa học</string>
     <string name="book_format_periodical">Tạp chí</string>
     <string name="pt_edit_book_isbn_checks">Xác thực nhập mã ISBN và mã khác</string>
     <string name="menu_code_validity_title">Kiểm tra ISBN/Mã</string>

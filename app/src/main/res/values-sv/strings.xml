@@ -925,6 +925,7 @@
     <string name="action_edit_with_ellipsis">Redigera med…</string>
     <string name="warning_import_csv_calibre">Kolumnen ”comments” från äldre versioner av Calibre kan orsaka ogiltiga CSV-filer. Om du stöter på ett fel löser det sig oftast genom att uppdatera Calibre till version 9.10 eller senare innan du exporterar. Alternativt kan du ta bort kolumnen ”comments” från din fil och försöka importera igen.</string>
     <string name="book_format_newspaper">Tidning</string>
+    <string name="book_format_journal">Facktidskrift</string>
     <string name="book_format_periodical">Tidskrift</string>
     <string name="pt_edit_book_isbn_checks">Validering av ISBN- och kodinmatning</string>
     <string name="menu_code_validity_title">ISBN/kod-kontroll</string>

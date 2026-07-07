@@ -70,7 +70,7 @@ public class ZdbKatalogSearchEngine
     private static final String PREFERENCE_KEY = "zdbkatalog";
 
     /**
-     * Param 1: SRU query
+     * Param 1: SRU query.
      * <p>
      * Hardcoded to return a single result for now.
      */
@@ -187,11 +187,15 @@ public class ZdbKatalogSearchEngine
                         book.setFormat(context.getString(R.string.book_format_newspaper));
                         break;
                     }
+                    case 'j': {
+                        book.setFormat(context.getString(R.string.book_format_journal));
+                        break;
+                    }
                     // g - Magazine
-                    // j - Journal
+                    // i - Serial zine
                     // p - Periodical
                     case 'g':
-                    case 'j':
+                    case 'i':
                     case 'p': {
                         book.setFormat(context.getString(R.string.book_format_periodical));
                         break;
