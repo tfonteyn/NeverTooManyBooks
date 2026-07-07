@@ -191,6 +191,7 @@ public class DatabazeKnihSearchEngine
                 .setAuthorResolverSupplier(DatabazeKnihAuthorResolver::create);
     }
 
+    @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_databaze_knih);

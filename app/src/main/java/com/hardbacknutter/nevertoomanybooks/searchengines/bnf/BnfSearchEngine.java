@@ -192,6 +192,7 @@ public class BnfSearchEngine
                         .build(SearchEngineConfig::new));
     }
 
+    @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_bnf);

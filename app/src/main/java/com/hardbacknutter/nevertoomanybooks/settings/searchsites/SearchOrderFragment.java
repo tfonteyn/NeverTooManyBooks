@@ -198,7 +198,7 @@ public class SearchOrderFragment
 
         if (menuItemId == R.id.MENU_SETTINGS) {
             final EngineId engineId = vm.getList(type).get(position).getEngineId();
-            final Class<? extends Fragment> pfc = engineId.getPreferenceFragmentClazz();
+            final Class<? extends Fragment> pfc = engineId.getPreferenceFragmentClass();
             // sanity check
             if (pfc == null) {
                 return false;

@@ -176,6 +176,7 @@ public class KbNlSearchEngine
                 .setMultipleCoverSizes(true);
     }
 
+    @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_kb_nl);

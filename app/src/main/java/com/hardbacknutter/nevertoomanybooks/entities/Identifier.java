@@ -28,53 +28,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bnf.BnfSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Audible;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BL;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BarnesAndNoble;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.DOI;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.ISNI;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.ISSN;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.KBR;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Lccn;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.LibrisSE;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.URI;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.URN;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 
 /**
  * External website id's (site-id, sid).
@@ -314,49 +283,36 @@ public class Identifier
      * @param context Current context
      *
      * @return list
+     *
+     * @throws IllegalStateException (debug) on any error
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     @NonNull
     public static Collection<Identifier> createInitialList(@NonNull final Context context) {
         final Collection<Identifier> all = new ArrayList<>();
 
-        // TODO: automate this
-        all.addAll(AmazonSearchEngine.createIdentifiers(context));
-        all.addAll(Audible.createIdentifiers(context));
-        all.addAll(BarnesAndNoble.createIdentifiers(context));
-        all.addAll(BedethequeSearchEngine.createIdentifiers(context));
-        all.addAll(BibliotecePlSearchEngine.createIdentifiers(context));
-        all.addAll(BnfSearchEngine.createIdentifiers(context));
-        all.addAll(BL.createIdentifiers(context));
-        all.addAll(DatabazeKnihSearchEngine.createIdentifiers(context));
-        all.addAll(DnbSearchEngine.createIdentifiers(context));
-        all.addAll(DOI.createIdentifiers(context));
-        all.addAll(DoubanSearchEngine.createIdentifiers(context));
-        all.addAll(FantLab.createIdentifiers(context));
-        all.addAll(GoodreadsSearchEngine.createIdentifiers(context));
-        all.addAll(GoogleBooksSearchEngine.createIdentifiers(context));
-        all.addAll(IsfdbSearchEngine.createIdentifiers(context));
-        all.addAll(ISNI.createIdentifiers(context));
-        all.addAll(ISSN.createIdentifiers(context));
-        all.addAll(KbNlSearchEngine.createIdentifiers(context));
-        all.addAll(KBR.createIdentifiers(context));
-        all.addAll(LastDodoSearchEngine.createIdentifiers(context));
-        all.addAll(Lccn.createIdentifiers(context));
-        all.addAll(LibraryThingSearchEngine.createIdentifiers(context));
-        all.addAll(LibrisSE.createIdentifiers(context));
-        all.addAll(FantaScienza.createIdentifiers(context));
-        all.addAll(NooSFere.createIdentifiers(context));
-        all.addAll(WorldCat.createIdentifiers(context));
-        all.addAll(OpenLibrarySearchEngine.createIdentifiers(context));
-        all.addAll(Porbase.createIdentifiers(context));
-        all.addAll(StoryGraph.createIdentifiers(context));
-        all.addAll(StripInfoSearchEngine.createIdentifiers(context));
-        all.addAll(StripWebSearchEngine.createIdentifiers(context));
-        all.addAll(TerceraFundacion.createIdentifiers(context));
-        all.addAll(URI.createIdentifiers(context));
-        all.addAll(URN.createIdentifiers(context));
-        all.addAll(VIAF.createIdentifiers(context));
-        all.addAll(WikidataSearchEngine.createIdentifiers(context));
+        final List<? extends Class<? extends SearchEngine>> implementations =
+                Arrays.stream(EngineId.values())
+                      .map(EngineId::getImplementationClass)
+                      .collect(Collectors.toList());
+
+        for (final Class<? extends SearchEngine> clazz : implementations) {
+            try {
+                final Method method = clazz.getMethod("createIdentifiers", Context.class);
+                //noinspection unchecked
+                final Collection<Identifier> results = (Collection<Identifier>)
+                        method.invoke(null, context);
+                // Sanity check
+                if (results != null) {
+                    all.addAll(results);
+                }
+            } catch (final NoSuchMethodException ignore) {
+                // ignore, not all of the engines have identifiers defined
+            } catch (@NonNull final InvocationTargetException
+                                    | IllegalAccessException e) {
+                throw new IllegalStateException(clazz.getName(), e);
+            }
+        }
 
         return all;
     }

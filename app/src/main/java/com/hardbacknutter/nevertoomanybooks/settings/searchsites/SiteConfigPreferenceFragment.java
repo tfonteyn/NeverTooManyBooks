@@ -49,7 +49,7 @@ public class SiteConfigPreferenceFragment
         factory.header(R.string.lbl_settings);
 
         for (final EngineId engineId : EngineId.values()) {
-            final Class<? extends Fragment> clazz = engineId.getPreferenceFragmentClazz();
+            final Class<? extends Fragment> clazz = engineId.getPreferenceFragmentClass();
             if (clazz != null && engineId.isEnabled()) {
                 factory.fragment(engineId.getPreferenceKey(),
                                  engineId.getLabelResId(),

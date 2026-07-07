@@ -464,8 +464,13 @@ public enum EngineId
         return key;
     }
 
+    @NonNull
+    public Class<? extends SearchEngine> getImplementationClass() {
+        return clazz;
+    }
+
     @Nullable
-    public Class<? extends Fragment> getPreferenceFragmentClazz() {
+    public Class<? extends Fragment> getPreferenceFragmentClass() {
         return preferenceFragmentClazz;
     }
 

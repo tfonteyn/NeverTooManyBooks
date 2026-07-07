@@ -150,6 +150,7 @@ public class GoogleBooksSearchEngine
                 .setMultipleCoverSizes(true);
     }
 
+    @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_google_books);

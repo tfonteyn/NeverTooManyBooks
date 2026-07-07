@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
 import android.content.Context;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
@@ -39,6 +40,7 @@ public final class WorldCat {
     private WorldCat() {
     }
 
+    @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_worldcat);

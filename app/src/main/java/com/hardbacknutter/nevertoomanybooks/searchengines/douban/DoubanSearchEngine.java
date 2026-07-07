@@ -169,6 +169,7 @@ public class DoubanSearchEngine
                 .setIdentifierKey(Identifier.EntityType.Book, Identifier.SID_DOUBAN);
     }
 
+    @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_douban);

@@ -370,6 +370,9 @@ public class AmazonSearchEngine
      * and use the search url for the user country amazon site.
      * Similar situation with the Author.
      * The ASIN for books is generated from the ISBN if possible.
+     * <p>
+     * Called by reflection; <strong>MUST</strong> be {@code public}
+     * and annotated with {@code @Keep}
      *
      * @param context Current context
      *
@@ -379,6 +382,7 @@ public class AmazonSearchEngine
      * @see Identifier#getUri()
      * @see ViewBookOnSiteMenuHandler
      */
+    @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         // links empty on purpose; created dynamically
