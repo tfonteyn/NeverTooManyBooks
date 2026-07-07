@@ -200,6 +200,14 @@ public class ImageDownloader {
                 try (Response response = call.execute()) {
                     checkResponseCode(response);
 
+                    final String contentType = response.header(HttpConstants.CONTENT_TYPE);
+                    if (contentType == null || !contentType.startsWith("image/")) {
+                        // It's probably an HTML file, abandon.
+                        // Don't log here... if logEnabled, then checkResponseCode
+                        // will log the full response already
+                        return Optional.empty();
+                    }
+
                     try (InputStream source = response.body().byteStream()) {
                         if (isZipped(response)) {
                             try (GZIPInputStream gzipInputStream = new GZIPInputStream(source)) {
