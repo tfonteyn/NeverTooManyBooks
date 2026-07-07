@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.util.Pair;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -56,11 +58,13 @@ class IdentifierTest
      */
     @Test
     void createInitialList() {
-        final Set<String> keys = new HashSet<>();
+        final Set<Pair<String, Identifier.EntityType>> keys = new HashSet<>();
         for (final Identifier identifier : Identifier.createInitialList(context)) {
             final String key = identifier.getKey();
-            assertFalse(keys.contains(key), "Duplicate key: " + key);
-            keys.add(key);
+            final Identifier.EntityType type = identifier.getEntityType();
+
+            final boolean isUnique = keys.add(new Pair<>(key, type));
+            assertTrue(isUnique, "Duplicate key/type: " + key + ", " + type);
 
             identifier.getUri().ifPresent(uri -> assertEquals(
                     1,
