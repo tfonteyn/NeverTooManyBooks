@@ -92,10 +92,10 @@ public class DnbSearchEngine
                                           + "&recordSchema=MARC21-xml"
                                           + "&maximumRecords=1";
 
-    private static final String SEARCH_TYPE_ISBN = "num";
+    private static final String SEARCH_TYPE_NUM = "num";
 
     /** Concat with the isbn. */
-    private static final String HIRES_IMAGE_SEARCH = "https://portal.dnb.de/opac/mvb/cover?isbn=";
+    private static final String COVER_URL = "https://portal.dnb.de/opac/mvb/cover?isbn=";
 
     private final AuthorResolverHelper authorResolverHelper;
 
@@ -183,7 +183,7 @@ public class DnbSearchEngine
 
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
-        final String query = SEARCH_TYPE_ISBN + "=" + codeStr;
+        final String query = SEARCH_TYPE_NUM + "=" + codeStr;
         final String url = String.format(SRU_URL, URLEncoder
                 .encode(query, StandardCharsets.UTF_8)
                 .replace("+", "%20"));
@@ -213,15 +213,15 @@ public class DnbSearchEngine
         if (productCode != null) {
             final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
             if (!codeStr.isEmpty()) {
-                query.add(SEARCH_TYPE_ISBN + "=" + codeStr);
+                query.add(SEARCH_TYPE_NUM + "=" + codeStr);
             }
         }
 
-        addCriteriaIfValid(query, "tit", criteria.getTitle());
-        addCriteriaIfValid(query, "per", criteria.getAuthor());
-        addCriteriaIfValid(query, "gsr", criteria.getSeries());
-        addCriteriaIfValid(query, "zsn", criteria.getSeriesNr());
-        addCriteriaIfValid(query, "vlg", criteria.getPublisher());
+        addCriteria(query, "tit", criteria.getTitle());
+        addCriteria(query, "per", criteria.getAuthor());
+        addCriteria(query, "gsr", criteria.getSeries());
+        addCriteria(query, "zsn", criteria.getSeriesNr());
+        addCriteria(query, "vlg", criteria.getPublisher());
 
         final Book book = new Book();
 
@@ -241,18 +241,19 @@ public class DnbSearchEngine
         return book;
     }
 
-    private void addCriteriaIfValid(@NonNull final StringJoiner query,
-                                    @NonNull final String index,
-                                    @Nullable final String value) {
-        if (value != null && !value.isBlank()) {
-            // Sanity cleaning
-            final String cleaned = value.replace("\n", " ")
-                                        .replace("\r", " ")
-                                        .strip();
-            final String escaped = cleaned.replace("\"", "\\\"");
-
-            query.add(index + "=\"" + escaped + "\"");
+    private void addCriteria(@NonNull final StringJoiner query,
+                             @NonNull final String index,
+                             @Nullable final String value) {
+        if (value == null || value.isBlank()) {
+            return;
         }
+        // Sanity cleaning
+        final String cleaned = value.replace("\n", " ")
+                                    .replace("\r", " ")
+                                    .strip();
+        final String escaped = cleaned.replace("\"", "\\\"");
+
+        query.add(index + "=\"" + escaped + "\"");
     }
 
     @VisibleForTesting
@@ -291,7 +292,7 @@ public class DnbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String url = HIRES_IMAGE_SEARCH + book.getRawProductCode();
+            final String url = COVER_URL + book.getRawProductCode();
             // No referer
             saveImage(context, url, null, book.getRawProductCode(), 0, null)
                     .ifPresent(s -> CoverFileSpecArray.setFileSpec(book, 0, s));
