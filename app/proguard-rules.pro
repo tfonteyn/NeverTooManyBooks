@@ -34,6 +34,12 @@
 -keep class com.yalantis.ucrop** { *; }
 -keep interface com.yalantis.ucrop** { *; }
 
+# As a precaution, make sure the SearchEngine reflection methods are never deleted.
+-keepclassmembers class * {
+    public static * init();
+    public static * createIdentifiers(...);
+}
+
 # The below and more is now done with the "@Keep" annotation.
 # Keeping for reference for now.
 
