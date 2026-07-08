@@ -371,6 +371,9 @@ public class AmazonSearchEngine
      * Similar situation with the Author.
      * The ASIN for books is generated from the ISBN if possible.
      * <p>
+     * Called at <strong>installation/upgrade</strong> time to create the initial set
+     * in the database.
+     * <p>
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *

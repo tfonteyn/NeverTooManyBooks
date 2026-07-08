@@ -42,8 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz._ALL;
 
 /**
  * External website id's (site-id, sid).
@@ -291,12 +291,16 @@ public class Identifier
     public static Collection<Identifier> createInitialList(@NonNull final Context context) {
         final Collection<Identifier> all = new ArrayList<>();
 
-        final List<? extends Class<? extends SearchEngine>> implementations =
+        // The actual SearchEngines
+        final List<Class<?>> implementations =
                 Arrays.stream(EngineId.values())
                       .map(EngineId::getImplementationClass)
-                      .collect(Collectors.toList());
+                      .collect(Collectors.toCollection(ArrayList::new));
 
-        for (final Class<? extends SearchEngine> clazz : implementations) {
+        // The wanna-be engines.
+        implementations.addAll(_ALL.ALL);
+
+        for (final Class<?> clazz : implementations) {
             try {
                 final Method method = clazz.getMethod("createIdentifiers", Context.class);
                 //noinspection unchecked

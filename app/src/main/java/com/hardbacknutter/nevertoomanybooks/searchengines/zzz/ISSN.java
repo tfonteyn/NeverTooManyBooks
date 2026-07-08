@@ -31,7 +31,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-public class ISSN {
+public final class ISSN {
 
     private static final String SITE_URL = "https://portal.issn.org/";
     private static final String SERIES_URL = "https://portal.issn.org/search?search=%s";
@@ -39,6 +39,17 @@ public class ISSN {
     private ISSN() {
     }
 
+    /**
+     * Called at <strong>installation/upgrade</strong> time to create the initial set
+     * in the database.
+     * <p>
+     * Called by reflection; <strong>MUST</strong> be {@code public}
+     * and annotated with {@code @Keep}
+     *
+     * @param context Current context
+     *
+     * @return list
+     */
     @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {

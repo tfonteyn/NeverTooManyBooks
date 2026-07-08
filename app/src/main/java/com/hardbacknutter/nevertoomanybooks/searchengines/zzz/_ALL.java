@@ -18,12 +18,34 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * The classes in this package are wanna-be SearchEngines.
- * Basically a centralised register of URL's needed for those sites
- * without them being searchable.
- * <p>
- * All classes <strong>MUST</strong> be added to
- * {@link com.hardbacknutter.nevertoomanybooks.searchengines.zzz._ALL#ALL}
- */
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
+
+import java.util.List;
+
+public final class _ALL {
+
+    public static final List<Class<?>> ALL = List.of(
+           Audible.class,
+           BarnesAndNoble.class,
+           BL.class,
+           DOI.class,
+           FantaScienza.class,
+           FantLab.class,
+           ISNI.class,
+           ISSN.class,
+           KBR.class,
+           Lccn.class,
+           LibrisSE.class,
+           NooSFere.class,
+           Porbase.class,
+           StoryGraph.class,
+           TerceraFundacion.class,
+           URI.class,
+           URN.class,
+           VIAF.class,
+           WorldCat.class
+    );
+
+    private _ALL() {
+    }
+}

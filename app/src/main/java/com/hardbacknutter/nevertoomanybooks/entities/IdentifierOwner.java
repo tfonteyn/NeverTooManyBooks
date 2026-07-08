@@ -30,6 +30,11 @@ import java.util.stream.Collectors;
 
 public interface IdentifierOwner {
 
+    /**
+     * Get the id of the owning entity.
+     *
+     * @return id
+     */
     long getId();
 
     /**
@@ -47,6 +52,11 @@ public interface IdentifierOwner {
      */
     void setIdentifiers(@NonNull Collection<Identifier.Value> ivs);
 
+    /**
+     * Add the given list of  {@link Identifier.Value}s.
+     *
+     * @param ivs list
+     */
     default void addIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
         final List<Identifier.Value> identifiers = getIdentifiers();
         identifiers.addAll(ivs);

@@ -174,6 +174,17 @@ public class StripWebSearchEngine
                 .setAuthorResolverSupplier(StripWebAuthorResolver::create);
     }
 
+    /**
+     * Called at <strong>installation/upgrade</strong> time to create the initial set
+     * in the database.
+     * <p>
+     * Called by reflection; <strong>MUST</strong> be {@code public}
+     * and annotated with {@code @Keep}
+     *
+     * @param context Current context
+     *
+     * @return list
+     */
     @Keep
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
