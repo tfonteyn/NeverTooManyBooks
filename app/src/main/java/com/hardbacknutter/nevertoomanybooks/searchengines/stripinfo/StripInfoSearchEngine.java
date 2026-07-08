@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -329,7 +328,7 @@ public class StripInfoSearchEngine
     public Book searchByExternalId(@NonNull final Context context,
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
 
@@ -351,7 +350,7 @@ public class StripInfoSearchEngine
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
@@ -371,7 +370,7 @@ public class StripInfoSearchEngine
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
         if (isMultiResult(document)) {
             parseMultiResult(context, document, fetchCovers, book);
         } else {
@@ -399,14 +398,14 @@ public class StripInfoSearchEngine
      *
      * @throws CredentialsException  on authentication/login failures
      * @throws SearchException       on generic exceptions (wrapped) during search
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException      on storage related failures
      */
     @WorkerThread
     public void parseMultiResult(@NonNull final Context context,
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -450,7 +449,7 @@ public class StripInfoSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException      on storage related failures
      * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws CredentialsException  on authentication/login failures
      *                               This should only occur if the engine calls/relies on
@@ -462,7 +461,7 @@ public class StripInfoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         // Title is extracted from the page header.
         // Number will be extracted from the book title section.
@@ -737,7 +736,7 @@ public class StripInfoSearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -746,7 +745,7 @@ public class StripInfoSearchEngine
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                         @IntRange(from = 0, to = 1) final int cIdx)
-            throws CoverStorageException {
+            throws StorageException {
 
         String url = null;
         if (cIdx == 0) {
@@ -779,7 +778,7 @@ public class StripInfoSearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -787,7 +786,7 @@ public class StripInfoSearchEngine
                                        @NonNull final String url,
                                        @Nullable final String bookId,
                                        @IntRange(from = 0, to = 1) final int cIdx)
-            throws CoverStorageException {
+            throws StorageException {
 
         // if the site has no image: https://www.stripinfo.be/image.php?i=0
         // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png

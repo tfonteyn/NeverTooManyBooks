@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -84,7 +83,7 @@ class SruParseTest
 
     @Test
     void parse9783453321892()
-            throws IOException, CredentialsException, CoverStorageException {
+            throws IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783453321892&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -148,7 +147,7 @@ class SruParseTest
 
     @Test
     void parse9783426226681()
-            throws IOException, CredentialsException, CoverStorageException {
+            throws IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783426226681&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -202,7 +201,7 @@ class SruParseTest
 
     @Test
     void parse9783734163296()
-            throws IOException, CredentialsException, CoverStorageException {
+            throws IOException, CredentialsException, StorageException {
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783734163296&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783734163296;
@@ -265,7 +264,7 @@ class SruParseTest
 
     @Test
     void parse9783770411849()
-            throws IOException, CredentialsException, CoverStorageException {
+            throws IOException, CredentialsException, StorageException {
         final String locationHeader = "https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&query=num%3D9783770411849&recordSchema=MARC21-xml&maximumRecords=1";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.dnb_sru_9783770411849;

@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -198,7 +197,7 @@ public class BiblionetGrSearchEngine
      *
      * @throws CredentialsException  on authentication/login failures
      * @throws SearchException       on generic exceptions (wrapped) during search
-     * @throws CoverStorageException on storage related failures
+     * @throws  StorageException     on storage related failures
      */
     @VisibleForTesting
     @WorkerThread
@@ -206,7 +205,7 @@ public class BiblionetGrSearchEngine
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
         // Grab the first search result, and redirect to that page
         Element dataElement = document.selectFirst("div#result_books");
         if (dataElement != null) {
@@ -235,7 +234,7 @@ public class BiblionetGrSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException      on storage related failures
      * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws CredentialsException  on authentication/login failures
      *                               This should only occur if the engine calls/relies on
@@ -247,7 +246,7 @@ public class BiblionetGrSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
 
         final Elements summaryDivs = document.select("div.summary");
 
@@ -738,7 +737,7 @@ public class BiblionetGrSearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @VisibleForTesting
@@ -748,7 +747,7 @@ public class BiblionetGrSearchEngine
                                          @Nullable final String bookId,
                                          @SuppressWarnings("SameParameterValue")
                                          @IntRange(from = 0, to = 0) final int cIdx)
-            throws CoverStorageException {
+            throws StorageException {
 
         final Element cover = document.selectFirst("div.product-thumb-info-image > img");
         if (cover == null) {

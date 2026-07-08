@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -464,7 +463,7 @@ public class GoodreadsSearchEngine
                            @NonNull final JSONObject o,
                            @NonNull final Book book,
                            @NonNull final boolean[] fetchCovers)
-            throws JSONException, CredentialsException, CoverStorageException {
+            throws JSONException, CredentialsException, StorageException {
         final String title = o.optString("title");
         if (title.isEmpty()) {
             return;

@@ -40,9 +40,9 @@ import java.util.concurrent.CancellationException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -249,7 +249,7 @@ public class MaintenanceViewModel
         @NonNull
         @Override
         protected UsedSpaceResult doWork()
-                throws CancellationException, CoverStorageException {
+                throws CancellationException, StorageException {
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             final CoverStorage coverStorage = serviceLocator.getCoverStorage();
 

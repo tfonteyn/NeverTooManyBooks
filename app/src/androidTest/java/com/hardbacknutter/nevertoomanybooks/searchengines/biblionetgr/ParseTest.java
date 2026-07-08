@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -89,7 +88,7 @@ class ParseTest
 
     @Test
     void parse9789603211495()
-            throws IOException, SearchException, CredentialsException, CoverStorageException {
+            throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://biblionet.gr/%CE%B7-%CE%B3%CE%B1%CE%BB%CE%B5%CF%81%CE%B1-%CF%84%CE%BF%CF%85-%CE%BF%CE%B2%CE%B5%CE%BB%CE%B9%CE%BE-607";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -169,7 +168,7 @@ class ParseTest
 
     @Test
     void parse9789602489147()
-            throws IOException, SearchException, CredentialsException, CoverStorageException {
+            throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
                 "https://biblionet.gr/%CE%BF-%CE%BA%CF%89%CE%BD%CF%83%CF%84%CE%B1%CE%BD%CF%84%CE%B9%CE%BD%CE%BF%CF%82-%CF%87%CE%B1%CF%84%CE%B6%CE%BF%CF%80%CE%BF%CF%85%CE%BB%CE%BF%CF%82-%CF%89%CF%82-%CF%83%CF%85%CE%B3%CE%B3%CF%81%CE%B1%CF%86%CE%B5%CE%B1%CF%82-%CE%BA%CE%B1%CE%B9-%CE%B8%CE%B5%CF%89%CF%81%CE%B7%CF%84%CE%B9%CE%BA%CE%BF%CF%82-10323";
         final int resId = com.hardbacknutter.nevertoomanybooks.test

@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
@@ -262,7 +261,7 @@ public class DnbSearchEngine
                @Nullable final ProductCode productCode,
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
-            throws CredentialsException, CoverStorageException {
+            throws CredentialsException, StorageException {
 
         final DnbBookParser parser = new DnbBookParser(context, document, book);
         parser.sidDnb();

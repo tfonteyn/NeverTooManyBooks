@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -328,7 +327,7 @@ public class BedethequeSearchEngine
     public Book searchByExternalId(@NonNull final Context context,
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
@@ -388,11 +387,11 @@ public class BedethequeSearchEngine
      *                     can be {@code null} if the search used different criteria
      * @param book         to update
      *
-     * @throws CoverStorageException on storage related failures
-     * @throws SearchException       on generic exceptions (wrapped) during search
-     * @throws CredentialsException  on authentication/login failures
-     *                               This should only occur if the engine calls/relies on
-     *                               secondary sites.
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
      */
     @VisibleForTesting
     @WorkerThread
@@ -401,7 +400,7 @@ public class BedethequeSearchEngine
                       @NonNull final boolean[] fetchCovers,
                       @Nullable final ProductCode searchedCode,
                       @NonNull final Book book)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         // The main book.
         // If we searched by SID, this will be the exact edition we wanted.
@@ -511,7 +510,7 @@ public class BedethequeSearchEngine
                                     @NonNull final Element edition,
                                     @NonNull final boolean[] fetchCovers,
                                     @NonNull final Book book)
-            throws CoverStorageException {
+            throws StorageException {
 
         // contains "front-cover" + "extra-images" + "back-cover"
         List<String> coverUrls = edition
@@ -540,7 +539,7 @@ public class BedethequeSearchEngine
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws CoverStorageException {
+            throws StorageException {
 
         if (fetchCovers[0]) {
             final Element a = document.selectFirst("div.bandeau-principal > div.bandeau-image > a");
@@ -572,13 +571,14 @@ public class BedethequeSearchEngine
      * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
-     * @throws CoverStorageException on storage related failures
+     *
+     * @throws StorageException on storage related failures
      */
     private void handleExtraImagesAndBackCover(@NonNull final Context context,
                                                @NonNull final List<String> coverUrls,
                                                @NonNull final boolean[] fetchCovers,
                                                @NonNull final Book book)
-            throws CoverStorageException {
+            throws StorageException {
         // sanity check
         if (coverUrls.isEmpty()) {
             return;
@@ -612,7 +612,7 @@ public class BedethequeSearchEngine
                             @Nullable final String url,
                             @IntRange(from = 0, to = 3) final int cIdx,
                             @NonNull final Book book)
-            throws CoverStorageException {
+            throws StorageException {
         if (url != null && !url.isBlank()) {
             saveImage(context, url, null, book.getRawProductCode(), cIdx, null).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, cIdx, fileSpec));

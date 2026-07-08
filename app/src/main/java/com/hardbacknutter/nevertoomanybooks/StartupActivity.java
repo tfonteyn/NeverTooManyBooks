@@ -34,7 +34,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.CatastropheDialog;
@@ -188,7 +188,7 @@ public class StartupActivity
             } else {
                 onStorageVolumeChanged();
             }
-        } catch (@NonNull final CoverStorageException e) {
+        } catch (@NonNull final StorageException e) {
             onFailure(e);
         }
     }
@@ -246,10 +246,10 @@ public class StartupActivity
      * The previously configured volume was not available.
      * Give the user some choices on how they want to continue.
      *
-     * @throws CoverStorageException on any error
+     * @throws StorageException on any error
      */
     private void onStorageVolumeChanged()
-            throws CoverStorageException {
+            throws StorageException {
 
         final String defStorageDescription = CoverVolume.getStorageVolume(this, 0)
                                                         .getDescription(this);

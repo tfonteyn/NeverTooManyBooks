@@ -53,9 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -345,7 +345,7 @@ public class MaintenanceFragment
                 FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
                 FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
 
-            } catch (@NonNull final CoverStorageException | SecurityException e) {
+            } catch (@NonNull final StorageException | SecurityException e) {
                 // CoverStorageException will not be thrown as we
                 // already did the same 'gets' to read the used-space above.
                 // SecurityException is never thrown as the

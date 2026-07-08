@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -679,7 +678,7 @@ public class StripWebSearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -688,7 +687,7 @@ public class StripWebSearchEngine
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
                                             @IntRange(from = 0, to = 0) final int cIdx)
-            throws CoverStorageException {
+            throws StorageException {
 
         final Element cover = main.selectFirst("a.d-block");
         if (cover == null) {

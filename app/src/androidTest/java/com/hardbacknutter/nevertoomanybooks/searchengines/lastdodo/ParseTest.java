@@ -30,7 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -74,7 +73,7 @@ class ParseTest
 
     @Test
     void parse01()
-            throws SearchException, IOException, CredentialsException, CoverStorageException {
+            throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -199,7 +198,7 @@ class ParseTest
      */
     @Test
     void parse02()
-            throws SearchException, CredentialsException, IOException, CoverStorageException {
+            throws SearchException, CredentialsException, IOException, StorageException {
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/8838967-schoot-der-aarde";
 
@@ -274,7 +273,7 @@ class ParseTest
      */
     @Test
     void parse03()
-            throws SearchException, CredentialsException, IOException, CoverStorageException {
+            throws SearchException, CredentialsException, IOException, StorageException {
 
         final String locationHeader = "https://www.lastdodo.nl/nl/items/37600-sioban";
 

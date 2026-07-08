@@ -53,9 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -648,7 +648,7 @@ public class SettingsFragment
                 vm.setOnBackRequiresActivityRecreation();
                 return true;
 
-            } catch (@NonNull final CoverStorageException e) {
+            } catch (@NonNull final StorageException e) {
                 // This should never happen... flw
                 // To get here the user would have to have displayed the dialog,
                 // manually removed the SDCARD

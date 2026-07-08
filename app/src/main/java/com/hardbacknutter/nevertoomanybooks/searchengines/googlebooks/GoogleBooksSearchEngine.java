@@ -586,7 +586,7 @@ public class GoogleBooksSearchEngine
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
-     * @throws StorageException The covers directory is not available
+     * @throws StorageException on storage related failures
      */
     @NonNull
     private Optional<String> searchCover(@NonNull final Context context,

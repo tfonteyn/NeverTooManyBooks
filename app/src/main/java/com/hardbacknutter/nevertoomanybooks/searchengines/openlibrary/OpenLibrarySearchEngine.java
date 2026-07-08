@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -1650,7 +1649,7 @@ public class OpenLibrarySearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 3) final int cIdx,
                                                  @Nullable final ImageWebSize size)
-            throws CoverStorageException {
+            throws StorageException {
 
         if (altEdition instanceof AltEditionOpenLibrary) {
             final AltEditionOpenLibrary edition = (AltEditionOpenLibrary) altEdition;
@@ -1692,14 +1691,14 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @NonNull
     private Optional<String> searchBestCover(@NonNull final Context context,
                                              @NonNull final String key,
                                              @NonNull final String id,
                                              @IntRange(from = 0, to = 3) final int cIdx)
-            throws CoverStorageException {
+            throws StorageException {
 
         Optional<String> oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
                                                      ImageWebSize.Large);
@@ -1727,7 +1726,7 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @NonNull
     Optional<String> fetchImageByKey(@NonNull final Context context,
@@ -1736,7 +1735,7 @@ public class OpenLibrarySearchEngine
                                      @NonNull final String id,
                                      @IntRange(from = 0, to = 3) final int cIdx,
                                      @Nullable final ImageWebSize size)
-            throws CoverStorageException {
+            throws StorageException {
 
         final String sizeParam;
         if (size == null) {

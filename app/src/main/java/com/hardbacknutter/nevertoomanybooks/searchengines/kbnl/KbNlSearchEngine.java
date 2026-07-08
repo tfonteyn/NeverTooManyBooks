@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -348,14 +347,14 @@ public class KbNlSearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
     private Optional<String> searchBestCoverByEdition(@NonNull final Context context,
                                                       @NonNull final AltEdition edition,
                                                       @IntRange(from = 0, to = 0) final int cIdx)
-            throws CoverStorageException {
+            throws StorageException {
 
         Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx,
                                                           ImageWebSize.Large);
@@ -383,7 +382,7 @@ public class KbNlSearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
-            throws CoverStorageException {
+            throws StorageException {
 
         if (altEdition instanceof AltEditionProductCode) {
             final AltEditionProductCode edition = (AltEditionProductCode) altEdition;

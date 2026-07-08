@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -230,7 +229,7 @@ public class BnfSearchEngine
     public Book searchByExternalId(@NonNull final Context context,
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
 
         final String url = getHostUrl() + ARK_12148 + externalId;
         return search(context, url, fetchCovers);
@@ -254,7 +253,7 @@ public class BnfSearchEngine
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
                        @NonNull final boolean[] fetchCovers)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
@@ -279,7 +278,7 @@ public class BnfSearchEngine
     private Book search(@NonNull final Context context,
                         @NonNull final String url,
                         @NonNull final boolean[] fetchCovers)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
         final Book book = new Book();
         // Load the 'public' page which will tell us if we found the book
         // and (hopefully) contains the cover image.
@@ -301,7 +300,7 @@ public class BnfSearchEngine
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Book book)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
 
         final Element ul = document.selectFirst("ul#ancrePremiereNotice");
         if (ul == null) {
@@ -330,7 +329,7 @@ public class BnfSearchEngine
                         @NonNull final Document pubDocument,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Book book)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
         // First get the unimarc page to easily parse the book data.
         // We have seen a suffix with the jsessionid; reconstruct as needed
         // https://catalogue.bnf.fr/ark:/12148/cb476077541;jsessionid=99...
@@ -349,7 +348,7 @@ public class BnfSearchEngine
                       @NonNull final Document unimarcDocument,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws SearchException, CredentialsException, CoverStorageException {
+            throws SearchException, CredentialsException, StorageException {
 
         parseUnimarc(context, unimarcDocument, book);
 
@@ -909,7 +908,7 @@ public class BnfSearchEngine
      *
      * @return fileSpec
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @VisibleForTesting
@@ -919,7 +918,7 @@ public class BnfSearchEngine
                                          @Nullable final String bookId,
                                          @SuppressWarnings("SameParameterValue")
                                          @IntRange(from = 0, to = 0) final int cIdx)
-            throws CoverStorageException {
+            throws StorageException {
 
         final Element coversDiv = document.selectFirst("div.notice-detail > div.visuels");
         if (coversDiv == null) {

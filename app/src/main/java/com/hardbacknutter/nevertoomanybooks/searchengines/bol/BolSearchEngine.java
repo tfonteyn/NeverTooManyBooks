@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -245,7 +244,7 @@ public class BolSearchEngine
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final ProductCode productCode,
                              @NonNull final boolean[] fetchCovers)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
@@ -274,7 +273,7 @@ public class BolSearchEngine
     public Book search(@NonNull final Context context,
                        @NonNull final BookSearchCriteria criteria,
                        @NonNull final boolean[] fetchCovers)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
@@ -316,9 +315,9 @@ public class BolSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CredentialsException  on authentication/login failures
-     * @throws CoverStorageException on storage related failures
-     * @throws SearchException       on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @VisibleForTesting
     @WorkerThread
@@ -326,7 +325,7 @@ public class BolSearchEngine
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
         final String aHref = String.format("a[href^=/%1$s/nl/p/]", getCountry());
@@ -365,7 +364,7 @@ public class BolSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CoverStorageException on storage related failures
+     * @throws StorageException      on storage related failures
      * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws CredentialsException  on authentication/login failures
      *                               This should only occur if the engine calls/relies on
@@ -377,7 +376,7 @@ public class BolSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book)
-            throws CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Element titleElement = document.selectFirst("span[data-test='title']");
         if (titleElement == null || titleElement.text().isEmpty()) {
@@ -672,13 +671,13 @@ public class BolSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException on storage related failures
      */
     private void parseCovers(@NonNull final Context context,
                              @NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
-            throws CoverStorageException {
+            throws StorageException {
 
         final Element imageSlotConfig = document.selectFirst(
                 "section[data-group-name='product-images'] script");
@@ -721,7 +720,7 @@ public class BolSearchEngine
                              @NonNull final JSONObject currentItem,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
-            throws CoverStorageException {
+            throws StorageException {
         // The site uses several possible keys, loop until found or exhausted
         for (final String key : FRONT_COVER_KEYS) {
             final String coverUrl = currentItem.optString(key);

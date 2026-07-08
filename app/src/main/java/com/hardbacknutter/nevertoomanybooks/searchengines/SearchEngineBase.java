@@ -59,10 +59,10 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -467,7 +467,7 @@ public abstract class SearchEngineBase
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -477,7 +477,7 @@ public abstract class SearchEngineBase
                                       @Nullable final String bookId,
                                       @IntRange(from = 0, to = 3) final int cIdx,
                                       @Nullable final ImageWebSize size)
-            throws CoverStorageException {
+            throws StorageException {
 
         synchronized (this) {
             if (imageDownloader == null) {
