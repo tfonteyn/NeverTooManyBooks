@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.searchengines.zdbkatalog;
+package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
 import android.util.Log;
 
@@ -51,7 +51,7 @@ class IisnParseTest
 
     private static final String UTF_8 = "UTF-8";
 
-    private ZdbKatalogSearchEngine searchEngine;
+    private DnbSearchEngine searchEngine;
 
     @BeforeEach
     void setup()
@@ -59,7 +59,7 @@ class IisnParseTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine =
-                (ZdbKatalogSearchEngine) EngineId.ZdbKatalog.createSearchEngine(context);
+                (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
@@ -75,7 +75,7 @@ class IisnParseTest
 
         final Document document = loadDocument(resId, UTF_8, "", Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parse(context, document, pc, book);
+        searchEngine.parseFromIssn(context, document, pc, book);
 
         Log.d(TAG, book.toString());
 

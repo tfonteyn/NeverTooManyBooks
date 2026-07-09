@@ -40,9 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -54,23 +56,30 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 
 import okhttp3.Request;
 
 /**
- * German language books & comics.
+ * German language books & comics + multi-language magazines and newspapers.
  * <p>
  * <a href="https://www.dnb.de">Deutsche Nationalbibliothek (DNB)</a>
  * <a href="https://www.dnb.de">Germany's National Library (DNB)</a>
+ * <a href="https://zdb-katalog.de">Deutsche Nationalbibliothek (ZDB)</a>
+ * <a href="https://zdb-katalog.de">Germany's National Library (ZDB)</a>
  *
  * @see <a href="https://www.dnb.de/EN/Professionell/Metadatendienste/Datenbezug/SRU/sru_node.html#doc250692bodyText1">
  *         DNB sru searches</a>
  * @see <a href="https://services.dnb.de/sru/dnb?operation=explain&version=1.1">
- *     SRU explain record</a> */
+ *         DNB explain record</a>
+ * @see <a href="https://services.dnb.de/sru/zdb?operation=explain&version=1.1">
+ *         ZDB explain record</a>
+ */
 public class DnbSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
+                   SearchEngine.ByIssn,
                    SearchEngine.ByText {
 
     /** Main site, but NOT the search site. */
@@ -80,19 +89,80 @@ public class DnbSearchEngine
 
     private static final String PREFERENCE_KEY = "dnb";
 
+    private static final String SRU_DNB = "dnb";
+    private static final String SRU_ZDB = "zdb";
+
     /**
-     * Param 1: SRU query.
+     * Param 1: SRU name space.
+     * Param 2: SRU query.
      * <p>
      * Hardcoded to return a single result for now.
      */
-    private static final String SRU_URL = "https://services.dnb.de/sru/dnb?"
-                                          + "version=1.1"
-                                          + "&operation=searchRetrieve"
-                                          + "&query=%1$s"
-                                          + "&recordSchema=MARC21-xml"
-                                          + "&maximumRecords=1";
+    private static final String SEARCH_URL = "https://services.dnb.de/sru/%1$s?"
+                                             + "version=1.1"
+                                             + "&operation=searchRetrieve"
+                                             + "&query=%2$s"
+                                             + "&recordSchema=MARC21-xml"
+                                             + "&maximumRecords=1";
 
-    private static final String SEARCH_TYPE_NUM = "num";
+    /**
+     * SRU: dnb, zdb.
+     * Index: Interner DNB-Identifier.
+     * <p>
+     * The {@link Identifier#SID_DNB} value.
+     */
+    private static final String SEARCH_INDEX_IDN = "idn";
+    /**
+     * SRU: dnb, zdb.
+     * Index: Nummer.
+     * <p>
+     * Generic search for a number, this includes ISBN and maybe others.
+     * NOT used when searching for an ISSN.
+     *
+     * @see #SEARCH_INDEX_ISS
+     */
+    private static final String SEARCH_INDEX_NUM = "num";
+    /**
+     * SRU: zdb.
+     * Index: ISSN [ZDB].
+     * <p>
+     * Specifically search for ISSN numbers in the "zdb" SRU
+     */
+    private static final String SEARCH_INDEX_ISS = "iss";
+    /**
+     * SRU: dnb, zdb.
+     * Index: Titel.
+     * <p>
+     * Book or magazine title.
+     */
+    private static final String SEARCH_INDEX_TIT = "tit";
+    /**
+     * SRU: dnb, zdb.
+     * Index: Person.
+     * <p>
+     * The author name.
+     */
+    private static final String SEARCH_INDEX_PER = "per";
+    /**
+     * SRU: dnb.
+     * Index: Verleger/Firma, Ort
+     * <p>
+     * The Publisher name.
+     */
+    private static final String SEARCH_INDEX_VLG = "vlg";
+
+
+    private static final String SEARCH_INDEX_GSR = "gsr";
+    private static final String SEARCH_INDEX_ZSN = "zsn";
+
+    /**
+     * SRU: dnb.
+     * Index: Normdatenidentifier.
+     */
+    private static final String SEARCH_INDEX_NID = "nid";
+
+    private static final int CF_008_FREQUENCY = 18;
+    private static final int CF_008_TYPE_OF_CONTINUING_RESOURCE = 21;
 
     /** Concat with the isbn. */
     private static final String COVER_URL = "https://portal.dnb.de/opac/mvb/cover?isbn=";
@@ -182,12 +252,7 @@ public class DnbSearchEngine
             throws SearchException, CredentialsException, StorageException {
 
         final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
-        final String query = SEARCH_TYPE_NUM + "=" + codeStr;
-        final String url = String.format(SRU_URL, URLEncoder
-                .encode(query, StandardCharsets.UTF_8)
-                .replace("+", "%20"));
-
+        final String url = createSearchUrl(SRU_DNB, SEARCH_INDEX_NUM + "=" + codeStr);
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 
         final Book book = new Book();
@@ -198,6 +263,25 @@ public class DnbSearchEngine
         return book;
     }
 
+    @NonNull
+    @Override
+    public Book searchByIssn(@NonNull final Context context,
+                             @NonNull final ProductCode productCode,
+                             @NonNull final boolean[] fetchCovers)
+            throws SearchException, CredentialsException {
+
+        final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
+        final String url = createSearchUrl(SRU_ZDB, SEARCH_INDEX_ISS + "=" + codeStr);
+        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+
+        final Book book = new Book();
+
+        if (!isCancelled()) {
+            parseFromIssn(context, document, productCode, book);
+        }
+
+        return book;
+    }
 
     @NonNull
     @Override
@@ -206,6 +290,8 @@ public class DnbSearchEngine
                        @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, StorageException {
 
+        String sru = SRU_DNB;
+
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner query = new StringJoiner(" and ");
 
@@ -213,15 +299,19 @@ public class DnbSearchEngine
         if (productCode != null) {
             final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
             if (!codeStr.isEmpty()) {
-                query.add(SEARCH_TYPE_NUM + "=" + codeStr);
+                query.add(SEARCH_INDEX_NUM + "=" + codeStr);
+                if (productCode.getType() == ProductCodeType.Issn8
+                    || productCode.getType() == ProductCodeType.Issn13) {
+                    sru = SRU_ZDB;
+                }
             }
         }
 
-        addCriteria(query, "tit", criteria.getTitle());
-        addCriteria(query, "per", criteria.getAuthor());
-        addCriteria(query, "gsr", criteria.getSeries());
-        addCriteria(query, "zsn", criteria.getSeriesNr());
-        addCriteria(query, "vlg", criteria.getPublisher());
+        addCriteria(query, SEARCH_INDEX_TIT, criteria.getTitle());
+        addCriteria(query, SEARCH_INDEX_PER, criteria.getAuthor());
+        addCriteria(query, SEARCH_INDEX_GSR, criteria.getSeries());
+        addCriteria(query, SEARCH_INDEX_ZSN, criteria.getSeriesNr());
+        addCriteria(query, SEARCH_INDEX_VLG, criteria.getPublisher());
 
         final Book book = new Book();
 
@@ -230,11 +320,9 @@ public class DnbSearchEngine
             return book;
         }
 
-        final String url = String.format(SRU_URL, URLEncoder
-                .encode(query.toString(), StandardCharsets.UTF_8)
-                .replace("+", "%20"));
-
+        final String url = createSearchUrl(sru, query.toString());
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+
         if (!isCancelled()) {
             parse(context, document, productCode, fetchCovers, book);
         }
@@ -256,6 +344,14 @@ public class DnbSearchEngine
         query.add(index + "=\"" + escaped + "\"");
     }
 
+    @NonNull
+    private String createSearchUrl(@NonNull final String sru,
+                                   @NonNull final String query) {
+        return String.format(SEARCH_URL, sru,
+                             URLEncoder.encode(query, StandardCharsets.UTF_8)
+                                       .replace("+", "%20"));
+    }
+
     @VisibleForTesting
     void parse(@NonNull final Context context,
                @NonNull final Document document,
@@ -270,18 +366,7 @@ public class DnbSearchEngine
         // Specific for books
         parser.isbn();
 
-        parser.identifiers();
-        parser.languages();
-
-        parser.authors();
-        parser.publishers();
-        parser.series();
-
-        parser.originalTitle();
-        parser.title();
-        parser.description();
-        parser.physicalDescription();
-        parser.genreTags();
+        parseCommonTags(parser);
 
         parser.finish(productCode);
 
@@ -297,6 +382,94 @@ public class DnbSearchEngine
             saveImage(context, url, null, book.getRawProductCode(), 0, null)
                     .ifPresent(s -> CoverFileSpecArray.setFileSpec(book, 0, s));
         }
+    }
+
+    @VisibleForTesting
+    void parseFromIssn(@NonNull final Context context,
+                       @NonNull final Document document,
+                       @NonNull final ProductCode productCode,
+                       @NonNull final Book book) {
+
+        final DnbBookParser parser = new DnbBookParser(context, document, book);
+        parser.sidDnb();
+
+        // Specific for magazines
+        // Type of continuing resource
+        //    # - None of the following
+        //    a - Activity report
+        //    d - Updating database
+        //    g - Magazine
+        //    h - Blog
+        //    i - Serial zine
+        //    j - Journal
+        //    l - Updating loose-leaf
+        //    m - Monographic series
+        //    n - Newspaper
+        //    p - Periodical
+        //    q - Serial podcast
+        //    r - Repository
+        //    s - Newsletter
+        //    t - Directory
+        //    w - Updating Web site
+        //    | - No attempt to code
+        // position 35-37 provides the language, but so does tag 041; we're ONLY using the latter
+        final Element cf008 = document.selectFirst("controlfield[tag='008']");
+        if (cf008 != null) {
+            final String text = DnbParser.normalise(cf008);
+            // sanity check
+            if (text.length() == 40) {
+                parseCF008(context, text, book);
+            }
+        }
+        parser.issn();
+
+        parseCommonTags(parser);
+
+        // We don't get an author for magazines, use the publisher if we have one...
+        book.getPrimaryPublisher()
+            .ifPresent(p -> book.add(Author.from(p.getName())));
+
+        parser.finish(productCode);
+    }
+
+    private void parseCF008(@NonNull final Context context,
+                            @NonNull final String text,
+                            @NonNull final Book book) {
+        switch (text.charAt(CF_008_TYPE_OF_CONTINUING_RESOURCE)) {
+            // n - Newspaper
+            case 'n': {
+                book.setFormat(context.getString(R.string.book_format_newspaper));
+                break;
+            }
+            case 'j': {
+                book.setFormat(context.getString(R.string.book_format_journal));
+                break;
+            }
+            // g - Magazine
+            // i - Serial zine
+            // p - Periodical
+            case 'g':
+            case 'i':
+            case 'p': {
+                book.setFormat(context.getString(R.string.book_format_periodical));
+                break;
+            }
+        }
+    }
+
+    private void parseCommonTags(@NonNull final DnbBookParser parser) {
+        parser.identifiers();
+        parser.languages();
+
+        parser.authors();
+        parser.publishers();
+        parser.series();
+
+        parser.originalTitle();
+        parser.title();
+        parser.description();
+        parser.physicalDescription();
+        parser.genreTags();
     }
 
     /**

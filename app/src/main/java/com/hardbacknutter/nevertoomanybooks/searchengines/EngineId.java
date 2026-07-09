@@ -68,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrar
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zdbkatalog.ZdbKatalogSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -154,8 +153,7 @@ public enum EngineId
     OpenLibrary(OpenLibrarySearchEngine.class, true),
     StripInfoBe(StripInfoSearchEngine.class, true),
     StripWebBe(StripWebSearchEngine.class, true),
-    Wikidata(WikidataSearchEngine.class, true),
-    ZdbKatalog(ZdbKatalogSearchEngine.class, true);
+    Wikidata(WikidataSearchEngine.class, true);
 
     /** {@link Parcelable}. */
     public static final Creator<EngineId> CREATOR = new Creator<>() {
@@ -274,7 +272,6 @@ public enum EngineId
         final boolean isCzech = languages.isUserLanguage(context, "cze");
         final boolean isDutch = languages.isUserLanguage(context, "nld");
         final boolean isFrench = languages.isUserLanguage(context, "fra");
-        final boolean isGerman = languages.isUserLanguage(context, "deu");
         final boolean isGreek = languages.isUserLanguage(context, "ell");
         final boolean isPolish = languages.isUserLanguage(context, "pol");
         final boolean isPortuguese = languages.isUserLanguage(context, "por");
@@ -303,9 +300,6 @@ public enum EngineId
                 if (isCzech || isSlovak) {
                     type.addSite(DatabazeKnih, true);
                 }
-                if (isGerman) {
-                    type.addSite(Dnb, true);
-                }
                 if (isGreek) {
                     type.addSite(BiblionetGr, true);
                 }
@@ -326,6 +320,7 @@ public enum EngineId
                 type.addSite(Isfdb, true);
                 type.addSite(BookFinder, true);
                 type.addSite(OpenLibrary, true);
+                type.addSite(Dnb, true);
 
                 type.addSite(StripInfoBe, isDutch);
                 type.addSite(LastDodoNl, isDutch);
@@ -343,9 +338,6 @@ public enum EngineId
                 if (!isCzech && !isSlovak) {
                     type.addSite(DatabazeKnih, false);
                 }
-                if (!isGerman) {
-                    type.addSite(Dnb, false);
-                }
                 if (!isGreek) {
                     type.addSite(BiblionetGr, false);
                 }
@@ -360,7 +352,6 @@ public enum EngineId
                 }
 
                 type.addSite(Wikidata, true);
-                type.addSite(ZdbKatalog, true);
                 break;
             }
             case Covers: {
@@ -464,11 +455,21 @@ public enum EngineId
         return key;
     }
 
+    /**
+     * Get the {@link SearchEngine} implementation class.
+     *
+     * @return class
+     */
     @NonNull
     public Class<? extends SearchEngine> getImplementationClass() {
         return clazz;
     }
 
+    /**
+     * Get the {@link SearchEngine} setting fragment implementation class.
+     *
+     * @return class
+     */
     @Nullable
     public Class<? extends Fragment> getPreferenceFragmentClass() {
         return preferenceFragmentClazz;
@@ -671,10 +672,10 @@ public enum EngineId
         @NonNull
         private final Locale defaultLocale;
 
-        private boolean multipleCoverSizes;
-
         private final Map<Identifier.EntityType, String> identifierKeys =
                 new EnumMap<>(Identifier.EntityType.class);
+
+        private boolean multipleCoverSizes;
 
         @Nullable
         private Class<? extends Fragment> preferenceFragmentClazz;
