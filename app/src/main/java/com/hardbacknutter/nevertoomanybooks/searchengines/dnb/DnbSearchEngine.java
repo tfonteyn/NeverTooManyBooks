@@ -151,10 +151,6 @@ public class DnbSearchEngine
      */
     private static final String SEARCH_INDEX_VLG = "vlg";
 
-
-    private static final String SEARCH_INDEX_GSR = "gsr";
-    private static final String SEARCH_INDEX_ZSN = "zsn";
-
     /**
      * SRU: dnb.
      * Index: Normdatenidentifier.
@@ -309,9 +305,8 @@ public class DnbSearchEngine
 
         addCriteria(query, SEARCH_INDEX_TIT, criteria.getTitle());
         addCriteria(query, SEARCH_INDEX_PER, criteria.getAuthor());
-        addCriteria(query, SEARCH_INDEX_GSR, criteria.getSeries());
-        addCriteria(query, SEARCH_INDEX_ZSN, criteria.getSeriesNr());
         addCriteria(query, SEARCH_INDEX_VLG, criteria.getPublisher());
+        // criteria.getSeries() + criteria.getSeriesNr() not searchable
 
         final Book book = new Book();
 
