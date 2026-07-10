@@ -508,6 +508,8 @@ public class BookDaoImpl
                                           book.getId(), book.getIdentifiers());
         }
 
+        // Returning a book == deleting the loanee,
+        // is handled directly, here we only need to bother with insert/update
         if (book.contains(DBKey.LOANEE_NAME)) {
             serviceLocator.getLoaneeDao().setLoanee(book);
         }
