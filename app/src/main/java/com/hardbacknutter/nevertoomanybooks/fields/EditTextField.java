@@ -43,6 +43,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Stores and retrieves data from an {@link EditText}.
+ * <p>
+ * The value from the view is copied to the field value by using a {@link ExtTextWatcher}
+ * implemented by this class.
  *
  * @param <T> type of Field value.
  * @param <V> type of Field View, must extend TextView

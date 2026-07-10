@@ -137,6 +137,7 @@ abstract class BaseTextField<T, V extends TextView>
         return (T) source.get(getFieldKey(), realNumberParser);
     }
 
+    @EmptySuper
     @Override
     void save(@NonNull final DataManager target) {
         // We don't know the type <T> so put as Object (DataManager will auto-detect).
