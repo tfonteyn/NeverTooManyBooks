@@ -158,7 +158,7 @@ public class ShowBookDetailsViewModel
     }
 
     /**
-     * Are we running in embedded mode?
+     * Are we running in embedded mode.
      *
      * @return flag
      */
