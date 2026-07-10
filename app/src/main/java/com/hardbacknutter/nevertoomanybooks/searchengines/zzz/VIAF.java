@@ -54,23 +54,24 @@ public final class VIAF {
     @NonNull
     public static Collection<Identifier> createIdentifiers(@NonNull final Context context) {
         final String name = context.getString(R.string.identifier_viaf);
+        // Text: they are digits, but too long to be an actual long value
         return Set.of(
                 new Identifier(Identifier.EntityType.Book,
-                               Identifier.Type.Number,
+                               Identifier.Type.Text,
                                Identifier.SID_VIAF,
                                name,
                                SITE_URL,
                                ITEM_URL,
                                "P214"),
                 new Identifier(Identifier.EntityType.Author,
-                               Identifier.Type.Number,
+                               Identifier.Type.Text,
                                Identifier.SID_VIAF,
                                name,
                                SITE_URL,
                                ITEM_URL,
                                "P214"),
                 new Identifier(Identifier.EntityType.Series,
-                               Identifier.Type.Number,
+                               Identifier.Type.Text,
                                Identifier.SID_VIAF,
                                name,
                                SITE_URL,
