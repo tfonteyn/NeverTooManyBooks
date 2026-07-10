@@ -170,7 +170,7 @@ public class EntityMergeHelper<T extends Mergeable> {
             // This is a quick way of manual verification whether there are duplicate ids.
             // Theoretically Series is allowed to, as a book_series link ALWAYS
             // has a number as well which must be different.
-            // Author, Publisher...  MAY hav duplicates...
+            // Author, Publisher...  MAY have duplicates...
             // TODO / TEST: when do we see duplicates and when are they allowed.
             final Set<Long> seen = new HashSet<>();
             final boolean hasDuplicateIds = list.stream()
