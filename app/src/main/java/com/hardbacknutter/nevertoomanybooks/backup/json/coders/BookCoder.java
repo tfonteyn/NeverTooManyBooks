@@ -162,9 +162,6 @@ public class BookCoder
                 return;
             }
             case DBKey.FK_CALIBRE_LIBRARY: {
-                // The presence of FK_CALIBRE_LIBRARY indicates there IS a calibre library
-                // for this book but there is no actual library data on the book itself.
-                // We need to explicitly load the library and encode a reference for it.
                 // FK as it's a reference
                 book.getCalibreLibrary().ifPresent(library -> out
                         .put(DBKey.FK_CALIBRE_LIBRARY,
