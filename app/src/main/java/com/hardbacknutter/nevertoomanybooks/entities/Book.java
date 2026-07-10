@@ -292,6 +292,7 @@ public class Book
         final Book book = new Book();
         try (Cursor bookCursor = ServiceLocator.getInstance().getBookDao().fetchById(bookId)) {
             if (bookCursor.moveToFirst()) {
+                // micro optimization, we don't need to read the id from the cursor.
                 book.load(bookId, bookCursor);
             }
         }
