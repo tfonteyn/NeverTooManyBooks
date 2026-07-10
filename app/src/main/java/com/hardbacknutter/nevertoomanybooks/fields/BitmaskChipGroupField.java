@@ -118,14 +118,15 @@ public class BitmaskChipGroupField
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final DataManager source,
-                     @NonNull final RealNumberParser realNumberParser) {
-        internalLoad(source.getInt(getFieldKey()));
+    @Nullable
+    public Integer load(@NonNull final Context context,
+                        @NonNull final DataManager source,
+                        @NonNull final RealNumberParser realNumberParser) {
+        return source.getInt(getFieldKey());
     }
 
     @Override
-    void internalSave(@NonNull final DataManager target) {
+    void save(@NonNull final DataManager target) {
         target.putLong(getFieldKey(), getValue());
     }
 

@@ -498,7 +498,7 @@ public class ShowBookDetailsFragment
         //noinspection DataFlowIssue
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.load(context, book, realNumberParser));
+              .forEach(field -> field.doLoad(context, book, realNumberParser));
 
         // We're only creating this here instead of in onViewCreated
         // so we are sure the book is loaded when the read-progress fragment displays

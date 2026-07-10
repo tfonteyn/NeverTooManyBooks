@@ -98,7 +98,7 @@ public abstract class BaseField<T, V extends View>
     /**
      * The value as originally loaded from the database.
      *
-     * @see #internalLoad(Object)
+     * @see #load(Context, DataManager, RealNumberParser)
      */
     @Nullable
     private T initialValue;
@@ -225,40 +225,64 @@ public abstract class BaseField<T, V extends View>
         return Objects.requireNonNull(getView());
     }
 
-    /**
-     * Internal to the Field class.
-     *
-     * @param target {@link DataManager} to save the Field value into.
-     *
-     * @see #save(DataManager)
-     */
-    abstract void internalSave(@NonNull DataManager target);
 
     /**
      * {@inheritDoc}
      * <p>
-     * final, override/implement {@link #internalSave(DataManager)} instead.
+     * final, override/implement {@link #save(DataManager)} instead.
      *
      * @param target {@link DataManager} to save the Field value into.
      */
     @Override
-    public final void save(@NonNull final DataManager target) {
-        internalSave(target);
+    public final void doSave(@NonNull final DataManager target) {
+        save(target);
         if (validator != null) {
             validator.validate(this);
         }
     }
 
     /**
-     * Should be called from the implementation of
-     * {@link #load(Context, DataManager, RealNumberParser)} instead.
+     * Save the field value to the given {@link DataManager}
      *
-     * @param value to set
+     * @param target to save into.
+     *
+     * @see #doSave(DataManager)
      */
-    final void internalLoad(@Nullable final T value) {
-        initialValue = value;
+    abstract void save(@NonNull DataManager target);
+
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * final, override/implement
+     * {@link #load(Context, DataManager, RealNumberParser)} instead.
+     */
+    @Override
+    public final void doLoad(@NonNull final Context context,
+                             @NonNull final DataManager source,
+                             @NonNull final RealNumberParser realNumberParser) {
+        initialValue = load(context, source, realNumberParser);
         setValue(initialValue);
     }
+
+    /**
+     * Load the field from the given {@link DataManager}.
+     * <p>
+     * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
+     * in the database.
+     *
+     * @param context          Current context
+     * @param source           to load from
+     * @param realNumberParser to use for parsing
+     *
+     * @return the value
+     *
+     * @see #doLoad(Context, DataManager, RealNumberParser)
+     */
+    @Nullable
+    abstract T load(@NonNull Context context,
+                    @NonNull DataManager source,
+                    @NonNull RealNumberParser realNumberParser);
 
     @CallSuper
     @Override

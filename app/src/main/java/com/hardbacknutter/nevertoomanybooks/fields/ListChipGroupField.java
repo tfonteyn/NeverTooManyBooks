@@ -121,14 +121,15 @@ public class ListChipGroupField<T extends Parcelable & Entity>
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final DataManager source,
-                     @NonNull final RealNumberParser realNumberParser) {
-        internalLoad(source.getParcelableArrayList(getFieldKey()));
+    @Nullable
+    public List<T> load(@NonNull final Context context,
+                        @NonNull final DataManager source,
+                        @NonNull final RealNumberParser realNumberParser) {
+        return source.getParcelableArrayList(getFieldKey());
     }
 
     @Override
-    void internalSave(@NonNull final DataManager target) {
+    void save(@NonNull final DataManager target) {
         target.putParcelableCollection(getFieldKey(), getValue());
     }
 

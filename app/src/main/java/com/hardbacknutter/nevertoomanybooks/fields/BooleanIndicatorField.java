@@ -81,14 +81,15 @@ public class BooleanIndicatorField
     }
 
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final DataManager source,
-                     @NonNull final RealNumberParser realNumberParser) {
-        internalLoad(source.getBoolean(getFieldKey()));
+    @Nullable
+    public Boolean load(@NonNull final Context context,
+                        @NonNull final DataManager source,
+                        @NonNull final RealNumberParser realNumberParser) {
+        return source.getBoolean(getFieldKey());
     }
 
     @Override
-    void internalSave(@NonNull final DataManager target) {
+    void save(@NonNull final DataManager target) {
         target.putBoolean(getFieldKey(), getValue());
     }
 

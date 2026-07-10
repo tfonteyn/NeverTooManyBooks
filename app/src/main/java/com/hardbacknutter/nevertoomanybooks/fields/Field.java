@@ -52,14 +52,14 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * Main interaction calls:
  * <ol>
  *     <li>Load the value from the {@link DataManager} into the field:
- *         {@link #load(Context, DataManager, RealNumberParser)}
+ *         {@link #doLoad(Context, DataManager, RealNumberParser)}
  *     </li>
  *     <li>{@link #setValue(Object)}</li>
  *     <li>{@link #getValue()}</li>
  *     <li>{@link #isEmpty()}</li>
  *     <li>
  *          Save the value from the field into the {@link DataManager}:
- *          {@link #save(DataManager)}
+ *          {@link #doSave(DataManager)}
  *     </li>
  * </ol>
  *
@@ -80,11 +80,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * Data flows to and from a view as follows:
  * <ul>
  *      <li>IN  (no formatter ):<br>
- *          {@link Field#load(Context, DataManager, RealNumberParser)} ->
+ *          {@link Field#doLoad(Context, DataManager, RealNumberParser)} ->
  *          {@link Field#setValue(Object)} ->
  *          populates the View.</li>
  *      <li>IN  (with FieldFormatter):<br>
- *          {@link Field#load(Context, DataManager, RealNumberParser)} ->
+ *          {@link Field#doLoad(Context, DataManager, RealNumberParser)} ->
  *          {@link Field#setValue(Object)} ->
  *          {@link FieldFormatter#apply} ->
  *          populates the View.</li>
@@ -92,12 +92,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *       <li>OUT (no formatter ):
  *          View ->
  *          {@link Field#getValue()} ->
- *          {@link Field#save(DataManager)}</li>
+ *          {@link Field#doSave(DataManager)}</li>
  *      <li>OUT (with EditFieldFormatter):
  *          View ->
  *          {@link EditFieldFormatter#extract(Context, String)} ->
  *          {@link Field#getValue()} ->
- *          {@link Field#save(DataManager)}</li>
+ *          {@link Field#doSave(DataManager)}</li>
  * </ul>
  *
  * @param <T> type of Field value.
@@ -179,11 +179,11 @@ public interface Field<T, V extends View> {
      * @param source           DataManager to load the Field objects from
      * @param realNumberParser to use for parsing
      *
-     * @see #save(DataManager)
+     * @see #doSave(DataManager)
      */
-    void load(@NonNull Context context,
-              @NonNull DataManager source,
-              @NonNull RealNumberParser realNumberParser);
+    void doLoad(@NonNull Context context,
+                @NonNull DataManager source,
+                @NonNull RealNumberParser realNumberParser);
 
     /**
      * Get the value from the view associated with the Field.
@@ -211,9 +211,9 @@ public interface Field<T, V extends View> {
      *
      * @param target {@link DataManager} to save the Field value into.
      *
-     * @see #load(Context, DataManager, RealNumberParser)
+     * @see #doLoad(Context, DataManager, RealNumberParser)
      */
-    void save(@NonNull DataManager target);
+    void doSave(@NonNull DataManager target);
 
     /**
      * Check if the current value is considered to be 'empty'.

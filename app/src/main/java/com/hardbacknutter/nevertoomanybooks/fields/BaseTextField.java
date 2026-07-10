@@ -25,6 +25,7 @@ import android.widget.Checkable;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.EmptySuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -125,13 +126,21 @@ abstract class BaseTextField<T, V extends TextView>
         }
     }
 
+    @EmptySuper
     @Override
-    public void load(@NonNull final Context context,
-                     @NonNull final DataManager source,
-                     @NonNull final RealNumberParser realNumberParser) {
+    @Nullable
+    public T load(@NonNull final Context context,
+                  @NonNull final DataManager source,
+                  @NonNull final RealNumberParser realNumberParser) {
         // We don't know the type <T>, so just cast it. If that fails -> BUG
         //noinspection unchecked
-        internalLoad((T) source.get(getFieldKey(), realNumberParser));
+        return (T) source.get(getFieldKey(), realNumberParser);
+    }
+
+    @Override
+    void save(@NonNull final DataManager target) {
+        // We don't know the type <T> so put as Object (DataManager will auto-detect).
+        target.put(getFieldKey(), getValue());
     }
 
     @Override
@@ -149,11 +158,7 @@ abstract class BaseTextField<T, V extends TextView>
         }
     }
 
-    @Override
-    void internalSave(@NonNull final DataManager target) {
-        // We don't know the type <T> so put as Object (DataManager will auto-detect).
-        target.put(getFieldKey(), getValue());
-    }
+
 
     /**
      * Check if the given value is considered to be 'empty'.

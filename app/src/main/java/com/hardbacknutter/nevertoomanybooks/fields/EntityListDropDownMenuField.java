@@ -119,14 +119,15 @@ public class EntityListDropDownMenuField<T extends Entity>
     }
 
     @Override
-    public void load(@NonNull final Context context,
+    @Nullable
+    public Long load(@NonNull final Context context,
                      @NonNull final DataManager source,
                      @NonNull final RealNumberParser realNumberParser) {
-        internalLoad(source.getLong(getFieldKey()));
+        return source.getLong(getFieldKey());
     }
 
     @Override
-    void internalSave(@NonNull final DataManager target) {
+    void save(@NonNull final DataManager target) {
         target.putLong(getFieldKey(), getValue());
     }
 

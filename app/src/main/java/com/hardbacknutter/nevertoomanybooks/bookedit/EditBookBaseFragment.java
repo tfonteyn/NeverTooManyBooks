@@ -222,7 +222,7 @@ public abstract class EditBookBaseFragment
         //noinspection DataFlowIssue
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.load(context, book, realNumberParser));
+              .forEach(field -> field.doLoad(context, book, realNumberParser));
     }
 
     /**
