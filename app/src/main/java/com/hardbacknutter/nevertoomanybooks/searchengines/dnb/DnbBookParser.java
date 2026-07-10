@@ -201,6 +201,9 @@ public class DnbBookParser {
         }
     }
 
+    /**
+     * Parse and <strong>add</strong> Identifiers found.
+     */
     public void identifiers() {
         ivs.addAll(dnbParser.identifiers());
     }
@@ -226,10 +229,6 @@ public class DnbBookParser {
         }
     }
 
-    public void authors() {
-        dnbParser.authors().forEach(book::add);
-    }
-
     public void originalTitle() {
         final String title = dnbParser.originalTitle();
         if (title != null) {
@@ -244,10 +243,20 @@ public class DnbBookParser {
         }
     }
 
+    /**
+     * Parse and <strong>add</strong> Authors found.
+     */
+    public void authors() {
+        dnbParser.authors().forEach(book::add);
+    }
+
+    /**
+     * Parse and <strong>add</strong> Publishers found.
+     */
     public void publishers() {
         final Pair<List<Publisher>, PartialDate> pubData = dnbParser.publishers();
         if (!pubData.first.isEmpty()) {
-            book.setPublishers(pubData.first);
+            pubData.first.forEach(book::add);
         }
         if (!PartialDate.NOT_SET.equals(pubData.second)) {
             book.setPublicationDate(pubData.second);
@@ -304,13 +313,19 @@ public class DnbBookParser {
         }
     }
 
+    /**
+     * Parse and <strong>add</strong> Series found.
+     */
     public void series() {
         final List<Series> series = dnbParser.series();
         if (!series.isEmpty()) {
-            book.setSeries(series);
+            series.forEach(book::add);
         }
     }
 
+    /**
+     * Parse and <strong>set</strong> genre tags as {@link Tag}s.
+     */
     public void genreTags() {
         final Set<Tag> genreTags = dnbParser.genreTags();
         if (!genreTags.isEmpty()) {
