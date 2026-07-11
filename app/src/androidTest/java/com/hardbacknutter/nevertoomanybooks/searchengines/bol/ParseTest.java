@@ -35,11 +35,13 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -96,7 +98,8 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{false, false, false, false},
+        searchEngine.parseMultiResult(context, ISBN.parse("9789056478193"),
+                                      document, new boolean[]{false, false, false, false},
                                       book);
         Log.d(TAG, book.toString());
 
@@ -109,7 +112,7 @@ class ParseTest
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
+                                           moneyParser.getRealNumberParser()), 0.01d);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         // TEST: missing tags?
@@ -146,7 +149,8 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, true, false, false},
+        searchEngine.parseMultiResult(context, ISBN.parse("9780008117498"),
+                                      document, new boolean[]{true, true, false, false},
                                       book);
         Log.d(TAG, book.toString());
 
@@ -161,7 +165,7 @@ class ParseTest
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals(3.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(8.95d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
+                                           moneyParser.getRealNumberParser()), 0.01d);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
 //  TEST: MISSING TAGS?
@@ -204,7 +208,7 @@ class ParseTest
      */
     @Test
     void parse01()
-            throws SearchException, IOException, CredentialsException, StorageException {
+            throws IOException, StorageException, SearchException {
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/alter-ego/9300000135231911/?s2a=";
@@ -213,7 +217,9 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        searchEngine.parse(context, ISBN.parse("9789044652901"),
+                           document, new boolean[]{true, true, false, false},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Alter ego", book.getString(DBKey.TITLE, null));
@@ -224,19 +230,16 @@ class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(51.6d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
+        assertEquals(19.85d, book.getDouble(DBKey.PRICE_LISTED,
+                                           moneyParser.getRealNumberParser()), 0.01d);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Een sterrenkok, zijn jonge vrouw"));
         final List<Tag> bookTags = book.getTags();
-        assertEquals(7, bookTags.size());
+        assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Thrillers & Spanning"));
-        assertTrue(tags.contains("Romance"));
-        assertTrue(tags.contains("Psychologische thrillers"));
-        assertTrue(tags.contains("Spanning"));
-        assertTrue(tags.contains("Romantische thrillers"));
         assertTrue(tags.contains("Literaire thrillers"));
 
         final List<Publisher> allPublishers = book.getPublishers();
@@ -269,7 +272,7 @@ class ParseTest
 
     @Test
     void parse02()
-            throws SearchException, IOException, CredentialsException, StorageException {
+            throws IOException, StorageException, SearchException {
 
         final String locationHeader = "https://www.bol.com/be/nl/p/europa/9300000130411439/?promo=main_861_new_for_you___product_0_9300000130411439&bltgh=vwTKjOiKpqSmgLkGxPZJow.90_91.92.ProductImage";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -277,7 +280,9 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        searchEngine.parse(context, ISBN.parse("9789044544725"),
+                           document, new boolean[]{true, true, false, false},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Europa", book.getString(DBKey.TITLE, null));
@@ -287,8 +292,8 @@ class ParseTest
         assertEquals("408", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(26.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
+        assertEquals(27.99d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0.01d);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -335,7 +340,7 @@ class ParseTest
     /** The redirect from {@link #parseMultiResult01()} */
     @Test
     void parse03()
-            throws SearchException, IOException, CredentialsException, StorageException {
+            throws IOException, StorageException, SearchException {
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/nijntjes-voorleesfeest/9200000122271922/";
@@ -344,7 +349,9 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        searchEngine.parse(context, ISBN.parse("9789056478193"),
+                           document, new boolean[]{true, true, false, false},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
@@ -356,7 +363,7 @@ class ParseTest
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
         assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0);
+                                           moneyParser.getRealNumberParser()), 0.01d);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -383,7 +390,7 @@ class ParseTest
     /** The redirect from {@link #parseMultiResult02()} */
     @Test
     void parse04()
-            throws SearchException, IOException, CredentialsException, StorageException {
+            throws IOException, StorageException, SearchException {
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/foundation-trilogy/1001004009994645/";
@@ -392,7 +399,9 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        searchEngine.parse(context, ISBN.parse("9781841593326"),
+                           document, new boolean[]{true, true, false, false},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
@@ -402,10 +411,14 @@ class ParseTest
         assertEquals("664", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
+        // It's 4.8, but we round up in the case
         assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(18.28d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
+        assertEquals(24.07d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0.01d);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("It is the story of the Galactic Empire, crumbling"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
@@ -415,8 +428,9 @@ class ParseTest
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
-        assertEquals(1, allPublishers.size());
+        assertEquals(2, allPublishers.size());
         assertEquals("Everyman'S Library", allPublishers.get(0).getName());
+        assertEquals("Penguin Random House UK", allPublishers.get(1).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -448,7 +462,7 @@ class ParseTest
 
     @Test
     void parse05()
-            throws SearchException, IOException, CredentialsException, StorageException {
+            throws IOException, StorageException, SearchException {
 
         final String locationHeader =
                 "https://www.bol.com/be/nl/p/er-stromen-rivieren-in-de-lucht/9300000174936851/?bltgh=mY-mZ8dieLK1LnLXkKxH5g.hNfQd-6cIGnpHMA9c25Jow_0_24.29.ProductTitle";
@@ -457,7 +471,9 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        searchEngine.parse(context, ISBN.parse("9789046832073"),
+                           document, new boolean[]{true, true, false, false},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Er stromen rivieren in de lucht", book.getString(DBKey.TITLE, null));
@@ -467,14 +483,12 @@ class ParseTest
         assertEquals("480", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(24.99d, book.getDouble(DBKey.PRICE_LISTED,
-                                            moneyParser.getRealNumberParser()), 0);
+        assertEquals(4.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
+        assertEquals(22.49d, book.getDouble(DBKey.PRICE_LISTED,
+                                            moneyParser.getRealNumberParser()), 0.01d);
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        assertEquals(
-                "'Wederom een rijke, roerende en actuele roman. [...] Een ingenieuze roman, waarmee Shafak niet alleen haar meesterschap onderstreept, maar vooral ook de grote kracht en waarde van literatuur in volle glorie toont.' het Parool ‘Haar nieuwe en wellicht ook meest ambitieuze roman tot nu toe’ De Morgen ‘Maak ruimte voor Shafak in je boekenkast. Maak ook ruimte voor haar in je hart. Je zult er geen spijt van krijgen.’ Arundhati Roy Londen, 1840. Arthur raakt gefascineerd door het oude Mesopotamië en in het bijzonder door het epische Gilgamesj-epos, over een hooghartige held die pas tot inkeer komt wanneer hij alles kwijt is. Turkije, 2014. De 10-jarige Narin moet vluchten voor isis, samen met haar oma, die uit een lange lijn van vrouwelijke zieners komt. Londen, 2018. Zaleekhah vindt troost in haar onderzoek naar rivieren, en komt via een vriendin in aanraking met een bijzondere oude taal. Wat de drie buitenstaanders door de eeuwen heen met elkaar verbindt, is het water, want: ‘Water bewaart alle herinneringen. Het zijn de mensen die vergeten.’ ‘Een van de belangrijkste schrijvers van dit moment.’ Independent ‘Iedereen zou Shafak moeten lezen.’ The Guardian ‘Een buitengewone roman, fris en zuiverend als de regen die op het metalen dak van ons leven slaat.’ Column McCann ‘Een meesterwerk.’ Ruth Ozeki ‘Shafaks verbeeldingskracht is een wonder: gedurfd, weergaloos en wijs.’ Katie Kitamura ‘Een moderne klassieker. Shafak is een van de grote schrijvers van onze tijd. Deze roman is verbazingwekkend, ingenieus en prachtig.’ Peter Frankopan",
-                book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("<p>'Wederom een rijke, roerende en actuele roman"));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
@@ -482,14 +496,14 @@ class ParseTest
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Historische romans"));
 
-        final List<Author> authors = book.getAuthors();
-        assertNotNull(authors);
-        assertEquals(2, authors.size());
-
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Wereldbibliotheek", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
 
         Author author;
         author = authors.get(0);

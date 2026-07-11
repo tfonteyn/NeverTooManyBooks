@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -74,7 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -149,6 +149,13 @@ public class BolSearchEngine
 
     /** Front-covers can be given using either of these keys. We must try both. */
     private static final List<String> FRONT_COVER_KEYS = List.of("coverImageUrl", "imageUrl");
+
+    // Local mapping for the types in the json data
+    private static final Map<String, Integer> FORMAT_MAPPING = Map.of(
+            "https://schema.org/Paperback", R.string.book_format_paperback,
+            "https://schema.org/EBook", R.string.book_format_ebook,
+            "https://schema.org/AudiobookFormat", R.string.book_format_audiobook
+    );
 
     /**
      * Constructor.
@@ -257,7 +264,7 @@ public class BolSearchEngine
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, productCode, document, fetchCovers, book);
         }
         return book;
     }
@@ -300,7 +307,7 @@ public class BolSearchEngine
                 HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, productCode, document, fetchCovers, book);
         }
         return book;
     }
@@ -309,11 +316,13 @@ public class BolSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retrieved.
      *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
-     * @param book        to update
+     * @param context      Current context
+     * @param searchedCode which the user searched for;
+     *                     can be {@code null} if the search used different criteria
+     * @param document     to parse
+     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
+     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book         to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -322,6 +331,7 @@ public class BolSearchEngine
     @VisibleForTesting
     @WorkerThread
     public void parseMultiResult(@NonNull final Context context,
+                                 @Nullable final ProductCode searchedCode,
                                  @NonNull final Document document,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
@@ -340,7 +350,7 @@ public class BolSearchEngine
             final Document redirected = loadDocument(context, url, Map.of(
                     HttpConstants.REFERER, document.location()));
             if (!isCancelled()) {
-                parse(context, redirected, fetchCovers, book);
+                parse(context, searchedCode, redirected, fetchCovers, book);
             }
         } else {
             final Element element = document.selectFirst("div.unicorn");
@@ -358,38 +368,198 @@ public class BolSearchEngine
      * <p>
      * We're ignoring the label "Co Auteur" and "Hoofdredacteur" on purpose.
      *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
-     * @param book        to update
+     * @param context      Current context
+     * @param searchedCode which the user searched for;
+     *                     can be {@code null} if the search used different criteria
+     * @param document     to parse
+     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
+     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book         to update
      *
-     * @throws StorageException      on storage related failures
-     * @throws SearchException       on generic exceptions (wrapped) during search
-     * @throws CredentialsException  on authentication/login failures
-     *                               This should only occur if the engine calls/relies on
-     *                               secondary sites.
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
+    @WorkerThread
+    void parse(@NonNull final Context context,
+               @Nullable final ProductCode searchedCode,
+               @NonNull final Document document,
+               @NonNull final boolean[] fetchCovers,
+               @NonNull final Book book)
+            throws StorageException, SearchException {
+
+        final Element jsonElement = document.selectFirst("script[type=\"application/ld+json\"]");
+        if (jsonElement != null) {
+            try {
+                parseJson(context, searchedCode, document, new JSONObject(jsonElement.data()),
+                          fetchCovers, book);
+            } catch (@NonNull final JSONException e) {
+                throw new SearchException(getEngineId(), e);
+            }
+        } else {
+            // If for whatever reason the json blob is missing, fall back to html.
+            parseHtml(context, searchedCode, document, fetchCovers, book);
+        }
+    }
+
     @VisibleForTesting
     @WorkerThread
-    public void parse(@NonNull final Context context,
-                      @NonNull final Document document,
-                      @NonNull final boolean[] fetchCovers,
-                      @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+    void parseJson(@NonNull final Context context,
+                   @Nullable final ProductCode searchedCode,
+                   @NonNull final Document document,
+                   @NonNull final JSONObject root,
+                   @NonNull final boolean[] fetchCovers,
+                   @NonNull final Book book)
+            throws StorageException {
 
-        final Element titleElement = document.selectFirst("span[data-test='title']");
+        if (BuildConfig.DEBUG /* always */) {
+            // can be used in tests
+            book.putString("PARSER", "JSON");
+        }
+
+        book.setTitle(root.optString("name"));
+        book.setDescription(root.optString("description"));
+        book.setLanguage(root.optString("inLanguage"));
+
+        final JSONObject jsonAuthor = root.optJSONObject("author");
+        if (jsonAuthor != null) {
+            book.add(Author.from(jsonAuthor.optString("name")));
+        }
+        // The author in json is the primary author only. Parse the html for others and roles.
+
+
+        final JSONObject jsonPublisher = root.optJSONObject("publisher");
+        if (jsonPublisher != null) {
+            book.add(Publisher.from(jsonPublisher.optString("name")));
+        }
+        final JSONObject jsonRating = root.optJSONObject("aggregateRating");
+        if (jsonRating != null) {
+            final float ratingValue = jsonRating.optFloat("ratingValue");
+            if (!Float.isNaN(ratingValue)) {
+                book.setRating(ratingValue);
+            }
+        }
+        final JSONArray works = root.optJSONArray("workExample");
+        if (works != null) {
+            parseJsonWorks(context, searchedCode, works, book);
+        }
+
+        final JSONArray genre = root.optJSONArray("genre");
+        if (genre != null) {
+            parseJsonTags(genre, book);
+        }
+
+        if (fetchCovers[0]) {
+            parseCoversFromJson(context, root, document, fetchCovers, book);
+        }
+    }
+
+    private void parseJsonWorks(@NonNull final Context context,
+                                @Nullable final ProductCode searchedCode,
+                                @NonNull final JSONArray works,
+                                @NonNull final Book book)
+            throws JSONException {
+        // we're using "get" and throw when there is an issue
+        int index = 0;
+        if (searchedCode != null) {
+            for (int i = 0; i < works.length(); i++) {
+                final ProductCode code = ISBN.parse(works.getJSONObject(i).optString("isbn"));
+                if (code.equals(searchedCode)) {
+                    // found it
+                    index = i;
+                    break;
+                }
+            }
+        }
+        // use the first one if we did not find a match
+        final JSONObject work = works.getJSONObject(index);
+
+        // back to using "opt"!
+        book.setRawProductCode(work.optString("isbn"));
+        book.setPages(work.optString("numberOfPages"));
+        // the format is ISO
+        book.setPublicationDate(work.optString("datePublished"));
+
+        if (book.getDescription().isEmpty()) {
+            book.setDescription(work.optString("@description"));
+        }
+
+        // do NOT use "@type", as the value "Book" is used for both book and ebook :/
+        final String bookFormat = work.optString("bookFormat");
+        final Integer formatStrId = FORMAT_MAPPING.get(bookFormat);
+        if (formatStrId != null) {
+            book.setFormat(context.getString(formatStrId));
+        } else if (bookFormat.startsWith("https://schema.org/")) {
+            book.setFormat(bookFormat.substring(19));
+        }
+
+        final JSONObject offers = work.optJSONObject("offers");
+        if (offers != null) {
+            parseJsonPrice(offers, book);
+        } else {
+            final JSONObject pa = work.optJSONObject("potentialAction");
+            if (pa != null) {
+                final JSONObject eao = pa.optJSONObject("expectsAcceptanceOf");
+                if (eao != null) {
+                    parseJsonPrice(eao, book);
+                }
+            }
+        }
+    }
+
+    private void parseJsonPrice(@NonNull final JSONObject o,
+                                @NonNull final Book book) {
+        final float price = o.optFloat("price");
+        if (!Float.isNaN(price)) {
+            final String priceCurrency = o.optString("priceCurrency", "EUR");
+            book.setPriceListed(new Money(BigDecimal.valueOf(price),
+                                          Currency.getInstance(priceCurrency)));
+        }
+    }
+
+    private void parseJsonTags(@NonNull final JSONArray genre,
+                               @NonNull final Book book) {
+        final List<String> tagNames = genre.toList()
+                                           .stream()
+                                           // they are simple Strings
+                                           .map(String::valueOf)
+                                           .collect(Collectors.toList());
+        setTags(tagNames, book);
+    }
+
+    @VisibleForTesting
+    @WorkerThread
+    void parseHtml(@NonNull final Context context,
+                   @Nullable final ProductCode searchedCode,
+                   @NonNull final Document document,
+                   @NonNull final boolean[] fetchCovers,
+                   @NonNull final Book book)
+            throws StorageException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            // can be used in tests
+            book.putString("PARSER", "HTML");
+        }
+
+        final Element titleElement = document
+                .selectFirst("div.md\\:col-span-2 > div > div.mb-3 > h1.mb-3 > span");
         if (titleElement == null || titleElement.text().isEmpty()) {
-            // well, this is unexpected...
-            // This is seen when accessing the site in French and looking for
-            // a Dutch (or german...) book....
-            // The site simply does not list the title... anywhere! ... ouch...
             return;
         }
         book.setTitle(SearchEngineUtils.cleanText(titleElement));
 
-        final Elements specs = document.select("div.specs > dl.specs__list");
-        if (specs.isEmpty()) {
+        final Element heading = document.selectFirst(
+                "div[data-testid=collapsible-content] > h2:containsOwn(Productspecificaties), "
+                + "div[data-testid=collapsible-content] > h2:containsOwn(Spécifications produit)");
+        if (heading == null) {
+            return;
+        }
+
+        final Element parentDiv = heading.parent();
+        if (parentDiv == null) {
+            return;
+        }
+        final Elements flexRows = parentDiv.select("div.flex.py-2");
+        if (flexRows.isEmpty()) {
             return;
         }
 
@@ -397,11 +567,12 @@ public class BolSearchEngine
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
         final RealNumberParser ratingNumberParser = new RealNumberParser(allLocales);
-        final MoneyParser moneyParser = new MoneyParser(siteLocale, allLocales);
 
-        for (final Element specRow : specs.select("div.specs__row")) {
-            final Element label = specRow.selectFirst("dt.specs__title");
-            final Element value = specRow.selectFirst("dd.specs__value");
+        for (final Element row : flexRows) {
+
+
+            final Element label = row.selectFirst("div.w-1\\/2.pl-4");
+            final Element value = row.selectFirst("div.w-1\\/2.px-4");
             if (label != null && value != null) {
                 final String labelText = label.text();
                 switch (labelText) {
@@ -413,10 +584,16 @@ public class BolSearchEngine
                         }
                         break;
                     }
-                    case "Bindwijze":
-                    case "Binding": {
+                    case "Uitvoering":
+                    case "Version": {
                         if (!book.contains(DBKey.FORMAT)) {
-                            book.setFormat(SearchEngineUtils.cleanText(value));
+                            final String format = SearchEngineUtils.cleanText(value);
+                            // economy/cheaper edition -> it's a paperback!
+                            if ("Voordeeleditie".equals(format)
+                                || "Édition spéciale".equals(format)) {
+                                book.setFormat(context.getString(R.string.book_format_paperback));
+                            }
+                            book.setFormat(format);
                         }
                         break;
                     }
@@ -436,42 +613,49 @@ public class BolSearchEngine
                         }
                         break;
                     }
+                    case "Originele titel":
+                    case "Titre original": {
+                        book.setTranslatedFromTitle(SearchEngineUtils.cleanText(value));
+                        break;
+                    }
                     case "Hoofdauteur":
-                    case "Auteur principal":
+                    case "Auteur principal": {
+                        // The translator is parsed before the primary author;
+                        // Force the primary one to be added at the top of the list.
+                        parseAuthor(value, AuthorRole.WRITER, book, true);
+                        break;
+                    }
                     case "Tweede Auteur":
                     case "Deuxième auteur": {
-                        parseAuthor(value, AuthorRole.WRITER, book);
+                        parseAuthor(value, AuthorRole.WRITER, book, false);
                         break;
                     }
                     case "Hoofdillustrator":
                     case "Illustrateur en chef":
                     case "Tweede Illustrator":
                     case "Deuxième illustrateur": {
-                        parseAuthor(value, AuthorRole.ARTIST, book);
+                        parseAuthor(value, AuthorRole.ARTIST, book, false);
                         break;
                     }
                     case "Hoofdredacteur":
                     case "Rédacteur en chef":
                     case "Tweede Redacteur":
                     case "Deuxième rédacteur": {
-                        parseAuthor(value, AuthorRole.EDITOR, book);
+                        parseAuthor(value, AuthorRole.EDITOR, book, false);
                         break;
                     }
                     case "Eerste Vertaler":
                     case "Tweede Vertaler":
                     case "Premier traducteur":
                     case "Deuxième traducteur": {
-                        parseAuthor(value, AuthorRole.TRANSLATOR, book);
+                        parseAuthor(value, AuthorRole.TRANSLATOR, book, false);
                         break;
                     }
                     case "Verteller":
                     case "Narrateur": {
-                        parseAuthor(value, AuthorRole.NARRATOR, book);
-                        break;
-                    }
-                    case "Originele titel":
-                    case "Titre original": {
-                        book.setTranslatedFromTitle(SearchEngineUtils.cleanText(value));
+                        if ("E-book".equals(book.getString(DBKey.FORMAT))) {
+                            parseAuthor(value, AuthorRole.NARRATOR, book, false);
+                        }
                         break;
                     }
                     case "Serie": {
@@ -488,7 +672,11 @@ public class BolSearchEngine
                     }
 
                     case "Hoofduitgeverij":
-                    case "Editeur principal": {
+                    case "Editeur principal":
+                    case "Tweede Uitgeverij":
+                    case "Deuxième édition":
+                    case "Co Uitgever(s)":
+                    case "Coéditeur(s)": {
                         final Element a = value.selectFirst("a");
                         if (a != null) {
                             final String s = SearchEngineUtils.cleanName(a);
@@ -518,28 +706,31 @@ public class BolSearchEngine
 
         parseDescription(document, book);
         parseRating(document, book, ratingNumberParser);
-        parsePrice(document, book, moneyParser);
+        parsePrice(document, book);
 
         if (fetchCovers[0]) {
-            parseCovers(context, document, fetchCovers, book);
+            parseCoversFromHtml(context, document, fetchCovers, book);
         }
     }
 
     private void parseAuthor(@NonNull final Element value,
                              @AuthorRole.Role final int type,
-                             @NonNull final Book book) {
+                             @NonNull final Book book,
+                             final boolean addAsFirst) {
         final Element a = value.selectFirst("a");
         if (a != null) {
             final String s = SearchEngineUtils.cleanName(a);
             if (!s.isBlank()) {
-                addAuthor(Author.from(s), type, book);
+                addAuthor(Author.from(s), type, book, addAsFirst);
             }
         }
     }
 
     private void parseDescription(@NonNull final Document document,
                                   @NonNull final Book book) {
-        final Element descrElement = document.selectFirst("div.product-description");
+
+        final Element descrElement = document
+                .selectFirst("div[data-testid=collapsible-content] div.pr-10.prose");
         if (descrElement != null) {
             final String s = SearchEngineUtils.cleanText(descrElement);
             if (!s.isBlank()) {
@@ -551,35 +742,40 @@ public class BolSearchEngine
     private void parseRating(@NonNull final Document document,
                              @NonNull final Book book,
                              @NonNull final RealNumberParser realNumberParser) {
+        // Rating uses a ',' as decimal separator.
         final RatingParser ratingParser = new RatingParser(realNumberParser, 5);
 
-        final Element ratingElement = document.selectFirst("div.reviews-summary__avg-score");
+        final Element ratingElement = document.selectFirst("span[data-testid=average-rating]");
         if (ratingElement != null) {
             ratingParser.parse(ratingElement.text()).ifPresent(book::setRating);
         }
     }
 
     private void parsePrice(@NonNull final Document document,
-                            @NonNull final Book book,
-                            @NonNull final MoneyParser moneyParser) {
+                            @NonNull final Book book) {
         //TODO: if they are out of stock, this element will NOT contain a price.
         // We should get the price from the buttons on the page just above this field
         // but those button elements are not easy to parse for.
-        final Element priceElement = document.selectFirst("span.promo-price");
-        if (priceElement != null) {
-            //noinspection OverlyBroadCatchBlock
+        final Element priceContainer = document.selectFirst("div.group\\/productoffer");
+        if (priceContainer != null) {
             try {
-                // <span class="promo-price" data-test="price">22
-                //    <sup class="promo-price__fraction" data-test="price-fraction">99</sup>
-                // </span>
-                // text() will get "22 99", so add a "," as decimal separator and parse as normal
-                final String priceStr = priceElement.text().replace(" ", ",");
-                // The currency is not part of the string,
-                // so we just parse it as a simple double and then add the EURO.
-                final double price = moneyParser.getRealNumberParser().parseDouble(priceStr);
-                book.setPriceListed(new Money(BigDecimal.valueOf(price), Money.EURO));
+                final Element euroElement = priceContainer
+                        .selectFirst("span.row-span-2[aria-hidden=true]");
+                if (euroElement == null) {
+                    return;
+                }
+                final Element centsElement = priceContainer
+                        .selectFirst("span.translate-x-\\[20\\%\\][aria-hidden=true]");
 
-            } catch (@NonNull final IllegalArgumentException ignore) {
+                BigDecimal price = BigDecimal.valueOf(Integer.parseInt(euroElement.text()));
+                if (centsElement != null) {
+                    final int cents = Integer.parseInt(euroElement.text());
+                    price = price.add(new BigDecimal(cents / 100));
+                }
+
+                book.setPriceListed(new Money(price, Money.EURO));
+
+            } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }
         }
@@ -597,73 +793,6 @@ public class BolSearchEngine
 
     /**
      * Parse the document for cover images.
-     * <p>
-     * Will NOT throw if the JSON objects are messed up; we just won't have an image.
-     * <p>
-     * Example of the text inside an "imageSlotConfig" if it's a JSONArray:
-     * <pre>
-     *     {@code
-     * [
-     *   {
-     *     "type": "book-flipper",
-     *     "coverImageUrl": "https://media.s-bol.com/gKE8jpMpWokY/VR6Nlz/550x766.jpg",
-     *     "backImageUrl": "https://media.s-bol.com/y802R6lV9MnV/550x556.jpg",
-     *     "hardcover": true,
-     *     "flipBookText": "Boek omdraaien",
-     *     "thickness": "medium",
-     *     "m2": {
-     *       "bltgiselecteditembookflippertemplate0": {
-     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.10"
-     *       },
-     *       "bltghselecteditembookflippertemplate0FlipBookByBook": {
-     *         "bltgh": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.10.FlipBookByBook"
-     *       },
-     *       "bltghselecteditembookflippertemplate1FlipBookByLink": {
-     *         "bltgh": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.10.FlipBookByLink"
-     *       }
-     *     }
-     *   },
-     *   {
-     *     "type": "image",
-     *     "imageUrl": "https://media.s-bol.com/gKE8jpMpWokY/VR6Nlz/550x766.jpg",
-     *     "productTitle": "nijntjes voorleesfeest",
-     *     "zoomImageUrl": "https://media.s-bol.com/gKE8jpMpWokY/VR6Nlz/861x1200.jpg",
-     *     "isHighPriorityEnabled": true,
-     *     "m2": {
-     *       "bltgiselecteditemimagetemplate0": {
-     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.11"
-     *       }
-     *     }
-     *   },
-     *   {
-     *     "type": "image",
-     *     "imageUrl": "https://media.s-bol.com/y802R6lV9MnV/550x556.jpg",
-     *     "productTitle": "nijntjes voorleesfeest",
-     *     "zoomImageUrl": "https://media.s-bol.com/y802R6lV9MnV/1186x1200.jpg",
-     *     "isHighPriorityEnabled": true,
-     *     "m2": {
-     *       "bltgiselecteditemimagetemplate0": {
-     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.12"
-     *       }
-     *     }
-     *   },
-     *   {
-     *     "type": "video",
-     *     "imageUrl": "https://media.s-bol.com/mEW048AnXmQG/550x309.jpg",
-     *     "videoUrl": "/nl/rnwy/ajax/video/product?productId=9200000122271922",
-     *     "srtText": "Video afspelen",
-     *     "m2": {
-     *       "bltghselecteditemvideotemplate0StartVideo": {
-     *         "bltgh": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.13.StartVideo"
-     *       },
-     *       "bltgiselecteditemvideotemplate0": {
-     *         "bltgi": "hhyqGFF0fyCZv8ZiGQdMGg.2_9.13"
-     *       }
-     *     }
-     *   }
-     * ]
-     *     }
-     * </pre>
      *
      * @param context     Current context
      * @param document    to parse
@@ -673,77 +802,89 @@ public class BolSearchEngine
      *
      * @throws StorageException on storage related failures
      */
-    private void parseCovers(@NonNull final Context context,
-                             @NonNull final Document document,
-                             @NonNull final boolean[] fetchCovers,
-                             @NonNull final Book book)
+    private void parseCoversFromHtml(@NonNull final Context context,
+                                     @NonNull final Document document,
+                                     @NonNull final boolean[] fetchCovers,
+                                     @NonNull final Book book)
             throws StorageException {
 
-        final Element imageSlotConfig = document.selectFirst(
-                "section[data-group-name='product-images'] script");
-        if (imageSlotConfig != null
-            && imageSlotConfig.hasAttr("data-image-slot-config")) {
+        // Target an img where src starts with media.s-bol.com
+        // AND has loading=eager AND has fetchPriority=high
+        final Element frontCoverImg = document.selectFirst(
+                "img[src^=https://media.s-bol.com/][loading=eager][fetchPriority=high]");
+        if (frontCoverImg == null) {
+            return;
+        }
+        final String url = frontCoverImg.attr("src");
+        commonParseCovers(context, document, fetchCovers, url, book);
+    }
 
-            // The data of this element can contain a JSONArray or a JSONObject
-            final String text = imageSlotConfig.data().strip();
-            try {
-                if (text.startsWith("[") && text.endsWith("]")) {
-                    // If it's a JSONArray, simply grab the first element.
-                    // This will either be a "book-flipper" with both front- and back-cover
-                    // in the keys "coverImageUrl" and backImageUrl";
-                    // or an "image" (or "video") with the front-cover in the key "imageUrl"
-                    final JSONArray objects = new JSONArray(text);
-                    final JSONObject currentItem = objects.optJSONObject(0);
-                    if (currentItem != null) {
-                        parseCovers(context, currentItem, fetchCovers, book);
-                    }
-                } else {
-                    // TEST: This 'else' branch can likely be removed.
-                    final JSONObject imageSlotSlider = new JSONObject(text)
-                            .optJSONObject("imageSlotSlider");
-                    if (imageSlotSlider != null) {
-                        final JSONObject currentItem = imageSlotSlider.optJSONObject("currentItem");
-                        if (currentItem != null) {
-                            parseCovers(context, currentItem, fetchCovers, book);
-                        }
-                    }
-                }
-            } catch (@NonNull final JSONException e) {
-                // Log it so we can extend the above check if needed.
-                // There is more than one way of listing images...
-                LoggerFactory.getLogger().w(TAG, e, "text=`" + text + "`");
-            }
+    private void parseCoversFromJson(@NonNull final Context context,
+                                     @NonNull final JSONObject root,
+                                     @NonNull final Document document,
+                                     @NonNull final boolean[] fetchCovers,
+                                     @NonNull final Book book)
+            throws StorageException {
+
+        // The front cover is available in the json object,
+        // but the back cover is NOT and we need to parse the html for it.
+        final JSONObject imageJson = root.optJSONObject("image");
+        if (imageJson != null) {
+            final String url = imageJson.optString("url");
+            commonParseCovers(context, document, fetchCovers, url, book);
         }
     }
 
-    private void parseCovers(@NonNull final Context context,
-                             @NonNull final JSONObject currentItem,
-                             @NonNull final boolean[] fetchCovers,
-                             @NonNull final Book book)
+    /**
+     * Given the front cover url, fetch it and optionally parse the html document
+     * for the back cover and get that as well.
+     * <p>
+     * The front cover url is passed in as that can come either from the json parser
+     * or from the html parser.
+     *
+     * @param context       Current context
+     * @param document      to parse
+     * @param fetchCovers   Set array indexes to {@code true} to fetch a cover for that index.
+     *                      Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param frontCoverUrl to fetch
+     * @param book          to update
+     *
+     * @throws StorageException on storage related failures
+     */
+    private void commonParseCovers(@NonNull final Context context,
+                                   @NonNull final Document document,
+                                   @NonNull final boolean[] fetchCovers,
+                                   @NonNull final String frontCoverUrl,
+                                   @NonNull final Book book)
             throws StorageException {
-        // The site uses several possible keys, loop until found or exhausted
-        for (final String key : FRONT_COVER_KEYS) {
-            final String coverUrl = currentItem.optString(key);
-            if (!coverUrl.isEmpty()) {
-                final String codeStr = book.getRawProductCode();
-                final Optional<String> oFileSpec =
-                        saveImage(context, coverUrl, null, codeStr, 0, null);
-                if (oFileSpec.isPresent()) {
-                    CoverFileSpecArray.setFileSpec(book, 0, oFileSpec.get());
-                    // only attempt to get the back-cover if we got a front-cover
-                    // and (obv.) if we want one.
-                    if (fetchCovers[1]) {
-                        final String url = currentItem.optString("backImageUrl");
-                        if (!url.isEmpty()) {
-                            saveImage(context, url, null, codeStr, 1, null).ifPresent(
-                                    fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
-                        }
-                    }
-                    // All done. We have a front-cover and maybe a back-cover.
-                    return;
-                }
-            }
+
+        if (frontCoverUrl.isEmpty()) {
+            return;
         }
+
+        final String codeStr = book.getRawProductCode();
+        final Optional<String> oFileSpec = saveImage(context, frontCoverUrl, null,
+                                                     codeStr, 0, null);
+        if (oFileSpec.isEmpty()) {
+            return;
+        }
+        CoverFileSpecArray.setFileSpec(book, 0, oFileSpec.get());
+        // only attempt to get the back-cover if we got a front-cover
+        // and if we want one.
+        if (!fetchCovers[1]) {
+            return;
+        }
+        // Target the img element whose 'alt' attribute ends with "back cover"
+        final Element backCoverImg = document.selectFirst("img[alt$=- back cover]");
+        if (backCoverImg == null) {
+            return;
+        }
+        final String url = backCoverImg.attr("src");
+        if (url.isEmpty()) {
+            return;
+        }
+        saveImage(context, url, null, codeStr, 1, null).ifPresent(
+                fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
     }
 
     @Override
