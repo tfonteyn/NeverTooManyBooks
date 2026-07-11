@@ -245,6 +245,9 @@ public class Series
     @NonNull
     private String number = "";
 
+    @Nullable
+    private PublicationFrequency frequency;
+
     /**
      * Copy constructor.
      *
@@ -286,6 +289,14 @@ public class Series
         } else {
             number = "";
         }
+
+        if (rowData.contains(DBKey.PUBLICATION_FREQUENCY.TYPE)) {
+            frequency = new PublicationFrequency(
+                    PublicationFrequency.Type.byId(
+                            rowData.getInt(DBKey.PUBLICATION_FREQUENCY.TYPE)),
+                    rowData.getInt(DBKey.PUBLICATION_FREQUENCY.CADENCE),
+                    rowData.getBoolean(DBKey.PUBLICATION_FREQUENCY.IS_ORDINAL));
+        }
     }
 
     /**
@@ -300,6 +311,8 @@ public class Series
         complete = in.readByte() != 0;
         //noinspection DataFlowIssue
         number = in.readString();
+        //noinspection deprecation
+        frequency = in.readParcelable(PublicationFrequency.class.getClassLoader());
 
         ParcelUtils.readParcelableList(in, identifiers, getClass().getClassLoader());
     }
@@ -470,6 +483,7 @@ public class Series
         dest.writeString(title);
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeString(number);
+        dest.writeParcelable(frequency, flags);
         ParcelUtils.writeParcelableList(dest, identifiers, flags);
     }
 
@@ -592,6 +606,31 @@ public class Series
     }
 
     /**
+     * Get the {@link PublicationFrequency}.
+     *
+     * @return frequency, or {@code null} for unknown
+     */
+    @Nullable
+    public PublicationFrequency getPublicationFrequency() {
+        return frequency;
+    }
+
+    /**
+     * Set the given {@link PublicationFrequency}.
+     * <p>
+     * A {@code null} or a type {@link PublicationFrequency.Type#Unknown} will delete it.
+     *
+     * @param frequency to set
+     */
+    public void setPublicationFrequency(@Nullable final PublicationFrequency frequency) {
+        if (frequency == null || frequency.getType() == PublicationFrequency.Type.Unknown) {
+            this.frequency = null;
+        } else {
+            this.frequency = frequency;
+        }
+    }
+
+    /**
      * <strong>Replace</strong> local details with those from the given Series.
      *
      * @param source            to copy from
@@ -633,6 +672,7 @@ public class Series
         }
 
         if (includeBookFields) {
+            // If we have one, we 'win'
             if (number.isEmpty()) {
                 number = source.number;
             }
@@ -641,6 +681,11 @@ public class Series
         // overwrite the id unless we're 'new'
         if (source.getId() > 0) {
             this.id = source.getId();
+        }
+
+        // If we have one, we 'win'
+        if (frequency == null) {
+            frequency = source.frequency;
         }
 
         identifiers.addAll(source.getIdentifiers());
@@ -735,6 +780,7 @@ public class Series
                + ", title=`" + title + '`'
                + ", complete=" + complete
                + ", number=`" + number + '`'
+               + ", frequency=" + frequency
                + ", identifiers=" + identifiers
                + '}';
     }

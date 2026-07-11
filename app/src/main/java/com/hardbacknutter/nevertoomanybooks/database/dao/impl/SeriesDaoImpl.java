@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublicationFrequencyDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
@@ -59,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES_PUBLICATION_FREQUENCY;
 
 public class SeriesDaoImpl
         extends BaseDaoImpl
@@ -71,6 +73,7 @@ public class SeriesDaoImpl
     private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     private final IdentifierValueDao seriesIdentifierDao;
+    private final PublicationFrequencyDao publicationFrequencyDao;
 
     /**
      * Constructor.
@@ -79,7 +82,9 @@ public class SeriesDaoImpl
      */
     public SeriesDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        seriesIdentifierDao = ServiceLocator.getInstance().getSeriesIdentifierDao();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        seriesIdentifierDao = serviceLocator.getSeriesIdentifierDao();
+        publicationFrequencyDao = serviceLocator.getPublicationFrequencyDao();
     }
 
     @NonNull
@@ -369,6 +374,7 @@ public class SeriesDaoImpl
             if (iId != -1) {
                 series.setId(iId);
 
+                publicationFrequencyDao.setFrequency(series);
                 seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
                                                    series.getId(), series.getIdentifiers());
 
@@ -420,6 +426,7 @@ public class SeriesDaoImpl
             }
 
             if (rowsAffected > 0) {
+                publicationFrequencyDao.setFrequency(series);
                 seriesIdentifierDao.insertOrUpdate(Identifier.EntityType.Series,
                                                    series.getId(), series.getIdentifiers());
                 if (txLock != null) {
@@ -662,10 +669,19 @@ public class SeriesDaoImpl
                 + _WHERE_ + DBKey.FK_SERIES + "=?";
 
         /** A list of all {@link Series}s, unordered. */
-        static final String SELECT_ALL = "SELECT * FROM " + TBL_SERIES.getName();
+        static final String SELECT_ALL =
+                "SELECT " + TBL_SERIES.dot("*")
+                // LEFT OUTER JOIN, columns default to NULL
+                + ',' + TBL_SERIES_PUBLICATION_FREQUENCY
+                        .dotAs(DBKey.PUBLICATION_FREQUENCY.TYPE,
+                               DBKey.PUBLICATION_FREQUENCY.CADENCE,
+                               DBKey.PUBLICATION_FREQUENCY.IS_ORDINAL)
+                + _FROM_ + TBL_SERIES.ref()
+                + TBL_SERIES.leftOuterJoin(TBL_SERIES_PUBLICATION_FREQUENCY);
 
         /** Find a {@link Series} by its id. */
-        static final String FIND_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
+        static final String FIND_BY_ID =
+                SELECT_ALL + _WHERE_ + TBL_SERIES.dot(DBKey.PK_ID) + "=?";
 
         /**
          * Find a {@link Series} by Title.
@@ -674,8 +690,8 @@ public class SeriesDaoImpl
          */
         static final String FIND_BY_NAME =
                 SELECT_ALL
-                + _WHERE_ + DBKey.SERIES.TITLE + "=?" + _COLLATION
-                + _OR_ + DBKey.SERIES.TITLE + "=?" + _COLLATION;
+                + _WHERE_ + TBL_SERIES.dot(DBKey.SERIES.TITLE) + "=?" + _COLLATION
+                + _OR_ + TBL_SERIES.dot(DBKey.SERIES.TITLE) + "=?" + _COLLATION;
 
         /**
          * All {@link Series}s for a {@link Book}.
@@ -688,8 +704,14 @@ public class SeriesDaoImpl
                                                     DBKey.SERIES.COMPLETE)
                 + ',' + TBL_BOOK_SERIES.dotAs(DBKey.SERIES.BOOK_SERIES_NUMBER,
                                               DBKey.SERIES.BOOK_SERIES_POSITION)
+                // LEFT OUTER JOIN, columns default to NULL
+                + ',' + TBL_SERIES_PUBLICATION_FREQUENCY
+                        .dotAs(DBKey.PUBLICATION_FREQUENCY.TYPE,
+                               DBKey.PUBLICATION_FREQUENCY.CADENCE,
+                               DBKey.PUBLICATION_FREQUENCY.IS_ORDINAL)
 
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
+                + TBL_SERIES.leftOuterJoin(TBL_SERIES_PUBLICATION_FREQUENCY)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_BOOK) + "=?"
                 + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_POSITION);
 
@@ -727,6 +749,7 @@ public class SeriesDaoImpl
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'
                 + _WHERE_ + "mp>1";
+
         /** All Series for a rebuild of the {@link DBKey.SERIES#TITLE_OB} column. */
         private static final String OB_REBUILD_TITLES =
                 SELECT_ + DBKey.PK_ID

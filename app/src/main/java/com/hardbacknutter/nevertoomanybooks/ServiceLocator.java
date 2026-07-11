@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.IsoLanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublicationFrequencyDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
@@ -87,6 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IsoLanguageDaoImpl
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LanguageDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LoaneeDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LocationDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.PublicationFrequencyDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.PublisherDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
@@ -204,6 +206,8 @@ public final class ServiceLocator {
     private LocationDao locationDao;
     @Nullable
     private PublisherDao publisherDao;
+    @Nullable
+    private PublicationFrequencyDao publicationFrequencyDao;
     @Nullable
     private SeriesDao seriesDao;
     @Nullable
@@ -757,6 +761,16 @@ public final class ServiceLocator {
             }
         }
         return publisherDao;
+    }
+
+    @NonNull
+    public PublicationFrequencyDao getPublicationFrequencyDao() {
+        synchronized (this) {
+            if (publicationFrequencyDao == null) {
+                publicationFrequencyDao = new PublicationFrequencyDaoImpl(getDb());
+            }
+        }
+        return publicationFrequencyDao;
     }
 
     @NonNull

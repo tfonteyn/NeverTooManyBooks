@@ -30,6 +30,11 @@
     {"name": "Doubleday"},
     {"name": "Subterranean"}
   ],
+  "pub_freq": [
+    {"s":  "Weekly"},
+    {"s":  "Every 2 months"},
+    {"s":  "4 Monthly"}
+  ],
   "location": [
     {"name": "Library"},
     {"name": "Under the stairs"},

@@ -410,6 +410,20 @@ public final class DBKey {
     }
 
     /**
+     * {@link DBDefinitions#TBL_SERIES_PUBLICATION_FREQUENCY}.
+     */
+    @SuppressWarnings("CheckStyle")
+    public static final class PUBLICATION_FREQUENCY {
+        /** {@link com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency} id.*/
+        public static final String TYPE = "pub_freq_type";
+        public static final String CADENCE = "pub_freq_cadence";
+        public static final String IS_ORDINAL = "pub_freq_is_ordinal";
+
+        private PUBLICATION_FREQUENCY() {
+        }
+    }
+
+    /**
      * {@link DBDefinitions#TBL_BOOKLIST_STYLES}.
      */
     @SuppressWarnings("CheckStyle")

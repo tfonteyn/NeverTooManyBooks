@@ -110,6 +110,8 @@ public final class DBDefinitions {
      * {@link #TBL_AUTHOR_IDENTIFIER}
      * {@link #TBL_SERIES_IDENTIFIER}
      * <p>
+     * {@link #TBL_SERIES_PUBLICATION_FREQUENCY}
+     * <p>
      * {@link #TBL_CALIBRE_BOOKS},
      * {@link #TBL_CALIBRE_LIBRARIES},
      * <p>
@@ -158,7 +160,7 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_SERIES;
     /** link table. */
     public static final TableDefinition TBL_BOOK_PUBLISHER;
-    /** link table. */
+    /** LEFT JOIN table. */
     public static final TableDefinition TBL_BOOK_LOANEE;
     /** link table. */
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
@@ -171,6 +173,8 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_AUTHOR_IDENTIFIER;
     /** link table. */
     public static final TableDefinition TBL_SERIES_IDENTIFIER;
+    /** LEFT JOIN table. */
+    public static final TableDefinition TBL_SERIES_PUBLICATION_FREQUENCY;
 
     /** Map alternative names for Authors. */
     public static final TableDefinition TBL_PSEUDONYM_AUTHOR;
@@ -488,6 +492,13 @@ public final class DBDefinitions {
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
     public static final Domain DOM_STRIP_INFO_LAST_SYNC__UTC;
 
+    /** {@link #TBL_SERIES_PUBLICATION_FREQUENCY}. */
+    public static final Domain DOM_PUBLICATION_FREQUENCY_TYPE;
+    /** {@link #TBL_SERIES_PUBLICATION_FREQUENCY}. */
+    public static final Domain DOM_PUBLICATION_FREQUENCY_CADENCE;
+    /** {@link #TBL_SERIES_PUBLICATION_FREQUENCY}. */
+    public static final Domain DOM_PUBLICATION_FREQUENCY_IS_ORDINAL;
+
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
 
@@ -631,6 +642,7 @@ public final class DBDefinitions {
         TBL_BOOK_IDENTIFIER = new TableDefinition("book_identifiers", "b_ids");
         TBL_AUTHOR_IDENTIFIER = new TableDefinition("author_identifiers", "a_ids");
         TBL_SERIES_IDENTIFIER = new TableDefinition("series_identifiers", "s_ids");
+        TBL_SERIES_PUBLICATION_FREQUENCY = new TableDefinition("series_pub_freq", "spf");
 
         TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib", "clb_l");
         TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib", "clb_vl");
@@ -1258,6 +1270,23 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.CALIBRE.VIRT_LIB_EXPR, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .build();
+
+        /* ======================================================================================
+         *  Publication frequency domains
+         * ====================================================================================== */
+
+        DOM_PUBLICATION_FREQUENCY_TYPE =
+                new Domain.Builder(DBKey.PUBLICATION_FREQUENCY.TYPE, SqLiteDataType.Integer)
+                        .notNull()
+                        .build();
+        DOM_PUBLICATION_FREQUENCY_CADENCE =
+                new Domain.Builder(DBKey.PUBLICATION_FREQUENCY.CADENCE, SqLiteDataType.Integer)
+                        .notNull()
+                        .build();
+        DOM_PUBLICATION_FREQUENCY_IS_ORDINAL =
+                new Domain.Builder(DBKey.PUBLICATION_FREQUENCY.IS_ORDINAL, SqLiteDataType.Boolean)
+                        .notNull()
                         .build();
 
         /* ======================================================================================
@@ -1974,6 +2003,16 @@ public final class DBDefinitions {
                           DOM_IDENTIFIER_SID,
                           DOM_FK_SERIES);
         ALL_TABLES.put(TBL_SERIES_IDENTIFIER.getName(), TBL_SERIES_IDENTIFIER);
+
+        TBL_SERIES_PUBLICATION_FREQUENCY
+                .addDomains(DOM_FK_SERIES,
+                            DOM_PUBLICATION_FREQUENCY_TYPE,
+                            DOM_PUBLICATION_FREQUENCY_CADENCE,
+                            DOM_PUBLICATION_FREQUENCY_IS_ORDINAL)
+                .setPrimaryKey(DOM_FK_SERIES)
+                .addReference(TBL_SERIES, DOM_FK_SERIES);
+        ALL_TABLES.put(TBL_SERIES_PUBLICATION_FREQUENCY.getName(),
+                       TBL_SERIES_PUBLICATION_FREQUENCY);
 
         TBL_CALIBRE_BOOKS
                 .addDomains(DOM_FK_BOOK,

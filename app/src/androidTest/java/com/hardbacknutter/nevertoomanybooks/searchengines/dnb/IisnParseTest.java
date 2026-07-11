@@ -29,9 +29,12 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -43,6 +46,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class IisnParseTest
         extends BaseDBTest {
@@ -81,20 +86,32 @@ class IisnParseTest
 
         assertEquals("64er: das Magazin für Computer-Fans",
                      book.getString(DBKey.TITLE, null));
-        assertEquals("ger",
-                     book.getString(DBKey.LANGUAGE, null));
-        assertEquals("Periodical",
-                     book.getString(DBKey.FORMAT, null));
-        assertEquals("01768824",
-                     book.getString(DBKey.ISBN, null));
+        assertEquals("ger", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Periodical", book.getString(DBKey.FORMAT, null));
+        assertEquals("01768824", book.getString(DBKey.ISBN, null));
+
+        assertEquals("010441638", book.getIdentifierValue(Identifier.SID_DNB).orElse(null));
+        assertEquals("ZDB50387-3", book.getIdentifierValue("DE-599").orElse(null));
+        assertEquals("85119872", book.getIdentifierValue(Identifier.SID_OCLC).orElse(null));
+
+        final List<Series> seriesList = book.getSeries();
+        assertEquals(1, seriesList.size());
+        final Series series = seriesList.get(0);
+        assertEquals("64er: das Magazin für Computer-Fans", series.getTitle());
+        assertEquals("01768824", series.getIdentifierValue(Identifier.SID_ISSN).orElse(null));
+
+        final PublicationFrequency frequency = series.getPublicationFrequency();
+        assertNotNull(frequency);
+        assertEquals(PublicationFrequency.Type.Monthly, frequency.getType());
+        assertEquals(1, frequency.getCadence());
+        assertFalse(frequency.isOrdinal());
+
+        final List<Author> authors = book.getAuthors();
+        assertEquals(1, authors.size());
+        assertEquals("Markt & Technik Verl. AG", authors.get(0).getFamilyName());
 
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());
-
         assertEquals("Markt & Technik Verl. AG", publishers.get(0).getName());
-
-        assertEquals("010441638", book.getIdentifierValue(Identifier.SID_DNB).orElse(null));
-        assertEquals("85119872", book.getIdentifierValue(Identifier.SID_OCLC).orElse(null));
-
     }
 }

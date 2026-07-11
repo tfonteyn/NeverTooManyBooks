@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
@@ -158,6 +160,7 @@ public class DnbSearchEngine
     private static final String SEARCH_INDEX_NID = "nid";
 
     private static final int CF_008_FREQUENCY = 18;
+    private static final int CF_008_REGULARITY = 19;
     private static final int CF_008_TYPE_OF_CONTINUING_RESOURCE = 21;
 
     /** Concat with the isbn. */
@@ -388,6 +391,11 @@ public class DnbSearchEngine
         final DnbBookParser parser = new DnbBookParser(context, document, book);
         parser.sidDnb();
 
+
+        parser.issn();
+        parseCommonTags(parser);
+
+        // Parse AFTER we parsed the common tags to make sure we get any Series.
         // Specific for magazines
         // Type of continuing resource
         //    # - None of the following
@@ -413,23 +421,29 @@ public class DnbSearchEngine
             final String text = DnbParser.normalise(cf008);
             // sanity check
             if (text.length() == 40) {
-                parseCF008(context, text, book);
+                parseIssnCF008(context, text, book);
             }
         }
-        parser.issn();
-
-        parseCommonTags(parser);
 
         // We don't get an author for magazines, use the publisher if we have one...
+        // URGENT: when the user manually adds/edit this name, it might go
+        //  through the parser again and get mangled up.
         book.getPrimaryPublisher()
-            .ifPresent(p -> book.add(Author.from(p.getName())));
+            .ifPresent(p -> book.add(new Author(p.getName(), null)));
 
         parser.finish(productCode);
     }
 
-    private void parseCF008(@NonNull final Context context,
-                            @NonNull final String text,
-                            @NonNull final Book book) {
+    /**
+     * Parse control field 008; this is only valid for ISSN search.
+     *
+     * @param context Current context
+     * @param text    the 40-char long control field 008
+     * @param book    to update
+     */
+    private void parseIssnCF008(@NonNull final Context context,
+                                @NonNull final CharSequence text,
+                                @NonNull final Book book) {
         switch (text.charAt(CF_008_TYPE_OF_CONTINUING_RESOURCE)) {
             // n - Newspaper
             case 'n': {
@@ -450,8 +464,32 @@ public class DnbSearchEngine
                 break;
             }
         }
+
+        final String title = book.getTitle();
+        // Check if we already have a series with a title identical to the book.
+        // If not, always create one.
+        final Series series = book.getSeries()
+                                  .stream()
+                                  .filter(s -> s.getTitle().equals(title))
+                                  .findFirst()
+                                  .orElseGet(() -> {
+                                      final Series newSeries = Series.from(title);
+                                      book.add(newSeries);
+                                      return newSeries;
+                                  });
+
+        final PublicationFrequency frequency = PublicationFrequency.fromMarc21(
+                text.charAt(CF_008_FREQUENCY),
+                text.charAt(CF_008_REGULARITY));
+        series.setPublicationFrequency(frequency);
+        series.setIdentifierValue(Identifier.SID_ISSN, book.getRawProductCode());
     }
 
+    /**
+     * The tags we always parse for any of the search methods.
+     *
+     * @param parser to use
+     */
     private void parseCommonTags(@NonNull final DnbBookParser parser) {
         parser.identifiers();
         parser.languages();

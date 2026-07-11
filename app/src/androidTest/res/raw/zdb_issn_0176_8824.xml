@@ -5,7 +5,9 @@
     <controlfield tag="003">DE-101</controlfield>
     <controlfield tag="005">20240430230531.0</controlfield>
     <controlfield tag="007">tu</controlfield>
-    <controlfield tag="008">991118d19841996gw u||p|  ||| 0||||1ger c</controlfield>
+    <!-- original had no frequency, added for the test -->
+    <!--    <controlfield tag="008">991118d19841996gw u||p|  ||| 0||||1ger c</controlfield>-->
+    <controlfield tag="008">991118d19841996gw mr|p|  ||| 0||||1ger c</controlfield>
     <datafield tag="015" ind1=" " ind2=" ">
       <subfield code="a">01,A49,0829</subfield>
       <subfield code="2">dnb</subfield>

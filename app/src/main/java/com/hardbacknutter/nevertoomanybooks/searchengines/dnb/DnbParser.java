@@ -36,9 +36,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class DnbParser {
+/**
+ * A MARC21 xml parser, with DNB specific handling.
+ * If we need to parse other source, we'll need to split/subclass this class.
+ */
+class DnbParser {
 
-    // 2026-06-21:
+    // Last updated 2026-06-21.
+    // These are fixed-case/as-is as they came from the SRU official list.
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             // Inline; i.e. as a "(key)value" subfield.
             Map.entry("DE-101", Identifier.SID_DNB),
@@ -100,13 +105,18 @@ public class DnbParser {
     private static final Pattern DESC_PREFIX_PATTERN =
             Pattern.compile("(?i)^(Inhalt|Rezension|Zusammenfassung):\\s*");
 
-    // Matches an optional date/year, a mandatory hyphen, and an optional date/year.
-    // YYYY-YYYY
-    // DD.MM.YYYY-DD.MM.YYYY
-    // with either of the pre-dash, or post-dash parts missing.
-    // Group 1 = Birth, Group 2 = Death
+    /**
+     * Matches an optional {@code YYYY} or {@code DD.MM.YYYY}.
+     */
+    private static final String DATE_REGEX = "([0-9]{4}|[0-9]{2}\\.[0-9]{2}\\.[0-9]{4})?";
+    /**
+     * Matches an optional date/year, a mandatory hyphen, and an optional date/year.
+     * with either of the pre-dash, or post-dash parts missing.
+     * Group 1 = Birth
+     * Group 2 = Death
+     */
     private static final Pattern LIFESPAN_PATTERN = Pattern.compile(
-            "^([0-9]{4}|[0-9]{2}\\.[0-9]{2}\\.[0-9]{4})?-([0-9]{4}|[0-9]{2}\\.[0-9]{2}\\.[0-9]{4})?$");
+            "^" + DATE_REGEX + "-" + DATE_REGEX + "$");
 
     private static final String SUBFIELD_CODE_0 = "subfield[code='0']";
     private static final String SUBFIELD_CODE_2 = "subfield[code='2']";
@@ -145,8 +155,9 @@ public class DnbParser {
      * @return clean string
      */
     @NonNull
-    public static String normalise(@NonNull final Element element) {
-        final String s = CONTROL_CHARACTERS_PATTERN.matcher(element.wholeText()).replaceAll("");
+    static String normalise(@NonNull final Element element) {
+        final String s = CONTROL_CHARACTERS_PATTERN.matcher(element.wholeText())
+                                                   .replaceAll("");
         return Normalizer.normalize(s, Normalizer.Form.NFC)
                          .strip();
     }
@@ -230,7 +241,7 @@ public class DnbParser {
      * @return ean-13
      */
     @Nullable
-    public String ean13() {
+    String ean13() {
         // 024 - Other Standard Identifier (R)
         // 3 - International Article Number
         // $a - Standard number or code (NR)
@@ -245,15 +256,14 @@ public class DnbParser {
     /**
      * Parse tags 035 and 024.
      * <p>
-     * Identifiers from tag 035 are <strong>always added</strong>.
-     * The ones we recognise are mapped.
+     * Identifiers from tag 035 are <strong>always added/mapped</strong>.
      * <p>
      * Tag 024 identifiers are only added/mapped if we recognise them.
      *
      * @return list; may contain duplicates.
      */
     @NonNull
-    public List<Identifier.Value> identifiers() {
+    List<Identifier.Value> identifiers() {
         // 035 - System Control Number (R)
         final List<Element> fields = document.select("datafield[tag='035'] > subfield[code='a']");
 
@@ -271,7 +281,7 @@ public class DnbParser {
      * @return list
      */
     @NonNull
-    public List<Author> authors() {
+    List<Author> authors() {
         // 100 - Main Entry-Personal Name (NR)
         // 700 - Added Entry-Personal Name (R)
         return author(document.select("datafield[tag='100'], datafield[tag='700']"));
@@ -285,7 +295,7 @@ public class DnbParser {
      * @return list
      */
     @NonNull
-    public List<Author> author(@NonNull final Collection<Element> tags) {
+    List<Author> author(@NonNull final Collection<Element> tags) {
         final List<Author> authors = new ArrayList<>();
         for (final Element tag : tags) {
             // $a - Personal name (NR)
@@ -339,7 +349,7 @@ public class DnbParser {
      *         Neither will be {@code null}.
      */
     @NonNull
-    public Pair<List<Publisher>, PartialDate> publishers() {
+    Pair<List<Publisher>, PartialDate> publishers() {
         final List<Publisher> publishers = new ArrayList<>();
         PartialDate date = PartialDate.NOT_SET;
 
@@ -410,7 +420,7 @@ public class DnbParser {
      * @return list
      */
     @NonNull
-    public List<Series> series() {
+    List<Series> series() {
         final List<Series> result = parseSeriesAddedTags();
 
         // If we got what we wanted from either or both, we're done
@@ -446,7 +456,7 @@ public class DnbParser {
      * @return description
      */
     @Nullable
-    public String description() {
+    String description() {
         // 520 - Summary, Etc. (R)
         // $a - Summary, etc. (NR)
         final Elements tags = document.select("datafield[tag='520'] > subfield[code='a']");
@@ -473,7 +483,7 @@ public class DnbParser {
      * @return title
      */
     @Nullable
-    public String title(@NonNull final Context context) {
+    String title(@NonNull final Context context) {
         // 245 - Title Statement (NR)
         final Element tag = document.selectFirst("datafield[tag='245']");
         if (tag == null) {
@@ -501,7 +511,7 @@ public class DnbParser {
      * @return original title
      */
     @Nullable
-    public String originalTitle() {
+    String originalTitle() {
         // 240 - Uniform Title (NR)
         // $a - Uniform title (NR)
         final Element tag = document.selectFirst("datafield[tag='240'] > subfield[code='a']");
@@ -517,7 +527,7 @@ public class DnbParser {
      * @return genre-tags; can be empty
      */
     @NonNull
-    public Set<Tag> genreTags() {
+    Set<Tag> genreTags() {
         // 655 - Index Term-Genre/Form (R)
         final Elements tags = document.select("datafield[tag='655']");
         for (final Element tag : tags) {
@@ -545,7 +555,6 @@ public class DnbParser {
 
         return Set.of();
     }
-
 
 
     /**
@@ -761,7 +770,10 @@ public class DnbParser {
 
     /**
      * Collect the identifiers from the given elements.
-     * Identifiers are expected to be formatted "(source)identifier"
+     * Identifiers are expected to be formatted "(source)identifier".
+     * <p>
+     * All keys are accepted (after optional filtering) as these will
+     * represent 'official' (non-commercial) sources .
      *
      * @param list       to parse
      * @param filterKeys {@code null} to accept all keys,
@@ -783,7 +795,7 @@ public class DnbParser {
 
                 if (key != null && value != null
                     && (filterKeys == null || filterKeys.contains(key))) {
-
+                    // Accept all (filtered) keys
                     final String mappedKey = IDENTIFIER_MAPPING.getOrDefault(key, key);
                     //noinspection DataFlowIssue
                     result.add(new Identifier.Value(mappedKey, value));
@@ -798,6 +810,7 @@ public class DnbParser {
      * Parse tag 024.
      * <p>
      * Tag 024 identifiers are only added if we can map them. Others are dropped.
+     * We're doing this because there is no official SRU list of the ones we might see.
      *
      * @return list
      */
@@ -812,6 +825,7 @@ public class DnbParser {
             // $2 - Source of number or code (NR)
             final Element source = df.selectFirst(SUBFIELD_CODE_2);
             if (source != null) {
+                // Filter on listed keys only.
                 final String key = IDENTIFIER_MAPPING.get(normalise(source));
                 if (key != null) {
                     // $a - Standard number or code (NR)
@@ -828,5 +842,4 @@ public class DnbParser {
 
         return ivs;
     }
-
 }

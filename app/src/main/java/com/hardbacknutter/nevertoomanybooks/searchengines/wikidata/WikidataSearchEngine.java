@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.wikidata;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.Keep;
@@ -42,9 +41,12 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -58,6 +60,12 @@ import com.hardbacknutter.org.json.JSONObject;
 
 import okhttp3.OkHttpClient;
 
+/**
+ * The structured database of Wikipedia.
+ *
+ * @see <a href="https://www.wikidata.org/wiki/Wikidata:Database_reports/List_of_properties/all">
+ *         All Wikidata claim number - WARNING: LONG LIST</a>
+ */
 public class WikidataSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIssn {
@@ -142,7 +150,8 @@ public class WikidataSearchEngine
     // json value element
     private static final String VALUE = "value";
 
-    // 2026-06-21
+    // Last updated: 2026-06-21
+    // Keys are always uppercase, no need to change case
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             Map.entry("P179", Identifier.SID_WIKIDATA),
 
@@ -273,7 +282,7 @@ public class WikidataSearchEngine
             document = new JSONObject(response);
 
             if (!isCancelled()) {
-                parseIssn(context, document, productCode, book);
+                parseFromIssn(context, document, productCode, book);
             }
 
         } catch (@NonNull final IOException | JSONException e) {
@@ -285,10 +294,10 @@ public class WikidataSearchEngine
 
 
     @VisibleForTesting
-    void parseIssn(@NonNull final Context context,
-                   @NonNull final JSONObject document,
-                   @NonNull final ProductCode productCode,
-                   @NonNull final Book book)
+    void parseFromIssn(@NonNull final Context context,
+                       @NonNull final JSONObject document,
+                       @NonNull final ProductCode productCode,
+                       @NonNull final Book book)
             throws JSONException {
 
         // we don't get it from the site, just add it
@@ -331,18 +340,38 @@ public class WikidataSearchEngine
             }
         }
 
-        parsePubAmountAndUnit(context, item, book);
+        // Always create a Series with the same title.
+        // As far as we know, there is no volume number available
+        // as Wikidata is returning the ISSN series data only.
+        final Series series = Series.from(book.getTitle());
+        final PublicationFrequency frequency = parsePubAmountAndUnit(item);
+        series.setPublicationFrequency(frequency);
+        series.setIdentifierValue(Identifier.SID_ISSN, book.getRawProductCode());
+        book.add(series);
 
         o = item.optJSONObject("identifiers", null);
         if (o != null) {
             parseIdentifiers(o, ivs);
         }
 
+        // We don't get an author for magazines, use the publisher if we have one...
+        // URGENT: when the user manually adds/edit this name, it might go
+        //  through the parser again and get mangled up.
+        book.getPrimaryPublisher()
+            .ifPresent(p -> book.add(new Author(p.getName(), null)));
+
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
     }
 
+    /**
+     * Parse the identifiers. We only add/map them when we recognise them,
+     * because wikidata can contains a huge amount of them; most of which are not useful for us.
+     *
+     * @param o   to parse
+     * @param ivs to update
+     */
     private void parseIdentifiers(@NonNull final JSONObject o,
                                   @NonNull final List<Identifier.Value> ivs) {
         final String s = o.optString(VALUE, null);
@@ -356,89 +385,85 @@ public class WikidataSearchEngine
             final String[] id = entry.split(":");
             // paranoia
             if (id.length == 2) {
-                final String key = IDENTIFIER_MAPPING.getOrDefault(id[0], id[0]);
-                if (!keys.contains(key)) {
+                // Filter on listed keys only.
+                final String key = IDENTIFIER_MAPPING.get(id[0]);
+                if (key != null && !keys.contains(key)) {
                     keys.add(key);
-                    //noinspection DataFlowIssue
                     ivs.add(new Identifier.Value(key, id[1]));
                 }
             }
         }
     }
 
-    private void parsePubAmountAndUnit(@NonNull final Context context,
-                                       @NonNull final JSONObject item,
-                                       @NonNull final Book book) {
-
-        final JSONObject pubAmount = item.optJSONObject("pubAmount", null);
+    @NonNull
+    private PublicationFrequency parsePubAmountAndUnit(@NonNull final JSONObject item) {
         final JSONObject pubUnit = item.optJSONObject("pubUnitQ", null);
-        if (pubAmount == null && pubUnit == null) {
-            return;
+        if (pubUnit == null) {
+            return new PublicationFrequency(PublicationFrequency.Type.Unknown, 0, false);
         }
 
+        final String q = getQ(pubUnit.optString(VALUE));
+        if (q == null) {
+            return new PublicationFrequency(PublicationFrequency.Type.Unknown, 0, false);
+        }
 
-        int amount = 0;
-        if (pubAmount != null) {
-            final String pubAmountType = pubAmount.optString("type");
-            // sanity check before we read the value as a float
-            if ("literal".equals(pubAmountType)) {
-                // The amount value can be a float, e.g. "0.5" to indicate twice daily.
-                // Presumably, other intervals can also be floats.
-                final float f = pubAmount.optFloat(VALUE, 0);
-                if (f > 0.0 && f < 1.0) {
-                    // Flip the fraction so we get an actual interval
-                    amount = (int) (1 / f);
-                } else {
-                    amount = (int) f;
-                }
+        // Default to 1 if pubAmount should be missing
+        int amount = 1;
+        boolean isFractional = false;
+
+        final JSONObject pubAmount = item.optJSONObject("pubAmount", null);
+        if (pubAmount != null && "literal".equals(pubAmount.optString("type"))) {
+            final float f = pubAmount.optFloat(VALUE, 0);
+            if (f > 0.0f && f < 1.0f) {
+                // e.g., 0.5 days means twice a day. 
+                // We flip it to get 2, and flag it as being fractional
+                amount = (int) (1 / f);
+                isFractional = true;
+            } else if (f >= 1.0f) {
+                amount = (int) f;
             }
         }
 
-        if (pubUnit != null) {
-            final Resources res = context.getResources();
-
-            final String q = getQ(pubUnit.optString(VALUE));
-            if (q != null) {
-                final String desc;
-                switch (q) {
-                    case "Q573":
-                        desc = res.getQuantityString(R.plurals.publication_frequency_daily,
-                                                     amount, amount);
-                        break;
-                    case "Q23387":
-                        desc = res.getQuantityString(R.plurals.publication_frequency_weekly,
-                                                     amount, amount);
-                        break;
-                    case "Q5151":
-                        desc = res.getQuantityString(R.plurals.publication_frequency_monthly,
-                                                     amount, amount);
-                        break;
-                    case "Q577":
-                        desc = res.getQuantityString(R.plurals.publication_frequency_yearly,
-                                                     amount, amount);
-                        break;
-                    case "Q2993680":
-                        // fortnight
-                        desc = res.getQuantityString(R.plurals.publication_frequency_monthly,
-                                                     2, 2);
-                        break;
-                    case "Q1643308":
-                        // quarter
-                        desc = res.getQuantityString(R.plurals.publication_frequency_yearly,
-                                                     4, 4);
-                        break;
-                    case "Q3955006":
-                        // semester
-                        desc = res.getQuantityString(R.plurals.publication_frequency_yearly,
-                                                     2, 2);
-                        break;
-                    default:
-                        // in theory we will never get here, as the above cases
-                        // are supposed to be the full/limited list for P2896
-                        return;
-                }
-                //URGENT: not a good idea....
-                book.setDescription(desc);
+        switch (q) {
+            case "Q573": {
+                // Day
+                // If it was a flipped fraction (e.g., 0.5), it means "2 times a day"
+                return new PublicationFrequency(PublicationFrequency.Type.Daily,
+                                                amount, isFractional);
+            }
+            case "Q23387": {
+                // Week
+                return new PublicationFrequency(PublicationFrequency.Type.Weekly,
+                                                amount, isFractional);
+            }
+            case "Q5151": {
+                // Month
+                return new PublicationFrequency(PublicationFrequency.Type.Monthly,
+                                                amount, isFractional);
+            }
+            case "Q577": {
+                // Year
+                return new PublicationFrequency(PublicationFrequency.Type.Yearly,
+                                                amount, isFractional);
+            }
+            case "Q2993680": {
+                // Fortnight (Every 2 Weeks)
+                return new PublicationFrequency(PublicationFrequency.Type.Weekly,
+                                                amount * 2, false);
+            }
+            case "Q1643308": {
+                // Quarter (Every 3 Months)
+                return new PublicationFrequency(PublicationFrequency.Type.Monthly,
+                                                amount * 3, false);
+            }
+            case "Q3955006": {
+                // Semester / Half-year (Every 6 Months)
+                return new PublicationFrequency(PublicationFrequency.Type.Monthly,
+                                                amount * 6, false);
+            }
+            default: {
+                return new PublicationFrequency(PublicationFrequency.Type.Unknown,
+                                                0, false);
             }
         }
     }

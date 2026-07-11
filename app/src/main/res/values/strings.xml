@@ -1641,6 +1641,67 @@
     <!-- First publication month.  Translations should be abbreviated and be more or less the same text length. -->
     <string name="lbl_date_first_publication_month">First Pub. Month</string>
 
+    <!-- Publication frequentie. Typically used for magazines. -->
+    <string name="freq_unknown">Unknown</string>
+
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: the interval in days.
+     -->
+    <plurals name="freq_interval_days">
+        <item quantity="one">Daily</item>
+        <item quantity="other">Every %1$d days</item>
+    </plurals>
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: the interval in weeks.
+     -->
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Weekly</item>
+        <item quantity="other">Every %1$d weeks</item>
+    </plurals>
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: the interval in months.
+    -->
+    <plurals name="freq_interval_months">
+        <item quantity="one">Monthly</item>
+        <item quantity="other">Every %1$d months</item>
+    </plurals>
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: the interval in years.
+    -->
+    <plurals name="freq_interval_years">
+        <item quantity="one">Yearly</item>
+        <item quantity="other">Every %1$d years</item>
+    </plurals>
+
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: how many times per day.
+    -->
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Daily</item>
+        <item quantity="other">%1$d daily</item>
+    </plurals>
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: how many times per week.
+    -->
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Weekly</item>
+        <item quantity="other">%1$d weekly</item>
+    </plurals>
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: how many times per month.
+    -->
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Monthly</item>
+        <item quantity="other">%1$d monthly</item>
+    </plurals>
+    <!-- Publication frequentie. Typically used for magazines.
+         Param 1: how many times per year.
+    -->
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Yearly</item>
+        <item quantity="other">%1$d yearly</item>
+    </plurals>
+
     <!-- Author birthdate -->
     <string name="lbl_date_born">Born</string>
     <!-- Author death date -->
@@ -2532,27 +2593,4 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="vldt_exact_length_required"
             translatable="false">Empty value or exact length of %1$d characters required.</string>
-
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <plurals name="publication_frequency_daily"
-             translatable="false">
-        <item quantity="one">Daily</item>
-        <item quantity="other">%1$s daily</item>
-    </plurals>
-    <plurals name="publication_frequency_weekly"
-             translatable="false">
-        <item quantity="one">Weekly</item>
-        <item quantity="other">%1$s weekly</item>
-    </plurals>
-    <plurals name="publication_frequency_monthly"
-             translatable="false">
-        <item quantity="one">Monthly</item>
-        <item quantity="other">%1$s monthly</item>
-    </plurals>
-    <plurals name="publication_frequency_yearly"
-             translatable="false">
-        <item quantity="one">Yearly</item>
-        <item quantity="other">%1$s yearly</item>
-    </plurals>
-
 </resources>
