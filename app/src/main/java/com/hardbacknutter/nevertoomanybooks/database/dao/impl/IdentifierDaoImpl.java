@@ -246,7 +246,7 @@ public class IdentifierDaoImpl
 
             for (final Identifier identifier : identifierList) {
                 // do we have this Key/EntityType?
-                stmtFindByKey.bindString(1, identifier.getKey());
+                stmtFindByKey.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
                 stmtFindByKey.bindLong(2, identifier.getEntityType().getId());
                 iId = stmtFindByKey.simpleQueryForLongOrZero();
                 if (iId == 0) {
@@ -277,8 +277,10 @@ public class IdentifierDaoImpl
     @NonNull
     public Optional<Identifier> find(@NonNull final String key,
                                      @NonNull final Identifier.EntityType entityType) {
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_KEY_AND_ENTITY_TYPE,
-                                         new String[]{key, String.valueOf(entityType.getId())})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_KEY_AND_ENTITY_TYPE, new String[]{
+                key.toLowerCase(Locale.ENGLISH),
+                String.valueOf(entityType.getId())})) {
+
             if (cursor.moveToFirst()) {
                 final CursorRow rowData = new CursorRow(cursor);
                 return Optional.of(new Identifier(rowData.getLong(DBKey.PK_ID), rowData));
@@ -325,7 +327,7 @@ public class IdentifierDaoImpl
         final List<Identifier.Value> result =
                 list.stream()
                     .filter(this::isValidIdentifier)
-                    .filter(iv -> keysFound.add(iv.getKey()))
+                    .filter(iv -> keysFound.add(iv.getKey().toLowerCase(Locale.ENGLISH)))
                     .collect(Collectors.toList());
 
         if (list.equals(result)) {

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -183,11 +184,12 @@ public class Identifier
      * Constructor to add unknown Identifiers as found in searches.
      *
      * @param key        a key(word) for this Identifier
+     *                   Will be converted to lowercase.
      * @param entityType to set
      */
     public Identifier(@NonNull final String key,
                       @NonNull final EntityType entityType) {
-        this.key = key;
+        this.key = key.toLowerCase(Locale.ENGLISH);
         this.entityType = entityType;
 
         // adding unknown identifiers is always done as a string
@@ -215,8 +217,7 @@ public class Identifier
      * @param entityType    to set
      * @param type          Text/Number
      * @param key           a key(word) for this Identifier. e.g. "oclc"
-     *                      Should be lowercase.
-     *                      The UI editor does enforce lowercase.
+     *                      Will be converted to lowercase.
      * @param name          a short name
      * @param siteUrl       url to the main website page
      * @param uri           a url with a {@code %s%} placeholder for the sid,
@@ -232,7 +233,7 @@ public class Identifier
                       @Nullable final String wikidataClaim) {
         this.entityType = entityType;
         this.type = type;
-        this.key = key;
+        this.key = key.toLowerCase(Locale.ENGLISH);
         this.name = name;
 
         this.siteUrl = siteUrl;
@@ -758,11 +759,12 @@ public class Identifier
          * Constructor.
          *
          * @param key Identifier
+         *            Will be converted to lowercase.
          * @param sid value
          */
         public Value(@NonNull final String key,
                      @NonNull final String sid) {
-            this.key = key;
+            this.key = key.toLowerCase(Locale.ENGLISH);;
             this.sid = sid;
         }
 
