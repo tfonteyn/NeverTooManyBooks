@@ -1,0 +1,101 @@
+{
+    "@type": [
+        "Book",
+        "Product"
+    ],
+    "@id": "https://www.bol.com/#9300000267100461",
+    "name": "De wees van Westerbeek",
+    "description": "De wees van Westerbeek van Patrica Snel is een op feiten gebaseerde historische roman over Riekje, die in 1818 in Frederiksoord een geheim ontdekt dat haar toekomst en vrijheid bedreigt. <br /> <br /> <p>De historische roman De wees van Westerbeek van Patrica Snel speelt zich af in Frederiksoord, november 1818. De zeventienjarige Riekje arriveert na een zware reis in het net geopende kolonistendorp, waar een beter leven lonkt. Al snel raakt ze innig bevriend met het weesmeisje Geeske. Terwijl Riekje hard moet werken en zich probeert los te worstelen uit de greep van haar dominante moeder, vertrouwt de eigenzinnige Geeske op zichzelf en haar bijzondere gave.<br /><br />Directeur Benjamin van den Bosch probeert ondertussen het hoofd te bieden aan de morrende kolonisten, die gebukt gaan onder zware landarbeid, voedseltekort, inperking van hun vrijheden en strenge regels. Terwijl de kolonisten een opstand voorbereiden doet Riekje een schokkende ontdekking. Samen met Geeske bedenkt ze een plan dat grote gevolgen zal hebben voor hun toekomst. Durven ze te kiezen voor vrijheid?<br /><br />De wees van Westerbeek is een op feiten gebaseerde historische roman over vriendschap, moed en de strijd om vrijheid in de jonge Koloniën van Weldadigheid. Bestsellerauteur Patrica Snel, eerder bekend van De vondeling van Veenhuizen, brengt deze geschiedenis tot leven in een spannend en ontroerend verhaal. Voor lezers van Simone van der Vlugt en Het pauperparadijs.<br /><br />Over De vondeling van Veenhuizen:<br /><br />'Patricia Snel weet hart en hoofd te raken in dit ontroerende en spannende historische verhaal.' ? Susan Smit<br /><br />'Een adembenemende roman.' ? Elegance<br /><br />'Patricia Snel gaf duizenden weeskinderen uit \"de hel\" van Veenhuizen een gezicht.' ? de Volkskrant<br /><br />'Door haar manier van vertellen krijg je het gevoel dat je zelf in die tijd terecht bent gekomen. Met De wees van Westerbeek en De vondeling van Veenhuizen verbindt Patricia Snel op een unieke manier beide UNESCO Werelderfgoed-dorpen met op feite gebaseerde verhalen. Beide romans zijn spannend, ontroerend én prachtig geschreven.' - Alfred Geerts, historicus en curator Museum De Proefkolonie</p>",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://media.s-bol.com/YKA6W945xZ2Y/PZmW8ly/781x1200.jpg",
+        "width": 781,
+        "height": 1200
+    },
+    "url": "https://www.bol.com/be/nl/f/de-wees-van-westerbeek/9300000246161649/",
+    "inLanguage": "nl",
+    "bookEdition": "1",
+    "author": {
+        "@type": "Person",
+        "name": "Patricia Snel",
+        "url": "https://www.bol.com/be/nl/b/patricia-snel/4080111/"
+    },
+    "publisher": {
+        "@type": "Brand",
+        "name": "Xander Uitgevers B.V.",
+        "url": "https://www.bol.com/be/nl/b/xander-uitgevers-b-v/7148450/"
+    },
+    "workExample": [
+        {
+            "@type": "Book",
+            "name": "De wees van Westerbeek",
+            "url": "https://www.bol.com/be/nl/p/de-wees-van-westerbeek/9300000267100461/",
+            "bookFormat": "https://schema.org/Paperback",
+            "isbn": "9789401627580",
+            "offers": {
+                "@type": "Offer",
+                "price": "22.99",
+                "priceCurrency": "EUR",
+                "itemCondition": "https://schema.org/NewCondition",
+                "availability": "InStock",
+                "seller": {
+                    "@type": "Organization",
+                    "name": "bol"
+                }
+            },
+            "datePublished": "2026-06-16"
+        },
+        {
+            "@type": "Book",
+            "name": "De wees van Westerbeek",
+            "@description": "<p>De historische roman De wees van Westerbeek van Patrica Snel speelt zich af in Frederiksoord, november 1818. De zeventienjarige Riekje arriveert na een zware reis in het net geopende kolonistendorp, waar een beter leven lonkt. Al snel raakt ze innig bevriend met het weesmeisje Geeske. Terwijl Riekje hard moet werken en zich probeert los te worstelen uit de greep van haar dominante moeder, vertrouwt de eigenzinnige Geeske op zichzelf en haar bijzondere gave.Directeur Benjamin van den Bosch probeert ondertussen het hoofd te bieden aan de morrende kolonisten, die gebukt gaan onder zware landarbeid, voedseltekort, inperking van hun vrijheden en strenge regels. Terwijl de kolonisten een opstand voorbereiden doet Riekje een schokkende ontdekking. Samen met Geeske bedenkt ze een plan dat grote gevolgen zal hebben voor hun toekomst. Durven ze te kiezen voor vrijheid?De wees van Westerbeek is een op feiten gebaseerde historische roman over vriendschap, moed en de strijd om vrijheid in de jonge Koloniën van Weldadigheid. Bestsellerauteur Patrica Snel, eerder bekend van De vondeling van Veenhuizen, brengt deze geschiedenis tot leven in een spannend en ontroerend verhaal. Voor lezers van Simone van der Vlugt en Het pauperparadijs.Over De vondeling van Veenhuizen:'Patricia Snel weet hart en hoofd te raken in dit ontroerende en spannende historische verhaal.' ? Susan Smit'Een adembenemende roman.' ? Elegance'Patricia Snel gaf duizenden weeskinderen uit \"de hel\" van Veenhuizen een gezicht.' ? de Volkskrant'Door haar manier van vertellen krijg je het gevoel dat je zelf in die tijd terecht bent gekomen. Met De wees van Westerbeek en De vondeling van Veenhuizen verbindt Patricia Snel op een unieke manier beide UNESCO Werelderfgoed-dorpen met op feite gebaseerde verhalen. Beide romans zijn spannend, ontroerend én prachtig geschreven.' - Alfred Geerts, historicus en curator Museum De Proefkolonie</p>",
+            "url": "https://www.bol.com/be/nl/p/de-wees-van-westerbeek/9300000268322739/",
+            "bookFormat": "https://schema.org/EBook",
+            "isbn": "9789401627597",
+            "numberOfPages": "253",
+            "potentialAction": {
+                "@type": "ReadAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "actionPlatform": [
+                        "https://schema.org/DesktopWebPlatform",
+                        "https://schema.org/MobileWebPlatform"
+                    ]
+                },
+                "expectsAcceptanceOf": {
+                    "@type": "Offer",
+                    "price": "12.99",
+                    "priceCurrency": "EUR",
+                    "itemCondition": "https://schema.org/NewCondition",
+                    "availability": "InStock"
+                }
+            },
+            "datePublished": "2026-06-16"
+        },
+        {
+            "@type": "Audiobook",
+            "name": "De wees van Westerbeek",
+            "@description": "<p>De historische roman De wees van Westerbeek van Patrica Snel speelt zich af in Frederiksoord, november 1818. De zeventienjarige Riekje arriveert na een zware reis in het net geopende kolonistendorp, waar een beter leven lonkt. Al snel raakt ze innig bevriend met het weesmeisje Geeske. Terwijl Riekje hard moet werken en zich probeert los te worstelen uit de greep van haar dominante moeder, vertrouwt de eigenzinnige Geeske op zichzelf en haar bijzondere gave.</p> <p>Directeur Benjamin van den Bosch probeert ondertussen het hoofd te bieden aan de morrende kolonisten, die gebukt gaan onder zware landarbeid, voedseltekort, inperking van hun vrijheden en strenge regels. Terwijl de kolonisten een opstand voorbereiden doet Riekje een schokkende ontdekking. Samen met Geeske bedenkt ze een plan dat grote gevolgen zal hebben voor hun toekomst. Durven ze te kiezen voor vrijheid?</p> <p>De wees van Westerbeek is een op feiten gebaseerde historische roman over vriendschap, moed en de strijd om vrijheid in de jonge Koloniën van Weldadigheid. Bestsellerauteur Patrica Snel, eerder bekend van De vondeling van Veenhuizen, brengt deze geschiedenis tot leven in een spannend en ontroerend verhaal. Voor lezers van Simone van der Vlugt en Het pauperparadijs.</p> <p>Over De vondeling van Veenhuizen:</p> <p>'Patricia Snel weet hart en hoofd te raken in dit ontroerende en spannende historische verhaal.' ? Susan Smit</p> <p>'Een adembenemende roman.' ? Elegance</p> <p>'Patricia Snel gaf duizenden weeskinderen uit \"de hel\" van Veenhuizen een gezicht.' ? de Volkskrant</p> <p>'Door haar manier van vertellen krijg je het gevoel dat je zelf in die tijd terecht bent gekomen. Met De wees van Westerbeek en De vondeling van Veenhuizen verbindt Patricia Snel op een unieke manier beide UNESCO Werelderfgoed-dorpen met op feite gebaseerde verhalen. Beide romans zijn spannend, ontroerend én prachtig geschreven.' - Alfred Geerts, historicus en curator Museum De Proefkolonie</p>",
+            "url": "https://www.bol.com/be/nl/p/de-wees-van-westerbeek/9300000271341294/",
+            "bookFormat": "https://schema.org/AudiobookFormat",
+            "isbn": "9789401627603",
+            "offers": {
+                "@type": "Offer",
+                "price": "14.99",
+                "priceCurrency": "EUR",
+                "itemCondition": "https://schema.org/NewCondition",
+                "availability": "InStock",
+                "seller": {
+                    "@type": "Organization",
+                    "name": "bol"
+                }
+            },
+            "datePublished": "2026-06-16"
+        }
+    ],
+    "genre": [
+        "Literatuur & Romans",
+        "Historische romans"
+    ],
+    "@context": "https://schema.org/"
+}
