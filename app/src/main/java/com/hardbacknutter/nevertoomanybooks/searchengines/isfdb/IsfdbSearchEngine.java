@@ -1319,7 +1319,7 @@ public class IsfdbSearchEngine
                     author.setIdentifierValue(Identifier.SID_ISFDB, siId);
                 }
             }
-            addAuthor(author, type, book);
+            addAuthor(author, type, book, false);
         }
     }
 

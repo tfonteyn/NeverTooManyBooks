@@ -878,7 +878,7 @@ public class AmazonSearchEngine
                         }
                     }
 
-                    addAuthor(author, type, book);
+                    addAuthor(author, type, book, false);
                 }
             }
         }

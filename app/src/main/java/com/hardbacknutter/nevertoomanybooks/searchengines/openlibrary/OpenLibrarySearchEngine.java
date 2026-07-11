@@ -868,13 +868,13 @@ public class OpenLibrarySearchEngine
             // remove "by " from the start
             if (s.startsWith("by ") && s.length() > 3) {
                 s = s.substring(3);
-                addAuthor(Author.from(s), AuthorRole.UNKNOWN, book);
+                addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
 
             } else if (s.contains(",")) {
                 // only grab the part before a comma
                 final String[] split = s.split(",");
                 if (split.length > 0) {
-                    addAuthor(Author.from(split[0]), AuthorRole.UNKNOWN, book);
+                    addAuthor(Author.from(split[0]), AuthorRole.UNKNOWN, book, false);
                 }
             }
         }
@@ -1008,7 +1008,7 @@ public class OpenLibrarySearchEngine
         final JSONObject document = new JSONObject(response);
         final Author author = authorParser.parse(context, document);
         if (author != null) {
-            addAuthor(author, AuthorRole.UNKNOWN, book);
+            addAuthor(author, AuthorRole.UNKNOWN, book, false);
         }
     }
 
@@ -1028,7 +1028,7 @@ public class OpenLibrarySearchEngine
                     } else {
                         type = AuthorRole.UNKNOWN;
                     }
-                    addAuthor(author, type, book);
+                    addAuthor(author, type, book, false);
                 }
             }
         }

@@ -775,7 +775,7 @@ public class DatabazeKnihSearchEngine
                 }
             }
         }
-        addAuthor(author, type, book);
+        addAuthor(author, type, book, false);
     }
 
     @Nullable

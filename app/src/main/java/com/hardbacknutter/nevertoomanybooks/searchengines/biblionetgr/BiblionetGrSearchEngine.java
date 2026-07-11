@@ -420,7 +420,7 @@ public class BiblionetGrSearchEngine
                         final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
                             final Author author = new Author(s, null);
-                            addAuthor(author, AuthorRole.UNKNOWN, book);
+                            addAuthor(author, AuthorRole.UNKNOWN, book, false);
                             // note that NO specific organization author type was created,
                             // The type is really the role of the author for specific book.
                             // Being an organization is an attribute of the author independent
@@ -474,7 +474,7 @@ public class BiblionetGrSearchEngine
           .map(SearchEngineUtils::cleanName)
           .filter(name -> !name.isBlank())
           .map(Author::from)
-          .forEach(a -> addAuthor(a, type, book));
+          .forEach(a -> addAuthor(a, type, book, false));
     }
 
     private void processDetails(@NonNull final Context context,

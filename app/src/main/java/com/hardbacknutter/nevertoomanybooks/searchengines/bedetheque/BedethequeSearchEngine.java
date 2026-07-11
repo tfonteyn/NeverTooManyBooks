@@ -907,12 +907,12 @@ public class BedethequeSearchEngine
         switch (names) {
             case "Indéterminé": {
                 final Author author = Author.createUnknownAuthor(context);
-                addAuthor(author, role, book);
+                addAuthor(author, role, book, false);
                 break;
             }
             case "Anonyme": {
                 final Author author = new Author(context.getString(R.string.anonymous_author), "");
-                addAuthor(author, role, book);
+                addAuthor(author, role, book, false);
                 break;
             }
             case "Art Book":
@@ -928,7 +928,7 @@ public class BedethequeSearchEngine
                     if (sid != null) {
                         author.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
                     }
-                    addAuthor(author, role, book);
+                    addAuthor(author, role, book, false);
                 }
                 break;
             }

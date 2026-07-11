@@ -329,7 +329,7 @@ class IsfdbPublicationListHandler
                 case XML_AUTHOR: {
                     if (inAuthors) {
                         final String s = SearchEngineUtils.cleanName(builder.toString());
-                        searchEngine.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book);
+                        searchEngine.addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
                     }
                     break;
                 }
@@ -420,7 +420,7 @@ class IsfdbPublicationListHandler
                 case XML_ARTIST: {
                     if (inCoverArtists) {
                         final String s = SearchEngineUtils.cleanName(builder.toString());
-                        searchEngine.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book);
+                        searchEngine.addAuthor(Author.from(s), AuthorRole.COVER_ARTIST, book, false);
                     }
                     break;
                 }

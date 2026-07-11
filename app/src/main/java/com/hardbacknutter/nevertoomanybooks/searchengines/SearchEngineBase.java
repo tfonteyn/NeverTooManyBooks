@@ -511,10 +511,14 @@ public abstract class SearchEngineBase
      * @param currentAuthor     to add
      * @param currentAuthorRole role
      * @param book              Bundle to update
+     * @param addAsFirst        set to {@code true} if new ones should
+     *                          be added at the top of the list.
+     *                          Otherwise, they are appended as normal.
      */
     public void addAuthor(@NonNull final Author currentAuthor,
                           @AuthorRole.Role final int currentAuthorRole,
-                          @NonNull final Book book) {
+                          @NonNull final Book book,
+                          final boolean addAsFirst) {
         boolean add = true;
         // check if already present
         for (final Author author : book.getAuthors()) {
@@ -538,7 +542,11 @@ public abstract class SearchEngineBase
 
         if (add) {
             currentAuthor.setRole(currentAuthorRole);
-            book.add(currentAuthor);
+            if (addAsFirst) {
+                book.getAuthors().add(0, currentAuthor);
+            } else {
+                book.add(currentAuthor);
+            }
         }
     }
 

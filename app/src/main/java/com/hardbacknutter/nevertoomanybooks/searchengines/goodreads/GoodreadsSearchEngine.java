@@ -706,7 +706,7 @@ public class GoodreadsSearchEngine
         } else {
             author.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
         }
-        addAuthor(author, role, book);
+        addAuthor(author, role, book, false);
     }
 
     private void parseSeries(@NonNull final JSONObject apolloState,

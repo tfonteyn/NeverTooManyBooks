@@ -452,7 +452,7 @@ class KbNlBookHandler
                 }
             }
 
-            searchEngine.addAuthor(author, type, book);
+            searchEngine.addAuthor(author, type, book, false);
         }
     }
 

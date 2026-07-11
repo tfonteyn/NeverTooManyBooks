@@ -1006,7 +1006,7 @@ public class StripInfoSearchEngine
                 }
             }
 
-            addAuthor(author, type, book);
+            addAuthor(author, type, book, false);
         }
         return 1;
     }

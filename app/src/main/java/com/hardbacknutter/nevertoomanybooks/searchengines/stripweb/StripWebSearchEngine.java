@@ -625,7 +625,7 @@ public class StripWebSearchEngine
             }
         }
         // Add/merge or skip if already present
-        addAuthor(author, type, book);
+        addAuthor(author, type, book, false);
     }
 
     /**

@@ -192,7 +192,7 @@ public class BookFinderSearchEngine
         if (authorElement != null) {
             final String s = SearchEngineUtils.cleanName(authorElement);
             if (!s.isBlank()) {
-                addAuthor(Author.from(s), AuthorRole.UNKNOWN, book);
+                addAuthor(Author.from(s), AuthorRole.UNKNOWN, book, false);
             }
         }
         final Element ratingElement = bookInfo.selectFirst("div.rating"

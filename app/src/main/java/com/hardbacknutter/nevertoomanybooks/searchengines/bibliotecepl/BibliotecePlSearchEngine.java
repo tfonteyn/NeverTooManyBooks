@@ -683,7 +683,7 @@ public class BibliotecePlSearchEngine
             if (g1 != null) {
                 final String s = SearchEngineUtils.cleanName(g1);
                 if (!s.isBlank()) {
-                    addAuthor(Author.from(s), type, book);
+                    addAuthor(Author.from(s), type, book, false);
                 }
             }
         }

@@ -563,7 +563,7 @@ public class DoubanSearchEngine
                             //  get the correct SID.
                             //  This would also allow us to get Birthdate etc
 
-                            addAuthor(author, AuthorRole.UNKNOWN, book);
+                            addAuthor(author, AuthorRole.UNKNOWN, book, false);
                         }
                     }
                     break;
@@ -601,7 +601,7 @@ public class DoubanSearchEngine
                     if (a != null && "a".equals(a.tagName())) {
                         final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
-                            addAuthor(Author.from(s), AuthorRole.TRANSLATOR, book);
+                            addAuthor(Author.from(s), AuthorRole.TRANSLATOR, book, false);
                         }
                     }
                     break;

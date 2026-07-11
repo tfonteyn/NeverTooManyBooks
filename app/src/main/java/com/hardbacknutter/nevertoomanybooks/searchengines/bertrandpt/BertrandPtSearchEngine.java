@@ -295,7 +295,7 @@ public class BertrandPtSearchEngine
                       .map(SearchEngineUtils::cleanName)
                       .filter(name -> !name.isBlank())
                       .map(Author::from)
-                      .forEach(author -> addAuthor(author, AuthorRole.UNKNOWN, book));
+                      .forEach(author -> addAuthor(author, AuthorRole.UNKNOWN, book, false));
 
         Element element;
 

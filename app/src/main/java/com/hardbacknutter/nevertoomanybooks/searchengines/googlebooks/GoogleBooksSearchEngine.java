@@ -527,7 +527,7 @@ public class GoogleBooksSearchEngine
                               @NonNull final Book book) {
         for (int i = 0; i < a.length(); i++) {
             final String name = a.optString(i);
-            addAuthor(Author.from(name), AuthorRole.UNKNOWN, book);
+            addAuthor(Author.from(name), AuthorRole.UNKNOWN, book, false);
         }
     }
 
