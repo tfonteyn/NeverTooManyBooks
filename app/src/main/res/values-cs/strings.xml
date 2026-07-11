@@ -963,5 +963,54 @@
     <string name="option_code_validity_strict_isbn">Přísné ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN a ostatní</string>
     <string name="option_code_validity_no_checks">Bez kontroly</string>
-
+    <string name="freq_unknown">Neznámá</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Denně</item>
+        <item quantity="few">Každé %1$d dny</item>
+        <item quantity="many">Každého %1$d dne</item>
+        <item quantity="other">Každých %1$d dní</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Týdně</item>
+        <item quantity="few">Každé %1$d týdny</item>
+        <item quantity="many">Každého %1$d týdne</item>
+        <item quantity="other">Každých %1$d týdnů</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Měsíčně</item>
+        <item quantity="few">Každé %1$d měsíce</item>
+        <item quantity="many">Každého %1$d měsíce</item>
+        <item quantity="other">Každých %1$d měsíců</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Ročně</item>
+        <item quantity="few">Každé %1$d roky</item>
+        <item quantity="many">Každého %1$d roku</item>
+        <item quantity="other">Každých %1$d let</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Denně</item>
+        <item quantity="few">%1$dkrát denně</item>
+        <item quantity="many">%1$dkrát denně</item>
+        <item quantity="other">%1$dkrát denně</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Týdně</item>
+        <item quantity="few">%1$dkrát týdně</item>
+        <item quantity="many">%1$dkrát týdně</item>
+        <item quantity="other">%1$dkrát týdně</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Měsíčně</item>
+        <item quantity="few">%1$dkrát měsíčně</item>
+        <item quantity="many">%1$dkrát měsíčně</item>
+        <item quantity="other">%1$dkrát měsíčně</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Ročně</item>
+        <item quantity="few">%1$dkrát ročně</item>
+        <item quantity="many">%1$dkrát ročně</item>
+        <item quantity="other">%1$dkrát ročně</item>
+    </plurals>
 </resources>
+

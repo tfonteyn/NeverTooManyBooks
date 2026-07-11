@@ -942,4 +942,45 @@
     <string name="option_code_validity_strict_isbn">ISBN strict</string>
     <string name="option_code_validity_valid_codes">ISBN et autres</string>
     <string name="option_code_validity_no_checks">Aucune validation</string>
+    <string name="freq_unknown">Inconnue</string>
+    <plurals name="freq_interval_days"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Quotidien</item>
+        <item quantity="other">Tous les %1$d jours</item>
+    </plurals>
+    <plurals name="freq_interval_weeks"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Hebdomadaire</item>
+        <item quantity="other">Toutes les %1$d semaines</item>
+    </plurals>
+    <plurals name="freq_interval_months"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Mensuel</item>
+        <item quantity="other">Tous les %1$d mois</item>
+    </plurals>
+    <plurals name="freq_interval_years"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Annuel</item>
+        <item quantity="other">Tous les %1$d ans</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Quotidien</item>
+        <item quantity="other">%1$d fois par jour</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Hebdomadaire</item>
+        <item quantity="other">%1$d fois par semaine</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Mensuel</item>
+        <item quantity="other">%1$d fois par mois</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly"
+             tools:ignore="ImpliedQuantity,MissingQuantity">
+        <item quantity="one">Annuel</item>
+        <item quantity="other">%1$d fois par an</item>
+    </plurals>
 </resources>

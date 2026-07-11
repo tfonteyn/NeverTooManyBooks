@@ -935,4 +935,37 @@
     <string name="option_code_validity_strict_isbn">Sıkı ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN ve diğerleri</string>
     <string name="option_code_validity_no_checks">Doğrulama yok</string>
+    <string name="freq_unknown">Bilinmiyor</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Günlük</item>
+        <item quantity="other">Her %1$d günde bir</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Haftalık</item>
+        <item quantity="other">Her %1$d haftada bir</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Aylık</item>
+        <item quantity="other">Her %1$d ayda bir</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Yıllık</item>
+        <item quantity="other">Her %1$d yılda bir</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Günlük</item>
+        <item quantity="other">Günde %1$d kez</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Haftalık</item>
+        <item quantity="other">Haftada %1$d kez</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Aylık</item>
+        <item quantity="other">Ayda %1$d kez</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Yıllık</item>
+        <item quantity="other">Yılda %1$d kez</item>
+    </plurals>
 </resources>

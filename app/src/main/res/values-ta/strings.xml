@@ -932,4 +932,37 @@
     <string name="option_code_validity_strict_isbn">கண்டிப்பான ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN மற்றும் பிற</string>
     <string name="option_code_validity_no_checks">சரிபார்ப்பு இல்லை</string>
+    <string name="freq_unknown">தெரியவில்லை</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">தினசரி</item>
+        <item quantity="other">ஒவ்வொரு %1$d நாட்களுக்கும்</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">வாராந்திர</item>
+        <item quantity="other">ஒவ்வொரு %1$d வாரங்களுக்கும்</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">மாதாந்திர</item>
+        <item quantity="other">ஒவ்வொரு %1$d மாதங்களுக்கும்</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">வருடாந்திர</item>
+        <item quantity="other">ஒவ்வொரு %1$d ஆண்டுகளுக்கும்</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">தினசரி</item>
+        <item quantity="other">தினசரி %1$d முறைகள்</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">வாராந்திர</item>
+        <item quantity="other">வாரத்திற்கு %1$d முறைகள்</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">மாதாந்திர</item>
+        <item quantity="other">மாதத்திற்கு %1$d முறைகள்</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">வருடாந்திர</item>
+        <item quantity="other">வருடத்திற்கு %1$d முறைகள்</item>
+    </plurals>
 </resources>

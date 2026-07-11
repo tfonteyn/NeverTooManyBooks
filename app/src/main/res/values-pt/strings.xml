@@ -943,4 +943,53 @@
     <string name="option_code_validity_strict_isbn">ISBN estrito</string>
     <string name="option_code_validity_valid_codes">ISBN e outros</string>
     <string name="option_code_validity_no_checks">Sem validação</string>
+    <string name="freq_unknown">Desconhecida</string>
+    <plurals name="freq_interval_days"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Diário</item>
+        <item quantity="other">A cada %1$d dias</item>
+    </plurals>
+    <plurals name="freq_interval_weeks"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Semanal</item>
+        <item quantity="other">A cada %1$d semanas</item>
+    </plurals>
+    <plurals name="freq_interval_months"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Mensal</item>
+        <item quantity="other">A cada %1$d meses</item>
+    </plurals>
+    <plurals name="freq_interval_years"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Anual</item>
+        <item quantity="other">A cada %1$d anos</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Diário</item>
+        <item quantity="other">%1$d por dia</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Semanal</item>
+        <item quantity="other">%1$d por semana</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Mensal</item>
+        <item quantity="other">%1$d por mês</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one"
+              tools:ignore="ImpliedQuantity">Anual</item>
+        <item quantity="other">%1$d por ano</item>
+    </plurals>
 </resources>

@@ -919,4 +919,29 @@
     <string name="option_code_validity_strict_isbn">ISBN nghiêm ngặt</string>
     <string name="option_code_validity_valid_codes">ISBN và mã khác</string>
     <string name="option_code_validity_no_checks">Không xác thực</string>
+    <string name="freq_unknown">Không xác định</string>
+    <plurals name="freq_interval_days">
+        <item quantity="other">Mỗi %1$d ngày</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="other">Mỗi %1$d tuần</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="other">Mỗi %1$d tháng</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="other">Mỗi %1$d năm</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="other">%1$d lần mỗi ngày</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="other">%1$d lần mỗi tuần</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="other">%1$d lần mỗi tháng</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="other">%1$d lần mỗi năm</item>
+    </plurals>
 </resources>

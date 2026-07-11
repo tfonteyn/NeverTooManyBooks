@@ -961,4 +961,54 @@
     <string name="option_code_validity_strict_isbn">Строгий ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN и другие</string>
     <string name="option_code_validity_no_checks">Без проверки</string>
+    <string name="freq_unknown">Неизвестно</string>
+    <string name="freq_unknown">Неизвестно</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Раз в %1$d день</item>
+        <item quantity="few">Раз в %1$d дня</item>
+        <item quantity="many">Раз в %1$d дней</item>
+        <item quantity="other">Раз в %1$d дня</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Раз в %1$d неделю</item>
+        <item quantity="few">Раз в %1$d недели</item>
+        <item quantity="many">Раз в %1$d недель</item>
+        <item quantity="other">Раз в %1$d недели</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Раз в %1$d месяц</item>
+        <item quantity="few">Раз в %1$d месяца</item>
+        <item quantity="many">Раз в %1$d месяцев</item>
+        <item quantity="other">Раз в %1$d месяца</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Раз в %1$d год</item>
+        <item quantity="few">Раз в %1$d года</item>
+        <item quantity="many">Раз в %1$d лет</item>
+        <item quantity="other">Раз в %1$d года</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">%1$d раз в день</item>
+        <item quantity="few">%1$d раза в день</item>
+        <item quantity="many">%1$d раз в день</item>
+        <item quantity="other">%1$d раза в день</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">%1$d раз в неделю</item>
+        <item quantity="few">%1$d раза в неделю</item>
+        <item quantity="many">%1$d раз в неделю</item>
+        <item quantity="other">%1$d раза в неделю</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">%1$d раз в месяц</item>
+        <item quantity="few">%1$d раза в месяц</item>
+        <item quantity="many">%1$d раз в месяц</item>
+        <item quantity="other">%1$d раза в месяц</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">%1$d раз в год</item>
+        <item quantity="few">%1$d раза в год</item>
+        <item quantity="many">%1$d раз в год</item>
+        <item quantity="other">%1$d раза в год</item>
+    </plurals>
 </resources>

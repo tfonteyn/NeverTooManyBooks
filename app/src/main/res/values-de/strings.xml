@@ -929,4 +929,37 @@
     <string name="option_code_validity_strict_isbn">Strikte ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN und andere</string>
     <string name="option_code_validity_no_checks">Keine Prüfung</string>
+    <string name="freq_unknown">Unbekannt</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Täglich</item>
+        <item quantity="other">Alle %1$d Tage</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Wöchentlich</item>
+        <item quantity="other">Alle %1$d Wochen</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Monatlich</item>
+        <item quantity="other">Alle %1$d Monate</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Jährlich</item>
+        <item quantity="other">Alle %1$d Jahre</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Täglich</item>
+        <item quantity="other">%1$d-mal täglich</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Wöchentlich</item>
+        <item quantity="other">%1$d-mal wöchentlich</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Monatlich</item>
+        <item quantity="other">%1$d-mal monatlich</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Jährlich</item>
+        <item quantity="other">%1$d-mal jährlich</item>
+    </plurals>
 </resources>

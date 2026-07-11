@@ -191,4 +191,37 @@
     <string name="option_code_validity_strict_isbn">Fast ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN og onnur</string>
     <string name="option_code_validity_no_checks">Einki eftirlit</string>
+    <string name="freq_unknown">Ókent</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Dagliga</item>
+        <item quantity="other">Hvønn %1$d. dag</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Vikuliga</item>
+        <item quantity="other">Hvørja %1$d. viku</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Mánaðarliga</item>
+        <item quantity="other">Hvønn %1$d. mánað</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Árliga</item>
+        <item quantity="other">Hvørt %1$d. ár</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Dagliga</item>
+        <item quantity="other">%1$d ferðir um dagin</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Vikuliga</item>
+        <item quantity="other">%1$d ferðir um vikuna</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Mánaðarliga</item>
+        <item quantity="other">%1$d ferðir um mánaðin</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Árliga</item>
+        <item quantity="other">%1$d ferðir um árið</item>
+    </plurals>
 </resources>

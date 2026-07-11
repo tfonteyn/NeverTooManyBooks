@@ -932,4 +932,37 @@
     <string name="option_code_validity_strict_isbn">Strikt ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN och andra</string>
     <string name="option_code_validity_no_checks">Ingen validering</string>
+    <string name="freq_unknown">Okänd</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Dagligen</item>
+        <item quantity="other">Var %1$d:e dag</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Veckovis</item>
+        <item quantity="other">Var %1$d:e vecka</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Månadsvis</item>
+        <item quantity="other">Var %1$d:e månad</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Årligen</item>
+        <item quantity="other">Var %1$d:e år</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Dagligen</item>
+        <item quantity="other">%1$d gånger om dagen</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Veckovis</item>
+        <item quantity="other">%1$d gånger i veckan</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Månadsvis</item>
+        <item quantity="other">%1$d gånger i månaden</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Årligen</item>
+        <item quantity="other">%1$d gånger om året</item>
+    </plurals>
 </resources>

@@ -20,7 +20,8 @@
   --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="n_books">
         <item quantity="one">%1$d libro</item>
         <item quantity="many">%1$d libros</item>
@@ -940,4 +941,45 @@
     <string name="option_code_validity_strict_isbn">ISBN estricto</string>
     <string name="option_code_validity_valid_codes">ISBN y otros</string>
     <string name="option_code_validity_no_checks">Sin validación</string>
+    <string name="freq_unknown">Desconocida</string>
+    <plurals name="freq_interval_days"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Diario</item>
+        <item quantity="other">Cada %1$d días</item>
+    </plurals>
+    <plurals name="freq_interval_weeks"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Semanal</item>
+        <item quantity="other">Cada %1$d semanas</item>
+    </plurals>
+    <plurals name="freq_interval_months"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Mensual</item>
+        <item quantity="other">Cada %1$d meses</item>
+    </plurals>
+    <plurals name="freq_interval_years"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Anual</item>
+        <item quantity="other">Cada %1$d años</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Diario</item>
+        <item quantity="other">%1$d al día</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Semanal</item>
+        <item quantity="other">%1$d a la semana</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Mensual</item>
+        <item quantity="other">%1$d al mes</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Anual</item>
+        <item quantity="other">%1$d al año</item>
+    </plurals>
 </resources>

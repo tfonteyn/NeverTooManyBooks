@@ -930,4 +930,37 @@
     <string name="option_code_validity_strict_isbn">ISBN estrito</string>
     <string name="option_code_validity_valid_codes">ISBN e outros</string>
     <string name="option_code_validity_no_checks">Sen validación</string>
+    <string name="freq_unknown">Descoñecida</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Diario</item>
+        <item quantity="other">Cada %1$d días</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Semanal</item>
+        <item quantity="other">Cada %1$d semanas</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Mensual</item>
+        <item quantity="other">Cada %1$d meses</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Anual</item>
+        <item quantity="other">Cada %1$d anos</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Diario</item>
+        <item quantity="other">%1$d ao día</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Semanal</item>
+        <item quantity="other">%1$d á semana</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Mensual</item>
+        <item quantity="other">%1$d ao mes</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Anual</item>
+        <item quantity="other">%1$d ao ano</item>
+    </plurals>
 </resources>

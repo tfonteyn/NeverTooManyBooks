@@ -930,4 +930,37 @@
     <string name="option_code_validity_strict_isbn">Szigorú ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN és egyéb</string>
     <string name="option_code_validity_no_checks">Nincs ellenőrzés</string>
+    <string name="freq_unknown">Ismeretlen</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Naponta</item>
+        <item quantity="other">%1$d naponta</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Hetente</item>
+        <item quantity="other">%1$d hetente</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Havonta</item>
+        <item quantity="other">%1$d havonta</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Évente</item>
+        <item quantity="other">%1$d évente</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Naponta</item>
+        <item quantity="other">Naponta %1$d alkalommal</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Hetente</item>
+        <item quantity="other">Hetente %1$d alkalommal</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Havonta</item>
+        <item quantity="other">Havonta %1$d alkalommal</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Évente</item>
+        <item quantity="other">Évente %1$d alkalommal</item>
+    </plurals>
 </resources>

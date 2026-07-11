@@ -922,4 +922,29 @@
     <string name="option_code_validity_strict_isbn">嚴格 ISBN 匹配</string>
     <string name="option_code_validity_valid_codes">ISBN 及其他</string>
     <string name="option_code_validity_no_checks">不檢查</string>
+    <string name="freq_unknown">未知</string>
+    <plurals name="freq_interval_days">
+        <item quantity="other">每 %1$d 天</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="other">每 %1$d 週</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="other">每 %1$d 個月</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="other">每 %1$d 年</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="other">每天 %1$d 次</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="other">每周 %1$d 次</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="other">每月 %1$d 次</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="other">每年 %1$d 次</item>
+    </plurals>
 </resources>

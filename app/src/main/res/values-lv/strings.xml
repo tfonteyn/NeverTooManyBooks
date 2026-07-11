@@ -940,4 +940,45 @@
     <string name="option_code_validity_strict_isbn">Stingrs ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN un citi</string>
     <string name="option_code_validity_no_checks">Bez pārbaudes</string>
+    <string name="freq_unknown">Nezināms</string>
+    <plurals name="freq_interval_days">
+        <item quantity="zero">Katras %1$d dienas</item>
+        <item quantity="one">Ik pēc %1$d dienas</item>
+        <item quantity="other">Ik pēc %1$d dienām</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="zero">Katras %1$d nedēļas</item>
+        <item quantity="one">Ik pēc %1$d nedēļas</item>
+        <item quantity="other">Ik pēc %1$d nedēļām</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="zero">Katrus %1$d mēnešus</item>
+        <item quantity="one">Ik pēc %1$d mēneša</item>
+        <item quantity="other">Ik pēc %1$d mēnešiem</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="zero">Katrus %1$d gadus</item>
+        <item quantity="one">Ik pēc %1$d gada</item>
+        <item quantity="other">Ik pēc %1$d gadiem</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="zero">%1$d reizes dienā</item>
+        <item quantity="one">%1$d reizi dienā</item>
+        <item quantity="other">%1$d reizes dienā</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="zero">%1$d reizes nedēļā</item>
+        <item quantity="one">%1$d reizi nedēļā</item>
+        <item quantity="other">%1$d reizes nedēļā</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="zero">%1$d reizes mēnesī</item>
+        <item quantity="one">%1$d reizi mēnesī</item>
+        <item quantity="other">%1$d reizes mēnesī</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="zero">%1$d reizes gadā</item>
+        <item quantity="one">%1$d reizi gadā</item>
+        <item quantity="other">%1$d reizes gadā</item>
+    </plurals>
 </resources>

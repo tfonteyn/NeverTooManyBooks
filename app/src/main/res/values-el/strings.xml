@@ -932,4 +932,37 @@ A question mark is written as the character semicolon: ';'
     <string name="option_code_validity_strict_isbn">Αυστηρό ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN και άλλα</string>
     <string name="option_code_validity_no_checks">Χωρίς έλεγχο</string>
+    <string name="freq_unknown">Άγνωστη</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Καθημερινά</item>
+        <item quantity="other">Κάθε %1$d ημέρες</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Εβδομαδιαία</item>
+        <item quantity="other">Κάθε %1$d εβδομάδες</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Μηνιαία</item>
+        <item quantity="other">Κάθε %1$d μήνες</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Ετήσια</item>
+        <item quantity="other">Κάθε %1$d χρόνια</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Καθημερινά</item>
+        <item quantity="other">%1$d φορές την ημέρα</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Εβδομαδιαία</item>
+        <item quantity="other">%1$d φορές την εβδομάδα</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Μηνιαία</item>
+        <item quantity="other">%1$d φορές τον μήνα</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Ετήσια</item>
+        <item quantity="other">%1$d φορές τον χρόνο</item>
+    </plurals>
 </resources>

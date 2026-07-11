@@ -954,4 +954,53 @@
     <string name="option_code_validity_strict_isbn">Ścisły ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN i inne</string>
     <string name="option_code_validity_no_checks">Brak walidacji</string>
+    <string name="freq_unknown">Nieznana</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Codziennie</item>
+        <item quantity="few">Co %1$d dni</item>
+        <item quantity="many">Co %1$d dni</item>
+        <item quantity="other">Co %1$d dnia</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Tygodniowo</item>
+        <item quantity="few">Co %1$d tygodnie</item>
+        <item quantity="many">Co %1$d tygodni</item>
+        <item quantity="other">Co %1$d tygodnia</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Miesięcznie</item>
+        <item quantity="few">Co %1$d miesiące</item>
+        <item quantity="many">Co %1$d miesięcy</item>
+        <item quantity="other">Co %1$d miesiąca</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Rocznie</item>
+        <item quantity="few">Co %1$d lata</item>
+        <item quantity="many">Co %1$d lat</item>
+        <item quantity="other">Co %1$d roku</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Codziennie</item>
+        <item quantity="few">%1$d razy dziennie</item>
+        <item quantity="many">%1$d razy dziennie</item>
+        <item quantity="other">%1$d raza dziennie</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Tygodniowo</item>
+        <item quantity="few">%1$d razy w tygodniu</item>
+        <item quantity="many">%1$d razy w tygodniu</item>
+        <item quantity="other">%1$d raza w tygodniu</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Miesięcznie</item>
+        <item quantity="few">%1$d razy w miesiącu</item>
+        <item quantity="many">%1$d razy w miesiącu</item>
+        <item quantity="other">%1$d raza w miesiącu</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Rocznie</item>
+        <item quantity="few">%1$d razy w roku</item>
+        <item quantity="many">%1$d razy w roku</item>
+        <item quantity="other">%1$d raza w roku</item>
+    </plurals>
 </resources>

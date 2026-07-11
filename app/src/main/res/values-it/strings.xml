@@ -943,4 +943,45 @@
     <string name="option_code_validity_strict_isbn">ISBN rigoroso</string>
     <string name="option_code_validity_valid_codes">ISBN e altri</string>
     <string name="option_code_validity_no_checks">Nessuna validazione</string>
+    <string name="freq_unknown">Sconosciuta</string>
+    <plurals name="freq_interval_days"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Giornaliero</item>
+        <item quantity="other">Ogni %1$d giorni</item>
+    </plurals>
+    <plurals name="freq_interval_weeks"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Settimanale</item>
+        <item quantity="other">Ogni %1$d settimane</item>
+    </plurals>
+    <plurals name="freq_interval_months"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Mensile</item>
+        <item quantity="other">Ogni %1$d mesi</item>
+    </plurals>
+    <plurals name="freq_interval_years"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Annuale</item>
+        <item quantity="other">Ogni %1$d anni</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Giornaliero</item>
+        <item quantity="other">%1$d al giorno</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Settimanale</item>
+        <item quantity="other">%1$d alla settimana</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Mensile</item>
+        <item quantity="other">%1$d al mes</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly"
+             tools:ignore="MissingQuantity">
+        <item quantity="one">Annuale</item>
+        <item quantity="other">%1$d all\'anno</item>
+    </plurals>
 </resources>

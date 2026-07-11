@@ -929,4 +929,37 @@
     <string name="option_code_validity_strict_isbn">Strikt ISBN</string>
     <string name="option_code_validity_valid_codes">ISBN en andere</string>
     <string name="option_code_validity_no_checks">Geen controle</string>
+    <string name="freq_unknown">Onbekend</string>
+    <plurals name="freq_interval_days">
+        <item quantity="one">Dagelijks</item>
+        <item quantity="other">Elke %1$d dagen</item>
+    </plurals>
+    <plurals name="freq_interval_weeks">
+        <item quantity="one">Wekelijks</item>
+        <item quantity="other">Elke %1$d weken</item>
+    </plurals>
+    <plurals name="freq_interval_months">
+        <item quantity="one">Maandelijks</item>
+        <item quantity="other">Elke %1$d maanden</item>
+    </plurals>
+    <plurals name="freq_interval_years">
+        <item quantity="one">Jaarlijks</item>
+        <item quantity="other">Elke %1$d jaar</item>
+    </plurals>
+    <plurals name="freq_ordinal_daily">
+        <item quantity="one">Dagelijks</item>
+        <item quantity="other">%1$d keer per dag</item>
+    </plurals>
+    <plurals name="freq_ordinal_weekly">
+        <item quantity="one">Wekelijks</item>
+        <item quantity="other">%1$d keer per week</item>
+    </plurals>
+    <plurals name="freq_ordinal_monthly">
+        <item quantity="one">Maandelijks</item>
+        <item quantity="other">%1$d keer per maand</item>
+    </plurals>
+    <plurals name="freq_ordinal_yearly">
+        <item quantity="one">Jaarlijks</item>
+        <item quantity="other">%1$d keer per jaar</item>
+    </plurals>
 </resources>
