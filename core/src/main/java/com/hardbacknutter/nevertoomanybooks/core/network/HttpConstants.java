@@ -23,10 +23,16 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 public final class HttpConstants {
 
     /**
-     * RELEASE: BROWSER_USER_AGENT: Last updated: 2026-06-18.
+     * RELEASE: USER_AGENT_FIREFOX: Last updated: 2026-07-11.
+     *
+     * @see <a href="https://www.whatismybrowser.com/guides/the-latest-user-agent/">
+     *     whatismybrowser</a>
      */
-    public static final String BROWSER_USER_AGENT =
+    public static final String USER_AGENT_FIREFOX =
+            // Windows 11
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0";
+
+            // "Mozilla/5.0 (Android 17; Mobile; rv:152.0) Gecko/152.0 Firefox/152.0"
 
     /**
      * HTTP Request Header.
@@ -141,6 +147,30 @@ public final class HttpConstants {
 
     /**
      * HTTP Request Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Storage-Access">
+     * Sec-Fetch-Storage-Access</a>
+     */
+    public static final String SEC_FETCH_STORAGE_ACCESS = "Sec-Fetch-Storage-Access";
+    /** Value for {@link #SEC_FETCH_STORAGE_ACCESS}. */
+    public static final String SEC_FETCH_STORAGE_ACCESS_NONE = "none";
+    /** Value for {@link #SEC_FETCH_STORAGE_ACCESS}. */
+    public static final String SEC_FETCH_STORAGE_ACCESS_INACTIVE = "inactive";
+    /** Value for {@link #SEC_FETCH_STORAGE_ACCESS}. */
+    public static final String SEC_FETCH_STORAGE_ACCESS_ACTIVE = "active";
+
+    /**
+     * HTTP Request Header.
+     * <p>
+     * Documented as EXPERIMENTAL.
+     * It seems only firefox is sending it, and it's not used by any other browser.
+     * <p>
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-GPC">
+     * Sec-GPC</a>
+     */
+    public static final String SEC_GPC = "Sec-GPC";
+
+    /**
+     * HTTP Request Header.
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Dest">
      * Sec-Fetch-Dest</a>
      */
@@ -221,6 +251,9 @@ public final class HttpConstants {
     public static final String USER_AGENT = "User-Agent";
     /**
      * HTTP Request Header.
+     * <p>
+     * Deprecated but Firefox/Chrome are still sending it by default.
+     * <p>
      * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/DNT">
      * DNT</a>
      */

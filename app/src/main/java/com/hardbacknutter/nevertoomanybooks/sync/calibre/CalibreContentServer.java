@@ -612,7 +612,7 @@ public final class CalibreContentServer
                 .url(urlStr)
                 .header(HttpConstants.HOST, new URL(urlStr).getHost())
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.BROWSER_USER_AGENT)
+                        HttpConstants.USER_AGENT_FIREFOX)
 
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_IMAGE)

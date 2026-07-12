@@ -256,22 +256,12 @@ public class HttpCall {
         //Sec-Fetch-User: ?1
         //Connection: keep-alive
 
-        // The "Sec-GPC" header above is documented as EXPERIMENTAL at
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-GPC
-        // It seems only firefox is sending it, and it's not used by any other browser.
-        // We're not sending it for now.
-
-        // TODO: could add Platform in combo with the Randomizer
-        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows",
-        // or "Unknown".
-        // .header("Sec-CH-UA-Platform", "Windows");
-
         final Request.Builder builder = new Request.Builder()
                 .url(url)
                 .method(method, body)
                 .header(HttpConstants.HOST, url.getHost())
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.BROWSER_USER_AGENT)
+                        HttpConstants.USER_AGENT_FIREFOX)
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_KITCHEN_SINK)
                 .header(HttpConstants.ACCEPT_LANGUAGE,
@@ -282,8 +272,8 @@ public class HttpCall {
                 .header(HttpConstants.CONNECTION,
                         HttpConstants.CONNECTION_KEEP_ALIVE)
 
-                // Deprecated but Firefox/Chrome are still sending it by default.
                 .header(HttpConstants.DNT, "1")
+                .header(HttpConstants.SEC_GPC, "1")
 
                 .header(HttpConstants.UPGRADE_INSECURE_REQUESTS,
                         HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE)

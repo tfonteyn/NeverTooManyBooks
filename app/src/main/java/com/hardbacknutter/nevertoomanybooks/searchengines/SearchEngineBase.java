@@ -40,7 +40,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -122,31 +122,26 @@ public abstract class SearchEngineBase
         final String acceptLanguageHeader = HttpLanguageHeader.create(siteLocale, userLocale);
         // Improve compatibility by sending standard headers.
 
-        // Host & User-Agent are set in {@link FutureHttp#execute}
-        // but can be overridden as needed.
-
         // Example of a Firefox request to https://developer.android.com
 
-        //Host: developer.android.com
-        //User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
-        //Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-        //Accept-Language: en-GB,en;q=0.8,nl-BE;q=0.5,de-DE;q=0.3
-        //Accept-Encoding: gzip, deflate, br, zstd
-        //DNT: 1
-        //Sec-GPC: 1
-        //Upgrade-Insecure-Requests: 1
-        //Sec-Fetch-Dest: document
-        //Sec-Fetch-Mode: navigate
-        //Sec-Fetch-Site: none
-        //Sec-Fetch-User: ?1
-        //Connection: keep-alive
+        // GET / HTTP/1.1
+        // Host: developer.android.com
+        // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0
+        // Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        // Accept-Language: en-GB,en;q=0.9,nl-BE;q=0.8,de-DE;q=0.7
+        // Accept-Encoding: gzip, deflate, br, zstd
+        // DNT: 1
+        // Sec-GPC: 1
+        // Upgrade-Insecure-Requests: 1
+        // Sec-Fetch-Dest: document
+        // Sec-Fetch-Mode: navigate
+        // Sec-Fetch-Site: none
+        // Sec-Fetch-User: ?1
+        // Connection: keep-alive
 
-        // The "Sec-GPC" header above is documented as EXPERIMENTAL at
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-GPC
-        // It seems only firefox is sending it, and it's not used by any other browser.
-        // We're not sending it for now.
-
-        final Map<String, String> headers = new HashMap<>();
+        // ordered list.
+        final Map<String, String> headers = new LinkedHashMap<>();
+        // Host & User-Agent are prefixed to the below in {@link FutureHttp#execute}
 
         headers.put(HttpConstants.ACCEPT,
                     HttpConstants.ACCEPT_KITCHEN_SINK);
@@ -155,11 +150,8 @@ public abstract class SearchEngineBase
         headers.put(HttpConstants.ACCEPT_ENCODING,
                     HttpConstants.ACCEPT_ENCODING_GZIP);
 
-        headers.put(HttpConstants.CONNECTION,
-                    HttpConstants.CONNECTION_KEEP_ALIVE);
-
-        // Deprecated but Firefox/Chrome are still sending it by default.
         headers.put(HttpConstants.DNT, "1");
+        headers.put(HttpConstants.SEC_GPC, "1");
 
         headers.put(HttpConstants.UPGRADE_INSECURE_REQUESTS,
                     HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
@@ -176,10 +168,8 @@ public abstract class SearchEngineBase
                     HttpConstants.SEC_FETCH_SITE_NONE);
         headers.put(HttpConstants.SEC_FETCH_USER, "?1");
 
-        // TODO: could add Platform in combo with the Randomizer
-        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
-        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
-
+        headers.put(HttpConstants.CONNECTION,
+                    HttpConstants.CONNECTION_KEEP_ALIVE);
         return headers;
     }
 
@@ -401,35 +391,51 @@ public abstract class SearchEngineBase
                                          @Nullable final Map<String, String> requestProperties)
             throws MalformedURLException {
 
-        // TODO: could add Platform in combo with the Randomizer
-        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows",
-        // or "Unknown".
-        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
+        // GET /devrel-devsite/prod/v63ff991b83776932202eabe7967909a8dae574de15846bab934768a76bf6c589/android/images/lockup.png HTTP/1.1
+        // Host: www.gstatic.com
+        // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0
+        // Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5
+        // Accept-Language: en-GB,en;q=0.9,nl-BE;q=0.8,de-DE;q=0.7
+        // Accept-Encoding: gzip, deflate, br, zstd
+        // Referer: https://developer.android.com/
+        // Sec-Fetch-Storage-Access: none
+        // DNT: 1
+        // Sec-GPC: 1
+        // Sec-Fetch-Dest: image
+        // Sec-Fetch-Mode: no-cors
+        // Sec-Fetch-Site: cross-site
+        //C onnection: keep-alive
 
         final Request.Builder builder = new Request.Builder()
                 .url(urlStr)
                 .header(HttpConstants.HOST, new URL(urlStr).getHost())
                 .header(HttpConstants.USER_AGENT,
-                        HttpConstants.BROWSER_USER_AGENT)
+                        HttpConstants.USER_AGENT_FIREFOX)
 
                 .header(HttpConstants.ACCEPT,
                         HttpConstants.ACCEPT_IMAGE)
+                .header(HttpConstants.ACCEPT_LANGUAGE,
+                        createAcceptLanguageHeader(context))
                 .header(HttpConstants.ACCEPT_ENCODING,
                         HttpConstants.ACCEPT_ENCODING_GZIP)
 
-                .header(HttpConstants.ACCEPT_LANGUAGE,
-                        createAcceptLanguageHeader(context))
+                .header(HttpConstants.SEC_FETCH_STORAGE_ACCESS,
+                        HttpConstants.SEC_FETCH_STORAGE_ACCESS_NONE)
 
-                .header(HttpConstants.CONNECTION,
-                        HttpConstants.CONNECTION_KEEP_ALIVE)
+                .header(HttpConstants.DNT, "1")
+                .header(HttpConstants.SEC_GPC, "1")
 
                 //We want a generic image
                 .header(HttpConstants.SEC_FETCH_DEST,
                         HttpConstants.SEC_FETCH_DEST_IMAGE)
                 .header(HttpConstants.SEC_FETCH_MODE,
                         HttpConstants.SEC_FETCH_MODE_NO_CORS)
+                // same site... might need to use SEC_FETCH_SITE_CROSS_SITE ?
                 .header(HttpConstants.SEC_FETCH_SITE,
-                        HttpConstants.SEC_FETCH_SITE_NONE);
+                        HttpConstants.SEC_FETCH_SITE_NONE)
+
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE);
 
         // add or override
         if (requestProperties != null) {
