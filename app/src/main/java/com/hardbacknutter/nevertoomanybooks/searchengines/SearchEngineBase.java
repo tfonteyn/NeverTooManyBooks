@@ -547,7 +547,7 @@ public abstract class SearchEngineBase
         }
 
         if (add) {
-            currentAuthor.setRole(currentAuthorRole);
+            currentAuthor.addRole(currentAuthorRole);
             if (addAsFirst) {
                 book.getAuthors().add(0, currentAuthor);
             } else {

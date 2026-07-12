@@ -381,7 +381,7 @@ public class Author
      * <strong>Note:</strong> uses a simple String decoder.
      * Any complex decoding for JSON format must be done before calling here.
      *
-     * @param name a String containing the name
+     * @param name see above
      *
      * @return Author
      */
@@ -488,6 +488,23 @@ public class Author
 
         return createWithOptionalBrackets(buildFamilyName.toString(), buildGivenNames.toString(),
                                           bracketSection);
+    }
+
+    /**
+     * Create an Author representing an organisation/body.
+     * <p>
+     * URGENT: We need a flag on author to indicate it's an organisation, and
+     *  then NOT parse it into last/given names.
+     *  We can't do this as a role, as that is a book-field.
+     *  Being an organization is an attribute of the author independent of a book.
+     *
+     * @param name of the org
+     *
+     * @return Author
+     */
+    @NonNull
+    public static Author asOrganisation(@NonNull final String name) {
+        return new Author(name, null);
     }
 
     /**

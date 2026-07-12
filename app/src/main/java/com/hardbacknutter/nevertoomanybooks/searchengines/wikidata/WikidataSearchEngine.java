@@ -355,10 +355,8 @@ public class WikidataSearchEngine
         }
 
         // We don't get an author for magazines, use the publisher if we have one...
-        // URGENT: when the user manually adds/edit this name, it might go
-        //  through the parser again and get mangled up.
         book.getPrimaryPublisher()
-            .ifPresent(p -> book.add(new Author(p.getName(), null)));
+            .ifPresent(p -> book.add(Author.asOrganisation(p.getName())));
 
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);

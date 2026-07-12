@@ -414,24 +414,10 @@ public class BiblionetGrSearchEngine
                     li.select("a").forEach(a -> {
                         // Φιλολογικός Όμιλος Αγρινίου "Κώστας Χατζόπουλος"
                         // -> Literary Society of Agrinio "Kostas Chatzopoulos"
-                        // Don't parse, use the name as-is.
-                        // URGENT: when the user manually adds/edit this name, it might go
-                        //  through the parser again and get mangled up.
                         final String s = SearchEngineUtils.cleanName(a);
                         if (!s.isBlank()) {
-                            final Author author = new Author(s, null);
-                            addAuthor(author, AuthorRole.UNKNOWN, book, false);
-                            // note that NO specific organization author type was created,
-                            // The type is really the role of the author for specific book.
-                            // Being an organization is an attribute of the author independent
-                            // of a book.
-                            // FIXME: if the user would edit this author in either:
-                            //  EditAuthorViewModel
-                            //  EditBookAuthorListViewModel
-                            //  EditTocEntryViewModel
-                            //  it might get re-parsed and would get split up.
-                            //  Deliberate decision: tackle that the day someone complains.
-                            //  It will involve adding a UI element to prevent parsing.
+                            // add directly, don't use the parent addAuthor method
+                            book.add(Author.asOrganisation(s));
                         }
                     });
                     break;
