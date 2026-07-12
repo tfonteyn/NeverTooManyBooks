@@ -640,6 +640,7 @@ public class Series
                          final boolean includeBookFields) {
         title = source.title;
         complete = source.complete;
+        frequency = source.frequency;
 
         identifiers.clear();
         // deep copy
