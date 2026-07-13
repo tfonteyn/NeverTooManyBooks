@@ -136,6 +136,8 @@ class BookTest
         assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
         // "test" is correct as preprocessPrices should NOT change illegal values.
+        // Explicitly use 'get' to test for any wrong type.
+        //noinspection deprecation
         assertEquals("test", book.getRawData().get(DBKey.PRICE_PAID));
         assertNull(book.getString(DBKey.PRICE_PAID_CURRENCY, null));
     }
@@ -323,6 +325,7 @@ class BookTest
 
     private void dump(@NonNull final DataManager data) {
         for (final String key : data.keySet()) {
+            //noinspection deprecation
             final Object value = data.getRawData().get(key);
             Log.d(TAG, key + "=" + value);
         }
