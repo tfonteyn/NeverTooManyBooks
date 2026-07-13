@@ -102,9 +102,22 @@ public class BedethequeSearchEngine
     /** Get the id from a Series url. */
     private static final Pattern SERIES_ID = Pattern.compile(".*/serie-(\\d+)-");
 
-    /** Later editions; heading format. */
+    /**
+     * Parsing the number in a series and the title.
+     * <p>
+     * Top of the page:
+     * {@code <h2>1<span class="numa">48</span>. Dick Digger's Gold Mine</h2>}
+     * In the edition table:
+     * {@code <h3 class="titre">9<span class="numa">a1978/01</span> . Les soucoupes volantes</h3>}
+     * <p>
+     * We grab the innerHtml from that code, and apply the pattern.
+     * Group 1 ((\d*)): Captures the "1" / "9".
+     * Group 2 ((\d*)): Captures the "48" / "a1978/01" inside the span.
+     * Group 3 ((.*)): Captures the title "Dick Digger's Gold Mine" / "Les soucoupes volantes".
+     */
     private static final Pattern NR_TITLE_PATTERN = Pattern.compile(
-            "(\\d*)\\s*<span.*/span>\\s?\\.\\s?(.*)");
+            "(\\d*)\\s*<span.*>(.*)</span\\s*>\\s*\\.\\s*(.*)");
+
     /** MM-YYYY. */
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
 
@@ -412,10 +425,7 @@ public class BedethequeSearchEngine
         }
 
         // Get the series from the top of the page.
-        final Element a = document.selectFirst("a[href^='https://www.bedetheque.com/serie-']");
-        if (a != null) {
-            parseSeries(a, book);
-        }
+        parseTopOfPageSeries(document, book);
 
         boolean isMainEdition = true;
 
@@ -433,10 +443,14 @@ public class BedethequeSearchEngine
                 for (final Element edition : editions) {
                     final Element albumMain = edition.selectFirst("div.album-main");
                     if (albumMain != null) {
-                        final Element infos = albumMain.selectFirst("div.album-main > ul.infos");
+                        final Element infos = albumMain.selectFirst("> ul.infos");
                         if (infos != null && matches(infos, searchedCode)) {
-                            parseEditionDetails(context, albumMain, infos, book);
+                            // may overwrite the series number which we found at the top
+                            // of the page. This is ok/intentional!
+                            parseEditionTitleAndSeriesNumber(albumMain, book);
+                            parseLabels(context, book, infos);
                             parseEditionCovers(context, edition, fetchCovers, book);
+
                             // quit the for-loop
                             isMainEdition = false;
                             break;
@@ -474,36 +488,168 @@ public class BedethequeSearchEngine
         }
     }
 
-    private void parseEditionDetails(@NonNull final Context context,
-                                     @NonNull final Element albumMain,
-                                     @NonNull final Element infos,
-                                     @NonNull final Book book) {
+    private void parseTopOfPageSeries(@NonNull final Document document,
+                                      @NonNull final Book book) {
+        final Element a = document.selectFirst("a[href^='https://www.bedetheque.com/serie-']");
+        if (a != null) {
+            final Series series = parseTopOfPageSeriesTitle(a, book);
+            if (series != null) {
+                parseTopOfPageSeriesNumber(document, series);
+            }
+        }
+    }
 
-        // The title and series nr is a heading
-        final Element titleElement = albumMain.selectFirst("h3.titre");
-        if (titleElement != null) {
-            // <h3 class="titre">9<span class="numa">a1978/01</span> . Les soucoupes volantes</h3>
-            // grab the HTML, to avoid the concatenation of the text
-            // in the span. We might later want to extract that text as well
-            final Matcher matcher = NR_TITLE_PATTERN.matcher(titleElement.html());
-            if (matcher.find()) {
-                final String s = matcher.group(2);
-                if (s != null) {
-                    final String title = SearchEngineUtils.cleanText(s);
-                    if (!title.isBlank()) {
-                        book.setTitle(title);
-                        final String nrInSeries = matcher.group(1);
-                        // educated gamble, add the nr to the first/only series we parsed earlier
-                        final List<Series> series = book.getSeries();
-                        if (!series.isEmpty()) {
-                            series.get(0).setNumber(nrInSeries);
-                        }
+    /**
+     * Parse the Series title as seen at the top of the page.
+     *
+     * @param a     the element to parse
+     * @param book to update
+     *
+     * @return a new Series instance, <strong>ADDED to the book</strong>
+     *
+     * @see #parseEditionTitleAndSeriesNumber(Element, Book)
+     */
+    @Nullable
+    private Series parseTopOfPageSeriesTitle(@NonNull final Element a,
+                                             @NonNull final Book book) {
+        final String url = a.attr("href");
+        final Matcher matcher = SERIES_ID.matcher(url);
+        final String sid = matcher.find() ? matcher.group(1) : null;
+
+        final String title = a.text();
+        if (!title.isEmpty()) {
+            final Series series = parseTopOfPageSeriesTitle(title, book);
+            if (sid != null) {
+                series.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
+            }
+            book.add(series);
+            return series;
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse the text from a series field.
+     * If it contains a language part, that language is is set on the given book.
+     * The text itself and simple prefixes are cleaned.
+     * <p>
+     * Dev note: this method only exists to facilitate testing. It should
+     * only be interpreted as used by {@link #parseTopOfPageSeriesTitle(Element, Book)}.
+     *
+     * @param text to parse
+     * @param book for adding the potential language to
+     *
+     * @return a new Series instance, <strong>NOT added to the book</strong>
+     */
+    @VisibleForTesting
+    @NonNull
+    Series parseTopOfPageSeriesTitle(@NonNull final String text,
+                                     @NonNull final Book book) {
+        // Series names can be formatted in a LOT of ways.
+        // We're not going to try and capture each and every special format
+        // but stick to the most common ones.
+        String seriesName = SearchEngineUtils.cleanName(text);
+
+        Matcher matcher;
+
+        // Try extracting a language
+        matcher = SERIES_WITH_LANGUAGE.matcher(seriesName);
+        if (matcher.find()) {
+            String maybeLanguage = matcher.group(2);
+            if (maybeLanguage != null) {
+                final int space = maybeLanguage.indexOf(' ');
+                if (space > 1) {
+                    // Lucky Luke Classics (en espagnol - Ediciones Kraken)
+                    maybeLanguage = maybeLanguage.substring(0, space);
+                } else {
+                    // The brackets part was a 'pure' language; strip it
+                    final String n = matcher.group(1);
+                    if (n != null) {
+                        seriesName = n;
                     }
+                }
+                book.setLanguage(maybeLanguage);
+            }
+        }
+
+        // Find/move a simple "Le|La/Les|L'" prefix
+        matcher = SERIES_WITH_SIMPLE_PREFIX.matcher(seriesName);
+        if (matcher.find()) {
+            final String n = matcher.group(1);
+            final String prefix = matcher.group(2);
+            if (n != null && prefix != null) {
+                if (prefix.endsWith("'")) {
+                    seriesName = prefix + n;
+                } else {
+                    seriesName = prefix + ' ' + n;
                 }
             }
         }
 
-        parseLabels(context, book, infos);
+        // plain constructor, no extra parsing
+        return new Series(seriesName);
+    }
+
+    private void parseTopOfPageSeriesNumber(@NonNull final Document document,
+                                            @NonNull final Series series) {
+        // Parse the series number.
+        // Can be overwritten when a particular edition is parsed further on
+        final Element seriesNrElement = document.selectFirst("div.bandeau-info.album.panier h2");
+        if (seriesNrElement == null) {
+            return;
+        }
+        final Matcher matcher = NR_TITLE_PATTERN.matcher(seriesNrElement.html());
+        if (!matcher.find()) {
+            return;
+        }
+        // We're ignoring group 3 which is the title, we'll get that from parseLabels
+        // or from the edition data which can be a variation of the title
+
+        // The only number, OR the number in the original series
+        //noinspection DataFlowIssue
+        final String firstNum = matcher.group(1).strip();
+        // The number in THIS series, the span can be empty if there is none
+        // in which case we use firstNum.
+        //noinspection DataFlowIssue
+        final String secondNum = matcher.group(2).strip();
+
+        final String nr = secondNum.isEmpty() ? firstNum : secondNum;
+        if (!nr.isEmpty()) {
+            series.setNumber(nr);
+        }
+    }
+
+    private void parseEditionTitleAndSeriesNumber(@NonNull final Element albumMain,
+                                                  @NonNull final Book book) {
+        // The title and series nr is a heading
+        final Element titleElement = albumMain.selectFirst("h3.titre");
+        if (titleElement == null) {
+            return;
+        }
+        // group 1: the number
+        // group 3: title.
+        // Note we are NOT grabbing group 2 here, as the value
+        // is not structured. It can be an alternative number, or a date code.
+        final Matcher matcher = NR_TITLE_PATTERN.matcher(titleElement.html());
+        if (!matcher.find()) {
+            return;
+        }
+        final String titleGroup = matcher.group(3);
+        if (titleGroup == null) {
+            return;
+        }
+        final String title = SearchEngineUtils.cleanText(titleGroup);
+        if (title.isBlank()) {
+            return;
+        }
+        book.setTitle(title);
+        final String nrInSeries = matcher.group(1);
+        // educated gamble, add the nr to the first/only series we parsed earlier
+        final List<Series> series = book.getSeries();
+        if (!series.isEmpty()) {
+            series.get(0).setNumber(nrInSeries);
+        }
     }
 
     private void parseEditionCovers(@NonNull final Context context,
@@ -675,7 +821,17 @@ public class BedethequeSearchEngine
                     break;
                 }
                 case "Tome :": {
-                    parseTome(labelElement, book);
+                    // NOT PARSED. See parseTopOfPageSeries* methods.
+                    // While it would be easier to parse the "Tome" element,
+                    // the site has a bug:
+                    // Some books (non-french only?) have two numbers
+                    // which the site concatenates.
+                    // e.g. the series "Lucky Luke (en anglais)":
+                    // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
+                    // have BOTH "1" and "48" ... and we end up with "148"
+                    // The "1" is the number in the original series.
+                    // The "48" is the number of the actual book in this specific series.
+                    // i.o.w. this specific series published the books in a new/different order.
                     break;
                 }
                 case "Identifiant :": {
@@ -834,27 +990,6 @@ public class BedethequeSearchEngine
         }
     }
 
-    private void parseTome(@NonNull final Element labelElement,
-                           @NonNull final Book book) {
-        //FIXME: some books (non-french only?) have two numbers
-        // which the site concatenates.
-        // e.g. the series "Lucky Luke (en anglais)":
-        // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
-        // have BOTH "1" and "48" ... and we end up with "148"
-        // The "1" is the number in the original series.
-        // The "48" is the number of the actual book in this specific series.
-        // i.o.w. this specific series published the books in a new/different order.
-        // This is clearly a bug on the site... not much we can do about that.
-        // The only solution... never parse the mainSection,
-        // but always parse the edition-section...  to be decided later...
-        final Node textNode = labelElement.nextSibling();
-        final List<Series> seriesList = book.getSeries();
-        if (textNode != null && !seriesList.isEmpty()) {
-            seriesList.get(seriesList.size() - 1)
-                      .setNumber(textNode.toString().strip());
-        }
-    }
-
     @Nullable
     private String parseLabelText(@NonNull final Element label) {
         // the main section has a span
@@ -933,84 +1068,6 @@ public class BedethequeSearchEngine
                 break;
             }
         }
-    }
-
-    private void parseSeries(@NonNull final Element a,
-                             @NonNull final Book book) {
-        final String url = a.attr("href");
-        final Matcher matcher = SERIES_ID.matcher(url);
-        final String sid = matcher.find() ? matcher.group(1) : null;
-
-        final String title = a.text();
-        if (!title.isEmpty()) {
-            final Series series = parseSeries(title, book);
-            if (sid != null) {
-                series.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
-            }
-            book.add(series);
-        }
-    }
-
-    /**
-     * Parse the text from a series field.
-     * If it contains a language part, that language is is set on the given book.
-     * The text itself and simple prefixes are cleaned.
-     * <p>
-     * Dev note: this method only exists to ease testing. It should
-     * only be interpreted as used by {@link #parseSeries(Element, Book)}.
-     *
-     * @param text to parse
-     * @param book for adding the potential language to
-     *
-     * @return a new Series instance, <strong>NOT added to the book</strong>
-     */
-    @VisibleForTesting
-    @NonNull
-    Series parseSeries(@NonNull final String text,
-                       @NonNull final Book book) {
-        // Series names can be formatted in a LOT of ways.
-        // We're not going to try and capture each and every special format
-        // but stick to the most common ones.
-        String seriesName = SearchEngineUtils.cleanName(text);
-
-        Matcher matcher;
-
-        // Try extracting a language
-        matcher = SERIES_WITH_LANGUAGE.matcher(seriesName);
-        if (matcher.find()) {
-            String maybeLanguage = matcher.group(2);
-            if (maybeLanguage != null) {
-                final int space = maybeLanguage.indexOf(' ');
-                if (space > 1) {
-                    // Lucky Luke Classics (en espagnol - Ediciones Kraken)
-                    maybeLanguage = maybeLanguage.substring(0, space);
-                } else {
-                    // The brackets part was a 'pure' language; strip it
-                    final String n = matcher.group(1);
-                    if (n != null) {
-                        seriesName = n;
-                    }
-                }
-                book.setLanguage(maybeLanguage);
-            }
-        }
-
-        // Find/move a simple "Le|La/Les|L'" prefix
-        matcher = SERIES_WITH_SIMPLE_PREFIX.matcher(seriesName);
-        if (matcher.find()) {
-            final String n = matcher.group(1);
-            final String prefix = matcher.group(2);
-            if (n != null && prefix != null) {
-                if (prefix.endsWith("'")) {
-                    seriesName = prefix + n;
-                } else {
-                    seriesName = prefix + ' ' + n;
-                }
-            }
-        }
-
-        // plain constructor, no extra parsing
-        return new Series(seriesName);
     }
 
     /**

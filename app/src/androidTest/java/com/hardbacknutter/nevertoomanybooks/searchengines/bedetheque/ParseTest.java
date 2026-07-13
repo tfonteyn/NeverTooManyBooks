@@ -74,6 +74,245 @@ class ParseTest
 
     @Test
     void parse01()
+            throws SearchException, CredentialsException, StorageException, IOException {
+
+        // Blondin et Cirage:  Les soucoupes volantes
+        final String locationHeader = "https://www.bedetheque.com/BD-Blondin-et-Cirage-Tome-9a1978-01-Les-soucoupes-volantes-18770.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bedetheque_multi_edition_blondin_cirage;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true},
+                           null, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Les soucoupes volantes", book.getString(DBKey.TITLE, null));
+        assertNull(book.getString(DBKey.ISBN, null));
+        assertEquals("18770", book.requireIdentifierValue(Identifier.SID_BEDETHEQUE));
+
+        assertEquals("1956-01", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("64", book.getString(DBKey.PAGES, null));
+        assertEquals("Quadrichromie", book.getString(DBKey.COLOR, null));
+        assertEquals("fra", book.getString(DBKey.LANGUAGE, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Dupuis", allPublishers.get(0).getName());
+
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
+
+        final Series series = allSeries.get(0);
+        assertEquals("Blondin et Cirage", series.getTitle());
+        assertEquals("9", series.getNumber());
+        assertEquals("2445", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        Author author = authors.get(0);
+        assertEquals("Jijé", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
+        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
+        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
+        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        author = author.getRealAuthor();
+        assertNotNull(author);
+        assertEquals("Gillain", author.getFamilyName());
+        assertEquals("Joseph", author.getGivenNames());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
+        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
+        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
+        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "__0_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "__1_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
+    }
+
+    /**
+     * Uses the same page/raw res file as {@link #parse01()}
+     * but adds a specific later edition isbn to the parser.
+     */
+    @Test
+    void parse01LaterEdition()
+            throws SearchException, CredentialsException, StorageException, IOException {
+
+        // Blondin et Cirage:  Les soucoupes volantes
+        // but a later edition, Collection : Péchés de jeunesse
+        final String locationHeader = "https://www.bedetheque.com/BD-Blondin-et-Cirage-Tome-9a1978-01-Les-soucoupes-volantes-18770.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bedetheque_multi_edition_blondin_cirage;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true},
+                           ISBN.parseISBN("280010578X"),
+                           book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Les soucoupes volantes", book.getString(DBKey.TITLE, null));
+        assertEquals("280010578X", book.getString(DBKey.ISBN, null));
+        assertEquals("9318", book.requireIdentifierValue(Identifier.SID_BEDETHEQUE));
+
+        assertEquals("1978-01", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("45", book.getString(DBKey.PAGES, null));
+        assertEquals("Quadrichromie", book.getString(DBKey.COLOR, null));
+        assertEquals("fra", book.getString(DBKey.LANGUAGE, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Dupuis", allPublishers.get(0).getName());
+
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
+
+        final Series series = allSeries.get(0);
+        assertEquals("Blondin et Cirage", series.getTitle());
+        assertEquals("9", series.getNumber());
+        assertEquals("2445", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+
+        Author author = authors.get(0);
+        assertEquals("Jijé", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
+        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
+        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
+        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        author = author.getRealAuthor();
+        assertNotNull(author);
+        assertEquals("Gillain", author.getFamilyName());
+        assertEquals("Joseph", author.getGivenNames());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
+        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
+        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
+        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        author = authors.get(1);
+        assertEquals("Roque", author.getFamilyName());
+        assertEquals("Carlos", author.getGivenNames());
+        assertEquals("1936-04-12", author.getBirthDate().orElse(null));
+        assertEquals("2006-07-27", author.getDeathDate().orElse(null));
+        assertEquals(AuthorRole.CONTRIBUTOR, author.getRole());
+        assertEquals("32388", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_0_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_1_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_2_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
+    }
+
+    @Test
+    void parse02()
+            throws SearchException, CredentialsException, StorageException, IOException {
+
+        final String locationHeader = "https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bedetheque_dig_diggers_in_english;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false},
+                           null, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Dick Digger's Gold Mine", book.getString(DBKey.TITLE, null));
+        assertEquals("9781849182089", book.getString(DBKey.ISBN, null));
+        assertEquals("227463", book.requireIdentifierValue(Identifier.SID_BEDETHEQUE));
+        assertEquals("2014-08", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("48", book.getString(DBKey.PAGES, null));
+        assertEquals("anglais", book.getString(DBKey.LANGUAGE, null));
+
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Dick Digger, an old pal of Lucky Luke’s, has struck gold in the hills."));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Cinebook", allPublishers.get(0).getName());
+
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
+
+        final Series series = allSeries.get(0);
+        assertEquals("Lucky Luke", series.getTitle());
+        assertEquals("48", series.getNumber());
+        assertEquals("23208", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        Author author = authors.get(0);
+        assertEquals("Morris", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST | AuthorRole.COLORIST, author.getRole());
+        assertEquals("1923-12-01", author.getBirthDate().orElse(null));
+        assertEquals("2001-07-17", author.getDeathDate().orElse(null));
+        assertEquals("111", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+        assertTrue(author.getTmpPictureFileSpec().orElse("").endsWith("_bedetheque_111_0_.jpg"));
+
+        author = author.getRealAuthor();
+        assertNotNull(author);
+        assertEquals("De Bevere", author.getFamilyName());
+        assertEquals("Maurice", author.getGivenNames());
+        assertEquals(AuthorRole.UNKNOWN, author.getRole());
+        assertEquals("1923-12-01", author.getBirthDate().orElse(null));
+        assertEquals("2001-07-17", author.getDeathDate().orElse(null));
+        assertEquals("111", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
+        assertTrue(author.getTmpPictureFileSpec().orElse("").endsWith("_bedetheque_111_0_.jpg"));
+    }
+
+    @Test
+    void parse03()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.bedetheque.com/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
@@ -158,181 +397,4 @@ class ParseTest
         assertEquals(0, covers.size());
     }
 
-    @Test
-    void isbnExactEdition01()
-            throws SearchException, CredentialsException, StorageException, IOException {
-
-        // Blondin et Cirage:  Les soucoupes volantes
-        final String locationHeader = "https://www.bedetheque.com/BD-Blondin-et-Cirage-Tome-9a1978-01-Les-soucoupes-volantes-18770.html";
-        final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.bedetheque_multi_edition_blondin_cirage;
-
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true, true, true},
-                           null, book);
-        Log.d(TAG, book.toString());
-
-        assertEquals("Les soucoupes volantes", book.getString(DBKey.TITLE, null));
-        assertNull(book.getString(DBKey.ISBN, null));
-        assertEquals("18770", book.requireIdentifierValue(Identifier.SID_BEDETHEQUE));
-
-        assertEquals("1956-01", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
-        assertEquals("64", book.getString(DBKey.PAGES, null));
-        assertEquals("Quadrichromie", book.getString(DBKey.COLOR, null));
-        assertEquals("fra", book.getString(DBKey.LANGUAGE, null));
-
-        final List<Publisher> allPublishers = book.getPublishers();
-        assertNotNull(allPublishers);
-        assertEquals(1, allPublishers.size());
-        assertEquals("Dupuis", allPublishers.get(0).getName());
-
-        final List<Series> allSeries = book.getSeries();
-        assertNotNull(allSeries);
-        assertEquals(1, allSeries.size());
-
-        final Series series = allSeries.get(0);
-        assertEquals("Blondin et Cirage", series.getTitle());
-        assertEquals("9", series.getNumber());
-        assertEquals("2445", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
-
-        final List<Author> authors = book.getAuthors();
-        assertNotNull(authors);
-        assertEquals(1, authors.size());
-
-        Author author = authors.get(0);
-        assertEquals("Jijé", author.getFamilyName());
-        assertEquals("", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
-        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
-        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
-        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
-
-        author = author.getRealAuthor();
-        assertNotNull(author);
-        assertEquals("Gillain", author.getFamilyName());
-        assertEquals("Joseph", author.getGivenNames());
-        assertEquals(AuthorRole.UNKNOWN, author.getRole());
-        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
-        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
-        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
-
-        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-        List<String> covers;
-        covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "__0_.jpg"));
-
-        covers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "__1_.jpg"));
-
-        covers = CoverFileSpecArray.getList(book, 2);
-        assertNotNull(covers);
-        assertEquals(0, covers.size());
-
-        covers = CoverFileSpecArray.getList(book, 3);
-        assertNotNull(covers);
-        assertEquals(0, covers.size());
-    }
-
-    /**
-     * Uses the same page/raw res file as {@link #isbnExactEdition01()}
-     * but adds a specific later edition isbn to the parser.
-     */
-    @Test
-    void isbnLaterEdition01()
-            throws SearchException, CredentialsException, StorageException, IOException {
-
-        // Blondin et Cirage:  Les soucoupes volantes
-        // but a later edition, Collection : Péchés de jeunesse
-        final String locationHeader = "https://www.bedetheque.com/BD-Blondin-et-Cirage-Tome-9a1978-01-Les-soucoupes-volantes-18770.html";
-        final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.bedetheque_multi_edition_blondin_cirage;
-
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true, true, true},
-                           ISBN.parseISBN("280010578X"),
-                           book);
-        Log.d(TAG, book.toString());
-
-        assertEquals("Les soucoupes volantes", book.getString(DBKey.TITLE, null));
-        assertEquals("280010578X", book.getString(DBKey.ISBN, null));
-        assertEquals("9318", book.requireIdentifierValue(Identifier.SID_BEDETHEQUE));
-
-        assertEquals("1978-01", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
-        assertEquals("45", book.getString(DBKey.PAGES, null));
-        assertEquals("Quadrichromie", book.getString(DBKey.COLOR, null));
-        assertEquals("fra", book.getString(DBKey.LANGUAGE, null));
-
-        final List<Publisher> allPublishers = book.getPublishers();
-        assertNotNull(allPublishers);
-        assertEquals(1, allPublishers.size());
-        assertEquals("Dupuis", allPublishers.get(0).getName());
-
-        final List<Series> allSeries = book.getSeries();
-        assertNotNull(allSeries);
-        assertEquals(1, allSeries.size());
-
-        final Series series = allSeries.get(0);
-        assertEquals("Blondin et Cirage", series.getTitle());
-        assertEquals("9", series.getNumber());
-        assertEquals("2445", series.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
-
-        final List<Author> authors = book.getAuthors();
-        assertNotNull(authors);
-        assertEquals(2, authors.size());
-
-        Author author = authors.get(0);
-        assertEquals("Jijé", author.getFamilyName());
-        assertEquals("", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
-        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
-        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
-        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
-
-        author = author.getRealAuthor();
-        assertNotNull(author);
-        assertEquals("Gillain", author.getFamilyName());
-        assertEquals("Joseph", author.getGivenNames());
-        assertEquals(AuthorRole.UNKNOWN, author.getRole());
-        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
-        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
-        assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
-
-        author = authors.get(1);
-        assertEquals("Roque", author.getFamilyName());
-        assertEquals("Carlos", author.getGivenNames());
-        assertEquals("367", author.getIdentifiers().get(0).getSid());
-        assertEquals("1936-04-12", author.getBirthDate().orElse(null));
-        assertEquals("2006-07-27", author.getDeathDate().orElse(null));
-        assertEquals(AuthorRole.CONTRIBUTOR, author.getRole());
-        assertEquals("32388", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
-
-        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-        List<String> covers;
-        covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_0_.jpg"));
-
-        covers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_1_.jpg"));
-
-        covers = CoverFileSpecArray.getList(book, 2);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_2_.jpg"));
-
-        covers = CoverFileSpecArray.getList(book, 3);
-        assertNotNull(covers);
-        assertEquals(0, covers.size());
-    }
 }
