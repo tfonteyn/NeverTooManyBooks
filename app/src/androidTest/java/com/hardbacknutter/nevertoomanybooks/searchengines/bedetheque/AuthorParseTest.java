@@ -143,15 +143,15 @@ class AuthorParseTest
         final boolean ok = authorListLoader.parseAuthorList(document);
         assertTrue(ok);
 
-        // There should be 2585 authors, which we have verified during parsing to be correct.
-        // However, there are only 2578 stored in the database.
-        // This is likely due to merging some of them due to identical family names
-        // and one of them not having a firstname set.
-        // FIXME: figure out why we get less authors in the cache than expected, low
-        //  priority as this is a cache only.
+        // There should be 3138 authors, which we have verified during parsing to be correct.
+        // However, there are only 3124 stored in the database.
+        // This is caused by the site data sometimes listing the same person
+        // but under a variation name:
+        // - La Rosa, Bud
+        // - Larosa, Bud
+        // Nothing we can do about that... the site needs to fix their lists.
         final int countAuthors = bedethequeCacheDao.countAuthors();
-        assertEquals(2578, countAuthors);
-//        assertEquals(2585, countAuthors);
+        assertEquals(3124, countAuthors);
     }
 
     @Test
