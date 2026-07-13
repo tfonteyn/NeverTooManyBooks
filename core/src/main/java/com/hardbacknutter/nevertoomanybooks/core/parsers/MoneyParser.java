@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,15 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 
+/**
+ * A parser for monetary values and their currency units.
+ * <p>
+ * Currency symbol parsing is best-effort.
+ * There are overlaps, e.g. pre-euro "fr"/BEL and Swiss "fr"/CHF and some others.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language">
+ *         English as an official language</a>
+ */
 public class MoneyParser {
     /** European Union Euro. */
     public static final String EUR = "EUR";
@@ -55,8 +65,16 @@ public class MoneyParser {
     private static final Pattern SHILLING_PENCE_PATTERN = Pattern.compile("(\\d*|-?)/(\\d*|-?)");
     /** HTML cleaning. */
     private static final Pattern NBSP_LITERAL = Pattern.compile("&nbsp;", Pattern.LITERAL);
-    /** A Map to translate currency <strong>symbols</strong> to their official ISO code. */
-    private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
+    /**
+     * A Map to translate currency <strong>symbols</strong> to their official ISO code.
+     * This is a fixed/static map with historical symbols and overrides.
+     */
+    private static final Map<String, String> HISTORIC_EXCEPTIONS = new HashMap<>();
+    /**
+     * A Map to translate currency <strong>symbols</strong> to their official ISO code.
+     * This is dynamically build from all currencies, using the {@link #locale}.
+     */
+    private final Map<String, String> dynamicCurrencyMap;
     @NonNull
     private final Locale locale;
     @NonNull
@@ -72,6 +90,98 @@ public class MoneyParser {
                        @NonNull final List<Locale> numberLocales) {
         this.locale = currencyLocale;
         this.realNumberParser = RealNumberParser.money(numberLocales);
+
+        dynamicCurrencyMap = createDynamicCurrencyMap(currencyLocale);
+        if (HISTORIC_EXCEPTIONS.isEmpty()) {
+            createCurrencyMap();
+        }
+    }
+
+    /**
+     * Populate the {@link #HISTORIC_EXCEPTIONS}.
+     * This is used during parsing of price/currency strings.
+     * <p>
+     * The key in the map must be <strong>LOWER-case</strong>.
+     * The value in the map must be <strong>UPPER-case</strong>.
+     * <p>
+     * This is a fixed/static map with historical symbols and overrides.
+     */
+    private static void createCurrencyMap() {
+        // allow re-creating, used for tests only
+        HISTORIC_EXCEPTIONS.clear();
+
+        // =========================================================================
+        // Legacy European Currencies; replaced by the Euro.
+        // =========================================================================
+        HISTORIC_EXCEPTIONS.put("dm", "DEM");   // German Mark
+        HISTORIC_EXCEPTIONS.put("m", "DEM");    // German Mark / East German Mark shorthand
+        HISTORIC_EXCEPTIONS.put("f", "FRF");    // French Franc
+        HISTORIC_EXCEPTIONS.put("ff", "FRF");   // French Franc
+        HISTORIC_EXCEPTIONS.put("bfr", "BEF");  // Belgian Franc
+        HISTORIC_EXCEPTIONS.put("fr.", "BEF");  // Belgian Franc
+        HISTORIC_EXCEPTIONS.put("fr", "BEF");   // Belgian Franc (overrides CHF 'Fr')
+        HISTORIC_EXCEPTIONS.put("ir£", "IEP");  // Irish Punt
+        HISTORIC_EXCEPTIONS.put("l", "ITL");    // Italian Lira
+        HISTORIC_EXCEPTIONS.put("lit", "ITL");  // Italian Lira
+        HISTORIC_EXCEPTIONS.put("pta", "ESP");  // Spanish Peseta
+        HISTORIC_EXCEPTIONS.put("ƒ", "NLG");    // Dutch Guilder
+        HISTORIC_EXCEPTIONS.put("Δρ", "GRD");   // Greek Drachma
+        HISTORIC_EXCEPTIONS.put("kn", "HRK");   // Croatian Kuna
+        HISTORIC_EXCEPTIONS.put("ls", "LVL");   // Latvian Lats
+        HISTORIC_EXCEPTIONS.put("sk", "SKK");   // Slovak Koruna
+        HISTORIC_EXCEPTIONS.put("ös", "ATS");   // Austrian Schilling
+        HISTORIC_EXCEPTIONS.put("sch", "ATS");  // Austrian Schilling
+        HISTORIC_EXCEPTIONS.put("esc", "PTE");  // Portuguese Escudo
+        HISTORIC_EXCEPTIONS.put("mk", "FIM");   // Finnish Markka
+        HISTORIC_EXCEPTIONS.put("sit", "SIT");  // Slovenian Tolar
+        HISTORIC_EXCEPTIONS.put("lt", "LTL");   // Lithuanian Litas
+        HISTORIC_EXCEPTIONS.put("lm", "MTL");   // Maltese Lira
+        HISTORIC_EXCEPTIONS.put("lfr", "LUF");  // Luxembourgish Franc
+
+        // =========================================================================
+        // Multi-Character & Regional Disambiguations
+        // =========================================================================
+        HISTORIC_EXCEPTIONS.put("a$", "AUD");   // Australian Dollar
+        HISTORIC_EXCEPTIONS.put("c$", "CAD");   // Canadian Dollar
+        HISTORIC_EXCEPTIONS.put("nz$", "NZD");  // New Zealand Dollar
+        HISTORIC_EXCEPTIONS.put("s$", "SGD");   // Singapore Dollar
+        HISTORIC_EXCEPTIONS.put("nt$", "TWD");  // Taiwan Dollar
+        HISTORIC_EXCEPTIONS.put("r$", "BRL");   // Brazilian Real
+        HISTORIC_EXCEPTIONS.put("mx$", "MXN");  // Mexican Peso
+        HISTORIC_EXCEPTIONS.put("r", "ZAR");    // South African Rand
+        HISTORIC_EXCEPTIONS.put("rm", "MYR");   // Malaysian Ringgit
+
+        // =========================================================================
+        // Non-Standard Abbreviations / Native Text Suffixes
+        // =========================================================================
+        HISTORIC_EXCEPTIONS.put("br", "RUB");   // Custom representation for Russian Rouble
+        HISTORIC_EXCEPTIONS.put("ft", "HUF");   // Hungarian Forint abbreviation
+        HISTORIC_EXCEPTIONS.put("kc", "CZK");   // Czech Koruna abbreviation
+        HISTORIC_EXCEPTIONS.put("kč", "CZK");   // Czech Koruna abbreviation
+        HISTORIC_EXCEPTIONS.put("lei", "RON");  // Romanian Leu text representation
+        HISTORIC_EXCEPTIONS.put("zł", "PLN");   // Polish Złoty symbol
+        HISTORIC_EXCEPTIONS.put("din", "YUD");  // Yugoslav Dinar
+        HISTORIC_EXCEPTIONS.put("lev", "BGN");  // Bulgarian Lev
+        HISTORIC_EXCEPTIONS.put("hrn", "UAH");  // Ukrainian Hryvnia
+        HISTORIC_EXCEPTIONS.put("tl", "TRY");   // Turkish Lira
+
+        HISTORIC_EXCEPTIONS.put("dkr", "DKK");  // Danish Krone
+        HISTORIC_EXCEPTIONS.put("nkr", "NOK");  // Norwegian Krone
+        HISTORIC_EXCEPTIONS.put("skr", "SEK");  // Swedish Krona
+        HISTORIC_EXCEPTIONS.put("ikr", "ISK");  // Icelandic Króna
+
+        // =========================================================================
+        // Nordic Currency Choice Override
+        // =========================================================================
+        // We had DKK for quite a while, so leaving this as the default.
+        // We could pick one based on the user device locale and/or on
+        // a specific SearchEngine Local.
+        // This overrides:
+        // SEK (Swedish)
+        // NOK (Norway)
+        // ISK(Iceland)
+        // EEK (Estonia)
+        HISTORIC_EXCEPTIONS.put("kr", "DKK");  // Danish Krone
     }
 
     /**
@@ -88,7 +198,7 @@ public class MoneyParser {
     @NonNull
     public static Money parse(@NonNull final BigDecimal value,
                               @Nullable final String currencyStr) {
-        if (currencyStr != null && !currencyStr.isEmpty()) {
+        if (currencyStr != null && !currencyStr.isBlank()) {
             try {
                 final Currency currency = Currency.getInstance(currencyStr);
                 return new Money(value, currency);
@@ -107,11 +217,11 @@ public class MoneyParser {
             String tmp;
 
             tmp = matcher.group(1);
-            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+            if (tmp != null && !tmp.isBlank() && !"-".equals(tmp)) {
                 shillings = Integer.parseInt(tmp);
             }
             tmp = matcher.group(2);
-            if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+            if (tmp != null && !tmp.isBlank() && !"-".equals(tmp)) {
                 pence = Integer.parseInt(tmp);
             }
 
@@ -127,73 +237,27 @@ public class MoneyParser {
         return Optional.empty();
     }
 
-    /**
-     * Populate CURRENCY_MAP. This is used during parsing of price/currency strings.
-     * <p>
-     * The key in the map must be <strong>LOWER-case</strong>.
-     * The value in the map must be <strong>UPPER-case</strong>.
-     * <p>
-     * We can't add all possible values, so we add the ones from English-speaking countries,
-     * the Euro countries (and their legacy currencies) and the ones we specifically
-     * support by having a locale (translation) for.
-     * <p>
-     * Others can/will be added as needed.
-     *
-     * @see <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language">
-     *         English as an official language</a>
-     */
-    private static void createCurrencyMap() {
-        // allow re-creating
-        CURRENCY_MAP.clear();
+    @NonNull
+    private Map<String, String> createDynamicCurrencyMap(final Locale locale) {
+        final Map<String, String> dynamicMap = new HashMap<>();
 
-        CURRENCY_MAP.put("", "");
-        CURRENCY_MAP.put("€", EUR);
+        for (final Currency currency : Currency.getAvailableCurrencies()) {
+            final String code = currency.getCurrencyCode();
+            final String symbol = currency.getSymbol(locale).toLowerCase(locale);
 
-        // English
-        CURRENCY_MAP.put("$", USD);     // US Dollar
-        CURRENCY_MAP.put("a$", "AUD");  // Australian Dollar
-        CURRENCY_MAP.put("c$", "CAD");  // Canadian Dollar
-        CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
-        CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
-        CURRENCY_MAP.put("s$", "SGD");  // Singapore dollar
-        CURRENCY_MAP.put("£", GBP);     // British Pound
+            // Some symbols are used by multiple countries (e.g., '$')
+            // Give preference to the native currency of the website's locale.
+            if (currency.equals(Currency.getInstance(locale))) {
+                dynamicMap.put(symbol, code);
+            } else {
+                dynamicMap.putIfAbsent(symbol, code);
+            }
 
-        // supported locales (including pre-euro)
-        CURRENCY_MAP.put("br", "RUB");  // Russian Rouble
-        CURRENCY_MAP.put("dm", "DEM");  // German Marks
-        CURRENCY_MAP.put("f", "FRF");   // French Franc
-        CURRENCY_MAP.put("ff", "FRF");  // French Franc
-        CURRENCY_MAP.put("fr", "BEF");  // Belgian Franc
-        CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
-        CURRENCY_MAP.put("ft", "HUF");  // Hungarian Forint
-        CURRENCY_MAP.put("kc", "CZK");  // Czech Koruna
-        CURRENCY_MAP.put("kč", "CZK");  // Czech Koruna
-        CURRENCY_MAP.put("l", "ITL");   // Italian Lira
-        CURRENCY_MAP.put("lit", "ITL"); // Italian Lira
-        CURRENCY_MAP.put("nt$", "TWD"); // Taiwan dollar
-        CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
-        CURRENCY_MAP.put("zł", "PLN");  // Polish Zloty
-        CURRENCY_MAP.put("đ", "VND");   // Vietnamese đồng
-        CURRENCY_MAP.put("₫", "VND");   // Vietnamese đồng (a different symbol!)
-        CURRENCY_MAP.put("ƒ", "NLG");   // Dutch Guilder
-        CURRENCY_MAP.put("Δρ", "GRD");  // Greek Drachma
-        CURRENCY_MAP.put("₺", "TRY");   // Turkish Lira
-        CURRENCY_MAP.put("元", CNY);    // Chinese Yuan
+            // Also register the raw lowercase ISO code as a safe fallback match
+            dynamicMap.put(code.toLowerCase(locale), code);
+        }
 
-        // some others
-        CURRENCY_MAP.put("kn", "HRK");  // Croatian Kuna
-        CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
-        CURRENCY_MAP.put("ls", "LVL");  // Latvian Lats
-        CURRENCY_MAP.put("r$", "BRL");  // Brazilian Real
-        CURRENCY_MAP.put("sk", "SKK");  // Slovak Koruna
-        CURRENCY_MAP.put("¥", "JPY");   // Japanese Yen
-
-        // FIXME: These are a problem... they use the same symbol.
-        // We had DKK for quite a while, so leaving this as the default for now.
-        // We could pick one based on the user device locale and/or on
-        // a specific SearchEngine Local.
-        CURRENCY_MAP.put("kr", "DKK");  // Danish Krone
-        //CURRENCY_MAP.put("kr", "SEK");  // Swedish Krona
+        return Collections.unmodifiableMap(dynamicMap);
     }
 
 
@@ -213,7 +277,7 @@ public class MoneyParser {
             final String vwc = NBSP_LITERAL.matcher(valueWithCurrency)
                                            .replaceAll(" ")
                                            .strip();
-            if (vwc.isEmpty()) {
+            if (vwc.isBlank()) {
                 return Optional.empty();
             }
 
@@ -263,24 +327,23 @@ public class MoneyParser {
                                  @Nullable final String currencyStr) {
 
         Currency currency = null;
-        if (currencyStr != null && !currencyStr.isEmpty()) {
+        if (currencyStr != null && !currencyStr.isBlank()) {
             try {
                 // We MUST use the users Locale here as currencies can use local characters.
-                String currencyCode = currencyStr.strip().toUpperCase(locale);
-                // if we don't have a normalised ISO3 code, see if we can convert it to one.
-                if (currencyCode.length() != 3) {
-                    currencyCode = fromSymbol(currencyStr);
-                }
-                if (currencyCode != null && !currencyCode.isEmpty()) {
-                    // re-get the code in case it used a recognised but non-standard string
+                final String currencyCode = currencyStr.strip().toUpperCase(locale);
+                // If we have a normalised ISO3 code, use it.
+                // Otherwise try to convert it to one.
+                if (currencyCode.length() == 3) {
                     currency = Currency.getInstance(currencyCode);
+                } else {
+                    currency = fromSymbol(currencyStr);
                 }
             } catch (@NonNull final IllegalArgumentException ignore) {
                 // ignore
             }
         }
 
-        if (valueStr != null && !valueStr.isEmpty()) {
+        if (valueStr != null && !valueStr.isBlank()) {
             //noinspection OverlyBroadCatchBlock
             try {
                 final double value = realNumberParser.parseDouble(valueStr);
@@ -309,18 +372,30 @@ public class MoneyParser {
 
     /**
      * Convert the passed string with a (hopefully valid) currency unit/symbol,
-     * into the ISO code for that currency.
+     * into a Currency.
      *
      * @param symbol to convert
      *
-     * @return ISO code.
+     * @return Currency, or {@code null} if not found
      */
     @Nullable
-    private String fromSymbol(@NonNull final String symbol) {
-        if (CURRENCY_MAP.isEmpty()) {
-            createCurrencyMap();
+    private Currency fromSymbol(@NonNull final String symbol) {
+        if (symbol.isBlank()) {
+            return null;
         }
+
         final String key = symbol.strip().toLowerCase(locale);
-        return CURRENCY_MAP.get(key);
+
+        // Check static historical/overrides
+        if (HISTORIC_EXCEPTIONS.containsKey(key)) {
+            return Currency.getInstance(HISTORIC_EXCEPTIONS.get(key));
+        }
+
+        // otherwise the standard table
+        if (dynamicCurrencyMap.containsKey(key)) {
+            return Currency.getInstance(dynamicCurrencyMap.get(key));
+        }
+
+        return null;
     }
 }
