@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.entities.codes;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 public interface ProductCode {
 
@@ -96,5 +97,33 @@ public interface ProductCode {
         } else {
             return this.asText();
         }
+    }
+
+    /**
+     * Most (not all) sites want the ISSN formatted as "XXXX-XXXX".
+     * <p>
+     * The caller <strong>must</strong> have checked this is a valid
+     * {@link ProductCodeType#Issn8} or compatible.
+     *
+     * @param engineId for the required format
+     *
+     * @return formatted product code text
+     *
+     * @throws SearchException if the product code was not an Issn8 or compatible
+     */
+    @NonNull
+    default String getDashFormattedIssn8(@NonNull final EngineId engineId)
+            throws SearchException {
+        final String codeStr;
+        try {
+            codeStr = this.asText(ProductCodeType.Issn8);
+            if (codeStr.length() == 8) {
+                return codeStr.substring(0, 4) + "-" + codeStr.substring(4);
+            }
+        } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
+        }
+        // We should never get here... flw
+        throw new SearchException(engineId, "Failed to convert to Issn8: " + this, null);
     }
 }

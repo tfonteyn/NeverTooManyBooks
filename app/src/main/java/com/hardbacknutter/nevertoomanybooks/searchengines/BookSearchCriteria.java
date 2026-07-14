@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.content.Context;
-
 import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +31,6 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
@@ -53,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
  */
 public class BookSearchCriteria {
 
-    private static final String ERROR_FAILED_TO_CONVERT_TO_ISSN_8 = "Failed to convert to Issn8: ";
     private static final String ERROR_PRODUCT_CODE_NOT_SET = "ProductCode not set";
     private static final String ERROR_SID_NOT_SET = "SID not set";
 
@@ -105,41 +101,6 @@ public class BookSearchCriteria {
             fetchCovers[cIdx] = serviceLocator.isFieldEnabled(DBKey.COVER[cIdx]);
         }
         strictIsbn = ProductCodeValidity.getPreferredLevel() == ProductCodeValidity.Isbn;
-    }
-
-    /**
-     * Most (not all) sites want the ISSN formatted as "XXXX-XXXX".
-     *
-     * @param context     Current context
-     * @param engineId    for the required format
-     * @param productCode to format
-     *
-     * @return formatted product code text
-     *
-     * @throws SearchException if the product code was not an Issn8/compatible
-     */
-    @NonNull
-    public static String formatIssn8(@NonNull final Context context,
-                                     @NonNull final EngineId engineId,
-                                     @NonNull final ProductCode productCode)
-            throws SearchException {
-        final String codeStr;
-        try {
-            codeStr = productCode.asText(ProductCodeType.Issn8);
-        } catch (@NonNull final NumberFormatException e) {
-            // We should never get here... flw
-            throw new SearchException(engineId,
-                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
-                                      context.getString(R.string.error_unexpected));
-        }
-        if (codeStr.length() != 8) {
-            // We should never get here... flw
-            throw new SearchException(engineId,
-                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
-                                      context.getString(R.string.error_unexpected));
-        }
-
-        return codeStr.substring(0, 4) + "-" + codeStr.substring(4);
     }
 
     @Nullable
