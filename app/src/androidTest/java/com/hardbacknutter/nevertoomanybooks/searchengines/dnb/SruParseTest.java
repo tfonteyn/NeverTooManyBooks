@@ -91,7 +91,7 @@ class SruParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parse(context, document, ISBN.parse("9783453321892"),
+        searchEngine.parse(context, document, "9783453321892",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -155,7 +155,7 @@ class SruParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parse(context, document, ISBN.parse("9783426226681"),
+        searchEngine.parse(context, document, "9783426226681",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -208,7 +208,7 @@ class SruParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parse(context, document, ISBN.parse("9783734163296"),
+        searchEngine.parse(context, document, "9783734163296",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);
         Log.d(TAG, book.toString());
 
@@ -271,7 +271,7 @@ class SruParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader, Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parse(context, document, ISBN.parse("9783770411849"),
+        searchEngine.parse(context, document, "9783770411849",
                            new boolean[]{FETCH_COVER_0, false, false, false}, book);
         Log.d(TAG, book.toString());
 

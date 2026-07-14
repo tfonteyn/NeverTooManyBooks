@@ -81,7 +81,8 @@ public class DnbSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByIssn,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.ByExternalId {
 
     /** Main site, but NOT the search site. */
     private static final String SITE_URL = "https://www.dnb.de";
@@ -242,6 +243,24 @@ public class DnbSearchEngine
         );
     }
 
+
+    @NonNull
+    @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final BookSearchCriteria criteria)
+            throws StorageException, SearchException, CredentialsException {
+
+        final String externalId = criteria.requireSid(getEngineId());
+        final String url = createSearchUrl(SRU_DNB, SEARCH_INDEX_IDN + "=" + externalId);
+        final Document document = loadDocument(context, Parser.xmlParser(), url, null);
+
+        final Book book = new Book();
+        if (!isCancelled()) {
+            parse(context, document, null, criteria.getFetchCovers(), book);
+        }
+        return book;
+    }
+
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
@@ -255,7 +274,7 @@ public class DnbSearchEngine
 
         final Book book = new Book();
         if (!isCancelled()) {
-            parse(context, document, productCode, criteria.getFetchCovers(), book);
+            parse(context, document, codeStr, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -275,7 +294,7 @@ public class DnbSearchEngine
         final Book book = new Book();
 
         if (!isCancelled()) {
-            parseFromIssn(context, document, productCode, book);
+            parseFromIssn(context, document, codeStr, book);
         }
 
         return book;
@@ -287,20 +306,25 @@ public class DnbSearchEngine
                        @NonNull final BookSearchCriteria criteria)
             throws SearchException, CredentialsException, StorageException {
 
+        @NonNull
         String sru = SRU_DNB;
+        @Nullable
+        String codeStr = null;
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner query = new StringJoiner(" and ");
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = productCode.getFormatted(getEngineId());
+            codeStr = productCode.getFormatted(getEngineId());
             if (!codeStr.isBlank()) {
                 query.add(SEARCH_INDEX_NUM + "=" + codeStr);
                 if (productCode.getType() == ProductCodeType.Issn8
                     || productCode.getType() == ProductCodeType.Issn13) {
                     sru = SRU_ZDB;
                 }
+            } else {
+                codeStr = null;
             }
         }
 
@@ -320,7 +344,7 @@ public class DnbSearchEngine
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 
         if (!isCancelled()) {
-            parse(context, document, productCode, criteria.getFetchCovers(), book);
+            parse(context, document, codeStr, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -351,7 +375,7 @@ public class DnbSearchEngine
     @VisibleForTesting
     void parse(@NonNull final Context context,
                @NonNull final Document document,
-               @Nullable final ProductCode productCode,
+               @Nullable final String searchedCode,
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
             throws CredentialsException, StorageException {
@@ -364,7 +388,7 @@ public class DnbSearchEngine
 
         parseCommonTags(parser);
 
-        parser.finish(productCode);
+        parser.finish(searchedCode);
 
         authorResolverHelper.resolve(context, this, book);
 
@@ -383,7 +407,7 @@ public class DnbSearchEngine
     @VisibleForTesting
     void parseFromIssn(@NonNull final Context context,
                        @NonNull final Document document,
-                       @NonNull final ProductCode productCode,
+                       @NonNull final String searchedCode,
                        @NonNull final Book book) {
 
         final DnbBookParser parser = new DnbBookParser(context, document, book);
@@ -427,7 +451,7 @@ public class DnbSearchEngine
         book.getPrimaryPublisher()
             .ifPresent(p -> book.add(Author.asOrganisation(p.getName())));
 
-        parser.finish(productCode);
+        parser.finish(searchedCode);
     }
 
     /**

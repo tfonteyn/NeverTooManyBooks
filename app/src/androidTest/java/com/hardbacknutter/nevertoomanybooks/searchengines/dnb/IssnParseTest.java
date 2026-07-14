@@ -35,8 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -49,10 +47,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class IisnParseTest
+class IssnParseTest
         extends BaseDBTest {
 
-    private static final String TAG = "IisnParseTest";
+    private static final String TAG = "IssnParseTest";
 
     private static final String UTF_8 = "UTF-8";
 
@@ -73,14 +71,13 @@ class IisnParseTest
     @Test
     void m64er()
             throws IOException {
-        final ProductCode pc = ISBN.parse("0176-8824");
-
+        final String issn = "0176-8824";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.zdb_issn_0176_8824;
 
         final Document document = loadDocument(resId, UTF_8, "", Parser.xmlParser());
         final Book book = new Book();
-        searchEngine.parseFromIssn(context, document, pc, book);
+        searchEngine.parseFromIssn(context, document, issn, book);
 
         Log.d(TAG, book.toString());
 

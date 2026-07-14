@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -337,15 +336,17 @@ public class DnbBookParser {
      * Finish the parsing process.
      *
      * @param searchedCode to code which the user was searching for.
+     *                     It will be set on the book as its product code,
+     *                     if the the latter was not retrieved during the search
      */
-    public void finish(@Nullable final ProductCode searchedCode) {
+    public void finish(@Nullable final String searchedCode) {
         ServiceLocator.getInstance().getIdentifierDao().pruneList(ivs);
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
 
         if (!book.hasProductCode() && searchedCode != null) {
-            book.setRawProductCode(searchedCode.asText());
+            book.setRawProductCode(searchedCode);
         }
     }
 }
