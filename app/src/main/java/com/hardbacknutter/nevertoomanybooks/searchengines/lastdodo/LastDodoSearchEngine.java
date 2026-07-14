@@ -285,6 +285,8 @@ public class LastDodoSearchEngine
         }
 
         if (s.length() == 10) {
+            // This is the more or less standard ISBN-10 format.
+            // "XX-XXXX-XXX-X"
             return s.substring(0, 2) + '-'
                    + s.substring(2, 6) + '-'
                    + s.substring(6, 9) + '-'
@@ -292,6 +294,8 @@ public class LastDodoSearchEngine
         }
 
         if (s.length() == 13) {
+            // This is the site specific ISBN-13 formatting.
+            // "XXX-XX-XXX-XXXX-X"
             return s.substring(0, 3) + '-'
                    + s.substring(3, 5) + '-'
                    + s.substring(5, 9) + '-'
