@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -275,8 +276,10 @@ public class StripInfoReader
                 }
             } else {
                 // It's a new book. Download the full data set from the server.
-                final Book book = searchEngine
-                        .searchByExternalId(context, externalId, coversForNewBooks);
+                final BookSearchCriteria criteria = new BookSearchCriteria();
+                criteria.setSids(Map.of(EngineId.StripInfoBe, externalId));
+                criteria.setFetchCovers(coversForNewBooks);
+                final Book book = searchEngine.searchByExternalId(context, criteria);
                 CoverFileSpecArray.process(book);
 
                 insertBook(context, book);
@@ -311,7 +314,10 @@ public class StripInfoReader
             // The back cover is *not* available on the collection page.
             // Download the full data set from the server.
             // The siBook data is superseded by this new data.
-            dataToMerge = searchEngine.searchByExternalId(context, externalId, coversWanted);
+            final BookSearchCriteria criteria = new BookSearchCriteria();
+            criteria.setSids(Map.of(EngineId.StripInfoBe, externalId));
+            criteria.setFetchCovers(coversWanted);
+            dataToMerge = searchEngine.searchByExternalId(context, criteria);
             CoverFileSpecArray.process(dataToMerge);
         } else {
             // We have all we need in the incoming siBook

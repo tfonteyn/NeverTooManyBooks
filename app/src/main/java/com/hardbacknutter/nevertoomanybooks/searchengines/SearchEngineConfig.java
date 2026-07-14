@@ -242,7 +242,7 @@ public class SearchEngineConfig {
      *
      * @return {@code true} if ISBN10 should be preferred.
      */
-    boolean prefersIsbn10() {
+    public boolean prefersIsbn10() {
         return ServiceLocator.getInstance().getSharedPreferences().getBoolean(
                 engineId.getPreferenceKey() + '.' + PK_SEARCH_ISBN_PREFER_10,
                 prefersIsbn10);

@@ -24,9 +24,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -72,9 +72,9 @@ class SearchByIsbnTest
         // realAuthor=Author{id=0, familyName=`De Bevere`, givenNames=`Maurice`, complete=false,
         // role=0b0: Role{}, realAuthor=null}}],
         // publisher_list=[Publisher{id=0, name=`Cinebook`}]}]
-        final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, ISBN.parseISBN("9781849182089"),
-                              new boolean[]{false, false, false, false});
+        final BookSearchCriteria criteria = new BookSearchCriteria();
+        criteria.setRawProductCode("9781849182089");
+        final Book book = ((SearchEngine.ByIsbn) searchEngine).searchByIsbn(context, criteria);
         assertNotNull(book);
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("anglais", book.getString(DBKey.LANGUAGE, null));

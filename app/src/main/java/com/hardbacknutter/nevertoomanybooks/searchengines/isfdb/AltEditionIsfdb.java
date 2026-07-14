@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
 import org.jsoup.nodes.Document;
@@ -80,10 +81,10 @@ public class AltEditionIsfdb
      * @param document    the JSoup document of the edition we found
      */
     AltEditionIsfdb(final long sid,
-                    @Nullable final String productCode,
+                    @Nullable final ProductCode productCode,
                     @Nullable final Document document) {
         this.sid = sid;
-        this.productCode = productCode;
+        this.productCode = productCode != null ? productCode.asText() : null;
         this.publisher = null;
         this.langIso3 = null;
         this.document = document;

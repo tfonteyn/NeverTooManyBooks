@@ -221,16 +221,16 @@ public class BibliotecePlSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
-        final Book book = new Book();
 
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + '/' + externalId;
         final Document document = loadDocument(context, url, null);
 
+        final Book book = new Book();
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
+            parse(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -238,19 +238,21 @@ public class BibliotecePlSearchEngine
     @NonNull
     @Override
     public Book searchByIssn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
-        return search(context, SEARCH_PREFIX_ISSN, productCode, fetchCovers);
+        return search(context, SEARCH_PREFIX_ISSN,
+                      criteria.requireProductCode(),
+                      criteria.getFetchCovers());
     }
 
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
-        return search(context, SEARCH_PREFIX_ISBN, productCode, fetchCovers);
+        return search(context, SEARCH_PREFIX_ISBN,
+                      criteria.requireProductCode(),
+                      criteria.getFetchCovers());
     }
 
     @NonNull
@@ -259,8 +261,8 @@ public class BibliotecePlSearchEngine
                         @NonNull final ProductCode productCode,
                         @NonNull final boolean[] fetchCovers)
             throws SearchException, CredentialsException, StorageException {
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
 
+        final String codeStr = productCode.getFormatted(getEngineId());
         final String url = getHostUrl() + SEARCH + searchPrefix + codeStr;
         final Document document = loadDocument(context, url, null);
 
@@ -277,8 +279,7 @@ public class BibliotecePlSearchEngine
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
         final StringJoiner words = new StringJoiner(" ");
@@ -301,11 +302,8 @@ public class BibliotecePlSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            if (productCode.getType() == ProductCodeType.Issn8
-                || productCode.getType() == ProductCodeType.Issn13) {
-                words.add(SEARCH_PREFIX_ISSN).add(productCode.asText());
-            } else {
-                final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 words.add(SEARCH_PREFIX_ISBN).add(codeStr);
             }
         }
@@ -321,7 +319,7 @@ public class BibliotecePlSearchEngine
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }

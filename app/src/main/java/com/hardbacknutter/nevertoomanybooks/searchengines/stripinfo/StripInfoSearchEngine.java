@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -326,16 +327,16 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final Book book = new Book();
-
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
+
+        final Book book = new Book();
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
+            parse(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -348,18 +349,18 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
-        final Book book = new Book();
-
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         final String url = getHostUrl() + String.format(BY_ISBN, codeStr);
         final Document document = loadDocument(context, url, null);
+
+        final Book book = new Book();
         if (!isCancelled()) {
-            parseRootDocument(context, productCode, document, fetchCovers, book);
+            parseRootDocument(context, criteria.requireProductCode(),
+                              document, criteria.getFetchCovers(), book);
         }
         return book;
     }

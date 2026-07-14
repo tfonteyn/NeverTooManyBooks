@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -227,16 +227,16 @@ public class DatabazeKnihSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
-        final Book book = new Book();
 
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + String.format(BY_SID, externalId);
         final Document document = loadDocument(context, url, null);
 
+        final Book book = new Book();
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
+            parse(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -244,33 +244,32 @@ public class DatabazeKnihSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
 
-        return search(context, codeStr, fetchCovers);
+        return search(context, codeStr, criteria.getFetchCovers());
     }
 
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 words.add(codeStr);
             }
         }
 
-        return search(context, words.toString(), fetchCovers);
+        return search(context, words.toString(), criteria.getFetchCovers());
     }
 
     @NonNull

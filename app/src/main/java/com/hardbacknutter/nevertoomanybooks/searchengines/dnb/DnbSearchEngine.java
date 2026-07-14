@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -246,18 +245,17 @@ public class DnbSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws SearchException, CredentialsException, StorageException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         final String url = createSearchUrl(SRU_DNB, SEARCH_INDEX_NUM + "=" + codeStr);
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 
         final Book book = new Book();
-
         if (!isCancelled()) {
-            parse(context, document, productCode, fetchCovers, book);
+            parse(context, document, productCode, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -265,11 +263,11 @@ public class DnbSearchEngine
     @NonNull
     @Override
     public Book searchByIssn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = BookSearchCriteria.formatIssn8(context, getEngineId(), productCode);
         final String url = createSearchUrl(SRU_ZDB, SEARCH_INDEX_ISS + "=" + codeStr);
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 
@@ -285,8 +283,7 @@ public class DnbSearchEngine
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws SearchException, CredentialsException, StorageException {
 
         String sru = SRU_DNB;
@@ -296,8 +293,8 @@ public class DnbSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 query.add(SEARCH_INDEX_NUM + "=" + codeStr);
                 if (productCode.getType() == ProductCodeType.Issn8
                     || productCode.getType() == ProductCodeType.Issn13) {
@@ -322,7 +319,7 @@ public class DnbSearchEngine
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 
         if (!isCancelled()) {
-            parse(context, document, productCode, fetchCovers, book);
+            parse(context, document, productCode, criteria.getFetchCovers(), book);
         }
         return book;
     }

@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -210,10 +209,8 @@ public interface SearchEngine
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
          *
-         * @param context     Current context
-         * @param externalId  the external id (as a String) for this particular search site.
-         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+         * @param context  Current context
+         * @param criteria to search for
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -224,8 +221,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book searchByExternalId(@NonNull Context context,
-                                @NonNull String externalId,
-                                @NonNull boolean[] fetchCovers)
+                                @NonNull BookSearchCriteria criteria)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -251,10 +247,8 @@ public interface SearchEngine
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
          *
-         * @param context     Current context
-         * @param productCode to search for
-         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+         * @param context  Current context
+         * @param criteria to search for
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -266,8 +260,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book searchByIsbn(@NonNull Context context,
-                          @NonNull ProductCode productCode,
-                          @NonNull boolean[] fetchCovers)
+                          @NonNull BookSearchCriteria criteria)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -287,11 +280,8 @@ public interface SearchEngine
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
          *
-         * @param context     Current context
-         * @param productCode to search for; will be an
-         *                    {@link ProductCodeType#Issn8} or {@link ProductCodeType#Issn13}
-         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+         * @param context  Current context
+         * @param criteria to search for
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -303,8 +293,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book searchByIssn(@NonNull Context context,
-                          @NonNull ProductCode productCode,
-                          @NonNull boolean[] fetchCovers)
+                          @NonNull BookSearchCriteria criteria)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -319,7 +308,7 @@ public interface SearchEngine
      * if the engine's implementation of {@link ByIsbn} also
      * supports searching for non-valid codes!
      * <p>
-     * Otherwise {@link #searchByBarcode(Context, ProductCode, boolean[])} <strong>MUST</strong>
+     * Otherwise {@link #searchByBarcode(Context, BookSearchCriteria)} <strong>MUST</strong>
      * be properly implemented.
      *
      * @see SearchBy#Barcode
@@ -332,14 +321,12 @@ public interface SearchEngine
          * Called by the {@link SearchCoordinator#search}.
          * <p>
          * The default implementation redirects to
-         * {@link ByIsbn#searchByIsbn(Context, ProductCode, boolean[])}
+         * {@link ByIsbn#searchByIsbn(Context, BookSearchCriteria)}
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
          *
-         * @param context     Current context
-         * @param productCode to search for
-         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+         * @param context  Current context
+         * @param criteria to search for
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -351,12 +338,11 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         default Book searchByBarcode(@NonNull final Context context,
-                                     @NonNull final ProductCode productCode,
-                                     @NonNull final boolean[] fetchCovers)
+                                     @NonNull final BookSearchCriteria criteria)
                 throws StorageException,
                        SearchException,
                        CredentialsException {
-            return searchByIsbn(context, productCode, fetchCovers);
+            return searchByIsbn(context, criteria);
         }
     }
 
@@ -384,10 +370,8 @@ public interface SearchEngine
          *  when there is an isbnStr
          *  => must update code in ALL SearchEngines to allow this!
          *
-         * @param context     Current context
-         * @param criteria    to search for
-         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+         * @param context  Current context
+         * @param criteria to search for
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -398,8 +382,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book search(@NonNull Context context,
-                    @NonNull BookSearchCriteria criteria,
-                    @NonNull boolean[] fetchCovers)
+                    @NonNull BookSearchCriteria criteria)
                 throws StorageException,
                        SearchException,
                        CredentialsException;

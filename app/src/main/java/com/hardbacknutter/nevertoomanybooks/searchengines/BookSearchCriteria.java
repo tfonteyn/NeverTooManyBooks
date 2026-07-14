@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,16 +29,17 @@ import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
 import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 
@@ -49,6 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
  * with {@link #productCode} the parsed value according to {@link #strictIsbn}.
  */
 public class BookSearchCriteria {
+
+    private static final String ERROR_FAILED_TO_CONVERT_TO_ISSN_8 = "Failed to convert to Issn8: ";
+    private static final String ERROR_PRODUCT_CODE_NOT_SET = "ProductCode not set";
+    private static final String ERROR_SID_NOT_SET = "SID not set";
 
     /**
      * Site external id for search.
@@ -100,6 +107,41 @@ public class BookSearchCriteria {
         strictIsbn = ProductCodeValidity.getPreferredLevel() == ProductCodeValidity.Isbn;
     }
 
+    /**
+     * Most (not all) sites want the ISSN formatted as "XXXX-XXXX".
+     *
+     * @param context     Current context
+     * @param engineId    for the required format
+     * @param productCode to format
+     *
+     * @return formatted product code text
+     *
+     * @throws SearchException if the product code was not an Issn8/compatible
+     */
+    @NonNull
+    public static String formatIssn8(@NonNull final Context context,
+                                     @NonNull final EngineId engineId,
+                                     @NonNull final ProductCode productCode)
+            throws SearchException {
+        final String codeStr;
+        try {
+            codeStr = productCode.asText(ProductCodeType.Issn8);
+        } catch (@NonNull final NumberFormatException e) {
+            // We should never get here... flw
+            throw new SearchException(engineId,
+                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
+                                      context.getString(R.string.error_unexpected));
+        }
+        if (codeStr.length() != 8) {
+            // We should never get here... flw
+            throw new SearchException(engineId,
+                                      ERROR_FAILED_TO_CONVERT_TO_ISSN_8 + productCode,
+                                      context.getString(R.string.error_unexpected));
+        }
+
+        return codeStr.substring(0, 4) + "-" + codeStr.substring(4);
+    }
+
     @Nullable
     ScanMode getScanMode() {
         return scanMode;
@@ -108,7 +150,8 @@ public class BookSearchCriteria {
     /**
      * Flags.
      *
-     * @return an array with length {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @return an array with length {@link DBKey#NR_OF_BOOK_COVERS};
+     *         If a slot is {@code true}, the user wants to fetch an image for it.
      */
     @NonNull
     public boolean[] getFetchCovers() {
@@ -201,8 +244,13 @@ public class BookSearchCriteria {
 
     /**
      * Get the {@link ProductCode} criteria.
+     * <p>
+     * The returned value can be {@code null} or {@link ProductCodeType#Invalid}.
+     * Use {@link #hasValidProductCode()} as needed before calling this method.
      *
      * @return code; can be {@code null} if none
+     *
+     * @see #hasValidProductCode()
      */
     @Nullable
     public ProductCode getProductCode() {
@@ -214,6 +262,18 @@ public class BookSearchCriteria {
             productCode = ISBN.parse(this.productCodeStr, this.strictIsbn);
         }
         return productCode;
+    }
+
+    /**
+     * Get the {@link ProductCode}.
+     * <p>
+     * Use {@link #hasValidProductCode()} as needed before calling this method.
+     *
+     * @return code
+     */
+    @NonNull
+    public ProductCode requireProductCode() {
+        return Objects.requireNonNull(productCode, ERROR_PRODUCT_CODE_NOT_SET);
     }
 
     /**
@@ -234,6 +294,11 @@ public class BookSearchCriteria {
         }
     }
 
+    /**
+     * Check if we have a valid {@link ProductCode}.
+     *
+     * @return flag
+     */
     boolean hasValidProductCode() {
         final ProductCode tmpProductCode = getProductCode();
         if (tmpProductCode == null) {
@@ -303,19 +368,39 @@ public class BookSearchCriteria {
     }
 
     /**
+     * Check if we have a valid sid for the given engine.
+     *
+     * @param engineId to get a sid for
+     *
+     * @return flag
+     */
+    boolean hasSid(@NonNull final EngineId engineId) {
+        final String s = sids.get(engineId);
+        return s != null && !s.isEmpty();
+    }
+
+    /**
      * Get the sid matching the given engine.
+     * <p>
+     * Use {@link #hasSid(EngineId)} as needed before calling this method.
      *
      * @param engineId to get a sid for
      *
      * @return sid
+     *
+     * @throws SearchException if the sid was not present
+     *
+     * @see #hasSid(EngineId)
      */
     @NonNull
-    public Optional<String> getSid(@NonNull final EngineId engineId) {
+    public String requireSid(@NonNull final EngineId engineId)
+            throws SearchException {
         final String s = sids.get(engineId);
         if (s != null && !s.isEmpty()) {
-            return Optional.of(s);
+            return s;
+        } else {
+            throw new SearchException(engineId, ERROR_SID_NOT_SET, null);
         }
-        return Optional.empty();
     }
 
     /**

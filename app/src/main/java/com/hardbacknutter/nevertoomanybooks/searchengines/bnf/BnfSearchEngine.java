@@ -49,13 +49,13 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
@@ -227,40 +226,39 @@ public class BnfSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws SearchException, CredentialsException, StorageException {
 
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + ARK_12148 + externalId;
-        return search(context, url, fetchCovers);
+        return search(context, url, criteria.getFetchCovers());
     }
 
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
 
         final String url = getHostUrl() + String.format(SEARCH, codeStr);
-        return search(context, url, fetchCovers);
+        return search(context, url, criteria.getFetchCovers());
     }
 
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws SearchException, CredentialsException, StorageException {
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 words.add(codeStr);
             }
         }
@@ -271,7 +269,7 @@ public class BnfSearchEngine
         }
 
         final String url = getHostUrl() + String.format(SEARCH, words);
-        return search(context, url, fetchCovers);
+        return search(context, url, criteria.getFetchCovers());
     }
 
     @NonNull

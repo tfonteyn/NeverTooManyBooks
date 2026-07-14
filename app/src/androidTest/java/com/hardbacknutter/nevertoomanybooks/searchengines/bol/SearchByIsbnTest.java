@@ -24,9 +24,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -64,9 +64,9 @@ class SearchByIsbnTest
     void parseMultiResult01()
             throws SearchException, CredentialsException, StorageException {
 
-        final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, ISBN.parseISBN("9789056478193"),
-                              new boolean[]{false, false, false, false});
+        final BookSearchCriteria criteria = new BookSearchCriteria();
+        criteria.setRawProductCode("9789056478193");
+        final Book book = ((SearchEngine.ByIsbn) searchEngine).searchByIsbn(context, criteria);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());

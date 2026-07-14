@@ -797,7 +797,7 @@ public class SearchCoordinator
 
         // Search by SID takes preference over all other criteria
         if (engineId.supports(SearchEngine.SearchBy.ExternalId)) {
-            if (criteria.getSid(engineId).isPresent()) {
+            if (criteria.hasSid(engineId)) {
                 return SearchEngine.SearchBy.ExternalId;
             }
         }

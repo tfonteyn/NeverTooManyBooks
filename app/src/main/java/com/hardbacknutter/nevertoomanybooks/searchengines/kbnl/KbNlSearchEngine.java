@@ -50,12 +50,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.xml.sax.SAXException;
@@ -237,20 +237,18 @@ public class KbNlSearchEngine
     @Override
     @NonNull
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         final String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, codeStr);
         final Book book = getBook(context, url);
-
         if (isCancelled()) {
             return book;
         }
 
-        if (fetchCovers[0]) {
+        if (criteria.getFetchCovers()[0]) {
             final AltEdition edition = new AltEditionProductCode(productCode);
             searchBestCoverByEdition(context, edition, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
@@ -261,16 +259,17 @@ public class KbNlSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
+
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + String.format(PERMALINK_URL, dbVersion, externalId);
         final Book book = getBook(context, url);
         if (isCancelled()) {
             return book;
         }
 
-        if (fetchCovers[0]) {
+        if (criteria.getFetchCovers()[0]) {
             final ProductCode productCode = book.getProductCode();
             if (productCode != null && productCode.isIsbn()) {
                 final AltEdition edition = new AltEditionProductCode(productCode);
@@ -385,10 +384,6 @@ public class KbNlSearchEngine
             throws StorageException {
 
         if (altEdition instanceof AltEditionProductCode) {
-            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
-            final ProductCode productCode = edition.getCode();
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
             final String sizeParam;
             if (size == null) {
                 sizeParam = "large";
@@ -407,6 +402,9 @@ public class KbNlSearchEngine
                 }
             }
 
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
+            final ProductCode productCode = edition.getCode();
+            final String codeStr = productCode.getFormatted(getEngineId());
             final String url = String.format(BASE_URL_COVERS, codeStr, sizeParam);
             return saveImage(context, url, null, codeStr, cIdx, size);
         }

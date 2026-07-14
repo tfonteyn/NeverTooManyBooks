@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.xml.sax.SAXException;
@@ -224,7 +223,7 @@ public class LibraryThingSearchEngine
             return List.of();
         }
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+        final String codeStr = productCode.getFormatted(getEngineId());
 
         final String apiToken = ServiceLocator.getInstance().getSharedPreferences()
                                               .getString(PK_API_TOKEN, null);

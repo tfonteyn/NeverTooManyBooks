@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.util.Map;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -34,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -120,7 +123,10 @@ public class IsfdbGetBookTask
             return book;
 
         } else if (isfdbId != null) {
-            final Book book = searchEngine.searchByExternalId(context, isfdbId, fetchCovers);
+            final BookSearchCriteria criteria = new BookSearchCriteria();
+            criteria.setFetchCovers(fetchCovers);
+            criteria.setSids(Map.of(EngineId.Isfdb, isfdbId));
+            final Book book = searchEngine.searchByExternalId(context, criteria);
             CoverFileSpecArray.process(book);
             return book;
 

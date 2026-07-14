@@ -49,11 +49,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -256,11 +256,11 @@ public class WikidataSearchEngine
     @NonNull
     @Override
     public Book searchByIssn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws SearchException {
 
-        final String codeStr = SearchEngineUtils.formatIssn8(context, getEngineId(), productCode);
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = BookSearchCriteria.formatIssn8(context, getEngineId(), productCode);
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         String lang = userLocale.getLanguage();

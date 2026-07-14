@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -462,10 +463,10 @@ public class AmazonSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
+        final ProductCode productCode = criteria.requireProductCode();
         final String asin;
         // If we get a convertible ISBN code convert it to ASIN
         if (productCode.isIsbn10Compat()) {
@@ -477,7 +478,7 @@ public class AmazonSearchEngine
         }
 
         final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin);
-        return genericSearch(context, url, fetchCovers);
+        return genericSearch(context, url, criteria.getFetchCovers());
     }
 
     /**
@@ -488,13 +489,14 @@ public class AmazonSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
+
+        final String externalId = criteria.requireSid(getEngineId());
         final ProductCode asin = new ASIN(externalId);
         if (asin.isValid()) {
             final String url = getHostUrl() + String.format(BY_PRODUCT_ID, asin.asText());
-            return genericSearch(context, url, fetchCovers);
+            return genericSearch(context, url, criteria.getFetchCovers());
         } else {
             return new Book();
         }
@@ -526,7 +528,7 @@ public class AmazonSearchEngine
         if (altEdition instanceof AltEditionProductCode) {
             final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
             final ProductCode productCode = edition.getCode();
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            final String codeStr = productCode.getFormatted(getEngineId());
 
             final String url = getHostUrl() + String.format(BY_PRODUCT_ID, codeStr);
             final Document document = loadDocument(context, url, null);

@@ -25,11 +25,10 @@ import android.util.Log;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -45,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Does live lookups to the website !
  */
 @SuppressWarnings("MissingJavadoc")
-public class SearchByIsbnTest
+class SearchByIsbnTest
         extends BaseDBTest {
 
     private static final String TAG = "SearchByIsbnTest";
@@ -54,8 +53,8 @@ public class SearchByIsbnTest
     private SearchEngine searchEngine;
 
     @BeforeEach
-    public void setup()
-            throws DaoWriteException, StorageException {
+    void setup()
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         searchEngine = EngineId.Amazon.createSearchEngine(context);
@@ -65,11 +64,11 @@ public class SearchByIsbnTest
     }
 
     @Test
-    public void Isbn0702315516()
+    void Isbn0702315516()
             throws SearchException, CredentialsException, StorageException {
-        final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, ISBN.parseISBN("0702315516"),
-                              new boolean[]{false, false, false, false});
+        final BookSearchCriteria criteria = new BookSearchCriteria();
+        criteria.setRawProductCode("0702315516");
+        final Book book = ((SearchEngine.ByIsbn) searchEngine).searchByIsbn(context, criteria);
         assertNotNull(book);
         assertFalse(book.isEmpty());
         Log.d(TAG, book.toString());

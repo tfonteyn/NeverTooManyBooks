@@ -307,16 +307,15 @@ public class OpenLibrarySearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final Book book = new Book();
-
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + String.format(SEARCH_BY_EXTERNAL_ID, externalId);
+        final Book book = new Book();
         try {
             final String response = loadDocument(context, url);
-            parse(context, new JSONObject(response), fetchCovers, book);
+            parse(context, new JSONObject(response), criteria.getFetchCovers(), book);
 
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
@@ -329,25 +328,22 @@ public class OpenLibrarySearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
-        final Book book = new Book();
-
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         final String url = getHostUrl() + String.format(BASE_BOOK_URL, codeStr);
 
-        fetchBook(context, url, fetchCovers, book);
+        final Book book = new Book();
+        fetchBook(context, url, criteria.getFetchCovers(), book);
         return book;
     }
 
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
@@ -355,8 +351,8 @@ public class OpenLibrarySearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 words.add(codeStr);
             }
         }
@@ -371,7 +367,7 @@ public class OpenLibrarySearchEngine
         // Limit the result to a single book for performance.
         final String url = getHostUrl() + String.format(BASE_BOOK_URL, words) + "&limit=1";
 
-        fetchBook(context, url, fetchCovers, book);
+        fetchBook(context, url, criteria.getFetchCovers(), book);
         return book;
     }
 
@@ -1425,7 +1421,7 @@ public class OpenLibrarySearchEngine
             return List.of();
         }
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+        final String codeStr = productCode.getFormatted(getEngineId());
 
         // https://openlibrary.org/isbn/9780141339092.json
         // => redirects to: https://openlibrary.org/books/OL27104332M.json
@@ -1672,7 +1668,7 @@ public class OpenLibrarySearchEngine
 
             final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
             final ProductCode productCode = edition.getCode();
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+            final String codeStr = productCode.getFormatted(getEngineId());
 
             // Frontcover only
             return fetchImageByKey(context, COVER_KEY_BOOK, "isbn", codeStr, 0, size);

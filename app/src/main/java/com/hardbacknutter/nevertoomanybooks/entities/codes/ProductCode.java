@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.entities.codes;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+
 public interface ProductCode {
 
     /**
@@ -78,4 +80,21 @@ public interface ProductCode {
     @NonNull
     String asText(@NonNull ProductCodeType toType)
             throws NumberFormatException;
+
+    /**
+     * Get as a formatted string.
+     *
+     * @param engineId for the required format
+     *
+     * @return formatted product code text
+     */
+    @NonNull
+    default String getFormatted(@NonNull final EngineId engineId) {
+        //noinspection DataFlowIssue
+        if (engineId.getConfig().prefersIsbn10() && this.isIsbn10Compat()) {
+            return this.asText(ProductCodeType.Isbn10);
+        } else {
+            return this.asText();
+        }
+    }
 }

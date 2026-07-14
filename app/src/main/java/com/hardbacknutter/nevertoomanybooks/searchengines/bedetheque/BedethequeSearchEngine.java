@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -314,13 +315,11 @@ public class BedethequeSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
-        final Book book = new Book();
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
         final String url = getHostUrl() + String.format(
@@ -328,9 +327,10 @@ public class BedethequeSearchEngine
 
         final Document document = loadDocument(context, url, extraRequestProperties);
 
+        final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book, productCode);
+            parseMultiResult(context, document, criteria.getFetchCovers(), book, productCode);
         }
         return book;
     }
@@ -338,14 +338,15 @@ public class BedethequeSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final Book book = new Book();
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, extraRequestProperties);
-        parse(context, document, fetchCovers, null, book);
+
+        final Book book = new Book();
+        parse(context, document, criteria.getFetchCovers(), null, book);
 
         return book;
     }

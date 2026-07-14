@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -44,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -329,10 +329,10 @@ class ParseTest
     void MultiResult()
             throws SearchException, CredentialsException, StorageException {
 
+        final BookSearchCriteria criteria = new BookSearchCriteria();
+        criteria.setRawProductCode("9020612476");
         // this will first hit a multi-result page, take the first book, and fetch that.
-        final Book book = searchEngine
-                .searchByIsbn(context, ISBN.parseISBN("9020612476"),
-                              new boolean[]{false, false, false, false});
+        final Book book = searchEngine.searchByIsbn(context, criteria);
 
         verify9020612476(book);
     }

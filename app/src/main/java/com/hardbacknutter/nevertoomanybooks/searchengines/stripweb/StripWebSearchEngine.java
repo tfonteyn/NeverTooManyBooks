@@ -201,19 +201,18 @@ public class StripWebSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
-        final Book book = new Book();
-
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         final String url = getHostUrl() + String.format(SEARCH_URL, codeStr);
         final Document document = loadDocument(context, url, null);
+
+        final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -221,8 +220,7 @@ public class StripWebSearchEngine
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
@@ -230,8 +228,8 @@ public class StripWebSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 words.add(codeStr);
             }
         }
@@ -247,7 +245,7 @@ public class StripWebSearchEngine
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }

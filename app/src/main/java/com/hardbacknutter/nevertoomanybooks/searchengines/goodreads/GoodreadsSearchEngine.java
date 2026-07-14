@@ -47,13 +47,13 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -228,9 +228,20 @@ public class GoodreadsSearchEngine
     @NonNull
     @Override
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
+
+        return searchByExternalId(context,
+                                  criteria.requireSid(getEngineId()),
+                                  criteria.getFetchCovers());
+    }
+
+    @NonNull
+    private Book searchByExternalId(@NonNull final Context context,
+                                    @NonNull final String externalId,
+                                    @NonNull final boolean[] fetchCovers)
+            throws SearchException, CredentialsException, StorageException {
+
         final String url = getHostUrl() + String.format(BY_GOODREADS_ID, externalId);
         final Document document = loadDocument(context, url, null);
 
@@ -244,39 +255,37 @@ public class GoodreadsSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         final long sid = getGoodreadsId(context, codeStr);
         if (sid > 0) {
-            return searchByExternalId(context, String.valueOf(sid), fetchCovers);
+            return searchByExternalId(context, String.valueOf(sid), criteria.getFetchCovers());
         }
 
         // Fallback to a text search for the ISBN
-        return search(context, codeStr, fetchCovers);
+        return search(context, codeStr, criteria.getFetchCovers());
     }
 
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 words.add(codeStr);
             }
         }
 
-        return search(context, words.toString(), fetchCovers);
+        return search(context, words.toString(), criteria.getFetchCovers());
     }
 
     @NonNull

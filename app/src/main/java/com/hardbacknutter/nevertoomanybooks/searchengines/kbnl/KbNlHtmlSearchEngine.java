@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -185,19 +186,17 @@ public class KbNlHtmlSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
         ensureCookie();
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
+        final String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, codeStr);
+        final Document document = loadDocument(context, url, null);
 
         final Book book = new Book();
-
-        final String url = getHostUrl() + String.format(SEARCH_URL,
-                                                        dbVersion, setNr, codeStr);
-        final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final Element titleList = document.selectFirst("div.titlelist");
             if (titleList != null) {
@@ -211,7 +210,7 @@ public class KbNlHtmlSearchEngine
             return book;
         }
 
-        if (fetchCovers[0]) {
+        if (criteria.getFetchCovers()[0]) {
             final AltEdition edition = new AltEditionProductCode(productCode);
             searchBestCoverByEdition(context, edition, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
@@ -596,10 +595,6 @@ public class KbNlHtmlSearchEngine
             throws StorageException {
 
         if (altEdition instanceof AltEditionProductCode) {
-            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
-            final ProductCode productCode = edition.getCode();
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
             final String sizeParam;
             if (size == null) {
                 sizeParam = "large";
@@ -617,6 +612,10 @@ public class KbNlHtmlSearchEngine
                         break;
                 }
             }
+
+            final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
+            final ProductCode productCode = edition.getCode();
+            final String codeStr = productCode.getFormatted(getEngineId());
 
             final String url = String.format(BASE_URL_COVERS, codeStr, sizeParam);
             return saveImage(context, url, null, codeStr, cIdx, size);

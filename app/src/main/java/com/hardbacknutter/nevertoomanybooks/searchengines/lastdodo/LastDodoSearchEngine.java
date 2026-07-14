@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -55,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -304,16 +304,16 @@ public class LastDodoSearchEngine
 
     @NonNull
     public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
+                                   @NonNull final BookSearchCriteria criteria)
             throws SearchException, CredentialsException, StorageException {
 
-        final Book book = new Book();
-
+        final String externalId = criteria.requireSid(getEngineId());
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
+
+        final Book book = new Book();
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
+            parse(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -321,22 +321,20 @@ public class LastDodoSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
-        final Book book = new Book();
-
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         // Reformat 10 or 13 digit codes to the site-required format,
         // whether they are valid ISBN or not.
         final String url = getHostUrl() + String.format(SEARCH, formatIsbnWithDashes(codeStr));
-
         final Document document = loadDocument(context, url, null);
+
+        final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -350,23 +348,21 @@ public class LastDodoSearchEngine
     @NonNull
     @Override
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
         // Searches are just a string of 'words', we can simply concatenate all available options.
         final StringJoiner words = criteria.concatTextCriteria(" ");
 
+        // Reformat 10 or 13 digit codes to the site-required format,
+        // whether they are valid ISBN or not.
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
-                // Reformat 10 or 13 digit codes to the site-required format,
-                // whether they are valid ISBN or not.
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 words.add(formatIsbnWithDashes(codeStr));
             }
         }
-
         final Book book = new Book();
 
         // Sanity check
@@ -378,7 +374,7 @@ public class LastDodoSearchEngine
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }

@@ -27,9 +27,9 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -51,8 +50,6 @@ final class SearchTask
     private static final String TAG = "SearchTask";
 
     private static final AtomicInteger TASK_ID = new AtomicInteger();
-
-    private static final String ERROR_PRODUCT_CODE_NOT_SET = "ProductCode not set";
 
     private final int searchId;
     @NonNull
@@ -182,44 +179,36 @@ final class SearchTask
         final Book book;
         switch (searchBy) {
             case ExternalId: {
-                final Optional<String> oSid = criteria.getSid(searchEngine.getEngineId());
-                if (oSid.isEmpty()) {
-                    throw new IllegalArgumentException("sid not set");
+                if (BuildConfig.DEBUG /* always */) {
+                    criteria.requireSid(searchEngine.getEngineId());
                 }
                 book = ((SearchEngine.ByExternalId) searchEngine)
-                        .searchByExternalId(context, oSid.get(), criteria.getFetchCovers());
+                        .searchByExternalId(context, criteria);
                 break;
             }
             case Issn: {
-                final ProductCode productCode = criteria.getProductCode();
-                if (productCode == null) {
-                    throw new IllegalArgumentException(ERROR_PRODUCT_CODE_NOT_SET);
+                if (BuildConfig.DEBUG /* always */) {
+                    criteria.requireProductCode();
                 }
-                book = ((SearchEngine.ByIssn) searchEngine)
-                        .searchByIssn(context, productCode, criteria.getFetchCovers());
+                book = ((SearchEngine.ByIssn) searchEngine).searchByIssn(context, criteria);
                 break;
             }
             case Isbn: {
-                final ProductCode productCode = criteria.getProductCode();
-                if (productCode == null) {
-                    throw new IllegalArgumentException(ERROR_PRODUCT_CODE_NOT_SET);
+                if (BuildConfig.DEBUG /* always */) {
+                    criteria.requireProductCode();
                 }
-                book = ((SearchEngine.ByIsbn) searchEngine)
-                        .searchByIsbn(context, productCode, criteria.getFetchCovers());
+                book = ((SearchEngine.ByIsbn) searchEngine).searchByIsbn(context, criteria);
                 break;
             }
             case Barcode: {
-                final ProductCode productCode = criteria.getProductCode();
-                if (productCode == null) {
-                    throw new IllegalArgumentException(ERROR_PRODUCT_CODE_NOT_SET);
+                if (BuildConfig.DEBUG /* always */) {
+                    criteria.requireProductCode();
                 }
-                book = ((SearchEngine.ByBarcode) searchEngine)
-                        .searchByBarcode(context, productCode, criteria.getFetchCovers());
+                book = ((SearchEngine.ByBarcode) searchEngine).searchByBarcode(context, criteria);
                 break;
             }
             case Text: {
-                book = ((SearchEngine.ByText) searchEngine)
-                        .search(context, criteria, criteria.getFetchCovers());
+                book = ((SearchEngine.ByText) searchEngine).search(context, criteria);
                 break;
             }
             default: {

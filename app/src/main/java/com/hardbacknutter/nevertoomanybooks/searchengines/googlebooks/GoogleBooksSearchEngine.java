@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -68,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -179,17 +179,16 @@ public class GoogleBooksSearchEngine
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final ProductCode productCode,
-                             @NonNull final boolean[] fetchCovers)
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
 
-        final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-
-        final Book book = new Book();
-
+        final ProductCode productCode = criteria.requireProductCode();
+        final String codeStr = productCode.getFormatted(getEngineId());
         // %3A  :
         final String url = getHostUrl() + SEARCH + "isbn%3A" + codeStr;
-        fetchBook(context, url, fetchCovers, book);
+
+        final Book book = new Book();
+        fetchBook(context, url, criteria.getFetchCovers(), book);
         return book;
     }
 
@@ -203,8 +202,7 @@ public class GoogleBooksSearchEngine
     @Override
     @WorkerThread
     public Book search(@NonNull final Context context,
-                       @NonNull final BookSearchCriteria criteria,
-                       @NonNull final boolean[] fetchCovers)
+                       @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException {
 
         final Book book = new Book();
@@ -229,8 +227,8 @@ public class GoogleBooksSearchEngine
 
         final ProductCode productCode = criteria.getProductCode();
         if (productCode != null) {
-            final String codeStr = SearchEngineUtils.formatIsbn(getEngineId(), productCode);
-            if (!codeStr.isEmpty()) {
+            final String codeStr = productCode.getFormatted(getEngineId());
+            if (!codeStr.isBlank()) {
                 args.add("isbn%3A" + encodeSpaces(codeStr));
             }
         }
@@ -241,7 +239,7 @@ public class GoogleBooksSearchEngine
 
         // %3A  :
         final String url = getHostUrl() + SEARCH + args;
-        fetchBook(context, url, fetchCovers, book);
+        fetchBook(context, url, criteria.getFetchCovers(), book);
         return book;
     }
 
@@ -681,8 +679,9 @@ public class GoogleBooksSearchEngine
             throws StorageException, SearchException, CredentialsException {
         if (altEdition instanceof AltEditionProductCode) {
             final AltEditionProductCode edition = (AltEditionProductCode) altEdition;
-            final ProductCode productCode = edition.getCode();
-            return searchByIsbn(context, productCode, new boolean[]{true, false, false, false})
+            final BookSearchCriteria criteria = new BookSearchCriteria();
+            criteria.setProductCode(edition.getCode(), ScanMode.Off);
+            return searchByIsbn(context, criteria)
                     .getImage(context, cIdx)
                     .map(File::getAbsolutePath);
         }
