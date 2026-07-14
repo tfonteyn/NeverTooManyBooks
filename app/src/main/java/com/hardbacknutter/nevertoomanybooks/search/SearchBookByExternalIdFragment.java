@@ -56,11 +56,6 @@ public class SearchBookByExternalIdFragment
      * NEWTHINGS: adding a new search engine: optional:
      * add a RadioButton to the layout +
      * add mapping between the RadioButton ViewId and the EngineId in the below Map.
-     * <p>
-     *  Amazon is not added here, users should use the ISBN.
-     * <p>
-     *  ENHANCE: DNB is HIDDEN: implement DNB sid searches once the site "stabiler link"
-     *  points to the (for now) beta website we use to find and parse
      */
     private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.ofEntries(
             Map.entry(R.id.site_amazon, EngineId.Amazon),

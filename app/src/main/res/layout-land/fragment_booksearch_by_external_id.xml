@@ -137,8 +137,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_dnb_de"
-            android:visibility="gone"
-            tools:visibility="visible"
             />
 
         <RadioButton
