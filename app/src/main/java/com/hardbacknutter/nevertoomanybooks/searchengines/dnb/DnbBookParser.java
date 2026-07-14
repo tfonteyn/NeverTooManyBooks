@@ -313,6 +313,35 @@ public class DnbBookParser {
     }
 
     /**
+     * Parse tag 338.
+     * <p>
+     * $b - Carrier type code (R)
+     *
+     * @see <a href="https://www.loc.gov/standards/valuelist/rdacarrier.html">
+     *     rdacarrier codes</a>
+     */
+    public void format() {
+        // 338 - Carrier Type (R)
+        final Element tag = document.selectFirst("datafield[tag='338']");
+        if (tag == null) {
+            return;
+        }
+        // $b - Carrier type code (R)
+        final Element b = tag.selectFirst(SUBFIELD_CODE_B);
+        if (b == null) {
+            return;
+        }
+        final String code = DnbParser.normalise(b);
+        if ("cr".equals(code)) {
+            // overwrite any previous code from tag 300.
+            book.setFormat(context.getString(R.string.book_format_ebook));
+        }
+
+        // paper/physical, but there is no further distinction.
+        // nc".equals(code)
+    }
+
+    /**
      * Parse and <strong>add</strong> Series found.
      */
     public void series() {

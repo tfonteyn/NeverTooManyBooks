@@ -522,6 +522,8 @@ public class DnbSearchEngine
         parser.title();
         parser.description();
         parser.physicalDescription();
+        // format should be parsed AFTER physicalDescription
+        parser.format();
         parser.genreTags();
     }
 
