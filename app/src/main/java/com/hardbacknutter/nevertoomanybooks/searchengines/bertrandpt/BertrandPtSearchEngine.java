@@ -48,15 +48,15 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -212,25 +212,24 @@ public class BertrandPtSearchEngine
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
-        //  9789899087774
-        // Grab the first search result, and redirect to that page
-        Element dataElement = document.selectFirst("div[data-product-position='1']");
-        if (dataElement != null) {
-            dataElement = dataElement.selectFirst("div.product-info");
-            if (dataElement != null) {
-                dataElement = dataElement.selectFirst("a.title-lnk");
-                if (dataElement != null) {
-                    String url = dataElement.attr("href");
-                    // sanity check - it normally does NOT have the protocol/site part
-                    if (url.startsWith("/")) {
-                        url = getHostUrl() + url;
-                    }
-                    final Document redirected = loadDocument(context, url, extraRequestProperties);
-                    if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, book);
-                    }
-                }
-            }
+
+        final Element urlElement = document.selectFirst(
+                "div[data-product-position='1'] div.product-info a.title-lnk");
+        if (urlElement == null) {
+            return;
+        }
+        String url = urlElement.attr("href");
+
+        if (url.isBlank()) {
+            return;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document redirected = loadDocument(context, url, extraRequestProperties);
+        if (!isCancelled()) {
+            parse(context, redirected, fetchCovers, book);
         }
     }
 

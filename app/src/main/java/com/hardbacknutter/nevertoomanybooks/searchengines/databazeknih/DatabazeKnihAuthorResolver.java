@@ -71,7 +71,7 @@ public final class DatabazeKnihAuthorResolver
     // <a href="/filtrovani-autoru?nationId=79">americká</a><span class="gray">,</span>  1948
     // <a href="/filtrovani-autoru?nationId=13">česká</a>
     private static final Pattern BIRTH_DEATH_DATE_PATTERN = Pattern.compile(
-            ".*,\\s*(\\d\\d\\d\\d)\\s*(?:-\\s*|)(\\d\\d\\d\\d|)");
+            ".*,\\s*(\\d{4})\\s*(?:-\\s*(\\d{4}))?");
     private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 
     @NonNull

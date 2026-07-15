@@ -336,22 +336,10 @@ public class BolSearchEngine
                                  @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // Grab the first search result, and redirect to that page
-        final String aHref = String.format("a[href^=/%1$s/nl/p/]", getCountry());
-        final Element urlElement = document.selectFirst(aHref);
-        // urlElement will be null if there were no results.
-        if (urlElement != null) {
-            String url = urlElement.attr("href");
-            // sanity check - it normally does NOT have the protocol/site part
-            if (url.startsWith("/")) {
-                url = getHostUrl() + url;
-            }
-            final Document redirected = loadDocument(context, url, Map.of(
-                    HttpConstants.REFERER, document.location()));
-            if (!isCancelled()) {
-                parse(context, searchedCode, redirected, fetchCovers, book);
-            }
-        } else {
+        final Element urlElement = document.selectFirst(
+                String.format("a[href^=/%1$s/nl/p/]", getCountry()));
+        if (urlElement == null) {
+            // check for the bot-block page, so we can inform the user if this is the problem
             final Element element = document.selectFirst("div.unicorn");
             if (element != null) {
                 throw new SearchException(getEngineId(),
@@ -359,6 +347,21 @@ public class BolSearchEngine
                                                   getEngineId().getLabelResId(),
                                                   "unicorn", null, document.location()));
             }
+            return;
+        }
+
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document redirected = loadDocument(context, url, Map.of(
+                HttpConstants.REFERER, document.location()));
+        if (!isCancelled()) {
+            parse(context, searchedCode, redirected, fetchCovers, book);
         }
     }
 

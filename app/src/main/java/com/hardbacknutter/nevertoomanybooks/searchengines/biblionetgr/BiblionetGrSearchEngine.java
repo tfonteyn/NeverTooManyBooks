@@ -207,22 +207,22 @@ public class BiblionetGrSearchEngine
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
-        // Grab the first search result, and redirect to that page
-        Element dataElement = document.selectFirst("div#result_books");
-        if (dataElement != null) {
-            dataElement = dataElement.selectFirst("a.book-title");
-            // Will be null when no book(s) found
-            if (dataElement != null) {
-                String url = dataElement.attr("href");
-                // sanity check - it normally does NOT have the protocol/site part
-                if (url.startsWith("/")) {
-                    url = getHostUrl() + url;
-                }
-                final Document redirected = loadDocument(context, url, null);
-                if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
-                }
-            }
+
+        final Element urlElement = document.selectFirst("div#result_books a.book-title");
+        if (urlElement == null) {
+            return;
+        }
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            parse(context, redirected, fetchCovers, book);
         }
     }
 

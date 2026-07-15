@@ -345,22 +345,22 @@ public class BibliotecePlSearchEngine
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
-        // Grab the first search result, and redirect to that page
-        Element dataElement = document.selectFirst("div#results");
-        if (dataElement != null) {
-            dataElement = dataElement.selectFirst("a.result-title");
-            // Will be null when no book(s) found
-            if (dataElement != null) {
-                String url = dataElement.attr("href");
-                // sanity check - it normally does NOT have the protocol/site part
-                if (url.startsWith("/")) {
-                    url = getHostUrl() + url;
-                }
-                final Document redirected = loadDocument(context, url, null);
-                if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
-                }
-            }
+
+        final Element urlElement = document.selectFirst("div#results a.result-title");
+        if (urlElement == null) {
+            return;
+        }
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            parse(context, redirected, fetchCovers, book);
         }
     }
 
@@ -448,21 +448,23 @@ public class BibliotecePlSearchEngine
         // We only get the first element. There can be a second,
         // but from the limited tests done, those are sticker-text, author name repeating...
         final Element stElement = work.selectFirst(cssQuery);
-        if (stElement != null) {
-            final String text = stElement.text();
-            if (!text.isEmpty()) {
-                // some translated books have their original title in
-                // both LABEL_ORIGINAL_TITLE and LABEL_SUBTITLE (in the details section)
-                // check this before accepting the subtitle.
-                // This will not always work, as the site is a bit sloppy...
-                // "The well..." versus "Well..."
-                if (!text.equalsIgnoreCase(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE))) {
-                    // just concat it; if both main and secondary sections had a subtitle,
-                    // we end up with the concatenation of ALL titles.
-                    // But we've not observed this during testing.
-                    book.setTitle(book.getTitle() + " - " + text);
-                }
-            }
+        if (stElement == null) {
+            return;
+        }
+        final String text = stElement.text();
+        if (text.isBlank()) {
+            return;
+        }
+        // some translated books have their original title in
+        // both LABEL_ORIGINAL_TITLE and LABEL_SUBTITLE (in the details section)
+        // check this before accepting the subtitle.
+        // This will not always work, as the site is a bit sloppy...
+        // "The well..." versus "Well..."
+        if (!text.equalsIgnoreCase(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE))) {
+            // just concat it; if both main and secondary sections had a subtitle,
+            // we end up with the concatenation of ALL titles.
+            // But we've not observed this during testing.
+            book.setTitle(book.getTitle() + " - " + text);
         }
     }
 

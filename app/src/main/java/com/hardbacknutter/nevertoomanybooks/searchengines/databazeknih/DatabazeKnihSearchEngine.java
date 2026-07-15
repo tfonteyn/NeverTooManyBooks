@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -57,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -303,20 +303,23 @@ public class DatabazeKnihSearchEngine
                           @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
 
-        Element element = document.selectFirst("p.new");
-        if (element != null) {
-            element = element.selectFirst("a.new");
-            if (element != null) {
-                String url = element.attr("href");
-                if (!url.isEmpty()) {
-                    // url is relative, add the host
-                    url = getHostUrl() + url;
-                    final Document redirected = loadDocument(context, url, null);
-                    // sanity check
-                    if (!isMultiResult(redirected)) {
-                        parse(context, redirected, fetchCovers, book);
-                    }
-                }
+        final Element urlElement = document.selectFirst("p.new a.new");
+        if (urlElement == null) {
+            return;
+        }
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            // sanity check
+            if (!isMultiResult(redirected)) {
+                parse(context, redirected, fetchCovers, book);
             }
         }
     }

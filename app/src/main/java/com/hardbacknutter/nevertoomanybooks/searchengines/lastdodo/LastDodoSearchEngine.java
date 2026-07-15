@@ -404,17 +404,14 @@ public class LastDodoSearchEngine
                                   @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
 
-        // Grab the first search result, and redirect to that page
-        final Element section = document.selectFirst("div.card-body");
-        // it will be null if there were no results.
-        if (section == null) {
-            return;
-        }
-        final Element urlElement = section.selectFirst("a");
+        final Element urlElement = document.selectFirst("div.card-body a");
         if (urlElement == null) {
             return;
         }
         String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return;
+        }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
             url = getHostUrl() + url;

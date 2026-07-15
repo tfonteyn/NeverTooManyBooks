@@ -978,19 +978,14 @@ public class IsfdbSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
+        final Element contentBox = document.selectFirst(CSS_Q_DIV_CONTENTBOX);
         // sanity check
-        if (allContentBoxes.isEmpty()) {
+        if (contentBox == null) {
             LoggerFactory.getLogger().w(TAG, "parse|no contentbox found",
                                         "document.location()=" + document.location());
             return;
         }
 
-        final Element contentBox = allContentBoxes.first();
-        // sanity check
-        if (contentBox == null) {
-            return;
-        }
         final Element ul = contentBox.selectFirst("ul");
         // sanity check
         if (ul == null) {

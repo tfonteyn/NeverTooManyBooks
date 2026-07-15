@@ -271,18 +271,15 @@ public class StripWebSearchEngine
                                   @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // Grab the first search result, and redirect to that page
-        final Element section = document.selectFirst("div.overview-item");
-        // it will be null if there were no results.
-        if (section == null) {
-            return;
-        }
-        final Element urlElement = section.selectFirst("a");
+        final Element urlElement = document.selectFirst("div.overview-item a");
         if (urlElement == null) {
             return;
         }
         String url = urlElement.attr("href");
-        // sanity check
+        if (url.isBlank()) {
+            return;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
             url = getHostUrl() + url;
         }

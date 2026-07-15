@@ -300,27 +300,22 @@ public class BnfSearchEngine
                                   @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
 
-        final Element ul = document.selectFirst("ul#ancrePremiereNotice");
-        if (ul == null) {
+        final Element urlElement = document.selectFirst("ul#ancrePremiereNotice a");
+        if (urlElement == null) {
             return;
         }
-        final Element a = ul.selectFirst("a");
-        if (a == null) {
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
             return;
         }
-
-        final String href = a.attr("href");
-        if (href.isEmpty()) {
-            return;
-        }
-
-        String url = href;
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
             url = getHostUrl() + url;
         }
-        final Document p = loadDocument(context, url, null);
-        search(context, p, fetchCovers, book);
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            search(context, redirected, fetchCovers, book);
+        }
     }
 
     private void search(@NonNull final Context context,

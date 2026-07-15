@@ -280,74 +280,77 @@ public class BedethequeAuthorResolver
     @Nullable
     Author parse(@NonNull final Context context,
                  @NonNull final Document document) {
-        final Element info = document.selectFirst("div.auteur-infos ul.auteur-info");
-        if (info != null) {
-            final Elements labels = info.getElementsByTag("label");
-            int sid = 0;
-            @Nullable
-            String familyName = null;
-            @Nullable
-            String givenName = null;
-            @Nullable
-            String penName = null;
-            @Nullable
-            String website = null;
-            @Nullable
-            String birthDate = null;
-            @Nullable
-            String deathDate = null;
-            @Nullable
-            String birthCountry = null;
 
-            for (final Element label : labels) {
-                switch (label.text()) {
-                    case "Identifiant :": {
-                        // <label>Identifiant :</label>111
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            try {
-                                sid = Integer.parseInt(textNode.toString().strip());
-                            } catch (@NonNull final NumberFormatException ignore) {
-                                // ignore
-                            }
+        final Elements labels = document.select("div.auteur-infos ul.auteur-info label");
+        if (labels.isEmpty()) {
+            return null;
+        }
+
+        int sid = 0;
+        @Nullable
+        String familyName = null;
+        @Nullable
+        String givenName = null;
+        @Nullable
+        String penName = null;
+        @Nullable
+        String website = null;
+        @Nullable
+        String birthDate = null;
+        @Nullable
+        String deathDate = null;
+        @Nullable
+        String birthCountry = null;
+
+        for (final Element label : labels) {
+            switch (label.text()) {
+                case "Identifiant :": {
+                    // <label>Identifiant :</label>111
+                    final Node textNode = label.nextSibling();
+                    if (textNode != null) {
+                        try {
+                            sid = Integer.parseInt(textNode.toString().strip());
+                        } catch (@NonNull final NumberFormatException ignore) {
+                            // ignore
                         }
-                        break;
                     }
-                    case "Nom :": {
-                        // <label>Nom :</label><span>De Bevere</span>
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            familyName = span.text();
-                        }
-                        break;
+                    break;
+                }
+                case "Nom :": {
+                    // <label>Nom :</label><span>De Bevere</span>
+                    final Element span = label.nextElementSibling();
+                    if (span != null) {
+                        familyName = span.text();
                     }
-                    case "Prénom :": {
-                        // <label>Prénom :</label><span>Maurice</span>
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            givenName = span.text();
-                        }
-                        break;
+                    break;
+                }
+                case "Prénom :": {
+                    // <label>Prénom :</label><span>Maurice</span>
+                    final Element span = label.nextElementSibling();
+                    if (span != null) {
+                        givenName = span.text();
                     }
-                    case "Pseudo :": {
-                        // <label>Pseudo :</label>Morris
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            penName = textNode.toString().strip();
-                        }
-                        break;
+                    break;
+                }
+                case "Pseudo :": {
+                    // <label>Pseudo :</label>Morris
+                    final Node textNode = label.nextSibling();
+                    if (textNode != null) {
+                        penName = textNode.toString().strip();
                     }
-                    case "Naissance :": {
-                        // <label>Naissance :</label>le 13/10/1980 <span class="pays-auteur">(BELGIQUE)</span>
-                        birthDate = parseDate(label.nextSibling());
-//                        birthCountry = parseBirthCountry(label.nextElementSibling());
-                        break;
-                    }
-                    case "Décès :": {
-                        // <label>Décès :</label>le 27/03/2006
-                        deathDate = parseDate(label.nextSibling());
-                        break;
-                    }
+                    break;
+                }
+                case "Naissance :": {
+                    // <label>Naissance :</label>le 13/10/1980 <span class="pays-auteur">(BELGIQUE)</span>
+                    birthDate = parseDate(label.nextSibling());
+                    // birthCountry = parseBirthCountry(label.nextElementSibling());
+                    break;
+                }
+                case "Décès :": {
+                    // <label>Décès :</label>le 27/03/2006
+                    deathDate = parseDate(label.nextSibling());
+                    break;
+                }
 //                    case "Pays :": {
 //                        // <label>Pays :</label><span class="pays-auteur">FRANCE</span>
 //                        // Don't overwrite
@@ -364,36 +367,35 @@ public class BedethequeAuthorResolver
 //                        }
 //                        break;
 //                    }
-                }
             }
+        }
 
-            // sanity check
-            if (familyName != null && !familyName.isEmpty()) {
-                final Author realAuthor = new Author(familyName, givenName);
+        // sanity check
+        if (familyName != null && !familyName.isEmpty()) {
+            final Author realAuthor = new Author(familyName, givenName);
+            if (sid > 0) {
+                realAuthor.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
+            }
+            realAuthor.setBirthDate(birthDate);
+            realAuthor.setDeathDate(deathDate);
+
+            @Nullable
+            final String pictureFileSpec = parseImage(context, document, sid).orElse(null);
+            realAuthor.setTmpPictureFileSpec(pictureFileSpec);
+
+            if (penName == null) {
+                return realAuthor;
+            } else {
+                final Author penNameAuthor = Author.from(penName);
                 if (sid > 0) {
-                    realAuthor.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
+                    penNameAuthor.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
                 }
-                realAuthor.setBirthDate(birthDate);
-                realAuthor.setDeathDate(deathDate);
+                penNameAuthor.setBirthDate(birthDate);
+                penNameAuthor.setDeathDate(deathDate);
+                penNameAuthor.setTmpPictureFileSpec(pictureFileSpec);
 
-                @Nullable
-                final String pictureFileSpec = parseImage(context, document, sid).orElse(null);
-                realAuthor.setTmpPictureFileSpec(pictureFileSpec);
-
-                if (penName == null) {
-                    return realAuthor;
-                } else {
-                    final Author penNameAuthor = Author.from(penName);
-                    if (sid > 0) {
-                        penNameAuthor.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
-                    }
-                    penNameAuthor.setBirthDate(birthDate);
-                    penNameAuthor.setDeathDate(deathDate);
-                    penNameAuthor.setTmpPictureFileSpec(pictureFileSpec);
-
-                    penNameAuthor.setRealAuthor(realAuthor);
-                    return penNameAuthor;
-                }
+                penNameAuthor.setRealAuthor(realAuthor);
+                return penNameAuthor;
             }
         }
         return null;

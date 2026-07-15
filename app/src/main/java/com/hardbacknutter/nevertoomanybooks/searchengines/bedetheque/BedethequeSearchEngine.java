@@ -374,19 +374,17 @@ public class BedethequeSearchEngine
                                   @Nullable final ProductCode searchedIsbn)
             throws StorageException, SearchException, CredentialsException {
 
-        // Grab the first search result, and redirect to that page
-        final Element section = document.selectFirst("ul.search-list");
-        if (section != null) {
-            final Element urlElement = section.selectFirst("a");
-            if (urlElement != null) {
-                final String url = urlElement.attr("href");
-                if (!url.isBlank()) {
-                    final Document redirected = loadDocument(context, url, extraRequestProperties);
-                    if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, searchedIsbn, book);
-                    }
-                }
-            }
+        final Element urlElement = document.selectFirst("ul.search-list a");
+        if (urlElement == null) {
+            return;
+        }
+        final String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return;
+        }
+        final Document redirected = loadDocument(context, url, extraRequestProperties);
+        if (!isCancelled()) {
+            parse(context, redirected, fetchCovers, searchedIsbn, book);
         }
     }
 
