@@ -91,6 +91,7 @@ import org.jsoup.nodes.Element;
  * www.amazon.co.uk
  * www.amazon.fr
  * www.amazon.de
+ * amazon.com.be
  * www.amazon.nl
  * www.amazon.es
  * <p>
