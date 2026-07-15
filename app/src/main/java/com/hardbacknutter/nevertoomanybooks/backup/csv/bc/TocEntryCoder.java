@@ -56,11 +56,7 @@ class TocEntryCoder
      * Actual date parsing is done with the {@link #partialDateParser}.
      */
     private static final Pattern DATE_PATTERN =
-            Pattern.compile("\\("
-                            + "([1|2]\\d\\d\\d"
-                            + "|[1|2]\\d\\d\\d-\\d\\d"
-                            + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
-                            + "\\)");
+            Pattern.compile("\\(([12]\\d{3}(-\\d{2}){0,2})\\)");
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
     @Override
@@ -91,21 +87,21 @@ class TocEntryCoder
     public TocEntry decode(@NonNull final String element) {
         final List<String> parts = StringList.newInstance(DefaultBookCoder.ELEMENT_SEPARATOR)
                                              .decodeElement(element);
+        // title and date.
         String title = parts.get(0);
         final Author author = Author.from(parts.get(1));
 
         final Matcher matcher = DATE_PATTERN.matcher(title);
         if (matcher.find()) {
-            final String g1 = matcher.group(0);
-            if (g1 != null) {
-                // strip out the found pattern (including the brackets)
-                title = title.replace(g1, "").strip();
+            final String found = matcher.group();
+            // Strip out the found date pattern (including the brackets)
+            // so we're left with the pure title part.
+            title = title.replace(found, "").strip();
 
-                final PartialDate firstPublicationDate = partialDateParser
-                        .parse(matcher.group(1))
-                        .orElse(PartialDate.NOT_SET);
-                return new TocEntry(author, title, firstPublicationDate);
-            }
+            final PartialDate firstPublicationDate = partialDateParser
+                    .parse(matcher.group(1))
+                    .orElse(PartialDate.NOT_SET);
+            return new TocEntry(author, title, firstPublicationDate);
         }
         return new TocEntry(author, title);
     }
