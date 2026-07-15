@@ -179,12 +179,6 @@ public abstract class SearchEngineBase
         return config.getEngineId();
     }
 
-    @NonNull
-    @Override
-    public String getName(@NonNull final Context context) {
-        return config.getEngineId().getName(context);
-    }
-
     @Override
     @NonNull
     public String getHostUrl() {
@@ -247,9 +241,8 @@ public abstract class SearchEngineBase
                 final Optional<Locale> locale = ServiceLocator.getInstance().getAppLocale()
                                                               .getLocale(root, userLocale);
                 if (BuildConfig.DEBUG /* always */) {
-                    LoggerFactory.getLogger()
-                                 .d(getName(context), "baseUrl=" + baseUrl,
-                                    "getLocale", "locale=" + locale);
+                    LoggerFactory.getLogger().d(config.getEngineId().getName(context),
+                                                "baseUrl=" + baseUrl, "getLocale=" + locale);
                 }
                 return locale.orElse(Locale.US);
         }
@@ -367,7 +360,7 @@ public abstract class SearchEngineBase
     @NonNull
     @EmptySuper
     public OkHttpClient createHttpClient() {
-        return HttpCallFactory.createHttpClient(getEngineId(), sslContext);
+        return HttpCallFactory.createHttpClient(config.getEngineId(), sslContext);
     }
 
     /**
@@ -495,7 +488,7 @@ public abstract class SearchEngineBase
             }
         }
         final String tempFilename = ImageFileInfo.getTempFilename(
-                getEngineId().getPreferenceKey(), bookId, cIdx, size);
+                config.getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
         try {
             final Request imageRequest = createImageRequest(context, url, requestProperties);
@@ -639,7 +632,8 @@ public abstract class SearchEngineBase
         book.setPriceListed(priceStr, currencyStr);
 
         // Log this as we need to understand WHY it failed.
-        LoggerFactory.getLogger().w(getName(context), "processPriceListed Failed to parse",
+        LoggerFactory.getLogger().w(config.getEngineId().getName(context),
+                                    "processPriceListed Failed to parse",
                                     "currencyStr=" + currencyStr,
                                     "priceStr=" + priceStr);
     }
@@ -652,8 +646,8 @@ public abstract class SearchEngineBase
      */
     protected void setTags(@NonNull final Collection<String> tagNames,
                            @NonNull final Book book) {
-        //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
+
+        final Set<String> tagsToIgnore = config.getTagsToIgnore();
         final List<Tag> tags = tagNames.stream()
                                        .filter(t -> !t.isBlank())
                                        .filter(t -> !tagsToIgnore.contains(t))

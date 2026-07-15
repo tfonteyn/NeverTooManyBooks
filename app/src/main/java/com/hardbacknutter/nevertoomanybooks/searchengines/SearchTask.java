@@ -78,7 +78,7 @@ final class SearchTask
                        @NonNull final SearchEngine.SearchBy searchBy,
                        @NonNull final BookSearchCriteria criteria,
                        @NonNull final TaskListener<Book> taskListener) {
-        super(taskId, TAG + ' ' + searchEngine.getName(context), taskListener);
+        super(taskId, TAG + ' ' + searchEngine.getEngineId().getName(context), taskListener);
         this.searchId = searchId;
         this.searchEngine = searchEngine;
         this.criteria = criteria;
@@ -168,13 +168,13 @@ final class SearchTask
             final SearchEngine.Login sel = (SearchEngine.Login) searchEngine;
             if (sel.isLoginToSearch(context)) {
                 publishProgress(1, context.getString(R.string.progress_msg_authenticating_to_site,
-                                                     searchEngine.getName(context)));
+                                                     searchEngine.getEngineId().getName(context)));
                 sel.login(context);
             }
         }
 
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
-                                             searchEngine.getName(context)));
+                                             searchEngine.getEngineId().getName(context)));
 
         final Book book;
         switch (searchBy) {
@@ -214,7 +214,7 @@ final class SearchTask
             default: {
                 // we should never get here...
                 throw new IllegalArgumentException("SearchEngine "
-                                                   + searchEngine.getName(context)
+                                                   + searchEngine.getEngineId().getName(context)
                                                    + " does not implement " + searchBy);
             }
         }

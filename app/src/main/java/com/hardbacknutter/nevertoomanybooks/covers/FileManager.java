@@ -169,7 +169,7 @@ class FileManager {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "search|SEARCHING",
-                                            "searchEngine=" + se.getName(context),
+                                            "searchEngine=" + se.getEngineId().getName(context),
                                             "edition=" + edition,
                                             "cIdx=" + cIdx,
                                             "size=" + size);
@@ -181,7 +181,7 @@ class FileManager {
                                 if (sel.isLoginToSearch(context)) {
                                     progressListener.publishProgress(1, context.getString(
                                             R.string.progress_msg_authenticating_to_site,
-                                            se.getName(context)));
+                                            se.getEngineId().getName(context)));
                                     sel.login(context);
                                 }
                             }
@@ -198,10 +198,10 @@ class FileManager {
                                 downloads.put(edition, imageFileInfo);
 
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
-                                    LoggerFactory.getLogger()
-                                                 .d(TAG, "search|SUCCESS",
-                                                    "searchEngine=" + se.getName(context),
-                                                    "imageFileInfo=" + imageFileInfo);
+                                    LoggerFactory.getLogger().d(
+                                            TAG, "search|SUCCESS",
+                                            "searchEngine=" + se.getEngineId().getName(context),
+                                            "imageFileInfo=" + imageFileInfo);
                                 }
                                 // abort search, we got an image
                                 return imageFileInfo;
@@ -212,19 +212,19 @@ class FileManager {
                             currentSearch.remove(engineId);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
-                                LoggerFactory.getLogger()
-                                             .d(TAG, "search|FAILED",
-                                                "searchEngine=" + se.getName(context), e);
+                                LoggerFactory.getLogger().d(
+                                        TAG, "search|FAILED",
+                                        "searchEngine=" + se.getEngineId().getName(context), e);
                             }
                         }
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
-                            LoggerFactory.getLogger()
-                                         .d(TAG, "search|NO FILE",
-                                            "searchEngine=" + se.getName(context),
-                                            "edition=" + edition,
-                                            "cIdx=" + cIdx,
-                                            "size=" + size);
+                            LoggerFactory.getLogger().d(
+                                    TAG, "search|NO FILE",
+                                    "searchEngine=" + se.getEngineId().getName(context),
+                                    "edition=" + edition,
+                                    "cIdx=" + cIdx,
+                                    "size=" + size);
                         }
 
                         // if the site we just searched only supports one image,

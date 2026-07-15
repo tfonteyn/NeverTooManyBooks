@@ -85,16 +85,6 @@ public interface SearchEngine
     EngineId getEngineId();
 
     /**
-     * Get the name for this engine.
-     *
-     * @param context Current context
-     *
-     * @return name
-     */
-    @NonNull
-    String getName(@NonNull Context context);
-
-    /**
      * Get the host url.
      *
      * @return url, including scheme.
