@@ -176,17 +176,17 @@ class ParseTest
                 .R.raw.douban_multi_9787536692930;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-        Optional<String> oUrl;
+        String url;
 
         setFetchMostRecent(false);
-        oUrl = searchEngine.extractBookUrl(document);
-        assertTrue(oUrl.isPresent());
-        assertEquals("https://book.douban.com/subject/36874304/", oUrl.get());
+        url = searchEngine.parseMultiResult(document);
+        assertNotNull(url);
+        assertEquals("https://book.douban.com/subject/36874304/", url);
 
         setFetchMostRecent(true);
-        oUrl = searchEngine.extractBookUrl(document);
-        assertTrue(oUrl.isPresent());
-        assertEquals("https://book.douban.com/subject/36892731/", oUrl.get());
+        url = searchEngine.parseMultiResult(document);
+        assertNotNull(url);
+        assertEquals("https://book.douban.com/subject/36892731/", url);
     }
 
     @Test
@@ -321,9 +321,9 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
         // There is only one result.
-        final Optional<String> oUrl = searchEngine.extractBookUrl(document);
-        assertTrue(oUrl.isPresent());
-        assertEquals("https://book.douban.com/subject/36665775/", oUrl.get());
+        final String url = searchEngine.parseMultiResult(document);
+        assertNotNull(url);
+        assertEquals("https://book.douban.com/subject/36665775/", url);
     }
 
     @Test
@@ -468,20 +468,20 @@ class ParseTest
                 .R.raw.douban_multi_9787532190294;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-        Optional<String> oUrl;
+        String url;
 
         // The first item with id="25930607" is an 'empty' book and will be rejected.
         // Instead, we'll should return the second item
         setFetchMostRecent(false);
-        oUrl = searchEngine.extractBookUrl(document);
-        assertTrue(oUrl.isPresent());
-        assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
+        url = searchEngine.parseMultiResult(document);
+        assertNotNull(url);
+        assertEquals("https://book.douban.com/subject/36897178/", url);
 
         // The most recent one is a valid book
         setFetchMostRecent(true);
-        oUrl = searchEngine.extractBookUrl(document);
-        assertTrue(oUrl.isPresent());
-        assertEquals("https://book.douban.com/subject/36897178/", oUrl.get());
+        url = searchEngine.parseMultiResult(document);
+        assertNotNull(url);
+        assertEquals("https://book.douban.com/subject/36897178/", url);
     }
 
     @Test

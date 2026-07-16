@@ -28,6 +28,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -223,7 +224,7 @@ public class DoubanSearchEngine
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book);
+            multiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -262,7 +263,7 @@ public class DoubanSearchEngine
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book);
+            multiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -281,14 +282,17 @@ public class DoubanSearchEngine
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws StorageException     on storage related failures
      */
-    private void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
+    @VisibleForTesting
+    @WorkerThread
+    void multiResult(@NonNull final Context context,
+                             @NonNull final Document document,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
-        final Optional<String> oUrl = extractBookUrl(document);
-        if (oUrl.isPresent()) {
-            final Document redirected = loadDocument(context, oUrl.get(), null);
+
+        final String url = parseMultiResult(document);
+        if (url != null) {
+            final Document redirected = loadDocument(context, url, null);
             if (!isCancelled()) {
                 parse(context, redirected, fetchCovers, book);
             }
@@ -298,37 +302,32 @@ public class DoubanSearchEngine
         }
     }
 
-
     /**
-     * Parse the given Document for the embedded JavaScript element containing
-     * the list of books found and extract the best suited book (url).
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
      *
      * @param document to parse
      *
-     * @return url for the book details page
+     * @return the url to redirect to, or {@code null} if parsing failed.
      */
     @VisibleForTesting
-    @NonNull
-    public Optional<String> extractBookUrl(@NonNull final Document document) {
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
         final Optional<JSONArray> oItems = extractItemList(document);
-        if (oItems.isPresent()) {
-            final JSONArray items = oItems.get();
-
-            final JSONObject reference;
-            // Depending on user setting:
-            if (useMostRecentResult()) {
-                reference = findMostRecent(items);
-            } else {
-                // Use the first one found
-                reference = items.getJSONObject(0);
-            }
-
-            final String url = reference.optString("url", null);
-            if (url != null) {
-                return Optional.of(url);
-            }
+        if (oItems.isEmpty()) {
+            return null;
         }
-        return Optional.empty();
+        final JSONArray items = oItems.get();
+
+        final JSONObject reference;
+        // Depending on user setting:
+        if (useMostRecentResult()) {
+            reference = findMostRecent(items);
+        } else {
+            // Use the first one found
+            reference = items.getJSONObject(0);
+        }
+        return reference.optString("url", null);
     }
 
     /**
