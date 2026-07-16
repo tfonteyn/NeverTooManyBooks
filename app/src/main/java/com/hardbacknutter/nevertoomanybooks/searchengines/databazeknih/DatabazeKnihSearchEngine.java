@@ -376,28 +376,7 @@ public class DatabazeKnihSearchEngine
 
         element = bDetails.selectFirst("a[href^=/serie/]");
         if (element != null) {
-            final String seriesName = SearchEngineUtils.cleanName(element);
-            if (!seriesName.isEmpty()) {
-                // some series will parse wrong.
-                // Example "Lucky Luke (Crew)"
-                // The "Crew" part is actually the publisher, but we parse it as the number.
-                // Not much we can do about that, as we need to rely on "()" parsing
-                // for many sites to BE the number.
-                final Series series = Series.from(seriesName);
-                final Element nrElement = document.selectFirst(
-                        "span.nowrap > span.odright_pet, span.nowrap > span.odleft_pet ");
-                if (nrElement != null) {
-                    String nr = nrElement.text();
-                    if (!nr.isEmpty()) {
-                        // these usually/always end with ". díl" == "episode"; remove
-                        if (nr.endsWith(". díl")) {
-                            nr = nr.substring(0, nr.length() - 5);
-                        }
-                        series.setNumber(nr);
-                    }
-                }
-                book.add(series);
-            }
+            parseSeries(document, element, book);
         }
 
         element = bDetails.selectFirst("p.justify");
@@ -514,6 +493,34 @@ public class DatabazeKnihSearchEngine
             parseCover(context, document, book.getRawProductCode(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
+    }
+
+    private void parseSeries(@NonNull final Document document,
+                             @NonNull final Element element,
+                             @NonNull final Book book) {
+        final String seriesName = SearchEngineUtils.cleanName(element);
+        if (seriesName.isEmpty()) {
+            return;
+        }
+        // some series will parse wrong.
+        // Example "Lucky Luke (Crew)"
+        // The "Crew" part is actually the publisher, but we parse it as the number.
+        // Not much we can do about that, as we need to rely on "()" parsing
+        // for many sites to BE the number.
+        final Series series = Series.from(seriesName);
+        final Element nrElement = document.selectFirst(
+                "span.nowrap > span.odright_pet, span.nowrap > span.odleft_pet ");
+        if (nrElement != null) {
+            String nr = nrElement.text();
+            if (!nr.isEmpty()) {
+                // these usually/always end with ". díl" == "episode"; remove
+                if (nr.endsWith(". díl")) {
+                    nr = nr.substring(0, nr.length() - 5);
+                }
+                series.setNumber(nr);
+            }
+        }
+        book.add(series);
     }
 
     private void parseRating(@NonNull final Element element,
@@ -736,7 +743,7 @@ public class DatabazeKnihSearchEngine
      * @param type of author
      * @param book to update
      */
-    private void parseAuthors(@NonNull final Elements aas,
+    private void parseAuthors(@NonNull final Collection<Element> aas,
                               @AuthorRole.Role final int type,
                               @NonNull final Book book) {
         for (final Element a : aas) {
