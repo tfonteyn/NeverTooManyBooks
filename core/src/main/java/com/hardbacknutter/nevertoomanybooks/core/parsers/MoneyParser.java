@@ -247,7 +247,7 @@ public class MoneyParser {
 
             // Some symbols are used by multiple countries (e.g., '$')
             // Give preference to the native currency of the website's locale.
-            if (currency.equals(Currency.getInstance(locale))) {
+            if (currency.equals(Currency.getInstance(code))) {
                 dynamicMap.put(symbol, code);
             } else {
                 dynamicMap.putIfAbsent(symbol, code);
