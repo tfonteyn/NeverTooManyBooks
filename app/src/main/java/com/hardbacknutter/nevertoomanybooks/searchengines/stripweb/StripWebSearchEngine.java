@@ -318,13 +318,9 @@ public class StripWebSearchEngine
         if (main == null) {
             return;
         }
-        final Element row = main.selectFirst("div.row");
-        if (row == null) {
-            return;
-        }
 
-        // dic class="col-lg-8 col-sm-8 pr-xl-9"
-        final Element details = main.selectFirst("div.col-lg-8");
+        // div class="col-lg-8 col-sm-8 pr-xl-9"
+        final Element details = main.selectFirst("div.row div.col-lg-8");
         if (details == null) {
             return;
         }
