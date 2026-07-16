@@ -1,6 +1,7 @@
 NEW:
 - dnb.de has been re-implemented to fix their bot-blocker.
-- ISSN support, using Wikidata and zdb-katalog.de sites
+- bol.com, databazeknih.cz have been updated to adapt their new site-internals
+- ISSN support, using Wikidata and dnb.de/zdb-katalog.de sites
 - The builtin image crop editor was replaced by https://github.com/Yalantis/uCrop
 - The old side-menu was replaced by a menu that follows the user preferred menu-style.
 - Series now also support Identifiers.
