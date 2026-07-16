@@ -373,7 +373,7 @@ public class StripInfoSearchEngine
                                   @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
         if (isMultiResult(document)) {
-            parseMultiResult(context, document, fetchCovers, book);
+            multiResult(context, document, fetchCovers, book);
         } else {
             parse(context, document, fetchCovers, book);
         }
@@ -401,12 +401,39 @@ public class StripInfoSearchEngine
      * @throws SearchException       on generic exceptions (wrapped) during search
      * @throws StorageException      on storage related failures
      */
+    @VisibleForTesting
     @WorkerThread
-    public void parseMultiResult(@NonNull final Context context,
-                                 @NonNull final Document document,
-                                 @NonNull final boolean[] fetchCovers,
-                                 @NonNull final Book book)
+    void multiResult(@NonNull final Context context,
+                     @NonNull final Document document,
+                     @NonNull final boolean[] fetchCovers,
+                     @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
+
+        final String url = parseMultiResult(document);
+        if (url == null) {
+            return;
+        }
+
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            // prevent looping.
+            if (!isMultiResult(redirected)) {
+                parse(context, redirected, fetchCovers, book);
+            }
+        }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -417,28 +444,28 @@ public class StripInfoSearchEngine
             //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
             final Element urlElement = section.selectFirst(A_HREF_STRIP);
             if (urlElement != null) {
-                final Document redirected = loadDocument(context, urlElement.attr("href"), null);
-                if (!isCancelled()) {
-                    // prevent looping.
-                    if (!isMultiResult(redirected)) {
-                        parse(context, redirected, fetchCovers, book);
-                    }
+                final String url = urlElement.attr("href");
+                if (!url.isBlank()) {
+                    // found, break out of the loop
+                    return url;
                 }
-                return;
+                // parser error, break out of the loop
+                return null;
             }
-            // A no-results page will contain:
-
-            // <section class="c6 fullInMediumScreens bottomMargin">
-            // <h4 class="title"></h4>
-            // <table>
-            //  <tbody>
-            //   <tr>
-            //    <td>Er werden geen resultaten gevonden voor uw zoekopdracht</td>
-            //   </tr>
-            //  </tbody>
-            // </table>
-            //</section>
         }
+        // A no-results page will contain:
+
+        // <section class="c6 fullInMediumScreens bottomMargin">
+        // <h4 class="title"></h4>
+        // <table>
+        //  <tbody>
+        //   <tr>
+        //    <td>Er werden geen resultaten gevonden voor uw zoekopdracht</td>
+        //   </tr>
+        //  </tbody>
+        // </table>
+        //</section>
+        return null;
     }
 
     /**
@@ -450,11 +477,11 @@ public class StripInfoSearchEngine
      *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
-     * @throws StorageException      on storage related failures
-     * @throws SearchException       on generic exceptions (wrapped) during search
-     * @throws CredentialsException  on authentication/login failures
-     *                               This should only occur if the engine calls/relies on
-     *                               secondary sites.
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
      */
     @VisibleForTesting
     @WorkerThread

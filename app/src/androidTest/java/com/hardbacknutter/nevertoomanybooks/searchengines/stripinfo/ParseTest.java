@@ -550,10 +550,22 @@ class ParseTest
         assertEquals(AuthorRole.ARTIST, author.getRole());
     }
 
+    @Test
+    void parseMultiResult()
+            throws IOException {
+
+        final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=chant+du+pluvier";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripinfo_multi_result_le_chant_du_pluvier;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://stripinfo.be/reeks/strip/84392_Le_chant_du_pluvier_1_Le_chant_du_pluvier",
+                     searchEngine.parseMultiResult(document));
+    }
 
     /** Network access! */
     @Test
-    void parseMultiResult()
+    void multiResult()
             throws SearchException, CredentialsException, StorageException, IOException {
 
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=chant+du+pluvier";
