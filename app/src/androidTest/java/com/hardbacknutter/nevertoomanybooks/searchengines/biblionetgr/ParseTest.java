@@ -87,6 +87,19 @@ class ParseTest
     }
 
     @Test
+    void parseMultiResult()
+            throws IOException {
+        final String locationHeader =
+                "https://biblionet.gr/%CF%83%CF%85%CE%BD%CE%B8%CE%B5%CF%84%CE%B7-%CE%B1%CE%BD%CE%B1%CE%B6%CE%B7%CF%84%CE%B7%CF%83%CE%B7?preselect_filter=books&q=%CF%80%CF%81%CE%B9%CE%B3%CE%BA%CE%B9%CF%80%CE%AD%CF%83%CE%B1";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.biblionetgr_multi_result;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://biblionet.gr/η-πριγκιπεσα-ιζαμπω-614456",
+                     searchEngine.parseMultiResult(document));
+    }
+
+    @Test
     void parse9789603211495()
             throws IOException, SearchException, CredentialsException, StorageException {
         final String locationHeader =
