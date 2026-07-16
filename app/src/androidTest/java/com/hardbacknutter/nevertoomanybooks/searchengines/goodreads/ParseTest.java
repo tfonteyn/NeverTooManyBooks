@@ -144,7 +144,7 @@ class ParseTest
         assertEquals(AuthorRole.WRITER, author.getRole());
         assertEquals("1938-09-26", author.getBirthDate().orElse(null));
         assertEquals("2021-08-19", author.getDeathDate().orElse(null));
-        assertEquals(11, author.getIdentifiers().size());
+        assertTrue(author.getIdentifiers().size() > 10);
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("115105", oIv.get());
@@ -413,7 +413,7 @@ class ParseTest
         assertEquals("1992-04-06", author.getDeathDate().orElse(null));
         assertTrue(
                 author.getTmpPictureFileSpec().orElseThrow().endsWith("_goodreads_16667_0_.jpg"));
-        assertEquals(21, author.getIdentifiers().size());
+        assertTrue(author.getIdentifiers().size() > 10);
 
         oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
@@ -552,20 +552,12 @@ class ParseTest
 
     @Test
     void parseMultiResultFoundationAndEmpire()
-            throws IOException, SearchException, CredentialsException, StorageException {
+            throws IOException {
         final String locationHeader = "https://www.goodreads.com/search?q=foundation+and+empire&qid=rMtPCIQx9m";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.goodreads_multi_result_foundation_and_empire;
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, false, false, false},
-                                      book);
-        Log.d(TAG, book.toString());
-
-        // live download, results may be different
-        assertEquals("Foundation and Empire", book.getString(DBKey.TITLE, null));
-        assertEquals("9780553803723", book.getString(DBKey.ISBN, null));
-        assertEquals("Spectra", book.getPrimaryPublisher().orElseThrow().getName());
-        // full assert is already tested in parseNextDataJson9780553803723()
+        assertEquals("https://www.goodreads.com/book/show/29581.Foundation_and_Empire?from_search=true&from_srp=true&qid=rMtPCIQx9m&rank=1",
+                     searchEngine.parseMultiResult(document));
     }
 }

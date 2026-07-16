@@ -26,6 +26,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -47,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -308,7 +310,7 @@ public class GoodreadsSearchEngine
                 // we have a single book
                 parse(context, document, fetchCovers, book);
             } else {
-                parseMultiResult(context, document, fetchCovers, book);
+                multiResult(context, document, fetchCovers, book);
             }
         }
         return book;
@@ -367,38 +369,62 @@ public class GoodreadsSearchEngine
         return 0;
     }
 
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param context      Current context
+     * @param document     to parse
+     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
+     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book         to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
     @VisibleForTesting
-    void parseMultiResult(@NonNull final Context context,
-                          @NonNull final Document document,
-                          @NonNull final boolean[] fetchCovers,
-                          @NonNull final Book book)
+    @WorkerThread
+    void multiResult(@NonNull final Context context,
+                     @NonNull final Document document,
+                     @NonNull final boolean[] fetchCovers,
+                     @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
 
-        final Element table = document.selectFirst("table.tableList");
-        if (table == null) {
+        final String url = parseMultiResult(document);
+        if (url == null) {
             return;
         }
-        final Element firstRow = table.selectFirst("tr");
-        if (firstRow == null) {
-            return;
+        final Document redirected = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            parse(context, redirected, fetchCovers, book);
         }
-        final Elements tds = firstRow.select("td");
-        if (tds.size() < 2) {
-            return;
-        }
-        final Element a = tds.get(1).selectFirst("a.bookTitle");
-        if (a != null) {
-            final String href = a.attr("href");
-            if (!href.isEmpty()) {
-                // pretend we click on the first result
-                final String url = getHostUrl() + href;
-                final Document redirected = loadDocument(context, url, null);
+    }
 
-                if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
-                }
-            }
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
+
+        // the first table, the first row
+        // then the 2nd TD in that row which contain the link to the book title
+        final Element a = document.selectFirst("table.tableList tr td + td a.bookTitle");
+        if (a == null) {
+            return null;
         }
+        final String url = a.attr("href");
+        if (url.isBlank()) {
+            return null;
+        }
+
+        return getHostUrl() + url;
     }
 
     @VisibleForTesting
