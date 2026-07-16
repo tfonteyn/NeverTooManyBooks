@@ -72,6 +72,18 @@ class ParseTest
     }
 
     @Test
+    void parseMultiResult()
+            throws IOException {
+        final String locationHeader =
+                "https://www.lastdodo.nl/nl/areas/search?type_id=147&q=zonnen+van+vinea";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.last_dodo_multi_result;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://www.lastdodo.nl/nl/items/1332103-de-3-zonnen-van-vinea?q=zonnen+van+vinea",
+                     searchEngine.parseMultiResult(document));
+    }
+    @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
