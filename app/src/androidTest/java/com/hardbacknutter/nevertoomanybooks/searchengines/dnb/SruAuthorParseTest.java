@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
