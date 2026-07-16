@@ -175,7 +175,7 @@ public final class DatabazeKnihAuthorResolver
     private Author parse(@NonNull final Context context,
                          @NonNull final Document document,
                          @NonNull final String sid) {
-        final Element section = document.selectFirst("div#left_less");
+        final Element section = document.selectFirst("div.gridMain");
         if (section == null) {
             return null;
         }
@@ -192,13 +192,10 @@ public final class DatabazeKnihAuthorResolver
         String pseudonym = null;
         final Element pseudonymElement = section.selectFirst("h2");
         if (pseudonymElement != null) {
-            final String text = pseudonymElement.text();
-            if (text.contains("pseudonym")) {
-                final Element a = pseudonymElement.selectFirst("a");
+            final Element a = pseudonymElement.selectFirst("a[href^=/vydane-knihy-pseudonym/]");
                 if (a != null) {
                     pseudonym = a.text();
                 }
-            }
         }
 
         final Author author;

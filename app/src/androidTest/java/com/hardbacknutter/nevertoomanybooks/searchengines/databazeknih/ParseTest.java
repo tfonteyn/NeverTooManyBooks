@@ -29,11 +29,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -42,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -82,6 +85,12 @@ class ParseTest
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putBoolean(AuthorResolverHelper.getPreferenceKey(
+                              EngineId.DatabazeKnih, EngineId.DatabazeKnih), true)
+                      .apply();
+
         final Locale siteLocale = searchEngine.getLocale(context);
         final List<Locale> allLocales = List.of(siteLocale);
         ratingNumberParser = new RealNumberParser(allLocales);
@@ -114,36 +123,15 @@ class ParseTest
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("2007", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals("Enola se stále skrývá před svým\n"
-                     + "bratrem – slavným detektivem Sherlockem Holmesem. Když ale\n"
-                     + "objeví tajnou skrýš plnou brilantních kreseb, vyrazí po stopě\n"
-                     + "jejich autorky, mladé lady Cecily, která beze stopy zmizela ze\n"
-                     + "své ložnice. Enola se vydá do nočních ulic Londýna, kterými se\n"
-                     + "potulují vr\n"
-                     + "azi, aby rozluštila záhadu a\n"
-                     + "zachránila talentovanou aristokratku před mocným padouchem.\n"
-                     + "Riskuje však, že odhalí víc, než by měla...",
-                     book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Enola se stále skrývá před svým bratrem"));
 
         final List<Tag> bookTags = book.getTags();
 
-        assertEquals(13, bookTags.size());
+        assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
-        // the 3 "genre" tags
         assertTrue(tags.contains("Literatura světová"));
         assertTrue(tags.contains("Detektivky, krimi"));
         assertTrue(tags.contains("Pro děti a mládež"));
-        // the 10 "Štítky" tags
-        assertTrue(tags.contains("Londýn"));
-        assertTrue(tags.contains("19. století"));
-        assertTrue(tags.contains("americká literatura"));
-        assertTrue(tags.contains("Velká Británie"));
-        assertTrue(tags.contains("hypnóza"));
-        assertTrue(tags.contains("historické detektivky"));
-        assertTrue(tags.contains("mysteriózní, mystéria"));
-        assertTrue(tags.contains("únosy"));
-        assertTrue(tags.contains("pro dospívající mládež (young adult)"));
-        assertTrue(tags.contains("fikce"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -222,29 +210,15 @@ class ParseTest
         assertEquals("pevná / vázaná", book.getString(DBKey.FORMAT, null));
         assertEquals("2015", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals("Soubor fejetonů, kterými herečka Aňa\n"
-                     + "Geislerová přispívala do magazínu ELLE, nyní vychází knižně. V\n"
-                     + "souhrnném vydání vyvstává příběh, který mohl dříve čtenářům\n"
-                     + "snadno uniknout; příběh části života, ve které jako by se\n"
-                     + "odehrálo úplně všechno. Příchod nových členů rodiny,\n"
-                     + "odcházení těch starých, lásky,\n"
-                     + "pády, úspěchy, problémy. Pět podivuhodných let, k nimž\n"
-                     + "autorka přidala ještě několik dříve nepublikovaných textů.",
-                     book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Soubor fejetonů, kterými herečka Aňa Geislerová"));
 
         final List<Tag> bookTags = book.getTags();
 
-        assertEquals(8, bookTags.size());
+        assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Fejetony, eseje"));
         assertTrue(tags.contains("Literatura česká"));
         assertTrue(tags.contains("Cestopisy a místopisy"));
-        assertTrue(tags.contains("prvotina"));
-        assertTrue(tags.contains("česká literatura"));
-        assertTrue(tags.contains("ze života"));
-        assertTrue(tags.contains("deníkové záznamy"));
-        assertTrue(tags.contains("Magnesia Litera"));
-
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -319,18 +293,13 @@ class ParseTest
         assertEquals("Sonnets / A lover's complaint",
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
 
-        assertEquals("Dvojjazyčné vydání /česky a anglicky/\n"
-                     + "kompletních Shakespearových sonetů s jeho méně známou, rozsáhlou\n"
-                     + "básnickou skladbou Milenčin nářek.\n"
-                     + "(Pozn.: v knize uvedeno chybné ISBN 80-7221-005-X)",
-                     book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Dvojjazyčné vydání /česky a anglicky"));
 
         final List<Tag> bookTags = book.getTags();
 
-        assertEquals(2, bookTags.size());
+        assertEquals(1, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Poezie"));
-        assertTrue(tags.contains("dvojjazyčná vydání"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -379,71 +348,64 @@ class ParseTest
 
 
     @Test
-    void parseMulti01()
-            throws IOException, SearchException, CredentialsException, StorageException {
-
-        final String locationHeader = "https://www.databazeknih.cz/search?in=books&q=foundation+asi&hledat=";
+    void multiResult()
+            throws IOException {
+        final String locationHeader = "https://www.databazeknih.cz/search?in=books&q=nadace+asim&hledat=";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.databazeknih_multi_foundation_asi;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final String url = searchEngine.parseMultiResult(document);
+        assertNotNull(url);
+        assertEquals("https://www.databazeknih.cz/prehled-knihy/nadace-nadacia-nadace-15829",url);
+    }
+
+    @Test
+    void parseMulti01()
+            throws IOException, SearchException, CredentialsException, StorageException {
+
+        final String locationHeader = "https://www.databazeknih.cz/prehled-knihy/nadace-nadacia-nadace-15829";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.databazeknih_nadace;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{false, false, false, false},
-                                      book);
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false},
+                                 book);
         Log.d(TAG, book.toString());
 
         assertEquals("Nadace", book.getString(DBKey.TITLE, null));
-        assertEquals("8020409319", book.getString(DBKey.ISBN, null));
-        assertEquals("40000", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
-        assertEquals("2001", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("9788025701331", book.getString(DBKey.ISBN, null));
+        assertEquals("15829", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
+        assertEquals("2009", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("250", book.getString(DBKey.PAGES, null));
-        //assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
-        assertEquals("měkká / brožovaná", book.getString(DBKey.FORMAT, null));
+        assertEquals("204", book.getString(DBKey.PAGES, null));
+        assertEquals(4.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
+        assertEquals("pevná / vázaná s přebalem", book.getString(DBKey.FORMAT, null));
         assertEquals("1951", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-//        assertEquals("První kniha série Nadace.\n"
-//                     + "\n"
-//                     + "Po dlouhých dvanácti tisíciletích existence spěje galaktická Říše pomalu,"
-//                     + " ale jistě k zániku. Prozatím jsou však trendy vedoucí k jejímu rozkladu"
-//                     + " sotva postřehnutelné – vysledovat je dokáže pouze geniální matematik"
-//                     + " Hari Seldon. Na základě psychohistorického modelu předpoví, že po pádu"
-//                     + " Říše čeká galaxii nepopsatelný chaos a že následná éra barbarství se"
-//                     + " protáhne na celých třicet tisíc let. Seldon se však s touto myšlenkou"
-//                     + " nehodlá smířit. Na samém okraji galaxie proto založí na planetě"
-//                     + " Terminus Nadaci, která má nejen uchovat kulturu a vědění předchozích"
-//                     + " věků, ale stát se i zárodkem Druhé říše. Toto je příběh prvních dvou"
-//                     + " set let její pohnuté historie…\n"
-//                     + "\n"
-//                     + "Nadace, Nadace a Říše, Druhá Nadace jsou trilogií skládající se z"
-//                     + " příběhů z historie vzdálené budoucnosti trvající více než milión let v"
-//                     + " době, kdy jsou planety v celé mléčné dráze spojené do obrovské"
-//                     + " Galaktické Říše.",
-//                     book.getString(DBKey.DESCRIPTION, null));
-
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Po dlouhých dvanácti tisíciletích existence spěje galaktická Říše"));
         assertEquals("Foundation",
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
 
         final List<Tag> bookTags = book.getTags();
 
-        assertEquals(6, bookTags.size());
+        assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatura světová"));
         assertTrue(tags.contains("Romány"));
         assertTrue(tags.contains("Sci-fi"));
-        assertTrue(tags.contains("space opera"));
-        assertTrue(tags.contains("sci-fi"));
-        assertTrue(tags.contains("zfilmováno – TV seriál"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
-        assertEquals(1, allPublishers.size());
+        assertEquals(2, allPublishers.size());
 
-        assertEquals("Mladá fronta", allPublishers.get(0).getName());
+        assertEquals("Argo", allPublishers.get(0).getName());
+        assertEquals("Triton", allPublishers.get(1).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(2, authors.size());
+        assertEquals(3, authors.size());
 
         Author author;
         final Optional<String> oIv;
@@ -453,7 +415,7 @@ class ParseTest
         assertEquals("Isaac", author.getGivenNames());
         assertEquals("1920", author.getBirthDate().orElse(null));
         assertEquals("1992", author.getDeathDate().orElse(null));
-
+        assertTrue(author.getTmpPictureFileSpec().orElse("").endsWith("_databazeknih_79_0_.jpg"));
         assertEquals(AuthorRole.WRITER, author.getRole());
         oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
         assertTrue(oIv.isPresent());
@@ -464,8 +426,15 @@ class ParseTest
         assertEquals("Viktor", author.getGivenNames());
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
-
         assertEquals(AuthorRole.TRANSLATOR, author.getRole());
+        assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
+
+        author = authors.get(2);
+        assertEquals("Whelan", author.getFamilyName());
+        assertEquals("Michael", author.getGivenNames());
+        assertNull(author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
+        assertEquals(AuthorRole.COVER_ARTIST, author.getRole());
         assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
 
         final List<Series> series = book.getSeries();

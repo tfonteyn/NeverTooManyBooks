@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html lang="cs-CZ">
     <head>
-        <script async
-                src="https://www.googletagmanager.com/gtag/js?id=G-071DTZVVD0"></script>
+        <meta charset="utf-8">
+                <script>(function(){var s=localStorage.getItem('theme-preference');if(!s&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)s='dark';if(s==='dark')document.documentElement.setAttribute('data-theme','dark')})();</script>
+
+                <link rel="preconnect" href="https://delivery.r2b2.cz">
+        <link rel="preconnect" href="https://www.googletagmanager.com">
+        <link rel="dns-prefetch" href="https://delivery.r2b2.cz">
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+        <link rel="dns-prefetch" href="https://www.google-analytics.com">
+
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-071DTZVVD0"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -19,690 +27,898 @@
         <!-- End Google Tag Manager -->
 
 
-        <meta http-equiv="Content-Type"
-              content="text/html; charset=utf-8" />
-        <meta name="robots"
-              content="noindex, follow" />
-        <meta name="author"
-              content="Databazeknih.cz" />
-        <meta name="verify-v1"
-              content="JiMerw6ACIaF3zP4sGDspZeK+Az/kYgj4c/7FN1PFiM=" />
-        <meta name="all-apver"
-              content="b6692ea5df920cad691c20319a6fffd7a4a766b8" />
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1.0" />
-        <link href="/favicon.ico"
-              rel="shortcut icon" />
-        <link href="/icon.png"
-              rel="icon"
-              type="image/png" />
+            <meta name="robots" content="noindex, follow" />
+        <meta name="author" content="Databazeknih.cz" />
+        <meta name="verify-v1" content="JiMerw6ACIaF3zP4sGDspZeK+Az/kYgj4c/7FN1PFiM=" />
+        <meta name="all-apver" content="b6692ea5df920cad691c20319a6fffd7a4a766b8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/favicon.ico" rel="shortcut icon" />
+        <link href="/icon.png" rel="icon" type="image/png" />
 
         <title>
-            Vyhledávání | Databáze knih
-        </title>
+                            Vyhledávání knih | Databáze knih
+                    </title>
 
         <script>
             var Unidata = window.Unidata || {};
-            if (window.innerWidth > 900) {
-                Unidata.biddingData = Unidata.biddingData || [{
-                    "halfpagead": true,
-                    "halfpagead_spodni": true,
-                    "widesquare": true,
-                    "branding": true,
-                    "300x250": true,
-                    "wallpaper": true
-                }];
-            } else {
-                Unidata.biddingData = Unidata.biddingData || [{
-                    "m_paticka": true,
-                    "m_300x250": true,
-                    "m_branding": true,
-                    "m_sticky": true
-                }];
+
+            Unidata.reklama = true; // Informace pro Mafra stack
+
+            if (Unidata.reklama !== false) {
+                if (window.innerWidth > 900) {
+                    Unidata.biddingData = Unidata.biddingData || [{
+                        "halfpagead": true,
+                        "halfpagead_spodni": true,
+                        "widesquare": true,
+                        "branding": true,
+                        "300x250": true,
+                        "wallpaper": true
+                    }];
+                } else {
+                    Unidata.biddingData = Unidata.biddingData || [{
+                        "m_paticka": true,
+                        "m_300x250": true,
+                        "m_branding": true,
+                        "m_sticky": true,
+                        "m_vignete": true
+                    }];
+                }
             }
         </script>
 
-        <link rel="preload"
-              href="/css/default.css?ver=7l"
-              as="style"
-              onload="this.onload=null;this.rel='stylesheet'">
-        <noscript>
-            <link rel="stylesheet"
-                  href="/css/default.css?ver=7l">
-        </noscript>
+        <link rel="preload" href="/fonts/lora/lora-v36-latin_latin-ext-regular.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/lora/lora-v36-latin_latin-ext-700.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/open-sans/open-sans-v43-latin_latin-ext-regular.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/open-sans/open-sans-v43-latin_latin-ext-700.woff2" as="font" type="font/woff2" crossorigin>
 
-        <script src="https://1gr.cz/js/uni/uni.js?rr=1752063294"></script>
-        <style>
-            @import "https://1gr.cz/css/externi/reklama.css?rr=1739525808422";
-        </style>
-        <script>
-            window.cpexPackageConfig = { publisherSettingsPath: 'https://cdn.cpex.cz/settings/production/mafra.js',websiteSettingsPath: 'https://cdn.cpex.cz/settings/production/mafra/databazeknih.cz.js' }; document.head.appendChild(Object.assign(document.createElement('script'), { src: 'https://cdn.cpex.cz/package/cpex-package' + (window.location.href.indexOf('debug') > -1 ? '.js' : '.min.js') } ))
-        </script>
-        <script src="https://cdn.cpex.cz/cmp/v2/cpex-cmp.min.js"
-                async="async"></script>
-        <script>Unidata.dsaInfo = true</script><!-- Gemius2013 -->
-        <script>
-             if((/tech_max=[^;]*aplikace=1/.test(document.cookie)) || (/dCMP=[^;]*gemius=1/.test(document.cookie)) || !(typeof(Didomi) == "undefined" || !Didomi.getUserStatus().vendors.consent.enabled.includes(328))) { var pp_gemius_consent = true; } else { var pp_gemius_use_cmp = true; } if(!/(^|;)\s*nogemius=/.test(document.cookie)) { var pp_gemius_identifier = '.FGb6TR.LJKmeuE7JnX4.aRvfXUupUca9AuNlNd5Om3..7'; function gemius_pending(i) { window[i] = window[i] || function() { var x = window[i+'_pdata'] = window[i+'_pdata'] || []; x[x.length]=arguments; } ; } ; gemius_pending('gemius_hit'); gemius_pending('gemius_event'); gemius_pending('gemius_init'); gemius_pending('pp_gemius_hit'); gemius_pending('pp_gemius_event'); gemius_pending('pp_gemius_init'); (function(d,t) { try { var gt=d.createElement(t),s=d.getElementsByTagName(t)[0],l='http'+((location.protocol=='https:')?'s':''); gt.setAttribute('async','async');gt.setAttribute('defer','defer'); gt.src=l+'://spir.hit.gemius.pl/xgemius.js'; s.parentNode.insertBefore(gt,s); } catch (e) { } } )(document,'script'); }
-        </script>
-        <script>
-            var adformtag = window.adformtag = window.adformtag || []; adformtag.push(function () { adformtag.setRequestParam('gdpr', '1'); } );
-        </script>
-        <script>
-            window.UniLoaded = window.UniLoaded || [];
-            window.UniLoaded.push(
-              function () {
-                var f = function(){
-                  if (/dCMP=[^;]*piano=1/.test(document.cookie) || !(typeof(Didomi) == "undefined" || !Didomi.getUserStatus().vendors.consent.enabled.includes(412)))
-                  {
-                    var id = document.cookies.read("_mmid");
-                    var webIdCookie = document.cookies.read("\x5fwebid");
-                    if (id) {
-                      window.pdl = window.pdl || { };
-                      window.pdl.browserId = id;
-                      if(!Math.floor(Math.random() * 1000)) Log.ping(location.href, "logpiano\x5Fmmid\x5Fx1000");
-                    } else {
-                      Log.ping(location.href, "logpiano\x5Fnommid\x5F" + (webIdCookie ? "" : "no") + "webid" + (webIdCookie ? "\x5F" + webIdCookie[0] : ""));
-                    }
-                    var s = document.createElement("script");
-                    document.getElementsByTagName("head")[0].appendChild(s);
-                    s.src = "https://cdn.tinypass.com/api/tinypass.min.js";
-                  }
-                };
-                if(typeof(Didomi) != "undefined")
-                  f();
-                else
-                {
-                  window.didomiEventListeners = window.didomiEventListeners || [];
-                  window.didomiEventListeners.push({
-                    event: 'sync.ready',  // The SDK is ready and syncing is done
-                    listener: function () {
-                      f();
-                    }
-                  });
-                }
-              }
-            );
-        </script>
-        <meta name="cXenseParse:qiw-ostrov"
-              content="databazeknih" />
-        <script>tp = window.tp || [];
-tp.push(["setAid", 'ldpllFOBpe']);
-tp.push(["setCxenseSiteId", "4732542837648372374"]);
-tp.push(["setEndpoint", 'https://buy-eu.piano.io/api/v3']);
-tp.push(["setEspEndpoint", 'https://api-esp-eu.piano.io']);
-tp.push(["setUseTinypassAccounts", false]);
-tp.push(["setUsePianoIdUserProvider", true]);
-var userState = Unidata.isLogged ? (Unidata.isSubscriber ? ["subscriber"] : ["logged"]) : ["notlogged"];
-tp.push(["setCustomVariable", "userState", userState]);
-var cX = cX || { options: { consent: true, consentVersion: 2 } } ; cX.callQueue = cX.callQueue || [];
-cX.callQueue.push(['setCustomParameters', { 'userState': userState } ] );
-var consent = (/dCMP=[^;]*piano=1/.test(document.cookie) || !(typeof(Didomi) == "undefined" || !Didomi.getUserStatus().vendors.consent.enabled.includes(412)));
-cX.callQueue.push(['setConsent', { pv: consent, segment: consent, ad: consent, recs: consent, geo: consent, device: consent } ]);
-tp.push(["init", function () { tp.experience.init(); } ]);
-        </script>
+        <style>:root{--bg: #ffffff;--text: #333333;--surface: #f6f6f6;--border: #dddddd;--border2: #eee;--link: #a03a3b;--surfaceOrange: #faf4ec;--gray100: #f6f6f6;--buttonLightBg: #f6f6f6;--buttonLightHoverBg: #f3f2f2;--whiteBoxBg: #ffffff;--mainMenuColor: #333333;--shadow-md: 0 3px 10px rgba(0,0,0,0.12);--gray600: #808080;--gray400: #cccccc;--gray300: #dddddd;--gray200: #f3f2f2;--buyAntiqueBorderColor: #edfbf9;--lightGreen: #e6f8f0;--redBoxColor: #fff6f6;--autocompleteHoverBg: #f8f6f6}.shadows{-webkit-box-shadow:0px 0px 13px -2px #dedbde;-moz-box-shadow:0px 0px 13px -2px #dedbde;box-shadow:0px 0px 13px -2px #dedbde}.inc_okraje,#header,#content,#footer{width:-moz-calc(100% - 70px);width:-webkit-calc(100% - 70px);width:calc(100% - 70px);max-width:1010px}*{padding:0;margin:0}body{font-family:Open Sans, Arial, Helvetica, sans-serif;font-size:105%;width:100%;font-weight:400;background:var(--gray300);overflow-x:hidden;overflow-anchor:none}#wrapper{margin:0 auto;margin-top:15px;width:100%;max-width:1040px;border:0;position:relative}#cover_wrapper{border:0;border-radius:8px 8px 0px 0px;box-shadow:var(--shadow-md);padding-bottom:0px;background:var(--bg);margin-bottom:10px}#faux{cursor:auto;width:100%;max-width:1040px;margin:0 auto;border-radius:8px 8px 8px 0px;padding:0px 0px 25px 0px}#headerCover{background:#a03a3b;border-radius:8px 8px 0px 0px}#header{color:#333;display:block;margin:0 auto;padding-top:1em;padding-bottom:12px;cursor:auto}.logo{margin:0em 0em 10px 0em;height:40px;width:194px}#content{background:#fff;margin:0 auto;margin-top:25px;margin-bottom:18px;padding:0px 0px;min-height:700px;cursor:auto}* html #content{min-height:700px}#footer,#footer p{color:gray;font-size:95%}#footer{clear:both;background:#ddd;margin:0 auto;text-align:center;padding:5px 25px 30px 25px;line-height:1.6em;cursor:auto;border-radius:0px 0px 0px 0px;max-width:990px}
+</style>
+                                <link rel="preload" href="/css/default.css?ver=3f" as="style" onload="this.onload=null;this.rel='stylesheet'">
+                        <noscript>
+                <link rel="stylesheet" href="/css/default.css?ver=3f">
+                            </noscript>
+        
+        <script>window.Ads = { config:{ "mBrandingOffsetTop":115,"mStickyShowTime":1000,"desktopTopBar":111,"vignetteCappingTime":180000,"preloadGPT":true}}</script>
+<script src="https://1gr.cz/js/uni/uni.js?rr=1782716269"></script>
+ <style>
+	@import "https://1gr.cz/css/externi/reklama.css?rr=1781261292";
+</style> <script>window.cpexPackageConfig = {
+publisherSettingsPath: 'https://cdn.cpex.cz/settings/production/mafra.js',
+websiteSettingsPath: 'https://cdn.cpex.cz/settings/production/mafra/databazeknih.cz.js'
+}
+document.head.appendChild(Object.assign(document.createElement('script'), { src: `https://cdn.cpex.cz/package/cpex-package${ window.location.href.indexOf('debug') > -1 ? '.js' : '.min.js'}` }));
+</script>
+<script type="text/javascript">!(function(b,_name){b[_name]=b[_name]||function n(){(n.q=n.q||[]).push(arguments)},b[_name].v=b[_name].v||2,b[_name].s="1";!(function(b,n,v,U,Q){function V(U,Q){try{V=b.localStorage,(U=JSON.parse(V[decodeURI(decodeURI('%67%256%35%2574I%74%65%25%36%64'))](v)).lgk||[])&&(Q=b[n].pubads())&&U.forEach((function(b){b&&b[0]&&Q.setTargeting(b[0],b[1]||"")}))}catch(q){}var V}try{(Q=b[n]=b[n]||{}).cmd=Q.cmd||[],typeof Q.pubads===U?V():typeof Q.cmd.unshift===U?Q.cmd.unshift(V):Q.cmd.push(V)}catch(q){}})(window,decodeURI(decodeURI('%67%25%36fo%67%6ce%2574%61%25%367')),"_a"+decodeURI(decodeURI("%25%35%31%53%25%33%30%253%32%254f%25%354%4a%2545%25%352%2555Y3%4d%7ad%25%34%32%25%352%256b%255%39y%51%25%354%256%33%25%33%30%4e%25%345%254%65%2545MkU%25%378NU%25%34%39%25%374%25%34d%67")),"function");;})(window,decodeURI(decodeURI('%25%36%31%64%25%36d%69%25%37%32%256%31l')));!(function(b,n,v,U){v=b.createElement(n),b=b.getElementsByTagName(n)[0],v.async=1,v.src="https://agencysignals.com/scripts/p2wxk7/7vt_w40-prod.js",(U=0)&&U(v),b.parentNode.insertBefore(v,b)})(document,"script");</script><script src="https://cdn.cpex.cz/cmp/v2/cpex-cmp.min.js" async="async"></script>
+<script>Unidata.dsaInfo = true</script><!-- Gemius2025 --><script> if((/tech_max=[^;]*aplikace=1/.test(document.cookie)) || (/dCMP=[^;]*gemius=1/.test(document.cookie)) || !(typeof(Didomi) == "undefined" || !Didomi.getUserStatus().vendors.consent.enabled.includes(328))) { var pp_gemius_consent = true; } else { var pp_gemius_use_cmp = true; } if(!/(^|;)\s*nogemius=/.test(document.cookie)) { var pp_gemius_identifier = '.FGb6TR.LJKmeuE7JnX4.aRvfXUupUca9AuNlNd5Om3..7'; function gemius_pending(i) { window[i] = window[i] || function() { var x = window[i+'_pdata'] = window[i+'_pdata'] || []; x[x.length]=Array.prototype.slice.call(arguments, 0);};};
+(function(cmds) { var c; while(c = cmds.pop()) gemius_pending(c)})(['gemius_cmd', 'gemius_hit', 'gemius_event', 'gemius_init', 'pp_gemius_hit', 'pp_gemius_event', 'pp_gemius_init']);
+window.pp_gemius_cmd = window.pp_gemius_cmd || window.gemius_cmd;
+(function(d,t) {try {var gt=d.createElement(t),s=d.getElementsByTagName(t)[0],l='http'+((location.protocol=='https:')?'s':''); gt.setAttribute('async','async');
+gt.setAttribute('defer','defer'); gt.src=l+'://spir.hit.gemius.pl/xgemius.min.js'; s.parentNode.insertBefore(gt,s); } catch (e) { } } ) (document,'script');
+ } </script><script>var adformtag = window.adformtag = window.adformtag || []; adformtag.push(function () { adformtag.setRequestParam('gdpr', '1'); } );</script><script>
+window.cX = window.cX || {};
+cX.options = cX.options || { consent: true, consentVersion: 2 };
+cX.callQueue = cX.callQueue || [];
+cX.callQueue.push(["setSiteId", "4732542837648372374"]);
+function getPianoConsent() {
+    return /dCMP=[^;]*piano=1/.test(document.cookie) ||
+        !(typeof Didomi === "undefined" ||
+          !Didomi.getUserStatus().vendors.consent.enabled.includes(412));
+}
+function setPianoConsent() {
+    var consent = getPianoConsent();
+    cX.callQueue.push(["setConsent", {
+        pv: consent,
+        segment: consent,
+        ad: consent,
+        recs: consent,
+        geo: consent,
+        device: consent
+    }]);
+}
+setPianoConsent();
+cX.callQueue.push(["sendPageViewEvent"]);
+</script>
+<meta name="cXenseParse:qiw-ostrov" content="databazeknih"/>
+<script async="async" src="https://cdn.cxense.com/cx.cce.js"></script>
 
+        <script defer src="/jquery/main.js?v=1y" type='text/javascript'></script>
+                        <base href="https://www.databazeknih.cz/" />
 
-        <script defer
-                src="/jquery/main.js?v=1k"
-                type='text/javascript'></script>
-        <base href="https://www.databazeknih.cz/" />
-
-        <script type="text/javascript"
-                src="//delivery.r2b2.cz/hb/mafra/databazeknih.cz"></script>
+        <script type="text/javascript" src="//delivery.r2b2.cz/hb/mafra/databazeknih.cz"></script>
     </head>
 
-    <body>
-        <!-- Google Tag Manager (noscript) -->
-        <noscript>
-            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PJXN2HQ"
-                    height="0"
-                    width="0"
-                    style="display:none;visibility:hidden"></iframe>
-        </noscript>
-        <!-- End Google Tag Manager (noscript) -->
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PJXN2HQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
-        <div id='ad_branding_desktop'>
-            <table id="r-leaderboardhp"
-                   class="r-main ahead s_branding">
-                <tr>
-                    <td>
-                        <div class="r-head">
-                            <span></span>
+<div id='ad_branding_desktop' style='width:100%;height:217px;'><table id="r-leaderboardhp" class="r-main ahead s_branding"><tr><td><div class="r-head"><span></span></div><div class="r-body"><div id='branding' style='position: fixed; left: 50%; transform: translate(-50%); top: 0px; min-width: 998px;'></div>
+<div class='top-layer' style='position: relative; min-width: 998px; min-height: 200px; pointer-events: none'></div>
+</div></td></tr></table></div>
+
+<div id="wrapper">
+    <div id="cover_wrapper">
+        <div id="headerWithMenu">
+            <div id="headerCover">
+                <div id="header">
+
+                    <div class="container">
+                        <div class="headerLogo">
+                            <a class="logoWrap" href="/" title="DatabazeKnih.cz ...Váš knižní svět"><img src="/img/content/databaze-knih-logo-white.png" alt="Databazeknih.cz" class="logo" /></a>
                         </div>
-                        <div class="r-body">
-                            <div id='branding'></div>
+
+                        <div class='loginPlace'>
+                                                            <div id="reglog">
+                                    <a href='/login'>Přihlásit</a>
+                                    <a class="odleft_fifteen" href='/registrace' class="strong">Vytvořit profil</a>
+                                </div>
+                                                        <div class="clear"></div>
                         </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
 
-        <div id="wrapper">
-            <div id="cover_wrapper">
-                <div id="headerWithMenu">
-                    <div id="headerCover">
-                        <div id="header">
+                        <div class="headerSearchMin">
+                            <span class="icon-magnifier"></span>
+                        </div>
 
-                            <div class="container">
-                                <div class="headerLogo">
-                                    <a href="/"
-                                       title="DatabazeKnih.cz ...Váš knižní svět">
-                                        <img src="/img/content/databaze-knih-logo-white.png"
-                                             alt="Databazeknih.cz"
-                                             class="logo" />
-                                    </a>
-                                    <a href="/"
-                                       title="DatabazeKnih.cz ...Váš knižní svět">
-                                        <img src="/img/content/d.svg"
-                                             alt="Databazeknih.cz"
-                                             class="logoD" />
-                                    </a>
-                                </div>
+                        <div class="headerSearch">
+                            <div id="hledej">
+                                <FORM NAME='hledat' action='/search' METHOD='GET'>
+                                    <input id="suggestMain" type='text' name='q' value='' placeholder='hledejte...' autocomplete='no'>
+                                    <button type='submit' value='' class='mainSearchButton' aria-label="Hledat"></button>
+                                </form>
 
-                                <div class='loginPlace'>
-                                    <div id="reglog">
-                                        <a href='/login'>Přihlásit</a>
-                                        <a class="odleft_fifteen"
-                                           href='/registrace'
-                                           class="strong">Vytvořit profil
-                                        </a>
-                                    </div>
-                                    <div class="clear"></div>
-                                </div>
-
-                                <div class="headerSearchMin">
-                                    <span class="icon-magnifier">
-                                        <img src="/img/content/magnifier_white.svg"
-                                             alt="">
-                                    </span>
-                                </div>
-
-                                <div class="headerSearch">
-                                    <div id="hledej">
-                                        <FORM NAME='hledat'
-                                              action='/search'
-                                              METHOD='GET'>
-                                            <input id="suggestMain"
-                                                   type='text'
-                                                   name='q'
-                                                   value=''
-                                                   placeholder='hledejte...'
-                                                   autocomplete='no'>
-                                            <button type='submit'
-                                                    value=''
-                                                    class='mainSearchButton'
-                                                    aria-label="Hledat">
-                                                <img src='/img/content/magnifier.svg'
-                                                     alt='' />
-                                            </button>
-                                        </form>
-
-                                        <a href="/isbn-scanner-new"
-                                           class="camera-link"
-                                           title="Skenovat ISBN"></a>
-                                    </div>
-                                </div>
+                                <a href="/isbn-scanner-new" class="camera-link" title="Skenovat ISBN"></a>
                             </div>
-
                         </div>
-
-                        <div class="clear"></div>
                     </div>
+
+                </div>
+
+                <div class="clear"></div>
+            </div>
 
                     <nav id='menu'>
-                        <ul id='menu-closed'>
-                            <li>
-                                <a href='/novinky'
-                                   class="GTM_menu_novinky">Novinky
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/knihy'
-                                   class="GTM_menu_knihy">Knihy
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/bazar-knih'
-                                   class="GTM_menu_bazar">Bazar
-                                </a>
-                            </li>
-                            <li>
-                                <a target="_blank"
-                                   href='https://restorio.cz/?utm_source=databazeknih&utm_medium=topmenu&utm_campaign=databazeknih_topmenu'
-                                   class="GTM_antikvariat_menu">Antikvariát
-                                    <img class="extLink odleft_pet"
-                                         src="/img/icons/header/external_link.svg"
-                                         alt=""
-                                         title="" />
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/eknihy-zdarma-ke-stazeni'
-                                   class="GTM_menu_eknihy_zdarma">Eknihy zdarma
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/vyzva?rok=2025'
-                                   class="GTM_menu_ctenarska_vyzva">Výzva
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/autori'
-                                   class="GTM_menu_autori">Autoři
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/zebricky'
-                                   class="GTM_menu_zebricky">Žebříčky
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/komunita'
-                                   class="GTM_menu_komunita">Komunita
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/nove-diskuze-a-nove-prispevky'
-                                   class="GTM_menu_diskuze">Diskuze
-                                </a>
-                            </li>
-                            <li>
-                                <a href='https://www.databazeknih.cz/search?hledat=&amp;in=books&amp;q=foundation%20asi#menu-closed'>
-                                    &#215; Zavřít menu
-                                </a>
-                            </li>
-                            <li class='menu-for-open'>
-                                <a href='https://www.databazeknih.cz/search?hledat=&amp;in=books&amp;q=foundation%20asi#menu'>
-                                    &#9776; Menu
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-
-
-                </div>
-
-                <div id="faux">
-                    <!-- Begin Content -->
-                    <div id="content">
-                        <div id='popup'></div>
-                        <div id='bgpopup'></div>
-
-                        <div id='left_less'>
-
-                            <h1 class="oddown">Vyhledávání
-                                knih
-                            </h1>
-
-                            <form name="hledat"
-                                  method="get"
-                                  action="/search"
-                                  class="oddown_big"
-                                  id="main_search">
-                                <input type='hidden'
-                                       value='books'
-                                       name='in' />
-                                <input class='nbazf'
-                                       placeholder="Hledejte..."
-                                       type="text"
-                                       name="q"
-                                       value="foundation asi"
-                                       autocomplete="off"
-                                       autofocus='autofocus' />
-                                <button type="submit"
-                                        value=""
-                                        class="searchbut"
-                                        name="hledat"
-                                        aria-label="Hledat" />
-                                <img src='/img/content/magnifier.svg'
-                                     alt='' />
-                                </button>
-                            </form>
-
-                            <ul id='newIcons'
-                                class='odtop'>
-                                <a href='/search?in=books&q=foundation asi'>
-                                    <li class="now">Knihy</li>
-                                </a>
-                                <a href='/search?in=series&q=foundation asi'>
-                                    <li>Série</li>
-                                </a>
-                                <a href='/search?in=tales&q=foundation asi'>
-                                    <li>Části děl</li>
-                                </a>
-                                <a href='/search?in=authors&q=foundation asi'>
-                                    <li>Autoři</li>
-                                </a>
-                                <a href='/search?in=bazar&q=foundation asi'>
-                                    <li>Bazar</li>
-                                </a>
-                                <a href='/search?in=users&q=foundation asi'>
-                                    <li>Uživatelé</li>
-                                </a>
-                                <a href='/search?in=forum&q=foundation asi'>
-                                    <li>Diskuze</li>
-                                </a>
-                                <a href='/search?in=tags&q=foundation asi'>
-                                    <li>Štítky</li>
-                                </a>
-                                <a href='/search?in=publishings&q=foundation asi'>
-                                    <li>Nakladatelství</li>
-                                </a>
-                            </ul>
-                            <div class='clear'></div>
-
-
-                            <div class="grayBoxLight">
-                                <img src="/img/icons/flags/cz.svg"
-                                     class="flag odtopm" />
-                                <p class='select odr'>
-                                    <SELECT name='lang'
-                                            value='všechny jazyky'
-                                            onChange='location.href=this.options[this.selectedIndex].value'>
-                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=cz"
-                                                selected>český jazyk
-                                        </OPTION>
-                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=sk">
-                                            slovenský jazyk
-                                        </OPTION>
-                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=en">
-                                            anglický jazyk
-                                        </OPTION>
-                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=de">
-                                            německý jazyk
-                                        </OPTION>
-                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=other">
-                                            jiný jazyk
-                                        </OPTION>
-                                    </SELECT>
-                                </p>
-                                <div class="clear"></div>
-                            </div>
-
-                            <hr class="oddown odtop" />
-
-                            <p class='new'>
-
-                                <a href="/prehled-knihy/nadace-nadace-40000">
-
-
-                                    <picture>
-                                        <source srcset="https://www.databazeknih.cz/img/books/40_/40000/nadace-uwD-40000.webp?v=1510351345"
-                                                type="image/webp">
-                                        <img src="https://www.databazeknih.cz/img/books/40_/40000/nadace-uwD-40000.jpg?v=1510351345"
-                                             alt="Obálka knihy Nadace"
-                                             title="Nadace"
-                                             class="img_39_left odtopm" />
-                                    </picture>
-                                </a>
-
-
-                                <img src='img/content/squares/red.gif'
-                                     title='85%'
-                                     alt='85%'
-                                     class='odr' />
-                                <a class='new'
-                                   type='book'
-                                   href='/prehled-knihy/nadace-nadace-40000'>Nadace
-                                </a>
-                                <br />
-                                <span class='smallfind'>
-                                    2001,
-                                    Isaac Asimov
-                                </span>
-                            <div class='clear'></div>
-                            <hr />
-                            </p>
-
-
-                            <div class='clear odtop_big'></div>
-                            <div class="pager">
-
-                            </div>
-
-
-                            <div class="orangeBoxLight odtop_fourty">
-                                <strong>TIP:</strong>
-                                Také můžete vyhledávat<a class="strong"
-                                                         href="/search?in=series&amp;q=foundation%20asi">
-                                v knižních sériích</a>.
-                            </div>
-
-                        </div>
-                        <div id='right_more'>
-                            <div id='hat_of_fly_banner'></div>
-                            <div id='ad_fly_cover'>
-                                <div id="r-hpa1"
-                                     class="r-main m11 s_halfpagead">
-                                    <div class="r-head">
-                                        <span></span>
-                                    </div>
-                                    <div class="r-body">
-                                        <div id='halfpagead'></div>
-                                        <div class="fc0"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="clear"
-                             id="endRectangle"></div>
-
-                        <div id='ad_wallpaper_desktop'
-                             class='odtop_fourty'>
-                            <div id="r-wallpaper"
-                                 class="r-main m54 s_wallpaper">
-                                <div class="r-head">
-                                    <span></span>
-                                </div>
-                                <div class="r-body">
-                                    <div id='wallpaper'></div>
-                                    <div class="fc0"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id='ad_sticky_mobile'>
-                            <div id='m_sticky'></div>
-                        </div>
-                        <div id='ad_footer_mobile'>
-                            <div id="r-touchfooter"
-                                 class="r-main r-box touch-216 s_m_paticka">
-                                <div class="r-head">
-                                    <span></span>
-                                </div>
-                                <div class="r-body">
-                                    <div id='m_paticka'></div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            <div itemscope
-                 itemtype="https://schema.org/WebSite"
-                 class="novis">
-                <meta itemprop="name"
-                      content="Databáze knih" />
-                <meta itemprop="url"
-                      content="https://www.databazeknih.cz/" />
-
-                <div itemprop="potentialAction"
-                     itemscope
-                     itemtype="https://schema.org/SearchAction">
-                    <meta itemprop="target"
-                          content="https://www.databazeknih.cz/search?q={search_term_string}" />
-                    <meta itemprop="query-input"
-                          content="required name=q" />
-                </div>
-            </div>
-
-            <div id="reklama"
-                 style="height: 2px"></div>
-
-            <script type="text/javascript">
-                <!-- adblock for adsense -->
-                window.onload = function() {
-                    setTimeout(function() {
-                        var reklama = document.getElementById("reklama");
-                        var stav;
-                        if (reklama.clientWidth <= 5) {
-                            // Reklama byla zablokována
-                            stav = "Ano";
-                        } else {
-                            stav = "Ne";
-                        }
-                        // Odeslání dat do Google Analytics
-                        gtag('event', 'Adblock', {
-                            'event_category': 'Adblock',
-                            'event_label': stav,
-                            'non_interaction': true
-                        });
-                    }, 1000);
-                }
-            </script>
-            <div id="mafra-ads-container"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', function () {
-                    const container = document.getElementById('mafra-ads-container');
-                    const device = window.innerWidth > 900 ? 'desktop' : 'mobil';
-
-                    fetch('/mafra-ads?device=' + device)
-                        .then(response => response.text())
-                        .then(html => {
-                            const tempDiv = document.createElement('div');
-                            tempDiv.innerHTML = html;
-
-                            const scripts = tempDiv.querySelectorAll('script');
-                            const nonScripts = [...tempDiv.childNodes].filter(node => node.tagName !== 'SCRIPT');
-                            container.append(...nonScripts);
-
-                            // Spustíme externí skripty (s src)
-                            const externalScripts = [...scripts].filter(script => script.src);
-                            const inlineScripts = [...scripts].filter(script => !script.src);
-
-                            let loadedCount = 0;
-
-                            if (externalScripts.length === 0) {
-                                runInlineScripts();
-                            }
-
-                            externalScripts.forEach(script => {
-                                const newScript = document.createElement('script');
-                                newScript.src = script.src;
-                                newScript.onload = () => {
-                                    loadedCount++;
-                                    if (loadedCount === externalScripts.length) {
-                                        runInlineScripts();
-                                    }
-                                };
-                                document.body.appendChild(newScript);
-                            });
-
-                            function runInlineScripts() {
-                                inlineScripts.forEach(script => {
-                                    const newScript = document.createElement('script');
-                                    newScript.textContent = script.textContent;
-                                    document.body.appendChild(newScript);
-                                });
-                            }
-                        });
-                });
-            </script>
-            <footer>
-                <div id="footer">
-                    <div class="trends">
-                        <p>
-                            <span class="odr">Často hledané knížky:</span>
-                            <a href="knihy/cas-vos-553528">Čas vos</a>
-                            -
-                            <a href=knihy/empyreum-empyreum-ctvrte-kridlo-530478"">Čtvrté křídlo</a>
-                            -
-                            <a href="knihy/empyreum-empyreum-onyxova-boure-553086">Onyxová bouře</a>
-                            -
-                            <a href="knihy/shuggie-bain-489101">Shuggie Bain</a>
-                            -
-                            <a href="knihy/mladej-mungo-558900">Mladej Mungo</a>
-                        </p>
-                        <p>
-                            <span class="odr">Hledaní autoři:</span>
-                            <a href="autori/rebecca-yarros-155224">Rebecca Yarros</a>
-                            -
-                            <a href="autori/robert-bryndza-37135">Robert Bryndza</a>
-                            -
-                            <a href="autori/alena-mornstajnova-54811">Alena Mornštajnová</a>
-                            -
-                            <a href="autori/patrik-hartl-38083">Patrik Hartl</a>
-                        </p>
-                    </div>
-
-                    <p>
-                        <a href="/"
-                           title="DatabazeKnih.cz ...Váš knižní svět">
-                            <img class="logoDk"
-                                 src="/img/content/logo_footer.png"
-                                 alt="Databáze knih logo"
-                                 loading="lazy" />
-                        </a>
-                    </p>
-
-                    <div class="clear odtopm"></div>
-                    <a class="footerButton"
-                       href="/zasilani-upozorneni">Nové knihy do e-mailu
-                    </a>
-                    <div class="clear oddown"></div>
-
-                    <p>
-                        <a href="/napoveda">Nápověda</a>
-                        -
-                        <a href="/podminky-uziti">Podmínky užití</a>
-                        -
-                        <a href="/gdpr">GDPR</a>
-                        -
-                        <a href="/nez-nam-napisete">Napište nám</a>
-                        <br />
-                        <a href="/o-nas">Náš příběh</a>
-                        -
-                        <a href="/kde-pomaha-databaze-knih">Kde pomáháme?</a>
-                        -
-                        <a href="/dnes-pridane-knihy">Dnes přidané knihy</a>
-                    </p>
-
-                    <p class="odtop_ten">
-                        &copy; 2008 - 2025 Databazeknih.cz -
-                        <a href="/provozovatel-a-moderatori">Provozovatel</a>
-                        <br />
-                        Reklamní bannery spravuje MAFRA, a.s.
-                        <br />
-                    </p>
-
-                    <p class="social-icons">
-                        <a title="Facebooková stránka Databáze knih"
-                           href="https://www.facebook.com/pages/Databazeknihcz/42347054164"
-                           target="_blank">
-                            <i class="icon-facebook-1"></i>
-                        </a>
-                        <a title="Instagram Databáze knih"
-                           href="https://www.instagram.com/databazeknih/"
-                           target="_blank">
-                            <i class="icon-instagram-1"></i>
-                        </a>
-                        <a title="Twitter Databáze knih"
-                           href="https://twitter.com/DatabazeKnihCZ"
-                           target="_blank">
-                            <i class="icon-twitter-1"></i>
-                        </a>
-                    </p>
-                </div>
-            </footer>
+    <ul id='menu-closed'>
+        <li><a href='/novinky' class="GTM_menu_novinky">Novinky</a></li>
+        <li><a href='/knihy' class="GTM_menu_knihy">Knihy</a></li>
+        <li><a href='/bazar-knih' class="GTM_menu_bazar">Bazar</a></li>
+        <li><a target="_blank" href='https://restorio.cz/?utm_source=databazeknih&utm_medium=topmenu&utm_campaign=databazeknih_topmenu' class="GTM_antikvariat_menu">Antikvariát<span class="extLink"></span></a></li>
+        <li><a href='/eknihy-zdarma-ke-stazeni' class="GTM_menu_eknihy_zdarma">Eknihy zdarma</a></li>
+        <li><a href='/vyzva?rok=2026' class="GTM_menu_ctenarska_vyzva">Výzva</a></li>
+        <li><a href='/autori' class="GTM_menu_autori">Autoři</a></li>
+        <li><a href='/zebricky' class="GTM_menu_zebricky">Žebříčky</a></li>
+        <li><a href='/komunita' class="GTM_menu_komunita">Komunita</a></li>
+        <li><a href='/nove-diskuze-a-nove-prispevky' class="GTM_menu_diskuze">Diskuze</a></li>
+        <li><a data-js-xhr="1" href='https://www.databazeknih.cz/vyhledavani/knihy?q=nadace%20asim#menu-closed'>&#215; Zavřít menu</a></li>
+        <li class='menu-for-open'><a data-js-xhr="1" href='https://www.databazeknih.cz/vyhledavani/knihy?q=nadace%20asim#menu'>&#9776; Menu</a></li>
+    </ul>
+</nav>        
         </div>
 
-        <!-- antiadblock -->
-        <iframe srcdoc="<script src='https://cdn.performax.cz/acc/loader.js?aab=loader'></script>"
-                style="display: none"
-                data-web="databazeknih.cz"
-                data-hash="ccd3bd01b03293404506b008d8e56d3027"></iframe>
-    </body>
+                            
+            <div id="faux">
+                <!-- Begin Content -->
+                <div id='popup'></div>
+                <div id='bgpopup'></div>
+                <div id="content">
+
+                
+                <div class="gridMain">
+                <div id='left'>
+                    
+<h1 class="oddown">Vyhledávání
+            knih
+    </h1>
+
+    
+<form name="hledat" method="get" action="/search" class="oddown_big deskto">
+    <input type='hidden' value='books' name='in' />
+    <input class='nbazf' placeholder="Hledejte..." type="text" name="q" value="nadace asim" autocomplete="off" id="suggestBook" autofocus='autofocus' />
+    <button type="submit" value="" class="searchbut" name="hledat" aria-label="Hledat" /></button>
+</form>
+
+<ul id='newIcons' class='odtop'>
+    <a href='/search?in=books&q=nadace asim'><li class="now">Knihy</li></a>
+    <a href='/search?in=series&q=nadace asim'><li>Série</li></a>
+    <a href='/search?in=tales&q=nadace asim'><li>Části děl</li></a>
+    <a href='/search?in=authors&q=nadace asim'><li>Autoři</li></a>
+    <a href='/search?in=users&q=nadace asim'><li>Uživatelé</li></a>
+    <a href='/search?in=forum&q=nadace asim'><li>Diskuze</li></a>
+    <a href='/search?in=tags&q=nadace asim'><li>Štítky</li></a>
+    <a href='/search?in=publishings&q=nadace asim'><li>Nakladatelství</li></a>
+</ul>
+<div class='clear'></div>
+
+<div class="grayBoxLight">
+            <img src="/img/icons/flags/cz.svg" class="flag odtopm" />
+        <p class='select odr'>
+        <SELECT name='lang' value='všechny jazyky' onChange='location.href=this.options[this.selectedIndex].value'>
+            <OPTION value="/vyhledavani/knihy?q=nadace%20asim&amp;lang=cz"  selected>český jazyk</OPTION>
+            <OPTION value="/vyhledavani/knihy?q=nadace%20asim&amp;lang=sk" >slovenský jazyk</OPTION>
+            <OPTION value="/vyhledavani/knihy?q=nadace%20asim&amp;lang=czsk" >český + slovenský jazyk</OPTION>
+            <OPTION value="/vyhledavani/knihy?q=nadace%20asim&amp;lang=en" >anglický jazyk</OPTION>
+            <OPTION value="/vyhledavani/knihy?q=nadace%20asim&amp;lang=de" >německý jazyk</OPTION>
+            <OPTION value="/vyhledavani/knihy?q=nadace%20asim&amp;lang=other" >jiný jazyk</OPTION>
+        </SELECT>
+    </p>
+    <div class="clear"></div>
+</div>
+
+<hr class="oddown odtop" />
+
+
+            <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-nadacia-nadace-15829">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/15_/15829/nadace-nXz-15829.webp?v=1557343113" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/15_/15829/nadace-nXz-15829.jpg?v=1557343113" alt="Obálka knihy Nadace" title="Nadace" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='85%' alt='85%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-nadacia-nadace-15829'>Nadace</a>
+            <br /><span class='pozn'>
+                                    2009,
+                                Isaac Asimov
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-nadacia-nadace-a-rise-40003">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/40_/40003/nadace-a-rise-mt3-40003.webp?v=1557343152" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/40_/40003/nadace-a-rise-mt3-40003.jpg?v=1557343152" alt="Obálka knihy Nadace a Říše" title="Nadace a Říše" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='87%' alt='87%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-nadacia-nadace-a-rise-40003'>Nadace a Říše</a>
+            <br /><span class='pozn'>
+                                    2009,
+                                Isaac Asimov
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-nadacia-druha-nadace-40565">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/40_/40565/druha-nadace-697-40565.webp?v=1557343187" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/40_/40565/druha-nadace-697-40565.jpg?v=1557343187" alt="Obálka knihy Druhá Nadace" title="Druhá Nadace" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='87%' alt='87%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-nadacia-druha-nadace-40565'>Druhá Nadace</a>
+            <br /><span class='pozn'>
+                                    2010,
+                                Isaac Asimov
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <div id='ad_branding_mobile' style='min-height:600px; margin-top:30px; margin-bottom:20px; margin-left:-25px; margin-right:-25px;'><div id="r-touchbranding" class="r-main touch-215 s_m_branding"><div class="r-head"><span></span></div><div class="r-body"><div id='m_branding'></div></div></div></div>
+            <div id='ad_widesquare_desktop' style='min-height:438px; background:#f8f8f8; margin:0 auto 25px; text-align:center; display:block;'><div class='clear'></div><div id="r-shp480" class="r-main m58 s_widesquare"><div class="r-head"><span></span></div><div class="r-body"><div id='widesquare'></div><div class="fc0"></div></div></div><div class='clear'></div></div>
+            <hr class="oddown" />
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-nadacia-na-hranicich-nadace-85929">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/85_/85929/nadace-na-hranicich--85929.webp?v=1313740755" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/85_/85929/nadace-na-hranicich--85929.jpg?v=1313740755" alt="Obálka knihy Na hranicích Nadace" title="Na hranicích Nadace" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='88%' alt='88%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-nadacia-na-hranicich-nadace-85929'>Na hranicích Nadace</a>
+            <br /><span class='pozn'>
+                                    2011,
+                                Isaac Asimov
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-nadacia-nadace-a-zeme-125953">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/12_/125953/nadace-a-zeme-aEQ-125953.webp?v=1557343240" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/12_/125953/nadace-a-zeme-aEQ-125953.jpg?v=1557343240" alt="Obálka knihy Nadace a Země" title="Nadace a Země" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='85%' alt='85%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-nadacia-nadace-a-zeme-125953'>Nadace a Země</a>
+            <br /><span class='pozn'>
+                                    2012,
+                                Isaac Asimov
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-nadacia-a-zrodi-se-nadace-209960">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/20_/209960/nadace-a-zrodi-se-nadace-t9Z-209960.webp?v=1412630713" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/20_/209960/nadace-a-zrodi-se-nadace-t9Z-209960.jpg?v=1412630713" alt="Obálka knihy A zrodí se Nadace" title="A zrodí se Nadace" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='89%' alt='89%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-nadacia-a-zrodi-se-nadace-209960'>A zrodí se Nadace</a>
+            <br /><span class='pozn'>
+                                    2014,
+                                Isaac Asimov
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-nadacia-predehra-k-nadaci-163840">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/16_/163840/predehra-k-nadaci-7B8-163840.webp?v=1557343270" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/16_/163840/predehra-k-nadaci-7B8-163840.jpg?v=1557343270" alt="Obálka knihy Předehra k Nadaci" title="Předehra k Nadaci" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='89%' alt='89%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-nadacia-predehra-k-nadaci-163840'>Předehra k Nadaci</a>
+            <br /><span class='pozn'>
+                                    2013,
+                                Isaac Asimov
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/pratele-nadace-povidky-k-pocte-isaaca-asimova-236765">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/23_/236765/pratele-nadace-povidky-k-pocte-isaa-236765.webp?v=1421847470" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/23_/236765/pratele-nadace-povidky-k-pocte-isaa-236765.jpg?v=1421847470" alt="Obálka knihy Přátelé Nadace – Povídky k poctě Isaaca Asimova" title="Přátelé Nadace – Povídky k poctě Isaaca Asimova" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/orange.gif' title='73%' alt='73%' class='odr' /><a class='new' type='book' href='/prehled-knihy/pratele-nadace-povidky-k-pocte-isaaca-asimova-236765'>Přátelé Nadace – Povídky k poctě Isaaca Asimova</a>
+            <br /><span class='pozn'>
+                                    2015,
+                                Martin H. Greenberg
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/druha-trilogie-nadace-nadace-a-chaos-60602">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/60_/60602/nadace-a-chaos-60602.webp?v=1295809703" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/60_/60602/nadace-a-chaos-60602.jpg?v=1295809703" alt="Obálka knihy Nadace a chaos" title="Nadace a chaos" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/orange.gif' title='77%' alt='77%' class='odr' /><a class='new' type='book' href='/prehled-knihy/druha-trilogie-nadace-nadace-a-chaos-60602'>Nadace a chaos</a>
+            <br /><span class='pozn'>
+                                    2002,
+                                Greg Bear
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-a-nadacni-fondy-124739">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/12_/124739/nadace-a-nadacni-fondy-124739.webp?v=1338292602" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/12_/124739/nadace-a-nadacni-fondy-124739.jpg?v=1338292602" alt="Obálka knihy Nadace a nadační fondy" title="Nadace a nadační fondy" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/white.gif' title='0%' alt='0%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-a-nadacni-fondy-124739'>Nadace a nadační fondy</a>
+            <br /><span class='pozn'>
+                                    2007,
+                                Tomáš Dvořák
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-reinharda-heydricha-v-praze-1942-1945-309764">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/30_/309764/nadace-reinharda-heydricha-v-praze-28Q-309764.gif?v=1472496989" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/30_/309764/nadace-reinharda-heydricha-v-praze-28Q-309764.gif?v=1472496989" alt="Obálka knihy Nadace Reinharda Heydricha v Praze (1942-1945)" title="Nadace Reinharda Heydricha v Praze (1942-1945)" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/white.gif' title='0%' alt='0%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-reinharda-heydricha-v-praze-1942-1945-309764'>Nadace Reinharda Heydricha v Praze (1942-1945)</a>
+            <br /><span class='pozn'>
+                                    2004,
+                                Andreas Wiedemann
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-700-let-mesta-plzne-25-let-pro-vas-391832">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/39_/391832/nadace-700-let-mesta-plzne-25-let-p-X0V-391832.webp?v=1539611926" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/39_/391832/nadace-700-let-mesta-plzne-25-let-p-X0V-391832.jpg?v=1539611926" alt="Obálka knihy Nadace 700 let města Plzně: 25 let pro vás" title="Nadace 700 let města Plzně: 25 let pro vás" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/white.gif' title='0%' alt='0%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-700-let-mesta-plzne-25-let-pro-vas-391832'>Nadace 700 let města Plzně: 25 let pro vás</a>
+            <br /><span class='pozn'>
+                                    2018,
+                                Petr Mazný
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-frantiska-horskeho-jeho-odkaz-408695">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/empty_n.webp?v=1479224491" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/empty_n.jpg?v=1479224491" alt="Obálka knihy Nadace Františka Horského, jeho odkaz" title="Nadace Františka Horského, jeho odkaz" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/white.gif' title='0%' alt='0%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-frantiska-horskeho-jeho-odkaz-408695'>Nadace Františka Horského, jeho odkaz</a>
+            <br /><span class='pozn'>
+                                    1992,
+                                Ladislav Skala
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadace-charty-77-dvacet-let-422305">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/42_/422305/nadace-charty-77-dvacet-let-D1d-422305.webp?v=1570028339" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/42_/422305/nadace-charty-77-dvacet-let-D1d-422305.jpg?v=1570028339" alt="Obálka knihy Nadace Charty 77 (dvacet let)" title="Nadace Charty 77 (dvacet let)" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/orange.gif' title='60%' alt='60%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadace-charty-77-dvacet-let-422305'>Nadace Charty 77 (dvacet let)</a>
+            <br /><span class='pozn'>
+                                    1998,
+                                * antologie
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/druha-trilogie-nadace-vitezstvi-nadace-2101">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/21_/2101/vitezstvi-nadace-2101.webp?v=1255283399" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/21_/2101/vitezstvi-nadace-2101.jpg?v=1255283399" alt="Obálka knihy Vítězství Nadace" title="Vítězství Nadace" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/orange.gif' title='79%' alt='79%' class='odr' /><a class='new' type='book' href='/prehled-knihy/druha-trilogie-nadace-vitezstvi-nadace-2101'>Vítězství Nadace</a>
+            <br /><span class='pozn'>
+                                    2003,
+                                David Brin
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <div id='ad-smr-desktop-div' style='min-height: 300px; width: 100%;'><div id="r-super300" class="r-main m22 s_300x250"><div class="r-head"><span></span></div><div class="r-body"><div id='300x250'></div><div class="fc0"></div></div></div></div>
+            <div id='smr_mobil_mafra' style='min-height:300px; background:#f8f8f8; margin:0 auto 30px;'><div id="r-touch300x250" class="r-main touch-203 s_m_300x250"><div class="r-head"><span></span></div><div class="r-body"><div id='m_300x250'></div></div></div></div>
+            <hr class="oddown">
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/opslstisova-nadace-nepravidelny-roman-13209">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/13_/13209/opslstisova-nadace-nepravidelny-roman.webp?v=1749806736" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/13_/13209/opslstisova-nadace-nepravidelny-roman.jpg?v=1749806736" alt="Obálka knihy Opšlstisova nadace (nepravidelný román)" title="Opšlstisova nadace (nepravidelný román)" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/orange.gif' title='79%' alt='79%' class='odr' /><a class='new' type='book' href='/prehled-knihy/opslstisova-nadace-nepravidelny-roman-13209'>Opšlstisova nadace (nepravidelný román)</a>
+            <br /><span class='pozn'>
+                                    2002,
+                                Stanislav Komárek
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/druha-trilogie-nadace-ohrozeni-nadace-60597">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/60_/60597/druha-trilogie-nadace-ohrozeni-nada-GVJ-60597.webp?v=1423047795" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/60_/60597/druha-trilogie-nadace-ohrozeni-nada-GVJ-60597.jpg?v=1423047795" alt="Obálka knihy Ohrožení Nadace" title="Ohrožení Nadace" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/blue.gif' title='58%' alt='58%' class='odr' /><a class='new' type='book' href='/prehled-knihy/druha-trilogie-nadace-ohrozeni-nadace-60597'>Ohrožení Nadace</a>
+            <br /><span class='pozn'>
+                                    2002,
+                                Gregory Albert Benford
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/ta-nase-nadace-ceska-435440">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/43_/435440/ta-nase-nadace-ceskaYYtvBr-Q5c-.webp?v=1583150180" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/43_/435440/ta-nase-nadace-ceskaYYtvBr-Q5c-.jpg?v=1583150180" alt="Obálka knihy Ta naše nadace česká" title="Ta naše nadace česká" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='83%' alt='83%' class='odr' /><a class='new' type='book' href='/prehled-knihy/ta-nase-nadace-ceska-435440'>Ta naše nadace česká</a>
+            <br /><span class='pozn'>
+                                    2019,
+                                V. R. Mach
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadeje-ma-sve-jmeno-pribehy-nadace-bona-344723">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/34_/344723/nadeje-ma-sve-jmeno-pribehy-nadace--yjb-344723.webp?v=1507400062" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/34_/344723/nadeje-ma-sve-jmeno-pribehy-nadace--yjb-344723.jpg?v=1507400062" alt="Obálka knihy Naděje má své jméno - příběhy Nadace Bona" title="Naděje má své jméno - příběhy Nadace Bona" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/white.gif' title='0%' alt='0%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadeje-ma-sve-jmeno-pribehy-nadace-bona-344723'>Naděje má své jméno - příběhy Nadace Bona</a>
+            <br /><span class='pozn'>
+                                    2017,
+                                Čestmír Punčochář
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+                    <p class='new'>
+            
+    <a href="/prehled-knihy/nadane-dite-a-rozvoj-jeho-schopnosti-132372">
+
+    
+    <picture>
+                                <source srcset="https://www.databazeknih.cz/img/books/13_/132372/nadane-dite-a-rozvoj-jeho-schopnosti-132372.gif?v=1345635578" type="image/webp">
+                <img src="https://www.databazeknih.cz/img/books/13_/132372/nadane-dite-a-rozvoj-jeho-schopnosti-132372.gif?v=1345635578" alt="Obálka knihy Nadané dítě a rozvoj jeho schopností" title="Nadané dítě a rozvoj jeho schopností" class="img_39_left odtopm"  />
+    </picture>
+</a>
+
+
+
+            <img src='img/content/squares/red.gif' title='83%' alt='83%' class='odr' /><a class='new' type='book' href='/prehled-knihy/nadane-dite-a-rozvoj-jeho-schopnosti-132372'>Nadané dítě a rozvoj jeho schopností</a>
+            <br /><span class='pozn'>
+                                    2007,
+                                Václav Fořtík
+            </span>
+        <div class='clear'></div>
+        <hr />
+        </p>
+
+            
+    <div class='clear'></div>
+    <div class="pager">
+            <div class="pagination">
+        
+        
+                                    <span class="current">1</span>
+                                                <span class="page">
+                    <a href="/vyhledavani/knihy?q=nadace%20asim&amp;page=2">2</a>
+                </span>
+                                                <span class="page">
+                    <a href="/vyhledavani/knihy?q=nadace%20asim&amp;page=3">3</a>
+                </span>
+                    
+                    <span class="next">
+                <a rel="next" href="/vyhledavani/knihy?q=nadace%20asim&amp;page=2">&gt;</a>
+            </span>
+        
+                    <span class="last">
+                <a href="/vyhledavani/knihy?q=nadace%20asim&amp;page=3">&gt;&gt;</a>
+            </span>
+            </div>
+
+    </div>
+
+
+                        <div class="clear"></div>
+    <div id="ads-offer-box" class="orangeBoxLight odtop_big">
+        <a class="fright" id="ads-offer-close" href="javascript:void(0)">Zavřít</a>
+
+        <h2>Vypněte si reklamy na Databázi</h2>
+
+        <p class="new2">
+            Za 99 Kč vám vypneme všechny reklamní bannery na CELÝ ROK:
+        </p>
+
+        <p class="new2 odtop_big">
+            <a class="buy_n" href="/platebni-udaje-vypnuti-reklam" data-analytics="hide_ads_offer">
+                Chci vypnout reklamy
+            </a>
+        </p>
+
+
+        <p class="new2 odtop_fourty">
+            Nebo se staňte členem DK Premium a využijte Databázi naplno - <a class="strong" href="/dk-premium">více o DK Premium</a>
+        </p>
+
+    </div>
+
+    <script>
+        document.getElementById('ads-offer-close').addEventListener('click', function () {
+            // Nastavíme cookie na 14 dní
+            let d = new Date();
+            d.setTime(d.getTime() + (14 * 24 * 60 * 60 * 1000));
+
+            document.cookie = "hide_ads_offer=1; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+
+            // Schováme box ihned
+            document.getElementById('ads-offer-box').style.display = 'none';
+        });
+    </script>
+
+                </div>
+                <div id='right'>
+                        <div id='hat_of_fly_banner'></div><div id='ad_fly_cover'><div id="r-hpa1" class="r-main m11 s_halfpagead"><div class="r-head"><span></span></div><div class="r-body"><div id='halfpagead'></div><div class="fc0"></div></div></div></div>
+                                    </div>
+                <div class="clear" id="endRectangle"></div>
+
+                                            <div style="grid-area: bottomAdMobile">
+                            <div id='ad_sticky_mobile'><div id='m_sticky'></div></div>
+                            <div id='ad_footer_mobile' style='visibility:hidden;;min-height:300px; background:#f8f8f8; margin-bottom:25px;'><div id="r-touchfooter" class="r-main touch-216 s_m_paticka"><div class="r-head"><span></span></div><div class="r-body"><div id='m_paticka'></div></div></div></div>
+                        </div>
+                    
+                </div>
+
+                                            <div id='ad_wallpaper_desktop' style='height:324px; background:#f8f8f8; margin-top:40px; margin-bottom:25px; display:block;'><div id="r-wallpaper" class="r-main m54 s_wallpaper"><div class="r-head"><span></span></div><div class="r-body"><div id='wallpaper'></div><div class="fc0"></div></div></div></div>
+                        <div id='m_vignete'><div id='m_vignete'></div></div>
+                                    </div>
+            </div>
+        </div>
+
+            <div itemscope itemtype="https://schema.org/WebSite" class="novis">
+            <meta itemprop="name" content="Databáze knih" />
+            <meta itemprop="url" content="https://www.databazeknih.cz/" />
+
+            <div itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
+                <meta itemprop="target" content="https://www.databazeknih.cz/search?q={search_term_string}" />
+                <meta itemprop="query-input" content="required name=q" />
+            </div>
+        </div>
+
+                    <div id="reklama" style="height: 2px"></div>
+
+    <script type="text/javascript">
+        <!-- adblock for adsense -->
+        window.onload = function() {
+            setTimeout(function() {
+                var reklama = document.getElementById("reklama");
+                var stav;
+                if (reklama.clientWidth <= 5) {
+                    // Reklama byla zablokována
+                    stav = "Ano";
+                } else {
+                    stav = "Ne";
+                }
+                // Odeslání dat do Google Analytics
+                gtag('event', 'Adblock', {
+                    'event_category': 'Adblock',
+                    'event_label': stav,
+                    'non_interaction': true
+                });
+            }, 1000);
+        }
+    </script>
+                <div id="mafra-ads-container"></div>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('mafra-ads-container');
+            const device = window.innerWidth > 900 ? 'desktop' : 'mobil';
+
+            fetch('/mafra-ads?device=' + device)
+                .then(response => response.text())
+                .then(html => {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+
+                    const scripts = tempDiv.querySelectorAll('script');
+                    const nonScripts = [...tempDiv.childNodes].filter(node => node.tagName !== 'SCRIPT');
+                    container.append(...nonScripts);
+
+                    // Spustíme externí skripty (s src)
+                    const externalScripts = [...scripts].filter(script => script.src);
+                    const inlineScripts = [...scripts].filter(script => !script.src);
+
+                    let loadedCount = 0;
+
+                    if (externalScripts.length === 0) {
+                        runInlineScripts();
+                    }
+
+                    externalScripts.forEach(script => {
+                        const newScript = document.createElement('script');
+                        newScript.src = script.src;
+                        newScript.onload = () => {
+                            loadedCount++;
+                            if (loadedCount === externalScripts.length) {
+                                runInlineScripts();
+                            }
+                        };
+                        document.body.appendChild(newScript);
+                    });
+
+                    function runInlineScripts() {
+                        inlineScripts.forEach(script => {
+                            const newScript = document.createElement('script');
+                            newScript.textContent = script.textContent;
+                            document.body.appendChild(newScript);
+                        });
+                    }
+                });
+        });
+    </script>
+         
+        <footer>
+<div id="footer">
+    <div class="trends">
+        <p>
+            <span class="odr">Často hledané knížky:</span>
+            <a href="knihy/pocatek-351159">Počátek</a> -
+            <a href="knihy/vona-591365">Vona</a> -
+            <a href=knihy/ptacatko-573548"">Ptáčátko</a> -
+            <a href="knihy/kruh-dni-592218">Kruh dní</a> -
+            <a href="knihy/robert-langdon-tajemstvi-vsech-tajemstvi-555702">Tajemství všech tajemství</a> -
+
+        </p>
+        <p>
+            <span class="odr">Hledaní autoři:</span>
+            <a href="autori/dan-brown-5">Dan Brown</a> -
+            <a href="autori/petra-klabouchova-7635">Petra Klabouchová</a> -
+            <a href="autori/robert-bryndza-37135">Robert Bryndza</a> -
+            <a href="autori/jo-nesbo-11435">Jo Nesbø</a> -
+            <a href="autori/stephen-king-181">Stephen King</a> -
+            <a href="autori/julie-caplin-119914">Julie Caplin</a>
+        </p>
+    </div>
+
+    <p>
+        <a href="/" title="DatabazeKnih.cz ...Váš knižní svět"><img class="logoDk" src="/img/content/databaze-knih-logo-white.png" alt="Databazeknih.cz" loading="lazy" /></a>
+    </p>
+
+    <div class="clear oddownm"></div>
+    <a class="footerButton" href="/zasilani-upozorneni">Knižní novinky e-mailem</a>
+
+    <div class="clear oddown_big"></div>
+
+    <p>
+        <a href="/napoveda">Nápověda</a> -
+        <a href="/podminky-uziti">Podmínky užití</a> -
+        <a href="/gdpr">GDPR</a> -
+        <a href="/overeni-autori-na-databazi-knih">Pro autory</a> -
+        <a href="/kontakt">Kontakt</a><br />
+        <a href="/o-nas">Náš příběh</a> -
+        <a href="/kde-pomaha-databaze-knih">Pomáháme</a> -
+        <a href="/podporte-databazi-knih">Podpořte nás</a> -
+        <a href="/dnes-pridane-knihy">Dnes přidané knihy</a>
+    </p>
+    <div class="clear oddown"></div>
+    <p>
+            <a href="/dk-premium"><span class="fa_moon"></span> Tmavý režim (DK Premium)</a>
+        </p>
+
+    <p class="odtop_fifteen">
+        &copy; 2008 - 2026 Databazeknih.cz - <a href="/provozovatel-a-moderatori">Provozovatel</a><br />
+        Reklamní bannery spravuje MAFRA, a.s.<br />
+    </p>
+
+    <p class="social-icons">
+        <a rel="nofollow" title="Instagram Databáze knih" href="https://www.instagram.com/databazeknih/" target="_blank"><i class="icon-instagram"></i></a>
+        <a rel="nofollow" title="Facebooková stránka Databáze knih" href="https://www.facebook.com/pages/Databazeknihcz/42347054164" target="_blank"><i class="icon-facebook"></i></a>
+        <a rel="nofollow" title="Twitter Databáze knih" href="https://twitter.com/DatabazeKnihCZ" target="_blank"><i class="icon-twitter"></i></a>
+    </p>
+</div>
+</footer>        </div>
+
+    <!-- pro GA4 -> měření mnou vymyšlených událostí rovnou ve Twigu  -->
+    <script defer src="/jquery/ga4events.js"></script>
+
+    <!-- pages where is a carousel  -->
+        </body>
 </html>
