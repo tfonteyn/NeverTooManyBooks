@@ -77,6 +77,20 @@ class ParseTest
 
     @Test
     void parseMultiResult01()
+            throws IOException {
+
+        final String locationHeader =
+                "https://www.bertrand.pt/pesquisa/9789895812899";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bertrandpt_multi_9789895812899;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://www.bertrand.pt/livro/a-livraria-cinnamon-bun-laurie-gilmore/30923903",
+                     searchEngine.parseMultiResult(document));
+    }
+
+    @Test
+    void multiResult01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
@@ -86,8 +100,8 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, false, false, false},
-                                      book);
+        searchEngine.multiResult(context, document, new boolean[]{true, false, false, false},
+                                 book);
         Log.d(TAG, book.toString());
 
         assertEquals("A Livraria Cinnamon Bun", book.getString(DBKey.TITLE, null));
@@ -127,6 +141,20 @@ class ParseTest
 
     @Test
     void parseMultiResult02()
+            throws IOException {
+
+        final String locationHeader =
+                "https://www.bertrand.pt/pesquisa/9789897734939";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bertrandpt_multi_9789897734939;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://www.bertrand.pt/livro/fundacao-e-terra-isaac-asimov/27980329",
+                     searchEngine.parseMultiResult(document));
+    }
+
+    @Test
+    void multiResult02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
@@ -136,8 +164,8 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, false, false, false},
-                                      book);
+        searchEngine.multiResult(context, document, new boolean[]{true, false, false, false},
+                                 book);
         Log.d(TAG, book.toString());
 
         assertEquals("Fundação e Terra", book.getString(DBKey.TITLE, null));

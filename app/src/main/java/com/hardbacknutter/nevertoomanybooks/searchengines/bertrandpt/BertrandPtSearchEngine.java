@@ -153,7 +153,7 @@ public class BertrandPtSearchEngine
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book);
+            multiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -186,7 +186,7 @@ public class BertrandPtSearchEngine
         final Document document = loadDocument(context, url, extraRequestProperties);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book);
+            multiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -195,42 +195,60 @@ public class BertrandPtSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retrieved.
      *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
-     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
-     * @param book        to update
+     * @param context      Current context
+     * @param document     to parse
+     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
+     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book         to update
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @VisibleForTesting
     @WorkerThread
-    public void parseMultiResult(@NonNull final Context context,
-                                 @NonNull final Document document,
-                                 @NonNull final boolean[] fetchCovers,
-                                 @NonNull final Book book)
+    void multiResult(@NonNull final Context context,
+                     @NonNull final Document document,
+                     @NonNull final boolean[] fetchCovers,
+                     @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Element urlElement = document.selectFirst(
-                "div[data-product-position='1'] div.product-info a.title-lnk");
-        if (urlElement == null) {
+        final String url = parseMultiResult(document);
+        if (url == null) {
             return;
-        }
-        String url = urlElement.attr("href");
-
-        if (url.isBlank()) {
-            return;
-        }
-        // sanity check - it normally does NOT have the protocol/site part
-        if (url.startsWith("/")) {
-            url = getHostUrl() + url;
         }
         final Document redirected = loadDocument(context, url, extraRequestProperties);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
+
+        final Element urlElement = document.selectFirst(
+                "div[data-product-position='1'] div.product-info a.title-lnk");
+        if (urlElement == null) {
+            return null;
+        }
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return null;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        return url;
     }
 
     /**
