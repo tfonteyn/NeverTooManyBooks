@@ -71,6 +71,18 @@ class ParseTest
     }
 
     @Test
+    void parseMultiResult()
+            throws IOException {
+        final String locationHeader =
+                "https://catalogue.bnf.fr/rechercher.do?motRecherche=lettre+de+mon+moulin&critereRecherche=0&depart=0&facetteModifiee=ok";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bnf_multi_result;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://catalogue.bnf.fr/ark:/12148/cb39187957k",
+                     searchEngine.parseMultiResult(document));
+    }
+    @Test
     void parse9782266341417()
             throws SearchException, IOException, CredentialsException, StorageException {
 

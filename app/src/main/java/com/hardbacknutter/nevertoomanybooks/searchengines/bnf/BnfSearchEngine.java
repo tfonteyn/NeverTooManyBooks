@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -285,7 +286,7 @@ public class BnfSearchEngine
         if (nbNotice != null) {
             // zero or multiple results
             if (!"0".equals(nbNotice.text())) {
-                parseMultiResult(context, pubDocument, fetchCovers, book);
+                multiResult(context, pubDocument, fetchCovers, book);
             }
         } else {
             // it was a single result
@@ -294,28 +295,62 @@ public class BnfSearchEngine
         return book;
     }
 
-    private void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param context      Current context
+     * @param document     to parse
+     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
+     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book         to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
+    @VisibleForTesting
+    @WorkerThread
+    void multiResult(@NonNull final Context context,
+                             @NonNull final Document document,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
 
-        final Element urlElement = document.selectFirst("ul#ancrePremiereNotice a");
-        if (urlElement == null) {
+        final String url = parseMultiResult(document);
+        if (url == null) {
             return;
-        }
-        String url = urlElement.attr("href");
-        if (url.isBlank()) {
-            return;
-        }
-        // sanity check - it normally does NOT have the protocol/site part
-        if (url.startsWith("/")) {
-            url = getHostUrl() + url;
         }
         final Document redirected = loadDocument(context, url, null);
         if (!isCancelled()) {
             search(context, redirected, fetchCovers, book);
         }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
+        final Element urlElement = document.selectFirst("ul#ancrePremiereNotice a");
+        if (urlElement == null) {
+            return null;
+        }
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return null;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        return url;
     }
 
     private void search(@NonNull final Context context,
