@@ -231,10 +231,9 @@ public class KbNlHtmlSearchEngine
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @WorkerThread
-    @VisibleForTesting
-    public void multiResult(@NonNull final Context context,
-                            @NonNull final Element titleList,
-                            @NonNull final Book book)
+    private void multiResult(@NonNull final Context context,
+                             @NonNull final Element titleList,
+                             @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         final String url = parseMultiResult(titleList);

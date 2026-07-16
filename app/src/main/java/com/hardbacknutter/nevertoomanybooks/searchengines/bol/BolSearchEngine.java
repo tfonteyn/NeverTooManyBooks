@@ -327,13 +327,12 @@ public class BolSearchEngine
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
-    @VisibleForTesting
     @WorkerThread
-    void multiResult(@NonNull final Context context,
-                     @Nullable final ProductCode searchedCode,
-                     @NonNull final Document document,
-                     @NonNull final boolean[] fetchCovers,
-                     @NonNull final Book book)
+    private void multiResult(@NonNull final Context context,
+                             @Nullable final ProductCode searchedCode,
+                             @NonNull final Document document,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         final String url = parseMultiResult(document);

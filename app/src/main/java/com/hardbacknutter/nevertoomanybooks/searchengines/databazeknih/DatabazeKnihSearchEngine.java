@@ -314,12 +314,11 @@ public class DatabazeKnihSearchEngine
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
-    @VisibleForTesting
     @WorkerThread
-    void multiResult(@NonNull final Context context,
-                     @NonNull final Document document,
-                     @NonNull final boolean[] fetchCovers,
-                     @NonNull final Book book)
+    private void multiResult(@NonNull final Context context,
+                             @NonNull final Document document,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
             throws SearchException, CredentialsException, StorageException {
 
         final String url = parseMultiResult(document);

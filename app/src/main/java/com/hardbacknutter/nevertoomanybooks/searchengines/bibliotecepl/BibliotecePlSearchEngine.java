@@ -338,12 +338,11 @@ public class BibliotecePlSearchEngine
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws StorageException     on storage related failures
      */
-    @VisibleForTesting
     @WorkerThread
-    void multiResult(@NonNull final Context context,
-                            @NonNull final Document document,
-                            @NonNull final boolean[] fetchCovers,
-                            @NonNull final Book book)
+    private void multiResult(@NonNull final Context context,
+                             @NonNull final Document document,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         final String url = parseMultiResult(document);
