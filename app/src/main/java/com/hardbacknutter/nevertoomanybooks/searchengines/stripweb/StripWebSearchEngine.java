@@ -48,9 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
@@ -59,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -212,7 +212,7 @@ public class StripWebSearchEngine
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book);
+            multiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -245,7 +245,7 @@ public class StripWebSearchEngine
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book);
+            multiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -264,29 +264,49 @@ public class StripWebSearchEngine
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws StorageException     on storage related failures
      */
+    @VisibleForTesting
     @WorkerThread
-    private void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
+    void multiResult(@NonNull final Context context,
+                     @NonNull final Document document,
+                     @NonNull final boolean[] fetchCovers,
+                     @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Element urlElement = document.selectFirst("div.overview-item a");
-        if (urlElement == null) {
+        final String url = parseMultiResult(document);
+        if (url == null) {
             return;
-        }
-        String url = urlElement.attr("href");
-        if (url.isBlank()) {
-            return;
-        }
-        // sanity check - it normally does NOT have the protocol/site part
-        if (url.startsWith("/")) {
-            url = getHostUrl() + url;
         }
         final Document redirected = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
+
+        final Element urlElement = document.selectFirst("div.overview-item a");
+        if (urlElement == null) {
+            return null;
+        }
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return null;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        return url;
     }
 
     /**

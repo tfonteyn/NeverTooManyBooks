@@ -81,6 +81,18 @@ class ParseTest
         moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
+    @Test
+    void parseMultiResult()
+            throws IOException {
+        final String locationHeader =
+                "https://www.stripweb.be/nl-nl/zoeken?type=&text=Jim+Cutlass";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.stripweb_multi_result;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://www.stripweb.be/nl-nl/jim-cutlass-integraal",
+                     searchEngine.parseMultiResult(document));
+    }
     /**
      * Fairly standard single book.
      */
