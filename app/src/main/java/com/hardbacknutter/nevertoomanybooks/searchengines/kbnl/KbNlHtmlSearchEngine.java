@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -46,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -200,7 +200,7 @@ public class KbNlHtmlSearchEngine
         if (!isCancelled()) {
             final Element titleList = document.selectFirst("div.titlelist");
             if (titleList != null) {
-                parseMultiResult(context, titleList, book);
+                multiResult(context, titleList, book);
             } else {
                 parse(document, book);
             }
@@ -232,25 +232,41 @@ public class KbNlHtmlSearchEngine
      */
     @WorkerThread
     @VisibleForTesting
-    public void parseMultiResult(@NonNull final Context context,
-                                 @NonNull final Element titleList,
-                                 @NonNull final Book book)
+    public void multiResult(@NonNull final Context context,
+                            @NonNull final Element titleList,
+                            @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Element a = titleList.selectFirst("td.rec_title > div > a");
-        if (a == null) {
+        final String url = parseMultiResult(titleList);
+        if (url == null) {
             return;
         }
-        final String show = a.attr("href");
-        if (show.isEmpty()) {
-            return;
-        }
-
-        final String url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
         final Document redirected = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(redirected, book);
         }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param titleList to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Element titleList) {
+        final Element a = titleList.selectFirst("td.rec_title > div > a");
+        if (a == null) {
+            return null;
+        }
+        final String url = a.attr("href");
+        if (url.isBlank()) {
+            return null;
+        }
+        return getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, url);
     }
 
     /**
