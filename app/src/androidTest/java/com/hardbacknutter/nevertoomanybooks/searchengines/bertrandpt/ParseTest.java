@@ -79,8 +79,7 @@ class ParseTest
     void parseMultiResult01()
             throws IOException {
 
-        final String locationHeader =
-                "https://www.bertrand.pt/pesquisa/9789895812899";
+        final String locationHeader = "https://www.bertrand.pt/pesquisa/9789895812899";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bertrandpt_multi_9789895812899;
 
@@ -90,18 +89,17 @@ class ParseTest
     }
 
     @Test
-    void multiResult01()
+    void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader =
-                "https://www.bertrand.pt/pesquisa/9789895812899";
+        final String locationHeader = "https://www.bertrand.pt/pesquisa/9789895812899";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.bertrandpt_multi_9789895812899;
+                .R.raw.bertrandpt_9789895812899;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.multiResult(context, document, new boolean[]{true, false, false, false},
-                                 book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("A Livraria Cinnamon Bun", book.getString(DBKey.TITLE, null));
@@ -154,18 +152,18 @@ class ParseTest
     }
 
     @Test
-    void multiResult02()
+    void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader =
                 "https://www.bertrand.pt/pesquisa/9789897734939";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.bertrandpt_multi_9789897734939;
+                .R.raw.bertrandpt_9789897734939;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.multiResult(context, document, new boolean[]{true, false, false, false},
-                                 book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Fundação e Terra", book.getString(DBKey.TITLE, null));

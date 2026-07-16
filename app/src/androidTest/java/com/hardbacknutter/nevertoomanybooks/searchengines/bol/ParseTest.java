@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -99,57 +98,6 @@ class ParseTest
                      searchEngine.parseMultiResult(document));
     }
 
-    /** Network access! */
-    @Test
-    void multiResult01()
-            throws SearchException, IOException, CredentialsException, StorageException {
-
-        final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=+9789056478193+";
-        final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.bol_multi_1_result_9789056478193;
-
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Book book = new Book();
-        searchEngine.multiResult(context, ISBN.parse("9789056478193"),
-                                 document, new boolean[]{false, false, false, false},
-                                 book);
-        Log.d(TAG, book.toString());
-
-        assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
-        assertEquals("9789056478193", book.getString(DBKey.ISBN, null));
-
-        assertEquals("2019-01-31", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("144", book.getString(DBKey.PAGES, null));
-        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
-        assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(16.5d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0.01d);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-
-        // TEST: missing tags?
-//        final List<Tag> bookTags = book.getTags();
-//        assertEquals(2, bookTags.size());
-//        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
-//        assertTrue(tags.contains("Kinderboeken"));
-//        assertTrue(tags.contains("Prentenboeken"));
-
-        final List<Publisher> allPublishers = book.getPublishers();
-        assertNotNull(allPublishers);
-        assertEquals(1, allPublishers.size());
-        assertEquals("Mercis Publishing B.V.", allPublishers.get(0).getName());
-
-        final List<Author> authors = book.getAuthors();
-        assertNotNull(authors);
-        assertEquals(1, authors.size());
-
-        final Author author = authors.get(0);
-        assertEquals("Bruna", author.getFamilyName());
-        assertEquals("Dick", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER | AuthorRole.ARTIST, author.getRole());
-
-    }
-
     @Test
     void parseMultiResult02()
             throws SearchException, IOException {
@@ -161,71 +109,6 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         assertEquals("https://www.bol.com/be/nl/p/foundation/9200000037157117/",
                      searchEngine.parseMultiResult(document));
-    }
-
-    /** Network access! */
-    @Test
-    void multiResult02()
-            throws SearchException, IOException, CredentialsException, StorageException {
-
-        final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=asimov%20foundation&suggestFragment=asimov";
-        final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.bol_asimov_foundation;
-
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Book book = new Book();
-        searchEngine.multiResult(context, ISBN.parse("9780008117498"),
-                                 document, new boolean[]{true, true, false, false},
-                                 book);
-        Log.d(TAG, book.toString());
-
-        assertEquals("Foundation", book.getString(DBKey.TITLE, null));
-        assertEquals("Foundation / Foundation And Empire / Second Foundation",
-                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
-        assertEquals("9780008117498", book.getString(DBKey.ISBN, null));
-
-        assertEquals("2016-09-22", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("240", book.getString(DBKey.PAGES, null));
-        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
-        assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(3.5f, book.getFloat(DBKey.RATING, ratingNumberParser), 0.1f);
-        assertEquals(8.95d, book.getDouble(DBKey.PRICE_LISTED,
-                                           moneyParser.getRealNumberParser()), 0.01d);
-        assertEquals(MoneyParser.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
-
-//  TEST: MISSING TAGS?
-//        final List<Tag> bookTags = book.getTags();
-//        assertEquals(2, bookTags.size());
-//        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
-//        assertTrue(tags.contains("Fantasy & Sciencefiction"));
-//        assertTrue(tags.contains("Sciencefiction"));
-
-        final List<Publisher> allPublishers = book.getPublishers();
-        assertNotNull(allPublishers);
-        assertEquals(1, allPublishers.size());
-        assertEquals("HCOL", allPublishers.get(0).getName());
-
-        final List<Author> authors = book.getAuthors();
-        assertNotNull(authors);
-        assertEquals(1, authors.size());
-
-        final Author author;
-        author = authors.get(0);
-        assertEquals("Asimov", author.getFamilyName());
-        assertEquals("Isaac", author.getGivenNames());
-        assertEquals(AuthorRole.WRITER, author.getRole());
-
-        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-        List<String> covers;
-
-        covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(preferenceKey + "_9780008117498_0_.jpg"));
-
-        covers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(covers);
-        assertEquals(0, covers.size());
     }
 
     /**
