@@ -1530,7 +1530,7 @@
     <string name="lbl_publication">Publication</string>
     <!-- Label for the number of books printed of this edition. -->
     <string name="lbl_print_run">Print run</string>
-    <!-- Label for the Book edition -->
+    <!-- Label for the Book edition flags (first edition / first impression). -->
     <string name="lbl_edition">Edition</string>
     <!-- Whether the user considers his collection of this [Author, Series, ...] to be complete. -->
     <string name="lbl_is_complete">Is complete</string>

@@ -65,7 +65,7 @@ public final class FilterFactory {
                     context.getString(R.string.lbl_given_names))),
 
             Map.entry(DBKey.COLOR, context -> context.getString(R.string.lbl_color)),
-            Map.entry(DBKey.EDITION, context -> context.getString(R.string.lbl_edition)),
+            Map.entry(DBKey.EDITION_FLAGS, context -> context.getString(R.string.lbl_edition)),
             Map.entry(DBKey.FORMAT, context -> context.getString(R.string.lbl_format)),
             Map.entry(DBKey.ISBN, context -> context.getString(R.string.lbl_isbn)),
             Map.entry(DBKey.LANGUAGE, context -> context.getString(R.string.lbl_language)),
@@ -190,9 +190,9 @@ public final class FilterFactory {
                 return new PStringEqualityFilter(
                         dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_COLOR);
             }
-            case DBKey.EDITION: {
+            case DBKey.EDITION_FLAGS: {
                 return new PBitmaskFilter(
-                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION,
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION_FLAGS,
                         Book.Edition::getAll);
             }
             case DBKey.FORMAT: {

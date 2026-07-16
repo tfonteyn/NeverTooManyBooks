@@ -1240,7 +1240,7 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_print_run)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        addField(fragmentId, new BitmaskChipGroupField(R.id.edition, DBKey.EDITION,
+        addField(fragmentId, new BitmaskChipGroupField(R.id.edition_flags, DBKey.EDITION_FLAGS,
                                                        Book.Edition::getAll)
                            .addRelatedViews(R.id.lbl_edition));
     }

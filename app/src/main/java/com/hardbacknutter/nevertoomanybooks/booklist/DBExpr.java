@@ -188,10 +188,10 @@ public final class DBExpr {
                                     sort)
                     );
                 }
-                case DBKey.EDITION: {
+                case DBKey.EDITION_FLAGS: {
                     return List.of(
                             new DomainExpression(
-                                    DBDefinitions.DOM_BOOK_EDITION,
+                                    DBDefinitions.DOM_BOOK_EDITION_FLAGS,
                                     DBDefinitions.TBL_BOOKS,
                                     sort)
                     );

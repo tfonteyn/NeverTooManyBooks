@@ -380,7 +380,7 @@
             />
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/edition"
+            android:id="@+id/edition_flags"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/field_margin_top"

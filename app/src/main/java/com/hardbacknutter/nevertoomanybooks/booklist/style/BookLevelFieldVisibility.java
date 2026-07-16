@@ -47,7 +47,7 @@ public class BookLevelFieldVisibility
             DBKey.FIRST_PUBLICATION_DATE,
 
             DBKey.COVER[0],
-            DBKey.EDITION,
+            DBKey.EDITION_FLAGS,
             DBKey.FK_AUTHOR,
             DBKey.FK_BOOKSHELF,
             DBKey.FK_PUBLISHER,
@@ -74,7 +74,7 @@ public class BookLevelFieldVisibility
             DBKey.COVER[0],
             DBKey.FK_SERIES,
             DBKey.SIGNED__BOOL,
-            DBKey.EDITION,
+            DBKey.EDITION_FLAGS,
             DBKey.LOANEE_NAME,
             DBKey.READ__BOOL);
 

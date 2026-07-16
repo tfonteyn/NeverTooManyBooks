@@ -110,7 +110,7 @@ public class FieldVisibilityPreferenceFragment
         // bit: 14
         factory.bool(DBKey.DESCRIPTION, R.string.lbl_description, true);
         // bit: 15
-        factory.bool(DBKey.EDITION, R.string.lbl_edition, true);
+        factory.bool(DBKey.EDITION_FLAGS, R.string.lbl_edition, true);
         // bit: 16
         factory.bool(DBKey.FIRST_PUBLICATION_DATE, R.string.lbl_date_first_publication, true);
         // bit: 17

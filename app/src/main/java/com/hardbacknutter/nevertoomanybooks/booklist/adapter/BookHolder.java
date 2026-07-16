@@ -341,8 +341,8 @@ public class BookHolder
             showOrHide(vb.iconSigned, rowData.getBoolean(DBKey.SIGNED__BOOL));
         }
 
-        if (use.contains(DBKey.EDITION)) {
-            showOrHide(vb.iconFirstEdition, (rowData.getLong(DBKey.EDITION)
+        if (use.contains(DBKey.EDITION_FLAGS)) {
+            showOrHide(vb.iconFirstEdition, (rowData.getLong(DBKey.EDITION_FLAGS)
                                              & Book.Edition.FIRST) != 0);
         }
 

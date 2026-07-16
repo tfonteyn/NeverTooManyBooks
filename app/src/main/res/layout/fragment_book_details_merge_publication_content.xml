@@ -169,7 +169,7 @@
         />
 
     <TextView
-        android:id="@+id/edition"
+        android:id="@+id/edition_flags"
         style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"

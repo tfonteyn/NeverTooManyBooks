@@ -368,8 +368,8 @@ public class ShowBookDetailsViewModel
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_first_publication));
 
-        addField(new TextViewField<>(R.id.edition, DBKey.EDITION,
-                                       new BitmaskFormatter(Details.Normal, Book.Edition::getAll))
+        addField(new TextViewField<>(R.id.edition_flags, DBKey.EDITION_FLAGS,
+                                     new BitmaskFormatter(Details.Normal, Book.Edition::getAll))
                            .addRelatedViews(R.id.lbl_edition));
 
         addField(new TextViewField<>(R.id.print_run, DBKey.PRINT_RUN));

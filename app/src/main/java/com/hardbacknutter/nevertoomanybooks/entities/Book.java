@@ -461,7 +461,7 @@ public class Book
         duplicate.setDescription(getString(DBKey.DESCRIPTION, null));
 
         // partially edition info, partially use-owned info.
-        duplicate.setEdition(getEdition());
+        duplicate.setEditionFlags(getEditionFlags());
 
         // user data
 
@@ -1379,7 +1379,7 @@ public class Book
      * @return {@code true} if the book matches (at least) the required edition
      */
     public boolean isEdition(@Edition.Bitmask final long bitmask) {
-        return (getEdition() & bitmask) != 0;
+        return (getEditionFlags() & bitmask) != 0;
     }
 
     /**
@@ -1390,8 +1390,8 @@ public class Book
      * @see Edition
      */
     @Edition.Bitmask
-    public long getEdition() {
-        return getLong(DBKey.EDITION) & Edition.BITMASK_ALL_BITS;
+    public long getEditionFlags() {
+        return getLong(DBKey.EDITION_FLAGS) & Edition.BITMASK_ALL_BITS;
     }
 
     /**
@@ -1401,8 +1401,8 @@ public class Book
      *
      * @see Edition
      */
-    public void setEdition(@Edition.Bitmask final long bitmask) {
-        putLong(DBKey.EDITION, bitmask & Edition.BITMASK_ALL_BITS);
+    public void setEditionFlags(@Edition.Bitmask final long bitmask) {
+        putLong(DBKey.EDITION_FLAGS, bitmask & Edition.BITMASK_ALL_BITS);
     }
 
     /**
@@ -2015,7 +2015,7 @@ public class Book
         validatorConfig.addValidator(DBKey.LANGUAGE,
                                      nonBlankValidator, R.string.lbl_language);
 
-        validatorConfig.addValidator(DBKey.EDITION,
+        validatorConfig.addValidator(DBKey.EDITION_FLAGS,
                                      longValidator, R.string.lbl_edition);
         validatorConfig.addValidator(DBKey.CONTENT_TYPE,
                                      longValidator, R.string.lbl_table_of_content);
@@ -2237,7 +2237,7 @@ public class Book
     }
 
     /**
-     * Database representation of column {@link DBKey#EDITION}.
+     * Database representation of column {@link DBKey#EDITION_FLAGS}.
      * <p>
      * 0b00000000 = a generic edition, or we simply don't know what edition it is.
      * 0b00000001 = first edition

@@ -406,7 +406,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_UUID;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_EDITION;
+    public static final Domain DOM_BOOK_EDITION_FLAGS;
     /** {@link #TBL_BOOKS}. See {@link Book.ContentType}. */
     public static final Domain DOM_BOOK_CONTENT_TYPE;
     /**
@@ -989,8 +989,8 @@ public final class DBDefinitions {
                         .withDefault("(lower(hex(randomblob(16))))")
                         .build();
 
-        DOM_BOOK_EDITION =
-                new Domain.Builder(DBKey.EDITION, SqLiteDataType.Integer)
+        DOM_BOOK_EDITION_FLAGS =
+                new Domain.Builder(DBKey.EDITION_FLAGS, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Book.Edition.UNKNOWN)
                         .build();
@@ -1713,7 +1713,7 @@ public final class DBDefinitions {
                             DOM_BOOK_DATE_READ_START,
                             DOM_BOOK_DATE_READ_END,
 
-                            DOM_BOOK_EDITION,
+                            DOM_BOOK_EDITION_FLAGS,
                             DOM_BOOK_SIGNED,
                             DOM_BOOK_RATING,
                             DOM_BOOK_LOCATION,

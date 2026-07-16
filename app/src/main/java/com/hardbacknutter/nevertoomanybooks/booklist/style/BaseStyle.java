@@ -97,7 +97,7 @@ public abstract class BaseStyle
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PAGES, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.CONDITION_BOOK, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.SIGNED__BOOL, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION_FLAGS, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOANEE_NAME, Sort.Unsorted);
 
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_BOOKSHELF, Sort.Unsorted);

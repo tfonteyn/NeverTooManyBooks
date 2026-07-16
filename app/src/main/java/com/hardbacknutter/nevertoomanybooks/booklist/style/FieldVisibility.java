@@ -106,7 +106,7 @@ public class FieldVisibility {
             DBKey.PUBLICATION_DATE,
             DBKey.COLOR,
             DBKey.DESCRIPTION,
-            DBKey.EDITION,
+            DBKey.EDITION_FLAGS,
 
             // bit 16..19
             DBKey.FIRST_PUBLICATION_DATE,

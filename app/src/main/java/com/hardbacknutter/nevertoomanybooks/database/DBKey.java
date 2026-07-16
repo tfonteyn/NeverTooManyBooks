@@ -110,7 +110,8 @@ public final class DBKey {
      *
      * @see com.hardbacknutter.nevertoomanybooks.entities.Book.Edition
      */
-    public static final String EDITION = "edition_bm";
+    public static final String EDITION_FLAGS = "edition_bm";
+
     public static final String FORMAT = "format";
     /** {@link DBDefinitions#TBL_BOOKS} + {@link DBDefinitions#TBL_TOC_ENTRIES}. */
     public static final String FIRST_PUBLICATION_DATE = "first_publication";
@@ -125,6 +126,7 @@ public final class DBKey {
     public static final String PAGES = "pages";
     public static final String PRICE_LISTED = "list_price";
     public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + CURRENCY_SUFFIX;
+    /** Info on limited editions, circulation numbers, etc... */
     public static final String PRINT_RUN = "print_run";
     public static final String PUBLICATION_DATE = "date_published";
 

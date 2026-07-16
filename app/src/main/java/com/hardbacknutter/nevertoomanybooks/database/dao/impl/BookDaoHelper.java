@@ -168,8 +168,8 @@ public class BookDaoHelper {
         }
 
         // normalise/store only valid bits
-        if (book.contains(DBKey.EDITION)) {
-            book.setEdition(book.getEdition());
+        if (book.contains(DBKey.EDITION_FLAGS)) {
+            book.setEditionFlags(book.getEditionFlags());
         }
 
         // clean-up/build all price related fields
