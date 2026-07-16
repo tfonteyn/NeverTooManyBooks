@@ -87,6 +87,18 @@ class ParseTest
         ratingNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 
+    @Test
+    void parseMultiResult()
+            throws IOException {
+        final String locationHeader = "https://w.bibliotece.pl/search/?q=Ziele%C5%84";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bibliotece_pl_multi_result;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://w.bibliotece.pl/446634/Ziele%C5%84+szmaragdu",
+                     searchEngine.parseMultiResult(document));
+    }
+
     /** Short test to verify ISBN 10/13 handling only. */
     @Test
     void parse9788321331966()

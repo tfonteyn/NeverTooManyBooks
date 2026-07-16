@@ -271,7 +271,7 @@ public class BibliotecePlSearchEngine
         book.setRawProductCode(codeStr);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            multiResult(context, document, fetchCovers, book);
         }
         return book;
     }
@@ -319,7 +319,7 @@ public class BibliotecePlSearchEngine
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book);
+            multiResult(context, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -340,28 +340,47 @@ public class BibliotecePlSearchEngine
      */
     @VisibleForTesting
     @WorkerThread
-    public void parseMultiResult(@NonNull final Context context,
-                                 @NonNull final Document document,
-                                 @NonNull final boolean[] fetchCovers,
-                                 @NonNull final Book book)
+    void multiResult(@NonNull final Context context,
+                            @NonNull final Document document,
+                            @NonNull final boolean[] fetchCovers,
+                            @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final Element urlElement = document.selectFirst("div#results a.result-title");
-        if (urlElement == null) {
+        final String url = parseMultiResult(document);
+        if (url == null) {
             return;
-        }
-        String url = urlElement.attr("href");
-        if (url.isBlank()) {
-            return;
-        }
-        // sanity check - it normally does NOT have the protocol/site part
-        if (url.startsWith("/")) {
-            url = getHostUrl() + url;
         }
         final Document redirected = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, book);
         }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
+
+        final Element urlElement = document.selectFirst("div#results a.result-title");
+        if (urlElement == null) {
+            return null;
+        }
+        String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return null;
+        }
+        // sanity check - it normally does NOT have the protocol/site part
+        if (url.startsWith("/")) {
+            url = getHostUrl() + url;
+        }
+        return url;
     }
 
     /**
