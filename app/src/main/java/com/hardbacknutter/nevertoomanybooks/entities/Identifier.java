@@ -764,7 +764,7 @@ public class Identifier
          */
         public Value(@NonNull final String key,
                      @NonNull final String sid) {
-            this.key = key.toLowerCase(Locale.ENGLISH);;
+            this.key = key.toLowerCase(Locale.ENGLISH);
             this.sid = sid;
         }
 

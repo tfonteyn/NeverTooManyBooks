@@ -475,8 +475,5 @@ public class IdentifierDaoImpl
                 + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
                 + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.ENTITY) + "=?";
-
-        private Sql() {
-        }
     }
 }
