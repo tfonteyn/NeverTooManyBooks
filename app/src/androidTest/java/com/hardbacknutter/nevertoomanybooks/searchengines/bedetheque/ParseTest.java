@@ -73,6 +73,19 @@ class ParseTest
     }
 
     @Test
+    void multiResult()
+            throws IOException {
+        final String locationHeader = "https://www.bedetheque.com/search/albums?RechIdSerie=&RechIdAuteur=&csrf_token_bel=f33d9a978bb8fb8cb35999ad40ebc2d7&RechSerie=&RechTitre=&RechEditeur=&RechCollection=&RechStyle=&RechAuteur=&RechISBN=9782808511926+&RechParution=&RechOrigine=&RechLangue=&RechMotCle=&RechDLDeb=&RechDLFin=&RechCoteMin=&RechCoteMax=&RechEO=0";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bedetheque_multi_result_9782808511926;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final String url = searchEngine.parseMultiResult(document);
+        assertNotNull(url);
+        assertEquals("https://www.bedetheque.com/BD-FRNCK-Tome-11-Deuxieme-chance-538001.html", url);
+    }
+
+    @Test
     void parse01()
             throws SearchException, CredentialsException, StorageException, IOException {
 

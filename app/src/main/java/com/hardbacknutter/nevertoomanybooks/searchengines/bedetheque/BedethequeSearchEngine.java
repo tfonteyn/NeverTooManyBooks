@@ -330,7 +330,7 @@ public class BedethequeSearchEngine
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, criteria.getFetchCovers(), book, productCode);
+            multiResult(context, document, criteria.getFetchCovers(), productCode, book);
         }
         return book;
     }
@@ -366,26 +366,46 @@ public class BedethequeSearchEngine
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
+    @VisibleForTesting
     @WorkerThread
-    private void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book,
-                                  @Nullable final ProductCode searchedIsbn)
-            throws StorageException, SearchException, CredentialsException {
+    void multiResult(@NonNull final Context context,
+                     @NonNull final Document document,
+                     @NonNull final boolean[] fetchCovers,
+                     @NonNull final ProductCode searchedIsbn,
+                     @NonNull final Book book)
+            throws SearchException, CredentialsException, StorageException {
 
-        final Element urlElement = document.selectFirst("ul.search-list a");
-        if (urlElement == null) {
-            return;
-        }
-        final String url = urlElement.attr("href");
-        if (url.isBlank()) {
+        final String url = parseMultiResult(document);
+        if (url == null) {
             return;
         }
         final Document redirected = loadDocument(context, url, extraRequestProperties);
         if (!isCancelled()) {
             parse(context, redirected, fetchCovers, searchedIsbn, book);
         }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document) {
+
+        final Element urlElement = document.selectFirst("ul.search-list a");
+        if (urlElement == null) {
+            return null;
+        }
+        final String url = urlElement.attr("href");
+        if (url.isBlank()) {
+            return null;
+        }
+        return url;
     }
 
     /**
