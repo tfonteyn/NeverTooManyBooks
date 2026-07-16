@@ -86,9 +86,22 @@ class ParseTest
         moneyParser = new MoneyParser(siteLocale, allLocales);
     }
 
-    /** Network access! */
     @Test
     void parseMultiResult01()
+            throws SearchException, IOException {
+
+        final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=+9789056478193+";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bol_multi_1_result_9789056478193;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://www.bol.com/be/nl/p/nijntjes-voorleesfeest/9200000122271922/",
+                     searchEngine.parseMultiResult(document));
+    }
+
+    /** Network access! */
+    @Test
+    void multiResult01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=+9789056478193+";
@@ -97,9 +110,9 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, ISBN.parse("9789056478193"),
-                                      document, new boolean[]{false, false, false, false},
-                                      book);
+        searchEngine.multiResult(context, ISBN.parse("9789056478193"),
+                                 document, new boolean[]{false, false, false, false},
+                                 book);
         Log.d(TAG, book.toString());
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
@@ -137,9 +150,22 @@ class ParseTest
 
     }
 
-    /** Network access! */
     @Test
     void parseMultiResult02()
+            throws SearchException, IOException {
+
+        final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=asimov%20foundation&suggestFragment=asimov";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bol_asimov_foundation;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        assertEquals("https://www.bol.com/be/nl/p/foundation/9200000037157117/",
+                     searchEngine.parseMultiResult(document));
+    }
+
+    /** Network access! */
+    @Test
+    void multiResult02()
             throws SearchException, IOException, CredentialsException, StorageException {
 
         final String locationHeader = "https://www.bol.com/be/nl/s/?searchtext=asimov%20foundation&suggestFragment=asimov";
@@ -148,9 +174,9 @@ class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, ISBN.parse("9780008117498"),
-                                      document, new boolean[]{true, true, false, false},
-                                      book);
+        searchEngine.multiResult(context, ISBN.parse("9780008117498"),
+                                 document, new boolean[]{true, true, false, false},
+                                 book);
         Log.d(TAG, book.toString());
 
         assertEquals("Foundation", book.getString(DBKey.TITLE, null));

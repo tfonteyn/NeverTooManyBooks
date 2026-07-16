@@ -264,7 +264,7 @@ public class BolSearchEngine
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, productCode, document, criteria.getFetchCovers(), book);
+            multiResult(context, productCode, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -306,7 +306,7 @@ public class BolSearchEngine
                 HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, productCode, document, criteria.getFetchCovers(), book);
+            multiResult(context, productCode, document, criteria.getFetchCovers(), book);
         }
         return book;
     }
@@ -329,13 +329,38 @@ public class BolSearchEngine
      */
     @VisibleForTesting
     @WorkerThread
-    public void parseMultiResult(@NonNull final Context context,
-                                 @Nullable final ProductCode searchedCode,
-                                 @NonNull final Document document,
-                                 @NonNull final boolean[] fetchCovers,
-                                 @NonNull final Book book)
+    void multiResult(@NonNull final Context context,
+                     @Nullable final ProductCode searchedCode,
+                     @NonNull final Document document,
+                     @NonNull final boolean[] fetchCovers,
+                     @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
+        final String url = parseMultiResult(document);
+        if (url == null) {
+            return;
+        }
+        final Document redirected = loadDocument(context, url, Map.of(
+                HttpConstants.REFERER, document.location()));
+        if (!isCancelled()) {
+            parse(context, searchedCode, redirected, fetchCovers, book);
+        }
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param document to parse
+     *
+     * @return the url to redirect to, or {@code null} if parsing failed.
+     *
+     * @throws SearchException oif we hit the bot-block page
+     */
+    @VisibleForTesting
+    @Nullable
+    String parseMultiResult(@NonNull final Document document)
+            throws SearchException {
         final Element urlElement = document.selectFirst(
                 String.format("a[href^=/%1$s/nl/p/]", getCountry()));
         if (urlElement == null) {
@@ -347,22 +372,18 @@ public class BolSearchEngine
                                                   getEngineId().getLabelResId(),
                                                   "unicorn", null, document.location()));
             }
-            return;
+            return null;
         }
 
         String url = urlElement.attr("href");
         if (url.isBlank()) {
-            return;
+            return null;
         }
         // sanity check - it normally does NOT have the protocol/site part
         if (url.startsWith("/")) {
             url = getHostUrl() + url;
         }
-        final Document redirected = loadDocument(context, url, Map.of(
-                HttpConstants.REFERER, document.location()));
-        if (!isCancelled()) {
-            parse(context, searchedCode, redirected, fetchCovers, book);
-        }
+        return url;
     }
 
     /**
