@@ -286,8 +286,7 @@ public class DnbSearchEngine
             throws SearchException, CredentialsException {
 
         final ProductCode productCode = criteria.requireProductCode();
-        final EngineId engineId = getEngineId();
-        final String codeStr = productCode.getDashFormattedIssn8(engineId);
+        final String codeStr = productCode.getDashFormattedIssn8(getEngineId());
         final String url = createSearchUrl(SRU_ZDB, SEARCH_INDEX_ISS + "=" + codeStr);
         final Document document = loadDocument(context, Parser.xmlParser(), url, null);
 

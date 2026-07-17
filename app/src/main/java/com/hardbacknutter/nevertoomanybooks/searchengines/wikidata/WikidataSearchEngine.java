@@ -260,8 +260,7 @@ public class WikidataSearchEngine
             throws SearchException {
 
         final ProductCode productCode = criteria.requireProductCode();
-        final EngineId engineId = getEngineId();
-        final String codeStr = productCode.getDashFormattedIssn8(engineId);
+        final String codeStr = productCode.getDashFormattedIssn8(getEngineId());
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         String lang = userLocale.getLanguage();
