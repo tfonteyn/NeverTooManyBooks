@@ -207,6 +207,102 @@ public final class PublicationFrequency
     }
 
     /**
+     * Convert the {@code Unimarc} code to a frequency record.
+     * <p>
+     * frequencyCode:
+     * <pre>
+     *   a - daily
+     *   b - semiweekly (twice a week)
+     *   c - weekly
+     *   d - biweekly (every two weeks)
+     *   e - semimonthly (twice a month)
+     *   f - monthly
+     *   g - bimonthly (every two months)
+     *   h - quarterly
+     *   i - three times a year
+     *   k - annual
+     *   l - biennial (every two years)
+     *   m - triennial (every three years)
+     *   n t- hree times a week
+     *   o - three times a month
+     *   p - continuously updated
+     *   u - unknown
+     *   y - no frequency (i.e. irregular) See also character position 2 below.
+     *   z - other
+     * </pre>
+     * <p>
+     * regularityCode:
+     * <pre>
+     *   a - regular
+     *   b - normalised irregular
+     *   u - not known
+     *   y - irregular
+     * </pre>
+     *
+     * @param frequencyCode  unimarc character df110/1
+     * @param regularityCode unimarc character df110/2
+     *
+     * @return frequency
+     *
+     * @see <a href="https://www.loc.gov/marc/bibliographic/bd008s.html">MARC21 spec</a>
+     */
+    @NonNull
+    public static PublicationFrequency fromUnimarc(final char frequencyCode,
+                                                   final char regularityCode) {
+        // Handle explicitly irregular or unknown
+        if (regularityCode == 'y' || regularityCode == 'u') {
+            return new PublicationFrequency(Type.Unknown, 0, false);
+        }
+
+        switch (frequencyCode) {
+            case 'a':
+                return new PublicationFrequency(Type.Daily, 1, false);
+            case 'b':
+                // Semiweekly
+                return new PublicationFrequency(Type.Weekly, 2, true);
+            case 'c':
+                return new PublicationFrequency(Type.Weekly, 1, false);
+            case 'd':
+                // Biweekly
+                return new PublicationFrequency(Type.Weekly, 2, false);
+            case 'e':
+                // Semimonthly
+                return new PublicationFrequency(Type.Monthly, 2, true);
+            case 'f':
+                return new PublicationFrequency(Type.Monthly, 1, false);
+            case 'g':
+                // Bimonthly
+                return new PublicationFrequency(Type.Monthly, 2, false);
+            case 'h':
+                // Quarterly
+                return new PublicationFrequency(Type.Monthly, 3, false);
+            case 'i':
+                // 3 times/year
+                return new PublicationFrequency(Type.Yearly, 3, true);
+            case 'k':
+                return new PublicationFrequency(Type.Yearly, 1, false);
+            case 'l':
+                // Biennial
+                return new PublicationFrequency(Type.Yearly, 2, false);
+            case 'm':
+                // Triennial
+                return new PublicationFrequency(Type.Yearly, 3, false);
+            case 'n':
+                // 3 times/week
+                return new PublicationFrequency(Type.Weekly, 3, true);
+            case 'o':
+                // 3 times/month
+                return new PublicationFrequency(Type.Monthly, 3, true);
+            case 'p': // Continuously updated
+            case 'u': // Unknown
+            case 'y': // No frequency
+            case 'z': // Other
+            case '|': // No attempt to code
+            default:
+                return new PublicationFrequency(Type.Unknown, 0, false);
+        }
+    }
+    /**
      * Resolves the current frequency instance into its localized Android display string.
      *
      * @param context Android context to access localized assets and plural rules.
