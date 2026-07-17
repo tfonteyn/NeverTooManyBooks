@@ -65,7 +65,7 @@ class IdentifierTest
             final boolean isUnique = keys.add(new Pair<>(key, type));
             assertTrue(isUnique, "Duplicate key/type: " + key + ", " + type);
 
-            identifier.getUri().ifPresent(uri -> assertEquals(
+            identifier.getRawUri().ifPresent(uri -> assertEquals(
                     1,
                     PLACEHOLDER.split(uri, -1).length - 1,
                     "Invalid uri key: " + key));
@@ -85,7 +85,7 @@ class IdentifierTest
     @Test
     void validateUri() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
-            final String uri = identifier.getUri().orElse("");
+            final String uri = identifier.getRawUri().orElse("");
             assertTrue(UrlPatterns.isBlankOrValidUriWith1s(uri), uri);
         }
     }

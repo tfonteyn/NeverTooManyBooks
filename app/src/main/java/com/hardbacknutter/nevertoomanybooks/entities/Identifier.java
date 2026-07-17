@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bnf.BnfSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bnf.ArkUtil;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz._ALL;
 
 /**
@@ -509,7 +509,7 @@ public class Identifier
 
         // We're going to regret this hack later...
         if (SID_BNF.equals(key)) {
-            final String cb = BnfSearchEngine.createCBNumberString(sid);
+            final String cb = ArkUtil.createCBNumberString(sid);
             if (cb != null) {
                 return Optional.of(String.format(oUri.get(), cb));
             }
