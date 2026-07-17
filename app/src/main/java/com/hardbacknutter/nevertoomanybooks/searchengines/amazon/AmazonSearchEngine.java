@@ -384,7 +384,7 @@ public class AmazonSearchEngine
      * @return list
      *
      * @see #getIdentifierUri(Identifier.EntityType)
-     * @see Identifier#getUri()
+     * @see Identifier#getRawUri()
      * @see ViewBookOnSiteMenuHandler
      */
     @Keep

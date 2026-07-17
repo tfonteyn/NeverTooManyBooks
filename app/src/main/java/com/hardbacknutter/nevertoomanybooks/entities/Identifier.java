@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bnf.BnfSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz._ALL;
 
 /**
@@ -489,12 +490,46 @@ public class Identifier
 
     /**
      * Get the <strong>uri</strong> for viewing a reference on the site.
-     * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
+     * The uri will have the given sid value embedded.
+     * <p>
+     * For the raw uri, use {@link #getRawUri()}.
+     *
+     * @param sid value
      *
      * @return uri
+     *
+     * @see #getRawUri()
      */
     @NonNull
-    public Optional<String> getUri() {
+    public Optional<String> getUri(@NonNull final String sid) {
+        final Optional<String> oUri = getRawUri();
+        if (oUri.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // We're going to regret this hack later...
+        if (SID_BNF.equals(key)) {
+            final String cb = BnfSearchEngine.createCBNumberString(sid);
+            if (cb != null) {
+                return Optional.of(String.format(oUri.get(), cb));
+            }
+        }
+
+        return Optional.of(String.format(oUri.get(), sid));
+    }
+
+    /**
+     * Get the <strong>raw uri</strong> for viewing a reference on the site.
+     * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
+     * <p>
+     * For a formatted/complete uri, use {@link #getUri(String)}.
+     *
+     * @return the <strong>raw</strong> url
+     *
+     * @see #getUri(String)
+     */
+    @NonNull
+    public Optional<String> getRawUri() {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             return AmazonSearchEngine.getIdentifierUri(entityType);
@@ -506,7 +541,12 @@ public class Identifier
         return Optional.of(uri);
     }
 
-    public void setUri(@Nullable final String uri) {
+    /**
+     * Set the <strong>raw uri</strong> for viewing a reference on the site.
+     *
+     * @param uri to set
+     */
+    public void setRawUri(@Nullable final String uri) {
         this.uri = uri;
     }
 

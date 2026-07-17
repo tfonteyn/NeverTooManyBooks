@@ -52,7 +52,7 @@ public class IdentifierCoder
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl());
 
-        identifier.getUri().ifPresent(s -> out.put(DBKey.IDENTIFIERS.URI, s));
+        identifier.getRawUri().ifPresent(s -> out.put(DBKey.IDENTIFIERS.URI, s));
         identifier.getWikidataClaim().ifPresent(s -> out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM, s));
         return out;
     }

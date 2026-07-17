@@ -101,9 +101,8 @@ public class RISCitation
         book.getIdentifiers()
             .forEach(iv -> identifierDao
                     .find(iv.getKey(), Identifier.EntityType.Book)
-                    .flatMap(Identifier::getUri)
-                    .ifPresent(bookUri -> sj.add(
-                            "UR  - " + String.format(bookUri, iv.getSid()))));
+                    .flatMap(identifier -> identifier.getUri(iv.getSid()))
+                    .ifPresent(bookUri -> sj.add("UR  - " + bookUri)));
 
         sj.add("ER  -");
         return sj + CRLF;

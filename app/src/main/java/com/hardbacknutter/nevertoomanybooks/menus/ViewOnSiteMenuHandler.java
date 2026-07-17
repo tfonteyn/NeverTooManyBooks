@@ -115,7 +115,7 @@ abstract class ViewOnSiteMenuHandler<T>
                              .map(Identifier.Value::getKey)
                              .map(key -> dao.find(key, entityType))
                              .flatMap(Optional::stream)
-                             .filter(id -> id.getUri().isPresent())
+                             .filter(id -> id.getRawUri().isPresent())
                              .collect(Collectors.toList());
 
         for (final Identifier identifier : validIdentifiers) {
@@ -142,19 +142,21 @@ abstract class ViewOnSiteMenuHandler<T>
             return false;
         }
 
-        final Optional<String> oUri = dao
+        final Optional<String> oSid = getSid(data, key);
+        // Sanity check, it should be there!
+        if (oSid.isEmpty()) {
+            return false;
+        }
+
+        final Optional<Uri> oUri = dao
                 .find(key, entityType)
-                .flatMap(Identifier::getUri);
+                .flatMap(identifier -> identifier.getUri(oSid.get()))
+                .map(Uri::parse);
 
         // Sanity check, it should be there!
         if (oUri.isPresent()) {
-            final Optional<String> oSid = getSid(data, key);
-            // Sanity check, it should be there!
-            if (oSid.isPresent()) {
-                final Uri uri = Uri.parse(String.format(oUri.get(), oSid.get()));
-                context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                context.startActivity(new Intent(Intent.ACTION_VIEW, oUri.get()));
                 return true;
-            }
         }
         return false;
     }

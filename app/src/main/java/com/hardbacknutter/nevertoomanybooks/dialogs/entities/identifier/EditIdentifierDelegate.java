@@ -194,7 +194,7 @@ class EditIdentifierDelegate
                     context.getString(R.string.vldt_blank_or_valid_url_required));
             hasError = true;
         }
-        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getUri().orElse(null))) {
+        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getRawUri().orElse(null))) {
             vb.lblIdentifierUri.setError(
                     context.getString(R.string.vldt_blank_or_valid_uri_with_1s_param_required));
             hasError = true;
@@ -250,7 +250,7 @@ class EditIdentifierDelegate
         vb.identifierName.setText(currentEdit.getName());
         vb.identifierKey.setText(currentEdit.getKey());
         vb.identifierSiteUrl.setText(currentEdit.getSiteUrl());
-        vb.identifierBookUri.setText(currentEdit.getUri().orElse(""));
+        vb.identifierBookUri.setText(currentEdit.getRawUri().orElse(""));
 
         // Remove the "P" prefix for easier editing
         String wdp = currentEdit.getWikidataClaim().orElse("");
@@ -266,7 +266,7 @@ class EditIdentifierDelegate
         currentEdit.setName(vb.identifierName.getText().toString().strip());
         currentEdit.setKey(vb.identifierKey.getText().toString().strip());
         currentEdit.setSiteUrl(vb.identifierSiteUrl.getText().toString().strip());
-        currentEdit.setUri(vb.identifierBookUri.getText().toString().strip());
+        currentEdit.setRawUri(vb.identifierBookUri.getText().toString().strip());
 
         // "P" prefix will be added internally
         currentEdit.setWikidataClaim(vb.identifierWikidataClaim.getText().toString().strip());
