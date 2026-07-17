@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
 class V8 {
@@ -79,6 +80,7 @@ class V8 {
         db52updateIdentifierTable();
         DBDefinitions.TBL_SERIES_IDENTIFIER.create(db, true);
         DBDefinitions.TBL_SERIES_PUBLICATION_FREQUENCY.create(db, true);
+        TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_BOOK_EDITION_INFO);
     }
 
     private void db52updateIdentifierTable() {

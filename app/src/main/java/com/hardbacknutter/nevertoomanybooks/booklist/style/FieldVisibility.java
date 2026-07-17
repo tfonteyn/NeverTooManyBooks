@@ -149,7 +149,10 @@ public class FieldVisibility {
             DBKey.DATE_ACQUIRED,
             DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
             DBKey.COVER[2],
-            DBKey.COVER[3]
+            DBKey.COVER[3],
+
+            // bit 40..32
+            DBKey.EDITION_INFO
 
             // FIXME: DBKey.BOOK_CONTENT_TYPE: has the same DBKey column name as DBKey.FK_TOC_ENTRY
             //  book-edit: toc/content_type are shown/hidden in a single fragment

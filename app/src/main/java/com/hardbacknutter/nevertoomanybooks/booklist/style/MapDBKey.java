@@ -70,6 +70,7 @@ public final class MapDBKey {
                     Map.entry(DBKey.DATE_LAST_UPDATED__UTC, R.string.lbl_date_last_updated),
                     Map.entry(DBKey.DESCRIPTION, R.string.lbl_description),
                     Map.entry(DBKey.EDITION_FLAGS, R.string.lbl_edition),
+                    Map.entry(DBKey.EDITION_INFO, R.string.lbl_edition_info),
                     Map.entry(DBKey.FIRST_PUBLICATION_DATE, R.string.lbl_date_first_publication),
                     Map.entry(DBKey.FK_AUTHOR, R.string.lbl_author),
                     Map.entry(DBKey.FK_AUTHOR_REAL_AUTHOR, R.string.lbl_author_pseudonym),

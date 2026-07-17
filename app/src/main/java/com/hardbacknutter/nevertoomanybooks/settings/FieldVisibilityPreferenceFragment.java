@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -40,7 +39,6 @@ import com.hardbacknutter.prefslib.BooleanSetting;
 import com.hardbacknutter.prefslib.Setting;
 import com.hardbacknutter.prefslib.SettingsDataStore;
 import com.hardbacknutter.prefslib.SettingsManager;
-import com.hardbacknutter.prefslib.SharedPreferencesDataStore;
 
 /**
  * NEWTHINGS: new fields visibility.
@@ -66,8 +64,7 @@ public class FieldVisibilityPreferenceFragment
     @NonNull
     @Override
     protected SettingsManager.Builder onCreateSettings() {
-        final SettingsDataStore store = new VSDataStore(
-                ServiceLocator.getInstance().getSharedPreferences());
+        final SettingsDataStore store = new VSDataStore();
         //noinspection DataFlowIssue
         final SettingsManager.Builder factory = new SettingsManager.Builder(getContext(), store)
                 // Use a single listener as all options are handled the same
@@ -110,6 +107,8 @@ public class FieldVisibilityPreferenceFragment
         // bit: 14
         factory.bool(DBKey.DESCRIPTION, R.string.lbl_description, true);
         // bit: 15
+        // This is the icon/flag only.
+        // The free-form text field is bit 40
         factory.bool(DBKey.EDITION_FLAGS, R.string.lbl_edition, true);
         // bit: 16
         factory.bool(DBKey.FIRST_PUBLICATION_DATE, R.string.lbl_date_first_publication, true);
@@ -163,6 +162,10 @@ public class FieldVisibilityPreferenceFragment
         factory.bool(DBKey.COVER[2], R.string.lbl_image_2, true);
         // bit: 39
         factory.bool(DBKey.COVER[3], R.string.lbl_image_3, true);
+        // bit: 40
+        // This is the free-form text
+        // For the icon see bit 15
+        factory.bool(DBKey.EDITION_INFO, R.string.lbl_edition_info, true);
 
         return factory;
     }
@@ -216,13 +219,12 @@ public class FieldVisibilityPreferenceFragment
      * Redirects storage to a single long value.
      */
     private static class VSDataStore
-            extends SharedPreferencesDataStore {
+            implements SettingsDataStore {
 
         @NonNull
         private final FieldVisibility fieldVisibility;
 
-        VSDataStore(@NonNull final SharedPreferences sharedPreferences) {
-            super(sharedPreferences);
+        VSDataStore() {
             fieldVisibility = ServiceLocator.getInstance().getGlobalFieldVisibility();
             fieldVisibility.load();
         }
@@ -230,7 +232,6 @@ public class FieldVisibilityPreferenceFragment
         @Override
         public void putBoolean(@NonNull final String key,
                                @Nullable final Boolean value) {
-
             fieldVisibility.setVisible(key, value != null ? value : false);
             fieldVisibility.save();
         }

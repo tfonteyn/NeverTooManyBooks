@@ -225,6 +225,25 @@
             <!--                android:text="@string/lbl_edition_first_impression"-->
             <!--                />-->
         </com.google.android.material.chip.ChipGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_edition_info"
+            style="@style/TIL.Text.EditionInfo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edition_flags"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edition_info"
+                style="@style/TIE.Notes"
+                android:imeOptions="actionDone"
+                tools:ignore="Autofill"
+                tools:text="23st impr."
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -111,6 +111,11 @@ public final class DBKey {
      * @see com.hardbacknutter.nevertoomanybooks.entities.Book.Edition
      */
     public static final String EDITION_FLAGS = "edition_bm";
+    /**
+     * Free-form field for extra information about the edition of the user's copy.
+     * (e.g. exact impression)
+     */
+    public static final String EDITION_INFO = "edition_info";
 
     public static final String FORMAT = "format";
     /** {@link DBDefinitions#TBL_BOOKS} + {@link DBDefinitions#TBL_TOC_ENTRIES}. */

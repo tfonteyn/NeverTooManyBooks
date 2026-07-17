@@ -515,9 +515,10 @@ public class ShowBookDetailsFragment
         //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(parentView, true, false));
 
-        // Hide the 'Edition' label if neither edition fields or print-run fields are shown
+        // Hide the 'Edition' label if none of the edition fields are shown
         setSectionVisibility(R.id.lbl_edition,
                              R.id.edition_flags,
+                             R.id.edition_info,
                              R.id.print_run);
 
         // Hide the 'Publication' label if none of the publishing fields are shown.

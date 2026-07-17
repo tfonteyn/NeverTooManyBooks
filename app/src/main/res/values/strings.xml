@@ -1532,6 +1532,9 @@
     <string name="lbl_print_run">Print run</string>
     <!-- Label for the Book edition flags (first edition / first impression). -->
     <string name="lbl_edition">Edition</string>
+    <!-- Label for the Book edition information (free-form text). -->
+    <string name="lbl_edition_info">Edition info</string>
+
     <!-- Whether the user considers his collection of this [Author, Series, ...] to be complete. -->
     <string name="lbl_is_complete">Is complete</string>
     <!-- Label for the Book / Dust cover condition -->

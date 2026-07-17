@@ -372,6 +372,8 @@ public class ShowBookDetailsViewModel
                                      new BitmaskFormatter(Details.Normal, Book.Edition::getAll))
                            .addRelatedViews(R.id.lbl_edition));
 
+        addField(new TextViewField<>(R.id.edition_info, DBKey.EDITION_INFO));
+
         addField(new TextViewField<>(R.id.print_run, DBKey.PRINT_RUN));
 
         addField(new TextViewField<>(R.id.price_listed, DBKey.PRICE_LISTED,

@@ -40,6 +40,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -77,6 +78,8 @@ public abstract class BaseField<T, V extends View>
     @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
     private final int fieldViewId;
+    @NonNull
+    private final FieldVisibility globalFieldVisibility;
 
     /**
      * The value which is currently held in memory.
@@ -139,6 +142,8 @@ public abstract class BaseField<T, V extends View>
         this.fieldViewId = fieldViewId;
         this.fieldKey = fieldKey;
         usedKey = prefKey;
+
+        globalFieldVisibility = ServiceLocator.getInstance().getGlobalFieldVisibility();
     }
 
     /**
@@ -242,7 +247,7 @@ public abstract class BaseField<T, V extends View>
     }
 
     /**
-     * Save the field value to the given {@link DataManager}
+     * Save the field value to the given {@link DataManager}.
      *
      * @param target to save into.
      *
@@ -485,7 +490,8 @@ public abstract class BaseField<T, V extends View>
 
     @Override
     public boolean isUsed() {
-        return ServiceLocator.getInstance().isFieldEnabled(usedKey);
+        final Boolean b = globalFieldVisibility.isVisible(usedKey).orElse(true);
+        return b;
     }
 
     @Override

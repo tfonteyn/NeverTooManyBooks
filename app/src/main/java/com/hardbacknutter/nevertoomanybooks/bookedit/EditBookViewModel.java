@@ -1243,6 +1243,10 @@ public class EditBookViewModel
         addField(fragmentId, new BitmaskChipGroupField(R.id.edition_flags, DBKey.EDITION_FLAGS,
                                                        Book.Edition::getAll)
                            .addRelatedViews(R.id.lbl_edition));
+
+        addField(fragmentId, new EditTextField<>(R.id.edition_info, DBKey.EDITION_INFO)
+                .setTextInputLayoutId(R.id.lbl_edition_info)
+                .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
     }
 
     @SuppressWarnings("SameParameterValue")

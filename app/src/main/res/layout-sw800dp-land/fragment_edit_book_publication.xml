@@ -413,12 +413,30 @@
         </com.google.android.material.chip.ChipGroup>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_edition_info"
+            style="@style/TIL.Text.EditionInfo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col2"
+            app:layout_constraintTop_toBottomOf="@id/edition_flags"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edition_info"
+                style="@style/TIE.Notes"
+                android:imeOptions="actionDone"
+                tools:ignore="Autofill"
+                tools:text="23st impr."
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_location"
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/edition"
+            app:layout_constraintTop_toBottomOf="@id/lbl_edition_info"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView

@@ -63,6 +63,10 @@
         <item name="android:hint">@string/lbl_print_run</item>
     </style>
 
+    <style name="TIL.Text.EditionInfo">
+        <item name="android:hint">@string/lbl_edition_info</item>
+    </style>
+
     <!-- A multi-line note/description field. -->
     <style name="TIL.Text.Note">
     </style>

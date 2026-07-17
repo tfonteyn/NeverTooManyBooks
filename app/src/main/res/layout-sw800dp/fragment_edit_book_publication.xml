@@ -255,6 +255,24 @@
             <!--                />-->
         </com.google.android.material.chip.ChipGroup>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_edition_info"
+            style="@style/TIL.Text.EditionInfo"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edition_flags"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edition_info"
+                style="@style/TIE.Notes"
+                android:imeOptions="actionDone"
+                tools:ignore="Autofill"
+                tools:text="23st impr."
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
             style="@style/Field.ZRatingBar.Editable"
@@ -425,7 +443,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="edition_flags,lbl_print_run,lbl_price_listed_currency,lbl_location,cbx_signed,lbl_condition,lbl_condition_cover,lbl_price_paid_currency"
+            app:constraint_referenced_ids="edition_flags,lbl_edition_info,lbl_print_run,lbl_price_listed_currency,lbl_location,cbx_signed,lbl_condition,lbl_condition_cover,lbl_price_paid_currency"
             />
 
 

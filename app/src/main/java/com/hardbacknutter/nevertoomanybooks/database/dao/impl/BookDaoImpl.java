@@ -1145,6 +1145,7 @@ public class BookDaoImpl
                         DBKey.DESCRIPTION,
                         // partially edition info, partially user-owned info.
                         DBKey.EDITION_FLAGS,
+                        DBKey.EDITION_INFO,
                         // user notes
                         DBKey.PERSONAL_NOTES,
                         DBKey.CONDITION_BOOK, DBKey.CONDITION_COVER,
