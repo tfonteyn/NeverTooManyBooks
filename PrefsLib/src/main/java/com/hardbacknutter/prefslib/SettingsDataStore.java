@@ -29,44 +29,71 @@ import java.util.Set;
  * There is NO {@code remove} method. This is by design.
  * The equivalent is passing in {@code null} as the value.
  * Implementations should typically then remove such key/value pairs.
+ *
+ * By default, <strong>all</strong> methods will throw.
+ * Implement those you are going to use.
  */
 public interface SettingsDataStore {
 
     @Nullable
-    String getString(@NonNull String key,
-                     @Nullable String defValue);
+    default String getString(@NonNull final String key,
+                             @Nullable final String defValue) {
+        throw new UnsupportedOperationException("getString");
+    }
 
-    void putString(@NonNull String key,
-                   @Nullable String value);
+    default void putString(@NonNull final String key,
+                           @Nullable final String value) {
+        throw new UnsupportedOperationException("putString");
+    }
 
     @Nullable
-    Set<String> getStringSet(@NonNull String key,
-                             @Nullable Set<String> defValues);
+    default Set<String> getStringSet(@NonNull final String key,
+                                     @Nullable final Set<String> defValues) {
+        throw new UnsupportedOperationException("getStringSet");
+    }
 
-    void putStringSet(@NonNull String key,
-                      @Nullable Set<String> values);
+    default void putStringSet(@NonNull final String key,
+                              @Nullable final Set<String> values) {
+        throw new UnsupportedOperationException("putStringSet");
+    }
 
-    int getInt(@NonNull String key,
-               @Nullable Integer defValue);
+    default int getInt(@NonNull final String key,
+                       @Nullable final Integer defValue) {
+        throw new UnsupportedOperationException("getInt");
+    }
 
-    void putInt(@NonNull String key,
-                @Nullable Integer value);
+    default void putInt(@NonNull final String key,
+                        @Nullable final Integer value) {
+        throw new UnsupportedOperationException("putInt");
+    }
 
-    long getLong(@NonNull String key,
-                 @Nullable Long defValue);
+    default long getLong(@NonNull final String key,
+                         @Nullable final Long defValue) {
+        throw new UnsupportedOperationException("getLong");
+    }
 
-    void putLong(@NonNull String key,
-                 @Nullable Long value);
+    default void putLong(@NonNull final String key,
+                         @Nullable final Long value) {
+        throw new UnsupportedOperationException("putLong");
+    }
 
-    float getFloat(@NonNull String key,
-                   @Nullable Float defValue);
+    default float getFloat(@NonNull final String key,
+                           @Nullable final Float defValue) {
+        throw new UnsupportedOperationException("getFloat");
+    }
 
-    void putFloat(@NonNull String key,
-                  @Nullable Float value);
+    default void putFloat(@NonNull final String key,
+                          @Nullable final Float value) {
+        throw new UnsupportedOperationException("putFloat");
+    }
 
-    boolean getBoolean(@NonNull String key,
-                       @Nullable Boolean defValue);
+    default boolean getBoolean(@NonNull final String key,
+                               @Nullable final Boolean defValue) {
+        throw new UnsupportedOperationException("getBoolean");
+    }
 
-    void putBoolean(@NonNull String key,
-                    @Nullable Boolean value);
+    default void putBoolean(@NonNull final String key,
+                            @Nullable final Boolean value) {
+        throw new UnsupportedOperationException("putBoolean");
+    }
 }
