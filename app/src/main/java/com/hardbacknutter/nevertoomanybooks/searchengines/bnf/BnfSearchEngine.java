@@ -72,6 +72,14 @@ import org.jsoup.select.Elements;
 
 /**
  * Bibliothèque nationale de France.
+ *
+ * URGENT: migrate to the SRU
+ * https://catalogue.bnf.fr/api/SRU?version=1.2&operation=explain
+ * https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=
+ * bib.persistentid+all+%22ark:/12148/cb39187957k%22
+ * &recordSchema=unimarcXchange
+ * &maximumRecords=1
+ * URGENT: add SearchEngine.ByIssn
  * <p>
  * The unimarc format:
  * <a href="https://www.ifla.org/unimarc-updates/unimarc-bibliographic-format-manual-online-ed/">
