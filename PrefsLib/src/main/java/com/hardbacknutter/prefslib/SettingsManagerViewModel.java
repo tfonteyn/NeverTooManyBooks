@@ -58,12 +58,10 @@ public class SettingsManagerViewModel
      */
     void init(@NonNull final SettingsDataStore dataStore,
               @NonNull final List<Setting> settings) {
-        if (this.dataStore == null) {
-            this.dataStore = dataStore;
-        }
         // This ViewModel is owned by the Activity, so we can share it
         // between the hosting fragment and any dialog fragments as needed.
-        // So we MUST always update the FRAGMENT settings.
+        // So we MUST always update the FRAGMENT store/settings.
+        this.dataStore = dataStore;
         this.settings = settings;
     }
 
