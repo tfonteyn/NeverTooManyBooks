@@ -112,7 +112,7 @@ public class IdentifierDaoImpl
             LoggerFactory.getLogger().e(TAG, e);
             throw e;
         } catch (@NonNull final DaoInsertException e) {
-            // log, but just rethrow insert errors... we're in a real mess now
+            // log, but just rethrow errors... we're in a real mess now
             LoggerFactory.getLogger().e(TAG, e);
             throw new SQLException("doInsert", e);
         }
@@ -152,6 +152,23 @@ public class IdentifierDaoImpl
         throw new DaoInsertException(ERROR_INSERT_FROM + identifier);
     }
 
+    public static void doUpdate(@NonNull final SQLiteDatabase db,
+                                @NonNull final Collection<Identifier> identifierList) {
+        try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.UPDATE))) {
+            for (final Identifier identifier : identifierList) {
+                doUpdate(identifier, stmt);
+            }
+        } catch (@NonNull final SQLException e) {
+            // log... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw e;
+        } catch (@NonNull final DaoUpdateException e) {
+            // log, but just rethrow errors... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw new SQLException("doUpdate", e);
+        }
+    }
+
     /**
      * Update the given {@link Identifier}.
      *
@@ -161,7 +178,7 @@ public class IdentifierDaoImpl
      * @throws DaoUpdateException on failure
      */
     private static void doUpdate(@NonNull final Identifier identifier,
-                                 @NonNull final SynchronizedStatement stmt)
+                                 @NonNull final ExtSQLiteStatement stmt)
             throws DaoUpdateException {
         int c = 0;
         stmt.bindString(++c, identifier.getKey().toLowerCase(Locale.ENGLISH));
