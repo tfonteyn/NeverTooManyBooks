@@ -18,14 +18,12 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.backup.json;
+package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.json.coders.IdentifierValueCoder;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
