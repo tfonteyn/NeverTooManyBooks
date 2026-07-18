@@ -1067,7 +1067,7 @@ public class EditBookViewModel
     }
 
     /**
-     * Add they field and remember to which fragment it belong.
+     * Add the field and remember to which fragment it belong.
      * <p>
      * If the field is already present, the new copy will replace the old one.
      * Keys needs to be unique across fragments.

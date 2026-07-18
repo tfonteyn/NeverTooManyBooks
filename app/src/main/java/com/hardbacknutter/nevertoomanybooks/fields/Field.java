@@ -251,6 +251,7 @@ public interface Field<T, V extends View> {
 
     /**
      * Display an error message in the previously set error view.
+     * It is normally cleared by the {@code TextWatcher} added to {@link EditTextField}s.
      * <p>
      * Supports setting the text on an {@link TextInputLayout} or {@link TextView}.
      * Fails silently if the view is not present.
