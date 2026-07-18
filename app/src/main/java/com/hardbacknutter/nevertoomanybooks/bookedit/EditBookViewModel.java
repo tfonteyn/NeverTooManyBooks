@@ -125,7 +125,7 @@ public class EditBookViewModel
      * NEWTHINGS: adding a new search engine:
      *  optional: external id KEY add a field; Keep them alphabetic.
      */
-    static final String[] KEYS = {
+    static final List<String> KEYS = List.of(
             Identifier.SID_ASIN,
             Identifier.SID_BEDETHEQUE,
             Identifier.SID_BIBLIOTECE_PL,
@@ -138,7 +138,7 @@ public class EditBookViewModel
             Identifier.SID_LAST_DODO_NL,
             Identifier.SID_LIBRARY_THING,
             Identifier.SID_OPEN_LIBRARY,
-            Identifier.SID_STRIP_INFO};
+            Identifier.SID_STRIP_INFO);
 
     /** key: the field-key. */
     private final Map<String, Field<?, ? extends View>> fields = new HashMap<>();
@@ -1370,9 +1370,8 @@ public class EditBookViewModel
                 (context, value) -> value != null && !"0".equals(value) ? value : "";
 
         final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
-        for (int i = 0; i < EditBookViewModel.KEYS.length; i++) {
-            final Optional<Identifier> oIdentifier = dao.find(EditBookViewModel.KEYS[i],
-                                                              Identifier.EntityType.Book);
+        for (final String key : EditBookViewModel.KEYS) {
+            final Optional<Identifier> oIdentifier = dao.find(key, Identifier.EntityType.Book);
             // Paranoia
             if (oIdentifier.isPresent()) {
                 final Identifier identifier = oIdentifier.get();

@@ -68,11 +68,11 @@ public class EditBookExternalIdFragment
         final Flow flow = content.findViewById(R.id.flow_site_ids);
 
         // collect ids to add to the Flow layout
-        final int[] ids = new int[EditBookViewModel.KEYS.length];
+        final int[] ids = new int[EditBookViewModel.KEYS.size()];
 
-        for (int i = 0; i < EditBookViewModel.KEYS.length; i++) {
+        for (int i = 0; i < EditBookViewModel.KEYS.size(); i++) {
             final IdentifierField<EditText> field = (IdentifierField<EditText>)
-                    vm.<String, EditText>requireField(EditBookViewModel.KEYS[i]);
+                    vm.<String, EditText>requireField(EditBookViewModel.KEYS.get(i));
 
             final Identifier identifier = field.getIdentifier();
             @LayoutRes
@@ -93,7 +93,7 @@ public class EditBookExternalIdFragment
             final TextInputEditText tie = view.findViewById(R.id.tie);
             tie.setId(field.getFieldViewId());
             // last one?
-            if (i == EditBookViewModel.KEYS.length - 1) {
+            if (i == EditBookViewModel.KEYS.size() - 1) {
                 tie.setImeOptions(EditorInfo.IME_ACTION_DONE);
             }
 
