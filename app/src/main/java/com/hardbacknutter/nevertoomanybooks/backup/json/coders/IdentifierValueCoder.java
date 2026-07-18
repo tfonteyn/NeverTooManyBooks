@@ -21,6 +21,10 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -41,10 +45,37 @@ public class IdentifierValueCoder
     }
 
     @Override
-    @NonNull
+    @Nullable
     public Identifier.Value decode(@NonNull final JSONObject data)
             throws JSONException {
-        return new Identifier.Value(data.getString(DBKey.IDENTIFIERS.KEY),
-                                    data.getString(DBKey.IDENTIFIERS.SID));
+        final String key = data.getString(DBKey.IDENTIFIERS.KEY);
+        final String value = data.getString(DBKey.IDENTIFIERS.SID);
+
+        if (Identifier.SID_BNF.equals(key) && value.length() > 8) {
+            return decodeBnfLegacyFormat(value);
+        }
+        return new Identifier.Value(key, value);
+    }
+
+    /**
+     * The internal storage format of the BnF sid has changed in app version 8.0.0.
+     * Instead of storing the "cbXXXXXXXXc" values, we now store the raw "XXXXXXXX" value.
+     *
+     * @param value to decode
+     *
+     * @return decoded value, or {@code null} when discarded
+     */
+    @Nullable
+    private Identifier.Value decodeBnfLegacyFormat(@NonNull final CharSequence value) {
+        final Pattern p = Pattern.compile("^cb(\\d{8}).?");
+        final Matcher matcher = p.matcher(value);
+        if (matcher.find()) {
+            final String s = matcher.group(1);
+            if (s != null) {
+                return new Identifier.Value(Identifier.SID_BNF, s);
+            }
+        }
+        // discard - better NO value than an invalid value
+        return null;
     }
 }
