@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,10 +85,21 @@ public interface JsonCoder<T> {
                                      .collect(Collectors.toList()));
     }
 
+    /**
+     * Encode an element as a reference. Must be overridden when applicable.
+     * The default implementation throws an {@code UnsupportedOperationException}.
+     *
+     * @param element to encode
+     *
+     * @return encoded data
+     *
+     * @throws JSONException upon any parsing error
+     */
     @NonNull
     default JSONObject encodeReference(@NonNull final T element)
             throws JSONException {
-        throw new UnsupportedOperationException();
+        //noinspection CheckStyle
+        throw new UnsupportedOperationException("");
     }
 
     /**
@@ -121,19 +133,32 @@ public interface JsonCoder<T> {
      *                                  will be shown to the user</strong>
      * @throws JSONException            upon any parsing error
      */
-    @NonNull
+    @Nullable
     T decode(@NonNull JSONObject data)
             throws JSONException;
 
+    /**
+     * Decode a single data element into a list of elements.
+     * The default implementation calls {@link #decode(JSONObject)}.
+     * Override as needed to split a data element into multiple returns.
+     *
+     * @param data to decode
+     *
+     * @return decoded data
+     *
+     * @throws JSONException upon any parsing error
+     */
     @NonNull
     default Collection<T> decodeList(@NonNull final JSONObject data)
             throws JSONException {
-        return List.of(decode(data));
+        @Nullable
+        final T decoded = decode(data);
+        return decoded != null ? List.of(decoded) : List.of();
     }
 
     /**
      * Decode a list of elements.
-     * Actual work is done in {@link #decode(JSONObject)}.
+     * Actual work is done in {@link #decodeList(JSONObject)}.
      *
      * @param elements to decode
      *
@@ -151,9 +176,24 @@ public interface JsonCoder<T> {
         return list;
     }
 
+    /**
+     * Decode the given data object. Must be overridden when applicable.
+     * The default implementation throws an {@code UnsupportedOperationException}.
+     *
+     * @param data to decode
+     *
+     * @return decoded data
+     *
+     * @throws IllegalArgumentException if the data could partially be parsed,
+     *                                  but we encountered an unknown type/element.
+     *                                  The message <strong>must be localised and
+     *                                  will be shown to the user</strong>
+     * @throws JSONException            upon any parsing error
+     */
     @NonNull
     default Optional<T> decodeReference(@NonNull final JSONObject data)
             throws JSONException {
+        //noinspection CheckStyle
         throw new UnsupportedOperationException();
     }
 
