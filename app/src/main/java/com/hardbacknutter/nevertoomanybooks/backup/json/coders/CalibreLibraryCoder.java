@@ -48,7 +48,7 @@ public class CalibreLibraryCoder
     @NonNull
     private final Context context;
     @NonNull
-    private final JsonCoder<Bookshelf> bookshelfCoder;
+    private final BookshelfCoder bookshelfCoder;
 
     @NonNull
     private final BookshelfDao bookshelfDao;

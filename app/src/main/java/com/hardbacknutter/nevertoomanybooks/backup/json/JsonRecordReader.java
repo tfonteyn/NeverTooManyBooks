@@ -663,7 +663,7 @@ public class JsonRecordReader
 
         Synchronizer.SyncLock txLock = null;
 
-        final JsonCoder<Book> bookCoder = new BookCoder(context, defaultStyle);
+        final BookCoder bookCoder = new BookCoder(context, defaultStyle);
 
         for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
 
