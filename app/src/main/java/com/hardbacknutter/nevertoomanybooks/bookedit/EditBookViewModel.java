@@ -1311,7 +1311,7 @@ public class EditBookViewModel
                            .setValidator(this::validateReadStartAndEndFields));
     }
 
-    private void validateReadStartAndEndFields(@NonNull final Field<String, TextView> field) {
+    private boolean validateReadStartAndEndFields(@NonNull final Field<String, TextView> field) {
 
         // we ignore the passed field, so we can use this validator for both fields.
         final Field<String, TextView> startField = requireField(DBKey.READ_START__DATE);
@@ -1321,22 +1321,23 @@ public class EditBookViewModel
         if (start == null || start.isEmpty()) {
             startField.setError(null);
             endField.setError(null);
-            return;
+            return true;
         }
 
         final String end = endField.getValue();
         if (end == null || end.isEmpty()) {
             startField.setError(null);
             endField.setError(null);
-            return;
+            return true;
         }
 
         if (start.compareToIgnoreCase(end) > 0) {
             endField.setError(errStrReadStartAfterEnd);
-
+            return false;
         } else {
             startField.setError(null);
             endField.setError(null);
+            return true;
         }
     }
 

@@ -263,9 +263,13 @@ public interface Field<T, V extends View> {
      * Convenience method to facilitate creating a non-empty {@link Validator}.
      *
      * @param errorText to display if the field is empty.
+     *
+     * @return {@code false} if the value was empty
      */
-    default void setErrorIfEmpty(@NonNull final String errorText) {
-        setError(isEmpty() ? errorText : null);
+    default boolean setErrorIfEmpty(@NonNull final String errorText) {
+        final boolean empty = isEmpty();
+        setError(empty ? errorText : null);
+        return !empty;
     }
 
     @FunctionalInterface
@@ -295,9 +299,15 @@ public interface Field<T, V extends View> {
 
         /**
          * Validation method.
+         * <p>
+         * If this method returns {@code false}, it's up to the caller
+         * to decide it's a breaking issue, or to ignore it.
          *
          * @param field to validate
+         *
+         * @return {@code true} if all is fine.
+         *         {@code false} if validation failed.
          */
-        void validate(@NonNull Field<T, V> field);
+        boolean validate(@NonNull Field<T, V> field);
     }
 }

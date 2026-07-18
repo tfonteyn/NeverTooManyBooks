@@ -188,7 +188,7 @@ public abstract class BaseField<T, V extends View>
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public Field<T, V> setValidator(@NonNull final Validator<T, V> validator) {
+    public Field<T, V> setValidator(@Nullable final Validator<T, V> validator) {
         this.validator = validator;
         return this;
     }
