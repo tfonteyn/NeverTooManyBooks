@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.updates;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,12 +31,18 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
 class V8 {
@@ -80,10 +87,14 @@ class V8 {
         db52updateIdentifierTable();
         DBDefinitions.TBL_SERIES_IDENTIFIER.create(db, true);
         DBDefinitions.TBL_SERIES_PUBLICATION_FREQUENCY.create(db, true);
+
         TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_BOOK_EDITION_INFO);
+
+        db52cleanupBnfIdentifiers();
     }
 
     private void db52updateIdentifierTable() {
+
         // add the new columns FIRST
         TBL_IDENTIFIERS.alterTableAddColumns(db,
                                              DBDefinitions.DOM_IDENTIFIER_ENTITY,
@@ -92,47 +103,178 @@ class V8 {
         TBL_IDENTIFIERS.getIndex(DBKey.IDENTIFIERS.KEY)
                        .ifPresent(index -> index.delete(db));
 
-        // reminder: we're in a transaction, rest easy
-        identifierMigration.deleteAllPredefined();
-        // We now only have user defined Identifiers in the table
-        final Collection<Bundle> currentList = identifierMigration.getCurrentList();
-        if (!currentList.isEmpty()) {
-            // Clear the entire table.
-            db.delete(TBL_IDENTIFIERS.getName(), null, null);
+
+        // isolate the linked tables
+        Upgrade.runWithoutConstraints(db, () -> {
+
+            // The new/updated format, using a key+entity
+            final Collection<Identifier> initialList = Identifier.createInitialList(context);
+
+            // Reduce to just the keys, this collapses the entities
+            final Set<String> predefinedKeys = initialList
+                    .stream().map(Identifier::getKey).collect(Collectors.toSet());
+
+
+            // Get ALL current rows, includes both predefined and user-defined.
+            final Map<String, Bundle> allCurrentKeys = identifierMigration.getCurrentList();
+
+            final List<String> currentUserDefinedKeys = allCurrentKeys
+                    .keySet()
+                    .stream()
+                    .filter(key -> !predefinedKeys.contains(key))
+                    .toList();
+
+            final List<String> currentPredefinedKeys = allCurrentKeys
+                    .keySet()
+                    .stream()
+                    .filter(predefinedKeys::contains)
+                    .toList();
+
+            // collect all as needed, then run a bulk operation afterwards.
+            final List<Identifier> toInsert = new ArrayList<>();
+            final List<Identifier> toUpdate = new ArrayList<>();
 
             // migrate the user defined Identifiers
-            final List<Identifier> toInsert = new ArrayList<>();
-            for (final Bundle ib : currentList) {
-                final long id = ib.getLong(DBKey.PK_ID, 0);
-                final String key = ib.getString(DBKey.IDENTIFIERS.KEY);
-                final String typeStr = ib.getString(DBKey.IDENTIFIERS.TYPE);
-                final String name = ib.getString(DBKey.IDENTIFIERS.NAME);
-                // Paranoia... should NEVER be the case
-                if (key != null && name != null && typeStr != null && !typeStr.isEmpty()) {
-                    @NonNull
-                    final Identifier.Type type = Identifier.Type.byId(typeStr.charAt(0));
-                    @Nullable
-                    final String siteUrl = ib.getString(DBKey.IDENTIFIERS.SITE_URL);
-                    @Nullable
-                    final String wikidataClaim = ib.getString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM);
-                    @Nullable
-                    final String bookUri = ib.getString(IdentifierMigration.BOOK_URI_OBSOLETE);
-                    @Nullable
-                    final String authorUri = ib.getString(IdentifierMigration.AUTHOR_URI_OBSOLETE);
-
-                    toInsert.addAll(IdentifierMigration.mapV7Identifier(
-                            id, key, type, name, siteUrl, bookUri, authorUri, wikidataClaim));
-                }
+            for (final String key : currentUserDefinedKeys) {
+                db52updateUserDefineIdentifiers(key, allCurrentKeys, toUpdate, toInsert);
             }
 
-            // insert the user defined Identifiers
-            identifierMigration.insert(toInsert);
-        }
-        // finally re-insert the predefined Identifiers
-        identifierMigration.reinsertPredefined();
+            // update the existing predefined Identifiers
+            for (final String key : currentPredefinedKeys) {
+                db52updateUPredefinedIdentifiers(key, allCurrentKeys, initialList, toUpdate, toInsert);
+                predefinedKeys.remove(key);
+            }
 
-        // and delete the now obsolete columns by recreating the entire table
-        // The indexes will be recreated as normal at the end of the upgrade.
-        TBL_IDENTIFIERS.recreate(db);
+            // any predefines ones left need inserting
+            final List<Identifier> leftOver = initialList
+                    .stream()
+                    .filter(identifier -> predefinedKeys.contains(identifier.getKey()))
+                    .toList();
+
+            toInsert.addAll(leftOver);
+
+            // RUN THE BULK OPERATIONS
+            identifierMigration.update(toUpdate);
+            identifierMigration.insert(toInsert);
+
+            // Delete the now obsolete columns by recreating the entire table
+            // The indexes will be recreated as normal at the end of the upgrade.
+            TBL_IDENTIFIERS.recreate(db);
+        });
+    }
+
+    private void db52updateUPredefinedIdentifiers(@NonNull final String key,
+                                                  @NonNull final Map<String, Bundle> all,
+                                                  @NonNull final Collection<Identifier> initialList,
+                                                  @NonNull final List<Identifier> toUpdate,
+                                                  @NonNull final List<Identifier> toInsert) {
+
+        final Bundle ib = all.get(key);
+        @SuppressWarnings("DataFlowIssue")
+        final long id = ib.getLong(DBKey.PK_ID, 0);
+
+        // The ones from the all-list ARE book-identifiers.
+        // Copy that id to the predefined/initial one, and force an update
+        initialList.stream()
+                   .filter(identifier -> identifier.getKey().equals(key))
+                   .filter(identifier -> identifier.getEntityType() == Identifier.EntityType.Book)
+                   .findFirst()
+                   .ifPresent(identifier -> {
+                       identifier.setId(id);
+                       toUpdate.add(identifier);
+                   });
+
+        // Filter for the non-book-identifiers; those always need inserting
+        initialList.stream()
+                   .filter(identifier -> identifier.getKey().equals(key))
+                   .filter(identifier -> identifier.getEntityType() != Identifier.EntityType.Book)
+                   .forEach(toInsert::add);
+
+    }
+
+    private void db52updateUserDefineIdentifiers(
+            @NonNull final String key,
+            @NonNull final Map<String, Bundle> all,
+            @NonNull final List<Identifier> toUpdate,
+            @NonNull final List<Identifier> toInsert) {
+
+        final Bundle ib = all.get(key);
+        @SuppressWarnings("DataFlowIssue")
+        final long id = ib.getLong(DBKey.PK_ID, 0);
+        final String typeStr = ib.getString(DBKey.IDENTIFIERS.TYPE);
+        final String name = ib.getString(DBKey.IDENTIFIERS.NAME);
+        // Paranoia... should NEVER be the case
+        if (id != 0 && name != null && typeStr != null && !typeStr.isEmpty()) {
+            @NonNull
+            final Identifier.Type type = Identifier.Type.byId(typeStr.charAt(0));
+            @Nullable
+            final String siteUrl = ib.getString(DBKey.IDENTIFIERS.SITE_URL);
+            @Nullable
+            final String wikidataClaim = ib.getString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM);
+            @Nullable
+            final String bookUri = ib.getString(IdentifierMigration.BOOK_URI_OBSOLETE);
+            @Nullable
+            final String authorUri = ib.getString(IdentifierMigration.AUTHOR_URI_OBSOLETE);
+
+            final List<Identifier> c = IdentifierMigration.mapV7Identifier(
+                    id, key, type, name, siteUrl, bookUri, authorUri, wikidataClaim);
+
+            for (final Identifier identifier : c) {
+                if (identifier.getId() > 0) {
+                    // the existing book-identifiers
+                    toUpdate.add(identifier);
+                } else {
+                    // the new author-identifiers
+                    toInsert.add(identifier);
+                }
+            }
+        }
+    }
+
+    private void db52cleanupBnfIdentifiers() {
+        // The internal storage format of the BnF sid has changed.
+        // Instead of storing the "cbXXXXXXXXc" values, we now store the raw "XXXXXXXX" value.
+
+        long id;
+        id = getIdentifierId(Identifier.EntityType.Book);
+        if (id != 0) {
+            db52cleanupBnfIdentifiers(TBL_BOOK_IDENTIFIER.getName(), id);
+        }
+        id = getIdentifierId(Identifier.EntityType.Author);
+        if (id != 0) {
+            db52cleanupBnfIdentifiers(TBL_AUTHOR_IDENTIFIER.getName(), id);
+        }
+    }
+
+    private long getIdentifierId(final Identifier.EntityType entity) {
+        final long id;
+        try (SQLiteStatement stmt = db.compileStatement(
+                "SELECT " + DBKey.PK_ID + " FROM " + TBL_IDENTIFIERS.getName()
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "='bnf'"
+                + " AND " + DBKey.IDENTIFIERS.ENTITY + "=?")) {
+
+            stmt.bindLong(1, entity.getId());
+            id = stmt.simpleQueryForLong();
+        }
+        return id;
+    }
+
+    private void db52cleanupBnfIdentifiers(@NonNull final String tableName,
+                                           final long id) {
+
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + tableName
+                + " SET " + DBKey.IDENTIFIERS.SID + "=SUBSTR(" + DBKey.IDENTIFIERS.SID + ",3,8)"
+                + " WHERE " + DBKey.FK_IDENTIFIER + "=?"
+                + "  AND LENGTH(" + DBKey.IDENTIFIERS.SID + ")=11"
+                + "  AND " + DBKey.IDENTIFIERS.SID + " LIKE 'cb%'")) {
+
+            stmt.bindLong(1, id);
+            final int rowsAffected = stmt.executeUpdateDelete();
+            LoggerFactory.getLogger().w(TAG, "db52cleanupBnfIdentifiers"
+                                             + "|id=" + id
+                                             + "|table=" + tableName
+                                             + "|rows=" + rowsAffected);
+        }
     }
 }

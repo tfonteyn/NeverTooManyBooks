@@ -30,14 +30,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -62,7 +61,6 @@ public class IdentifierMigration {
 
     private static final String TAG = "IdentifierMigration";
 
-    private static final String DELETE_FROM_ = "DELETE FROM ";
     private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
     private static final String UPDATE_ = "UPDATE ";
     private static final String _SET_ = " SET ";
@@ -110,15 +108,22 @@ public class IdentifierMigration {
         tableInfo = DBDefinitions.TBL_IDENTIFIERS.getTableInfo(db);
     }
 
+    /**
+     * Map a V7 identifier which was used for BOTH book and author,
+     * to one or two V8 identifiers: book and/or author identifiers.
+     *
+     * @return replacements
+     */
+    @SuppressWarnings({"MissingJavadoc", "CheckStyle"})
     @NonNull
-    public static Collection<Identifier> mapV7Identifier(final long id,
-                                                         @NonNull final String key,
-                                                         @NonNull final Identifier.Type type,
-                                                         @NonNull final String name,
-                                                         @Nullable final String siteUrl,
-                                                         @Nullable final String bookUri,
-                                                         @Nullable final String authorUri,
-                                                         @Nullable final String wikidataClaim) {
+    public static List<Identifier> mapV7Identifier(final long id,
+                                                   @NonNull final String key,
+                                                   @NonNull final Identifier.Type type,
+                                                   @NonNull final String name,
+                                                   @Nullable final String siteUrl,
+                                                   @Nullable final String bookUri,
+                                                   @Nullable final String authorUri,
+                                                   @Nullable final String wikidataClaim) {
         if (bookUri == null && authorUri == null
             || bookUri != null && authorUri != null) {
             // no urls at all or both present; create Book AND Author
@@ -193,43 +198,28 @@ public class IdentifierMigration {
                          .findFirst();
     }
 
-
-    void deleteAllPredefined() {
-        final List<String> keys = predefined.stream().map(Identifier::getKey)
-                                            .collect(Collectors.toList());
-
-        try (SQLiteStatement stmt = db.compileStatement(
-                DELETE_FROM_ + TBL_IDENTIFIERS.getName()
-                + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
-            for (final String key : keys) {
-                stmt.bindString(1, key);
-                stmt.executeUpdateDelete();
-            }
-        }
-    }
-
-    /**
-     * Assuming all predefined are previously deleted,
-     * insert them using the correct up-to-date schema.
-     */
-    void reinsertPredefined() {
-        insert(predefined);
-    }
-
     void insert(@NonNull final Collection<Identifier> list) {
         IdentifierDaoImpl.doInsert(db, list);
     }
 
+    void update(@NonNull final Collection<Identifier> list) {
+        IdentifierDaoImpl.doUpdate(db, list);
+    }
+
     /**
-     * Get all rows from the Identifier table as a collection of Bundles.
-     * The "_id" column will be available as a {@code long},
-     * all other columns are {@code String}.
+     * Get all rows from the Identifier table as a map.
+     * key:   identifier key
+     * value: Bundle with
+     *        The "_id" column as a {@code long}.
+     *        + all other columns as {@code String}.
+     * <p>
+     * Contains all user-defined entries + the original predefined.
      *
      * @return all rows
      */
     @NonNull
-    Collection<Bundle> getCurrentList() {
-        final List<Bundle> result = new ArrayList<>();
+    Map<String, Bundle> getCurrentList() {
+        final Map<String, Bundle> result = new LinkedHashMap<>();
         try (Cursor cursor = db.rawQuery("SELECT * FROM " + TBL_IDENTIFIERS, null)) {
             while (cursor.moveToNext()) {
                 final String[] columnNames = cursor.getColumnNames();
@@ -237,12 +227,12 @@ public class IdentifierMigration {
                 for (int c = 0; c < columnNames.length; c++) {
                     // yes, very inefficient... oh well.
                     if (DBKey.PK_ID.equals(columnNames[c])) {
-                        row.putLong(columnNames[c], cursor.getLong(c));
+                        row.putLong(DBKey.PK_ID, cursor.getLong(c));
                     } else {
                         row.putString(columnNames[c], cursor.getString(c));
                     }
                 }
-                result.add(row);
+                result.put(row.getString(DBKey.IDENTIFIERS.KEY), row);
             }
         }
         return result;
