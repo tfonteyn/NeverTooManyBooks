@@ -581,12 +581,17 @@ public class TableDefinition {
      * <p>
      * Convenience method to use when table columns have changed definitions,
      * but no removals or renames.
+     * <p>
+     * <strong>MUST</strong> be called from
+     * {@link Recreate#runWithoutConstraints(SQLiteDatabase, Runnable)}.
      *
      * @param db Underlying database
      *
+     * @throws IllegalStateException (debug) if we're NOT called from the re-creater class.
      * @see #recreate(SQLiteDatabase, Map)
      */
-    public void recreate(@NonNull final SQLiteDatabase db) {
+    public void recreate(@NonNull final SQLiteDatabase db)
+            throws IllegalStateException {
         recreate(db, new HashMap<>());
     }
 
@@ -623,14 +628,24 @@ public class TableDefinition {
      *  <li>Commit transaction</li>
      *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
      * </ol>
+     * <p>
+     * <strong>MUST</strong> be called from
+     * {@link Recreate#runWithoutConstraints(SQLiteDatabase, Runnable)}.
      *
      * @param db       Underlying database
      * @param toRename (optional) Map of fields to be renamed
+     *
+     * @throws IllegalStateException (debug) if we're NOT called from the re-creater class.
      */
     public void recreate(@NonNull final SQLiteDatabase db,
-                         @NonNull final Map<String, String> toRename) {
+                         @NonNull final Map<String, String> toRename)
+            throws IllegalStateException {
 
         LoggerFactory.getLogger().w(TAG, "recreate table: " + name);
+
+        if (!Boolean.TRUE.equals(Recreate.IS_RUNNING_WITHOUT_CONSTRAINTS.get())) {
+            throw new IllegalStateException("Method must be called within runWithoutConstraints!");
+        }
 
         // create the new table
         final String dstTableName = "copyOf" + name;

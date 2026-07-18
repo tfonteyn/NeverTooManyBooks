@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
+import com.hardbacknutter.nevertoomanybooks.core.database.Recreate;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
@@ -77,20 +78,7 @@ public class Upgrade {
      */
     static void runWithoutConstraints(@NonNull final SQLiteDatabase db,
                                       @NonNull final Runnable runInside) {
-        // THIS WILL COMMIT ALL PREVIOUS UPDATES
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(false);
-        db.beginTransaction();
-
-        runInside.run();
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        // This method must not be called while a transaction is in progress.
-        db.setForeignKeyConstraintsEnabled(true);
-        db.beginTransaction();
+        Recreate.runWithoutConstraints(db, runInside);
     }
 
     public void backup(@NonNull final File destDir,
