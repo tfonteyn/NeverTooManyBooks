@@ -225,12 +225,6 @@ public abstract class BaseField<T, V extends View>
         relatedViews.add(id);
     }
 
-    @NonNull
-    public V requireView() {
-        return Objects.requireNonNull(getView());
-    }
-
-
     /**
      * {@inheritDoc}
      * <p>
@@ -351,15 +345,9 @@ public abstract class BaseField<T, V extends View>
         }
     }
 
-    /**
-     * Get the previously set view.
-     *
-     * @return view, or {@code null} if the reference is dead
-     *
-     * @see #requireView()
-     */
+    @Override
     @Nullable
-    V getView() {
+    public V getView() {
         if (viewReference != null) {
             return viewReference.get();
         }

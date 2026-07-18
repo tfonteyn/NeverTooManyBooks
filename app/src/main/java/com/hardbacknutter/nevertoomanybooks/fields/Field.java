@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
@@ -151,9 +153,23 @@ public interface Field<T, V extends View> {
      * @return view
      *
      * @throws NullPointerException if the View is not set
+     *
+     * @see #getView()
      */
     @NonNull
-    V requireView();
+    default V requireView() {
+        return Objects.requireNonNull(getView());
+    }
+
+    /**
+     * Get the previously set view.
+     *
+     * @return view, or {@code null} if the reference is dead
+     *
+     * @see #requireView()
+     */
+    @Nullable
+    V getView();
 
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
@@ -261,10 +277,12 @@ public interface Field<T, V extends View> {
     /**
      * Interface for all field-level validators.
      * <p>
-     * A file validator works on the field (duh) itself.
-     * It will NOT stop the potentially invalid to be saved.
-     * I will usually take care of displaying an error message urging, but
-     * not forcing, the user to correct the data.
+     * A field validator works on the field (duh) itself.
+     * <p>
+     * It will NOT stop the potentially invalid value to be saved.
+     * I will typically display an error message urging,
+     * but not forcing, the user to correct the data.
+     * <p>
      * These validators are activated whenever the field data changes.
      *
      * @param <T> type of Field value.
