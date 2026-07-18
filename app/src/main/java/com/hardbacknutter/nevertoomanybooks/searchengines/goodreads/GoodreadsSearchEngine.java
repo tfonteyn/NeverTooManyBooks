@@ -72,7 +72,6 @@ import com.hardbacknutter.org.json.JSONObject;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>

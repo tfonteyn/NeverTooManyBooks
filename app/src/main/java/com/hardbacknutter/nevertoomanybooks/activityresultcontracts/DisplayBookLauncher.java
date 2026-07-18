@@ -61,7 +61,7 @@ public class DisplayBookLauncher {
      * Constructor.
      *
      * @param contractOwner  the component which handles the {@link ActivityResultContract}
-     * @param resultCallback
+     * @param resultCallback with the activity result
      */
     public DisplayBookLauncher(@NonNull final ActivityResultCaller contractOwner,
                                @NonNull final ActivityResultCallback<Optional<EditBookOutput>>

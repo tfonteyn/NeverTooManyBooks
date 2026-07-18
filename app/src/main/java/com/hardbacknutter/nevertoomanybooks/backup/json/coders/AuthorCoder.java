@@ -109,7 +109,8 @@ public class AuthorCoder
         }
 
         if (data.has(Identifier.Value.BKEY_LIST)) {
-            author.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(Identifier.Value.BKEY_LIST)));
+            author.setIdentifiers(identifierValueCoder.decode(
+                    data.getJSONArray(Identifier.Value.BKEY_LIST)));
         }
         return author;
     }

@@ -29,7 +29,7 @@ import java.util.Set;
  * There is NO {@code remove} method. This is by design.
  * The equivalent is passing in {@code null} as the value.
  * Implementations should typically then remove such key/value pairs.
- *
+ * <p>
  * By default, <strong>all</strong> methods will throw.
  * Implement those you are going to use.
  */

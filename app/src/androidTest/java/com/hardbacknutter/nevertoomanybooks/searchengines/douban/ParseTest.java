@@ -25,7 +25,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;

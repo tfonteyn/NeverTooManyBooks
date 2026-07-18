@@ -78,6 +78,7 @@ public abstract class BaseField<T, V extends View>
     @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
     private final int fieldViewId;
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final FieldVisibility globalFieldVisibility;
 
@@ -478,8 +479,7 @@ public abstract class BaseField<T, V extends View>
 
     @Override
     public boolean isUsed() {
-        final Boolean b = globalFieldVisibility.isVisible(usedKey).orElse(true);
-        return b;
+        return globalFieldVisibility.isVisible(usedKey).orElse(true);
     }
 
     @Override

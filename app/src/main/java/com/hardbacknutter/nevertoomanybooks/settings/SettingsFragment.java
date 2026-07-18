@@ -542,6 +542,7 @@ public class SettingsFragment
 
         @NonNull
         private final Context context;
+        @NonNull
         private final SingleChoiceSetting storageVolumePref;
         @Nullable
         private ProgressDelegate progressDelegate;
@@ -562,6 +563,7 @@ public class SettingsFragment
         }
 
         boolean onStorageVolumeChange(final int newVolumeIndex) {
+            //noinspection DataFlowIssue
             final CharSequence newVolumeDesc = storageVolumePref.getEntries()[newVolumeIndex];
 
             if (vm.isMissingStorageVolume()) {
