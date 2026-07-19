@@ -946,4 +946,5 @@
     <plurals name="freq_ordinal_yearly">
         <item quantity="other">每年 %1$d 次</item>
     </plurals>
+    <string name="lbl_edition_info">版本信息</string>
 </resources>
