@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressCo
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 
 /**
  * Dialog for the user to update their progress.
@@ -150,8 +151,14 @@ class ReadingProgressDelegate
         });
 
         addTextWatchers();
+
         vb.percentage.setOnEditorActionListener(this::textFieldImeDone);
+        ExtClearTextEndIconDelegate.attach(vb.lblPercentage, null);
+
         vb.totalPages.setOnEditorActionListener(this::textFieldImeDone);
+        ExtClearTextEndIconDelegate.attach(vb.lblTotalPages, null);
+
+        ExtClearTextEndIconDelegate.attach(vb.lblCurrentPage, null);
 
         vb.sliderPercentage.addOnChangeListener((slider, value, fromUser) -> {
             if (fromUser) {

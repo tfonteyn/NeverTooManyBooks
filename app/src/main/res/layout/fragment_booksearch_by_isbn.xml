@@ -141,7 +141,7 @@
             android:id="@+id/lbl_isbn"
             style="@style/TIL.Text.Isbn"
             android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
-            app:endIconMode="clear_text"
+            app:endIconMode="custom"
             app:layout_constraintEnd_toStartOf="@id/isbn_del"
             app:layout_constraintStart_toStartOf="@id/keypad"
             app:layout_constraintTop_toBottomOf="@+id/btn_stop_scanning"

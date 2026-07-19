@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.MultiOnFocusChangeListener;
  * @see <a href="https://github.com/material-components/material-components-android/pull/2025">
  *         generic input field with clear-text icon at the end.</a>
  */
-public class ExtClearTextEndIconDelegate
+public final class ExtClearTextEndIconDelegate
         implements ExtEndIconDelegate {
 
     private static final TimeInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
@@ -185,19 +185,19 @@ public class ExtClearTextEndIconDelegate
     /**
      * Constructor.
      *
-     * @param til      to attach a new instance of the delegate to
-     * @param listener for click events;
-     *                 use {@code null} for the default action: clear the field.
+     * @param til             to attach a new instance of the delegate to
+     * @param onClickListener for click events;
+     *                        use {@code null} for the default action: clear the field.
      *
      * @return delegate for optional further configuration
      */
     @NonNull
     public static ExtClearTextEndIconDelegate attach(
             @NonNull final TextInputLayout til,
-            @Nullable final View.OnClickListener listener) {
+            @Nullable final View.OnClickListener onClickListener) {
         final ExtClearTextEndIconDelegate delegate = new ExtClearTextEndIconDelegate(
                 til.getContext());
-        delegate.setEndIconOnClickListener(listener);
+        delegate.setEndIconOnClickListener(onClickListener);
         delegate.setTextInputLayout(til);
         return delegate;
     }

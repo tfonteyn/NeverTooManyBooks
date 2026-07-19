@@ -185,7 +185,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
             style="@style/TIL.Text.Isbn"
-            app:endIconMode="clear_text"
+            app:endIconMode="custom"
             app:layout_constraintEnd_toStartOf="@id/isbn_del"
             app:layout_constraintStart_toStartOf="@id/keypad"
             app:layout_constraintTop_toBottomOf="@id/txt_limitations"

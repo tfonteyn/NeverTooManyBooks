@@ -194,7 +194,7 @@
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/lbl_site_book_id"
-            app:endIconMode="clear_text"
+            app:endIconMode="custom"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"

@@ -39,7 +39,6 @@
             android:id="@+id/lbl_library_name"
             style="@style/TIL.Text"
             android:layout_marginEnd="@dimen/field_margin_inline"
-            app:endIconMode="clear_text"
             app:layout_constraintEnd_toStartOf="@id/btn_create"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

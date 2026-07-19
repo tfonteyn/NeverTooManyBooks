@@ -192,7 +192,7 @@
             style="@style/TIL.Text.ExternalId"
             android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/lbl_site_book_id"
-            app:endIconMode="clear_text"
+            app:endIconMode="custom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"

@@ -73,7 +73,7 @@
             style="@style/TIL.Text.Title"
             android:layout_marginStart="@dimen/field_margin_start"
             android:layout_marginEnd="@dimen/field_margin_end"
-            app:endIconMode="clear_text"
+            app:endIconMode="custom"
             app:errorEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/middle"

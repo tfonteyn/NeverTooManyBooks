@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
@@ -113,9 +114,11 @@ public class SearchBookByTextFragment
         modelToView();
 
         autoRemoveError(vb.lblTitle, vb.title);
+        ExtClearTextEndIconDelegate.attach(vb.lblTitle, null);
+
         autoRemoveError(vb.lblAuthor, vb.author);
-        // Counter-intuitive... we must CLEAR the listener which would show/remove the "end_icon"
-        vb.seriesNum.setOnFocusChangeListener(null);
+
+        ExtClearTextEndIconDelegate.attach(vb.lblSeriesNum, null);
 
         // For small screens which bring up the IME text editor
         vb.publisher.setOnEditorActionListener(this::onEditorAction);

@@ -86,6 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeValidity;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueueViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.queue.QueuedItem;
@@ -487,6 +488,7 @@ public class SearchBookByIsbnFragment
      */
     private void initInputField() {
         TilUtil.autoRemoveError(vb.isbn, vb.lblIsbn);
+        ExtClearTextEndIconDelegate.attach(vb.lblIsbn, null);
 
         final ProductCodeValidity validity = ProductCodeValidity.getPreferredLevel();
 

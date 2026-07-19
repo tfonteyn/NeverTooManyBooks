@@ -47,7 +47,7 @@
         android:id="@+id/lbl_bookshelf"
         style="@style/TIL.Text"
         android:hint="@string/lbl_bookshelf"
-        app:endIconMode="clear_text"
+        app:endIconMode="custom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"

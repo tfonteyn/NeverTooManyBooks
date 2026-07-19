@@ -64,7 +64,7 @@
         android:id="@+id/lbl_series_issn"
         style="@style/TIL.Text.ExternalId"
         android:hint="@string/lbl_issn"
-        app:endIconMode="clear_text"
+        app:endIconMode="custom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
         >

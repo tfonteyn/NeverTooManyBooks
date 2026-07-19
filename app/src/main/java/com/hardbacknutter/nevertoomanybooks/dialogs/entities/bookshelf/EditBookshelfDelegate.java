@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -121,6 +122,7 @@ class EditBookshelfDelegate
 
         vb.bookshelf.setText(vm.getCurrentEdit().getName());
         TilUtil.autoRemoveError(vb.bookshelf, vb.lblBookshelf);
+        ExtClearTextEndIconDelegate.attach(vb.lblBookshelf, null);
 
         vb.bookshelf.requestFocus();
     }

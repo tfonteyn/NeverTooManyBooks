@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
@@ -121,10 +122,12 @@ class EditTocEntryDelegate
         // What about the publication year?
         vb.title.setText(currentEdit.getTitle());
         EditTextField.Capitalization.Title.apply(vb.title);
+        ExtClearTextEndIconDelegate.attach(vb.lblTitle, null);
         TilUtil.autoRemoveError(vb.title, vb.lblTitle);
 
         currentEdit.getFirstPublicationDate().getYear()
                    .ifPresent(integer -> vb.firstPublication.setText(String.valueOf(integer)));
+        ExtClearTextEndIconDelegate.attach(vb.lblFirstPublication, null);
 
         if (vm.isAnthology()) {
             final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(

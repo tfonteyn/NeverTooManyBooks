@@ -86,7 +86,7 @@
     <style name="TIL.Text.SeriesNum">
         <item name="android:hint">@string/lbl_series_num</item>
         <item name="android:layout_width">@dimen/til_fixed_width_series_num</item>
-        <item name="endIconMode">clear_text</item>
+        <item name="endIconMode">custom</item>
     </style>
 
     <style name="TIL.Text.Price">
@@ -108,7 +108,7 @@
 
     <style name="TIL.Text.FtsInput">
         <item name="android:layout_width">@dimen/til_fixed_width_fts_input</item>
-        <item name="endIconMode">clear_text</item>
+        <item name="endIconMode">custom</item>
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->

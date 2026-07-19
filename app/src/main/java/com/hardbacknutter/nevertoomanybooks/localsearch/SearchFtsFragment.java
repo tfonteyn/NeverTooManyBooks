@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
@@ -133,6 +134,12 @@ public class SearchFtsFragment
         vb.author.setText(criteria.getFtsAuthor());
         vb.publisher.setText(criteria.getFtsPublisher());
         vb.keywords.setText(criteria.getFtsKeywords());
+
+        ExtClearTextEndIconDelegate.attach(vb.lblTitle, null);
+        ExtClearTextEndIconDelegate.attach(vb.lblSeries, null);
+        ExtClearTextEndIconDelegate.attach(vb.lblAuthor, null);
+        ExtClearTextEndIconDelegate.attach(vb.lblPublisher, null);
+        ExtClearTextEndIconDelegate.attach(vb.lblKeywords, null);
 
         // Detect when user types something.
         vb.title.addTextChangedListener(textWatcher);

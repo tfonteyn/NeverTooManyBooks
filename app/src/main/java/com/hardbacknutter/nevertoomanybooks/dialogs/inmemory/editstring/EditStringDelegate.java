@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentB
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 
 class EditStringDelegate
         implements FlexDialogDelegate {
@@ -119,6 +120,7 @@ class EditStringDelegate
 
         bindMessageView(vb.message);
         bindEditText(vb.editString);
+        ExtClearTextEndIconDelegate.attach(vb.lblEditString, null);
     }
 
     private void bindMessageView(@Nullable final TextView messageView) {

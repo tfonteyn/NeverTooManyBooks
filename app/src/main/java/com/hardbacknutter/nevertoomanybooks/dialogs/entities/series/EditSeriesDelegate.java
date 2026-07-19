@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -137,6 +138,7 @@ class EditSeriesDelegate
 
         vb.seriesIssn.setText(currentEdit.getIdentifierValue(Identifier.SID_ISSN)
                                          .orElse(""));
+        ExtClearTextEndIconDelegate.attach(vb.lblSeriesIssn, null);
         TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
 
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());

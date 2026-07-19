@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -169,6 +170,7 @@ public class EditBookSeriesListDialogFragment
         vb.seriesTitle.setAdapter(titleAdapter);
         TilUtil.autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
 
+        ExtClearTextEndIconDelegate.attach(vb.lblSeriesNum, null);
         // soft-keyboards 'done' button act as a shortcut to add the series
         vb.seriesNum.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
