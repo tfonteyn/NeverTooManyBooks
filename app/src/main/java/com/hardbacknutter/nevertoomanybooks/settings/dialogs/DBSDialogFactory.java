@@ -59,6 +59,9 @@ public class DBSDialogFactory
                                  @NonNull final Setting setting,
                                  @Nullable final String dialogMessage) {
         final DialogFragment fragment;
+        // Do NOT move this to the constructor.
+        // The mode can be changed in the settings DURING this session,
+        // hence, we ALWAYS need to read the current setting.
         final DialogMode dialogMode = DialogMode.getMode(context);
         final Setting.Type type = setting.getType();
         switch (dialogMode) {

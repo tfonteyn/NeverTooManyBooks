@@ -36,6 +36,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.dialogs.DBSDialogFactory;
 import com.hardbacknutter.prefslib.SettingsManager;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -89,7 +90,7 @@ public abstract class BaseSettingsFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         this.settingsManager = onCreateSettings()
-                //.setDialogFactory(new DBSDialogFactory())
+                .setDialogFactory(new DBSDialogFactory())
                 .build(this, recyclerView);
     }
 
