@@ -965,4 +965,5 @@ A question mark is written as the character semicolon: ';'
         <item quantity="one">Ετήσια</item>
         <item quantity="other">%1$d φορές τον χρόνο</item>
     </plurals>
+    <string name="lbl_edition_info">Πληροφορίες έκδοσης</string>
 </resources>
