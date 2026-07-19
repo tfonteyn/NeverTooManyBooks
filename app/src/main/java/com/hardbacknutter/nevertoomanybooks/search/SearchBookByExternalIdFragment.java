@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class SearchBookByExternalIdFragment
@@ -131,7 +132,7 @@ public class SearchBookByExternalIdFragment
         vb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
         vb.btnSearch.setOnClickListener(v -> startSearch());
 
-        autoRemoveError(vb.externalId, vb.lblExternalId);
+        TilUtil.autoRemoveError(vb.externalId, vb.lblExternalId);
         vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 hideKeyboard(v);

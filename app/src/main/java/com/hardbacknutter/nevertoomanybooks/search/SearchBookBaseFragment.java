@@ -28,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -40,7 +39,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 
@@ -51,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookCont
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -295,26 +292,6 @@ public abstract class SearchBookBaseFragment
      */
     @CallSuper
     abstract void onClearSearchCriteria();
-
-
-    /**
-     * Add the needed listeners to automatically remove any error text from
-     * a {@link TextInputLayout} when the user changes the content.
-     *
-     * @param editText inner text edit view
-     * @param til      outer layout view
-     */
-    protected void autoRemoveError(@NonNull final EditText editText,
-                                   @NonNull final TextInputLayout til) {
-        editText.addTextChangedListener((ExtTextWatcher) s -> til.setError(null));
-        // REMINDER: this overrides the default listener which would show/remove the "end_icon"
-        // This is in fact what we want - finally... and android "issue" we like.
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                til.setError(null);
-            }
-        });
-    }
 
     class SearchSitesToolbarMenuProvider
             implements MenuProvider {

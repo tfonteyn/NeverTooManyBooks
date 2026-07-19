@@ -97,6 +97,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
@@ -485,7 +486,7 @@ public class SearchBookByIsbnFragment
      * The input field is not being limited in length. This is to allow entering UPC_A numbers.
      */
     private void initInputField() {
-        autoRemoveError(vb.isbn, vb.lblIsbn);
+        TilUtil.autoRemoveError(vb.isbn, vb.lblIsbn);
 
         final ProductCodeValidity validity = ProductCodeValidity.getPreferredLevel();
 
