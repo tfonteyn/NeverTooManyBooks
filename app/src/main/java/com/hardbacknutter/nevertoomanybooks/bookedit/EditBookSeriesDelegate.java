@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesViewModel;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -158,6 +159,10 @@ class EditBookSeriesDelegate
         vb.seriesTitle.setAdapter(titleAdapter);
         TilUtil.autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
 
+        vb.seriesIssn.setText(currentEdit.getIdentifierValue(Identifier.SID_ISSN)
+                                         .orElse(""));
+        TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
+
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.seriesNum.setText(currentEdit.getNumber());
@@ -208,6 +213,9 @@ class EditBookSeriesDelegate
         final Series currentEdit = seriesVm.getCurrentEdit();
 
         currentEdit.setTitle(vb.seriesTitle.getText().toString().strip());
+        //noinspection DataFlowIssue
+        currentEdit.setIdentifierValue(Identifier.SID_ISSN,
+                                       vb.seriesIssn.getText().toString().strip());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
         //noinspection DataFlowIssue

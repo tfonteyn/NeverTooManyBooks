@@ -54,8 +54,28 @@
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/series_title"
             style="@style/TIA.Title"
-            android:imeOptions="actionDone"
+            android:imeOptions="actionNext"
             tools:ignore="LabelFor"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_series_issn"
+        style="@style/TIL.Text.ExternalId"
+        android:hint="@string/lbl_issn"
+        app:endIconMode="clear_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/series_issn"
+            style="@style/TIE.ExternalId.Number"
+            android:imeOptions="actionDone"
+            android:maxLength="8"
+            tools:ignore="Autofill"
+            tools:text="12345678"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -66,7 +86,7 @@
         android:layout_height="wrap_content"
         android:text="@string/lbl_series_is_complete"
         app:layout_constraintStart_toStartOf="@id/lbl_series_title"
-        app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
+        app:layout_constraintTop_toBottomOf="@id/lbl_series_issn"
         />
 
     <TextView
