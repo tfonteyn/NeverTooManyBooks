@@ -26,17 +26,49 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+/**
+ * The original OnFocusChangeListener is limited to a single instance per View.
+ * <p>
+ * This extension allows multiple listener to be set on a {@link Field}.
+ *
+ * @param <T> type of Field value.
+ * @param <V> type of View for this field
+ */
 public interface MultiOnFocusChangeListener<T, V extends View>
         extends View.OnFocusChangeListener {
 
+    /**
+     * Add the given listener.
+     *
+     * @param listener to add
+     *
+     * @return field reference for chaining
+     */
     @NonNull
     Field<T, V> addOnFocusChangeListener(@NonNull View.OnFocusChangeListener listener);
 
+    /**
+     * Remove the given listener.
+     *
+     * @param listener to remove
+     */
     void removeOnFocusChangeListener(@NonNull View.OnFocusChangeListener listener);
 
+    /**
+     * Get the list of listeners.
+     *
+     * @return list
+     */
     @Nullable
     List<View.OnFocusChangeListener> getOnFocusChangeListeners();
 
+    /**
+     * Hooks into the original single OnFocusChangeListener.
+     * This default implementation simply calls all listener in sequence.
+     *
+     * @param v        The view whose state has changed.
+     * @param hasFocus The new focus state of v.
+     */
     @Override
     default void onFocusChange(@NonNull final View v,
                                final boolean hasFocus) {
