@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.endicon;
+package com.hardbacknutter.nevertoomanybooks.widgets.endicon;
 
 import android.view.View;
 
@@ -30,7 +30,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.MultiOnFocusChangeListener;
 
 public interface ExtEndIconDelegate {
 

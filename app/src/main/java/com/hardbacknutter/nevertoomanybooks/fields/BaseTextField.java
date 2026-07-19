@@ -38,8 +38,9 @@ import java.util.Collection;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtClearTextEndIconDelegate;
-import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
+import com.hardbacknutter.nevertoomanybooks.widgets.MultiOnFocusChangeListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
