@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,7 +43,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
 
 /**
@@ -52,15 +50,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
  * The animation related code in this class was copied from material 1.12.0 library
  * {@code com.google.android.material.textfield.ClearTextEndIconDelegate}
  *
- * @param <T> type of Field value.
- * @param <V> type of View for this field
- *
  * @see <a href="https://github.com/material-components/material-components-android/blob/master/lib/java/com/google/android/material/textfield/ClearTextEndIconDelegate.java">
  *         ClearTextEndIconDelegate.java</a>
  * @see <a href="https://github.com/material-components/material-components-android/pull/2025">
  *         generic input field with clear-text icon at the end.</a>
  */
-public class ExtClearTextEndIconDelegate<V extends TextView, T>
+public class ExtClearTextEndIconDelegate
         implements ExtEndIconDelegate {
 
     private static final TimeInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
@@ -77,8 +72,8 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
     @NonNull
     private final TimeInterpolator animationScaleInterpolator;
 
-    @NonNull
-    private final Field<T, V> field;
+    @Nullable
+    private MultiOnFocusChangeListener onFocusChangeListener;
 
     private TextInputLayout endLayout;
 
@@ -95,7 +90,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         }
     };
 
-    private final View.OnFocusChangeListener focusChangeListener =
+    private final View.OnFocusChangeListener fclIconAnimator =
             (v, hasFocus) -> animateIcon(shouldBeVisible());
 
     private ImageButton endIconView;
@@ -106,15 +101,13 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
                 public void onEditTextAttached(@NonNull final TextInputLayout textInputLayout) {
                     final EditText editText = Objects.requireNonNull(textInputLayout.getEditText());
                     textInputLayout.setEndIconVisible(shouldBeVisible());
-                    if (field instanceof MultiOnFocusChangeListener) {
-                        //noinspection unchecked
-                        ((MultiOnFocusChangeListener<T, V>) field)
-                                .addOnFocusChangeListener(focusChangeListener);
+                    if (onFocusChangeListener != null) {
+                        onFocusChangeListener.addOnFocusChangeListener(fclIconAnimator);
                     } else {
-                        editText.setOnFocusChangeListener(focusChangeListener);
+                        editText.setOnFocusChangeListener(fclIconAnimator);
                     }
 
-                    endIconView.setOnFocusChangeListener(focusChangeListener);
+                    endIconView.setOnFocusChangeListener(fclIconAnimator);
                     // Make sure there's always only one clear text watcher added
                     editText.removeTextChangedListener(clearTextEndIconTextWatcher);
                     editText.addTextChangedListener(clearTextEndIconTextWatcher);
@@ -135,16 +128,14 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
                             animateIcon(true);
                         });
 
-                        if (field instanceof MultiOnFocusChangeListener) {
-                            //noinspection unchecked
-                            ((MultiOnFocusChangeListener<T, V>) field)
-                                    .removeOnFocusChangeListener(focusChangeListener);
+                        if (onFocusChangeListener != null) {
+                            onFocusChangeListener.removeOnFocusChangeListener(fclIconAnimator);
                         } else {
-                            if (editText.getOnFocusChangeListener() == focusChangeListener) {
+                            if (editText.getOnFocusChangeListener() == fclIconAnimator) {
                                 editText.setOnFocusChangeListener(null);
                             }
                         }
-                        if (endIconView.getOnFocusChangeListener() == focusChangeListener) {
+                        if (endIconView.getOnFocusChangeListener() == fclIconAnimator) {
                             endIconView.setOnFocusChangeListener(null);
                         }
                     }
@@ -172,15 +163,11 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
     };
 
     /**
-     * Constructor.
+     * Private Constructor.
      *
      * @param context Current context
-     * @param field   to handle
      */
-    public ExtClearTextEndIconDelegate(@NonNull final Context context,
-                                       @NonNull final Field<T, V> field) {
-        this.field = field;
-
+    private ExtClearTextEndIconDelegate(@NonNull final Context context) {
         animationFadeDuration = MotionUtils.resolveThemeDuration(
                 context, com.google.android.material.R.attr.motionDurationShort3,
                 DEFAULT_ANIMATION_FADE_DURATION);
@@ -195,14 +182,36 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
                 LINEAR_OUT_SLOW_IN_INTERPOLATOR);
     }
 
-    /** Called from {@link Field#setParentView(View)}. */
+    /**
+     * Constructor.
+     *
+     * @param til      to attach a new instance of the delegate to
+     * @param listener for click events;
+     *                 use {@code null} for the default action: clear the field.
+     *
+     * @return delegate for optional further configuration
+     */
+    @NonNull
+    public static ExtClearTextEndIconDelegate attach(
+            @NonNull final TextInputLayout til,
+            @Nullable final View.OnClickListener listener) {
+        final ExtClearTextEndIconDelegate delegate = new ExtClearTextEndIconDelegate(
+                til.getContext());
+        delegate.setEndIconOnClickListener(listener);
+        delegate.setTextInputLayout(til);
+        return delegate;
+    }
+
+    public void setOnFocusChangeListener(@Nullable final MultiOnFocusChangeListener listener) {
+        this.onFocusChangeListener = listener;
+    }
+
     @Override
     public void setEndIconOnClickListener(@Nullable final View.OnClickListener
                                                   endIconOnClickListener) {
         this.endIconOnClickListener = endIconOnClickListener;
     }
 
-    /** Called from {@link Field#setParentView(View)}. */
     @Override
     public void setTextInputLayout(@NonNull final TextInputLayout til) {
         endLayout = til;
@@ -223,7 +232,6 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         initAnimators();
     }
 
-    /** Called from {@link Field#setValue(Object)}. */
     @Override
     public void updateEndIcon() {
         endLayout.setEndIconVisible(shouldBeVisible());

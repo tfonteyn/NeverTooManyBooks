@@ -29,23 +29,24 @@ import java.util.List;
 /**
  * The original OnFocusChangeListener is limited to a single instance per View.
  * <p>
- * This extension allows multiple listener to be set on a {@link Field}.
- *
- * @param <T> type of Field value.
- * @param <V> type of View for this field
+ * This extension allows multiple listener to be set.
+ * <p>
+ * Dev. note: this was needed due to the {@code ExtClearTextEndIconDelegate}
+ * (or more precisely: due to the original {@code ClearTextEndIconDelegate})
+ * wanting to install it's own listener without a way to add our own.
+ * i.e. one was overwriting the other.
+ * We're now sharing the 'multi' listener between the text field
+ * and the {@code ExtClearTextEndIconDelegate}.
  */
-public interface MultiOnFocusChangeListener<T, V extends View>
+public interface MultiOnFocusChangeListener
         extends View.OnFocusChangeListener {
 
     /**
      * Add the given listener.
      *
      * @param listener to add
-     *
-     * @return field reference for chaining
      */
-    @NonNull
-    Field<T, V> addOnFocusChangeListener(@NonNull View.OnFocusChangeListener listener);
+    void addOnFocusChangeListener(@NonNull View.OnFocusChangeListener listener);
 
     /**
      * Remove the given listener.

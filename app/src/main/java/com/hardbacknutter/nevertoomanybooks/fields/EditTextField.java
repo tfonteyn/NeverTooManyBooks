@@ -52,7 +52,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class EditTextField<T, V extends EditText>
         extends BaseTextField<T, V>
-        implements ExtTextWatcher, MultiOnFocusChangeListener<T, V> {
+        implements ExtTextWatcher, MultiOnFocusChangeListener {
 
     private static final String TAG = "EditTextField";
 
@@ -112,8 +112,7 @@ public class EditTextField<T, V extends EditText>
         return this;
     }
 
-    @NonNull
-    public EditTextField<T, V> addOnFocusChangeListener(
+    public void addOnFocusChangeListener(
             @NonNull final View.OnFocusChangeListener listener) {
         if (focusChangeListeners == null) {
             focusChangeListeners = new ArrayList<>();
@@ -121,7 +120,6 @@ public class EditTextField<T, V extends EditText>
         if (!focusChangeListeners.contains(listener)) {
             focusChangeListeners.add(listener);
         }
-        return this;
     }
 
     public void removeOnFocusChangeListener(
@@ -169,6 +167,8 @@ public class EditTextField<T, V extends EditText>
         view.addTextChangedListener(this);
         // REMINDER: this overrides the default listener which would show/remove the "end_icon"
         // This is in fact what we want - finally... an android "issue" we like.
+        // IMPORTANT: see the BaseTextField#setParentView
+        // where the END_ICON_CLEAR_TEXT is hooked up to the same this==MultiOnFocusChangeListener
         view.setOnFocusChangeListener(this);
     }
 

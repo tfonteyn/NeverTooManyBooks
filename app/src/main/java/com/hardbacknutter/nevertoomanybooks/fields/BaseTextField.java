@@ -115,9 +115,11 @@ abstract class BaseTextField<T, V extends TextView>
 
             // On of our own end-icon delegates?
             if (endIconMode == TextInputLayout.END_ICON_CLEAR_TEXT) {
-                endIconDelegate = new ExtClearTextEndIconDelegate<>(parent.getContext(), this);
-                endIconDelegate.setEndIconOnClickListener(endIconOnClickListener);
-                endIconDelegate.setTextInputLayout(til);
+                endIconDelegate = ExtClearTextEndIconDelegate.attach(til, endIconOnClickListener);
+                //noinspection InstanceofThis
+                if (this instanceof MultiOnFocusChangeListener) {
+                    endIconDelegate.setOnFocusChangeListener((MultiOnFocusChangeListener) this);
+                }
 
                 // or use a default delegate?
             } else if (til.getEndIconMode() == TextInputLayout.END_ICON_CLEAR_TEXT) {

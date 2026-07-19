@@ -1189,52 +1189,57 @@ public class EditBookViewModel
 
 
         // MUST be defined before the currency field is defined.
-        addField(fragmentId, new DecimalEditTextField(R.id.price_listed, DBKey.PRICE_LISTED)
-                           .setFormatter(doubleNumberFormatter, false)
-                           .setTextInputLayoutId(R.id.lbl_price_listed)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
-                           // Copy to price_paid field if applicable
-                           .addOnFocusChangeListener((view, hasFocus) -> {
-                               if (!hasFocus) {
-                                   getField(DBKey.PRICE_PAID).ifPresent(destField -> {
-                                       if (destField.isEmpty()) {
-                                           // Paranoia... parse it to a double.
-                                           final double value = realNumberParser.toDouble(
-                                                   requireField(DBKey.PRICE_LISTED).getValue());
-                                           // Update BOTH the book and the field
-                                           getBook().putDouble(DBKey.PRICE_PAID, value);
-                                           destField.setValue(value);
-                                       }
-                                   });
-                               }
-                           })
-                           .addRelatedViews(R.id.lbl_price_listed,
-                                            R.id.lbl_price_listed_currency,
-                                            R.id.price_listed_currency));
+        final DecimalEditTextField plField =
+                new DecimalEditTextField(R.id.price_listed, DBKey.PRICE_LISTED);
+        plField.setFormatter(doubleNumberFormatter, false)
+               .setTextInputLayoutId(R.id.lbl_price_listed)
+               .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
+               // Copy to price_paid field if applicable
+               .addOnFocusChangeListener((view, hasFocus) -> {
+                   if (!hasFocus) {
+                       getField(DBKey.PRICE_PAID).ifPresent(destField -> {
+                           if (destField.isEmpty()) {
+                               // Paranoia... parse it to a double.
+                               final double value = realNumberParser.toDouble(
+                                       requireField(DBKey.PRICE_LISTED).getValue());
+                               // Update BOTH the book and the field
+                               getBook().putDouble(DBKey.PRICE_PAID, value);
+                               destField.setValue(value);
+                           }
+                       });
+                   }
+               });
+        plField.addRelatedViews(R.id.lbl_price_listed,
+                                R.id.lbl_price_listed_currency,
+                                R.id.price_listed_currency);
+        addField(fragmentId, plField);
 
-        addField(fragmentId, new AutoCompleteTextField(R.id.price_listed_currency,
-                                                       DBKey.PRICE_LISTED_CURRENCY,
-                                                       c -> getAllListPriceCurrencies())
-                           .setTextInputLayoutId(R.id.lbl_price_listed_currency)
-                           // Copy to price_paid_currency field if applicable
-                           .addOnFocusChangeListener((v, hasFocus) -> {
-                               if (!hasFocus) {
-                                   getField(DBKey.PRICE_PAID_CURRENCY).ifPresent(destField -> {
-                                       if (destField.isEmpty()) {
-                                           final String value = (String)
-                                                   requireField(DBKey.PRICE_LISTED_CURRENCY)
-                                                           .getValue();
-                                           if (value != null) {
-                                               // Update BOTH the book and the field
-                                               getBook().putString(DBKey.PRICE_PAID_CURRENCY,
-                                                                   value);
-                                               destField.setValue(value);
-                                           }
-                                       }
-                                   });
-                               }
-                           })
-                           .setUsedKey(DBKey.PRICE_LISTED));
+
+        final AutoCompleteTextField plcField =
+                new AutoCompleteTextField(R.id.price_listed_currency,
+                                          DBKey.PRICE_LISTED_CURRENCY,
+                                          c -> getAllListPriceCurrencies());
+        plcField.setUsedKey(DBKey.PRICE_LISTED);
+        plcField.setTextInputLayoutId(R.id.lbl_price_listed_currency)
+                // Copy to price_paid_currency field if applicable
+                .addOnFocusChangeListener((v, hasFocus) -> {
+                    if (!hasFocus) {
+                        getField(DBKey.PRICE_PAID_CURRENCY).ifPresent(destField -> {
+                            if (destField.isEmpty()) {
+                                final String value = (String)
+                                        requireField(DBKey.PRICE_LISTED_CURRENCY)
+                                                .getValue();
+                                if (value != null) {
+                                    // Update BOTH the book and the field
+                                    getBook().putString(DBKey.PRICE_PAID_CURRENCY,
+                                                        value);
+                                    destField.setValue(value);
+                                }
+                            }
+                        });
+                    }
+                });
+        addField(fragmentId, plcField);
 
         addField(fragmentId, new EditTextField<>(R.id.print_run, DBKey.PRINT_RUN)
                            .setTextInputLayoutId(R.id.lbl_print_run)

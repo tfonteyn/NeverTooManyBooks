@@ -30,10 +30,19 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
+
 public interface ExtEndIconDelegate {
 
     /**
-     * Hook up the listener.
+     * Hook up a listener.
+     *
+     * @param onFocusChangeListener to use
+     */
+    void setOnFocusChangeListener(@Nullable MultiOnFocusChangeListener onFocusChangeListener);
+
+    /**
+     * Hook up a listener.
      * <p>
      * MUST be called <strong>BEFORE</strong> {@link #setTextInputLayout(TextInputLayout)}
      * is called, or the listener will be ignored.
