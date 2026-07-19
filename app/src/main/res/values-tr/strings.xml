@@ -386,6 +386,7 @@
     <string name="option_import_books_option_new_only">Yalnızca yeni kitaplar</string>
     <string name="lbl_import_options">Neyin içe aktarılacağını seçin.</string>
     <string name="lbl_importing">İçe aktarılıyor…</string>
+    <string name="lbl_edition_info">Baskı bilgisi</string>
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="lbl_keywords">Anahtar kelimeler</string>
     <string name="lbl_language">Dil</string>

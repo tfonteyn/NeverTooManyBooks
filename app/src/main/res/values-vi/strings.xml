@@ -426,6 +426,7 @@
     <string name="lbl_import_books">Nhập sách</string>
     <string name="lbl_import_options">Chọn những gì sẽ được nhập.</string>
     <string name="lbl_importing">Đang nhập…</string>
+    <string name="lbl_edition_info">Thông tin xuất bản</string>
     <string name="lbl_is_complete">Đã hoàn tất</string>
     <string name="lbl_keywords">Từ khóa</string>
     <string name="lbl_language">Ngôn ngữ</string>

@@ -633,6 +633,7 @@
     <string name="lbl_titles">Títulos</string>
     <string name="lbl_description">Descrición</string>
     <string name="lbl_location_long">Localización do libro</string>
+    <string name="lbl_edition_info">Info. da edición</string>
     <string name="lbl_is_complete">Está completa</string>
     <string name="lbl_lend_out_to_name">Emprestado a %1$s</string>
     <string name="lbl_year">Ano</string>

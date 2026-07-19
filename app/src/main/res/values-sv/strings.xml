@@ -449,6 +449,7 @@
     <string name="lbl_import_books">Importera böcker</string>
     <string name="lbl_import_options">Välj vad som ska importeras.</string>
     <string name="lbl_importing">Importer… </string>
+    <string name="lbl_edition_info">Utgåveinfo</string>
     <string name="lbl_is_complete">Är komplett</string>
     <string name="lbl_keywords">Nyckelord</string>
     <string name="lbl_language">Språk</string>

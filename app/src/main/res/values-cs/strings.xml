@@ -414,6 +414,7 @@
     <string name="option_import_books_option_new_only">Pouze nové knihy</string>
     <string name="lbl_import_options">Vyberte, co bude importováno.</string>
     <string name="lbl_importing">Probíhá import…</string>
+    <string name="lbl_edition_info">Informace o vydání</string>
     <string name="lbl_is_complete">Je kompletní</string>
     <string name="lbl_keywords">Klíčová slova</string>
     <string name="lbl_language">Jazyk</string>

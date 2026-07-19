@@ -395,6 +395,7 @@
     <string name="option_import_books_option_new_only">Solo libros nuevos</string>
     <string name="lbl_import_options">Seleccione lo que se importará.</string>
     <string name="lbl_importing">Importando…</string>
+    <string name="lbl_edition_info">Info. de la edición</string>
     <string name="lbl_is_complete">Esta completo</string>
     <string name="lbl_keywords">Palabras clave</string>
     <string name="lbl_language">Idioma</string>

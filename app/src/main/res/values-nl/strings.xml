@@ -391,6 +391,7 @@
     <string name="lbl_import_books">Boeken Importeren</string>
     <string name="lbl_import_options">Selecteer wat je wil importeren.</string>
     <string name="lbl_importing">Importeren…</string>
+    <string name="lbl_edition_info">Editie-info</string>
     <string name="lbl_is_complete">Is volledig</string>
     <string name="lbl_keywords">Trefwoorden</string>
     <string name="lbl_language">Taal</string>

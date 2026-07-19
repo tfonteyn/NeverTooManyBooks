@@ -352,7 +352,7 @@
     <string name="lbl_dust_cover">Schutzumschlag</string>
     <string name="option_storage_edit_settings">Einstellungen bearbeiten</string>
     <string name="lbl_edit_style">Stil bearbeiten</string>
-    <string name="lbl_edition">Edition</string>
+    <string name="lbl_edition">Ausgabe</string>
     <string name="lbl_edition_book_club">Buchclub-Ausgabe</string>
     <string name="lbl_edition_first_edition">Erstausgabe</string>
     <string name="lbl_edition_first_impression">Erstauflage</string>
@@ -382,6 +382,7 @@
     <string name="option_import_books_option_new_only">Nur neue Bücher</string>
     <string name="lbl_import_options">Wähle aus, was importiert werden soll.</string>
     <string name="lbl_importing">Wird importiert…</string>
+    <string name="lbl_edition_info">Ausgabe-Info</string>
     <string name="lbl_is_complete">Ist komplett</string>
     <string name="lbl_keywords">Schlüsselwörter</string>
     <string name="lbl_language">Sprache</string>

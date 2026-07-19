@@ -466,6 +466,7 @@
     <string name="tip_autorotate_camera_images">Se estiver sempre a rodar as imagens da câmara na mesma direção, tente alterar as preferências da aplicação para especificar uma rotação a ser aplicada automaticamente.</string>
     <string name="lbl_edition_slipcase">Caixa de cartão</string>
     <string name="lbl_print_run">Tiragem</string>
+    <string name="lbl_edition_info">Info. da edição</string>
     <string name="lbl_is_complete">Está completa</string>
     <string name="lbl_lend_out_to_name">Emprestado a %1$s</string>
     <string name="lbl_month">Mês</string>

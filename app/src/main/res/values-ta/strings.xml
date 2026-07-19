@@ -580,6 +580,7 @@
     <string name="lbl_personal_notes">தனிப்பட்ட குறிப்புகள்</string>
     <string name="lbl_location">இடம்</string>
     <string name="lbl_location_long">புத்தகத்தின் இடம்</string>
+    <string name="lbl_edition_info">பதிப்பு விவரம்</string>
     <string name="lbl_is_complete">முழுமையானது</string>
     <string name="lbl_dust_cover">தூசி கவர்</string>
     <string name="lbl_lend_out_to_name">%1$s க்கு கடன் கொடுங்கள்</string>

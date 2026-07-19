@@ -224,4 +224,5 @@
         <item quantity="one">Árliga</item>
         <item quantity="other">%1$d ferðir um árið</item>
     </plurals>
+    <string name="lbl_edition_info">Útgávuupplýsingar</string>
 </resources>

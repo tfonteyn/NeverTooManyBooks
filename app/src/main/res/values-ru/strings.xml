@@ -411,6 +411,7 @@
     <string name="option_import_books_option_new_only">Только новые книги</string>
     <string name="lbl_import_options">Выберите, что будет импортировано.</string>
     <string name="lbl_importing">Импорт…</string>
+    <string name="lbl_edition_info">Сведения об издании</string>
     <string name="lbl_is_complete">Завершена</string>
     <string name="lbl_keywords">Ключевые слова</string>
     <string name="lbl_language">Язык</string>

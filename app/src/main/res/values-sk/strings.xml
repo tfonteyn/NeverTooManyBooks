@@ -854,6 +854,7 @@
     <string name="option_bob_filter_isbn_no">Bez ISBN</string>
     <string name="option_import_books_option_new_only">Iba nové knihy</string>
     <string name="info_bulk_set_location">Vyberte umiestnenie, ktoré chcete priradiť všetkým knihám uvedeným pod vybratým uzlom.</string>
+    <string name="lbl_edition_info">Informácie o vydaní</string>
     <string name="lbl_is_complete">Je kompletná</string>
     <string name="X_option_archive_type_csv">Knihy (.csv)</string>
     <string name="option_info_import_books_option_new_only">Importovať iba nové knihy. Akékoľvek aktualizácie existujúcich kníh budú ignorované.</string>

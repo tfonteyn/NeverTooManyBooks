@@ -446,6 +446,7 @@
     <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Izdevums</string>
     <string name="lbl_edition">Izdevums</string>
+    <string name="lbl_edition_info">Izdevuma info</string>
     <string name="lbl_is_complete">Pilnīgs</string>
     <string name="lbl_condition">Stāvoklis</string>
     <string name="lbl_dust_cover">Apliekamais vāks</string>

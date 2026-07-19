@@ -631,6 +631,7 @@
     <string name="lbl_publication">Publikáció</string>
     <string name="lbl_print_run">Példányszám</string>
     <string name="lbl_edition">Kiadás</string>
+    <string name="lbl_edition_info">Kiadás információi</string>
     <string name="lbl_is_complete">Befejezett</string>
     <string name="lbl_condition">Állapot</string>
     <string name="lbl_dust_cover">Védőborító</string>
