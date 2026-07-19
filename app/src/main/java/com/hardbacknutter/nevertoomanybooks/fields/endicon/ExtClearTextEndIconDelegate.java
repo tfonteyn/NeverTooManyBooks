@@ -212,7 +212,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
 
         endLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
         if (endLayout.getEndIconDrawable() == null) {
-            endLayout.setEndIconDrawable(R.drawable.cancel_24px);
+            endLayout.setEndIconDrawable(R.drawable.end_icon_clear);
         }
         endLayout.setEndIconContentDescription(R.string.cd_clear_text_end_icon);
         endLayout.setEndIconCheckable(false);

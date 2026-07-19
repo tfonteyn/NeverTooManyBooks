@@ -129,7 +129,7 @@
     <style name="TIL.DatePicker"
            parent="Base.TIL">
         <item name="endIconMode">custom</item>
-        <item name="endIconDrawable">@drawable/cancel_24px</item>
+        <item name="endIconDrawable">@drawable/end_icon_clear</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->

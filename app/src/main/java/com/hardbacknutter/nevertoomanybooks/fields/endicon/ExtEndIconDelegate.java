@@ -33,15 +33,29 @@ import java.lang.annotation.RetentionPolicy;
 public interface ExtEndIconDelegate {
 
     /**
-     * MUST be called BEFORE {@link #setTextInputLayout(TextInputLayout)}
+     * Hook up the listener.
+     * <p>
+     * MUST be called <strong>BEFORE</strong> {@link #setTextInputLayout(TextInputLayout)}
      * is called, or the listener will be ignored.
      *
      * @param endIconOnClickConsumer to use
      */
     void setEndIconOnClickListener(@Nullable View.OnClickListener endIconOnClickConsumer);
 
+    /**
+     * Hook up with the layout.
+     * <p>
+     * MUST be called <strong>AFTER</strong>
+     * {@link #setEndIconOnClickListener(View.OnClickListener)}
+     * is called, or the listener will be ignored.
+     *
+     * @param parent to add
+     */
     void setTextInputLayout(@NonNull TextInputLayout parent);
 
+    /**
+     * Refresh/show/hide the icon as applicable based on the current value.
+     */
     void updateEndIcon();
 
     @IntDef({
