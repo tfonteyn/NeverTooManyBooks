@@ -804,10 +804,10 @@ public class SearchCoordinator
 
         final ProductCode productCode = criteria.getProductCode();
 
-        // Search by a VALID ISSN.
+        // Search by a valid 8-digit ISSN.
+        // A 13-digit ISSN will be handled by ISBN searches.
         if (engineId.supports(SearchEngine.SearchBy.Issn) && productCode != null
-            && (productCode.getType() == ProductCodeType.Issn8
-                || productCode.getType() == ProductCodeType.Issn13)) {
+            && productCode.getType() == ProductCodeType.Issn8) {
             return SearchEngine.SearchBy.Issn;
         }
 

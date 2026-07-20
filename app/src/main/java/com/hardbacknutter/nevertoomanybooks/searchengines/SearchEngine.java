@@ -236,6 +236,9 @@ public interface SearchEngine
          * Called by the {@link SearchCoordinator#search}.
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
+         * <p>
+         * Implementation can expect the given criteria to have
+         * a <strong>valid</strong> product-code.
          *
          * @param context  Current context
          * @param criteria to search for
@@ -269,6 +272,9 @@ public interface SearchEngine
          * Called by the {@link SearchCoordinator#search}.
          * <p>
          * If applicable, {@link Login} will be called upon before this method is called.
+         * <p>
+         * Implementation can expect the given criteria to have
+         * a <strong>valid 8-digit ISSN</strong> product-code.
          *
          * @param context  Current context
          * @param criteria to search for
