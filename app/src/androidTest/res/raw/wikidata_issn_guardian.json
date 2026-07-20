@@ -1,58 +1,77 @@
 {
-  "head" : {
-    "vars" : [ "item", "itemLabel", "title", "newsPaperFormat", "newsPaperFormatLabel", "publisher", "publisherLabel", "pubAmount", "pubUnitQ", "langCode", "identifiers" ]
-  },
-  "results" : {
-    "bindings" : [ {
-      "item" : {
-        "type" : "uri",
-        "value" : "http://www.wikidata.org/entity/Q11148"
-      },
-      "itemLabel" : {
-        "xml:lang" : "en",
-        "type" : "literal",
-        "value" : "The Guardian"
-      },
-      "title" : {
-        "xml:lang" : "en",
-        "type" : "literal",
-        "value" : "The Guardian"
-      },
-      "newsPaperFormat" : {
-        "type" : "uri",
-        "value" : "http://www.wikidata.org/entity/Q1449648"
-      },
-      "newsPaperFormatLabel" : {
-        "xml:lang" : "en",
-        "type" : "literal",
-        "value" : "tabloid"
-      },
-      "publisher" : {
-        "type" : "uri",
-        "value" : "http://www.wikidata.org/entity/Q139200166"
-      },
-      "publisherLabel" : {
-        "xml:lang" : "en",
-        "type" : "literal",
-        "value" : "Guardian News and Media Ltd."
-      },
-      "pubAmount" : {
-        "datatype" : "http://www.w3.org/2001/XMLSchema#decimal",
-        "type" : "literal",
-        "value" : "1"
-      },
-      "pubUnitQ" : {
-        "type" : "uri",
-        "value" : "http://www.wikidata.org/entity/Q573"
-      },
-      "langCode" : {
-        "type" : "literal",
-        "value" : "eng"
-      },
-      "identifiers" : {
-        "type" : "literal",
-        "value" : "P214:4860158188266720260004|P214:220402319|P214:147107172|P14541:47hm8I|P13337:guardianunlimited.com|P13337:gu.com|P13337:guardian.co.uk|P13337:theguardian.com|P12942:1598|P12361:theguardian.com|P12251:632|P12204:2105|P12126:The_Guardian|P12079:guardian|P11615:for-profit/guardian|P11223:27|P10804:208818013|P10565:36516|P10283:S2764508504|P10006:guardian|P9852:the-guardian|P9035:guardian|P8903:120743|P8408:TheGuardian-TheNewspaper|P8313:The_Guardian|P8189:987007421245705171|P7775:The_Guardian|P7363:0307-756X|P7363:0261-3077|P7305:3908648|P7259:5077|P7259:953|P7199:356207932|P6981:66012|P6981:66011|P6849:the-guardian|P6200:czpxkvk2qxpt|P6157:CAAqBwgKMMKOqgswwpnCAw|P6136:UK_TG|P6058:oeuvre/The_Guardian/122481|P5554:the-guardian|P5396:manukguardian|P4527:10559|P4342:The_Guardian|P4015:guardianvideo|P3789:guardian|P3482:The Guardian|P3479:6caa40c4cbc18d281472aa7be6cbcf2b36c805de|P3417:The-Guardian-newspaper-1|P3417:Guardian|P3222:guardian|P3219:the-guardian|P3106:media/theguardian|P2942:Guardian|P2924:2344643|P2847:+TheGuardian|P2581:01206062n|P2397:UCHpw8xwDNhU9gdohEcJu4aA|P2088:citizen-media|P2013:theguardian|P2002:guardian|P1711:99601|P1617:f349e97e-d232-403c-aead-a024c3522ba3|P1417:topic/The-Guardian-British-newspaper|P1258:critics/source/205|P966:ef4f9c2d-598a-4aef-88c5-2f749438d3bf|P646:/m/0cnn5|P345:co0064503|P269:152903445|P268:12342909v|P243:60623878|P243:476290235|P236:0261-3077|P227:4158503-3|P214:9853155044850272520002"
-      }
-    } ]
-  }
+    "head": {
+        "vars": [
+            "item",
+            "itemLabel",
+            "title",
+            "newsPaperFormat",
+            "newsPaperFormatLabel",
+            "publisher",
+            "publisherLabel",
+            "pubAmount",
+            "pubUnitQ",
+            "langCode",
+            "currentEditors",
+            "identifiers"
+        ]
+    },
+    "results": {
+        "bindings": [
+            {
+                "item": {
+                    "type": "uri",
+                    "value": "http://www.wikidata.org/entity/Q11148"
+                },
+                "itemLabel": {
+                    "xml:lang": "en",
+                    "type": "literal",
+                    "value": "The Guardian"
+                },
+                "title": {
+                    "xml:lang": "en",
+                    "type": "literal",
+                    "value": "The Guardian"
+                },
+                "newsPaperFormat": {
+                    "type": "uri",
+                    "value": "http://www.wikidata.org/entity/Q1449648"
+                },
+                "newsPaperFormatLabel": {
+                    "xml:lang": "en",
+                    "type": "literal",
+                    "value": "tabloid"
+                },
+                "publisher": {
+                    "type": "uri",
+                    "value": "http://www.wikidata.org/entity/Q139200166"
+                },
+                "publisherLabel": {
+                    "xml:lang": "en",
+                    "type": "literal",
+                    "value": "Guardian News and Media Ltd."
+                },
+                "pubAmount": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                    "type": "literal",
+                    "value": "1"
+                },
+                "pubUnitQ": {
+                    "type": "uri",
+                    "value": "http://www.wikidata.org/entity/Q573"
+                },
+                "langCode": {
+                    "type": "literal",
+                    "value": "eng"
+                },
+                "currentEditors": {
+                    "type": "literal",
+                    "value": ""
+                },
+                "identifiers": {
+                    "type": "literal",
+                    "value": "P214:4860158188266720260004|P214:220402319|P214:147107172|P14541:47hm8I|P13337:guardianunlimited.com|P13337:gu.com|P13337:guardian.co.uk|P13337:theguardian.com|P12942:1598|P12361:theguardian.com|P12251:632|P12204:2105|P12126:The_Guardian|P12079:guardian|P11615:for-profit/guardian|P11223:27|P10804:208818013|P10565:36516|P10283:S2764508504|P10006:guardian|P9852:the-guardian|P9035:guardian|P8903:120743|P8408:TheGuardian-TheNewspaper|P8313:The_Guardian|P8189:987007421245705171|P7775:The_Guardian|P7363:0307-756X|P7363:0261-3077|P7305:3908648|P7259:5077|P7259:953|P7199:356207932|P6981:66012|P6981:66011|P6849:the-guardian|P6200:czpxkvk2qxpt|P6157:CAAqBwgKMMKOqgswwpnCAw|P6136:UK_TG|P6058:oeuvre/The_Guardian/122481|P5554:the-guardian|P5396:manukguardian|P4527:10559|P4342:The_Guardian|P4015:guardianvideo|P3789:guardian|P3482:The Guardian|P3479:6caa40c4cbc18d281472aa7be6cbcf2b36c805de|P3417:The-Guardian-newspaper-1|P3417:Guardian|P3222:guardian|P3219:the-guardian|P3106:media/theguardian|P2942:Guardian|P2924:2344643|P2847:+TheGuardian|P2581:01206062n|P2397:UCHpw8xwDNhU9gdohEcJu4aA|P2088:citizen-media|P2013:theguardian|P2002:guardian|P1711:99601|P1617:f349e97e-d232-403c-aead-a024c3522ba3|P1417:topic/The-Guardian-British-newspaper|P1258:critics/source/205|P966:ef4f9c2d-598a-4aef-88c5-2f749438d3bf|P646:/m/0cnn5|P345:co0064503|P269:152903445|P268:12342909v|P243:60623878|P243:476290235|P236:0261-3077|P227:4158503-3|P214:9853155044850272520002"
+                }
+            }
+        ]
+    }
 }

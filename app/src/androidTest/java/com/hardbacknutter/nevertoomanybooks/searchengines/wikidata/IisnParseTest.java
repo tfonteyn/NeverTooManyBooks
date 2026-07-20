@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
@@ -71,7 +72,7 @@ class IisnParseTest
     void mfsf()
             throws IOException {
 
-        final ProductCode pc = ISBN.parse("0024984X");
+        final ProductCode pc = ISBN.parse("0024-984X");
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.wikidata_issn_fsf);
         final Book book = new Book();
@@ -104,6 +105,11 @@ class IisnParseTest
         assertEquals(PublicationFrequency.Type.Monthly, frequency.getType());
         assertEquals(2, frequency.getCadence());
         assertFalse(frequency.isOrdinal());
+
+        final List<Publisher> publishers = book.getPublishers();
+        assertEquals(0, publishers.size());
+        final List<Author> authors = book.getAuthors();
+        assertEquals(0, authors.size());
     }
 
     @Test
@@ -125,6 +131,7 @@ class IisnParseTest
         assertEquals("02613077", book.getString(DBKey.ISBN, null));
 
         assertEquals("Q11148", book.getIdentifierValue(Identifier.SID_WIKIDATA).orElse(null));
+        // the -X is a checksum, but dbn.de accepts that just fine
         assertEquals("4158503-3", book.getIdentifierValue(Identifier.SID_DNB).orElse(null));
         assertEquals("60623878", book.getIdentifierValue(Identifier.SID_OCLC).orElse(null));
         // and many more...
@@ -147,7 +154,55 @@ class IisnParseTest
 
         final List<Author> authors = book.getAuthors();
         assertEquals(1, authors.size());
-        assertEquals("Guardian News and Media Ltd.", authors.get(0).getFamilyName());
+        final Author editor = authors.get(0);
+        assertEquals("Viner", editor.getFamilyName());
+        assertEquals("Katharine", editor.getGivenNames());
+        assertEquals(AuthorRole.EDITOR, editor.getRole());
+    }
 
+    @Test
+    void nature()
+            throws IOException {
+
+        final ProductCode pc = ISBN.parse("0028-0836");
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.wikidata_issn_nature);
+        final Book book = new Book();
+        searchEngine.parseFromIssn(context, document, pc, book);
+
+        Log.d(TAG, book.toString());
+
+        assertEquals("Nature",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("00280836", book.getString(DBKey.ISBN, null));
+
+        assertEquals("Q180445", book.getIdentifierValue(Identifier.SID_WIKIDATA).orElse(null));
+        assertEquals("01586310", book.getIdentifierValue(Identifier.SID_OCLC).orElse(null));
+        // the -X is a checksum, but dbn.de accepts that just fine
+        assertEquals("4499779-6", book.getIdentifierValue(Identifier.SID_DNB).orElse(null));
+
+        final List<Series> seriesList = book.getSeries();
+        assertEquals(1, seriesList.size());
+        final Series series = seriesList.get(0);
+        assertEquals("Nature", series.getTitle());
+        assertEquals("00280836", series.getIdentifierValue(Identifier.SID_ISSN).orElse(null));
+
+        final PublicationFrequency frequency = series.getPublicationFrequency();
+        assertNotNull(frequency);
+        assertEquals(PublicationFrequency.Type.Weekly, frequency.getType());
+        assertEquals(1, frequency.getCadence());
+        assertFalse(frequency.isOrdinal());
+
+        final List<Publisher> publishers = book.getPublishers();
+        assertEquals(1, publishers.size());
+        assertEquals("Springer Science+Business Media", publishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertEquals(1, authors.size());
+        final Author editor = authors.get(0);
+        assertEquals("Skipper", editor.getFamilyName());
+        assertEquals("Magdalena", editor.getGivenNames());
+        assertEquals(AuthorRole.EDITOR, editor.getRole());
     }
 }

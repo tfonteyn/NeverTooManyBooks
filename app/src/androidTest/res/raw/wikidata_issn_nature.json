@@ -1,0 +1,68 @@
+{
+  "head": {
+    "vars": [
+      "item",
+      "itemLabel",
+      "title",
+      "newsPaperFormat",
+      "newsPaperFormatLabel",
+      "publisher",
+      "publisherLabel",
+      "pubAmount",
+      "pubUnitQ",
+      "langCode",
+      "currentEditors",
+      "identifiers"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "item": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q180445"
+        },
+        "itemLabel": {
+          "xml:lang": "en",
+          "type": "literal",
+          "value": "Nature"
+        },
+        "title": {
+          "xml:lang": "en",
+          "type": "literal",
+          "value": "Nature"
+        },
+        "publisher": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q176916"
+        },
+        "publisherLabel": {
+          "xml:lang": "en",
+          "type": "literal",
+          "value": "Springer Science+Business Media"
+        },
+        "pubAmount": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "type": "literal",
+          "value": "1"
+        },
+        "pubUnitQ": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q23387"
+        },
+        "langCode": {
+          "type": "literal",
+          "value": "eng"
+        },
+        "currentEditors": {
+          "type": "literal",
+          "value": "Magdalena Skipper"
+        },
+        "identifiers": {
+          "type": "literal",
+          "value": "P14397:3491|P14237:9048-0007|P14225:981005669282709366|P13337:nature.com|P13003:nature-z0raj6t0|P12385:nature|P11917:40569|P11686:981058605880706706|P11496:1130000793566510848|P11310:1476-4687|P11037:1018957|P10283:S4210210546|P10283:S4210191612|P10283:S137773608|P10006:naturecom-media-bias|P9984:981058605880706706|P9852:nature|P9035:nature|P8903:7333|P8801:500000830|P8774:3308|P8608:container_drfdii35rzaibj3aml5uhvr5xm|P8584:123|P8375:3415|P8313:Nature|P8189:987007364986005171|P8179:ncf12000244|P8104:232926|P7699:LNB:vLA;=BZ|P7662:2391156|P7502:Nature_(journal)|P7461:21597|P7363:0028-0836|P7305:3946149|P7293:9810576685305606|P6981:2166034|P6981:2721|P6721:129292834|P6366:137773608|P6180:1018957|P6157:CAAqJAgKIh5DQklTRUFnTWFnd0tDbTVoZEhWeVpTNWpiMjBvQUFQAQ|P5983:41586|P5396:nature|P5357:nature|P4730:12852|P4616:1412|P4569:68374|P4327:40302|P3434:422484|P3222:nature|P3181:16|P2687:10010289|P2581:03182284n|P2163:1384954|P2008:2590-2|P2002:NatureNews|P2002:nature|P1844:101703357|P1844:000637680|P1739:AA00752384|P1609:980|P1417:topic/Nature-British-periodical|P1375:000070736|P1300:Natur|P1296:0249964|P1277:63759|P1272:11795|P1270:422484|P1250:2298|P1245:449888|P1160:Nature|P1159:NATUAS|P1156:21206|P1144:12037118|P1058:17479|P1055:0410462|P1054:000000118222|P1044:014473941|P1042:120714-3|P1025:038758717|P1015:3038002|P646:/m/0bwyb|P356:10.1038/41586.1476-4687|P349:001097666|P244:n90725469|P243:01586310|P236:1476-4687|P236:0028-0836|P227:4499779-6"
+        }
+      }
+    ]
+  }
+}

@@ -30,23 +30,15 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpCall;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.network.HttpCallFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
@@ -65,6 +57,8 @@ import okhttp3.OkHttpClient;
  *
  * @see <a href="https://www.wikidata.org/wiki/Wikidata:Database_reports/List_of_properties/all">
  *         All Wikidata claim number - WARNING: LONG LIST</a>
+ *
+ * @see <a href="https://query.wikidata.org/">Try out SPARQL queries</a>
  */
 public class WikidataSearchEngine
         extends SearchEngineBase
@@ -97,9 +91,12 @@ public class WikidataSearchEngine
             + " ?publisher ?publisherLabel"
             + " ?pubAmount ?pubUnitQ"
             + " ?langCode"
+            // CURRENT editor-in-chief + other editors
+            + "(GROUP_CONCAT(DISTINCT ?editorLabel; separator=\", \") AS ?currentEditors)"
             // Concat the identifiers as a single string
             + " (GROUP_CONCAT(CONCAT(STRAFTER(STR(?propVar), \"/direct/\"),"
             + " \":\", ?idValue); separator=\"|\") AS ?identifiers)"
+
             + " WHERE {"
             // Match the ISSN
             + "   ?item wdt:P236 \"%1$s\" ."
@@ -110,6 +107,25 @@ public class WikidataSearchEngine
             // specific for newspapers, but sometimes used for magazines as well
             // There seems to be no equivalent magazine (or book) P-claim number.
             + "   OPTIONAL { ?item wdt:P3912 ?newsPaperFormat . }"
+
+            // Fetch Editors-in-Chief (P578) an/or Editors (P98)
+            + "OPTIONAL {"
+            + "  {"
+            + "    ?item p:P98 ?editorStmt ."
+            + "    ?editorStmt ps:P98 ?editorNode ."
+            + "  }"
+            + "  UNION"
+            + "  {"
+            + "    ?item p:P578 ?editorStmt ."
+            + "    ?editorStmt ps:P578 ?editorNode ."
+            + "  }"
+            // Exclude past editors (where end time P582 is in the past)
+            + "  OPTIONAL { ?editorStmt pq:P582 ?endTime . }"
+            + "  FILTER(!BOUND(?endTime) || ?endTime > NOW())"
+            // Get label for active editors
+            + "  ?editorNode rdfs:label ?editorLabel ."
+            + "  FILTER(LANG(?editorLabel) = \"%2$s\" || LANG(?editorLabel) = \"en\")"
+            + "}"
 
             // P2896: publication interval (Raw values, no text joins)
             + "   OPTIONAL {"
@@ -125,11 +141,13 @@ public class WikidataSearchEngine
             + "  BIND(COALESCE(?iso3, ?iso2, STRAFTER(STR(?language), \"/entity/\")) AS ?langCode)"
             + " }"
 
+            // All identifiers, which are of the type "wikibase:ExternalId"
             + " OPTIONAL {"
             + "  ?item ?propVar ?idValue ."
             + "  ?wdProp wikibase:directClaim ?propVar ."
             + "  ?wdProp wikibase:propertyType wikibase:ExternalId ."
             + " }"
+
             // Use the automatic labeling service
             + "   SERVICE wikibase:label { bd:serviceParam wikibase:language \"%2$s\" }"
             + " }"
@@ -142,35 +160,9 @@ public class WikidataSearchEngine
             + " ?langCode"
             + " LIMIT 1";
 
-
     /** Param 1: the encoded SPARQL. Note this is not the default host. */
     private static final String ISSN_SEARCH_URL =
             "https://query.wikidata.org/sparql?query=%s&format=json";
-
-    // json value element
-    private static final String VALUE = "value";
-
-    // Last updated: 2026-06-21
-    // Keys are always uppercase, no need to change case
-    private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
-            Map.entry("P179", Identifier.SID_WIKIDATA),
-
-            Map.entry("P8619", Identifier.SID_BEDETHEQUE),
-            Map.entry("P227", Identifier.SID_DNB),
-            Map.entry("P10318", Identifier.SID_DOUBAN),
-            Map.entry("P6947", Identifier.SID_GOODREADS),
-            Map.entry("P1235", Identifier.SID_ISFDB),
-            Map.entry("P13137", Identifier.SID_ISFDB_PUB_SERIES),
-            Map.entry("P9088", Identifier.SID_KBR),
-            Map.entry("P10419", Identifier.SID_LAST_DODO_NL),
-            Map.entry("P244", Identifier.SID_LCCN),
-            Map.entry("P8513", Identifier.SID_LIBRARY_THING),
-            Map.entry("P5792", Identifier.SID_NOOSFERE),
-            Map.entry("P243", Identifier.SID_OCLC),
-            Map.entry("P214", Identifier.SID_VIAF)
-    );
-
-    private static final Pattern IDENT_SPLIT_PATTERN = Pattern.compile("\\|");
 
     @Nullable
     private HttpCall httpCall;
@@ -300,178 +292,8 @@ public class WikidataSearchEngine
                        @NonNull final Book book)
             throws JSONException {
 
-        // we don't get it from the site, just add it
-        book.setRawProductCode(productCode.asText());
-
-        // We expect one result, just throw otherwise
-        final JSONObject item = document.getJSONObject("results")
-                                        .getJSONArray("bindings")
-                                        .getJSONObject(0);
-
-        final List<Identifier.Value> ivs = new ArrayList<>();
-
-        JSONObject o;
-
-        // The title is mandatory.
-        o = item.getJSONObject("title");
-        book.setTitle(o.getString(VALUE));
-        // and the item itself, being the SID
-        o = item.getJSONObject("item");
-        final String sid = getQ(o.getString(VALUE));
-        // paranoia...
-        if (sid != null && !sid.isEmpty()) {
-            ivs.add(new Identifier.Value(Identifier.SID_WIKIDATA, sid));
-        }
-
-        // all else is optional.
-        o = item.optJSONObject("langCode", null);
-        if (o != null) {
-            book.setLanguage(o.optString(VALUE, null));
-        }
-        o = item.optJSONObject("newsPaperFormatLabel", null);
-        if (o != null) {
-            book.setFormat(o.optString(VALUE, null));
-        }
-        o = item.optJSONObject("publisherLabel", null);
-        if (o != null) {
-            final String s = o.optString(VALUE, null);
-            if (s != null && !s.isBlank()) {
-                book.add(Publisher.from(s));
-            }
-        }
-
-        // Always create a Series with the same title.
-        // As far as we know, there is no volume number available
-        // as Wikidata is returning the ISSN series data only.
-        final Series series = Series.from(book.getTitle());
-        final PublicationFrequency frequency = parsePubAmountAndUnit(item);
-        series.setPublicationFrequency(frequency);
-        series.setIdentifierValue(Identifier.SID_ISSN, book.getRawProductCode());
-        book.add(series);
-
-        o = item.optJSONObject("identifiers", null);
-        if (o != null) {
-            parseIdentifiers(o, ivs);
-        }
-
-        // We don't get an author for magazines, use the publisher if we have one...
-        book.getPrimaryPublisher()
-            .ifPresent(p -> book.add(Author.asOrganisation(p.getName())));
-
-        if (!ivs.isEmpty()) {
-            book.setIdentifiers(ivs);
-        }
-    }
-
-    /**
-     * Parse the identifiers. We only add/map them when we recognise them,
-     * because wikidata can contains a huge amount of them; most of which are not useful for us.
-     *
-     * @param o   to parse
-     * @param ivs to update
-     */
-    private void parseIdentifiers(@NonNull final JSONObject o,
-                                  @NonNull final List<Identifier.Value> ivs) {
-        final String s = o.optString(VALUE, null);
-        if (s == null || s.isBlank()) {
-            return;
-        }
-        // Avoid duplicates overwriting
-        final Set<String> keys = new HashSet<>();
-
-        for (final String entry : IDENT_SPLIT_PATTERN.split(s)) {
-            final String[] id = entry.split(":");
-            // paranoia
-            if (id.length == 2) {
-                // Filter on listed keys only.
-                final String key = IDENTIFIER_MAPPING.get(id[0]);
-                if (key != null && !keys.contains(key)) {
-                    keys.add(key);
-                    ivs.add(new Identifier.Value(key, id[1]));
-                }
-            }
-        }
-    }
-
-    @NonNull
-    private PublicationFrequency parsePubAmountAndUnit(@NonNull final JSONObject item) {
-        final JSONObject pubUnit = item.optJSONObject("pubUnitQ", null);
-        if (pubUnit == null) {
-            return new PublicationFrequency(PublicationFrequency.Type.Unknown, 0, false);
-        }
-
-        final String q = getQ(pubUnit.optString(VALUE));
-        if (q == null) {
-            return new PublicationFrequency(PublicationFrequency.Type.Unknown, 0, false);
-        }
-
-        // Default to 1 if pubAmount should be missing
-        int amount = 1;
-        boolean isFractional = false;
-
-        final JSONObject pubAmount = item.optJSONObject("pubAmount", null);
-        if (pubAmount != null && "literal".equals(pubAmount.optString("type"))) {
-            final float f = pubAmount.optFloat(VALUE, 0);
-            if (f > 0.0f && f < 1.0f) {
-                // e.g., 0.5 days means twice a day. 
-                // We flip it to get 2, and flag it as being fractional
-                amount = (int) (1 / f);
-                isFractional = true;
-            } else if (f >= 1.0f) {
-                amount = (int) f;
-            }
-        }
-
-        switch (q) {
-            case "Q573": {
-                // Day
-                // If it was a flipped fraction (e.g., 0.5), it means "2 times a day"
-                return new PublicationFrequency(PublicationFrequency.Type.Daily,
-                                                amount, isFractional);
-            }
-            case "Q23387": {
-                // Week
-                return new PublicationFrequency(PublicationFrequency.Type.Weekly,
-                                                amount, isFractional);
-            }
-            case "Q5151": {
-                // Month
-                return new PublicationFrequency(PublicationFrequency.Type.Monthly,
-                                                amount, isFractional);
-            }
-            case "Q577": {
-                // Year
-                return new PublicationFrequency(PublicationFrequency.Type.Yearly,
-                                                amount, isFractional);
-            }
-            case "Q2993680": {
-                // Fortnight (Every 2 Weeks)
-                return new PublicationFrequency(PublicationFrequency.Type.Weekly,
-                                                amount * 2, false);
-            }
-            case "Q1643308": {
-                // Quarter (Every 3 Months)
-                return new PublicationFrequency(PublicationFrequency.Type.Monthly,
-                                                amount * 3, false);
-            }
-            case "Q3955006": {
-                // Semester / Half-year (Every 6 Months)
-                return new PublicationFrequency(PublicationFrequency.Type.Monthly,
-                                                amount * 6, false);
-            }
-            default: {
-                return new PublicationFrequency(PublicationFrequency.Type.Unknown,
-                                                0, false);
-            }
-        }
-    }
-
-    @Nullable
-    private String getQ(@Nullable final String url) {
-        if (url == null || !url.contains("/Q")) {
-            return null;
-        }
-        return url.substring(url.lastIndexOf('/') + 1);
+        final WikidataBookParser parser = new WikidataBookParser(document, productCode, book);
+        parser.parse();
     }
 
     @Override
