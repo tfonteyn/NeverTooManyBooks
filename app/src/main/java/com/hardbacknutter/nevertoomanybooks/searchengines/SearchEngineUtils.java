@@ -23,12 +23,18 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -214,7 +220,7 @@ public final class SearchEngineUtils {
      * and clean up the book title.
      * <p>
      * The pattern we look for:  "Book title (series and number)"
-     * as we've seen this used on a number of websites.
+     * as we've seen this used on a number of websites and CSV imports.
      * <p>
      * We do <strong>NOT</strong> look for "title #123" style pattern
      * as this is typically used for a magazine and issue number.
@@ -246,5 +252,76 @@ public final class SearchEngineUtils {
         // and add the series to the TOP of the list.
         book.add(0, Series.from(seriesTitleWithNumber));
 
+    }
+
+    /**
+     * If the book has a valid ISSN, find or create the Series for that ISSN.
+     * <p>
+     * Warning: can theoretically return a Series with a different ISSN.
+     * This is as designed so no data is ever lost.
+     *
+     * @param book to check
+     *
+     * @return series
+     */
+    @NonNull
+    public static Optional<Series> ensurePeriodicalSeries(@NonNull final Book book) {
+
+        @Nullable
+        final ProductCode productCode = book.getProductCode();
+        if (productCode == null
+            || productCode.getType() != ProductCodeType.Issn8
+               && productCode.getType() != ProductCodeType.Issn13) {
+            return Optional.empty();
+        }
+
+        final String issn = productCode.asText(ProductCodeType.Issn8);
+
+        // Check if we have a Series with the same ISSN already set.
+        final Optional<Series> seriesWithIssn = book
+                .getSeries()
+                .stream()
+                .filter(s -> s.getIdentifierValue(Identifier.SID_ISSN)
+                              .map(code -> code.equals(issn))
+                              .orElse(false))
+                .findFirst();
+        if (seriesWithIssn.isPresent()) {
+            return seriesWithIssn;
+        }
+
+        // Check if we already have a series with a title identical to the book,
+        // if not, create one.
+        final String title = book.getTitle();
+        final Series series = book
+                .getSeries()
+                .stream()
+                .filter(s -> s.getTitle().equals(title))
+                .findFirst()
+                .orElseGet(() -> {
+                    final Series newSeries = Series.from(title);
+                    book.add(newSeries);
+                    return newSeries;
+                });
+
+        // If the series had an identical ISSN, this method would have exited
+        // before getting here. But, if for some weird reason it HAS a different
+        // ISSN, then do NOT overwrite it.
+        final Optional<String> issnValue = series.getIdentifierValue(Identifier.SID_ISSN);
+        if (issnValue.isEmpty()) {
+            series.setIdentifierValue(Identifier.SID_ISSN, issn);
+        }
+
+        return Optional.of(series);
+    }
+
+    public static void ensurePeriodicalEditor(@NonNull final Book book) {
+        if (book.getAuthors().isEmpty()) {
+            book.getPrimaryPublisher()
+                .ifPresent(p -> {
+                    final Author organisation = Author.asOrganisation(p.getName());
+                    organisation.setRole(AuthorRole.EDITOR);
+                    book.add(organisation);
+                });
+        }
     }
 }

@@ -41,7 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -285,31 +287,39 @@ public class BnfSearchEngine
 
     @VisibleForTesting
     void parse(@NonNull final Context context,
-                      @NonNull final Document document,
-                      @Nullable final String searchedCode,
-                      @NonNull final boolean[] fetchCovers,
-                      @NonNull final Book book)
+               @NonNull final Document document,
+               @Nullable final String searchedCode,
+               @NonNull final boolean[] fetchCovers,
+               @NonNull final Book book)
             throws CredentialsException, StorageException {
 
-        final BnfParser parser = new BnfParser(this, document, book);
-
+        final BnfBookParser parser = new BnfBookParser(context, this, document, book);
+        // Parse the sid FIRST
         parser.sid();
-        parser.isbnFormatAndPrice(context);
+        // Parse the product-code next
+        // Check for an ISBN, or if that fails, an ISSN
+        parser.isbnFormatAndPrice();
+        if (!book.hasProductCode()) {
+            parser.issnFormatAndPrice();
+        }
+
         parser.languages();
         parser.title();
-        parser.physicalDescription(context);
+        parser.physicalDescription();
         parser.publicationDate();
         parser.publication();
         parser.description();
         parser.translation();
         parser.authors();
         parser.series();
-        // This must be parsed AFTER doing title and series!
-        // (a book will simply not find the tag)
-        parser.magazines(context);
+
+        // Check for, and parse Periodical data.
+        // This must be parsed AFTER parsing title and series as above.
+        parser.periodicals();
 
         final List<String> coverIds = parser.coverIds();
 
+        // all done
         parser.finish(searchedCode);
 
         authorResolverHelper.resolve(context, this, book);
@@ -329,4 +339,6 @@ public class BnfSearchEngine
             }
         }
     }
+
+
 }

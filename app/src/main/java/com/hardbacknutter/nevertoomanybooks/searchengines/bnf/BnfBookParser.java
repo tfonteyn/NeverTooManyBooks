@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISNI;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -66,7 +67,7 @@ import org.jsoup.select.Elements;
  * <a href="https://www.transition-bibliographique.fr/unimarc/manuel-unimarc-format-bibliographique/">
  * French tags online</a>
  */
-class BnfParser {
+class BnfBookParser {
 
     /** These need to be removed from all strings we read. */
     private static final Pattern CONTROL_CHARACTERS_PATTERN = Pattern.compile(
@@ -133,8 +134,14 @@ class BnfParser {
             // Typographer
             Map.entry("750", AuthorRole.LETTERING));
 
+    private static final int TAG_110_FORMAT = 0;
+    private static final int TAG_110_FREQUENCY = 1;
+    private static final int TAG_110_REGULARITY = 2;
+
     private final List<Identifier.Value> ivs = new ArrayList<>();
 
+    @NonNull
+    private final Context context;
     @NonNull
     private final BnfSearchEngine searchEngine;
     @NonNull
@@ -144,9 +151,13 @@ class BnfParser {
 
     private final PartialDateParser partialDateParser;
 
-    BnfParser(@NonNull final BnfSearchEngine searchEngine,
-              @NonNull final Document document,
-              @NonNull final Book book) {
+    // TODO: we don't really want to pass in the searchEngine
+    //  but we use it for a helper in its base class.
+    BnfBookParser(@NonNull final Context context,
+                  @NonNull final BnfSearchEngine searchEngine,
+                  @NonNull final Document document,
+                  @NonNull final Book book) {
+        this.context = context;
         this.searchEngine = searchEngine;
         this.document = document;
         this.book = book;
@@ -173,10 +184,11 @@ class BnfParser {
     }
 
     /**
-     * Control field 001.
+     * Parse the BNF identifier.
+     * <p>
+     * {@code 001} RECORD IDENTIFIER.
      */
     void sid() {
-        // 001 RECORD IDENTIFIER
         final Element tag = document.selectFirst("*|controlfield[tag=001]");
         if (tag == null) {
             return;
@@ -189,36 +201,48 @@ class BnfParser {
         }
     }
 
+
     /**
-     * {@code "010"} INTERNATIONAL STANDARD BOOK NUMBER (ISBN) (R)
+     * {@code 010} INTERNATIONAL STANDARD BOOK NUMBER (ISBN) (R).
      * <ul>
      * <li>{@code $a} Number (ISBN) (NR)</li>
      * <li>{@code $b} Qualification (R)</li>
      * <li>{@code $d} Terms of Availability and/or Price (NR)</li>
      * </ul>
-     * {@code "011"} ISSN (R).
+     */
+    void isbnFormatAndPrice() {
+        productCodeFormatAndPrice("010");
+    }
+
+    /**
+     * {@code 011} ISSN (R).
+     * <ul>
+     * <li>{@code $a} Number (ISSN) (NR)</li>
+     * <li>{@code $b} Qualification (R)</li>
+     * <li>{@code $d} Terms of Availability and/or Price (R)</li>
+     * </ul>
+     */
+    void issnFormatAndPrice() {
+        productCodeFormatAndPrice("011");
+    }
+
+    /**
+     * {@code 010} INTERNATIONAL STANDARD BOOK NUMBER (ISBN) (R).
+     * <ul>
+     * <li>{@code $a} Number (ISBN) (NR)</li>
+     * <li>{@code $b} Qualification (R)</li>
+     * <li>{@code $d} Terms of Availability and/or Price (NR)</li>
+     * </ul>
+     * {@code 011} ISSN (R).
      * <ul>
      * <li>{@code $a} Number (ISSN) (NR)</li>
      * <li>{@code $b} Qualification (R)</li>
      * <li>{@code $d} Terms of Availability and/or Price (R)</li>
      * </ul>
      *
-     * @param context Current context
+     * @param tagNr to parse, either 010 or 011
      */
-    void isbnFormatAndPrice(@NonNull final Context context) {
-        // Only grab the first should there be multiple
-        if (book.hasProductCode()) {
-            return;
-        }
-        isbnFormatAndPrice(context, "010");
-        if (book.hasProductCode()) {
-            return;
-        }
-        isbnFormatAndPrice(context, "011");
-    }
-
-    private void isbnFormatAndPrice(@NonNull final Context context,
-                                    @NonNull final String tagNr) {
+    void productCodeFormatAndPrice(@NonNull final String tagNr) {
         final Element tag = document.selectFirst("*|datafield[tag=" + tagNr + "]");
         if (tag == null) {
             return;
@@ -226,47 +250,55 @@ class BnfParser {
 
         final Element a = tag.selectFirst(SUBFIELD_CODE_A);
         if (a != null) {
-            final String s = ISBN.cleanText(a.text());
-            if (!s.isBlank()) {
-                book.setRawProductCode(s);
+            final String codeStr = ISBN.cleanText(a.text());
+            if (!codeStr.isBlank()) {
+                book.setRawProductCode(codeStr);
             }
         }
 
         final Element b = tag.selectFirst(SUBFIELD_CODE_B);
         if (b != null) {
-            final String s = normalise(b);
-            if (!s.isBlank()) {
-                // The values are not well-defined; best effort
-                final String lc = s.toLowerCase(Locale.FRANCE);
-                switch (lc) {
-                    case "br.":
-                        book.setFormat(context.getString(R.string.book_format_paperback));
-                        break;
-                    case "rel.":
-                        book.setFormat(context.getString(R.string.book_format_hardcover));
-                        break;
-                    default:
-                        // The FormatMapper will hopefully transform as needed/permitted
-                        book.setFormat(s);
-                }
-            }
+            format(normalise(b));
         }
 
         final Element d = tag.selectFirst(SUBFIELD_CODE_D);
         if (d != null) {
-            final String s = normalise(d);
-            if (!s.isBlank()) {
-                final LocaleList userLocales = context.getResources().getConfiguration()
-                                                      .getLocales();
-                final List<Locale> allLocales = LocaleListUtils.asList(Locale.FRANCE, userLocales);
-                final MoneyParser parser = new MoneyParser(Locale.FRANCE, allLocales);
-                searchEngine.addPriceListed(context, parser, s, null, book);
-            }
+            listPrice(normalise(d));
         }
     }
 
+    private void format(@NonNull final String s) {
+        if (s.isBlank()) {
+            return;
+        }
+        // The values are not well-defined; best effort
+        final String lc = s.toLowerCase(Locale.FRANCE);
+        switch (lc) {
+            case "br.":
+                book.setFormat(context.getString(R.string.book_format_paperback));
+                break;
+            case "rel.":
+                book.setFormat(context.getString(R.string.book_format_hardcover));
+                break;
+            default:
+                // The FormatMapper will hopefully transform as needed/permitted
+                book.setFormat(s);
+        }
+    }
+
+    private void listPrice(@NonNull final String s) {
+        if (s.isBlank()) {
+            return;
+        }
+        final LocaleList userLocales = context.getResources().getConfiguration()
+                                              .getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(Locale.FRANCE, userLocales);
+        final MoneyParser parser = new MoneyParser(Locale.FRANCE, allLocales);
+        searchEngine.addPriceListed(context, parser, s, null, book);
+    }
+
     /**
-     * {@code "100"} GENERAL PROCESSING DATA.
+     * {@code 100} GENERAL PROCESSING DATA.
      */
     void publicationDate() {
         final Element tag = document.selectFirst("*|datafield[tag=100]");
@@ -284,7 +316,7 @@ class BnfParser {
     }
 
     /**
-     * {@code "101"} LANGUAGE OF THE RESOURCE (R).
+     * {@code 101} LANGUAGE OF THE RESOURCE (R).
      * <ul>
      * <li>{@code $a} Language of Text (R)</li>
      * <li>{@code $c} Language of Original Work (R)</li>
@@ -306,27 +338,35 @@ class BnfParser {
     }
 
     /**
-     * {@code "110"} CODED DATA FIELD: CONTINUING RESOURCES.
-     *
-     * @param context Current context
+     * Check for, and parse Periodical data if found.
+     * No-op if the book does not have an ISSN as product-code.
      */
-    void magazines(@NonNull final Context context) {
+    void periodicals() {
+        SearchEngineUtils.ensurePeriodicalSeries(book).ifPresent(this::periodicals);
+    }
+
+    /**
+     * {@code 110} CODED DATA FIELD: CONTINUING RESOURCES.
+     * <ul>
+     *     <li>Position 0: format</li>
+     *     <li>Position 1/2: frequency</li>
+     * </ul>
+     *
+     * @param series to update
+     */
+    void periodicals(@NonNull final Series series) {
+
         final Element tag = document.selectFirst("*|datafield[tag=110]");
         if (tag == null) {
             return;
         }
         final String codedData = tag.text();
+        // sanity check
         if (codedData.length() < 4) {
             return;
         }
 
-        format(context, codedData.charAt(0));
-        frequency(codedData.charAt(1), codedData.charAt(2));
-    }
-
-    private void format(@NonNull final Context context,
-                        final char c) {
-        switch (c) {
+        switch (codedData.charAt(TAG_110_FORMAT)) {
             // c - Newspaper
             case 'c': {
                 book.setFormat(context.getString(R.string.book_format_newspaper));
@@ -346,27 +386,17 @@ class BnfParser {
                 break;
             }
         }
-    }
 
-    private void frequency(final char frequencyCode,
-                           final char regularityCode) {
-        final PublicationFrequency frequency = PublicationFrequency
-                .fromUnimarc(frequencyCode, regularityCode);
+        final PublicationFrequency frequency = PublicationFrequency.fromUnimarc(
+                codedData.charAt(TAG_110_FREQUENCY),
+                codedData.charAt(TAG_110_REGULARITY));
         if (frequency.getType() != PublicationFrequency.Type.Unknown) {
-            final Series series;
-            final List<Series> bookSeries = book.getSeries();
-            if (bookSeries.isEmpty()) {
-                series = Series.from(book.getTitle());
-                bookSeries.add(0, series);
-            } else {
-                series = bookSeries.get(0);
-            }
             series.setPublicationFrequency(frequency);
         }
     }
 
     /**
-     * {@code "200"} TITLE AND STATEMENT OF RESPONSIBILITY (NR).
+     * {@code 200} TITLE AND STATEMENT OF RESPONSIBILITY (NR).
      * <p>
      * Typically, we only need {@code $a} for the title.
      * <ul>
@@ -391,8 +421,8 @@ class BnfParser {
     }
 
     /**
-     * {@code "210"}  PUBLICATION, DISTRIBUTION, ETC. (R).
-     * {@code "214"} PRODUCTION, PUBLICATION, DISTRIBUTION, MANUFACTURE STATEMENTS (R).
+     * {@code 210}  PUBLICATION, DISTRIBUTION, ETC. (R).
+     * {@code 214} PRODUCTION, PUBLICATION, DISTRIBUTION, MANUFACTURE STATEMENTS (R).
      * <ul>
      * <li>{@code $c} Name of Publisher, Distributor, etc. (R)</li>
      * <li>{@code $d} Date of Publication, Distribution, etc. (R)</li>
@@ -406,7 +436,7 @@ class BnfParser {
         publication("210");
     }
 
-    void publication(@NonNull final String tagNr) {
+    private void publication(@NonNull final String tagNr) {
         final Elements tags = document.select("*|datafield[tag='" + tagNr + "']");
         for (final Element tag : tags) {
             final Element c = tag.selectFirst(SUBFIELD_CODE_C);
@@ -420,15 +450,13 @@ class BnfParser {
     }
 
     /**
-     * {@code "215"} PHYSICAL DESCRIPTION.
+     * {@code 215} PHYSICAL DESCRIPTION.
      * <ul>
      * <li>{@code $a} Specific Material Designation and Extent</li>
      * <li>{@code $c} Other Physical Details</li>
      * </ul>
-     *
-     * @param context Current context
      */
-    void physicalDescription(@NonNull final Context context) {
+    void physicalDescription() {
         final Element tag = document.selectFirst("*|datafield[tag=215]");
         if (tag == null) {
             return;
@@ -439,7 +467,7 @@ class BnfParser {
             if (!s.isBlank()) {
                 final Matcher matcher = PAGES_PATTERN.matcher(s);
                 if (matcher.find()) {
-                    s = matcher.group(1);
+                    s = matcher.group(TAG_110_FREQUENCY);
                     if (s != null && !s.isBlank()) {
                         book.setPages(s);
                     }
@@ -460,8 +488,8 @@ class BnfParser {
     }
 
     /**
-     * {@code "410"} SERIES.
-     * {@code "461"} SET
+     * {@code 410} SERIES.
+     * {@code 461} SET
      * <ul>
      * <li>{@code $t} Title</li>
      * <li>{@code $v} Volume Designation</li>
@@ -523,7 +551,7 @@ class BnfParser {
     }
 
     /**
-     * {@code "225"} SERIES (R).
+     * {@code 225} SERIES (R).
      * <ul>
      * <li>{@code $a} Title</li>
      * <li>{@code $v} Volume Designation</li>
@@ -556,7 +584,7 @@ class BnfParser {
     }
 
     /**
-     * {@code "330"} SUMMARY OR ABSTRACT.
+     * {@code 330} SUMMARY OR ABSTRACT.
      * <ul>
      * <li>{@code $a} Text of Note</li>
      * <li>{@code $u} Uniform Resource Identifier (URI) </li>
@@ -586,7 +614,7 @@ class BnfParser {
     }
 
     /**
-     * {@code "454"} TRANSLATION OF.
+     * {@code 454} TRANSLATION OF.
      * <ul>
      * <li>{@code $d} Date of Publication</li>
      * <li>{@code $t} Title</li>
@@ -616,11 +644,11 @@ class BnfParser {
     }
 
     /**
-     * {@code "700"} PERSONAL NAME – PRIMARY RESPONSIBILITY.
-     * {@code "701"} PERSONAL NAME – ALTERNATIVE RESPONSIBILITY.
-     * {@code "702"} PERSONAL NAME – SECONDARY RESPONSIBILITY.
-     * {@code "710"} CORPORATE BODY NAME – PRIMARY RESPONSIBILITY.
-     * {@code "711"} CORPORATE BODY NAME – ALTERNATIVE RESPONSIBILITY.
+     * {@code 700} PERSONAL NAME – PRIMARY RESPONSIBILITY.
+     * {@code 701} PERSONAL NAME – ALTERNATIVE RESPONSIBILITY.
+     * {@code 702} PERSONAL NAME – SECONDARY RESPONSIBILITY.
+     * {@code 710} CORPORATE BODY NAME – PRIMARY RESPONSIBILITY.
+     * {@code 711} CORPORATE BODY NAME – ALTERNATIVE RESPONSIBILITY.
      * <ul>
      * <li>{@code $a} Entry Element</li>
      * <li>{@code $b} Part of Name Other than Entry Element</li>
@@ -684,8 +712,8 @@ class BnfParser {
                 if (f != null) {
                     final Matcher matcher = LIFESPAN_PATTERN.matcher(normalise(f));
                     if (matcher.find()) {
-                        author.setBirthDate(matcher.group(1));
-                        author.setDeathDate(matcher.group(2));
+                        author.setBirthDate(matcher.group(TAG_110_FREQUENCY));
+                        author.setDeathDate(matcher.group(TAG_110_REGULARITY));
                     }
                 }
 
@@ -711,7 +739,7 @@ class BnfParser {
     }
 
     /**
-     * {@code "856"} ELECTRONIC LOCATION AND ACCESS (R).
+     * {@code 856} ELECTRONIC LOCATION AND ACCESS (R).
      *
      * @return list of cover ids; can be empty.
      */

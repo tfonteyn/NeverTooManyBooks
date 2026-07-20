@@ -43,8 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.PublicationFrequency;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
@@ -54,10 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 
 import okhttp3.Request;
@@ -158,10 +156,6 @@ public class DnbSearchEngine
      * Index: Normdatenidentifier.
      */
     private static final String SEARCH_INDEX_NID = "nid";
-
-    private static final int CF_008_FREQUENCY = 18;
-    private static final int CF_008_REGULARITY = 19;
-    private static final int CF_008_TYPE_OF_CONTINUING_RESOURCE = 21;
 
     /** Concat with the isbn. */
     private static final String COVER_URL = "https://portal.dnb.de/opac/mvb/cover?isbn=";
@@ -380,13 +374,12 @@ public class DnbSearchEngine
             throws CredentialsException, StorageException {
 
         final DnbBookParser parser = new DnbBookParser(context, document, book);
-        parser.sidDnb();
-
-        // Specific for books
+        // Parse the sid FIRST
+        parser.sid();
+        // Parse the product-code next
         parser.isbn();
-
         parseCommonTags(parser);
-
+        // all done
         parser.finish(searchedCode);
 
         authorResolverHelper.resolve(context, this, book);
@@ -410,98 +403,21 @@ public class DnbSearchEngine
                        @NonNull final Book book) {
 
         final DnbBookParser parser = new DnbBookParser(context, document, book);
-        parser.sidDnb();
-
-
+        // Parse the sid FIRST
+        parser.sid();
+        // Parse the product-code next
         parser.issn();
         parseCommonTags(parser);
 
-        // Parse AFTER we parsed the common tags to make sure we get any Series.
-        // Specific for magazines
-        // Type of continuing resource
-        //    # - None of the following
-        //    a - Activity report
-        //    d - Updating database
-        //    g - Magazine
-        //    h - Blog
-        //    i - Serial zine
-        //    j - Journal
-        //    l - Updating loose-leaf
-        //    m - Monographic series
-        //    n - Newspaper
-        //    p - Periodical
-        //    q - Serial podcast
-        //    r - Repository
-        //    s - Newsletter
-        //    t - Directory
-        //    w - Updating Web site
-        //    | - No attempt to code
-        // position 35-37 provides the language, but so does tag 041; we're ONLY using the latter
-        final Element cf008 = document.selectFirst("controlfield[tag='008']");
-        if (cf008 != null) {
-            final String text = DnbParser.normalise(cf008);
-            // sanity check
-            if (text.length() == 40) {
-                parseIssnCF008(context, text, book);
-            }
-        }
+        // Check for, and parse Periodical data.
+        // This must be parsed AFTER parsing title and series as above.
+        parser.periodicals();
 
-        // We don't get an author for magazines, use the publisher if we have one...
-        book.getPrimaryPublisher()
-            .ifPresent(p -> book.add(Author.asOrganisation(p.getName())));
-
+        // all done
         parser.finish(searchedCode);
-    }
 
-    /**
-     * Parse control field 008; this is only valid for ISSN search.
-     *
-     * @param context Current context
-     * @param text    the 40-char long control field 008
-     * @param book    to update
-     */
-    private void parseIssnCF008(@NonNull final Context context,
-                                @NonNull final CharSequence text,
-                                @NonNull final Book book) {
-        switch (text.charAt(CF_008_TYPE_OF_CONTINUING_RESOURCE)) {
-            // n - Newspaper
-            case 'n': {
-                book.setFormat(context.getString(R.string.book_format_newspaper));
-                break;
-            }
-            case 'j': {
-                book.setFormat(context.getString(R.string.book_format_journal));
-                break;
-            }
-            // g - Magazine
-            // i - Serial zine
-            // p - Periodical
-            case 'g':
-            case 'i':
-            case 'p': {
-                book.setFormat(context.getString(R.string.book_format_periodical));
-                break;
-            }
-        }
-
-        final String title = book.getTitle();
-        // Check if we already have a series with a title identical to the book.
-        // If not, always create one.
-        final Series series = book.getSeries()
-                                  .stream()
-                                  .filter(s -> s.getTitle().equals(title))
-                                  .findFirst()
-                                  .orElseGet(() -> {
-                                      final Series newSeries = Series.from(title);
-                                      book.add(newSeries);
-                                      return newSeries;
-                                  });
-
-        final PublicationFrequency frequency = PublicationFrequency.fromMarc21(
-                text.charAt(CF_008_FREQUENCY),
-                text.charAt(CF_008_REGULARITY));
-        series.setPublicationFrequency(frequency);
-        series.setIdentifierValue(Identifier.SID_ISSN, book.getRawProductCode());
+        // If didn't get an editor, use the publisher if we have one.
+        SearchEngineUtils.ensurePeriodicalEditor(book);
     }
 
     /**
@@ -521,8 +437,8 @@ public class DnbSearchEngine
         parser.title();
         parser.description();
         parser.physicalDescription();
-        // format should be parsed AFTER physicalDescription
-        parser.format();
+        // eBook flag must be parsed AFTER physicalDescription
+        parser.ebook();
         parser.genreTags();
     }
 

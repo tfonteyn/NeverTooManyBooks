@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
 
 public final class DnbAuthorResolver
         implements AuthorResolver {
@@ -149,11 +148,10 @@ public final class DnbAuthorResolver
     @Nullable
     Author parse(@NonNull final Document document) {
 
-        final DnbParser parser = new DnbParser(document);
+        final DnbBookParser.DnbParser parser = new DnbBookParser.DnbParser(document);
 
         // There will only be one or none
-        final Elements tags = document.select("datafield[tag='100']");
-        final List<Author> authors = parser.author(tags);
+        final List<Author> authors = parser.authors("100");
         if (authors.isEmpty()) {
             return null;
         }
@@ -162,8 +160,8 @@ public final class DnbAuthorResolver
 
         final List<Identifier.Value> ivs = parser.identifiers();
 
-        // add the DNB one to the front of the list
-        final Identifier.Value value = parser.cf001();
+        // add the DNB identifier as the first in the list
+        final Identifier.Value value = parser.sid();
         if (value != null) {
             ivs.add(0, value);
         }
