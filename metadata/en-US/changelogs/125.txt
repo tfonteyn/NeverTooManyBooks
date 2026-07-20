@@ -1,15 +1,21 @@
 NEW:
-- dnb.de has been re-implemented to fix their bot-blocker.
-- bol.com, databazeknih.cz have been updated to adapt their new site-internals
-- ISSN support, using Wikidata and dnb.de/zdb-katalog.de sites
+
+Searches:
+- dnb.de has been re-implemented to a) fix their bot-blocker + b) make it faster
+- bnf.fr has been re-implemented to make it faster
+- bol.com, databazeknih.cz have been updated to adapt to their new site-internals
+
+ISSN search fully supported on sites:
+  - bnf.fr
+  - dnb.de / zdb-katalog.de
+  - wikidata
+  - Series now also support Identifiers (ISSN and more)
+
+UI:
 - The builtin image crop editor was replaced by https://github.com/Yalantis/uCrop
 - The old side-menu was replaced by a menu that follows the user preferred menu-style.
-- Series now also support Identifiers.
-- Identifiers are now split according to item type (book, author, series).
 - Support for importing Calibre CSV files.
 - upgraded to Material3Expressive.
-- supports/tested on Android 17
 - Added UI language: Latvian
 
-FIXES:
-- many smaller issues
+Supports and tested on Android 17
