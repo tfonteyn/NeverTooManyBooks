@@ -1219,7 +1219,7 @@ public class SearchBookByIsbnFragment
             isbnCleanupTextWatcher.setValidityLevel(validity);
             isbnValidationTextWatcher.setValidityLevel(validity);
             // Clear any previous validity errors
-            vb.isbn.setError(null);
+            vb.lblIsbn.setError(null);
         }
     }
 }
