@@ -1,35 +1,18 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 /**
  * Configuration object for the JSON parser. The configuration is immutable.
  */
-@SuppressWarnings("ALL")
-public class JSONParserConfiguration
-        extends ParserConfiguration {
+public class JSONParserConfiguration extends ParserConfiguration {
     /**
      * Used to indicate whether to overwrite duplicate key or not.
      */
     private boolean overwriteDuplicateKey;
+    
+    /**
+     * Used to indicate whether to convert java null values to JSONObject.NULL or ignoring the entry when converting java maps.
+     */
+    private boolean useNativeNulls;
 
     /**
      * Configuration with the default values.
@@ -37,6 +20,8 @@ public class JSONParserConfiguration
     public JSONParserConfiguration() {
         super();
         this.overwriteDuplicateKey = false;
+        // DO NOT DELETE THE FOLLOWING LINE -- it is used for strictMode testing
+        // this.strictMode = true;
     }
 
     /**
@@ -49,7 +34,10 @@ public class JSONParserConfiguration
     protected JSONParserConfiguration clone() {
         JSONParserConfiguration clone = new JSONParserConfiguration();
         clone.overwriteDuplicateKey = overwriteDuplicateKey;
+        clone.strictMode = strictMode;
         clone.maxNestingDepth = maxNestingDepth;
+        clone.keepStrings = keepStrings;
+        clone.useNativeNulls = useNativeNulls;
         return clone;
     }
 
@@ -60,7 +48,6 @@ public class JSONParserConfiguration
      * if the maximum depth is reached.
      *
      * @param maxNestingDepth the maximum nesting depth allowed to the JSON parser
-     *
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
     @SuppressWarnings("unchecked")
@@ -78,12 +65,26 @@ public class JSONParserConfiguration
      * Or the duplicate key's value will be overwritten.
      *
      * @param overwriteDuplicateKey defines should the parser overwrite duplicate keys.
-     *
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
     public JSONParserConfiguration withOverwriteDuplicateKey(final boolean overwriteDuplicateKey) {
         JSONParserConfiguration clone = this.clone();
         clone.overwriteDuplicateKey = overwriteDuplicateKey;
+
+        return clone;
+    }
+    
+    /**
+     * Controls the parser's behavior when meeting Java null values while converting maps.
+     * If set to true, the parser will put a JSONObject.NULL into the resulting JSONObject.
+     * Or the map entry will be ignored.
+     *
+     * @param useNativeNulls defines if the parser should convert null values in Java maps
+     * @return The existing configuration will not be modified. A new configuration is returned.
+     */
+    public JSONParserConfiguration withUseNativeNulls(final boolean useNativeNulls) {
+        JSONParserConfiguration clone = this.clone();
+        clone.useNativeNulls = useNativeNulls;
 
         return clone;
     }
@@ -94,7 +95,6 @@ public class JSONParserConfiguration
      * When strict mode is enabled, the parser will throw a JSONException if it encounters an invalid character
      * immediately following the final ']' character in the input. This is useful for ensuring strict adherence to the
      * JSON syntax, as any characters after the final closing bracket of a JSON array are considered invalid.
-     *
      * @return a new JSONParserConfiguration instance with the updated strict mode setting
      */
     public JSONParserConfiguration withStrictMode() {
@@ -109,7 +109,6 @@ public class JSONParserConfiguration
      * JSON syntax, as any characters after the final closing bracket of a JSON array are considered invalid.
      *
      * @param mode a boolean value indicating whether strict mode should be enabled or not
-     *
      * @return a new JSONParserConfiguration instance with the updated strict mode setting
      */
     public JSONParserConfiguration withStrictMode(final boolean mode) {
@@ -128,8 +127,23 @@ public class JSONParserConfiguration
     public boolean isOverwriteDuplicateKey() {
         return this.overwriteDuplicateKey;
     }
+    
+    /**
+     * The parser's behavior when meeting a null value in a java map, controls whether the parser should 
+     * write a JSON entry with a null value (<code>isUseNativeNulls() == true</code>) 
+     * or ignore that map entry (<code>isUseNativeNulls() == false</code>).
+     *
+     * @return The <code>useNativeNulls</code> configuration value.
+     */
+    public boolean isUseNativeNulls() {
+        return this.useNativeNulls;
+    }
+    
 
     /**
+     * The parser throws an Exception when strict mode is true and tries to parse invalid JSON characters.
+     * Otherwise, the parser is more relaxed and might tolerate some invalid characters.
+     *
      * @return the current strict mode setting.
      */
     public boolean isStrictMode() {

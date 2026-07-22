@@ -1,23 +1,3 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 /*
@@ -43,12 +23,13 @@ Public Domain.
  * @author JSON.org
  * @version 2016-05-01
  */
-@SuppressWarnings("ALL")
 public class CDL {
 
     /**
      * Constructs a new CDL object.
+     * @deprecated (Utility class cannot be instantiated)
      */
+    @Deprecated
     public CDL() {
     }
 
@@ -60,9 +41,7 @@ public class CDL {
      * @return The value string, or null if empty.
      * @throws JSONException if the quoted string is badly formed.
      */
-    private static String getValue(JSONTokener x,
-                                   char delimiter)
-            throws JSONException {
+    private static String getValue(JSONTokener x, char delimiter) throws JSONException {
         char c;
         char q;
         StringBuilder sb;
@@ -74,7 +53,7 @@ public class CDL {
         } else if (c == '"' || c == '\'') {
             q = c;
             sb = new StringBuilder();
-            for (; ; ) {
+            for (;;) {
                 c = x.next();
                 if (c == q) {
                     //Handle escaped double-quote
@@ -107,8 +86,7 @@ public class CDL {
      * @return A JSONArray of strings.
      * @throws JSONException if a called function fails
      */
-    public static JSONArray rowToJSONArray(JSONTokener x)
-            throws JSONException {
+    public static JSONArray rowToJSONArray(JSONTokener x) throws JSONException {
         return rowToJSONArray(x, ',');
     }
 
@@ -119,19 +97,21 @@ public class CDL {
      * @return A JSONArray of strings.
      * @throws JSONException if a called function fails
      */
-    public static JSONArray rowToJSONArray(JSONTokener x,
-                                           char delimiter)
-            throws JSONException {
+    public static JSONArray rowToJSONArray(JSONTokener x, char delimiter) throws JSONException {
         JSONArray ja = new JSONArray();
-        for (; ; ) {
+        for (;;) {
             String value = getValue(x,delimiter);
             char c = x.next();
-            if (value == null ||
-                (ja.length() == 0 && value.length() == 0 && c != delimiter)) {
+            if (value != null) {
+                ja.put(value);
+            } else if (ja.length() == 0 && c != delimiter) {
                 return null;
+            } else {
+                // This line accounts for CSV ending with no newline
+                ja.put("");
             }
-            ja.put(value);
-            for (; ; ) {
+
+            for (;;) {
                 if (c == delimiter) {
                     break;
                 }
@@ -140,7 +120,7 @@ public class CDL {
                         return ja;
                     }
                     throw x.syntaxError("Bad character '" + c + "' (" +
-                                        (int) c + ").");
+                            (int)c + ").");
                 }
                 c = x.next();
             }
@@ -157,9 +137,7 @@ public class CDL {
      * @return A JSONObject combining the names and values.
      * @throws JSONException if a called function fails
      */
-    public static JSONObject rowToJSONObject(JSONArray names,
-                                             JSONTokener x)
-            throws JSONException {
+    public static JSONObject rowToJSONObject(JSONArray names, JSONTokener x) throws JSONException {
         return rowToJSONObject(names, x, ',');
     }
 
@@ -174,10 +152,7 @@ public class CDL {
      * @return A JSONObject combining the names and values.
      * @throws JSONException if a called function fails
      */
-    public static JSONObject rowToJSONObject(JSONArray names,
-                                             JSONTokener x,
-                                             char delimiter)
-            throws JSONException {
+    public static JSONObject rowToJSONObject(JSONArray names, JSONTokener x, char delimiter) throws JSONException {
         JSONArray ja = rowToJSONArray(x, delimiter);
         return ja != null ? ja.toJSONObject(names) :  null;
     }
@@ -208,28 +183,69 @@ public class CDL {
                 sb.append(delimiter);
             }
             Object object = ja.opt(i);
-            if (object != null) {
-                String string = object.toString();
-                if (string.length() > 0 && (string.indexOf(delimiter) >= 0 ||
-                                            string.indexOf('\n') >= 0 || string.indexOf(
-                        '\r') >= 0 ||
-                        string.indexOf(0) >= 0 || string.charAt(0) == '"')) {
-                    sb.append('"');
-                    int length = string.length();
-                    for (int j = 0; j < length; j += 1) {
-                        char c = string.charAt(j);
-                        if (c >= ' ' && c != '"') {
-                            sb.append(c);
-                        }
-                    }
-                    sb.append('"');
-                } else {
-                    sb.append(string);
-                }
-            }
+            appendRowValue(sb, object, delimiter);
         }
         sb.append('\n');
         return sb.toString();
+    }
+
+    /**
+     * Append a single row value, quoting it when required by the delimiter or
+     * content.
+     *
+     * @param sb the destination buffer
+     * @param object the value to append
+     * @param delimiter the delimiter used between row values
+     */
+    private static void appendRowValue(StringBuilder sb, Object object, char delimiter) {
+        if (object == null) {
+            return;
+        }
+        String string = object.toString();
+        if (shouldQuoteValue(string, delimiter)) {
+            appendQuotedValue(sb, string);
+        } else {
+            sb.append(string);
+        }
+    }
+
+    /**
+     * Determine whether a row value should be quoted.
+     *
+     * @param value the row value to evaluate
+     * @param delimiter the delimiter used between row values
+     * @return {@code true} if the value should be quoted
+     */
+    private static boolean shouldQuoteValue(String value, char delimiter) {
+        if (value.isEmpty()) {
+            return false;
+        }
+        boolean containsDelimiter = value.indexOf(delimiter) >= 0;
+        boolean containsNewline = value.indexOf('\n') >= 0;
+        boolean containsCarriageReturn = value.indexOf('\r') >= 0;
+        boolean containsNullCharacter = value.indexOf(0) >= 0;
+        boolean startsWithQuote = value.charAt(0) == '"';
+        return containsDelimiter || containsNewline || containsCarriageReturn ||
+                containsNullCharacter || startsWithQuote;
+    }
+
+    /**
+     * Append a row value surrounded by quotes, omitting characters that should
+     * not appear inside the quoted value.
+     *
+     * @param sb the destination buffer
+     * @param value the value to append
+     */
+    private static void appendQuotedValue(StringBuilder sb, String value) {
+        sb.append('"');
+        int length = value.length();
+        for (int j = 0; j < length; j += 1) {
+            char c = value.charAt(j);
+            if (c >= ' ' && c != '"') {
+                sb.append(c);
+            }
+        }
+        sb.append('"');
     }
 
     /**
@@ -239,8 +255,7 @@ public class CDL {
      * @return A JSONArray of JSONObjects.
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(String string)
-            throws JSONException {
+    public static JSONArray toJSONArray(String string) throws JSONException {
         return toJSONArray(string, ',');
     }
 
@@ -252,9 +267,7 @@ public class CDL {
      * @return A JSONArray of JSONObjects.
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(String string,
-                                        char delimiter)
-            throws JSONException {
+    public static JSONArray toJSONArray(String string, char delimiter) throws JSONException {
         return toJSONArray(new JSONTokener(string), delimiter);
     }
 
@@ -277,9 +290,7 @@ public class CDL {
      * @return A JSONArray of JSONObjects.
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(JSONTokener x,
-                                        char delimiter)
-            throws JSONException {
+    public static JSONArray toJSONArray(JSONTokener x, char delimiter) throws JSONException {
         return toJSONArray(rowToJSONArray(x, delimiter), x, delimiter);
     }
 
@@ -291,9 +302,7 @@ public class CDL {
      * @return A JSONArray of JSONObjects.
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(JSONArray names,
-                                        String string)
-            throws JSONException {
+    public static JSONArray toJSONArray(JSONArray names, String string) throws JSONException {
         return toJSONArray(names, string, ',');
     }
 
@@ -306,10 +315,7 @@ public class CDL {
      * @return A JSONArray of JSONObjects.
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(JSONArray names,
-                                        String string,
-                                        char delimiter)
-            throws JSONException {
+    public static JSONArray toJSONArray(JSONArray names, String string, char delimiter) throws JSONException {
         return toJSONArray(names, new JSONTokener(string), delimiter);
     }
 
@@ -349,6 +355,17 @@ public class CDL {
         if (ja.length() == 0) {
             return null;
         }
+
+        // The following block accounts for empty datasets (no keys or vals)
+        if (ja.length() == 1) {
+            JSONObject j = ja.getJSONObject(0);
+            if (j.length() == 1) {
+                String key = j.keys().next();
+                if ("".equals(key) && "".equals(j.get(key))) {
+                    return null;
+                }
+            }
+        }
         return ja;
     }
 
@@ -361,8 +378,7 @@ public class CDL {
      * @return A comma delimited text.
      * @throws JSONException if a called function fails
      */
-    public static String toString(JSONArray ja)
-            throws JSONException {
+    public static String toString(JSONArray ja) throws JSONException {
         return toString(ja, ',');
     }
 
@@ -395,9 +411,7 @@ public class CDL {
      * @return A comma delimited text.
      * @throws JSONException if a called function fails
      */
-    public static String toString(JSONArray names,
-                                  JSONArray ja)
-            throws JSONException {
+    public static String toString(JSONArray names, JSONArray ja) throws JSONException {
         return toString(names, ja, ',');
     }
 

@@ -1,23 +1,3 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 /*
 Public Domain.
@@ -26,9 +6,8 @@ Public Domain.
 /**
  * Configuration object for the XML to JSONML parser. The configuration is immutable.
  */
-@SuppressWarnings("ALL")
-public class JSONMLParserConfiguration
-        extends ParserConfiguration {
+@SuppressWarnings({""})
+public class JSONMLParserConfiguration extends ParserConfiguration {
 
     /**
      * We can override the default maximum nesting depth if needed.
@@ -37,10 +16,10 @@ public class JSONMLParserConfiguration
 
     /** Original Configuration of the XML to JSONML Parser. */
     public static final JSONMLParserConfiguration ORIGINAL
-            = new JSONMLParserConfiguration();
+        = new JSONMLParserConfiguration();
     /** Original configuration of the XML to JSONML Parser except that values are kept as strings. */
     public static final JSONMLParserConfiguration KEEP_STRINGS
-            = new JSONMLParserConfiguration().withKeepStrings(true);
+        = new JSONMLParserConfiguration().withKeepStrings(true);
 
     /**
      * Default parser configuration. Does not keep strings (tries to implicitly convert values).
@@ -56,8 +35,7 @@ public class JSONMLParserConfiguration
      *      <code>false</code> to try and convert XML string values into a JSON value.
      * @param maxNestingDepth <code>int</code> to limit the nesting depth
      */
-    protected JSONMLParserConfiguration(final boolean keepStrings,
-                                        final int maxNestingDepth) {
+    protected JSONMLParserConfiguration(final boolean keepStrings, final int maxNestingDepth) {
         super(keepStrings, maxNestingDepth);
     }
 

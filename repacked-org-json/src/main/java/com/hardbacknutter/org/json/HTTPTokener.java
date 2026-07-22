@@ -1,23 +1,3 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 /*
@@ -30,9 +10,7 @@ Public Domain.
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings("ALL")
-public class HTTPTokener
-        extends JSONTokener {
+public class HTTPTokener extends JSONTokener {
 
     /**
      * Construct an HTTPTokener from a string.
@@ -48,8 +26,7 @@ public class HTTPTokener
      * @return A String.
      * @throws JSONException if a syntax error occurs
      */
-    public String nextToken()
-            throws JSONException {
+    public String nextToken() throws JSONException {
         char c;
         char q;
         StringBuilder sb = new StringBuilder();
@@ -58,7 +35,7 @@ public class HTTPTokener
         } while (Character.isWhitespace(c));
         if (c == '"' || c == '\'') {
             q = c;
-            for (; ; ) {
+            for (;;) {
                 c = next();
                 if (c < ' ') {
                     throw syntaxError("Unterminated string.");
@@ -69,7 +46,7 @@ public class HTTPTokener
                 sb.append(c);
             }
         }
-        for (; ; ) {
+        for (;;) {
             if (c == 0 || Character.isWhitespace(c)) {
                 return sb.toString();
             }

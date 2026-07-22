@@ -1,30 +1,8 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 /*
 Public Domain.
 */
-
-import androidx.annotation.Nullable;
 
 import java.io.StringWriter;
 
@@ -58,9 +36,7 @@ import java.io.StringWriter;
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings("ALL")
-public class JSONStringer
-        extends JSONWriter {
+public class JSONStringer extends JSONWriter {
     /**
      * Make a fresh JSONStringer. It can be used to build one JSON text.
      */
@@ -77,7 +53,6 @@ public class JSONStringer
      * @return The JSON text.
      */
     @Override
-    @Nullable
     public String toString() {
         return this.mode == 'd' ? this.writer.toString() : null;
     }

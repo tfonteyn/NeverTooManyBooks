@@ -1,23 +1,3 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 /*
@@ -32,13 +12,42 @@ Public Domain.
  * @author JSON.org
  * @version 2016-01-30
  */
-@SuppressWarnings("ALL")
 public class JSONML {
 
     /**
      * Constructs a new JSONML object.
+     * @deprecated (Utility class cannot be instantiated)
      */
+    @Deprecated
     public JSONML() {
+    }
+
+    /**
+     * Safely cast parse result to JSONArray with proper type checking.
+     * @param result The result from parse() method
+     * @return JSONArray if result is a JSONArray
+     * @throws JSONException if result is not a JSONArray
+     */
+    private static JSONArray toJSONArraySafe(Object result) throws JSONException {
+        if (result instanceof JSONArray) {
+            return (JSONArray) result;
+        }
+        throw new JSONException("Expected JSONArray but got " +
+            (result == null ? "null" : result.getClass().getSimpleName()));
+    }
+
+    /**
+     * Safely cast parse result to JSONObject with proper type checking.
+     * @param result The result from parse() method
+     * @return JSONObject if result is a JSONObject
+     * @throws JSONException if result is not a JSONObject
+     */
+    private static JSONObject toJSONObjectSafe(Object result) throws JSONException {
+        if (result instanceof JSONObject) {
+            return (JSONObject) result;
+        }
+        throw new JSONException("Expected JSONObject but got " +
+            (result == null ? "null" : result.getClass().getSimpleName()));
     }
 
     /**
@@ -47,21 +56,20 @@ public class JSONML {
      * @param arrayForm true if array form, false if object form.
      * @param ja      The JSONArray that is containing the current tag or null
      *     if we are at the outermost level.
-     * @param keepStrings    Don't type-convert text nodes and attribute values
+     * @param keepStrings	Don't type-convert text nodes and attribute values
      * @return A JSONArray if the value is the outermost tag, otherwise null.
-     * @throws .JSONException if a parsing error occurs
+     * @throws JSONException if a parsing error occurs
      */
     private static Object parse(
-            XMLTokener x,
-            boolean arrayForm,
-            JSONArray ja,
-            boolean keepStrings,
-            int currentNestingDepth
-    )
-            throws JSONException {
-        return parse(x, arrayForm, ja,
-                     keepStrings ? JSONMLParserConfiguration.KEEP_STRINGS : JSONMLParserConfiguration.ORIGINAL,
-                     currentNestingDepth);
+        XMLTokener x,
+        boolean    arrayForm,
+        JSONArray  ja,
+        boolean keepStrings,
+        int currentNestingDepth
+    ) throws JSONException {
+        return parse(x,arrayForm, ja,
+            keepStrings ? JSONMLParserConfiguration.KEEP_STRINGS : JSONMLParserConfiguration.ORIGINAL,
+            currentNestingDepth);
     }
 
     /**
@@ -77,21 +85,20 @@ public class JSONML {
      * @throws JSONException if a parsing error occurs
      */
     private static Object parse(
-            XMLTokener x,
-            boolean arrayForm,
-            JSONArray ja,
-            JSONMLParserConfiguration config,
-            int currentNestingDepth
-    )
-            throws JSONException {
-        String attribute;
-        char c;
-        String closeTag = null;
-        int i;
-        JSONArray newja = null;
+        XMLTokener x,
+        boolean    arrayForm,
+        JSONArray  ja,
+        JSONMLParserConfiguration config,
+        int currentNestingDepth
+    ) throws JSONException {
+        String     attribute;
+        char       c;
+        String     closeTag = null;
+        int        i;
+        JSONArray  newja = null;
         JSONObject newjo = null;
-        Object token;
-        String tagName = null;
+        Object     token;
+        String     tagName = null;
 
 // Test for and skip past these forms:
 //      <!-- ... -->
@@ -134,7 +141,7 @@ public class JSONML {
                             }
                         } else if (c == '[') {
                             token = x.nextToken();
-                            if (token.equals("CDATA") && x.next() == '[') {
+                            if ("CDATA".equals(token) && x.next() == '[') {
                                 if (ja != null) {
                                     ja.put(x.nextCDATA());
                                 }
@@ -169,7 +176,7 @@ public class JSONML {
                     if (!(token instanceof String)) {
                         throw x.syntaxError("Bad tagName '" + token + "'.");
                     }
-                    tagName = (String) token;
+                    tagName = (String)token;
                     newja = new JSONArray();
                     newjo = new JSONObject();
                     if (arrayForm) {
@@ -184,7 +191,7 @@ public class JSONML {
                         }
                     }
                     token = null;
-                    for (; ; ) {
+                    for (;;) {
                         if (token == null) {
                             token = x.nextToken();
                         }
@@ -197,9 +204,8 @@ public class JSONML {
 
 // attribute = value
 
-                        attribute = (String) token;
-                        if (!arrayForm && ("tagName".equals(attribute) || "childNode".equals(
-                                attribute))) {
+                        attribute = (String)token;
+                        if (!arrayForm && ("tagName".equals(attribute) || "childNode".equals(attribute))) {
                             throw x.syntaxError("Reserved attribute.");
                         }
                         token = x.nextToken();
@@ -208,9 +214,7 @@ public class JSONML {
                             if (!(token instanceof String)) {
                                 throw x.syntaxError("Missing value");
                             }
-                            newjo.accumulate(attribute,
-                                             config.isKeepStrings() ? ((String) token) : XML.stringToValue(
-                                                     (String) token));
+                            newjo.accumulate(attribute, config.isKeepStrings() ? ((String)token) :XML.stringToValue((String)token));
                             token = null;
                         } else {
                             newjo.accumulate(attribute, "");
@@ -241,16 +245,14 @@ public class JSONML {
                         }
 
                         if (currentNestingDepth == config.getMaxNestingDepth()) {
-                            throw x.syntaxError(
-                                    "Maximum nesting depth of " + config.getMaxNestingDepth() + " reached");
+                            throw x.syntaxError("Maximum nesting depth of " + config.getMaxNestingDepth() + " reached");
                         }
 
-                        closeTag = (String) parse(x, arrayForm, newja, config,
-                                                  currentNestingDepth + 1);
+                        closeTag = (String)parse(x, arrayForm, newja, config, currentNestingDepth + 1);
                         if (closeTag != null) {
                             if (!closeTag.equals(tagName)) {
                                 throw x.syntaxError("Mismatched '" + tagName +
-                                                    "' and '" + closeTag + "'");
+                                        "' and '" + closeTag + "'");
                             }
                             tagName = null;
                             if (!arrayForm && newja.length() > 0) {
@@ -267,10 +269,21 @@ public class JSONML {
                 }
             } else {
                 if (ja != null) {
-                    ja.put(token instanceof String
-                           ? (config.isKeepStrings() ? XML.unescape(
-                            (String) token) : XML.stringToValue((String) token))
-                           : token);
+                    Object value;
+
+                    if (token instanceof String) {
+                        String strToken = (String) token;
+                        if (config.isKeepStrings()) {
+                            value = XML.unescape(strToken);
+                        } else {
+                            value = XML.stringToValue(strToken);
+                        }
+                    } else {
+                        value = token;
+                    }
+
+                    ja.put(value);
+
                 }
             }
         }
@@ -289,10 +302,8 @@ public class JSONML {
      * @return A JSONArray containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(String string)
-            throws JSONException {
-        return (JSONArray) parse(new XMLTokener(string), true, null,
-                                 JSONMLParserConfiguration.ORIGINAL, 0);
+    public static JSONArray toJSONArray(String string) throws JSONException {
+        return toJSONArraySafe(parse(new XMLTokener(string), true, null, JSONMLParserConfiguration.ORIGINAL, 0));
     }
 
 
@@ -313,10 +324,8 @@ public class JSONML {
      * @return A JSONArray containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(String string,
-                                        boolean keepStrings)
-            throws JSONException {
-        return (JSONArray) parse(new XMLTokener(string), true, null, keepStrings, 0);
+    public static JSONArray toJSONArray(String string, boolean keepStrings) throws JSONException {
+        return toJSONArraySafe(parse(new XMLTokener(string), true, null, keepStrings, 0));
     }
 
 
@@ -340,10 +349,8 @@ public class JSONML {
      * @return A JSONArray containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(String string,
-                                        JSONMLParserConfiguration config)
-            throws JSONException {
-        return (JSONArray) parse(new XMLTokener(string), true, null, config, 0);
+    public static JSONArray toJSONArray(String string, JSONMLParserConfiguration config) throws JSONException {
+        return toJSONArraySafe(parse(new XMLTokener(string), true, null, config, 0));
     }
 
 
@@ -366,10 +373,8 @@ public class JSONML {
      * @return A JSONArray containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(XMLTokener x,
-                                        JSONMLParserConfiguration config)
-            throws JSONException {
-        return (JSONArray) parse(x, true, null, config, 0);
+    public static JSONArray toJSONArray(XMLTokener x, JSONMLParserConfiguration config) throws JSONException {
+        return toJSONArraySafe(parse(x, true, null, config, 0));
     }
 
 
@@ -390,10 +395,8 @@ public class JSONML {
      * @return A JSONArray containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(XMLTokener x,
-                                        boolean keepStrings)
-            throws JSONException {
-        return (JSONArray) parse(x, true, null, keepStrings, 0);
+    public static JSONArray toJSONArray(XMLTokener x, boolean keepStrings) throws JSONException {
+        return toJSONArraySafe(parse(x, true, null, keepStrings, 0));
     }
 
 
@@ -409,9 +412,8 @@ public class JSONML {
      * @return A JSONArray containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(XMLTokener x)
-            throws JSONException {
-        return (JSONArray) parse(x, true, null, false, 0);
+    public static JSONArray toJSONArray(XMLTokener x) throws JSONException {
+        return toJSONArraySafe(parse(x, true, null, false, 0));
     }
 
 
@@ -428,9 +430,8 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(String string)
-            throws JSONException {
-        return (JSONObject) parse(new XMLTokener(string), false, null, false, 0);
+    public static JSONObject toJSONObject(String string) throws JSONException {
+        return toJSONObjectSafe(parse(new XMLTokener(string), false, null, false, 0));
     }
 
 
@@ -449,10 +450,8 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(String string,
-                                          boolean keepStrings)
-            throws JSONException {
-        return (JSONObject) parse(new XMLTokener(string), false, null, keepStrings, 0);
+    public static JSONObject toJSONObject(String string, boolean keepStrings) throws JSONException {
+        return toJSONObjectSafe(parse(new XMLTokener(string), false, null, keepStrings, 0));
     }
 
 
@@ -473,10 +472,8 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(String string,
-                                          JSONMLParserConfiguration config)
-            throws JSONException {
-        return (JSONObject) parse(new XMLTokener(string), false, null, config, 0);
+    public static JSONObject toJSONObject(String string, JSONMLParserConfiguration config) throws JSONException {
+        return toJSONObjectSafe(parse(new XMLTokener(string), false, null, config, 0));
     }
 
 
@@ -493,9 +490,8 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(XMLTokener x)
-            throws JSONException {
-        return (JSONObject) parse(x, false, null, false, 0);
+    public static JSONObject toJSONObject(XMLTokener x) throws JSONException {
+           return toJSONObjectSafe(parse(x, false, null, false, 0));
     }
 
 
@@ -514,10 +510,8 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(XMLTokener x,
-                                          boolean keepStrings)
-            throws JSONException {
-        return (JSONObject) parse(x, false, null, keepStrings, 0);
+    public static JSONObject toJSONObject(XMLTokener x, boolean keepStrings) throws JSONException {
+           return toJSONObjectSafe(parse(x, false, null, keepStrings, 0));
     }
 
 
@@ -538,10 +532,8 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(XMLTokener x,
-                                          JSONMLParserConfiguration config)
-            throws JSONException {
-        return (JSONObject) parse(x, false, null, config, 0);
+    public static JSONObject toJSONObject(XMLTokener x, JSONMLParserConfiguration config) throws JSONException {
+        return toJSONObjectSafe(parse(x, false, null, config, 0));
     }
 
 
@@ -551,14 +543,13 @@ public class JSONML {
      * @return An XML string.
      * @throws JSONException Thrown on error converting to a string
      */
-    public static String toString(JSONArray ja)
-            throws JSONException {
-        int i;
-        JSONObject jo;
-        int length;
-        Object object;
-        StringBuilder sb = new StringBuilder();
-        String tagName;
+    public static String toString(JSONArray ja) throws JSONException {
+        int                 i;
+        JSONObject          jo;
+        int                 length;
+        Object              object;
+        StringBuilder        sb = new StringBuilder();
+        String              tagName;
 
 // Emit <tagName
 
@@ -571,7 +562,7 @@ public class JSONML {
         object = ja.opt(1);
         if (object instanceof JSONObject) {
             i = 2;
-            jo = (JSONObject) object;
+            jo = (JSONObject)object;
 
 // Emit the attributes
 
@@ -607,9 +598,9 @@ public class JSONML {
                     if (object instanceof String) {
                         sb.append(XML.escape(object.toString()));
                     } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject) object));
+                        sb.append(toString((JSONObject)object));
                     } else if (object instanceof JSONArray) {
-                        sb.append(toString((JSONArray) object));
+                        sb.append(toString((JSONArray)object));
                     } else {
                         sb.append(object.toString());
                     }
@@ -633,15 +624,14 @@ public class JSONML {
      * @return An XML string.
      * @throws JSONException Thrown on error converting to a string
      */
-    public static String toString(JSONObject jo)
-            throws JSONException {
+    public static String toString(JSONObject jo) throws JSONException {
         StringBuilder sb = new StringBuilder();
-        int i;
-        JSONArray ja;
-        int length;
-        Object object;
-        String tagName;
-        Object value;
+        int                 i;
+        JSONArray           ja;
+        int                 length;
+        Object              object;
+        String              tagName;
+        Object              value;
 
 //Emit <tagName
 
@@ -687,9 +677,9 @@ public class JSONML {
                     if (object instanceof String) {
                         sb.append(XML.escape(object.toString()));
                     } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject) object));
+                        sb.append(toString((JSONObject)object));
                     } else if (object instanceof JSONArray) {
-                        sb.append(toString((JSONArray) object));
+                        sb.append(toString((JSONArray)object));
                     } else {
                         sb.append(object.toString());
                     }

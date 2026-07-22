@@ -1,27 +1,4 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -60,7 +37,6 @@ Public Domain.
  * @author JSON.org
  * @version 2016-08-08
  */
-@SuppressWarnings("ALL")
 public class JSONWriter {
     private static final int maxdepth = 200;
 
@@ -113,9 +89,7 @@ public class JSONWriter {
      * @return this
      * @throws JSONException If the value is out of sequence.
      */
-    @NonNull
-    private JSONWriter append(@NonNull String string)
-            throws JSONException {
+    private JSONWriter append(String string) throws JSONException {
         if (string == null) {
             throw new JSONException("Null pointer");
         }
@@ -126,9 +100,9 @@ public class JSONWriter {
                 }
                 this.writer.append(string);
             } catch (IOException e) {
-                // Android as of API 25 does not support this exception constructor
-                // however we won't worry about it. If an exception is happening here
-                // it will just throw a "Method not found" exception instead.
+            	// Android as of API 25 does not support this exception constructor
+            	// however we won't worry about it. If an exception is happening here
+            	// it will just throw a "Method not found" exception instead.
                 throw new JSONException(e);
             }
             if (this.mode == 'o') {
@@ -149,9 +123,7 @@ public class JSONWriter {
      * started in the wrong place (for example as a key or after the end of the
      * outermost array or object).
      */
-    @NonNull
-    public JSONWriter array()
-            throws JSONException {
+    public JSONWriter array() throws JSONException {
         if (this.mode == 'i' || this.mode == 'o' || this.mode == 'a') {
             this.push(null);
             this.append("[");
@@ -168,22 +140,19 @@ public class JSONWriter {
      * @return this
      * @throws JSONException If unbalanced.
      */
-    @NonNull
-    private JSONWriter end(char m,
-                           char c)
-            throws JSONException {
+    private JSONWriter end(char m, char c) throws JSONException {
         if (this.mode != m) {
             throw new JSONException(m == 'a'
-                                    ? "Misplaced endArray."
-                                    : "Misplaced endObject.");
+                ? "Misplaced endArray."
+                : "Misplaced endObject.");
         }
         this.pop(m);
         try {
             this.writer.append(c);
         } catch (IOException e) {
-            // Android as of API 25 does not support this exception constructor
-            // however we won't worry about it. If an exception is happening here
-            // it will just throw a "Method not found" exception instead.
+        	// Android as of API 25 does not support this exception constructor
+        	// however we won't worry about it. If an exception is happening here
+        	// it will just throw a "Method not found" exception instead.
             throw new JSONException(e);
         }
         this.comma = true;
@@ -196,9 +165,7 @@ public class JSONWriter {
      * @return this
      * @throws JSONException If incorrectly nested.
      */
-    @NonNull
-    public JSONWriter endArray()
-            throws JSONException {
+    public JSONWriter endArray() throws JSONException {
         return this.end('a', ']');
     }
 
@@ -208,9 +175,7 @@ public class JSONWriter {
      * @return this
      * @throws JSONException If incorrectly nested.
      */
-    @NonNull
-    public JSONWriter endObject()
-            throws JSONException {
+    public JSONWriter endObject() throws JSONException {
         return this.end('k', '}');
     }
 
@@ -222,9 +187,7 @@ public class JSONWriter {
      * @throws JSONException If the key is out of place. For example, keys
      *  do not belong in arrays or if the key is null.
      */
-    @NonNull
-    public JSONWriter key(@NonNull String string)
-            throws JSONException {
+    public JSONWriter key(String string) throws JSONException {
         if (string == null) {
             throw new JSONException("Null key.");
         }
@@ -232,9 +195,9 @@ public class JSONWriter {
             try {
                 JSONObject topObject = this.stack[this.top - 1];
                 // don't use the built in putOnce method to maintain Android support
-                if (topObject.has(string)) {
-                    throw new JSONException("Duplicate key \"" + string + "\"");
-                }
+				if(topObject.has(string)) {
+					throw new JSONException("Duplicate key \"" + string + "\"");
+				}
                 topObject.put(string, true);
                 if (this.comma) {
                     this.writer.append(',');
@@ -245,9 +208,9 @@ public class JSONWriter {
                 this.mode = 'o';
                 return this;
             } catch (IOException e) {
-                // Android as of API 25 does not support this exception constructor
-                // however we won't worry about it. If an exception is happening here
-                // it will just throw a "Method not found" exception instead.
+            	// Android as of API 25 does not support this exception constructor
+            	// however we won't worry about it. If an exception is happening here
+            	// it will just throw a "Method not found" exception instead.
                 throw new JSONException(e);
             }
         }
@@ -264,9 +227,7 @@ public class JSONWriter {
      * started in the wrong place (for example as a key or after the end of the
      * outermost array or object).
      */
-    @NonNull
-    public JSONWriter object()
-            throws JSONException {
+    public JSONWriter object() throws JSONException {
         if (this.mode == 'i') {
             this.mode = 'o';
         }
@@ -286,8 +247,7 @@ public class JSONWriter {
      * @param c The scope to close.
      * @throws JSONException If nesting is wrong.
      */
-    private void pop(char c)
-            throws JSONException {
+    private void pop(char c) throws JSONException {
         if (this.top <= 0) {
             throw new JSONException("Nesting error.");
         }
@@ -297,10 +257,10 @@ public class JSONWriter {
         }
         this.top -= 1;
         this.mode = this.top == 0
-                    ? 'd'
-                    : this.stack[this.top - 1] == null
-                      ? 'a'
-                      : 'k';
+            ? 'd'
+            : this.stack[this.top - 1] == null
+            ? 'a'
+            : 'k';
     }
 
     /**
@@ -308,8 +268,7 @@ public class JSONWriter {
      * @param jo The scope to open.
      * @throws JSONException If nesting is too deep.
      */
-    private void push(@Nullable JSONObject jo)
-            throws JSONException {
+    private void push(JSONObject jo) throws JSONException {
         if (this.top >= maxdepth) {
             throw new JSONException("Nesting too deep.");
         }
@@ -342,9 +301,7 @@ public class JSONWriter {
      * @throws JSONException
      *             If the value is or contains an invalid number.
      */
-    @NonNull
-    public static String valueToString(@Nullable Object value)
-            throws JSONException {
+    public static String valueToString(Object value) throws JSONException {
         if (value == null || value.equals(null)) {
             return "null";
         }
@@ -363,7 +320,7 @@ public class JSONWriter {
         if (value instanceof Number) {
             // not all Numbers may match actual JSON Numbers. i.e. Fractions or Complex
             final String numberAsString = JSONObject.numberToString((Number) value);
-            if (JSONObject.NUMBER_PATTERN.matcher(numberAsString).matches()) {
+            if(JSONObject.NUMBER_PATTERN.matcher(numberAsString).matches()) {
                 // Close enough to a JSON number that we will return it unquoted
                 return numberAsString;
             }
@@ -372,7 +329,7 @@ public class JSONWriter {
             return JSONObject.quote(numberAsString);
         }
         if (value instanceof Boolean || value instanceof JSONObject
-            || value instanceof JSONArray) {
+                || value instanceof JSONArray) {
             return value.toString();
         }
         if (value instanceof Map) {
@@ -386,8 +343,8 @@ public class JSONWriter {
         if (value.getClass().isArray()) {
             return new JSONArray(value).toString();
         }
-        if (value instanceof Enum<?>) {
-            return JSONObject.quote(((Enum<?>) value).name());
+        if(value instanceof Enum<?>){
+            return JSONObject.quote(((Enum<?>)value).name());
         }
         return JSONObject.quote(value.toString());
     }
@@ -399,9 +356,7 @@ public class JSONWriter {
      * @return this
      * @throws JSONException if a called function has an error
      */
-    @NonNull
-    public JSONWriter value(boolean b)
-            throws JSONException {
+    public JSONWriter value(boolean b) throws JSONException {
         return this.append(b ? "true" : "false");
     }
 
@@ -411,9 +366,7 @@ public class JSONWriter {
      * @return this
      * @throws JSONException If the number is not finite.
      */
-    @NonNull
-    public JSONWriter value(double d)
-            throws JSONException {
+    public JSONWriter value(double d) throws JSONException {
         return this.value(Double.valueOf(d));
     }
 
@@ -423,9 +376,7 @@ public class JSONWriter {
      * @return this
      * @throws JSONException if a called function has an error
      */
-    @NonNull
-    public JSONWriter value(long l)
-            throws JSONException {
+    public JSONWriter value(long l) throws JSONException {
         return this.append(Long.toString(l));
     }
 
@@ -437,9 +388,7 @@ public class JSONWriter {
      * @return this
      * @throws JSONException If the value is out of sequence.
      */
-    @NonNull
-    public JSONWriter value(Object object)
-            throws JSONException {
+    public JSONWriter value(Object object) throws JSONException {
         return this.append(valueToString(object));
     }
 }

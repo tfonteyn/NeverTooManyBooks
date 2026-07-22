@@ -1,23 +1,3 @@
-/*
- * @Copyright 2018-2026 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 /*
@@ -32,26 +12,23 @@ import java.io.Reader;
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings("ALL")
-public class XMLTokener
-        extends JSONTokener {
+public class XMLTokener extends JSONTokener {
 
 
-    /**
-     * The table of entity values. It initially contains Character values for
-     * amp, apos, gt, lt, quot.
-     */
-    public static final java.util.HashMap<String, Character> entity;
+   /** The table of entity values. It initially contains Character values for
+    * amp, apos, gt, lt, quot.
+    */
+   public static final java.util.HashMap<String, Character> entity;
 
-    private XMLParserConfiguration configuration = XMLParserConfiguration.ORIGINAL;
+   private XMLParserConfiguration configuration = XMLParserConfiguration.ORIGINAL;
 
-    static {
-        entity = new java.util.HashMap<String, Character>(8);
-        entity.put("amp", XML.AMP);
-        entity.put("apos", XML.APOS);
-        entity.put("gt", XML.GT);
-        entity.put("lt", XML.LT);
-        entity.put("quot", XML.QUOT);
+   static {
+       entity = new java.util.HashMap<String, Character>(8);
+       entity.put("amp",  XML.AMP);
+       entity.put("apos", XML.APOS);
+       entity.put("gt",   XML.GT);
+       entity.put("lt",   XML.LT);
+       entity.put("quot", XML.QUOT);
    }
 
     /**
@@ -75,8 +52,7 @@ public class XMLTokener
      * @param r A source reader.
      * @param configuration the configuration that can be used to set certain flags
      */
-    public XMLTokener(Reader r,
-                      XMLParserConfiguration configuration) {
+    public XMLTokener(Reader r, XMLParserConfiguration configuration) {
         super(r);
         this.configuration = configuration;
     }
@@ -86,17 +62,16 @@ public class XMLTokener
      * @return The string up to the <code>]]&gt;</code>.
      * @throws JSONException If the <code>]]&gt;</code> is not found.
      */
-    public String nextCDATA()
-            throws JSONException {
-        char c;
-        int i;
+    public String nextCDATA() throws JSONException {
+        char         c;
+        int          i;
         StringBuilder sb = new StringBuilder();
         while (more()) {
             c = next();
             sb.append(c);
             i = sb.length() - 3;
             if (i >= 0 && sb.charAt(i) == ']' &&
-                sb.charAt(i + 1) == ']' && sb.charAt(i + 2) == '>') {
+                          sb.charAt(i + 1) == ']' && sb.charAt(i + 2) == '>') {
                 sb.setLength(i);
                 return sb.toString();
             }
@@ -111,13 +86,12 @@ public class XMLTokener
      * tag, and the content
      * text between markup tags.
      *
-     * @return A string, or a <pre>{@code '<' }</pre> Character, or null if
+     * @return  A string, or a <pre>{@code '<' }</pre> Character, or null if
      * there is no more source text.
      * @throws JSONException if a called function has an error
      */
-    public Object nextContent()
-            throws JSONException {
-        char c;
+    public Object nextContent() throws JSONException {
+        char         c;
         StringBuilder sb;
         do {
             c = next();
@@ -137,9 +111,7 @@ public class XMLTokener
                 back();
                 if (configuration.shouldTrimWhiteSpace()) {
                     return sb.toString().trim();
-                } else {
-                    return sb.toString();
-                }
+                } else return sb.toString();
             }
             if (c == '&') {
                 sb.append(nextEntity(c));
@@ -157,11 +129,10 @@ public class XMLTokener
      *     &amp;  &apos;  &gt;  &lt;  &quot;.
      * }</pre>
      * @param ampersand An ampersand character.
-     * @return A Character or an entity String if the entity is not recognised.
+     * @return  A Character or an entity String if the entity is not recognized.
      * @throws JSONException If missing ';' in XML entity.
      */
-    public Object nextEntity(@SuppressWarnings("unused") char ampersand)
-            throws JSONException {
+    public Object nextEntity(@SuppressWarnings("unused") char ampersand) throws JSONException {
         StringBuilder sb = new StringBuilder();
         for (;;) {
             char c = next();
@@ -180,31 +151,109 @@ public class XMLTokener
     /**
      * Unescape an XML entity encoding;
      * @param e entity (only the actual entity value, not the preceding & or ending ;
-     * @return
+     * @return the unescaped entity string
+     * @throws JSONException if the entity is malformed
      */
-    static String unescapeEntity(String e) {
+    static String unescapeEntity(String e) throws JSONException {
         // validate
         if (e == null || e.isEmpty()) {
             return "";
         }
         // if our entity is an encoded unicode point, parse it.
         if (e.charAt(0) == '#') {
-            int cp;
-            if (e.charAt(1) == 'x' || e.charAt(1) == 'X') {
-                // hex encoded unicode
-                cp = Integer.parseInt(e.substring(2), 16);
-            } else {
-                // decimal encoded unicode
-                cp = Integer.parseInt(e.substring(1));
+            if (e.length() < 2) {
+                throw new JSONException("Invalid numeric character reference: &#;");
             }
-            return new String(new int[]{cp}, 0, 1);
-        } 
+            int cp = (e.charAt(1) == 'x' || e.charAt(1) == 'X')
+                ? parseHexEntity(e)
+                : parseDecimalEntity(e);
+            if (XML.mustEscape(cp)) {
+                throw new JSONException("Invalid numeric character reference: &#" + e.substring(1) + ";");
+            }
+            return new String(new int[] {cp}, 0, 1);
+        }
         Character knownEntity = entity.get(e);
-        if (knownEntity==null) {
+        if (knownEntity == null) {
             // we don't know the entity so keep it encoded
             return '&' + e + ';';
         }
         return knownEntity.toString();
+    }
+
+    /**
+     * Parse a hexadecimal numeric character reference (e.g., "&#xABC;").
+     * @param e entity string starting with '#' (e.g., "#x1F4A9")
+     * @return the Unicode code point
+     * @throws JSONException if the format is invalid
+     */
+    private static int parseHexEntity(String e) throws JSONException {
+        // hex encoded unicode - need at least one hex digit after #x
+        if (e.length() < 3) {
+            throw new JSONException("Invalid hex character reference: missing hex digits in &#" + e.substring(1) + ";");
+        }
+        String hex = e.substring(2);
+        if (!isValidHex(hex)) {
+            throw new JSONException("Invalid hex character reference: &#" + e.substring(1) + ";");
+        }
+        try {
+            return Integer.parseInt(hex, 16);
+        } catch (NumberFormatException nfe) {
+            throw new JSONException("Invalid hex character reference: &#" + e.substring(1) + ";", nfe);
+        }
+    }
+
+    /**
+     * Parse a decimal numeric character reference (e.g., "&#123;").
+     * @param e entity string starting with '#' (e.g., "#123")
+     * @return the Unicode code point
+     * @throws JSONException if the format is invalid
+     */
+    private static int parseDecimalEntity(String e) throws JSONException {
+        String decimal = e.substring(1);
+        if (!isValidDecimal(decimal)) {
+            throw new JSONException("Invalid decimal character reference: &#" + decimal + ";");
+        }
+        try {
+            return Integer.parseInt(decimal);
+        } catch (NumberFormatException nfe) {
+            throw new JSONException("Invalid decimal character reference: &#" + decimal + ";", nfe);
+        }
+    }
+
+    /**
+     * Check if a string contains only valid hexadecimal digits.
+     * @param s the string to check
+     * @return true if s is non-empty and contains only hex digits (0-9, a-f, A-F)
+     */
+    private static boolean isValidHex(String s) {
+        if (s == null || s.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if a string contains only valid decimal digits.
+     * @param s the string to check
+     * @return true if s is non-empty and contains only digits (0-9)
+     */
+    private static boolean isValidDecimal(String s) {
+        if (s == null || s.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c < '0' || c > '9') {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -227,52 +276,52 @@ public class XMLTokener
             c = next();
         } while (Character.isWhitespace(c));
         switch (c) {
-            case 0:
-                throw syntaxError("Misshaped meta tag");
-            case '<':
-                return XML.LT;
-            case '>':
-                return XML.GT;
-            case '/':
-                return XML.SLASH;
-            case '=':
-                return XML.EQ;
-            case '!':
-                return XML.BANG;
-            case '?':
-                return XML.QUEST;
-            case '"':
-            case '\'':
-                q = c;
-                for (; ; ) {
-                    c = next();
-                    if (c == 0) {
-                        throw syntaxError("Unterminated string");
-                    }
-                    if (c == q) {
-                        return Boolean.TRUE;
-                    }
+        case 0:
+            throw syntaxError("Misshaped meta tag");
+        case '<':
+            return XML.LT;
+        case '>':
+            return XML.GT;
+        case '/':
+            return XML.SLASH;
+        case '=':
+            return XML.EQ;
+        case '!':
+            return XML.BANG;
+        case '?':
+            return XML.QUEST;
+        case '"':
+        case '\'':
+            q = c;
+            for (;;) {
+                c = next();
+                if (c == 0) {
+                    throw syntaxError("Unterminated string");
                 }
-            default:
-                for (; ; ) {
-                    c = next();
-                    if (Character.isWhitespace(c)) {
-                        return Boolean.TRUE;
-                    }
-                    switch (c) {
-                        case 0:
-                            throw syntaxError("Unterminated string");
-                        case '<':
-                        case '>':
-                        case '/':
-                        case '=':
-                        case '!':
-                        case '?':
-                        case '"':
-                        case '\'':
-                            back();
-                            return Boolean.TRUE;
-                    }
+                if (c == q) {
+                    return Boolean.TRUE;
+                }
+            }
+        default:
+            for (;;) {
+                c = next();
+                if (Character.isWhitespace(c)) {
+                    return Boolean.TRUE;
+                }
+                switch (c) {
+                case 0:
+                    throw syntaxError("Unterminated string");
+                case '<':
+                case '>':
+                case '/':
+                case '=':
+                case '!':
+                case '?':
+                case '"':
+                case '\'':
+                    back();
+                    return Boolean.TRUE;
+                }
             }
         }
     }
@@ -296,69 +345,69 @@ public class XMLTokener
             c = next();
         } while (Character.isWhitespace(c));
         switch (c) {
-            case 0:
-                throw syntaxError("Misshaped element");
-            case '<':
-                throw syntaxError("Misplaced '<'");
-            case '>':
-                return XML.GT;
-            case '/':
-                return XML.SLASH;
-            case '=':
-                return XML.EQ;
-            case '!':
-                return XML.BANG;
-            case '?':
-                return XML.QUEST;
+        case 0:
+            throw syntaxError("Misshaped element");
+        case '<':
+            throw syntaxError("Misplaced '<'");
+        case '>':
+            return XML.GT;
+        case '/':
+            return XML.SLASH;
+        case '=':
+            return XML.EQ;
+        case '!':
+            return XML.BANG;
+        case '?':
+            return XML.QUEST;
 
 // Quoted string
 
-            case '"':
-            case '\'':
-                q = c;
-                sb = new StringBuilder();
-                for (; ; ) {
-                    c = next();
-                    if (c == 0) {
-                        throw syntaxError("Unterminated string");
-                    }
-                    if (c == q) {
-                        return sb.toString();
-                    }
-                    if (c == '&') {
-                        sb.append(nextEntity(c));
-                    } else {
-                        sb.append(c);
-                    }
+        case '"':
+        case '\'':
+            q = c;
+            sb = new StringBuilder();
+            for (;;) {
+                c = next();
+                if (c == 0) {
+                    throw syntaxError("Unterminated string");
                 }
-            default:
+                if (c == q) {
+                    return sb.toString();
+                }
+                if (c == '&') {
+                    sb.append(nextEntity(c));
+                } else {
+                    sb.append(c);
+                }
+            }
+        default:
 
 // Name
 
-                sb = new StringBuilder();
-                for (; ; ) {
-                    sb.append(c);
-                    c = next();
-                    if (Character.isWhitespace(c)) {
-                        return sb.toString();
-                    }
-                    switch (c) {
-                        case 0:
-                            return sb.toString();
-                        case '>':
-                        case '/':
-                        case '=':
-                        case '!':
-                        case '?':
-                        case '[':
-                        case ']':
-                            back();
-                            return sb.toString();
-                        case '<':
-                        case '"':
-                        case '\'':
-                            throw syntaxError("Bad character in a name");
-                    }
+            sb = new StringBuilder();
+            for (;;) {
+                sb.append(c);
+                c = next();
+                if (Character.isWhitespace(c)) {
+                    return sb.toString();
+                }
+                switch (c) {
+                case 0:
+                    return sb.toString();
+                case '>':
+                case '/':
+                case '=':
+                case '!':
+                case '?':
+                case '[':
+                case ']':
+                    back();
+                    return sb.toString();
+                case '<':
+                case '"':
+                case '\'':
+                    throw syntaxError("Bad character in a name");
+                }
             }
         }
     }

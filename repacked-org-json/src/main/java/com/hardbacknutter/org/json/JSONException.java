@@ -1,31 +1,8 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 /*
 Public Domain.
  */
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * The JSONException is thrown by the JSON.org classes when things are amiss.
@@ -33,9 +10,7 @@ import androidx.annotation.Nullable;
  * @author JSON.org
  * @version 2015-12-09
  */
-@SuppressWarnings("ALL")
-public class JSONException
-        extends RuntimeException {
+public class JSONException extends RuntimeException {
     /** Serialization ID */
     private static final long serialVersionUID = 0;
 
@@ -45,7 +20,7 @@ public class JSONException
      * @param message
      *            Detail about the reason for the exception.
      */
-    public JSONException(@Nullable final String message) {
+    public JSONException(final String message) {
         super(message);
     }
 
@@ -57,8 +32,7 @@ public class JSONException
      * @param cause
      *            The cause.
      */
-    public JSONException(@Nullable final String message,
-                         @Nullable final Throwable cause) {
+    public JSONException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -68,7 +42,7 @@ public class JSONException
      * @param cause
      *            The cause.
      */
-    public JSONException(@NonNull final Throwable cause) {
+    public JSONException(final Throwable cause) {
         super(cause.getMessage(), cause);
     }
 

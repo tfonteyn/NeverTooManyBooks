@@ -1,27 +1,6 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static java.lang.String.format;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -29,8 +8,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static java.lang.String.format;
 
 /*
 Public Domain.
@@ -54,7 +31,6 @@ Public Domain.
  * @author JSON.org
  * @version 2016-05-14
  */
-@SuppressWarnings("ALL")
 public class JSONPointer {
 
     // used for URL encoding and decoding
@@ -128,11 +104,10 @@ public class JSONPointer {
      *       .append(0)
      *       .build();
      * </code></pre>
-     *
+     * 
      *  @return a builder instance which can be used to construct a {@code JSONPointer} instance by chained
      *  {@link Builder#append(String)} calls.
      */
-    @NonNull
     public static Builder builder() {
         return new Builder();
     }
@@ -152,7 +127,7 @@ public class JSONPointer {
         if (pointer == null) {
             throw new NullPointerException("pointer cannot be null");
         }
-        if (pointer.isEmpty() || pointer.equals("#")) {
+        if (pointer.isEmpty() || "#".equals(pointer)) {
             this.refTokens = Collections.emptyList();
             return;
         }
@@ -175,7 +150,7 @@ public class JSONPointer {
         do {
             prevSlashIdx = slashIdx + 1;
             slashIdx = refs.indexOf('/', prevSlashIdx);
-            if (prevSlashIdx == slashIdx || prevSlashIdx == refs.length()) {
+            if(prevSlashIdx == slashIdx || prevSlashIdx == refs.length()) {
                 // found 2 slashes in a row ( obj//next )
                 // or single slash at the end of a string ( obj/test/ )
                 this.refTokens.add("");
@@ -207,7 +182,6 @@ public class JSONPointer {
     /**
      * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
-    @NonNull
     private static String unescape(String token) {
         return token.replace("~1", "/").replace("~0", "~");
     }
@@ -222,9 +196,7 @@ public class JSONPointer {
      * @return the result of the evaluation
      * @throws JSONPointerException if an error occurs during evaluation
      */
-    @Nullable
-    public Object queryFrom(@Nullable Object document)
-            throws JSONPointerException {
+    public Object queryFrom(Object document) throws JSONPointerException {
         if (this.refTokens.isEmpty()) {
             return document;
         }
@@ -250,23 +222,19 @@ public class JSONPointer {
      * @return the matched object. If no matching item is found a
      * @throws JSONPointerException is thrown if the index is out of bounds
      */
-    @NonNull
-    private static Object readByIndexToken(Object current,
-                                           String indexToken)
-            throws JSONPointerException {
+    private static Object readByIndexToken(Object current, String indexToken) throws JSONPointerException {
         try {
             int index = Integer.parseInt(indexToken);
             JSONArray currentArr = (JSONArray) current;
             if (index >= currentArr.length()) {
-                throw new JSONPointerException(
-                        format("index %s is out of bounds - the array has %d elements", indexToken,
-                               Integer.valueOf(currentArr.length())));
+                throw new JSONPointerException(format("index %s is out of bounds - the array has %d elements", indexToken,
+                        Integer.valueOf(currentArr.length())));
             }
             try {
-                return currentArr.get(index);
-            } catch (JSONException e) {
-                throw new JSONPointerException("Error reading value at index position " + index, e);
-            }
+				return currentArr.get(index);
+			} catch (JSONException e) {
+				throw new JSONPointerException("Error reading value at index position " + index, e);
+			}
         } catch (NumberFormatException e) {
             throw new JSONPointerException(format("%s is not an array index", indexToken), e);
         }
@@ -277,9 +245,8 @@ public class JSONPointer {
      * representation
      */
     @Override
-    @NonNull
     public String toString() {
-        StringBuilder rval = new StringBuilder("");
+        StringBuilder rval = new StringBuilder();
         for (String token: this.refTokens) {
             rval.append('/').append(escape(token));
         }
@@ -295,7 +262,6 @@ public class JSONPointer {
      * 
      * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
-    @NonNull
     private static String escape(String token) {
         return token.replace("~", "~0")
                 .replace("/", "~1");
@@ -306,7 +272,6 @@ public class JSONPointer {
      * fragment identifier representation
      * @return a uri fragment string
      */
-    @NonNull
     public String toURIFragment() {
         try {
             StringBuilder rval = new StringBuilder("#");

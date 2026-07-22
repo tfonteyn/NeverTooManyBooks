@@ -1,23 +1,3 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 
 import java.io.IOException;
@@ -27,8 +7,7 @@ import java.io.Writer;
  * Performance optimised alternative for {@link java.io.StringWriter}
  * using internally a {@link StringBuilder} instead of a {@link StringBuffer}.
  */
-public class StringBuilderWriter
-        extends Writer {
+public class StringBuilderWriter extends Writer {
     private final StringBuilder builder;
 
     /**
@@ -58,11 +37,9 @@ public class StringBuilderWriter
     }
 
     @Override
-    public void write(char[] cbuf,
-                      int offset,
-                      int length) {
+    public void write(char[] cbuf, int offset, int length) {
         if ((offset < 0) || (offset > cbuf.length) || (length < 0) ||
-            ((offset + length) > cbuf.length) || ((offset + length) < 0)) {
+                ((offset + length) > cbuf.length) || ((offset + length) < 0)) {
             throw new IndexOutOfBoundsException();
         } else if (length == 0) {
             return;
@@ -76,9 +53,7 @@ public class StringBuilderWriter
     }
 
     @Override
-    public void write(String str,
-                      int offset,
-                      int length) {
+    public void write(String str, int offset, int length) {
         builder.append(str, offset, offset + length);
     }
 
@@ -89,9 +64,7 @@ public class StringBuilderWriter
     }
 
     @Override
-    public StringBuilderWriter append(CharSequence csq,
-                                      int start,
-                                      int end) {
+    public StringBuilderWriter append(CharSequence csq, int start, int end) {
         if (csq == null) {
             csq = "null";
         }
@@ -114,7 +87,6 @@ public class StringBuilderWriter
     }
 
     @Override
-    public void close()
-            throws IOException {
+    public void close() throws IOException {
     }
 }

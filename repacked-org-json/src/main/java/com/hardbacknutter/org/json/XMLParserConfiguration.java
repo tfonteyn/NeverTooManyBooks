@@ -1,23 +1,3 @@
-/*
- * @Copyright 2018-2025 HardBackNutter
- * @License GNU General Public License
- *
- * This file is part of NeverTooManyBooks.
- *
- * NeverTooManyBooks is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * NeverTooManyBooks is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.hardbacknutter.org.json;
 /*
 Public Domain.
@@ -34,21 +14,30 @@ import java.util.Set;
  * Configuration object for the XML parser. The configuration is immutable.
  * @author AylwardJ
  */
-@SuppressWarnings("ALL")
-public class XMLParserConfiguration
-        extends ParserConfiguration {
+@SuppressWarnings({""})
+public class XMLParserConfiguration extends ParserConfiguration {
 
     /**
      * The default maximum nesting depth when parsing a XML document to JSON.
      */
 //    public static final int DEFAULT_MAXIMUM_NESTING_DEPTH = 512; // We could override
 
+    /**
+     * Allow user to control how numbers are parsed
+     */
+    private boolean keepNumberAsString;
+
+    /**
+     * Allow user to control how booleans are parsed
+     */
+    private boolean keepBooleanAsString;
+
     /** Original Configuration of the XML Parser. */
     public static final XMLParserConfiguration ORIGINAL
-            = new XMLParserConfiguration();
+        = new XMLParserConfiguration();
     /** Original configuration of the XML Parser except that values are kept as strings. */
     public static final XMLParserConfiguration KEEP_STRINGS
-            = new XMLParserConfiguration().withKeepStrings(true);
+        = new XMLParserConfiguration().withKeepStrings(true);
 
     /**
      * The name of the key in a JSON Object that indicates a CDATA section. Historically this has
@@ -95,7 +84,7 @@ public class XMLParserConfiguration
      * Default parser configuration. Does not keep strings (tries to implicitly convert
      * values), and the CDATA Tag Name is "content". Trims whitespace.
      */
-    public XMLParserConfiguration() {
+    public XMLParserConfiguration () {
         super();
         this.cDataTagName = "content";
         this.convertNilAttributeToNull = false;
@@ -113,7 +102,7 @@ public class XMLParserConfiguration
      *      This constructor may be removed in a future release.
      */
     @Deprecated
-    public XMLParserConfiguration(final boolean keepStrings) {
+    public XMLParserConfiguration (final boolean keepStrings) {
         this(keepStrings, "content", false);
     }
 
@@ -128,7 +117,7 @@ public class XMLParserConfiguration
      *      This constructor may be removed in a future release.
      */
     @Deprecated
-    public XMLParserConfiguration(final String cDataTagName) {
+    public XMLParserConfiguration (final String cDataTagName) {
         this(false, cDataTagName, false);
     }
 
@@ -143,8 +132,7 @@ public class XMLParserConfiguration
      *      This constructor may be removed in a future release.
      */
     @Deprecated
-    public XMLParserConfiguration(final boolean keepStrings,
-                                  final String cDataTagName) {
+    public XMLParserConfiguration (final boolean keepStrings, final String cDataTagName) {
         super(keepStrings, DEFAULT_MAXIMUM_NESTING_DEPTH);
         this.cDataTagName = cDataTagName;
         this.convertNilAttributeToNull = false;
@@ -163,10 +151,10 @@ public class XMLParserConfiguration
      *      This constructor may be removed or marked private in a future release.
      */
     @Deprecated
-    public XMLParserConfiguration(final boolean keepStrings,
-                                  final String cDataTagName,
-                                  final boolean convertNilAttributeToNull) {
-        super(keepStrings, DEFAULT_MAXIMUM_NESTING_DEPTH);
+    public XMLParserConfiguration (final boolean keepStrings, final String cDataTagName, final boolean convertNilAttributeToNull) {
+        super(false, DEFAULT_MAXIMUM_NESTING_DEPTH);
+        this.keepNumberAsString = keepStrings;
+        this.keepBooleanAsString = keepStrings;
         this.cDataTagName = cDataTagName;
         this.convertNilAttributeToNull = convertNilAttributeToNull;
     }
@@ -185,14 +173,12 @@ public class XMLParserConfiguration
      * @param maxNestingDepth <code>int</code> to limit the nesting depth
      * @param closeEmptyTag <code>boolean</code> to turn on explicit end tag for tag with empty value
      */
-    private XMLParserConfiguration(final boolean keepStrings,
-                                   final String cDataTagName,
-                                   final boolean convertNilAttributeToNull,
-                                   final Map<String, XMLXsiTypeConverter<?>> xsiTypeMap,
-                                   final Set<String> forceList,
-                                   final int maxNestingDepth,
-                                   final boolean closeEmptyTag) {
-        super(keepStrings, maxNestingDepth);
+    private XMLParserConfiguration (final boolean keepStrings, final String cDataTagName,
+            final boolean convertNilAttributeToNull, final Map<String, XMLXsiTypeConverter<?>> xsiTypeMap, final Set<String> forceList,
+            final int maxNestingDepth, final boolean closeEmptyTag, final boolean keepNumberAsString, final boolean keepBooleanAsString) {
+        super(false, maxNestingDepth);
+        this.keepNumberAsString = keepNumberAsString;
+        this.keepBooleanAsString = keepBooleanAsString;
         this.cDataTagName = cDataTagName;
         this.convertNilAttributeToNull = convertNilAttributeToNull;
         this.xsiTypeMap = Collections.unmodifiableMap(xsiTypeMap);
@@ -217,7 +203,9 @@ public class XMLParserConfiguration
                 this.xsiTypeMap,
                 this.forceList,
                 this.maxNestingDepth,
-                this.closeEmptyTag
+                this.closeEmptyTag,
+                this.keepNumberAsString,
+                this.keepBooleanAsString
         );
         config.shouldTrimWhiteSpace = this.shouldTrimWhiteSpace;
         return config;
@@ -235,7 +223,43 @@ public class XMLParserConfiguration
     @SuppressWarnings("unchecked")
     @Override
     public XMLParserConfiguration withKeepStrings(final boolean newVal) {
-        return super.withKeepStrings(newVal);
+        XMLParserConfiguration newConfig = this.clone();
+        newConfig.keepStrings = newVal;
+        newConfig.keepNumberAsString = newVal;
+        newConfig.keepBooleanAsString = newVal;
+        return newConfig;
+    }
+
+    /**
+     * When parsing the XML into JSON, specifies if numbers should be kept as strings (<code>1</code>), or if
+     * they should try to be guessed into JSON values (numeric, boolean, string)
+     *
+     * @param newVal
+     *      new value to use for the <code>keepNumberAsString</code> configuration option.
+     *
+     * @return The existing configuration will not be modified. A new configuration is returned.
+     */
+    public XMLParserConfiguration withKeepNumberAsString(final boolean newVal) {
+        XMLParserConfiguration newConfig = this.clone();
+        newConfig.keepNumberAsString = newVal;
+        newConfig.keepStrings = newConfig.keepBooleanAsString && newConfig.keepNumberAsString;
+        return newConfig;
+    }
+
+    /**
+     * When parsing the XML into JSON, specifies if booleans should be kept as strings (<code>true</code>), or if
+     * they should try to be guessed into JSON values (numeric, boolean, string)
+     *
+     * @param newVal
+     *      new value to use for the <code>withKeepBooleanAsString</code> configuration option.
+     *
+     * @return The existing configuration will not be modified. A new configuration is returned.
+     */
+    public XMLParserConfiguration withKeepBooleanAsString(final boolean newVal) {
+        XMLParserConfiguration newConfig = this.clone();
+        newConfig.keepBooleanAsString = newVal;
+        newConfig.keepStrings = newConfig.keepBooleanAsString && newConfig.keepNumberAsString;
+        return newConfig;
     }
 
     /**
@@ -247,6 +271,26 @@ public class XMLParserConfiguration
      */
     public String getcDataTagName() {
         return this.cDataTagName;
+    }
+
+    /**
+     * When parsing the XML into JSONML, specifies if numbers should be kept as strings (<code>true</code>), or if
+     * they should try to be guessed into JSON values (numeric, boolean, string).
+     *
+     * @return The <code>keepStrings</code> configuration value.
+     */
+    public boolean isKeepNumberAsString() {
+        return this.keepNumberAsString;
+    }
+
+    /**
+     * When parsing the XML into JSONML, specifies if booleans should be kept as strings (<code>true</code>), or if
+     * they should try to be guessed into JSON values (numeric, boolean, string).
+     *
+     * @return The <code>keepStrings</code> configuration value.
+     */
+    public boolean isKeepBooleanAsString() {
+        return this.keepBooleanAsString;
     }
 
     /**
@@ -314,8 +358,7 @@ public class XMLParserConfiguration
      */
     public XMLParserConfiguration withXsiTypeMap(final Map<String, XMLXsiTypeConverter<?>> xsiTypeMap) {
         XMLParserConfiguration newConfig = this.clone();
-        Map<String, XMLXsiTypeConverter<?>> cloneXsiTypeMap = new HashMap<String, XMLXsiTypeConverter<?>>(
-                xsiTypeMap);
+        Map<String, XMLXsiTypeConverter<?>> cloneXsiTypeMap = new HashMap<String, XMLXsiTypeConverter<?>>(xsiTypeMap);
         newConfig.xsiTypeMap = Collections.unmodifiableMap(cloneXsiTypeMap);
         return newConfig;
     }
@@ -362,7 +405,7 @@ public class XMLParserConfiguration
      * @param closeEmptyTag new value for the closeEmptyTag property
      * @return same instance of configuration with empty tag config updated
      */
-    public XMLParserConfiguration withCloseEmptyTag(boolean closeEmptyTag) {
+    public XMLParserConfiguration withCloseEmptyTag(boolean closeEmptyTag){
         XMLParserConfiguration clonedConfiguration = this.clone();
         clonedConfiguration.closeEmptyTag = closeEmptyTag;
         return clonedConfiguration;
@@ -375,7 +418,7 @@ public class XMLParserConfiguration
      * @param shouldTrimWhiteSpace boolean to set trimming on or off. Off is default.
      * @return same instance of configuration with empty tag config updated
      */
-    public XMLParserConfiguration withShouldTrimWhitespace(boolean shouldTrimWhiteSpace) {
+    public XMLParserConfiguration withShouldTrimWhitespace(boolean shouldTrimWhiteSpace){
         XMLParserConfiguration clonedConfiguration = this.clone();
         clonedConfiguration.shouldTrimWhiteSpace = shouldTrimWhiteSpace;
         return clonedConfiguration;
