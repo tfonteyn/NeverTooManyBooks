@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
+import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -88,20 +89,30 @@ class WikidataBookParser {
     void parse()
             throws JSONException {
 
-        // We expect one result, just throw otherwise
-        final JSONObject item = document.getJSONObject("results")
-                                        .getJSONArray("bindings")
-                                        .getJSONObject(0);
+        // We expect one result
+        final JSONObject results = document.optJSONObject("results");
+        if (results == null) {
+            return;
+        }
+        final JSONArray bindings = results.optJSONArray("bindings");
+        if (bindings == null) {
+            return;
+        }
+        final JSONObject item = bindings.optJSONObject(0);
+        if (item == null) {
+            return;
+        }
 
         final List<Identifier.Value> ivs = new ArrayList<>();
 
         JSONObject o;
 
-        // The title is mandatory.
+        // The title is mandatory, otherwise throw!
         o = item.getJSONObject("title");
         book.setTitle(o.getString(VALUE));
-        // and the item itself, being the SID
+        // and the item itself, being the SID, otherwise throw!
         o = item.getJSONObject("item");
+
         final String sid = getQ(o.getString(VALUE));
         // paranoia...
         if (sid != null && !sid.isEmpty()) {
