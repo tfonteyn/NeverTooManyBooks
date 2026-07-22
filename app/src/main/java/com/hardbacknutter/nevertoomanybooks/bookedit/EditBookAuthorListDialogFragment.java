@@ -219,7 +219,7 @@ public class EditBookAuthorListDialogFragment
 
     private void editEntry(final int position) {
         //noinspection DataFlowIssue
-        editLauncher.edit(getActivity(), authorList.get(position));
+        editLauncher.edit(getActivity(), authorList.get(position), null);
     }
 
     /**
@@ -290,7 +290,7 @@ public class EditBookAuthorListDialogFragment
         final Author author = Author.from(name);
         if (withDetails) {
             //noinspection DataFlowIssue
-            editLauncher.add(getActivity(), author);
+            editLauncher.add(getActivity(), author, null);
         } else {
             add(author);
         }

@@ -58,6 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
@@ -214,9 +216,20 @@ public class EditBookSeriesListDialogFragment
         vb.seriesList.setHasFixedSize(true);
     }
 
+    @Nullable
+    private String issn8() {
+        final ProductCode productCode = vm.getBook().getProductCode();
+        if (productCode != null
+            && (productCode.getType() == ProductCodeType.Issn8
+                || productCode.getType() == ProductCodeType.Issn13)) {
+            return productCode.asText(ProductCodeType.Issn8);
+        }
+        return null;
+    }
+
     private void editEntry(final int position) {
         //noinspection DataFlowIssue
-        editLauncher.edit(getActivity(), seriesList.get(position));
+        editLauncher.edit(getActivity(), seriesList.get(position), issn8());
     }
 
     /**
@@ -289,7 +302,7 @@ public class EditBookSeriesListDialogFragment
         series.setNumber(vb.seriesNum.getText().toString().strip());
         if (withDetails) {
             //noinspection DataFlowIssue
-            editLauncher.add(getActivity(), series);
+            editLauncher.add(getActivity(), series, issn8());
         } else {
             add(series);
         }

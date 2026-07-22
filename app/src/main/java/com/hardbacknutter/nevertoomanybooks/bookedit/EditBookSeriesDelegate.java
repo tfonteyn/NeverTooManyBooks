@@ -160,12 +160,20 @@ class EditBookSeriesDelegate
     }
 
     private void initIssn(@NonNull final Series series) {
-        vb.seriesIssn.setText(series.getIdentifierValue(Identifier.SID_ISSN)
-                                    .orElse(""));
-        ExtClearTextEndIconDelegate.attach(vb.lblSeriesIssn, null);
-        TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
-    }
+        final String issn = series.getIdentifierValue(Identifier.SID_ISSN)
+                                  .orElse(seriesVm.getBookIssn());
+        if (issn != null) {
+            vb.seriesIssn.setText(issn);
+            ExtClearTextEndIconDelegate.attach(vb.lblSeriesIssn, null);
+            TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
 
+            vb.lblSeriesIssn.setVisibility(View.VISIBLE);
+            vb.seriesIssn.setVisibility(View.VISIBLE);
+        } else {
+            vb.lblSeriesIssn.setVisibility(View.GONE);
+            vb.seriesIssn.setVisibility(View.GONE);
+        }
+    }
 
     private void initTitle(@NonNull final Context context,
                            @NonNull final Series series) {

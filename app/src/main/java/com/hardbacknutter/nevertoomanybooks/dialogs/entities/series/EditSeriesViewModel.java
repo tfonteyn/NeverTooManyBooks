@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
@@ -47,6 +48,8 @@ public class EditSeriesViewModel
 
     /** Current edit. */
     private Series currentEdit;
+    private String bookIssn;
+
     private SeriesDao dao;
 
     /**
@@ -58,6 +61,9 @@ public class EditSeriesViewModel
         if (dao == null) {
             dao = ServiceLocator.getInstance().getSeriesDao();
 
+            bookIssn = args.getString(EditParcelableLauncher.BKEY_BOOK_ISSN, null);
+
+            //noinspection deprecation
             original = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
                                               EditParcelableLauncher.BKEY_ITEM);
 
@@ -68,6 +74,16 @@ public class EditSeriesViewModel
     @NonNull
     List<String> getAllTitles() {
         return dao.getNames();
+    }
+
+    /**
+     * The ISSN from the book this Series belongs to.
+     *
+     * @return issn, or {@code null} if the book had none, or if it was not an ISSN.
+     */
+    @Nullable
+    public String getBookIssn() {
+        return bookIssn;
     }
 
     @NonNull

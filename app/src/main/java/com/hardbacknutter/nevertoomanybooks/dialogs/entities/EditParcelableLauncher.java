@@ -50,6 +50,13 @@ public final class EditParcelableLauncher<T extends Parcelable>
 
     /** Input value: the item we're going to edit. */
     public static final String BKEY_ITEM = TAG + ":item";
+    /**
+     * Input value: the issn-8 code from a book.
+     *
+     * @see #add(Context, Parcelable, String)
+     */
+    public static final String BKEY_BOOK_ISSN = TAG + ":issn";
+
     /** Output value: the item with the edits. */
     private static final String MODIFIED = TAG + ":m";
 
@@ -105,7 +112,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
     }
 
     /**
-     * Set the listener which will be used by {@link #add(Context, Parcelable)}.
+     * Set the listener which will be used by {@link #add(Context, Parcelable, String)}.
      *
      * @param listener to use
      */
@@ -114,7 +121,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
     }
 
     /**
-     * Set the listener which will be used by {@link #edit(Context, Parcelable)}.
+     * Set the listener which will be used by {@link #edit(Context, Parcelable, String)}.
      *
      * @param listener to use
      */
@@ -125,19 +132,27 @@ public final class EditParcelableLauncher<T extends Parcelable>
     /**
      * Launch the dialog for an add-operation.
      *
-     * @param context preferably the {@code Activity}
-     *                but another UI {@code Context} will also do.
-     * @param item    to edit
+     * @param context  preferably the {@code Activity}
+     *                 but another UI {@code Context} will also do.
+     * @param item     to edit
+     * @param bookIssn (optional) whether to show the ISSN edit field or hide it.
+     *                 Will be ignored by Book-Author/Book-Publisher; pass in {@code null}.
+     *                 Book-Series: the ISSN-8 code string from the book,
+     *                 or {@code null} if the code is absent or not an ISSN
      *
      * @throws NullPointerException if there is no {@link OnAddListener} set
      */
     public void add(@NonNull @UiContext final Context context,
-                    @NonNull final T item) {
+                    @NonNull final T item,
+                    @Nullable final String bookIssn) {
         Objects.requireNonNull(onAddListener, ERROR_NULL_ON_ADD_LISTENER);
 
-        final Bundle args = new Bundle(3);
+        final Bundle args = new Bundle(4);
         args.putParcelable(EditAction.BKEY, EditAction.Add);
         args.putParcelable(BKEY_ITEM, item);
+        if (bookIssn != null) {
+            args.putString(BKEY_BOOK_ISSN, bookIssn);
+        }
 
         showDialog(context, args);
     }
@@ -145,23 +160,32 @@ public final class EditParcelableLauncher<T extends Parcelable>
     /**
      * Launch the dialog for an edit-operation.
      *
-     * @param context preferably the {@code Activity}
-     *                but another UI {@code Context} will also do.
-     * @param item    to edit
+     * @param context  preferably the {@code Activity}
+     *                 but another UI {@code Context} will also do.
+     * @param item     to edit
+     * @param bookIssn (optional) whether to show the ISSN edit field or hide it.
+     *                 Will be ignored by Book-Author/Book-Publisher; pass in {@code null}.
+     *                 Book-Series: the ISSN-8 code string from the book,
+     *                 or {@code null} if the code is absent or not an ISSN
      *
      * @throws NullPointerException if there is no {@link OnEditListener} set
      */
     public void edit(@NonNull @UiContext final Context context,
-                     @NonNull final T item) {
+                     @NonNull final T item,
+                     @Nullable final String bookIssn) {
         Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Bundle args = new Bundle(3);
+        final Bundle args = new Bundle(4);
         args.putParcelable(EditAction.BKEY, EditAction.Edit);
         args.putParcelable(BKEY_ITEM, item);
+        if (bookIssn != null) {
+            args.putString(BKEY_BOOK_ISSN, bookIssn);
+        }
 
         showDialog(context, args);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
