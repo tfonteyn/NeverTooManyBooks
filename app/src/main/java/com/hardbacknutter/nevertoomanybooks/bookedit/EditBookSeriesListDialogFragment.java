@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCodeType;
@@ -453,7 +454,17 @@ public class EditBookSeriesListDialogFragment
 
         void onBind(@NonNull final Series series) {
             final Context context = itemView.getContext();
-            seriesView.setText(series.getLabel(context));
+            String label = series.getLabel(context);
+            String issn = series.getIdentifierValue(Identifier.SID_ISSN).orElse(null);
+            if (issn != null) {
+                // sanity check, it should always be 8 characters.
+                if (issn.length() == 8) {
+                    issn = issn.substring(0, 4) + '-' + issn.substring(4, 8);
+                }
+                label = context.getString(R.string.a_space_b, label, issn);
+            }
+
+            seriesView.setText(label);
             final int dc = series.isComplete() ? R.drawable.done_all_24px : 0;
             seriesView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, dc, 0);
         }
