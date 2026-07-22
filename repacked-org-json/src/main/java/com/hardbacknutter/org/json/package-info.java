@@ -23,6 +23,11 @@
  * <p>
  * No modification, except nullable/nonnull annotations added in some places.
  * Package name and imports adjusted to new structure.
+ * <p>
+ * Current version: 20260722
+ * <p>
+ * Use {@code org_json_annotations.patch} from this module's root folder
+ * to apply to future versions.
  *
  * @see <a href="https://github.com/stleary/JSON-java">https://github.com/stleary/JSON-java</a>
  */

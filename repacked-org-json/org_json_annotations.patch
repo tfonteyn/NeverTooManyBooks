@@ -1,0 +1,1717 @@
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CDL.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CDL.java
+index ec5eb3c185..9e06d5e4db 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CDL.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CDL.java
+@@ -23,6 +23,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2016-05-01
+  */
++@SuppressWarnings("ALL")
+ public class CDL {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Cookie.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Cookie.java
+index a6f0fde7e2..51d9750981 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Cookie.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Cookie.java
+@@ -13,6 +13,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2015-12-09
+  */
++@SuppressWarnings("ALL")
+ public class Cookie {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CookieList.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CookieList.java
+index 034edfad92..8b39c98b6a 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CookieList.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/CookieList.java
+@@ -9,6 +9,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2015-12-09
+  */
++@SuppressWarnings("ALL")
+ public class CookieList {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTP.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTP.java
+index b5b8a67924..c491157e39 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTP.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTP.java
+@@ -11,6 +11,7 @@ import java.util.Locale;
+  * @author JSON.org
+  * @version 2015-12-09
+  */
++@SuppressWarnings("ALL")
+ public class HTTP {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTPTokener.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTPTokener.java
+index b5e91a6c7c..dd0527031b 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTPTokener.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/HTTPTokener.java
+@@ -10,6 +10,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2015-12-09
+  */
++@SuppressWarnings("ALL")
+ public class HTTPTokener extends JSONTokener {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONArray.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONArray.java
+index 21dd595f2c..e44405b1aa 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONArray.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONArray.java
+@@ -4,7 +4,7 @@ package com.hardbacknutter.org.json;
+ Public Domain.
+  */
+
+-import java.io.IOException;
++import androidx.annotation.NonNull;import androidx.annotation.Nullable;import java.io.IOException;
+ import java.io.Writer;
+ import java.lang.reflect.Array;
+ import java.math.BigDecimal;
+@@ -60,6 +60,7 @@ import java.util.Map;
+  * @author JSON.org
+  * @version 2016-08/15
+  */
++@SuppressWarnings("ALL")
+ public class JSONArray implements Iterable<Object> {
+
+     /**
+@@ -82,7 +83,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If there is a syntax error.
+      */
+-    public JSONArray(JSONTokener x) throws JSONException {
++    public JSONArray(@NonNull JSONTokener x) throws JSONException {
+         this(x, x.getJsonParserConfiguration());
+     }
+
+@@ -93,7 +94,7 @@ public class JSONArray implements Iterable<Object> {
+      * @param jsonParserConfiguration A JSONParserConfiguration instance that controls the behavior of the parser.
+      * @throws JSONException If a syntax error occurs during the construction of the JSONArray.
+      */
+-    public JSONArray(JSONTokener x, JSONParserConfiguration jsonParserConfiguration) throws JSONException {
++    public JSONArray(@NonNull JSONTokener x, @Nullable JSONParserConfiguration jsonParserConfiguration) throws JSONException {
+         this();
+
+         boolean isInitial = x.getPrevious() == 0;
+@@ -183,7 +184,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If there is a syntax error.
+      */
+-    public JSONArray(String source) throws JSONException {
++    public JSONArray(@NonNull String source) throws JSONException {
+         this(source, new JSONParserConfiguration());
+     }
+
+@@ -198,7 +199,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If there is a syntax error.
+      */
+-    public JSONArray(String source, JSONParserConfiguration jsonParserConfiguration) throws JSONException {
++    public JSONArray(@NonNull String source, @Nullable JSONParserConfiguration jsonParserConfiguration) throws JSONException {
+         this(new JSONTokener(source, jsonParserConfiguration), jsonParserConfiguration);
+     }
+
+@@ -208,7 +209,7 @@ public class JSONArray implements Iterable<Object> {
+      * @param collection
+      *            A Collection.
+      */
+-    public JSONArray(Collection<?> collection) {
++    public JSONArray(@Nullable Collection<?> collection) {
+       this(collection, 0, new JSONParserConfiguration());
+     }
+
+@@ -220,7 +221,7 @@ public class JSONArray implements Iterable<Object> {
+      * @param jsonParserConfiguration
+      *            Configuration object for the JSON parser
+      */
+-    public JSONArray(Collection<?> collection, JSONParserConfiguration jsonParserConfiguration) {
++    public JSONArray(@Nullable Collection<?> collection, @Nullable JSONParserConfiguration jsonParserConfiguration) {
+         this(collection, 0, jsonParserConfiguration);
+     }
+
+@@ -234,7 +235,7 @@ public class JSONArray implements Iterable<Object> {
+      * @param jsonParserConfiguration
+      *             Configuration object for the JSON parser
+      */
+-    JSONArray(Collection<?> collection, int recursionDepth, JSONParserConfiguration jsonParserConfiguration) {
++    JSONArray(@Nullable Collection<?> collection, int recursionDepth, @Nullable JSONParserConfiguration jsonParserConfiguration) {
+         if (recursionDepth > jsonParserConfiguration.getMaxNestingDepth()) {
+           throw new JSONException("JSONArray has reached recursion depth limit of " + jsonParserConfiguration.getMaxNestingDepth());
+         }
+@@ -252,7 +253,7 @@ public class JSONArray implements Iterable<Object> {
+      * @param iter
+      *            A Iterable collection.
+      */
+-    public JSONArray(Iterable<?> iter) {
++    public JSONArray(@Nullable Iterable<?> iter) {
+         this();
+         if (iter == null) {
+             return;
+@@ -266,7 +267,7 @@ public class JSONArray implements Iterable<Object> {
+      * @param array
+      *            A array.
+      */
+-    public JSONArray(JSONArray array) {
++    public JSONArray(@Nullable JSONArray array) {
+         if (array == null) {
+             this.myArrayList = new ArrayList<Object>();
+         } else {
+@@ -288,7 +289,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws NullPointerException
+      *            Thrown if the array parameter is null.
+      */
+-    public JSONArray(Object array) throws JSONException {
++    public JSONArray(@NonNull Object array) throws JSONException {
+         this();
+         if (!array.getClass().isArray()) {
+             throw new JSONException(
+@@ -327,6 +328,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If there is no value for the index.
+      */
++    @NonNull
+     public Object get(int index) throws JSONException {
+         Object object = this.opt(index);
+         if (object == null) {
+@@ -412,6 +414,7 @@ public class JSONArray implements Iterable<Object> {
+      *             if the key is not found or if the value is not a Number
+      *             object and cannot be converted to a number.
+      */
++    @NonNull
+     public Number getNumber(int index) throws JSONException {
+         Object object = this.get(index);
+         try {
+@@ -438,7 +441,8 @@ public class JSONArray implements Iterable<Object> {
+      *            if the key is not found or if the value cannot be converted
+      *            to an enum.
+      */
+-    public <E extends Enum<E>> E getEnum(Class<E> clazz, int index) throws JSONException {
++    @NonNull
++    public <E extends Enum<E>> E getEnum(@NonNull Class<E> clazz, int index) throws JSONException {
+         E val = optEnum(clazz, index);
+         if(val==null) {
+             // JSONException should really take a throwable argument.
+@@ -463,6 +467,7 @@ public class JSONArray implements Iterable<Object> {
+      *             If the key is not found or if the value cannot be converted
+      *             to a BigDecimal.
+      */
++    @NonNull
+     public BigDecimal getBigDecimal (int index) throws JSONException {
+         Object object = this.get(index);
+         BigDecimal val = JSONObject.objectToBigDecimal(object, null);
+@@ -482,6 +487,7 @@ public class JSONArray implements Iterable<Object> {
+      *             If the key is not found or if the value cannot be converted
+      *             to a BigInteger.
+      */
++    @NonNull
+     public BigInteger getBigInteger (int index) throws JSONException {
+         return this.getBigInteger(index, new JSONParserConfiguration());
+     }
+@@ -502,7 +508,8 @@ public class JSONArray implements Iterable<Object> {
+      *             If the key is not found or if the value cannot be converted
+      *             to a BigInteger.
+      */
+-    public BigInteger getBigInteger (int index, JSONParserConfiguration jsonParserConfiguration)
++    @NonNull
++    public BigInteger getBigInteger (int index, @Nullable JSONParserConfiguration jsonParserConfiguration)
+             throws JSONException {
+         Object object = this.get(index);
+         BigInteger val = JSONObject.objectToBigInteger(object, null, jsonParserConfiguration);
+@@ -543,6 +550,7 @@ public class JSONArray implements Iterable<Object> {
+      *             If there is no value for the index. or if the value is not a
+      *             JSONArray
+      */
++    @NonNull
+     public JSONArray getJSONArray(int index) throws JSONException {
+         Object object = this.get(index);
+         if (object instanceof JSONArray) {
+@@ -561,6 +569,7 @@ public class JSONArray implements Iterable<Object> {
+      *             If there is no value for the index or if the value is not a
+      *             JSONObject
+      */
++    @NonNull
+     public JSONObject getJSONObject(int index) throws JSONException {
+         Object object = this.get(index);
+         if (object instanceof JSONObject) {
+@@ -600,6 +609,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If there is no string value for the index.
+      */
++    @NonNull
+     public String getString(int index) throws JSONException {
+         Object object = this.get(index);
+         if (object instanceof String) {
+@@ -630,7 +640,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If the array contains an invalid number.
+      */
+-    public String join(String separator) throws JSONException {
++    @NonNull
++    public String join(@Nullable String separator) throws JSONException {
+         int len = this.length();
+         if (len == 0) {
+             return "";
+@@ -670,6 +681,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1. If not, null is returned.
+      * @return An object value, or null if there is no object at that index.
+      */
++    @Nullable
+     public Object opt(int index) {
+         return (index < 0 || index >= this.length()) ? null : this.myArrayList
+                 .get(index);
+@@ -716,6 +728,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return The truth.
+      */
++    @Nullable
+     public Boolean optBooleanObject(int index) {
+         return this.optBooleanObject(index, false);
+     }
+@@ -731,7 +744,8 @@ public class JSONArray implements Iterable<Object> {
+      *            A boolean default.
+      * @return The truth.
+      */
+-    public Boolean optBooleanObject(int index, Boolean defaultValue) {
++    @Nullable
++    public Boolean optBooleanObject(int index, @Nullable Boolean defaultValue) {
+         try {
+             return this.getBoolean(index);
+         } catch (Exception e) {
+@@ -780,6 +794,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return The object.
+      */
++    @Nullable
+     public Double optDoubleObject(int index) {
+         return this.optDoubleObject(index, Double.NaN);
+     }
+@@ -795,7 +810,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default object.
+      * @return The object.
+      */
+-    public Double optDoubleObject(int index, Double defaultValue) {
++    @Nullable
++    public Double optDoubleObject(int index, @Nullable Double defaultValue) {
+         final Number val = this.optNumber(index, null);
+         if (val == null) {
+             return defaultValue;
+@@ -844,6 +860,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return The object.
+      */
++    @Nullable
+     public Float optFloatObject(int index) {
+         return this.optFloatObject(index, Float.NaN);
+     }
+@@ -859,7 +876,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default object.
+      * @return The object.
+      */
+-    public Float optFloatObject(int index, Float defaultValue) {
++    @Nullable
++    public Float optFloatObject(int index, @Nullable Float defaultValue) {
+         final Number val = this.optNumber(index, null);
+         if (val == null) {
+             return defaultValue;
+@@ -908,6 +926,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return The object.
+      */
++    @Nullable
+     public Integer optIntegerObject(int index) {
+         return this.optIntegerObject(index, 0);
+     }
+@@ -923,7 +942,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default object.
+      * @return The object.
+      */
+-    public Integer optIntegerObject(int index, Integer defaultValue) {
++    @Nullable
++    public Integer optIntegerObject(int index, @Nullable Integer defaultValue) {
+         final Number val = this.optNumber(index, null);
+         if (val == null) {
+             return defaultValue;
+@@ -942,7 +962,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return The enum value at the index location or null if not found
+      */
+-    public <E extends Enum<E>> E optEnum(Class<E> clazz, int index) {
++    @Nullable
++    public <E extends Enum<E>> E optEnum(@NonNull Class<E> clazz, int index) {
+         return this.optEnum(clazz, index, null);
+     }
+
+@@ -960,7 +981,8 @@ public class JSONArray implements Iterable<Object> {
+      * @return The enum value at the index location or defaultValue if
+      *            the value is not found or cannot be assigned to clazz
+      */
+-    public <E extends Enum<E>> E optEnum(Class<E> clazz, int index, E defaultValue) {
++    @Nullable
++    public <E extends Enum<E>> E optEnum(@NonNull Class<E> clazz, int index, @Nullable E defaultValue) {
+         try {
+             Object val = this.opt(index);
+             if (JSONObject.NULL.equals(val)) {
+@@ -991,7 +1013,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default value.
+      * @return The value.
+      */
+-    public BigInteger optBigInteger(int index, BigInteger defaultValue) {
++    @Nullable
++    public BigInteger optBigInteger(int index, @Nullable BigInteger defaultValue) {
+         return this.optBigInteger(index, defaultValue, new JSONParserConfiguration());
+     }
+
+@@ -1013,8 +1036,9 @@ public class JSONArray implements Iterable<Object> {
+      *            this check.
+      * @return The value.
+      */
+-    public BigInteger optBigInteger(int index, BigInteger defaultValue,
+-            JSONParserConfiguration jsonParserConfiguration) {
++    @Nullable
++    public BigInteger optBigInteger(int index, @Nullable BigInteger defaultValue,
++            @Nullable JSONParserConfiguration jsonParserConfiguration) {
+         Object val = this.opt(index);
+         return JSONObject.objectToBigInteger(val, defaultValue, jsonParserConfiguration);
+     }
+@@ -1033,7 +1057,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default value.
+      * @return The value.
+      */
+-    public BigDecimal optBigDecimal(int index, BigDecimal defaultValue) {
++    @Nullable
++    public BigDecimal optBigDecimal(int index, @Nullable BigDecimal defaultValue) {
+         Object val = this.opt(index);
+         return JSONObject.objectToBigDecimal(val, defaultValue);
+     }
+@@ -1046,6 +1071,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return A JSONArray value.
+      */
++    @Nullable
+     public JSONArray optJSONArray(int index) {
+         return this.optJSONArray(index, null);
+     }
+@@ -1060,7 +1086,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default.
+      * @return A JSONArray value.
+      */
+-    public JSONArray optJSONArray(int index, JSONArray defaultValue) {
++    @Nullable
++    public JSONArray optJSONArray(int index, @Nullable JSONArray defaultValue) {
+         Object object = this.opt(index);
+         return object instanceof JSONArray ? (JSONArray) object : defaultValue;
+     }
+@@ -1073,6 +1100,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return A JSONObject value.
+      */
++    @Nullable
+     public JSONObject optJSONObject(int index) {
+         return this.optJSONObject(index, null);
+     }
+@@ -1087,7 +1115,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default.
+      * @return A JSONObject value.
+      */
+-    public JSONObject optJSONObject(int index, JSONObject defaultValue) {
++    @Nullable
++    public JSONObject optJSONObject(int index, @Nullable JSONObject defaultValue) {
+         Object object = this.opt(index);
+         return object instanceof JSONObject ? (JSONObject) object : defaultValue;
+     }
+@@ -1133,6 +1162,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return The object.
+      */
++    @Nullable
+     public Long optLongObject(int index) {
+         return this.optLongObject(index, 0L);
+     }
+@@ -1148,7 +1178,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default object.
+      * @return The object.
+      */
+-    public Long optLongObject(int index, Long defaultValue) {
++    @Nullable
++    public Long optLongObject(int index, @Nullable Long defaultValue) {
+         final Number val = this.optNumber(index, null);
+         if (val == null) {
+             return defaultValue;
+@@ -1166,6 +1197,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return An object which is the value.
+      */
++    @Nullable
+     public Number optNumber(int index) {
+         return this.optNumber(index, null);
+     }
+@@ -1182,7 +1214,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public Number optNumber(int index, Number defaultValue) {
++    @Nullable
++    public Number optNumber(int index, @Nullable Number defaultValue) {
+         Object val = this.opt(index);
+         if (JSONObject.NULL.equals(val)) {
+             return defaultValue;
+@@ -1210,6 +1243,7 @@ public class JSONArray implements Iterable<Object> {
+      *            The index must be between 0 and length() - 1.
+      * @return A String value.
+      */
++    @NonNull
+     public String optString(int index) {
+         return this.optString(index, "");
+     }
+@@ -1224,7 +1258,8 @@ public class JSONArray implements Iterable<Object> {
+      *            The default value.
+      * @return A String value.
+      */
+-    public String optString(int index, String defaultValue) {
++    @Nullable
++    public String optString(int index, @Nullable String defaultValue) {
+         Object object = this.opt(index);
+         return JSONObject.NULL.equals(object) ? defaultValue : object
+                 .toString();
+@@ -1237,6 +1272,7 @@ public class JSONArray implements Iterable<Object> {
+      *            A boolean value.
+      * @return this.
+      */
++    @NonNull
+     public JSONArray put(boolean value) {
+         return this.put(value ? Boolean.TRUE : Boolean.FALSE);
+     }
+@@ -1251,7 +1287,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *            If the value is non-finite number.
+      */
+-    public JSONArray put(Collection<?> value) {
++    @NonNull
++    public JSONArray put(@Nullable Collection<?> value) {
+         return this.put(new JSONArray(value));
+     }
+
+@@ -1264,6 +1301,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             if the value is not finite.
+      */
++    @NonNull
+     public JSONArray put(double value) throws JSONException {
+         return this.put(Double.valueOf(value));
+     }
+@@ -1277,6 +1315,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             if the value is not finite.
+      */
++    @NonNull
+     public JSONArray put(float value) throws JSONException {
+         return this.put(Float.valueOf(value));
+     }
+@@ -1288,6 +1327,7 @@ public class JSONArray implements Iterable<Object> {
+      *            An int value.
+      * @return this.
+      */
++    @NonNull
+     public JSONArray put(int value) {
+         return this.put(Integer.valueOf(value));
+     }
+@@ -1299,6 +1339,7 @@ public class JSONArray implements Iterable<Object> {
+      *            A long value.
+      * @return this.
+      */
++    @NonNull
+     public JSONArray put(long value) {
+         return this.put(Long.valueOf(value));
+     }
+@@ -1315,7 +1356,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws NullPointerException
+      *            If a key in the map is <code>null</code>
+      */
+-    public JSONArray put(Map<?, ?> value) {
++    @NonNull
++    public JSONArray put(@Nullable Map<?, ?> value) {
+         return this.put(new JSONObject(value));
+     }
+
+@@ -1330,7 +1372,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *            If the value is non-finite number.
+      */
+-    public JSONArray put(Object value) {
++    @NonNull
++    public JSONArray put(@Nullable Object value) {
+         JSONObject.testValidity(value);
+         this.myArrayList.add(value);
+         return this;
+@@ -1349,6 +1392,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If the index is negative.
+      */
++    @NonNull
+     public JSONArray put(int index, boolean value) throws JSONException {
+         return this.put(index, value ? Boolean.TRUE : Boolean.FALSE);
+     }
+@@ -1365,7 +1409,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If the index is negative or if the value is non-finite.
+      */
+-    public JSONArray put(int index, Collection<?> value) throws JSONException {
++    @NonNull
++    public JSONArray put(int index, @Nullable Collection<?> value) throws JSONException {
+         return this.put(index, new JSONArray(value));
+     }
+
+@@ -1382,6 +1427,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If the index is negative or if the value is non-finite.
+      */
++    @NonNull
+     public JSONArray put(int index, double value) throws JSONException {
+         return this.put(index, Double.valueOf(value));
+     }
+@@ -1399,6 +1445,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If the index is negative or if the value is non-finite.
+      */
++    @NonNull
+     public JSONArray put(int index, float value) throws JSONException {
+         return this.put(index, Float.valueOf(value));
+     }
+@@ -1416,6 +1463,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If the index is negative.
+      */
++    @NonNull
+     public JSONArray put(int index, int value) throws JSONException {
+         return this.put(index, Integer.valueOf(value));
+     }
+@@ -1433,6 +1481,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If the index is negative.
+      */
++    @NonNull
+     public JSONArray put(int index, long value) throws JSONException {
+         return this.put(index, Long.valueOf(value));
+     }
+@@ -1453,7 +1502,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws NullPointerException
+      *             If a key in the map is <code>null</code>
+      */
+-    public JSONArray put(int index, Map<?, ?> value) throws JSONException {
++    @NonNull
++    public JSONArray put(int index, @Nullable Map<?, ?> value) throws JSONException {
+         this.put(index, new JSONObject(value, new JSONParserConfiguration()));
+         return this;
+     }
+@@ -1473,7 +1523,8 @@ public class JSONArray implements Iterable<Object> {
+      *          If the index is negative or if the value is an invalid
+      *          number.
+      */
+-    public JSONArray put(int index, Map<?, ?> value, JSONParserConfiguration jsonParserConfiguration) throws JSONException {
++    @NonNull
++    public JSONArray put(int index, @Nullable Map<?, ?> value, @Nullable JSONParserConfiguration jsonParserConfiguration) throws JSONException {
+         this.put(index, new JSONObject(value, jsonParserConfiguration));
+         return this;
+     }
+@@ -1494,7 +1545,8 @@ public class JSONArray implements Iterable<Object> {
+      *             If the index is negative or if the value is an invalid
+      *             number.
+      */
+-    public JSONArray put(int index, Object value) throws JSONException {
++    @NonNull
++    public JSONArray put(int index, @Nullable Object value) throws JSONException {
+         if (index < 0) {
+             throw new JSONException("JSONArray[" + index + "] not found.");
+         }
+@@ -1524,7 +1576,8 @@ public class JSONArray implements Iterable<Object> {
+      *            A Collection.
+      * @return this.
+      */
+-    public JSONArray putAll(Collection<?> collection) {
++    @NonNull
++    public JSONArray putAll(@NonNull Collection<?> collection) {
+         this.addAll(collection, false);
+         return this;
+     }
+@@ -1536,7 +1589,8 @@ public class JSONArray implements Iterable<Object> {
+      *            An Iterable.
+      * @return this.
+      */
+-    public JSONArray putAll(Iterable<?> iter) {
++    @NonNull
++    public JSONArray putAll(@NonNull Iterable<?> iter) {
+         this.addAll(iter, false);
+         return this;
+     }
+@@ -1548,7 +1602,8 @@ public class JSONArray implements Iterable<Object> {
+      *            A JSONArray.
+      * @return this.
+      */
+-    public JSONArray putAll(JSONArray array) {
++    @NonNull
++    public JSONArray putAll(@NonNull JSONArray array) {
+         // directly copy the elements from the source array to this one
+         // as all wrapping should have been done already in the source.
+         this.myArrayList.addAll(array.myArrayList);
+@@ -1568,7 +1623,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws NullPointerException
+      *            Thrown if the array parameter is null.
+      */
+-    public JSONArray putAll(Object array) throws JSONException {
++    @NonNull
++    public JSONArray putAll(@NonNull Object array) throws JSONException {
+         this.addAll(array, false);
+         return this;
+     }
+@@ -1627,7 +1683,8 @@ public class JSONArray implements Iterable<Object> {
+      * @return the queried value or {@code null}
+      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
+      */
+-    public Object optQuery(String jsonPointer) {
++    @Nullable
++    public Object optQuery(@NonNull String jsonPointer) {
+     	return optQuery(new JSONPointer(jsonPointer));
+     }
+
+@@ -1639,7 +1696,8 @@ public class JSONArray implements Iterable<Object> {
+      * @return the queried value or {@code null}
+      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
+      */
+-    public Object optQuery(JSONPointer jsonPointer) {
++    @Nullable
++    public Object optQuery(@NonNull JSONPointer jsonPointer) {
+         try {
+             return jsonPointer.queryFrom(this);
+         } catch (JSONPointerException e) {
+@@ -1655,6 +1713,7 @@ public class JSONArray implements Iterable<Object> {
+      * @return The value that was associated with the index, or null if there
+      *         was no value.
+      */
++    @Nullable
+     public Object remove(int index) {
+         return index >= 0 && index < this.length()
+             ? this.myArrayList.remove(index)
+@@ -1735,7 +1794,8 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException
+      *             If any of the names are null.
+      */
+-    public JSONObject toJSONObject(JSONArray names) throws JSONException {
++    @Nullable
++    public JSONObject toJSONObject(@Nullable JSONArray names) throws JSONException {
+         if (names == null || names.isEmpty() || this.isEmpty()) {
+             return null;
+         }
+@@ -1759,6 +1819,7 @@ public class JSONArray implements Iterable<Object> {
+      *         array.
+      */
+     @Override
++    @Nullable
+     public String toString() {
+         try {
+             return this.toString(0);
+@@ -1795,6 +1856,7 @@ public class JSONArray implements Iterable<Object> {
+      * @throws JSONException if a called function fails
+      */
+     @SuppressWarnings("resource")
++    @Nullable
+     public String toString(int indentFactor) throws JSONException {
+         // each value requires a comma, so multiply the count by 2
+         // We don't want to oversize the initial capacity
+@@ -1910,6 +1972,7 @@ public class JSONArray implements Iterable<Object> {
+      *
+      * @return a java.util.List containing the elements of this array
+      */
++    @NonNull
+     public List<Object> toList() {
+         List<Object> results = new ArrayList<Object>(this.myArrayList.size());
+         for (Object element : this.myArrayList) {
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONException.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONException.java
+index 95fae3e0d8..f1b5c469bf 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONException.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONException.java
+@@ -4,12 +4,15 @@ package com.hardbacknutter.org.json;
+ Public Domain.
+  */
+
+-/**
++import androidx.annotation.NonNull;
++import androidx.annotation.Nullable; /**
++
+  * The JSONException is thrown by the JSON.org classes when things are amiss.
+  *
+  * @author JSON.org
+  * @version 2015-12-09
+  */
++@SuppressWarnings("ALL")
+ public class JSONException extends RuntimeException {
+     /** Serialization ID */
+     private static final long serialVersionUID = 0;
+@@ -20,7 +23,7 @@ public class JSONException extends RuntimeException {
+      * @param message
+      *            Detail about the reason for the exception.
+      */
+-    public JSONException(final String message) {
++    public JSONException(@Nullable final String message) {
+         super(message);
+     }
+
+@@ -32,7 +35,7 @@ public class JSONException extends RuntimeException {
+      * @param cause
+      *            The cause.
+      */
+-    public JSONException(final String message, final Throwable cause) {
++    public JSONException(@NonNull final String message, @Nullable final Throwable cause) {
+         super(message, cause);
+     }
+
+@@ -42,7 +45,7 @@ public class JSONException extends RuntimeException {
+      * @param cause
+      *            The cause.
+      */
+-    public JSONException(final Throwable cause) {
++    public JSONException(@NonNull final Throwable cause) {
+         super(cause.getMessage(), cause);
+     }
+
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONML.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONML.java
+index 7ef4e4c09b..e744f9dd69 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONML.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONML.java
+@@ -12,6 +12,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2016-01-30
+  */
++@SuppressWarnings("ALL")
+ public class JSONML {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONMLParserConfiguration.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONMLParserConfiguration.java
+index 65c21b4dd5..9f66968455 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONMLParserConfiguration.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONMLParserConfiguration.java
+@@ -6,7 +6,7 @@ Public Domain.
+ /**
+  * Configuration object for the XML to JSONML parser. The configuration is immutable.
+  */
+-@SuppressWarnings({""})
++@SuppressWarnings("ALL")
+ public class JSONMLParserConfiguration extends ParserConfiguration {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONObject.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONObject.java
+index 4c88536345..932fc925ea 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONObject.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONObject.java
+@@ -4,6 +4,9 @@ package com.hardbacknutter.org.json;
+ Public Domain.
+ */
+
++import androidx.annotation.NonNull;
++import androidx.annotation.Nullable;
++
+ import java.io.Closeable;
+ import java.io.IOException;
+ import java.io.Writer;
+@@ -74,6 +77,7 @@ import java.lang.reflect.GenericArrayType;
+  * @author JSON.org
+  * @version 2016-08-15
+  */
++@SuppressWarnings("ALL")
+ public class JSONObject {
+     /**
+      * JSONObject.NULL is equivalent to the value that JavaScript calls null,
+@@ -132,6 +136,7 @@ public class JSONObject {
+      *
+      * @return The class object representing the type of the underlying Map.
+      */
++    @NonNull
+     public Class<? extends Map> getMapType() {
+         return map.getClass();
+     }
+@@ -358,7 +363,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If a key in the map is <code>null</code>
+      */
+-    public JSONObject(Map<?, ?> m) {
++    public JSONObject(@Nullable Map<?, ?> m) {
+       this(m, 0, new JSONParserConfiguration());
+     }
+
+@@ -371,14 +376,14 @@ public class JSONObject {
+      * @param jsonParserConfiguration
+      *            Variable to pass parser custom configuration for json parsing.
+      */
+-    public JSONObject(Map<?, ?> m, JSONParserConfiguration jsonParserConfiguration) {
++    public JSONObject(@Nullable Map<?, ?> m, JSONParserConfiguration jsonParserConfiguration) {
+         this(m, 0, jsonParserConfiguration);
+     }
+
+     /**
+      * Construct a JSONObject from a map with recursion depth.
+      */
+-    private JSONObject(Map<?, ?> m, int recursionDepth, JSONParserConfiguration jsonParserConfiguration) {
++    private JSONObject(@Nullable Map<?, ?> m, int recursionDepth, JSONParserConfiguration jsonParserConfiguration) {
+         if (recursionDepth > jsonParserConfiguration.getMaxNestingDepth()) {
+           throw new JSONException("JSONObject has reached recursion depth limit of " + jsonParserConfiguration.getMaxNestingDepth());
+         }
+@@ -512,7 +517,7 @@ public class JSONObject {
+      *                If there is a syntax error in the source string or a
+      *                duplicated key.
+      */
+-    public JSONObject(String source) throws JSONException {
++    public JSONObject(@NonNull String source) throws JSONException {
+         this(source, new JSONParserConfiguration());
+     }
+
+@@ -691,7 +696,8 @@ public class JSONObject {
+      * @throws JSONException
+      *             if the key is not found.
+      */
+-    public Object get(String key) throws JSONException {
++    @NonNull
++    public Object get(@NonNull String key) throws JSONException {
+         if (key == null) {
+             throw new JSONException("Null key.");
+         }
+@@ -716,7 +722,8 @@ public class JSONObject {
+      *             if the key is not found or if the value cannot be converted
+      *             to an enum.
+      */
+-    public <E extends Enum<E>> E getEnum(Class<E> clazz, String key) throws JSONException {
++    @NonNull
++    public <E extends Enum<E>> E getEnum(@NonNull Class<E> clazz, @NonNull String key) throws JSONException {
+         E val = optEnum(clazz, key);
+         if(val==null) {
+             // JSONException should really take a throwable argument.
+@@ -737,7 +744,7 @@ public class JSONObject {
+      *             if the value is not a Boolean or the String "true" or
+      *             "false".
+      */
+-    public boolean getBoolean(String key) throws JSONException {
++    public boolean getBoolean(@NonNull String key) throws JSONException {
+         Object object = this.get(key);
+         if (Boolean.FALSE.equals(object)
+                 || (object instanceof String && "false".equalsIgnoreCase((String) object))) {
+@@ -759,7 +766,8 @@ public class JSONObject {
+      *             if the key is not found or if the value cannot
+      *             be converted to BigInteger.
+      */
+-    public BigInteger getBigInteger(String key) throws JSONException {
++    @NonNull
++    public BigInteger getBigInteger(@NonNull String key) throws JSONException {
+         return this.getBigInteger(key, new JSONParserConfiguration());
+     }
+
+@@ -779,7 +787,8 @@ public class JSONObject {
+      *             if the key is not found or if the value cannot
+      *             be converted to BigInteger.
+      */
+-    public BigInteger getBigInteger(String key, JSONParserConfiguration jsonParserConfiguration)
++    @NonNull
++    public BigInteger getBigInteger(@NonNull String key, @Nullable JSONParserConfiguration jsonParserConfiguration)
+             throws JSONException {
+         Object object = this.get(key);
+         BigInteger ret = objectToBigInteger(object, null, jsonParserConfiguration);
+@@ -802,7 +811,8 @@ public class JSONObject {
+      *             if the key is not found or if the value
+      *             cannot be converted to BigDecimal.
+      */
+-    public BigDecimal getBigDecimal(String key) throws JSONException {
++    @NonNull
++    public BigDecimal getBigDecimal(@NonNull String key) throws JSONException {
+         Object object = this.get(key);
+         BigDecimal ret = objectToBigDecimal(object, null);
+         if (ret != null) {
+@@ -821,7 +831,7 @@ public class JSONObject {
+      *             if the key is not found or if the value is not a Number
+      *             object and cannot be converted to a number.
+      */
+-    public double getDouble(String key) throws JSONException {
++    public double getDouble(@NonNull String key) throws JSONException {
+         final Object object = this.get(key);
+         if(object instanceof Number) {
+             return ((Number)object).doubleValue();
+@@ -843,7 +853,7 @@ public class JSONObject {
+      *             if the key is not found or if the value is not a Number
+      *             object and cannot be converted to a number.
+      */
+-    public float getFloat(String key) throws JSONException {
++    public float getFloat(@NonNull String key) throws JSONException {
+         final Object object = this.get(key);
+         if(object instanceof Number) {
+             return ((Number)object).floatValue();
+@@ -865,7 +875,8 @@ public class JSONObject {
+      *             if the key is not found or if the value is not a Number
+      *             object and cannot be converted to a number.
+      */
+-    public Number getNumber(String key) throws JSONException {
++    @NonNull
++    public Number getNumber(@NonNull String key) throws JSONException {
+         Object object = this.get(key);
+         try {
+             if (object instanceof Number) {
+@@ -887,7 +898,7 @@ public class JSONObject {
+      *             if the key is not found or if the value cannot be converted
+      *             to an integer.
+      */
+-    public int getInt(String key) throws JSONException {
++    public int getInt(@NonNull String key) throws JSONException {
+         final Object object = this.get(key);
+         if(object instanceof Number) {
+             return ((Number)object).intValue();
+@@ -908,7 +919,8 @@ public class JSONObject {
+      * @throws JSONException
+      *             if the key is not found or if the value is not a JSONArray.
+      */
+-    public JSONArray getJSONArray(String key) throws JSONException {
++    @NonNull
++    public JSONArray getJSONArray(@NonNull String key) throws JSONException {
+         Object object = this.get(key);
+         if (object instanceof JSONArray) {
+             return (JSONArray) object;
+@@ -925,7 +937,8 @@ public class JSONObject {
+      * @throws JSONException
+      *             if the key is not found or if the value is not a JSONObject.
+      */
+-    public JSONObject getJSONObject(String key) throws JSONException {
++    @NonNull
++    public JSONObject getJSONObject(@NonNull String key) throws JSONException {
+         Object object = this.get(key);
+         if (object instanceof JSONObject) {
+             return (JSONObject) object;
+@@ -943,7 +956,7 @@ public class JSONObject {
+      *             if the key is not found or if the value cannot be converted
+      *             to a long.
+      */
+-    public long getLong(String key) throws JSONException {
++    public long getLong(@NonNull String key) throws JSONException {
+         final Object object = this.get(key);
+         if(object instanceof Number) {
+             return ((Number)object).longValue();
+@@ -962,7 +975,8 @@ public class JSONObject {
+      *            JSON object
+      * @return An array of field names, or null if there are no names.
+      */
+-    public static String[] getNames(JSONObject jo) {
++    @Nullable
++    public static String[] getNames(@NonNull JSONObject jo) {
+         if (jo.isEmpty()) {
+             return null;
+         }
+@@ -976,7 +990,8 @@ public class JSONObject {
+      *            object to read
+      * @return An array of field names, or null if there are no names.
+      */
+-    public static String[] getNames(Object object) {
++    @Nullable
++    public static String[] getNames(@Nullable Object object) {
+         if (object == null) {
+             return null;
+         }
+@@ -1002,7 +1017,8 @@ public class JSONObject {
+      * @throws JSONException
+      *             if there is no string value for the key.
+      */
+-    public String getString(String key) throws JSONException {
++    @NonNull
++    public String getString(@NonNull String key) throws JSONException {
+         Object object = this.get(key);
+         if (object instanceof String) {
+             return (String) object;
+@@ -1017,7 +1033,7 @@ public class JSONObject {
+      *            A key string.
+      * @return true if the key exists in the JSONObject.
+      */
+-    public boolean has(String key) {
++    public boolean has(@NonNull String key) {
+         return this.map.containsKey(key);
+     }
+
+@@ -1079,6 +1095,7 @@ public class JSONObject {
+      *
+      * @return An iterator of the keys.
+      */
++    @NonNull
+     public Iterator<String> keys() {
+         return this.keySet().iterator();
+     }
+@@ -1091,6 +1108,7 @@ public class JSONObject {
+      *
+      * @return A keySet.
+      */
++    @NonNull
+     public Set<String> keySet() {
+         return this.map.keySet();
+     }
+@@ -1188,7 +1206,8 @@ public class JSONObject {
+      *            A key string.
+      * @return An object which is the value, or null if there is no value.
+      */
+-    public Object opt(String key) {
++    @Nullable
++    public Object opt(@NonNull String key) {
+         return key == null ? null : this.map.get(key);
+     }
+
+@@ -1203,7 +1222,7 @@ public class JSONObject {
+      *            A key string.
+      * @return The enum value associated with the key or null if not found
+      */
+-    public <E extends Enum<E>> E optEnum(Class<E> clazz, String key) {
++    public <E extends Enum<E>> E optEnum(@NonNull Class<E> clazz, @NonNull String key) {
+         return this.optEnum(clazz, key, null);
+     }
+
+@@ -1221,7 +1240,8 @@ public class JSONObject {
+      * @return The enum value associated with the key or defaultValue
+      *            if the value is not found or cannot be assigned to <code>clazz</code>
+      */
+-    public <E extends Enum<E>> E optEnum(Class<E> clazz, String key, E defaultValue) {
++    @Nullable
++    public <E extends Enum<E>> E optEnum(@NonNull Class<E> clazz, @NonNull String key, @Nullable E defaultValue) {
+         try {
+             Object val = this.opt(key);
+             if (NULL.equals(val)) {
+@@ -1249,7 +1269,8 @@ public class JSONObject {
+      *            A key string.
+      * @return The truth.
+      */
+-    public boolean optBoolean(String key) {
++    @Nullable
++    public boolean optBoolean(@NonNull String key) {
+         return this.optBoolean(key, false);
+     }
+
+@@ -1264,7 +1285,7 @@ public class JSONObject {
+      *            The default.
+      * @return The truth.
+      */
+-    public boolean optBoolean(String key, boolean defaultValue) {
++    public boolean optBoolean(@NonNull String key, boolean defaultValue) {
+         Object val = this.opt(key);
+         if (NULL.equals(val)) {
+             return defaultValue;
+@@ -1288,7 +1309,8 @@ public class JSONObject {
+      *            A key string.
+      * @return The truth.
+      */
+-    public Boolean optBooleanObject(String key) {
++    @Nullable
++    public Boolean optBooleanObject(@NonNull String key) {
+         return this.optBooleanObject(key, false);
+     }
+
+@@ -1303,7 +1325,8 @@ public class JSONObject {
+      *            The default.
+      * @return The truth.
+      */
+-    public Boolean optBooleanObject(String key, Boolean defaultValue) {
++    @Nullable
++    public Boolean optBooleanObject(@NonNull String key, @Nullable Boolean defaultValue) {
+         Object val = this.opt(key);
+         if (NULL.equals(val)) {
+             return defaultValue;
+@@ -1333,7 +1356,8 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public BigDecimal optBigDecimal(String key, BigDecimal defaultValue) {
++    @Nullable
++    public BigDecimal optBigDecimal(@NonNull String key, @Nullable BigDecimal defaultValue) {
+         Object val = this.opt(key);
+         return objectToBigDecimal(val, defaultValue);
+     }
+@@ -1401,7 +1425,8 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public BigInteger optBigInteger(String key, BigInteger defaultValue) {
++    @Nullable
++    public BigInteger optBigInteger(@NonNull String key, @Nullable BigInteger defaultValue) {
+         return this.optBigInteger(key, defaultValue, new JSONParserConfiguration());
+     }
+
+@@ -1423,7 +1448,8 @@ public class JSONObject {
+      *            this check.
+      * @return An object which is the value.
+      */
+-    public BigInteger optBigInteger(String key, BigInteger defaultValue,
++    @Nullable
++    public BigInteger optBigInteger(@NonNull String key, @Nullable BigInteger defaultValue,
+             JSONParserConfiguration jsonParserConfiguration) {
+         Object val = this.opt(key);
+         return objectToBigInteger(val, defaultValue, jsonParserConfiguration);
+@@ -1529,7 +1555,7 @@ public class JSONObject {
+      *            A string which is the key.
+      * @return An object which is the value.
+      */
+-    public double optDouble(String key) {
++    public double optDouble(@NonNull String key) {
+         return this.optDouble(key, Double.NaN);
+     }
+
+@@ -1544,7 +1570,7 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public double optDouble(String key, double defaultValue) {
++    public double optDouble(@NonNull String key, double defaultValue) {
+         Number val = this.optNumber(key);
+         if (val == null) {
+             return defaultValue;
+@@ -1561,7 +1587,8 @@ public class JSONObject {
+      *            A string which is the key.
+      * @return An object which is the value.
+      */
+-    public Double optDoubleObject(String key) {
++    @Nullable
++    public Double optDoubleObject(@NonNull String key) {
+         return this.optDoubleObject(key, Double.NaN);
+     }
+
+@@ -1576,7 +1603,8 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public Double optDoubleObject(String key, Double defaultValue) {
++    @Nullable
++    public Double optDoubleObject(@NonNull String key, @Nullable Double defaultValue) {
+         Number val = this.optNumber(key);
+         if (val == null) {
+             return defaultValue;
+@@ -1593,7 +1621,7 @@ public class JSONObject {
+      *            A key string.
+      * @return The value.
+      */
+-    public float optFloat(String key) {
++    public float optFloat(@NonNull String key) {
+         return this.optFloat(key, Float.NaN);
+     }
+
+@@ -1608,7 +1636,7 @@ public class JSONObject {
+      *            The default value.
+      * @return The value.
+      */
+-    public float optFloat(String key, float defaultValue) {
++    public float optFloat(@NonNull String key, float defaultValue) {
+         Number val = this.optNumber(key);
+         if (val == null) {
+             return defaultValue;
+@@ -1625,7 +1653,8 @@ public class JSONObject {
+      *            A key string.
+      * @return The object.
+      */
+-    public Float optFloatObject(String key) {
++    @Nullable
++    public Float optFloatObject(@NonNull String key) {
+         return this.optFloatObject(key, Float.NaN);
+     }
+
+@@ -1640,7 +1669,8 @@ public class JSONObject {
+      *            The default object.
+      * @return The object.
+      */
+-    public Float optFloatObject(String key, Float defaultValue) {
++    @Nullable
++    public Float optFloatObject(@NonNull String key, @Nullable Float defaultValue) {
+         Number val = this.optNumber(key);
+         if (val == null) {
+             return defaultValue;
+@@ -1657,7 +1687,7 @@ public class JSONObject {
+      *            A key string.
+      * @return An object which is the value.
+      */
+-    public int optInt(String key) {
++    public int optInt(@NonNull String key) {
+         return this.optInt(key, 0);
+     }
+
+@@ -1672,7 +1702,7 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public int optInt(String key, int defaultValue) {
++    public int optInt(@NonNull String key, int defaultValue) {
+         final Number val = this.optNumber(key, null);
+         if (val == null) {
+             return defaultValue;
+@@ -1689,7 +1719,8 @@ public class JSONObject {
+      *            A key string.
+      * @return An object which is the value.
+      */
+-    public Integer optIntegerObject(String key) {
++    @Nullable
++    public Integer optIntegerObject(@NonNull String key) {
+         return this.optIntegerObject(key, 0);
+     }
+
+@@ -1704,7 +1735,8 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public Integer optIntegerObject(String key, Integer defaultValue) {
++    @Nullable
++    public Integer optIntegerObject(@NonNull String key, @Nullable Integer defaultValue) {
+         final Number val = this.optNumber(key, null);
+         if (val == null) {
+             return defaultValue;
+@@ -1720,7 +1752,8 @@ public class JSONObject {
+      *            A key string.
+      * @return A JSONArray which is the value.
+      */
+-    public JSONArray optJSONArray(String key) {
++    @Nullable
++    public JSONArray optJSONArray(@NonNull String key) {
+         return this.optJSONArray(key, null);
+     }
+
+@@ -1734,7 +1767,8 @@ public class JSONObject {
+      *            The default.
+      * @return A JSONArray which is the value.
+      */
+-    public JSONArray optJSONArray(String key, JSONArray defaultValue) {
++    @Nullable
++    public JSONArray optJSONArray(@NonNull String key, @Nullable JSONArray defaultValue) {
+         Object object = this.opt(key);
+         return object instanceof JSONArray ? (JSONArray) object : defaultValue;
+     }
+@@ -1747,7 +1781,8 @@ public class JSONObject {
+      *            A key string.
+      * @return A JSONObject which is the value.
+      */
+-    public JSONObject optJSONObject(String key) { return this.optJSONObject(key, null); }
++    @Nullable
++    public JSONObject optJSONObject(@NonNull String key) { return this.optJSONObject(key, null); }
+
+     /**
+      * Get an optional JSONObject associated with a key, or the default if there
+@@ -1759,7 +1794,8 @@ public class JSONObject {
+      *            The default.
+      * @return An JSONObject which is the value.
+      */
+-    public JSONObject optJSONObject(String key, JSONObject defaultValue) {
++    @Nullable
++    public JSONObject optJSONObject(@NonNull String key, @Nullable JSONObject defaultValue) {
+         Object object = this.opt(key);
+         return object instanceof JSONObject ? (JSONObject) object : defaultValue;
+     }
+@@ -1773,7 +1809,7 @@ public class JSONObject {
+      *            A key string.
+      * @return An object which is the value.
+      */
+-    public long optLong(String key) {
++    public long optLong(@NonNull String key) {
+         return this.optLong(key, 0);
+     }
+
+@@ -1788,7 +1824,7 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public long optLong(String key, long defaultValue) {
++    public long optLong(@NonNull String key, long defaultValue) {
+         final Number val = this.optNumber(key, null);
+         if (val == null) {
+             return defaultValue;
+@@ -1806,7 +1842,8 @@ public class JSONObject {
+      *            A key string.
+      * @return An object which is the value.
+      */
+-    public Long optLongObject(String key) {
++    @Nullable
++    public Long optLongObject(@NonNull String key) {
+         return this.optLongObject(key, 0L);
+     }
+
+@@ -1821,7 +1858,8 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public Long optLongObject(String key, Long defaultValue) {
++    @Nullable
++    public Long optLongObject(@NonNull String key, @Nullable Long defaultValue) {
+         final Number val = this.optNumber(key, null);
+         if (val == null) {
+             return defaultValue;
+@@ -1840,7 +1878,8 @@ public class JSONObject {
+      *            A key string.
+      * @return An object which is the value.
+      */
+-    public Number optNumber(String key) {
++    @Nullable
++    public Number optNumber(@NonNull String key) {
+         return this.optNumber(key, null);
+     }
+
+@@ -1856,7 +1895,8 @@ public class JSONObject {
+      *            The default.
+      * @return An object which is the value.
+      */
+-    public Number optNumber(String key, Number defaultValue) {
++    @Nullable
++    public Number optNumber(@NonNull String key, @Nullable Number defaultValue) {
+         Object val = this.opt(key);
+         if (NULL.equals(val)) {
+             return defaultValue;
+@@ -1881,7 +1921,8 @@ public class JSONObject {
+      *            A key string.
+      * @return A string which is the value.
+      */
+-    public String optString(String key) {
++    @NonNull
++    public String optString(@NonNull String key) {
+         return this.optString(key, "");
+     }
+
+@@ -1895,7 +1936,8 @@ public class JSONObject {
+      *            The default.
+      * @return A string which is the value.
+      */
+-    public String optString(String key, String defaultValue) {
++    @Nullable
++    public String optString(@NonNull String key, @Nullable String defaultValue) {
+         Object object = this.opt(key);
+         return NULL.equals(object) ? defaultValue : object.toString();
+     }
+@@ -2264,6 +2306,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
++    @NonNull
+     public JSONObject put(String key, boolean value) throws JSONException {
+         return this.put(key, value ? Boolean.TRUE : Boolean.FALSE);
+     }
+@@ -2282,6 +2325,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
++    @NonNull
+     public JSONObject put(String key, Collection<?> value) throws JSONException {
+         return this.put(key, new JSONArray(value));
+     }
+@@ -2299,6 +2343,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
++    @NonNull
+     public JSONObject put(String key, double value) throws JSONException {
+         return this.put(key, Double.valueOf(value));
+     }
+@@ -2316,6 +2361,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
++    @NonNull
+     public JSONObject put(String key, float value) throws JSONException {
+         return this.put(key, Float.valueOf(value));
+     }
+@@ -2333,6 +2379,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
++    @NonNull
+     public JSONObject put(String key, int value) throws JSONException {
+         return this.put(key, Integer.valueOf(value));
+     }
+@@ -2350,6 +2397,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
++    @NonNull
+     public JSONObject put(String key, long value) throws JSONException {
+         return this.put(key, Long.valueOf(value));
+     }
+@@ -2368,6 +2416,7 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
++    @NonNull
+     public JSONObject put(String key, Map<?, ?> value) throws JSONException {
+         return this.put(key, new JSONObject(value));
+     }
+@@ -2388,7 +2437,8 @@ public class JSONObject {
+      * @throws NullPointerException
+      *            If the key is <code>null</code>.
+      */
+-    public JSONObject put(String key, Object value) throws JSONException {
++    @NonNull
++    public JSONObject put(@NonNull String key, @Nullable Object value) throws JSONException {
+         if (key == null) {
+             throw new NullPointerException("Null key.");
+         }
+@@ -2414,6 +2464,7 @@ public class JSONObject {
+      * @throws JSONException
+      *             if the key is a duplicate
+      */
++    @NonNull
+     public JSONObject putOnce(String key, Object value) throws JSONException {
+         if (key != null && value != null) {
+             if (this.opt(key) != null) {
+@@ -2438,6 +2489,7 @@ public class JSONObject {
+      * @throws JSONException
+      *             If the value is a non-finite number.
+      */
++    @NonNull
+     public JSONObject putOpt(String key, Object value) throws JSONException {
+         if (key != null && value != null) {
+             return this.put(key, value);
+@@ -2498,7 +2550,8 @@ public class JSONObject {
+      * @return the queried value or {@code null}
+      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
+      */
+-    public Object optQuery(String jsonPointer) {
++    @Nullable
++    public Object optQuery(@NonNull String jsonPointer) {
+     	return optQuery(new JSONPointer(jsonPointer));
+     }
+
+@@ -2510,7 +2563,8 @@ public class JSONObject {
+      * @return the queried value or {@code null}
+      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
+      */
+-    public Object optQuery(JSONPointer jsonPointer) {
++    @Nullable
++    public Object optQuery(@NonNull JSONPointer jsonPointer) {
+         try {
+             return jsonPointer.queryFrom(this);
+         } catch (JSONPointerException e) {
+@@ -2628,7 +2682,8 @@ public class JSONObject {
+      * @return The value that was associated with the name, or null if there was
+      *         no value.
+      */
+-    public Object remove(String key) {
++    @Nullable
++    public Object remove(@NonNull String key) {
+         return this.map.remove(key);
+     }
+
+@@ -2964,6 +3019,7 @@ public class JSONObject {
+      *         brace)</small>.
+      */
+     @Override
++    @Nullable
+     public String toString() {
+         try {
+             return this.toString(0);
+@@ -2999,6 +3055,7 @@ public class JSONObject {
+      *             If the object contains an invalid number.
+      */
+     @SuppressWarnings("resource")
++    @Nullable
+     public String toString(int indentFactor) throws JSONException {
+         // 6 characters are the minimum to serialise a key value pair e.g.: "k":1,
+         // and we don't want to oversize the initial capacity
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONParserConfiguration.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONParserConfiguration.java
+index ae00043bbc..3fa0b9adda 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONParserConfiguration.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONParserConfiguration.java
+@@ -3,6 +3,7 @@ package com.hardbacknutter.org.json;
+ /**
+  * Configuration object for the JSON parser. The configuration is immutable.
+  */
++@SuppressWarnings("ALL")
+ public class JSONParserConfiguration extends ParserConfiguration {
+     /**
+      * Used to indicate whether to overwrite duplicate key or not.
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointer.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointer.java
+index 65ad48dcf0..93a9a604b5 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointer.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointer.java
+@@ -31,6 +31,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2016-05-14
+  */
++@SuppressWarnings("ALL")
+ public class JSONPointer {
+
+     // used for URL encoding and decoding
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointerException.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointerException.java
+index f33db33568..848a46081c 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointerException.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPointerException.java
+@@ -11,6 +11,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2016-05-13
+  */
++@SuppressWarnings("ALL")
+ public class JSONPointerException extends JSONException {
+     private static final long serialVersionUID = 8872944667561856751L;
+
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyIgnore.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyIgnore.java
+index 917474637e..059761d47e 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyIgnore.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyIgnore.java
+@@ -20,4 +20,5 @@ import java.lang.annotation.Target;
+ @Documented
+ @Retention(RUNTIME)
+ @Target({METHOD})
++@SuppressWarnings("ALL")
+ public @interface JSONPropertyIgnore { }
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyName.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyName.java
+index 8e8bdd45da..74acffeea9 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyName.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONPropertyName.java
+@@ -19,6 +19,7 @@ import java.lang.annotation.Target;
+ @Documented
+ @Retention(RUNTIME)
+ @Target({METHOD})
++@SuppressWarnings("ALL")
+ public @interface JSONPropertyName {
+     /**
+      * The value of the JSON property.
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONString.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONString.java
+index a6863c7b18..7489625ca8 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONString.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONString.java
+@@ -12,6 +12,7 @@ Public Domain.
+  * <code>toJSONString</code> method will be used instead of the default behavior
+  * of using the Object's <code>toString()</code> method and quoting the result.
+  */
++@SuppressWarnings("ALL")
+ public interface JSONString {
+     /**
+      * The <code>toJSONString</code> method allows a class to produce its own JSON
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONStringer.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONStringer.java
+index 43c6d50eab..da69d3e0b3 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONStringer.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONStringer.java
+@@ -36,6 +36,7 @@ import java.io.StringWriter;
+  * @author JSON.org
+  * @version 2015-12-09
+  */
++@SuppressWarnings("ALL")
+ public class JSONStringer extends JSONWriter {
+     /**
+      * Make a fresh JSONStringer. It can be used to build one JSON text.
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONTokener.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONTokener.java
+index 48f285c50c..625811c9e2 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONTokener.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONTokener.java
+@@ -1,6 +1,6 @@
+ package com.hardbacknutter.org.json;
+
+-import java.io.*;
++import androidx.annotation.NonNull;import java.io.*;
+ import java.nio.charset.Charset;
+
+ /*
+@@ -14,6 +14,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2014-05-03
+  */
++@SuppressWarnings("ALL")
+ public class JSONTokener {
+     /** current read character position on the current line. */
+     private long character;
+@@ -40,7 +41,7 @@ public class JSONTokener {
+      *
+      * @param reader the source.
+      */
+-    public JSONTokener(Reader reader) {
++    public JSONTokener(@NonNull Reader reader) {
+         this(reader, new JSONParserConfiguration());
+     }
+
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONWriter.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONWriter.java
+index 51c60094de..8aee8f7e6d 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONWriter.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/JSONWriter.java
+@@ -37,6 +37,7 @@ Public Domain.
+  * @author JSON.org
+  * @version 2016-08-08
+  */
++@SuppressWarnings("ALL")
+ public class JSONWriter {
+     private static final int maxdepth = 200;
+
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/ParserConfiguration.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/ParserConfiguration.java
+index 1237ff033d..60c7394a46 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/ParserConfiguration.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/ParserConfiguration.java
+@@ -6,7 +6,7 @@ Public Domain.
+ /**
+  * Configuration base object for parsers. The configuration is immutable.
+  */
+-@SuppressWarnings({""})
++@SuppressWarnings("ALL")
+ public class ParserConfiguration {
+     /**
+      * Used to indicate there's no defined limit to the maximum nesting depth when parsing a document.
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Property.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Property.java
+index d1514473ce..08084cc52c 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Property.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/Property.java
+@@ -12,6 +12,7 @@ import java.util.Properties;
+  * @author JSON.org
+  * @version 2015-05-05
+  */
++@SuppressWarnings("ALL")
+ public class Property {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/StringBuilderWriter.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/StringBuilderWriter.java
+index 038673a6ec..feb642efc5 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/StringBuilderWriter.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/StringBuilderWriter.java
+@@ -7,6 +7,7 @@ import java.io.Writer;
+  * Performance optimised alternative for {@link java.io.StringWriter}
+  * using internally a {@link StringBuilder} instead of a {@link StringBuffer}.
+  */
++@SuppressWarnings("ALL")
+ public class StringBuilderWriter extends Writer {
+     private final StringBuilder builder;
+
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XML.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XML.java
+index 6ccd93dd04..dc6fa92f7a 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XML.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XML.java
+@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
+  * @author JSON.org
+  * @version 2016-08-10
+  */
+-@SuppressWarnings("boxing")
++@SuppressWarnings("ALL")
+ public class XML {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLParserConfiguration.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLParserConfiguration.java
+index 62a5bd81c8..efa48fb5f9 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLParserConfiguration.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLParserConfiguration.java
+@@ -14,7 +14,7 @@ import java.util.Set;
+  * Configuration object for the XML parser. The configuration is immutable.
+  * @author AylwardJ
+  */
+-@SuppressWarnings({""})
++@SuppressWarnings("ALL")
+ public class XMLParserConfiguration extends ParserConfiguration {
+
+     /**
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLTokener.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLTokener.java
+index 870c1679b3..437c5a6253 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLTokener.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLTokener.java
+@@ -12,6 +12,7 @@ import java.io.Reader;
+  * @author JSON.org
+  * @version 2015-12-09
+  */
++@SuppressWarnings("ALL")
+ public class XMLTokener extends JSONTokener {
+
+
+diff --git a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLXsiTypeConverter.java b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLXsiTypeConverter.java
+index f6f5bb6ad0..cd0233164d 100644
+--- a/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLXsiTypeConverter.java
++++ b/repacked-org-json/src/main/java/com/hardbacknutter/org/json/XMLXsiTypeConverter.java
+@@ -41,6 +41,7 @@ Public Domain.
+  * @author kumar529
+  * @param <T> return type of convert method
+  */
++@SuppressWarnings("ALL")
+ public interface XMLXsiTypeConverter<T> {
+
+     /**
