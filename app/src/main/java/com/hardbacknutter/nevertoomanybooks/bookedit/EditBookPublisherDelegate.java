@@ -150,15 +150,20 @@ class EditBookPublisherDelegate
 
         final Publisher currentEdit = publisherVm.getCurrentEdit();
 
+        initName(context, currentEdit);
+
+        vb.publisherName.requestFocus();
+    }
+
+    private void initName(@NonNull final Context context,
+                          @NonNull final Publisher publisher) {
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
 
-        vb.publisherName.setText(currentEdit.getName());
+        vb.publisherName.setText(publisher.getName());
         vb.publisherName.setAdapter(nameAdapter);
         TilUtil.autoRemoveError(vb.publisherName, vb.lblPublisherName);
-
-        vb.publisherName.requestFocus();
     }
 
     @Override
@@ -203,6 +208,7 @@ class EditBookPublisherDelegate
     }
 
     private void viewToModel() {
-        publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().strip());
+        publisherVm.getCurrentEdit()
+                   .setName(vb.publisherName.getText().toString().strip());
     }
 }

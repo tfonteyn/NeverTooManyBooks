@@ -44,8 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
-import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
@@ -90,14 +90,14 @@ class EditTocEntryDelegate
         return view;
     }
 
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
-    }
-
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 
     @Override
@@ -115,39 +115,50 @@ class EditTocEntryDelegate
         }
 
         final Context context = vb.getRoot().getContext();
-
         final TocEntry currentEdit = vm.getCurrentEdit();
 
-        //ENHANCE: should we provide a AuthorWorksAdapter to aid manually adding TOC titles?
-        // What about the publication year?
-        vb.title.setText(currentEdit.getTitle());
-        EditTextField.Capitalization.Title.apply(vb.title);
-        ExtClearTextEndIconDelegate.attach(vb.lblTitle, null);
-        TilUtil.autoRemoveError(vb.title, vb.lblTitle);
-
-        currentEdit.getFirstPublicationDate().getYear()
-                   .ifPresent(integer -> vb.firstPublication.setText(String.valueOf(integer)));
-        ExtClearTextEndIconDelegate.attach(vb.lblFirstPublication, null);
+        initTitle(currentEdit);
+        initPubYear(currentEdit);
 
         if (vm.isAnthology()) {
-            final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
-                    context, R.layout.popup_dropdown_menu_item,
-                    ExtArrayAdapter.FilterType.Diacritic,
-                    vm.getAuthorNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
-            vb.author.setAdapter(authorAdapter);
-            vb.author.setText(vm.getCurrentAuthorName());
-            vb.author.selectAll();
-            vb.author.requestFocus();
-
+            initAuthor(context);
             vb.lblAuthor.setVisibility(View.VISIBLE);
             vb.author.setVisibility(View.VISIBLE);
 
-        } else {
-            vb.title.requestFocus();
+            vb.author.requestFocus();
 
+        } else {
             vb.lblAuthor.setVisibility(View.GONE);
             vb.author.setVisibility(View.GONE);
+
+            vb.title.requestFocus();
         }
+    }
+
+    private void initTitle(@NonNull final TocEntry tocEntry) {
+        //ENHANCE: should we provide a AuthorWorksAdapter to aid manually adding TOC titles?
+        // What about the publication year?
+        vb.title.setText(tocEntry.getTitle());
+        EditTextField.Capitalization.Title.apply(vb.title);
+        ExtClearTextEndIconDelegate.attach(vb.lblTitle, null);
+        TilUtil.autoRemoveError(vb.title, vb.lblTitle);
+    }
+
+    private void initPubYear(@NonNull final TocEntry tocEntry) {
+        tocEntry.getFirstPublicationDate().getYear()
+                   .ifPresent(integer -> vb.firstPublication.setText(String.valueOf(integer)));
+        ExtClearTextEndIconDelegate.attach(vb.lblFirstPublication, null);
+    }
+
+    private void initAuthor(@NonNull final Context context) {
+        final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
+                context, R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Diacritic,
+                vm.getAuthorNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
+
+        vb.author.setAdapter(authorAdapter);
+        vb.author.setText(vm.getCurrentAuthorName());
+        vb.author.selectAll();
     }
 
     @Override

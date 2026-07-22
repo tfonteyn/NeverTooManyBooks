@@ -126,19 +126,23 @@ class EditTagDelegate
         }
 
         final Context context = vb.getRoot().getContext();
-
         final Tag currentEdit = vm.getCurrentEdit();
 
+        initName(context, currentEdit);
+
+        vb.tagName.requestFocus();
+    }
+
+    private void initName(@NonNull final Context context,
+                          @NonNull final Tag tag) {
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllNames());
 
-        vb.tagName.setText(currentEdit.getName());
+        vb.tagName.setText(tag.getName());
         vb.tagName.setAdapter(nameAdapter);
         TilUtil.autoRemoveError(vb.tagName, vb.lblTagName);
-
-        vb.tagName.requestFocus();
     }
 
     @Override

@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLaunc
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
@@ -94,6 +94,7 @@ class EditBookSeriesDelegate
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
+        //noinspection deprecation
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
 
         //noinspection DataFlowIssue
@@ -152,24 +153,34 @@ class EditBookSeriesDelegate
 
         final Series currentEdit = seriesVm.getCurrentEdit();
 
+        initTitle(context, currentEdit);
+        initNumber(currentEdit);
+        initIssn(currentEdit);
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
+    }
+
+    private void initIssn(@NonNull final Series series) {
+        vb.seriesIssn.setText(series.getIdentifierValue(Identifier.SID_ISSN)
+                                    .orElse(""));
+        ExtClearTextEndIconDelegate.attach(vb.lblSeriesIssn, null);
+        TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
+    }
+
+
+    private void initTitle(@NonNull final Context context,
+                           @NonNull final Series series) {
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
 
-        vb.seriesTitle.setText(currentEdit.getTitle());
+        vb.seriesTitle.setText(series.getTitle());
         vb.seriesTitle.setAdapter(titleAdapter);
         TilUtil.autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
+    }
 
-        vb.seriesIssn.setText(currentEdit.getIdentifierValue(Identifier.SID_ISSN)
-                                         .orElse(""));
-        ExtClearTextEndIconDelegate.attach(vb.lblSeriesIssn, null);
-        TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
-
-        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-
-        vb.seriesNum.setText(currentEdit.getNumber());
+    private void initNumber(@NonNull final Series series) {
+        vb.seriesNum.setText(series.getNumber());
         ExtClearTextEndIconDelegate.attach(vb.lblSeriesNum, null);
-
     }
 
     @Override
@@ -214,15 +225,15 @@ class EditBookSeriesDelegate
     }
 
     private void viewToModel() {
-        final Series currentEdit = seriesVm.getCurrentEdit();
+        final Series series = seriesVm.getCurrentEdit();
 
-        currentEdit.setTitle(vb.seriesTitle.getText().toString().strip());
+        series.setTitle(vb.seriesTitle.getText().toString().strip());
         //noinspection DataFlowIssue
-        currentEdit.setIdentifierValue(Identifier.SID_ISSN,
-                                       vb.seriesIssn.getText().toString().strip());
-        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
+        series.setNumber(vb.seriesNum.getText().toString().strip());
 
         //noinspection DataFlowIssue
-        currentEdit.setNumber(vb.seriesNum.getText().toString().strip());
+        series.setIdentifierValue(Identifier.SID_ISSN,
+                                  vb.seriesIssn.getText().toString().strip());
+        series.setComplete(vb.cbxIsComplete.isChecked());
     }
 }

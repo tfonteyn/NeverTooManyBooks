@@ -187,22 +187,21 @@ class EditBookAuthorDelegate
 
         final Author currentEdit = authorVm.getCurrentEdit();
 
-        setupNames(context, currentEdit);
-        setupRealAuthorField(context);
-        setupAuthorRoleField(currentEdit.getRole());
-
+        initNames(context, currentEdit);
+        initRealAuthorField(context);
+        initAuthorRoleField(currentEdit.getRole());
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.familyName.requestFocus();
     }
 
-    private void setupNames(@NonNull final Context context,
-                            @NonNull final Author currentEdit) {
+    private void initNames(@NonNull final Context context,
+                           @NonNull final Author author) {
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllAuthorFamilyNames());
-        vb.familyName.setText(currentEdit.getFamilyName());
+        vb.familyName.setText(author.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         TilUtil.autoRemoveError(vb.familyName, vb.lblFamilyName);
 
@@ -210,11 +209,11 @@ class EditBookAuthorDelegate
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllAuthorGivenNames());
-        vb.givenNames.setText(currentEdit.getGivenNames());
+        vb.givenNames.setText(author.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
     }
 
-    private void setupRealAuthorField(@NonNull final Context context) {
+    private void initRealAuthorField(@NonNull final Context context) {
         if (authorVm.showRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);
@@ -233,7 +232,7 @@ class EditBookAuthorDelegate
         }
     }
 
-    private void setupAuthorRoleField(@AuthorRole.Role final int currentRole) {
+    private void initAuthorRoleField(@AuthorRole.Role final int currentRole) {
         final CompoundButton rolesSwitch = getRolesSwitch();
 
         if (!authorVm.showAuthorRole()) {
@@ -373,16 +372,10 @@ class EditBookAuthorDelegate
     }
 
     private void viewToModel() {
-        final Author currentEdit = authorVm.getCurrentEdit();
+        final Author author = authorVm.getCurrentEdit();
 
-        currentEdit.setName(vb.familyName.getText().toString().strip(),
+        author.setName(vb.familyName.getText().toString().strip(),
                             vb.givenNames.getText().toString().strip());
-        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
-
-        if (authorVm.showRealAuthorName()) {
-            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().strip());
-        }
-
         if (authorVm.showAuthorRole()) {
             // Always set these when globally enabled
             // even when disabled for the current edit.
@@ -393,7 +386,12 @@ class EditBookAuthorDelegate
                     role |= roleButtons.keyAt(i);
                 }
             }
-            currentEdit.setRole(role);
+            author.setRole(role);
         }
+
+        if (authorVm.showRealAuthorName()) {
+            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().strip());
+        }
+        author.setComplete(vb.cbxIsComplete.isChecked());
     }
 }

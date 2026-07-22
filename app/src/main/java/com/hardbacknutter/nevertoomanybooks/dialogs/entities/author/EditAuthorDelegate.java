@@ -139,8 +139,6 @@ class EditAuthorDelegate
 
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
-        final Context context = vb.getRoot().getContext();
-
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
                 toolbar.inflateMenu(R.menu.toolbar_action_save);
@@ -148,22 +146,26 @@ class EditAuthorDelegate
             initToolbar(owner, dialogType, toolbar);
         }
 
-        setupNames(context);
-        setupRealAuthorField(context);
-        setupBirthDate(context);
-        setupDeathDate(context);
+        final Context context = vb.getRoot().getContext();
+        final Author currentEdit = vm.getCurrentEdit();
 
-        vb.cbxIsComplete.setChecked(vm.getCurrentEdit().isComplete());
+        initNames(context, currentEdit);
+        initRealAuthor(context);
+        initBirthDate(context, currentEdit);
+        initDeathDate(context, currentEdit);
+
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.familyName.requestFocus();
     }
 
-    private void setupNames(@NonNull final Context context) {
+    private void initNames(@NonNull final Context context,
+                           @NonNull final Author author) {
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllNames(DBKey.AUTHOR.FAMILY_NAME));
-        vb.familyName.setText(vm.getCurrentEdit().getFamilyName());
+        vb.familyName.setText(author.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         TilUtil.autoRemoveError(vb.familyName, vb.lblFamilyName);
 
@@ -171,11 +173,11 @@ class EditAuthorDelegate
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllNames(DBKey.AUTHOR.GIVEN_NAMES));
-        vb.givenNames.setText(vm.getCurrentEdit().getGivenNames());
+        vb.givenNames.setText(author.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
     }
 
-    private void setupRealAuthorField(@NonNull final Context context) {
+    private void initRealAuthor(@NonNull final Context context) {
         if (vm.showRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);
@@ -194,9 +196,10 @@ class EditAuthorDelegate
         }
     }
 
-    private void setupBirthDate(@NonNull final Context context) {
+    private void initBirthDate(@NonNull final Context context,
+                               @NonNull final Author author) {
         vb.birthDate.setText(dateFieldFormatter.format(
-                context, vm.getCurrentEdit().getBirthDate().orElse(null)));
+                context, author.getBirthDate().orElse(null)));
         vb.lblBirthDate.setEndIconOnClickListener(v -> {
             vm.getCurrentEdit().setBirthDate(null);
             vb.birthDate.setText(null);
@@ -215,9 +218,10 @@ class EditAuthorDelegate
         });
     }
 
-    private void setupDeathDate(@NonNull final Context context) {
+    private void initDeathDate(@NonNull final Context context,
+                               @NonNull final Author author) {
         vb.deathDate.setText(dateFieldFormatter.format(
-                context, vm.getCurrentEdit().getDeathDate().orElse(null)));
+                context, author.getDeathDate().orElse(null)));
         vb.lblDeathDate.setEndIconOnClickListener(v -> {
             vm.getCurrentEdit().setDeathDate(null);
             vb.deathDate.setText(null);

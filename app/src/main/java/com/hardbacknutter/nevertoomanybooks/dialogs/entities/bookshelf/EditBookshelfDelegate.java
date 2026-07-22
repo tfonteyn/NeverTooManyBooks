@@ -120,11 +120,16 @@ class EditBookshelfDelegate
             initToolbar(owner, dialogType, toolbar);
         }
 
-        vb.bookshelf.setText(vm.getCurrentEdit().getName());
-        TilUtil.autoRemoveError(vb.bookshelf, vb.lblBookshelf);
-        ExtClearTextEndIconDelegate.attach(vb.lblBookshelf, null);
+        final Bookshelf currentEdit = vm.getCurrentEdit();
+        initName(currentEdit);
 
         vb.bookshelf.requestFocus();
+    }
+
+    private void initName(@NonNull final Bookshelf bookshelf) {
+        vb.bookshelf.setText(bookshelf.getName());
+        TilUtil.autoRemoveError(vb.bookshelf, vb.lblBookshelf);
+        ExtClearTextEndIconDelegate.attach(vb.lblBookshelf, null);
     }
 
     @Override

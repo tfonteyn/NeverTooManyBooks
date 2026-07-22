@@ -47,8 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -124,26 +124,31 @@ class EditSeriesDelegate
         }
 
         final Context context = vb.getRoot().getContext();
-
         final Series currentEdit = vm.getCurrentEdit();
 
-        final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
-                context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic,
-                vm.getAllNames());
-
-        vb.seriesTitle.setText(currentEdit.getTitle());
-        vb.seriesTitle.setAdapter(titleAdapter);
-        TilUtil.autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
-
-        vb.seriesIssn.setText(currentEdit.getIdentifierValue(Identifier.SID_ISSN)
-                                         .orElse(""));
-        ExtClearTextEndIconDelegate.attach(vb.lblSeriesIssn, null);
-        TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
-
+        initTitle(context, currentEdit);
+        initIssn(currentEdit);
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.seriesTitle.requestFocus();
+    }
+
+    private void initIssn(@NonNull final Series series) {
+        vb.seriesIssn.setText(series.getIdentifierValue(Identifier.SID_ISSN).orElse(""));
+        ExtClearTextEndIconDelegate.attach(vb.lblSeriesIssn, null);
+        TilUtil.autoRemoveError(vb.seriesIssn, vb.lblSeriesIssn);
+    }
+
+    private void initTitle(@NonNull final Context context,
+                           @NonNull final Series series) {
+        final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
+                context, R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Diacritic,
+                vm.getAllTitles());
+
+        vb.seriesTitle.setText(series.getTitle());
+        vb.seriesTitle.setAdapter(titleAdapter);
+        TilUtil.autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
     }
 
     @Override

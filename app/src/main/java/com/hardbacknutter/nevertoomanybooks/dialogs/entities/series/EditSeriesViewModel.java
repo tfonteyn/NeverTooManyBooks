@@ -66,7 +66,7 @@ public class EditSeriesViewModel
     }
 
     @NonNull
-    List<String> getAllNames() {
+    List<String> getAllTitles() {
         return dao.getNames();
     }
 
