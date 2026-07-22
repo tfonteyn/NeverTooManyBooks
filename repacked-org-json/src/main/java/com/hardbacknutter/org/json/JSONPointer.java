@@ -31,6 +31,7 @@ Public Domain.
  * @author JSON.org
  * @version 2016-05-14
  */
+@SuppressWarnings("ALL")
 public class JSONPointer {
 
     // used for URL encoding and decoding

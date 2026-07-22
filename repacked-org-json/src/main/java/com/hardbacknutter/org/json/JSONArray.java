@@ -4,7 +4,7 @@ package com.hardbacknutter.org.json;
 Public Domain.
  */
 
-import java.io.IOException;
+import androidx.annotation.NonNull;import androidx.annotation.Nullable;import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -60,6 +60,7 @@ import java.util.Map;
  * @author JSON.org
  * @version 2016-08/15
  */
+@SuppressWarnings("ALL")
 public class JSONArray implements Iterable<Object> {
 
     /**
@@ -82,7 +83,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If there is a syntax error.
      */
-    public JSONArray(JSONTokener x) throws JSONException {
+    public JSONArray(@NonNull JSONTokener x) throws JSONException {
         this(x, x.getJsonParserConfiguration());
     }
 
@@ -93,7 +94,7 @@ public class JSONArray implements Iterable<Object> {
      * @param jsonParserConfiguration A JSONParserConfiguration instance that controls the behavior of the parser.
      * @throws JSONException If a syntax error occurs during the construction of the JSONArray.
      */
-    public JSONArray(JSONTokener x, JSONParserConfiguration jsonParserConfiguration) throws JSONException {
+    public JSONArray(@NonNull JSONTokener x, @Nullable JSONParserConfiguration jsonParserConfiguration) throws JSONException {
         this();
 
         boolean isInitial = x.getPrevious() == 0;
@@ -183,7 +184,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If there is a syntax error.
      */
-    public JSONArray(String source) throws JSONException {
+    public JSONArray(@NonNull String source) throws JSONException {
         this(source, new JSONParserConfiguration());
     }
 
@@ -198,7 +199,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If there is a syntax error.
      */
-    public JSONArray(String source, JSONParserConfiguration jsonParserConfiguration) throws JSONException {
+    public JSONArray(@NonNull String source, @Nullable JSONParserConfiguration jsonParserConfiguration) throws JSONException {
         this(new JSONTokener(source, jsonParserConfiguration), jsonParserConfiguration);
     }
 
@@ -208,7 +209,7 @@ public class JSONArray implements Iterable<Object> {
      * @param collection
      *            A Collection.
      */
-    public JSONArray(Collection<?> collection) {
+    public JSONArray(@Nullable Collection<?> collection) {
       this(collection, 0, new JSONParserConfiguration());
     }
 
@@ -220,7 +221,7 @@ public class JSONArray implements Iterable<Object> {
      * @param jsonParserConfiguration
      *            Configuration object for the JSON parser
      */
-    public JSONArray(Collection<?> collection, JSONParserConfiguration jsonParserConfiguration) {
+    public JSONArray(@Nullable Collection<?> collection, @Nullable JSONParserConfiguration jsonParserConfiguration) {
         this(collection, 0, jsonParserConfiguration);
     }
 
@@ -234,7 +235,7 @@ public class JSONArray implements Iterable<Object> {
      * @param jsonParserConfiguration
      *             Configuration object for the JSON parser
      */
-    JSONArray(Collection<?> collection, int recursionDepth, JSONParserConfiguration jsonParserConfiguration) {
+    JSONArray(@Nullable Collection<?> collection, int recursionDepth, @Nullable JSONParserConfiguration jsonParserConfiguration) {
         if (recursionDepth > jsonParserConfiguration.getMaxNestingDepth()) {
           throw new JSONException("JSONArray has reached recursion depth limit of " + jsonParserConfiguration.getMaxNestingDepth());
         }
@@ -252,7 +253,7 @@ public class JSONArray implements Iterable<Object> {
      * @param iter
      *            A Iterable collection.
      */
-    public JSONArray(Iterable<?> iter) {
+    public JSONArray(@Nullable Iterable<?> iter) {
         this();
         if (iter == null) {
             return;
@@ -266,7 +267,7 @@ public class JSONArray implements Iterable<Object> {
      * @param array
      *            A array.
      */
-    public JSONArray(JSONArray array) {
+    public JSONArray(@Nullable JSONArray array) {
         if (array == null) {
             this.myArrayList = new ArrayList<Object>();
         } else {
@@ -288,7 +289,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws NullPointerException
      *            Thrown if the array parameter is null.
      */
-    public JSONArray(Object array) throws JSONException {
+    public JSONArray(@NonNull Object array) throws JSONException {
         this();
         if (!array.getClass().isArray()) {
             throw new JSONException(
@@ -327,6 +328,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If there is no value for the index.
      */
+    @NonNull
     public Object get(int index) throws JSONException {
         Object object = this.opt(index);
         if (object == null) {
@@ -412,6 +414,7 @@ public class JSONArray implements Iterable<Object> {
      *             if the key is not found or if the value is not a Number
      *             object and cannot be converted to a number.
      */
+    @NonNull
     public Number getNumber(int index) throws JSONException {
         Object object = this.get(index);
         try {
@@ -438,7 +441,8 @@ public class JSONArray implements Iterable<Object> {
      *            if the key is not found or if the value cannot be converted
      *            to an enum.
      */
-    public <E extends Enum<E>> E getEnum(Class<E> clazz, int index) throws JSONException {
+    @NonNull
+    public <E extends Enum<E>> E getEnum(@NonNull Class<E> clazz, int index) throws JSONException {
         E val = optEnum(clazz, index);
         if(val==null) {
             // JSONException should really take a throwable argument.
@@ -463,6 +467,7 @@ public class JSONArray implements Iterable<Object> {
      *             If the key is not found or if the value cannot be converted
      *             to a BigDecimal.
      */
+    @NonNull
     public BigDecimal getBigDecimal (int index) throws JSONException {
         Object object = this.get(index);
         BigDecimal val = JSONObject.objectToBigDecimal(object, null);
@@ -482,6 +487,7 @@ public class JSONArray implements Iterable<Object> {
      *             If the key is not found or if the value cannot be converted
      *             to a BigInteger.
      */
+    @NonNull
     public BigInteger getBigInteger (int index) throws JSONException {
         return this.getBigInteger(index, new JSONParserConfiguration());
     }
@@ -502,7 +508,8 @@ public class JSONArray implements Iterable<Object> {
      *             If the key is not found or if the value cannot be converted
      *             to a BigInteger.
      */
-    public BigInteger getBigInteger (int index, JSONParserConfiguration jsonParserConfiguration)
+    @NonNull
+    public BigInteger getBigInteger (int index, @Nullable JSONParserConfiguration jsonParserConfiguration)
             throws JSONException {
         Object object = this.get(index);
         BigInteger val = JSONObject.objectToBigInteger(object, null, jsonParserConfiguration);
@@ -543,6 +550,7 @@ public class JSONArray implements Iterable<Object> {
      *             If there is no value for the index. or if the value is not a
      *             JSONArray
      */
+    @NonNull
     public JSONArray getJSONArray(int index) throws JSONException {
         Object object = this.get(index);
         if (object instanceof JSONArray) {
@@ -561,6 +569,7 @@ public class JSONArray implements Iterable<Object> {
      *             If there is no value for the index or if the value is not a
      *             JSONObject
      */
+    @NonNull
     public JSONObject getJSONObject(int index) throws JSONException {
         Object object = this.get(index);
         if (object instanceof JSONObject) {
@@ -600,6 +609,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If there is no string value for the index.
      */
+    @NonNull
     public String getString(int index) throws JSONException {
         Object object = this.get(index);
         if (object instanceof String) {
@@ -630,7 +640,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If the array contains an invalid number.
      */
-    public String join(String separator) throws JSONException {
+    @NonNull
+    public String join(@Nullable String separator) throws JSONException {
         int len = this.length();
         if (len == 0) {
             return "";
@@ -670,6 +681,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1. If not, null is returned.
      * @return An object value, or null if there is no object at that index.
      */
+    @Nullable
     public Object opt(int index) {
         return (index < 0 || index >= this.length()) ? null : this.myArrayList
                 .get(index);
@@ -716,6 +728,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return The truth.
      */
+    @Nullable
     public Boolean optBooleanObject(int index) {
         return this.optBooleanObject(index, false);
     }
@@ -731,7 +744,8 @@ public class JSONArray implements Iterable<Object> {
      *            A boolean default.
      * @return The truth.
      */
-    public Boolean optBooleanObject(int index, Boolean defaultValue) {
+    @Nullable
+    public Boolean optBooleanObject(int index, @Nullable Boolean defaultValue) {
         try {
             return this.getBoolean(index);
         } catch (Exception e) {
@@ -780,6 +794,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return The object.
      */
+    @Nullable
     public Double optDoubleObject(int index) {
         return this.optDoubleObject(index, Double.NaN);
     }
@@ -795,7 +810,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default object.
      * @return The object.
      */
-    public Double optDoubleObject(int index, Double defaultValue) {
+    @Nullable
+    public Double optDoubleObject(int index, @Nullable Double defaultValue) {
         final Number val = this.optNumber(index, null);
         if (val == null) {
             return defaultValue;
@@ -844,6 +860,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return The object.
      */
+    @Nullable
     public Float optFloatObject(int index) {
         return this.optFloatObject(index, Float.NaN);
     }
@@ -859,7 +876,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default object.
      * @return The object.
      */
-    public Float optFloatObject(int index, Float defaultValue) {
+    @Nullable
+    public Float optFloatObject(int index, @Nullable Float defaultValue) {
         final Number val = this.optNumber(index, null);
         if (val == null) {
             return defaultValue;
@@ -908,6 +926,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return The object.
      */
+    @Nullable
     public Integer optIntegerObject(int index) {
         return this.optIntegerObject(index, 0);
     }
@@ -923,7 +942,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default object.
      * @return The object.
      */
-    public Integer optIntegerObject(int index, Integer defaultValue) {
+    @Nullable
+    public Integer optIntegerObject(int index, @Nullable Integer defaultValue) {
         final Number val = this.optNumber(index, null);
         if (val == null) {
             return defaultValue;
@@ -942,7 +962,8 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return The enum value at the index location or null if not found
      */
-    public <E extends Enum<E>> E optEnum(Class<E> clazz, int index) {
+    @Nullable
+    public <E extends Enum<E>> E optEnum(@NonNull Class<E> clazz, int index) {
         return this.optEnum(clazz, index, null);
     }
 
@@ -960,7 +981,8 @@ public class JSONArray implements Iterable<Object> {
      * @return The enum value at the index location or defaultValue if
      *            the value is not found or cannot be assigned to clazz
      */
-    public <E extends Enum<E>> E optEnum(Class<E> clazz, int index, E defaultValue) {
+    @Nullable
+    public <E extends Enum<E>> E optEnum(@NonNull Class<E> clazz, int index, @Nullable E defaultValue) {
         try {
             Object val = this.opt(index);
             if (JSONObject.NULL.equals(val)) {
@@ -991,7 +1013,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default value.
      * @return The value.
      */
-    public BigInteger optBigInteger(int index, BigInteger defaultValue) {
+    @Nullable
+    public BigInteger optBigInteger(int index, @Nullable BigInteger defaultValue) {
         return this.optBigInteger(index, defaultValue, new JSONParserConfiguration());
     }
 
@@ -1013,8 +1036,9 @@ public class JSONArray implements Iterable<Object> {
      *            this check.
      * @return The value.
      */
-    public BigInteger optBigInteger(int index, BigInteger defaultValue,
-            JSONParserConfiguration jsonParserConfiguration) {
+    @Nullable
+    public BigInteger optBigInteger(int index, @Nullable BigInteger defaultValue,
+            @Nullable JSONParserConfiguration jsonParserConfiguration) {
         Object val = this.opt(index);
         return JSONObject.objectToBigInteger(val, defaultValue, jsonParserConfiguration);
     }
@@ -1033,7 +1057,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default value.
      * @return The value.
      */
-    public BigDecimal optBigDecimal(int index, BigDecimal defaultValue) {
+    @Nullable
+    public BigDecimal optBigDecimal(int index, @Nullable BigDecimal defaultValue) {
         Object val = this.opt(index);
         return JSONObject.objectToBigDecimal(val, defaultValue);
     }
@@ -1046,6 +1071,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return A JSONArray value.
      */
+    @Nullable
     public JSONArray optJSONArray(int index) {
         return this.optJSONArray(index, null);
     }
@@ -1060,7 +1086,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default.
      * @return A JSONArray value.
      */
-    public JSONArray optJSONArray(int index, JSONArray defaultValue) {
+    @Nullable
+    public JSONArray optJSONArray(int index, @Nullable JSONArray defaultValue) {
         Object object = this.opt(index);
         return object instanceof JSONArray ? (JSONArray) object : defaultValue;
     }
@@ -1073,6 +1100,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return A JSONObject value.
      */
+    @Nullable
     public JSONObject optJSONObject(int index) {
         return this.optJSONObject(index, null);
     }
@@ -1087,7 +1115,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default.
      * @return A JSONObject value.
      */
-    public JSONObject optJSONObject(int index, JSONObject defaultValue) {
+    @Nullable
+    public JSONObject optJSONObject(int index, @Nullable JSONObject defaultValue) {
         Object object = this.opt(index);
         return object instanceof JSONObject ? (JSONObject) object : defaultValue;
     }
@@ -1133,6 +1162,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return The object.
      */
+    @Nullable
     public Long optLongObject(int index) {
         return this.optLongObject(index, 0L);
     }
@@ -1148,7 +1178,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default object.
      * @return The object.
      */
-    public Long optLongObject(int index, Long defaultValue) {
+    @Nullable
+    public Long optLongObject(int index, @Nullable Long defaultValue) {
         final Number val = this.optNumber(index, null);
         if (val == null) {
             return defaultValue;
@@ -1166,6 +1197,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return An object which is the value.
      */
+    @Nullable
     public Number optNumber(int index) {
         return this.optNumber(index, null);
     }
@@ -1182,7 +1214,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default.
      * @return An object which is the value.
      */
-    public Number optNumber(int index, Number defaultValue) {
+    @Nullable
+    public Number optNumber(int index, @Nullable Number defaultValue) {
         Object val = this.opt(index);
         if (JSONObject.NULL.equals(val)) {
             return defaultValue;
@@ -1210,6 +1243,7 @@ public class JSONArray implements Iterable<Object> {
      *            The index must be between 0 and length() - 1.
      * @return A String value.
      */
+    @NonNull
     public String optString(int index) {
         return this.optString(index, "");
     }
@@ -1224,7 +1258,8 @@ public class JSONArray implements Iterable<Object> {
      *            The default value.
      * @return A String value.
      */
-    public String optString(int index, String defaultValue) {
+    @Nullable
+    public String optString(int index, @Nullable String defaultValue) {
         Object object = this.opt(index);
         return JSONObject.NULL.equals(object) ? defaultValue : object
                 .toString();
@@ -1237,6 +1272,7 @@ public class JSONArray implements Iterable<Object> {
      *            A boolean value.
      * @return this.
      */
+    @NonNull
     public JSONArray put(boolean value) {
         return this.put(value ? Boolean.TRUE : Boolean.FALSE);
     }
@@ -1251,7 +1287,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *            If the value is non-finite number.
      */
-    public JSONArray put(Collection<?> value) {
+    @NonNull
+    public JSONArray put(@Nullable Collection<?> value) {
         return this.put(new JSONArray(value));
     }
 
@@ -1264,6 +1301,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             if the value is not finite.
      */
+    @NonNull
     public JSONArray put(double value) throws JSONException {
         return this.put(Double.valueOf(value));
     }
@@ -1277,6 +1315,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             if the value is not finite.
      */
+    @NonNull
     public JSONArray put(float value) throws JSONException {
         return this.put(Float.valueOf(value));
     }
@@ -1288,6 +1327,7 @@ public class JSONArray implements Iterable<Object> {
      *            An int value.
      * @return this.
      */
+    @NonNull
     public JSONArray put(int value) {
         return this.put(Integer.valueOf(value));
     }
@@ -1299,6 +1339,7 @@ public class JSONArray implements Iterable<Object> {
      *            A long value.
      * @return this.
      */
+    @NonNull
     public JSONArray put(long value) {
         return this.put(Long.valueOf(value));
     }
@@ -1315,7 +1356,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws NullPointerException
      *            If a key in the map is <code>null</code>
      */
-    public JSONArray put(Map<?, ?> value) {
+    @NonNull
+    public JSONArray put(@Nullable Map<?, ?> value) {
         return this.put(new JSONObject(value));
     }
 
@@ -1330,7 +1372,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *            If the value is non-finite number.
      */
-    public JSONArray put(Object value) {
+    @NonNull
+    public JSONArray put(@Nullable Object value) {
         JSONObject.testValidity(value);
         this.myArrayList.add(value);
         return this;
@@ -1349,6 +1392,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If the index is negative.
      */
+    @NonNull
     public JSONArray put(int index, boolean value) throws JSONException {
         return this.put(index, value ? Boolean.TRUE : Boolean.FALSE);
     }
@@ -1365,7 +1409,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If the index is negative or if the value is non-finite.
      */
-    public JSONArray put(int index, Collection<?> value) throws JSONException {
+    @NonNull
+    public JSONArray put(int index, @Nullable Collection<?> value) throws JSONException {
         return this.put(index, new JSONArray(value));
     }
 
@@ -1382,6 +1427,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If the index is negative or if the value is non-finite.
      */
+    @NonNull
     public JSONArray put(int index, double value) throws JSONException {
         return this.put(index, Double.valueOf(value));
     }
@@ -1399,6 +1445,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If the index is negative or if the value is non-finite.
      */
+    @NonNull
     public JSONArray put(int index, float value) throws JSONException {
         return this.put(index, Float.valueOf(value));
     }
@@ -1416,6 +1463,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If the index is negative.
      */
+    @NonNull
     public JSONArray put(int index, int value) throws JSONException {
         return this.put(index, Integer.valueOf(value));
     }
@@ -1433,6 +1481,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If the index is negative.
      */
+    @NonNull
     public JSONArray put(int index, long value) throws JSONException {
         return this.put(index, Long.valueOf(value));
     }
@@ -1453,7 +1502,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws NullPointerException
      *             If a key in the map is <code>null</code>
      */
-    public JSONArray put(int index, Map<?, ?> value) throws JSONException {
+    @NonNull
+    public JSONArray put(int index, @Nullable Map<?, ?> value) throws JSONException {
         this.put(index, new JSONObject(value, new JSONParserConfiguration()));
         return this;
     }
@@ -1473,7 +1523,8 @@ public class JSONArray implements Iterable<Object> {
      *          If the index is negative or if the value is an invalid
      *          number.
      */
-    public JSONArray put(int index, Map<?, ?> value, JSONParserConfiguration jsonParserConfiguration) throws JSONException {
+    @NonNull
+    public JSONArray put(int index, @Nullable Map<?, ?> value, @Nullable JSONParserConfiguration jsonParserConfiguration) throws JSONException {
         this.put(index, new JSONObject(value, jsonParserConfiguration));
         return this;
     }
@@ -1494,7 +1545,8 @@ public class JSONArray implements Iterable<Object> {
      *             If the index is negative or if the value is an invalid
      *             number.
      */
-    public JSONArray put(int index, Object value) throws JSONException {
+    @NonNull
+    public JSONArray put(int index, @Nullable Object value) throws JSONException {
         if (index < 0) {
             throw new JSONException("JSONArray[" + index + "] not found.");
         }
@@ -1524,7 +1576,8 @@ public class JSONArray implements Iterable<Object> {
      *            A Collection.
      * @return this. 
      */
-    public JSONArray putAll(Collection<?> collection) {
+    @NonNull
+    public JSONArray putAll(@NonNull Collection<?> collection) {
         this.addAll(collection, false);
         return this;
     }
@@ -1536,7 +1589,8 @@ public class JSONArray implements Iterable<Object> {
      *            An Iterable.
      * @return this. 
      */
-    public JSONArray putAll(Iterable<?> iter) {
+    @NonNull
+    public JSONArray putAll(@NonNull Iterable<?> iter) {
         this.addAll(iter, false);
         return this;
     }
@@ -1548,7 +1602,8 @@ public class JSONArray implements Iterable<Object> {
      *            A JSONArray.
      * @return this. 
      */
-    public JSONArray putAll(JSONArray array) {
+    @NonNull
+    public JSONArray putAll(@NonNull JSONArray array) {
         // directly copy the elements from the source array to this one
         // as all wrapping should have been done already in the source.
         this.myArrayList.addAll(array.myArrayList);
@@ -1568,7 +1623,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws NullPointerException
      *            Thrown if the array parameter is null.
      */
-    public JSONArray putAll(Object array) throws JSONException {
+    @NonNull
+    public JSONArray putAll(@NonNull Object array) throws JSONException {
         this.addAll(array, false);
         return this;
     }
@@ -1627,7 +1683,8 @@ public class JSONArray implements Iterable<Object> {
      * @return the queried value or {@code null}
      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
      */
-    public Object optQuery(String jsonPointer) {
+    @Nullable
+    public Object optQuery(@NonNull String jsonPointer) {
     	return optQuery(new JSONPointer(jsonPointer));
     }
     
@@ -1639,7 +1696,8 @@ public class JSONArray implements Iterable<Object> {
      * @return the queried value or {@code null}
      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
      */
-    public Object optQuery(JSONPointer jsonPointer) {
+    @Nullable
+    public Object optQuery(@NonNull JSONPointer jsonPointer) {
         try {
             return jsonPointer.queryFrom(this);
         } catch (JSONPointerException e) {
@@ -1655,6 +1713,7 @@ public class JSONArray implements Iterable<Object> {
      * @return The value that was associated with the index, or null if there
      *         was no value.
      */
+    @Nullable
     public Object remove(int index) {
         return index >= 0 && index < this.length()
             ? this.myArrayList.remove(index)
@@ -1735,7 +1794,8 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException
      *             If any of the names are null.
      */
-    public JSONObject toJSONObject(JSONArray names) throws JSONException {
+    @Nullable
+    public JSONObject toJSONObject(@Nullable JSONArray names) throws JSONException {
         if (names == null || names.isEmpty() || this.isEmpty()) {
             return null;
         }
@@ -1759,6 +1819,7 @@ public class JSONArray implements Iterable<Object> {
      *         array.
      */
     @Override
+    @Nullable
     public String toString() {
         try {
             return this.toString(0);
@@ -1795,6 +1856,7 @@ public class JSONArray implements Iterable<Object> {
      * @throws JSONException if a called function fails
      */
     @SuppressWarnings("resource")
+    @Nullable
     public String toString(int indentFactor) throws JSONException {
         // each value requires a comma, so multiply the count by 2
         // We don't want to oversize the initial capacity
@@ -1910,6 +1972,7 @@ public class JSONArray implements Iterable<Object> {
      *
      * @return a java.util.List containing the elements of this array
      */
+    @NonNull
     public List<Object> toList() {
         List<Object> results = new ArrayList<Object>(this.myArrayList.size());
         for (Object element : this.myArrayList) {

@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  * @author JSON.org
  * @version 2016-08-10
  */
-@SuppressWarnings("boxing")
+@SuppressWarnings("ALL")
 public class XML {
 
     /**

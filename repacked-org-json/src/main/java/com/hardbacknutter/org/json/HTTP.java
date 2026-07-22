@@ -11,6 +11,7 @@ import java.util.Locale;
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings("ALL")
 public class HTTP {
 
     /**

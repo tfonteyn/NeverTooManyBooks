@@ -41,6 +41,7 @@ Public Domain.
  * @author kumar529
  * @param <T> return type of convert method
  */
+@SuppressWarnings("ALL")
 public interface XMLXsiTypeConverter<T> {
 
     /**

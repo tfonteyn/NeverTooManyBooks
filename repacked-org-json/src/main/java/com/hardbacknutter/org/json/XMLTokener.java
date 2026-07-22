@@ -12,6 +12,7 @@ import java.io.Reader;
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings("ALL")
 public class XMLTokener extends JSONTokener {
 
 

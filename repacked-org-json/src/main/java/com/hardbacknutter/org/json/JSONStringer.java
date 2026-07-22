@@ -36,6 +36,7 @@ import java.io.StringWriter;
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings("ALL")
 public class JSONStringer extends JSONWriter {
     /**
      * Make a fresh JSONStringer. It can be used to build one JSON text.

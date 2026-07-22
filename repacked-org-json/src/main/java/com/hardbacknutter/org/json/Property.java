@@ -12,6 +12,7 @@ import java.util.Properties;
  * @author JSON.org
  * @version 2015-05-05
  */
+@SuppressWarnings("ALL")
 public class Property {
 
     /**

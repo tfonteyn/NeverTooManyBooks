@@ -10,6 +10,7 @@ Public Domain.
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings("ALL")
 public class HTTPTokener extends JSONTokener {
 
     /**

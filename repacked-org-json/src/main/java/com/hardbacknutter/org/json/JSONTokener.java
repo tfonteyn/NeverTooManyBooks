@@ -1,6 +1,6 @@
 package com.hardbacknutter.org.json;
 
-import java.io.*;
+import androidx.annotation.NonNull;import java.io.*;
 import java.nio.charset.Charset;
 
 /*
@@ -14,6 +14,7 @@ Public Domain.
  * @author JSON.org
  * @version 2014-05-03
  */
+@SuppressWarnings("ALL")
 public class JSONTokener {
     /** current read character position on the current line. */
     private long character;
@@ -40,7 +41,7 @@ public class JSONTokener {
      *
      * @param reader the source.
      */
-    public JSONTokener(Reader reader) {
+    public JSONTokener(@NonNull Reader reader) {
         this(reader, new JSONParserConfiguration());
     }
 

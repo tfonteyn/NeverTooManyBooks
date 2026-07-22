@@ -23,6 +23,7 @@ Public Domain.
  * @author JSON.org
  * @version 2016-05-01
  */
+@SuppressWarnings("ALL")
 public class CDL {
 
     /**

@@ -7,6 +7,7 @@ import java.io.Writer;
  * Performance optimised alternative for {@link java.io.StringWriter}
  * using internally a {@link StringBuilder} instead of a {@link StringBuffer}.
  */
+@SuppressWarnings("ALL")
 public class StringBuilderWriter extends Writer {
     private final StringBuilder builder;
 

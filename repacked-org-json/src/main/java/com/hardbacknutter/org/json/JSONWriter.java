@@ -37,6 +37,7 @@ Public Domain.
  * @author JSON.org
  * @version 2016-08-08
  */
+@SuppressWarnings("ALL")
 public class JSONWriter {
     private static final int maxdepth = 200;
 

@@ -3,6 +3,7 @@ package com.hardbacknutter.org.json;
 /**
  * Configuration object for the JSON parser. The configuration is immutable.
  */
+@SuppressWarnings("ALL")
 public class JSONParserConfiguration extends ParserConfiguration {
     /**
      * Used to indicate whether to overwrite duplicate key or not.

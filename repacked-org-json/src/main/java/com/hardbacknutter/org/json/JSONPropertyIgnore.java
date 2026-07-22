@@ -20,4 +20,5 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RUNTIME)
 @Target({METHOD})
+@SuppressWarnings("ALL")
 public @interface JSONPropertyIgnore { }

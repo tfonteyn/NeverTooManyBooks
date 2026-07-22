@@ -11,6 +11,7 @@ Public Domain.
  * @author JSON.org
  * @version 2016-05-13
  */
+@SuppressWarnings("ALL")
 public class JSONPointerException extends JSONException {
     private static final long serialVersionUID = 8872944667561856751L;
 
