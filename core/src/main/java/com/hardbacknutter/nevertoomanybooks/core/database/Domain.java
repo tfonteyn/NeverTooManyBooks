@@ -62,7 +62,7 @@ public class Domain {
     private final String collationClause;
 
     @NonNull
-    private Sort indexSortingOrder;
+    private final Sort indexSortingOrder;
 
     /**
      * Full, private constructor.
@@ -101,6 +101,8 @@ public class Domain {
         unique = from.unique;
         defaultClause = from.defaultClause;
         references = from.references;
+        indexSortingOrder = from.indexSortingOrder;
+
         collationClause = from.collationClause;
 
         notBlank = from.notBlank;
