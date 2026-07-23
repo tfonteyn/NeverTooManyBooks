@@ -818,7 +818,7 @@ public class DatabazeKnihSearchEngine
         for (final Element meta : metaElements) {
             final String property = meta.attr("property");
             final String content = meta.attr("content");
-            if (property.equals("og:url")) {
+            if ("og:url".equals(property)) {
                 // https://www.databazeknih.cz/prehled-knihy/pripad-levoruke-damy-546691
                 final int index = content.lastIndexOf('-');
                 if (index > 0 && (index + 1) < content.length()) {
