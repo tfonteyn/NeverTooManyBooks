@@ -45,10 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 public final class EditInPlaceParcelableLauncher<T extends Parcelable>
         extends DialogLauncher {
 
-    private static final String TAG = "EditParcelableLauncher";
+    private static final String TAG = "EditInPlacePL";
 
-    /** Input value: the item we're going to edit. */
-    public static final String BKEY_ITEM = TAG + ":item";
+    // Input value: the item we're going to edit
+    // uses the shared key: EditParcelableLauncher.BKEY_ITEM
+    // as we're using the SAME viewmodel.
+
     /** Output value: the (same) item with the edits. */
     private static final String MODIFIED = TAG + ":m";
 
@@ -109,7 +111,7 @@ public final class EditInPlaceParcelableLauncher<T extends Parcelable>
         Objects.requireNonNull(listener, ERROR_NULL_LISTENER);
 
         final Bundle args = new Bundle(2);
-        args.putParcelable(BKEY_ITEM, item);
+        args.putParcelable(EditParcelableLauncher.BKEY_ITEM, item);
         showDialog(context, args);
     }
 
