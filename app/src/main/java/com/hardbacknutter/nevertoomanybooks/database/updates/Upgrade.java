@@ -113,7 +113,7 @@ public class Upgrade {
         }
 
         if (oldVersion < 51) {
-            new V7(context, db).update(oldVersion);
+            new V7(context, db, identifierMigration).update(oldVersion);
         }
 
         if (oldVersion < 52) {

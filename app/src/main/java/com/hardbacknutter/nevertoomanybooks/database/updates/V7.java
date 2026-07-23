@@ -82,17 +82,22 @@ class V7 {
     private final Context context;
     @NonNull
     private final SQLiteDatabase db;
+    @NonNull
+    private final IdentifierMigration identifierMigration;
 
     /**
      * Constructor.
      *
      * @param context             Current context
      * @param db                  Underlying database
+     * @param identifierMigration helper
      */
     V7(@NonNull final Context context,
-       @NonNull final SQLiteDatabase db) {
+       @NonNull final SQLiteDatabase db,
+       @NonNull final IdentifierMigration identifierMigration) {
         this.context = context;
         this.db = db;
+        this.identifierMigration = identifierMigration;
     }
 
     /**
@@ -194,6 +199,8 @@ class V7 {
     }
 
     private void db35AddIdentifiersTable() {
+        identifierMigration.setIsNewInstall();
+
         TBL_IDENTIFIERS.create(db, true);
         TBL_BOOK_IDENTIFIER.create(db, true);
         IdentifierDaoImpl.onPostCreate(context, db);

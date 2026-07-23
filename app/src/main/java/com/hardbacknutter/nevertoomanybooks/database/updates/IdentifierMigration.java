@@ -59,13 +59,6 @@ public class IdentifierMigration {
     public static final String BOOK_URI_OBSOLETE = "book_uri";
     public static final String AUTHOR_URI_OBSOLETE = "author_uri";
 
-    private static final String TAG = "IdentifierMigration";
-
-    private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
-    private static final String UPDATE_ = "UPDATE ";
-    private static final String _SET_ = " SET ";
-    private static final String _WHERE_ = " WHERE ";
-
     /**
      * Archive format v7 and older used individual Identifier/Bundle keys on the book itself.
      * This maps the old name to the new name.
@@ -80,10 +73,16 @@ public class IdentifierMigration {
             "bdt_book_id", Identifier.SID_BEDETHEQUE
     );
 
+    private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
+    private static final String UPDATE_ = "UPDATE ";
+    private static final String _SET_ = " SET ";
+    private static final String _WHERE_ = " WHERE ";
+
     @NonNull
     private final SQLiteDatabase db;
     private final Collection<Identifier> predefined;
     private final TableInfo tableInfo;
+    private boolean newInstall;
 
     /**
      * Constructor.
@@ -165,6 +164,22 @@ public class IdentifierMigration {
     }
 
     /**
+     * Subsequent updates know that we did a new install of the Identifier table.
+     */
+    void setIsNewInstall() {
+        newInstall = true;
+    }
+
+    /**
+     * Check if a previous upgrade did a new install of the Identifier table.
+     *
+     * @return flag
+     */
+    boolean isNewInstall() {
+        return newInstall;
+    }
+
+    /**
      * Add the given Identifiers using their keys.
      * Silently skips the ones already predefined/existing.
      *
@@ -209,9 +224,9 @@ public class IdentifierMigration {
     /**
      * Get all rows from the Identifier table as a map.
      * key:   identifier key
-     * value: Bundle with
-     *        The "_id" column as a {@code long}.
-     *        + all other columns as {@code String}.
+     * value: Bundle with:
+     * - The "_id" column as a {@code long}.
+     * - all other columns as {@code String}.
      * <p>
      * Contains all user-defined entries + the original predefined.
      *
@@ -263,18 +278,6 @@ public class IdentifierMigration {
                          + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + identifier.getKey() + '\''));
     }
 
-    /**
-     * Add the column {@link DBKey.IDENTIFIERS#WIKIDATA_CLAIM} if not yet there.
-     * <p>
-     * This call is still needed even after db52 update to allow importing
-     * backup archives created with older versions.
-     *
-     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
-     */
-    public void initWikidataClaim(@NonNull final Set<String> keys) {
-        init(DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM, keys, Identifier::getWikidataClaim);
-    }
-
     // db52 update REMOVED
     //    /**
     //     * Add the column {@link IdentifierMigration#BOOK_URI_OBSOLETE} if not yet there.
@@ -294,6 +297,18 @@ public class IdentifierMigration {
     //    void initAuthorUrl(@NonNull final Set<String> keys) {
     //        init(DOM_IDENTIFIER_AUTHOR_URI_OBSOLETE, keys, Identifier::getAuthorUri);
     //    }
+
+    /**
+     * Add the column {@link DBKey.IDENTIFIERS#WIKIDATA_CLAIM} if not yet there.
+     * <p>
+     * This call is still needed even after db52 update to allow importing
+     * backup archives created with older versions.
+     *
+     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
+     */
+    public void initWikidataClaim(@NonNull final Set<String> keys) {
+        init(DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM, keys, Identifier::getWikidataClaim);
+    }
 
     /**
      * Update the given domain for the given keys.

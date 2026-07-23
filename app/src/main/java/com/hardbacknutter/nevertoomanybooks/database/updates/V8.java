@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.updates;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 
@@ -94,6 +95,20 @@ class V8 {
     }
 
     private void db52updateIdentifierTable() {
+        // There are TWO possible situations.
+        // 1. We did an upgrade db35
+        //    => the db35 update will have created and populated
+        //       the entire Identifier table fully correct.
+        // identifierMigration.isNewInstall() == true
+        //
+        // 2. We did an upgrade from a db36 or later version
+        //    => we need to populate/migrate existing data.
+        // identifierMigration.isNewInstall() == false
+
+
+        if (identifierMigration.isNewInstall()) {
+            return;
+        }
 
         // add the new columns FIRST
         TBL_IDENTIFIERS.alterTableAddColumns(db,
@@ -141,7 +156,8 @@ class V8 {
 
             // update the existing predefined Identifiers
             for (final String key : currentPredefinedKeys) {
-                db52updateUPredefinedIdentifiers(key, allCurrentKeys, initialList, toUpdate, toInsert);
+                db52updateUPredefinedIdentifiers(key, allCurrentKeys, initialList,
+                                                 toUpdate, toInsert);
                 predefinedKeys.remove(key);
             }
 
@@ -189,7 +205,6 @@ class V8 {
                    .filter(identifier -> identifier.getKey().equals(key))
                    .filter(identifier -> identifier.getEntityType() != Identifier.EntityType.Book)
                    .forEach(toInsert::add);
-
     }
 
     private void db52updateUserDefineIdentifiers(
@@ -237,26 +252,35 @@ class V8 {
 
         long id;
         id = getIdentifierId(Identifier.EntityType.Book);
-        if (id != 0) {
+        if (id > 0) {
             db52cleanupBnfIdentifiers(TBL_BOOK_IDENTIFIER.getName(), id);
         }
         id = getIdentifierId(Identifier.EntityType.Author);
-        if (id != 0) {
+        if (id > 0) {
             db52cleanupBnfIdentifiers(TBL_AUTHOR_IDENTIFIER.getName(), id);
         }
     }
 
-    private long getIdentifierId(final Identifier.EntityType entity) {
-        final long id;
+    /**
+     * Get the id for the given entity for the BNF Identifier.
+     *
+     * @param entity to get
+     *
+     * @return id, or {@code 0} if none found.
+     */
+    private long getIdentifierId(@NonNull final Identifier.EntityType entity) {
         try (SQLiteStatement stmt = db.compileStatement(
                 "SELECT " + DBKey.PK_ID + " FROM " + TBL_IDENTIFIERS.getName()
-                + " WHERE " + DBKey.IDENTIFIERS.KEY + "='bnf'"
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?"
                 + " AND " + DBKey.IDENTIFIERS.ENTITY + "=?")) {
 
             stmt.bindLong(1, entity.getId());
-            id = stmt.simpleQueryForLong();
+            stmt.bindString(2, Identifier.SID_BNF);
+            return stmt.simpleQueryForLong();
+
+        } catch (@NonNull final SQLiteDoneException e) {
+            return 0;
         }
-        return id;
     }
 
     private void db52cleanupBnfIdentifiers(@NonNull final String tableName,
