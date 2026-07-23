@@ -381,7 +381,7 @@ public class CalibreBookCoder
         final String[] split = value.split(",");
         // Typically we would now insert "eBook", but as we can't
         // create the library info, we'll use the actual format here
-        book.putString(DBKey.FORMAT, split[0]);
+        book.setFormat(split[0]);
     }
 
     private void processTags(@NonNull final CharSequence value,

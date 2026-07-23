@@ -413,9 +413,9 @@ public class GoodreadsBookCoder
                                             final boolean isNote,
                                             @NonNull final Book book) {
 
-        String notes = book.getString(DBKey.PERSONAL_NOTES);
-        if (notes.isEmpty()) {
-            book.putString(DBKey.PERSONAL_NOTES, value);
+        String notes = book.getNotes();
+        if (notes.isBlank()) {
+            book.setNotes(value);
             return;
         }
 
@@ -432,6 +432,6 @@ public class GoodreadsBookCoder
             // append
             notes = notes + "\n\n" + value;
         }
-        book.putString(DBKey.PERSONAL_NOTES, notes);
+        book.setNotes(notes);
     }
 }

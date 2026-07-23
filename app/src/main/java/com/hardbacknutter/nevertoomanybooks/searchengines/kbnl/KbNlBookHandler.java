@@ -95,9 +95,9 @@ class KbNlBookHandler
         super.endDocument();
 
         if (tmpSeriesNr != null) {
-            final String title = book.getString(DBKey.TITLE, null);
+            final String title = book.getTitle();
             // should never happen, but paranoia...
-            if (title != null && !title.isBlank()) {
+            if (!title.isBlank()) {
                 final String s = SearchEngineUtils.cleanName(title);
                 if (!s.isBlank()) {
                     book.add(Series.from(s, tmpSeriesNr));

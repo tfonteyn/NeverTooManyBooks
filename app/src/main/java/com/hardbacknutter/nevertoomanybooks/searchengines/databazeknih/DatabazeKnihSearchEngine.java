@@ -682,7 +682,7 @@ public class DatabazeKnihSearchEngine
         final String text = SearchEngineUtils.cleanText(valueElement.text());
         final Matcher matcher = TITLE_YEAR_PATTERN.matcher(text);
         if (matcher.find()) {
-            if (book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE).isBlank()) {
+            if (book.getTranslatedFromTitle().isBlank()) {
                 //noinspection DataFlowIssue
                 book.setTranslatedFromTitle(matcher.group(1).strip());
             }

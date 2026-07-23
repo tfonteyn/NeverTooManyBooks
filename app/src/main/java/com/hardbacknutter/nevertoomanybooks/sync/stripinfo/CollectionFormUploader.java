@@ -313,8 +313,8 @@ class CollectionFormUploader {
 
         builder.appendQueryParameter(FF_AANTAL, String.valueOf(collectionData.getAmount()));
 
-        builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKey.LOCATION));
-        builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.PERSONAL_NOTES));
+        builder.appendQueryParameter(FF_LOCATIE, book.getLocation());
+        builder.appendQueryParameter(FF_OPMERKING, book.getNotes());
 
         final RequestBody postBody = new FormBody.Builder()
                 .add(FF_STRIP_ID, externalId)

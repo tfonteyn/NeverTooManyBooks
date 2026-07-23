@@ -205,8 +205,8 @@ public class BookDaoHelper {
     @VisibleForTesting
     public void processReadProgress(@NonNull final Book book) {
         final ReadingProgress readingProgress = book.getReadingProgress();
-        // KEEP THIS LOGIC IN SYNC with {@link BookDaoImpl#setReadProgress()} !
-        if (!readingProgress.asPercentage() && book.getString(DBKey.PAGES).isEmpty()) {
+        // KEEP THIS LOGIC IN SYNC with {@link BookDaoImpl#setReadingProgress()} !
+        if (!readingProgress.asPercentage() && book.getPages().isEmpty()) {
             book.setPages(readingProgress.getTotalPages());
         }
     }

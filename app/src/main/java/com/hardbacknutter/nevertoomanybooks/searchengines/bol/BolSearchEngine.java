@@ -675,7 +675,7 @@ public class BolSearchEngine
                     }
                     case "Verteller":
                     case "Narrateur": {
-                        if ("E-book".equals(book.getString(DBKey.FORMAT))) {
+                        if ("E-book".equals(book.getFormat())) {
                             parseAuthor(value, AuthorRole.NARRATOR, book, false);
                         }
                         break;

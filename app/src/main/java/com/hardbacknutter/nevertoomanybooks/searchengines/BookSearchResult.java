@@ -156,11 +156,7 @@ public final class BookSearchResult {
      * @return {@code true} if there is
      */
     public boolean hasBook() {
-        if (book == null) {
-            return false;
-        }
-        final String title = book.getString(DBKey.TITLE, null);
-        return title != null && !title.isEmpty() || book.size() > 2;
+        return book != null && (!book.getTitle().isEmpty() || book.size() > 2);
     }
 
     /**

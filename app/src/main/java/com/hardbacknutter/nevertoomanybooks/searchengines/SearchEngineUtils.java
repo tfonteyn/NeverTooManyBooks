@@ -230,8 +230,8 @@ public final class SearchEngineUtils {
      * @param book to process
      */
     public static void parseSeriesNameInTitle(@NonNull final Book book) {
-        final String fullTitle = book.getString(DBKey.TITLE, null);
-        if (fullTitle == null || fullTitle.isEmpty()) {
+        final String fullTitle = book.getTitle();
+        if (fullTitle.isBlank()) {
             return;
         }
         final Matcher matcher = SERIES_FROM_BOOK_TITLE_PATTERN.matcher(fullTitle);

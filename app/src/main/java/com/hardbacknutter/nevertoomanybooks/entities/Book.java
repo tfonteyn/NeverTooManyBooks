@@ -418,6 +418,9 @@ public class Book
         // BOOK_DATE_ADDED
         // DATE_LAST_UPDATED
         //
+        // Note we use the getString method to ensure we detect null values
+        // and do NOT accidentally insert empty strings instead.
+        //
         // //NEWTHINGS: new fields
 
         duplicate.setTitle(getString(DBKey.TITLE, null));
@@ -787,6 +790,52 @@ public class Book
     }
 
     /**
+     * Get the personal notes.
+     *
+     * @return the notes; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getNotes() {
+        return getString(DBKey.PERSONAL_NOTES);
+    }
+
+    /**
+     * Set the personal notes.
+     *
+     * @param notes to set; a {@code null} or an empty string will remove the field
+     */
+    public void setNotes(@Nullable final String notes) {
+        if (notes != null && !notes.isBlank()) {
+            putString(DBKey.PERSONAL_NOTES, notes);
+        } else {
+            remove(DBKey.PERSONAL_NOTES);
+        }
+    }
+
+    /**
+     * Get the Location.
+     *
+     * @return the location; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getLocation() {
+        return getString(DBKey.LOCATION);
+    }
+
+    /**
+     * Set the Location.
+     *
+     * @param location to set; a {@code null} or an empty string will remove the field
+     */
+    public void setLocation(@Nullable final String location) {
+        if (location != null && !location.isBlank()) {
+            putString(DBKey.LOCATION, location);
+        } else {
+            remove(DBKey.LOCATION);
+        }
+    }
+
+    /**
      * Set the colour.
      *
      * @param color to set; a {@code null} or an empty string will remove the field
@@ -797,6 +846,16 @@ public class Book
         } else {
             remove(DBKey.COLOR);
         }
+    }
+
+    /**
+     * Get the format.
+     *
+     * @return format; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getFormat() {
+        return getString(DBKey.FORMAT);
     }
 
     /**
@@ -813,22 +872,32 @@ public class Book
     }
 
     /**
+     * Get the pages note.
+     *
+     * @return the pages note; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getPages() {
+        return getString(DBKey.PAGES);
+    }
+
+    /**
      * Set the number of pages.
      *
-     * @param pages to set; a {@code 0} or negative number will remove the field
+     * @param number to set; a {@code 0} or negative number will remove the field
      */
-    public void setPages(final int pages) {
-        setPages(pages > 0 ? String.valueOf(pages) : null);
+    public void setPages(final int number) {
+        setPages(number > 0 ? String.valueOf(number) : null);
     }
 
     /**
      * Set the number of pages / pages description.
      *
-     * @param pages to set; a {@code null} or an empty string will remove the field
+     * @param description to set; a {@code null} or an empty string will remove the field
      */
-    public void setPages(@Nullable final String pages) {
-        if (pages != null && !pages.isBlank()) {
-            putString(DBKey.PAGES, pages);
+    public void setPages(@Nullable final String description) {
+        if (description != null && !description.isBlank()) {
+            putString(DBKey.PAGES, description);
         } else {
             remove(DBKey.PAGES);
         }
@@ -1407,6 +1476,29 @@ public class Book
     }
 
     /**
+     * Get the edition info (e.g. impression).
+     *
+     * @return the notes; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getEditionInfo() {
+        return getString(DBKey.EDITION_INFO);
+    }
+
+    /**
+     * Set the edition info (e.g. impression).
+     *
+     * @param notes to set; a {@code null} or an empty string will remove the field
+     */
+    public void setEditionInfo(@Nullable final String notes) {
+        if (notes != null && !notes.isBlank()) {
+            putString(DBKey.EDITION_INFO, notes);
+        } else {
+            remove(DBKey.EDITION_INFO);
+        }
+    }
+
+    /**
      * Get the {@link StripInfoCollectionData}.
      *
      * @return collection data
@@ -1628,6 +1720,16 @@ public class Book
         } else {
             return Optional.of(loanee);
         }
+    }
+
+    /**
+     * Get the original language title.
+     *
+     * @return the original title; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getTranslatedFromTitle() {
+        return getString(DBKey.TRANSLATION_ORIGINAL_TITLE);
     }
 
     /**

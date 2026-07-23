@@ -131,16 +131,14 @@ class CollectionParser {
     void parseLocation(@NonNull final Element root,
                        @NonNull final String nameAttr,
                        @NonNull final Book book) {
-        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(
-                value -> book.putString(DBKey.LOCATION, value));
+        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(book::setLocation);
     }
 
     @AnyThread
     void parseNotes(@NonNull final Element root,
                     @NonNull final String nameAttr,
                     @NonNull final Book book) {
-        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(
-                value -> book.putString(DBKey.PERSONAL_NOTES, value));
+        jSoupHelper.getNonEmptyString(root, nameAttr).ifPresent(book::setNotes);
     }
 
     @AnyThread
@@ -190,8 +188,7 @@ class CollectionParser {
             if ("1".equals(value)) {
                 book.setEditionFlags(Book.Edition.FIRST);
             } else {
-                final String notes = book.getString(DBKey.PERSONAL_NOTES);
-                book.putString(DBKey.PERSONAL_NOTES, value + '\n' + notes);
+                book.setEditionInfo(value);
             }
         });
     }

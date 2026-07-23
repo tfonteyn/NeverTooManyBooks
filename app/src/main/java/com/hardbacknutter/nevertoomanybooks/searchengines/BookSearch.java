@@ -242,9 +242,8 @@ class BookSearch {
         // no synchronisation needed, at this point all other threads have finished.
         resultsAccumulator.process(context, results, book);
 
-        // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = book.getString(DBKey.ISBN, null);
-        if (isbnStr == null || isbnStr.isEmpty()) {
+        // If we did not get a product-code, use the one we originally searched for.
+        if (book.getRawProductCode().isEmpty()) {
             if (criteria.hasValidProductCode()) {
                 //noinspection DataFlowIssue
                 book.setRawProductCode(criteria.getProductCode().asText());
@@ -252,15 +251,14 @@ class BookSearch {
         }
 
         // If we did not get a title, use the one we originally searched for.
-        final String title = book.getString(DBKey.TITLE, null);
-        if (title == null || title.isEmpty()) {
+        if (book.getTitle().isBlank()) {
             book.setTitle(criteria.getTitle());
         }
 
         return book;
     }
 
-    private void applyBarcodeMetaData(final Context context,
+    private void applyBarcodeMetaData(@NonNull final Context context,
                                       @NonNull final Barcode barcode,
                                       @NonNull final Book book) {
 

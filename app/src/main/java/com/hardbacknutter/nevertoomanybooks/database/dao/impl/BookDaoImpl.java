@@ -623,7 +623,7 @@ public class BookDaoImpl
         // If the separate page-count field is empty, and we have a total-pages value,
         // set it as well.
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoHelper#processReadProgress()} !
-        String pageCount = book.getString(DBKey.PAGES);
+        String pageCount = book.getPages();
         if (!progress.asPercentage() && pageCount.isEmpty()) {
             pageCount = String.valueOf(progress.getTotalPages());
         }

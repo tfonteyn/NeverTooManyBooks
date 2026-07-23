@@ -338,8 +338,8 @@ public class CalibreContentServerWriter
                               @NonNull final JSONObject changes) {
         // Calibre only supports an 'int' typed pages, but we use a string.
         // Hence, only add if we can convert to int.
-        final String pagesStr = localBook.getString(DBKey.PAGES, null);
-        if (pagesStr != null && !pagesStr.isEmpty()) {
+        final String pagesStr = localBook.getPages();
+        if (!pagesStr.isEmpty()) {
             try {
                 final int pages = Integer.parseInt(pagesStr);
                 changes.put(CalibreBookJsonKey.PAGES, pages);

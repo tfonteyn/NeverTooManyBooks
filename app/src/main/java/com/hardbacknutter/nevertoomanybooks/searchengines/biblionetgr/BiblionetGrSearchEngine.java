@@ -627,7 +627,7 @@ public class BiblionetGrSearchEngine
                     // The site only lists hard/soft covers here.
                     // see "Type" above for more.
                     // We take "Type" by preference.
-                    if (book.getString(DBKey.FORMAT).isBlank()) {
+                    if (book.getFormat().isBlank()) {
                         book.setFormat(text);
                     }
                     break;

@@ -161,8 +161,7 @@ class JsonArchiveWriterTest
         bookDao.delete(deletedBookId);
 
         final Book book = Book.from(modifiedBookId);
-        book.putString(DBKey.PERSONAL_NOTES,
-                       "MODIFIED " + book.getString(DBKey.PERSONAL_NOTES, null));
+        book.setNotes("MODIFIED " + book.getString(DBKey.PERSONAL_NOTES, null));
         bookDao.update(context, book, Set.of());
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
