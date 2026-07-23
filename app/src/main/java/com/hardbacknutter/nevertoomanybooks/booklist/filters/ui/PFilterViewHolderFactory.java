@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBo
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterEntityListBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterStringEqualityBinding;
 
-public final class PFilterViewHolderFactory {
+final class PFilterViewHolderFactory {
 
     private PFilterViewHolderFactory() {
     }
@@ -51,9 +51,9 @@ public final class PFilterViewHolderFactory {
      */
     @SuppressWarnings("rawtypes")
     @NonNull
-    public static PFilterViewHolder create(@NonNull final ViewGroup parent,
-                                           @LayoutRes final int filterType,
-                                           @NonNull final ModificationListener listener) {
+    static PFilterViewHolder create(@NonNull final ViewGroup parent,
+                                    @LayoutRes final int filterType,
+                                    @NonNull final ModificationListener listener) {
 
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (filterType == R.layout.row_edit_bookshelf_filter_bitmask) {

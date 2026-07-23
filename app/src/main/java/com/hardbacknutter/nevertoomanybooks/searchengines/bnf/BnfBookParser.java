@@ -242,7 +242,7 @@ class BnfBookParser {
      *
      * @param tagNr to parse, either 010 or 011
      */
-    void productCodeFormatAndPrice(@NonNull final String tagNr) {
+    private void productCodeFormatAndPrice(@NonNull final String tagNr) {
         final Element tag = document.selectFirst("*|datafield[tag=" + tagNr + "]");
         if (tag == null) {
             return;
@@ -354,7 +354,7 @@ class BnfBookParser {
      *
      * @param series to update
      */
-    void periodicals(@NonNull final Series series) {
+    private void periodicals(@NonNull final Series series) {
 
         final Element tag = document.selectFirst("*|datafield[tag=110]");
         if (tag == null) {

@@ -204,7 +204,7 @@ public class SearchBookByExternalIdFragment
         vb.externalId.setEnabled(true);
     }
 
-    protected void modelToView() {
+    void modelToView() {
         final int checkedId = vm.getSelectedRbViewId();
         if (checkedId != View.NO_ID) {
             final RadioButton btn = vb.getRoot().findViewById(checkedId);
@@ -219,7 +219,7 @@ public class SearchBookByExternalIdFragment
         vb.externalId.setText("");
     }
 
-    protected void viewToModel() {
+    void viewToModel() {
         vm.setSelectedRbViewId(vb.sitesGroup.getCheckedRadioButtonId());
         //noinspection DataFlowIssue
         final String sid = vb.externalId.getText().toString().strip();

@@ -42,7 +42,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Shared parser code between the SearchEngine and the AuthorResolver.
  */
-public class AuthorParser {
+class AuthorParser {
 
     private static final String TAG = "AuthorParser";
 

@@ -212,7 +212,7 @@ public class AuthorWorksAdapter
         }
     }
 
-    public static class BookHolder
+    static class BookHolder
             extends AuthorWorkHolder {
 
         BookHolder(@NonNull final RowAuthorWorkBinding vb,
@@ -257,7 +257,7 @@ public class AuthorWorksAdapter
             }
         }
 
-        public void onBind(@NonNull final AuthorWork work) {
+        void onBind(@NonNull final AuthorWork work) {
 
             final Context context = itemView.getContext();
             vb.title.setText(work.getLabel(context, Details.AutoSelect, style));

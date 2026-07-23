@@ -1168,7 +1168,7 @@ public class BooksOnBookshelfViewModel
      *
      * @param book which was changed
      */
-    public void onBookReadStatusChanged(@NonNull final Book book) {
+    private void onBookReadStatusChanged(@NonNull final Book book) {
         if (getStyle().hasGroup(BooklistGroup.READ_STATUS)) {
             // The book might move to another group - no choice, we must rebuild
             triggerRebuildList.setValue(LiveDataEvent.of(false));

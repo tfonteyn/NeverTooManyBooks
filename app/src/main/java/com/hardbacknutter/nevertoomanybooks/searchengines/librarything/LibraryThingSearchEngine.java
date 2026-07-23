@@ -304,7 +304,7 @@ public class LibraryThingSearchEngine
          * @return the list with editions.
          */
         @NonNull
-        public List<AltEditionProductCode> getResult() {
+        List<AltEditionProductCode> getResult() {
             return editions;
         }
 

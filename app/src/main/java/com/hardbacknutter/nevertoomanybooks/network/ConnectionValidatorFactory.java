@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrar
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 
-public final class ConnectionValidatorFactory {
+final class ConnectionValidatorFactory {
     private ConnectionValidatorFactory() {
     }
 
@@ -53,8 +53,8 @@ public final class ConnectionValidatorFactory {
      * @throws IllegalArgumentException for site which do not support connection validation
      */
     @NonNull
-    public static ConnectionValidator create(@NonNull final Context context,
-                                             @StringRes final int siteResId)
+    static ConnectionValidator create(@NonNull final Context context,
+                                      @StringRes final int siteResId)
             throws CertificateException {
         if (siteResId == R.string.site_calibre) {
             return new CalibreContentServer.Builder(context).build();

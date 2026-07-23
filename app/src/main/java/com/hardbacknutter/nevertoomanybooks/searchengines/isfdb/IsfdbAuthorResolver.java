@@ -50,7 +50,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
- * Available:
+ * Available fields.
  * - Birthdate
  * - Deathdate
  * - picture
@@ -62,6 +62,8 @@ public final class IsfdbAuthorResolver
         implements AuthorResolver {
 
     private static final String TAG = "IsfdbAuthorResolver";
+    // part of a url
+    private static final String EA_CGI = "ea.cgi";
 
     @NonNull
     private final IsfdbSearchEngine searchEngine;
@@ -161,7 +163,7 @@ public final class IsfdbAuthorResolver
         if (!searchEngine.isCancelled()) {
             // sanity check, we SHOULD always have a single result page
             final String pageUrl = document.location();
-            if (pageUrl.contains("ea.cgi")) {
+            if (pageUrl.contains(EA_CGI)) {
                 return parse(context, document, sid);
             } else {
                 LoggerFactory.getLogger().w(TAG, "parse|pageUrl=" + pageUrl);
@@ -181,7 +183,7 @@ public final class IsfdbAuthorResolver
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             final String pageUrl = document.location();
-            if (pageUrl.contains("ea.cgi")) {
+            if (pageUrl.contains(EA_CGI)) {
                 final String sid = getIdFromUrl(pageUrl);
                 if (sid != null) {
                     return parse(context, document, sid);

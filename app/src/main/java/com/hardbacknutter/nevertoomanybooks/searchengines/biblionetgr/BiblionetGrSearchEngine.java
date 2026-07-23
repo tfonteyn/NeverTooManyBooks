@@ -83,7 +83,7 @@ public class BiblionetGrSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn {
 
-    public static final String SITE_URL = "https://biblionet.gr";
+    private static final String SITE_URL = "https://biblionet.gr";
 
     private static final String TAG = "BiblionetGrSearchEngine";
 

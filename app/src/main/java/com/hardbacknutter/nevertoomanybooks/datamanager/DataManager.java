@@ -674,6 +674,7 @@ public class DataManager
      *
      * @param key Key of data object
      */
+    @SuppressWarnings("WeakerAccess")
     public void putNull(@NonNull final String key) {
         rawData.putString(key, null);
     }

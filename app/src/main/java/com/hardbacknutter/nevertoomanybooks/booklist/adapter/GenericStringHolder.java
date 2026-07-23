@@ -187,7 +187,7 @@ public class GenericStringHolder
         }
     }
 
-    void dbgPosition(@NonNull final DataHolder rowData) {
+    private void dbgPosition(@NonNull final DataHolder rowData) {
         // Debugger help: colour the row according to state
         if (DEBUG_SWITCHES.BOB_NODE_STATE) {
             //noinspection DataFlowIssue

@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataAuthorResolver;
 
-public final class BiblionetGrAuthorResolver {
+final class BiblionetGrAuthorResolver {
 
     private BiblionetGrAuthorResolver() {
     }
@@ -46,8 +46,8 @@ public final class BiblionetGrAuthorResolver {
      * @return new instance
      */
     @NonNull
-    public static List<AuthorResolver> create(@NonNull final Context context,
-                                              @NonNull final SearchEngine searchEngine) {
+    static List<AuthorResolver> create(@NonNull final Context context,
+                                       @NonNull final SearchEngine searchEngine) {
 
         if (AuthorResolverHelper.isEnabled(EngineId.BiblionetGr, EngineId.Wikidata, false)) {
             return WikidataAuthorResolver.create(context, searchEngine);

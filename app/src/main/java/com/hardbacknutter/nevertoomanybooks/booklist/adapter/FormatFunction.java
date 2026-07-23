@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 @FunctionalInterface
-public interface FormatFunction {
+interface FormatFunction {
 
     /**
      * Format the source string according to the BooklistGroup id.

@@ -1391,14 +1391,13 @@ public final class CalibreContentServer
      * @return Calibre book object
      *
      * @throws IOException      on generic/other IO failures
-     * @throws StorageException on storage related failures
      * @throws JSONException    upon any parsing error
      */
     @WorkerThread
     @NonNull
-    public JSONObject getBook(@NonNull final String libraryStringId,
+    private JSONObject getBook(@NonNull final String libraryStringId,
                               final int calibreId)
-            throws StorageException, IOException, JSONException {
+            throws IOException, JSONException {
 
         @SuppressLint("DefaultLocale")
         final String url = String.format(GET_BOOK_BY_ID, serverUri, calibreId, libraryStringId);

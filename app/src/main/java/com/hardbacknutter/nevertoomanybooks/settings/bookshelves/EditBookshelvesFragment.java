@@ -322,8 +322,8 @@ public class EditBookshelvesFragment
             this.vb = vb;
         }
 
-        public void onBind(@Nullable final Bookshelf bookshelf,
-                           final boolean isDefault) {
+        void onBind(@Nullable final Bookshelf bookshelf,
+                    final boolean isDefault) {
             if (bookshelf == null) {
                 vb.getRoot().setVisibility(View.INVISIBLE);
             } else {

@@ -74,7 +74,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * Processing and filtering is done in two methods to facilitate testing.
  */
-public class BookDaoHelper {
+class BookDaoHelper {
 
     private static final String TAG = "BookDaoHelper";
 
@@ -99,8 +99,8 @@ public class BookDaoHelper {
      * @param tableInfo   of the {@link DBDefinitions#TBL_BOOKS} table
      * @param userLocales Current Locales
      */
-    public BookDaoHelper(@NonNull final TableInfo tableInfo,
-                         @NonNull final List<Locale> userLocales) {
+    BookDaoHelper(@NonNull final TableInfo tableInfo,
+                  @NonNull final List<Locale> userLocales) {
         this.tableInfo = tableInfo;
         this.userLocales = userLocales;
 
@@ -117,7 +117,6 @@ public class BookDaoHelper {
                 .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.DateTime)
                 .map(Domain::getName)
                 .collect(Collectors.toList());
-
     }
 
     /**
@@ -203,7 +202,7 @@ public class BookDaoHelper {
      * @see BookDaoImpl#setReadingProgress(Book, ReadingProgress)
      */
     @VisibleForTesting
-    public void processReadProgress(@NonNull final Book book) {
+    void processReadProgress(@NonNull final Book book) {
         final ReadingProgress readingProgress = book.getReadingProgress();
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoImpl#setReadingProgress()} !
         if (!readingProgress.asPercentage() && book.getPages().isEmpty()) {
@@ -297,7 +296,7 @@ public class BookDaoHelper {
      * @param book to process
      */
     @VisibleForTesting
-    public void processDates(@NonNull final Book book) {
+    void processDates(@NonNull final Book book) {
         // Partial/Full Date strings
         for (final String dateDomainName : dateDomainNames) {
             if (book.contains(dateDomainName)) {

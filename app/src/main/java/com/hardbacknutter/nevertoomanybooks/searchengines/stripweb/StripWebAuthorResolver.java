@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 
-public final class StripWebAuthorResolver {
+final class StripWebAuthorResolver {
 
     private StripWebAuthorResolver() {
     }
@@ -46,8 +46,8 @@ public final class StripWebAuthorResolver {
      * @return new instance
      */
     @NonNull
-    public static List<AuthorResolver> create(@NonNull final Context context,
-                                              @NonNull final SearchEngine searchEngine) {
+    static List<AuthorResolver> create(@NonNull final Context context,
+                                       @NonNull final SearchEngine searchEngine) {
 
         if (AuthorResolverHelper.isEnabled(EngineId.StripWebBe, EngineId.Bedetheque, true)) {
             return BedethequeAuthorResolver.create(context, searchEngine);

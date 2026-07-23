@@ -33,7 +33,7 @@ public final class ArkUtil {
     /**
      * A raw ark number must be 8 digits exactly.
      */
-    public static final Pattern ARK_DIGITS_PATTERN = Pattern.compile("\\d{8}");
+    private static final Pattern ARK_DIGITS_PATTERN = Pattern.compile("\\d{8}");
 
     private ArkUtil() {
     }

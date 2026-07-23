@@ -23,14 +23,14 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class CurrentData {
+class CurrentData {
     @NonNull
     final String data;
     @Nullable
     final String url;
 
-    public CurrentData(@NonNull final String data,
-                       @Nullable final String url) {
+    CurrentData(@NonNull final String data,
+                @Nullable final String url) {
         this.data = data;
         this.url = url;
     }

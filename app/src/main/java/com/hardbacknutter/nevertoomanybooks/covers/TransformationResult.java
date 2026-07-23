@@ -28,7 +28,7 @@ import java.io.File;
 /**
  * Value class with the results.
  */
-public class TransformationResult {
+class TransformationResult {
 
     @Nullable
     private final File file;

@@ -519,6 +519,7 @@ public class BooksOnBookshelf
                     final long currentlyDisplayedBookId = childVm.getBook().getId();
 
                     // If it was, then refresh the embedded fragment as well
+                    //noinspection DataFlowIssue
                     positions.stream()
                              .map(p -> adapter.readDataAt(p))
                              .filter(Objects::nonNull)

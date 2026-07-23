@@ -30,7 +30,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public class ImageReference {
+class ImageReference {
 
     @NonNull
     private final WeakReference<ImageView> viewReference;
@@ -51,7 +51,7 @@ public class ImageReference {
      * @return view, or {@code null} if the view was no longer available or associated.
      */
     @Nullable
-    public ImageView getView() {
+    ImageView getView() {
         final ImageView view = viewReference.get();
         if (view == null || !Objects.equals(taskUuid, view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
             return null;

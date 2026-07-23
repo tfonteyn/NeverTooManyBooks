@@ -75,7 +75,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 
-public final class GroupKeyFactory {
+final class GroupKeyFactory {
     /** Cache for the static GroupKey instances. */
     private static final Map<Integer, GroupKey> GROUP_KEYS = new UniqueMap<>();
 

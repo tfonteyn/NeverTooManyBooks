@@ -75,6 +75,7 @@ class ExcludePatternTest
         assertFalse(jsonObject.has(CoverVolume.PK_VOLUME_INDEX));
         assertTrue(jsonObject.has("Some.Other.Key"));
 
+        //noinspection DataFlowIssue
         Log.d(TAG, jsonObject.toString(2));
     }
 }

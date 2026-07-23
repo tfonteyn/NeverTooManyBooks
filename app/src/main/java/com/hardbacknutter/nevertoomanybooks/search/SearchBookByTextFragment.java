@@ -199,7 +199,7 @@ public class SearchBookByTextFragment
         return false;
     }
 
-    protected void modelToView() {
+    void modelToView() {
         final BookSearchCriteria criteria = vm.getSearchCriteria();
         vb.title.setText(criteria.getTitle());
         vb.author.setText(criteria.getAuthor());
@@ -208,7 +208,7 @@ public class SearchBookByTextFragment
         vb.publisher.setText(criteria.getPublisher());
     }
 
-    protected void viewToModel() {
+    void viewToModel() {
         final BookSearchCriteria criteria = vm.getSearchCriteria();
         //noinspection DataFlowIssue
         criteria.setTitle(vb.title.getText().toString().strip());

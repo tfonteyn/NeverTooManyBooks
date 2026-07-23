@@ -55,8 +55,7 @@ public final class CalibreIdentifiers {
      * "epl"
      * "kobo"
      */
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    static final Map<String, String> IDENTIFIER_MAPPING_READER = Map.ofEntries(
+    private static final Map<String, String> IDENTIFIER_MAPPING_READER = Map.ofEntries(
             // I'm not clear on why calibre prefers 'amazon' above 'asin'
             // but heck, just convert it.
             Map.entry(AMAZON, Identifier.SID_ASIN),

@@ -269,7 +269,7 @@ public class SearchCoordinator
         }
     }
 
-    protected void pushResultFinished(@NonNull final BookSearchResult data) {
+    private void pushResultFinished(@NonNull final BookSearchResult data) {
         searchCoordinatorFinishedQueue.add(data);
         searchCoordinatorFinished.setValue(LiveDataEvent.of(true));
 

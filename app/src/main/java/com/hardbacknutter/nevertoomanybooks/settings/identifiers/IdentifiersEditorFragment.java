@@ -76,7 +76,7 @@ public class IdentifiersEditorFragment
         extends BaseFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "IdentifiersEditorFrag";
+    private static final String TAG = "IdentifiersEditorFrag";
     static final String BKEY_ENTITY_TYPE = TAG + ":et";
 
     private static final String RK_MENU = TAG + ":rk:menu";

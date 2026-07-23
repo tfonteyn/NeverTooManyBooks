@@ -299,7 +299,7 @@ public class StartupActivity
                 .show();
     }
 
-    public enum Stage {
+    private enum Stage {
         /** We're starting. */
         Init,
         /** We need storage for the covers. */
@@ -317,7 +317,7 @@ public class StartupActivity
          * @return next stage
          */
         @NonNull
-        public Stage next() {
+        Stage next() {
             switch (this) {
                 case Init:
                     return InitStorage;

@@ -28,7 +28,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
-public final class AttrUtils {
+final class AttrUtils {
 
     private AttrUtils() {
     }

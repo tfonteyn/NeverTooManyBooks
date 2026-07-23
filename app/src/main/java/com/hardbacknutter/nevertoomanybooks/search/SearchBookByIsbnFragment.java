@@ -589,12 +589,12 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    protected void modelToView() {
+    void modelToView() {
         vb.isbn.setText(vm.getIsbnText());
     }
 
     @Override
-    protected void viewToModel() {
+    void viewToModel() {
         //noinspection DataFlowIssue
         vm.setIsbnText(vb.isbn.getText().toString().strip());
     }
@@ -924,7 +924,7 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    protected int startSearch(@NonNull final ProductCode productCode) {
+    int startSearch(@NonNull final ProductCode productCode) {
         final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setProductCode(productCode, vm.getScannerMode());
         return coordinator.search(criteria);
