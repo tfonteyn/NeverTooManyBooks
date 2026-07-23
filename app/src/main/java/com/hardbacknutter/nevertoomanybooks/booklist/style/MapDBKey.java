@@ -34,6 +34,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 public final class MapDBKey {
 
+    /**
+     * Map some special DBKey's to their actual Domain name (key) as they appear in a Cursor.
+     * This is used by the BoB Book row holder.
+     * <p>
+     * key: the DBKey from configuration/visibility.
+     * value: the domain name as it appears in the Cursor/DataHolder
+     */
     private static final Map<String, String> DB_KEY_TO_DOMAIN_NAME = Map.ofEntries(
             Map.entry(DBKey.COVER[0], DBKey.BOOK_UUID),
             Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
@@ -48,6 +55,7 @@ public final class MapDBKey {
 
     /**
      * Generic mapping of a {@link DBKey} to a label.
+     * Mainly used for Style configuration, and for Sync engines.
      * <p>
      * TEST: should Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lending)
      *  be R.string.lbl_lend_out instead?
