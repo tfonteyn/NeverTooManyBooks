@@ -171,6 +171,7 @@ public class SearchBookByTextFragment
             vb.txtLimitations.setTextColor(textColor);
             vb.txtLimitations.setText(getString(R.string.info_sites_active,
                                                 String.join(", ", engines)));
+            vb.txtLimitations.showCloseButton(true);
             return;
         }
 
@@ -185,6 +186,7 @@ public class SearchBookByTextFragment
                                             // TODO: support RTL
                                             getString(R.string.lbl_author)
                                             + " / " + getString(R.string.lbl_title)));
+        vb.txtLimitations.showCloseButton(false);
         vb.txtLimitations.setVisibility(View.VISIBLE);
     }
 
