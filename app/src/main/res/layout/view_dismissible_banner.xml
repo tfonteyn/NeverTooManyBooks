@@ -31,10 +31,11 @@
 
         <TextView
             android:id="@+id/bannerText"
-            style="@style/Text.Body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:text="@string/tip_book_search_by_text"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnCloseBanner"
             app:layout_constraintStart_toStartOf="parent"

@@ -43,6 +43,7 @@
 
     <declare-styleable name="DismissibleBanner">
         <attr name="android:text" />
+        <attr name="android:textAppearance" />
     </declare-styleable>
 
 </resources>
