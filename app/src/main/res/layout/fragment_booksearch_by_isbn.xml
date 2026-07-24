@@ -38,11 +38,9 @@
              text and text-color is set from code. -->
         <com.hardbacknutter.nevertoomanybooks.widgets.DismissibleBanner
             android:id="@+id/txt_limitations"
-            style="@style/Banner"
+            style="@style/Banner.SearchSites"
             android:layout_width="0dp"
-            android:layout_marginStart="@dimen/container_margin"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="@dimen/container_margin"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

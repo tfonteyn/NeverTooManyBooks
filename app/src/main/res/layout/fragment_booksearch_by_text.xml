@@ -37,6 +37,7 @@
             android:layout_width="0dp"
             android:layout_margin="@dimen/container_margin"
             android:text="@string/tip_book_search_by_text"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -48,11 +49,9 @@
              text and text-color is set from code. -->
         <com.hardbacknutter.nevertoomanybooks.widgets.DismissibleBanner
             android:id="@+id/txt_limitations"
-            style="@style/Banner"
+            style="@style/Banner.SearchSites"
             android:layout_width="0dp"
-            android:layout_marginStart="@dimen/container_margin"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="@dimen/container_margin"
+            android:layout_marginTop="@dimen/section_margin_top"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
