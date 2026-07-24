@@ -42,6 +42,8 @@ public class DismissibleBanner
         extends MaterialCardView {
 
     private TextView textView;
+    private MaterialButton btnClose;
+
     @Nullable
     private OnDismissListener dismissListener;
 
@@ -87,7 +89,7 @@ public class DismissibleBanner
             }
         }
 
-        final MaterialButton btnClose = findViewById(R.id.btnCloseBanner);
+        btnClose = findViewById(R.id.btnCloseBanner);
         btnClose.setOnClickListener(this::dismiss);
     }
 
@@ -103,6 +105,10 @@ public class DismissibleBanner
         if (dismissListener != null) {
             dismissListener.onDismissed(this, (MaterialButton) v);
         }
+    }
+
+    public void showCloseButton(final boolean visible) {
+        btnClose.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
