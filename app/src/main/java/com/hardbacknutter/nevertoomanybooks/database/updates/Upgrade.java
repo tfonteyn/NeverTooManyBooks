@@ -41,6 +41,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 
+@SuppressWarnings({"StringConcatenationMissingWhitespace", "MagicNumber"})
 public class Upgrade {
 
     private static final String TAG = "Upgrade";
@@ -104,7 +105,7 @@ public class Upgrade {
     }
 
     public void upgrade(final int oldVersion) {
-        LoggerFactory.getLogger().w(TAG, "Upgrading from: " + oldVersion);
+        LoggerFactory.getLogger().w(TAG, "Upgrading from: db" + oldVersion);
 
         if (oldVersion < 25) {
             new V4(context, db, oldVersion).update();

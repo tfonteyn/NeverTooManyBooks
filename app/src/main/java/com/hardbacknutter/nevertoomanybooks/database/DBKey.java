@@ -588,7 +588,7 @@ public final class DBKey {
         public static final String NAME = "name";
 
         /** The WikiData claim, i.e. "P" number. */
-        public static final String WIKIDATA_CLAIM = "wd_p_author_id";
+        public static final String WIKIDATA_CLAIM = "wikidata_p";
         /** URL to the main page of the site. */
         public static final String SITE_URL = "site_url";
         /**

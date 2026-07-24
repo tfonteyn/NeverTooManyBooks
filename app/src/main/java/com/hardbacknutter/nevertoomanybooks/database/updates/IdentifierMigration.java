@@ -36,11 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
-import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
@@ -56,9 +55,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_ID
  */
 public class IdentifierMigration {
 
-    public static final String BOOK_URI_OBSOLETE = "book_uri";
-    public static final String AUTHOR_URI_OBSOLETE = "author_uri";
-
     /**
      * Archive format v7 and older used individual Identifier/Bundle keys on the book itself.
      * This maps the old name to the new name.
@@ -73,25 +69,10 @@ public class IdentifierMigration {
             "bdt_book_id", Identifier.SID_BEDETHEQUE
     );
 
-    private static final String SELECT_1_FROM_ = "SELECT 1 FROM ";
-    private static final String UPDATE_ = "UPDATE ";
-    private static final String _SET_ = " SET ";
-    private static final String _WHERE_ = " WHERE ";
-
     @NonNull
     private final SQLiteDatabase db;
     private final Collection<Identifier> predefined;
-    private final TableInfo tableInfo;
     private boolean newInstall;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     */
-    public IdentifierMigration(@NonNull final Context context) {
-        this(context, ServiceLocator.getInstance().getDb().getSQLiteDatabase());
-    }
 
     /**
      * Constructor.
@@ -102,9 +83,7 @@ public class IdentifierMigration {
     IdentifierMigration(@NonNull final Context context,
                         @NonNull final SQLiteDatabase db) {
         this.db = db;
-
         predefined = Identifier.createInitialList(context);
-        tableInfo = DBDefinitions.TBL_IDENTIFIERS.getTableInfo(db);
     }
 
     /**
@@ -164,6 +143,30 @@ public class IdentifierMigration {
     }
 
     /**
+     * Repair the wikidata claim/p column data for all predefined Identifiers.
+     *
+     * @param context Current context
+     */
+    public static void repairBuiltinIdentifiersWikidataClaim(@NonNull final Context context) {
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+        // Load the data from the predefined Identifiers
+        try (SynchronizedStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS.getName()
+                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM + "=?"
+                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
+
+            for (final Identifier identifier : Identifier.createInitialList(context)) {
+                final String claim = identifier.getWikidataClaim().orElse(null);
+                if (claim != null) {
+                    stmt.bindString(1, claim);
+                    stmt.bindString(2, identifier.getKey());
+                    stmt.executeUpdateDelete();
+                }
+            }
+        }
+    }
+
+    /**
      * Subsequent updates know that we did a new install of the Identifier table.
      */
     void setIsNewInstall() {
@@ -196,8 +199,8 @@ public class IdentifierMigration {
 
     private boolean isPresent(@NonNull final String key) {
         try (SQLiteStatement stmt = db.compileStatement(
-                SELECT_1_FROM_ + DBDefinitions.TBL_IDENTIFIERS.getName()
-                + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
+                "SELECT 1 FROM " + DBDefinitions.TBL_IDENTIFIERS.getName()
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
             stmt.bindString(1, key);
             return 1 == stmt.simpleQueryForLong();
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -251,97 +254,5 @@ public class IdentifierMigration {
             }
         }
         return result;
-    }
-
-    /**
-     * Update the name for the given key. Does nothing if the key is not found.
-     *
-     * @param key to update
-     */
-    void fixName(@NonNull final String key) {
-        getPredefined(key).ifPresent(identifier -> db
-                .execSQL(UPDATE_ + TBL_IDENTIFIERS.getName()
-                         + _SET_ + DBKey.IDENTIFIERS.NAME + "='" + identifier.getName() + '\''
-                         + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + identifier.getKey() + '\''));
-    }
-
-    /**
-     * Update the type for the given key. Does nothing if the key is not found.
-     *
-     * @param key to update
-     */
-    void fixType(@NonNull final String key) {
-        getPredefined(key).ifPresent(identifier -> db
-                .execSQL(UPDATE_ + TBL_IDENTIFIERS.getName()
-                         + _SET_ + DBKey.IDENTIFIERS.TYPE
-                         + "='" + identifier.getType().getId() + '\''
-                         + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + identifier.getKey() + '\''));
-    }
-
-    // db52 update REMOVED
-    //    /**
-    //     * Add the column {@link IdentifierMigration#BOOK_URI_OBSOLETE} if not yet there.
-    //     *
-    //     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
-    //     */
-    //    void initBookUrl(@NonNull final Set<String> keys) {
-    //        init(DOM_IDENTIFIER_BOOK_URI_OBSOLETE, keys, Identifier::getUri);
-    //    }
-
-    // db52 update REMOVED
-    //    /**
-    //     * Add the column {@link IdentifierMigration#AUTHOR_URI_OBSOLETE} if not yet there.
-    //     *
-    //     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
-    //     */
-    //    void initAuthorUrl(@NonNull final Set<String> keys) {
-    //        init(DOM_IDENTIFIER_AUTHOR_URI_OBSOLETE, keys, Identifier::getAuthorUri);
-    //    }
-
-    /**
-     * Add the column {@link DBKey.IDENTIFIERS#WIKIDATA_CLAIM} if not yet there.
-     * <p>
-     * This call is still needed even after db52 update to allow importing
-     * backup archives created with older versions.
-     *
-     * @param keys set of specific keys to add/update, or an empty Set to do all known keys.
-     */
-    public void initWikidataClaim(@NonNull final Set<String> keys) {
-        init(DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM, keys, Identifier::getWikidataClaim);
-    }
-
-    /**
-     * Update the given domain for the given keys.
-     * The column is added to the table if not there yet.
-     * Silently skips keys which have been deleted. i.e. this will NOT restore missing keys.
-     *
-     * @param domain        to add/use
-     * @param keys          to update
-     * @param valueSupplier provides the value to store
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao#restore(Context)
-     */
-    private void init(@NonNull final Domain domain,
-                      @NonNull final Set<String> keys,
-                      @NonNull final Function<Identifier, Optional<String>> valueSupplier) {
-        // Create the column if not already present.
-        if (tableInfo.getColumn(domain.getName()) == null) {
-            TBL_IDENTIFIERS.alterTableAddColumns(db, domain);
-        }
-
-        // Load the data from the predefined Identifiers
-        try (SQLiteStatement stmt = db.compileStatement(
-                UPDATE_ + TBL_IDENTIFIERS.getName()
-                + _SET_ + domain + "=?"
-                + _WHERE_ + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
-
-            predefined.stream()
-                      .filter(identifier -> keys.isEmpty() || keys.contains(identifier.getKey()))
-                      .forEach(identifier -> valueSupplier.apply(identifier).ifPresent(v -> {
-                          stmt.bindString(1, v);
-                          stmt.bindString(2, identifier.getKey());
-                          stmt.executeUpdateDelete();
-                      }));
-        }
     }
 }

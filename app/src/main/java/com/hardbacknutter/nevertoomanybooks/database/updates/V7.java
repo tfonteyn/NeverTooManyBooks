@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.cleaning.CleanOptions;
@@ -61,12 +63,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
-/**
- * IMPORTANT: all previous Identity migration calls have been removed in this class.
- * {@link V8} db52 does a major update.
- * <p>
- * TODO: remove comments about Identity migration AFTER db52+ is released
- */
+@SuppressWarnings({"CheckStyle", "MagicNumber"})
 class V7 {
 
     private static final String DELETE_FROM_ = "DELETE FROM ";
@@ -370,16 +367,25 @@ class V7 {
     }
 
     private void db39() {
-        // db52 update REMOVED
-        // identifierMigration.initAuthorUrl(Set.of());
+        // Only needed for updating from db36 or higher
+        if (oldVersion > 35) {
+            // db52 modified: we need the column to exist, but don't care about the content.
+            TBL_IDENTIFIERS.alterTableAddColumns(db, new Domain.Builder(
+                    "author_uri", SqLiteDataType.Text).build());
+        }
 
         TBL_AUTHOR_IDENTIFIER.create(db, true);
     }
 
     private void db40() {
-        // db52 update REMOVED
-        // identifierMigration.fixName(Identifier.SID_DNB);
-        // identifierMigration.initBookUrl(Set.of(Identifier.SID_BNF, Identifier.SID_PORBASE));
+        // Only needed for updating from db36 or higher
+        if (oldVersion > 35) {
+            // db52 removed
+            // identifierMigration.fixName(Identifier.SID_DNB);
+            // db52 modified: we need the column to exist, but don't care about the content.
+            TBL_IDENTIFIERS.alterTableAddColumns(db, new Domain.Builder(
+                    "book_uri", SqLiteDataType.Text).build());
+        }
     }
 
     private void db41() {
@@ -390,8 +396,12 @@ class V7 {
     }
 
     private void db42() {
-        // db52 update REMOVED
-        // identifierMigration.initWikidataClaim(Set.of());
+        // Only needed for updating from db36 or higher
+        if (oldVersion > 35) {
+            // db52 modified: we need the column to exist, but don't care about the content.
+            TBL_IDENTIFIERS.alterTableAddColumns(db, new Domain.Builder(
+                    "wd_p_author_id", SqLiteDataType.Text).build());
+        }
     }
 
     private void db43() {

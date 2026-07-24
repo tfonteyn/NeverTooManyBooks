@@ -46,6 +46,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
+@SuppressWarnings({"CheckStyle", "MagicNumber"})
 class V8 {
 
     private static final String TAG = "V8";
@@ -108,7 +109,6 @@ class V8 {
         // 2. We did an upgrade from a db36 or later version
         //    => we need to populate/migrate existing data.
         // identifierMigration.isNewInstall() == false
-
 
         if (identifierMigration.isNewInstall()) {
             return;
@@ -173,13 +173,15 @@ class V8 {
 
             toInsert.addAll(leftOver);
 
-            // RUN THE BULK OPERATIONS
+            // Delete the now obsolete columns by recreating the entire table.
+            // Rename the wikidata column.
+            // The indexes will be recreated as normal at the end of the upgrade.
+            TBL_IDENTIFIERS.recreate(db, Map.of(
+                    "wd_p_author_id", DBKey.IDENTIFIERS.WIKIDATA_CLAIM));
+
+            // Finally, run the bulk operations
             identifierMigration.update(toUpdate);
             identifierMigration.insert(toInsert);
-
-            // Delete the now obsolete columns by recreating the entire table
-            // The indexes will be recreated as normal at the end of the upgrade.
-            TBL_IDENTIFIERS.recreate(db);
         });
     }
 
@@ -229,11 +231,11 @@ class V8 {
             @Nullable
             final String siteUrl = ib.getString(DBKey.IDENTIFIERS.SITE_URL);
             @Nullable
-            final String wikidataClaim = ib.getString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM);
+            final String wikidataClaim = ib.getString("wd_p_author_id");
             @Nullable
-            final String bookUri = ib.getString(IdentifierMigration.BOOK_URI_OBSOLETE);
+            final String bookUri = ib.getString("book_uri");
             @Nullable
-            final String authorUri = ib.getString(IdentifierMigration.AUTHOR_URI_OBSOLETE);
+            final String authorUri = ib.getString("author_uri");
 
             final List<Identifier> c = IdentifierMigration.mapV7Identifier(
                     id, key, type, name, siteUrl, bookUri, authorUri, wikidataClaim);

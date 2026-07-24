@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 
+@SuppressWarnings("MagicNumber")
 class V4 {
 
     @NonNull

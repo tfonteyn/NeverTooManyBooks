@@ -43,6 +43,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 
+@SuppressWarnings("MagicNumber")
 class V5 {
 
     private static final String ALTER_TABLE_ = "ALTER TABLE ";
