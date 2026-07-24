@@ -50,31 +50,7 @@
     <item
         android:id="@id/SUBMENU_SYNC"
         android:icon="@drawable/sync_alt_24px"
-        android:title="@string/action_synchronize">
-        <menu>
-            <item
-                android:id="@id/MENU_SYNC_CALIBRE"
-                android:title="@string/site_calibre">
-            </item>
-
-            <item
-                android:id="@id/MENU_SYNC_STRIP_INFO"
-                android:title="@string/site_stripinfo_be">
-            </item>
-        </menu>
-    </item>
-
-    <!-- submenu item , displayed on demand. -->
-    <item
-        android:id="@id/MENU_SYNC_CALIBRE"
-        android:title="@string/site_calibre"
-        android:visible="false" />
-
-    <!-- submenu item , displayed on demand. -->
-    <item
-        android:id="@id/MENU_SYNC_STRIP_INFO"
-        android:title="@string/site_stripinfo_be"
-        android:visible="false" />
+        android:title="@string/action_synchronize" />
 
     <item
         android:id="@id/MENU_SETTINGS"

@@ -36,10 +36,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -131,6 +134,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
@@ -208,6 +212,8 @@ public class BooksOnBookshelf
     private CalibreHandler calibreHandler;
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
+    /** Encapsulates the Navigation drawer/menu. */
+    private NavDrawer navDrawer;
     private SearchViewHelper searchViewHelper;
     private ToolbarMenuProvider toolbarMenuProvider;
 
@@ -262,9 +268,9 @@ public class BooksOnBookshelf
     private AutoCompletePickerLauncher bulkSetLocationLauncher;
 
     private OnBackPressedCallback backClearsSearchCriteria;
+    private OnBackPressedCallback backClosesNavDrawer;
     private OnBackPressedCallback backClosesFabMenu;
 
-    private boolean isSyncMenuExpanded;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -274,12 +280,15 @@ public class BooksOnBookshelf
         setContentView(vb.getRoot());
 
         // fitsSystemWindows is not used:
-        // If we have it on the CoordinatorLayout
+        // If we have it on the DrawerLayout or on the CoordinatorLayout
         // we end up with the status bar being transparent as expected,
         // but the background of it set to the same as the vb.content.list,
         // which then of course does NOT match the toolbar.
         //
         // The solution applied here:
+        // - The DrawerLayout is told to simply dispatch the insets to all its children.
+        //   It will NOT apply any insets to itself.
+        // - The NavigationView is handled in the NavDrawer class.
         // - The CoordinatorLayout will NOT adjust for the status bar, but only
         //   for cutouts (and ime, N/A for this screen but no harm done)
         // - adjust toolbar/fab as needed
@@ -287,7 +296,7 @@ public class BooksOnBookshelf
         //
         // The status bar will still be transparent, but the background will be the same
         // as the toolbar.
-        InsetsListenerBuilder.apply(vb.coordinatorContainer, vb.toolbar, vb.fab);
+        InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
         // REMINDER: the FastScroller sets an Insets listener on the RecyclerView!
 
         if (useFixedHeaderAndFooter()) {
@@ -303,6 +312,9 @@ public class BooksOnBookshelf
 
         createSyncDelegates();
         createCalibreServerHandler();
+
+        navDrawer = new NavDrawer(vb.drawerLayout, menuItem ->
+                onNavigationItemSelected(menuItem.getItemId()));
 
         initToolbar();
 
@@ -351,6 +363,27 @@ public class BooksOnBookshelf
      */
     private void createOnBackHandlers() {
         final OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+
+        backClosesNavDrawer = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                // Paranoia... the drawer listener should/will disable us.
+                backClosesNavDrawer.setEnabled(false);
+                navDrawer.close();
+            }
+        };
+        dispatcher.addCallback(this, backClosesNavDrawer);
+        vb.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(@NonNull final View drawerView) {
+                backClosesNavDrawer.setEnabled(true);
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull final View drawerView) {
+                backClosesNavDrawer.setEnabled(false);
+            }
+        });
 
         backClosesFabMenu = new OnBackPressedCallback(false) {
             @Override
@@ -945,26 +978,17 @@ public class BooksOnBookshelf
             return;
         }
 
-        final Menu menu = MenuUtils.create(this, R.menu.bob_nav_view);
         // Show or hide the synchronisation menu.
         // Note this is only effective for the actual sync switches.
         // The launchers MUST have been created at Activity startup,
         // due to how "registerForActivityResult" works.
-        final boolean enableSync =
+        final boolean enable =
                 SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
                 ||
                 SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
-        menu.findItem(R.id.SUBMENU_SYNC).setVisible(enableSync);
-        if (enableSync) {
-            menu.findItem(R.id.MENU_SYNC_CALIBRE)
-                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
-
-            menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
-                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
-
-        }
-
-        menuLauncher.launch(anchor, null, null, R.menu.bob_nav_view, menu);
+        //noinspection DataFlowIssue
+        navDrawer.getMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
+        navDrawer.open();
     }
 
     /**
@@ -1096,6 +1120,14 @@ public class BooksOnBookshelf
      */
     private boolean onNavigationItemSelected(@IdRes final int menuItemId) {
         saveListPosition();
+
+        if (menuItemId == R.id.SUBMENU_SYNC) {
+            showNavigationSubMenu(R.id.SUBMENU_SYNC, R.string.action_synchronize,
+                                  menuItemId, R.menu.sync);
+            return false;
+        }
+
+        navDrawer.close();
 
         if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
             ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getBookshelf(),
@@ -1418,6 +1450,27 @@ public class BooksOnBookshelf
         } else {
             throw new IllegalArgumentException(String.valueOf(menuItemId));
         }
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void showNavigationSubMenu(@IdRes final int subMenuId,
+                                       @StringRes final int subMenuTitleId,
+                                       @IdRes final int menuItemId,
+                                       @MenuRes final int menuRes) {
+
+        final View anchor = navDrawer.getMenuItemView(subMenuId);
+
+        final Menu menu = MenuUtils.create(this, menuRes);
+
+        if (menuItemId == R.id.SUBMENU_SYNC) {
+            menu.findItem(R.id.MENU_SYNC_CALIBRE)
+                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
+
+            menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
+                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
+        }
+
+        menuLauncher.launch(anchor, getString(subMenuTitleId), null, 0, menu);
     }
 
     /**

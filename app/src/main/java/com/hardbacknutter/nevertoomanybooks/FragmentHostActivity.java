@@ -59,7 +59,7 @@ public class FragmentHostActivity
         final MaterialToolbar toolbar = findViewById(R.id.toolbar);
         final FloatingActionButton fab = findViewById(R.id.fab);
 
-        InsetsListenerBuilder.apply(coordinatorLayout, toolbar, fab);
+        InsetsListenerBuilder.apply(null, coordinatorLayout, toolbar, fab);
 
         @Nullable
         final View contentFrame = findViewById(R.id.content_frame);

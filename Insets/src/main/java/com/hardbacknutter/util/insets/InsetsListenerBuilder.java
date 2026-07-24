@@ -29,9 +29,11 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +63,18 @@ public final class InsetsListenerBuilder {
     /**
      * Convenience constructor to use from an {@code Activity#onCreate}.
      *
+     * @param drawerLayout      optional
      * @param coordinatorLayout optional
      * @param toolbar           optional
      * @param fab               optional
      */
-    public static void apply(@Nullable final CoordinatorLayout coordinatorLayout,
+    public static void apply(@Nullable final DrawerLayout drawerLayout,
+                             @Nullable final CoordinatorLayout coordinatorLayout,
                              @Nullable final Toolbar toolbar,
                              @Nullable final FloatingActionButton fab) {
+        if (drawerLayout != null) {
+            apply(drawerLayout);
+        }
         if (coordinatorLayout != null) {
             apply(coordinatorLayout);
         }
@@ -77,6 +84,32 @@ public final class InsetsListenerBuilder {
         if (fab != null) {
             apply(fab);
         }
+    }
+
+    /**
+     * Apply a predefined listener.
+     *
+     * @param view to apply to
+     */
+    public static void apply(@NonNull final DrawerLayout view) {
+        // No action on the view itself, but dispatch incoming insets to all children.
+        new InsetsListenerBuilder(view)
+                .dispatchToChildren(true)
+                .apply();
+    }
+
+    /**
+     * Apply a predefined listener.
+     *
+     * @param view to apply to
+     *
+     * @see NavigationViewWindowInsetsListener
+     */
+    public static void apply(@NonNull final NavigationView view) {
+        // Custom listener, reacts tot system-bars and display cutouts.
+        final OnApplyWindowInsetsListener listener =
+                new NavigationViewWindowInsetsListener(view);
+        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
     }
 
     /**
@@ -153,6 +186,17 @@ public final class InsetsListenerBuilder {
                 .apply();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param view to apply to
+     *
+     * @return builder
+     */
+    @NonNull
+    public static InsetsListenerBuilder create(@NonNull final View view) {
+        return new InsetsListenerBuilder(view);
+    }
 
     /**
      * Enable {@link WindowInsetsCompat.Type#systemBars()}.
