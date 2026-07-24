@@ -358,7 +358,9 @@ public class SearchBookByIsbnFragment
      * @see #onViewCreated(View, Bundle)
      */
     private void afterOnViewCreated() {
-        explainSitesSupport();
+        // URGENT: postponed to 8.1.0
+        //explainSitesSupport();
+
         vb.isbn.requestFocus();
         if (vm.isStartScanner()) {
             startScanner();
