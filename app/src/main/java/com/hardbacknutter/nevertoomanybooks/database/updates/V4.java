@@ -37,27 +37,32 @@ class V4 {
     private final Context context;
     @NonNull
     private final SQLiteDatabase db;
+    private final int oldVersion;
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param db      Underlying database
+     * @param context    Current context
+     * @param db         Underlying database
+     * @param oldVersion The old database version.
      */
     V4(@NonNull final Context context,
-       @NonNull final SQLiteDatabase db) {
+       @NonNull final SQLiteDatabase db,
+       final int oldVersion) {
         this.context = context;
         this.db = db;
+        this.oldVersion = oldVersion;
     }
 
     /**
+     * Perform all updates.
+     * <p>
      * v4.0.0: 23
      * v4.4.0: 24
      * v4.5.0: 25
      *
-     * @param oldVersion The old database version.
      */
-    void update(final int oldVersion) {
+    void update() {
         if (oldVersion < 24) {
             db24();
         }

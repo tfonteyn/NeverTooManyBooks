@@ -104,20 +104,22 @@ public class Upgrade {
     }
 
     public void upgrade(final int oldVersion) {
+        LoggerFactory.getLogger().w(TAG, "Upgrading from: " + oldVersion);
+
         if (oldVersion < 25) {
-            new V4(context, db).update(oldVersion);
+            new V4(context, db, oldVersion).update();
         }
 
         if (oldVersion < 34) {
-            new V5(db).update(oldVersion);
+            new V5(db, oldVersion).update();
         }
 
         if (oldVersion < 51) {
-            new V7(context, db, identifierMigration).update(oldVersion);
+            new V7(context, db, oldVersion, identifierMigration).update();
         }
 
         if (oldVersion < 52) {
-            new V8(context, db, identifierMigration).update(oldVersion);
+            new V8(context, db, oldVersion, identifierMigration).update();
         }
 
         cleanup();

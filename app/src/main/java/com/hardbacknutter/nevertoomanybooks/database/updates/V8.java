@@ -55,6 +55,7 @@ class V8 {
     @NonNull
     private final SQLiteDatabase db;
 
+    private final int oldVersion;
     @NonNull
     private final IdentifierMigration identifierMigration;
 
@@ -63,22 +64,25 @@ class V8 {
      *
      * @param context             Current context
      * @param db                  Underlying database
+     * @param oldVersion          The old database version.
      * @param identifierMigration helper
      */
     V8(@NonNull final Context context,
        @NonNull final SQLiteDatabase db,
+       final int oldVersion,
        @NonNull final IdentifierMigration identifierMigration) {
         this.context = context;
         this.db = db;
+        this.oldVersion = oldVersion;
         this.identifierMigration = identifierMigration;
     }
 
     /**
+     * Perform all updates.
+     * <p>
      * v8.0.0: 52
-     *
-     * @param oldVersion The old database version.
      */
-    void update(final int oldVersion) {
+    void update() {
         if (oldVersion < 52) {
             db52();
         }

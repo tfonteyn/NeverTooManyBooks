@@ -82,6 +82,7 @@ class V7 {
     private final Context context;
     @NonNull
     private final SQLiteDatabase db;
+    private final int oldVersion;
     @NonNull
     private final IdentifierMigration identifierMigration;
 
@@ -90,17 +91,22 @@ class V7 {
      *
      * @param context             Current context
      * @param db                  Underlying database
+     * @param oldVersion          The old database version.
      * @param identifierMigration helper
      */
     V7(@NonNull final Context context,
        @NonNull final SQLiteDatabase db,
+       final int oldVersion,
        @NonNull final IdentifierMigration identifierMigration) {
         this.context = context;
         this.db = db;
+        this.oldVersion = oldVersion;
         this.identifierMigration = identifierMigration;
     }
 
     /**
+     * Perform all updates.
+     * <p>
      * v7.0.0: 35
      * v7.0.3: 36
      * v7.1.0: 38
@@ -117,10 +123,8 @@ class V7 {
      * v7.12.0: 49
      * v7.13.0: 50
      * v7.16.0: 51
-     *
-     * @param oldVersion The old database version.
      */
-    void update(final int oldVersion) {
+    void update() {
         if (oldVersion < 35) {
             db35();
         }

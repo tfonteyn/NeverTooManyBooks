@@ -56,17 +56,23 @@ class V5 {
 
     @NonNull
     private final SQLiteDatabase db;
+    private final int oldVersion;
 
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db         Underlying database
+     * @param oldVersion The old database version.
      */
-    V5(@NonNull final SQLiteDatabase db) {
+    V5(@NonNull final SQLiteDatabase db,
+       final int oldVersion) {
         this.db = db;
+        this.oldVersion = oldVersion;
     }
 
     /**
+     * Perform all updates.
+     * <p>
      * v5.0.0: 26
      * v5.1.0: 27
      * v5.2.0: 29
@@ -75,10 +81,8 @@ class V5 {
      * v5.5.0: 32
      * v5.5.1: 33
      * v5.5.4: 34
-     *
-     * @param oldVersion The old database version.
      */
-    void update(final int oldVersion) {
+    void update() {
         if (oldVersion < 26) {
             db26();
         }
