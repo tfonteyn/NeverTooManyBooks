@@ -53,10 +53,12 @@
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/section_margin_top"
             android:textIsSelectable="true"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_warning"
             tools:text="@string/warning_no_site_supports_this_method"
+            tools:visibility="visible"
             />
 
         <com.google.android.material.textfield.TextInputLayout
