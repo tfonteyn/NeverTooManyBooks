@@ -20,6 +20,4 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# Gradle plugin 8.4
-# https://developer.android.com/build/releases/gradle-plugin#library-classes-shrunk
 -keep class com.hardbacknutter.nevertoomanybooks.core.** { *; }
