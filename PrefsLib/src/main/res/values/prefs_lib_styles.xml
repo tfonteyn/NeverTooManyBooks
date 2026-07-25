@@ -144,8 +144,8 @@
            parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:layout_marginBottom">24dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
     <style name="PrefsLib.Dialog.Message"
