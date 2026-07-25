@@ -53,9 +53,13 @@
         tools:text="@tools:sample/lorem"
         />
 
+    <!-- layout_constrainedHeight/layout_constraintVertical_bias
+         works in conjunction with layout_height=wrap_content -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
         style="@style/Dialog.Body.RecyclerView"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_bias="0.0"
         android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintBottom_toTopOf="@id/button_panel_layout"
         app:layout_constraintEnd_toEndOf="parent"

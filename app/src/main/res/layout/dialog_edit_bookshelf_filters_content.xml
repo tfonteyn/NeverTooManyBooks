@@ -44,9 +44,13 @@
         app:title="@string/lbl_filters"
         />
 
+    <!-- layout_constrainedHeight/layout_constraintVertical_bias
+         works in conjunction with layout_height=wrap_content -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/filter_list"
         style="@style/Dialog.Body.RecyclerView"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintBottom_toTopOf="@id/button_panel_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
