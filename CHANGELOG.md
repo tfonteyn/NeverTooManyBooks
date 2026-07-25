@@ -1,3 +1,27 @@
+### 8.0.0
+
+NEW:
+
+- Searches:
+  - dnb.de has been re-implemented to a) fix their bot-blocker + b) improve performance
+  - bnf.fr has been re-implemented to improve performance
+  - bol.com, databazeknih.cz updated
+
+- ISSN searches on:
+  - bnf.fr
+  - dnb.de / zdb-katalog.de
+  - wikidata
+  - Series support Identifiers (ISSN and more)
+
+- Support for importing Calibre CSV files.
+
+- UI:
+  - The builtin image crop editor was replaced by https://github.com/Yalantis/uCrop
+  - UI language: Latvian
+
+Supports Android 17
+
+---
 ### 7.16.2
 
 FIXES:
