@@ -90,7 +90,7 @@ public abstract class BaseSettingsFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         this.settingsManager = onCreateSettings()
-                .setDialogFactory(new DBSDialogFactory())
+                //.setDialogFactory(new DBSDialogFactory())
                 .build(this, recyclerView);
     }
 
