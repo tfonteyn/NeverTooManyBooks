@@ -63,6 +63,10 @@
             as the shape 'fill' color. -->
         <item name="backgroundTint">?attr/colorSurface</item>
 
+        <item name="materialAlertDialogTitleTextStyle">
+            @style/Widget.App.MaterialAlertDialogTitleTextStyle
+        </item>
+
         <!-- needed to get the background of the buttons to use colorSurface -->
         <item name="buttonBarButtonStyle">
             @style/Widget.CustomDialog.DialogButtonBarButtons
@@ -79,17 +83,15 @@
 
     </style>
 
-    <!-- duplication due to the android style system... -->
+    <!-- needed to get the background of the buttons to use colorSurface -->
     <style name="Widget.CustomDialog.DialogButtonBarButtons"
-           parent="Widget.Material3Expressive.Button.TextButton.Dialog">
-        <item name="android:textColor">?attr/colorSecondary</item>
+           parent="Widget.App.DialogButtonBarButtons">
         <item name="android:background">?attr/colorSurface</item>
     </style>
 
-    <!-- yes, even more duplication due to the android style system... -->
+    <!-- needed to get the background of the buttons to use colorSurface -->
     <style name="Widget.CustomDialog.DialogButtonBarButtons.Flush"
-           parent="Widget.Material3Expressive.Button.TextButton.Dialog.Flush">
-        <item name="android:textColor">?attr/colorSecondary</item>
+           parent="Widget.App.DialogButtonBarButtons.Flush">
         <item name="android:background">?attr/colorSurface</item>
     </style>
 </resources>

@@ -177,12 +177,22 @@
 
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3Expressive.MaterialAlertDialog">
+        <item name="materialAlertDialogTitleTextStyle">
+            @style/Widget.App.MaterialAlertDialogTitleTextStyle
+        </item>
+
         <item name="buttonBarButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButtonBarButtons</item>
         <item name="buttonBarNeutralButtonStyle">
             @style/Widget.App.DialogButtonBarButtons.Flush
         </item>
+    </style>
+    <style name="Widget.App.MaterialAlertDialogTitleTextStyle"
+           parent="MaterialAlertDialog.Material3Expressive.Title.Text">
+        <!-- Original was textAppearanceHeadlineSmall, which uses 24sp.
+             The textAppearanceTitleMedium uses 16sp. -->
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialCalendarTheme"
