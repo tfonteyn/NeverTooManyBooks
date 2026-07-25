@@ -230,7 +230,6 @@
             android:id="@+id/description"
             style="@style/Field.Description"
             android:background="@drawable/bg_outline_sharp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/personal_data_layout"
