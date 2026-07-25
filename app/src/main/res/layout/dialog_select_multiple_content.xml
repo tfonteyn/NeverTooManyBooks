@@ -56,6 +56,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
         style="@style/Dialog.Body.RecyclerView"
+        android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintBottom_toTopOf="@id/button_panel_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
