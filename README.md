@@ -66,7 +66,7 @@ What you should not do:
 - Chinese Simplified(CN), Chinese Traditional(TW),
   Czech, Dutch, English, French, Galician, German, Greek, Hungarian, Italian, Polish
   Portuguese, Portuguese(Brazil), Russian, Slovak, Spanish, Tamil, Turkish, Vietnamese.
-- Machine translated, no guarantees for quality: Swedish.
+- Machine translated, no guarantees for quality: Latvian, Swedish.
 
 Translations are editable on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
 
@@ -112,12 +112,13 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites...
 - **OpenLibrary** (English and more; Catalogue)
 - **StripInfo** (Dutch and more; Catalogue; European Comics)
 - **StripWeb** (Dutch/French; Shop; European Comics)
+- **WikiData** *ISSN search only* (English and more; Catalogue)
 - Supports synchronizing with a [Calibre](https://calibre-ebook.com/) Content Server.
 
 ## Device support:
 
 - Requires minimal Android 8.0 (API 26)
-- Supported/tested up to Android 16 (API 36).
+- Supported/tested up to Android 17 (API 37).
 
 ## Android Permissions:
 
