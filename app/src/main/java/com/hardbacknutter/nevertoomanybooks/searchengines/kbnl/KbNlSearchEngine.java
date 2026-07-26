@@ -74,8 +74,6 @@ public class KbNlSearchEngine
                    SearchEngine.CoverByEdition {
 
     private static final String SITE_URL = "https://www.kb.nl";
-    // URGENT: needs doublt checking if we can use the url as documented at
-    //  https://www.wikidata.org/wiki/Property:P1006
     private static final String BOOK_URL =
             "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
     private static final String AUTHOR_URL =
