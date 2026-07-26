@@ -31,11 +31,14 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+/**
+ * 2026-07-26:  https://opac.kbr.be  seems to be completely broken as it does not do TLS ?
+ *             and the http site redirect to the https ...
+ */
 public final class KBR {
 
     private static final String SITE_URL = "https://opac.kbr.be";
-    // originally using "https://opac.kbr.be/Library/doc/SYRACUSE/%s"
-    // 2026-05-29: switching to use their permalink urls'
+
     private static final String BOOK_URL = "https://uurl.kbr.be/bib/%s";
     private static final String AUTHOR_URL = "https://uurl.kbr.be/aut/%s";
     private static final String SERIES_URL = "https://uurl.kbr.be/bib/%s";
