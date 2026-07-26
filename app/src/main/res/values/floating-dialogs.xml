@@ -23,7 +23,13 @@
 
     <!-- This base value will never get used as the dialogs will be fullscreen
          at this resolution. -->
-    <dimen name="floating_dialog_recycler_view_min_height">100dp</dimen>
+    <dimen name="floating_dialog_min_height">200dp</dimen>
+
+    <!-- ignored when the dialogs are fullscreen, -->
+    <item name="floating_dialog_height_ratio"
+          type="dimen"
+          format="float">0.80
+    </item>
 
     <!--
     TODO: re-evaluate the use of this

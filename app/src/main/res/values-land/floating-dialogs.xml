@@ -20,4 +20,9 @@
   -->
 
 <resources>
+    <!-- ignored when the dialogs are fullscreen, -->
+    <item name="floating_dialog_height_ratio"
+          type="dimen"
+          format="float">0.90
+    </item>
 </resources>

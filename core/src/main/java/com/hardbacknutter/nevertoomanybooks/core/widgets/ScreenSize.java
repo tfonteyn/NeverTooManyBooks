@@ -69,11 +69,15 @@ public final class ScreenSize {
 
     @NonNull
     private final Value height;
+    @NonNull
+    private final WindowMetrics metrics;
 
     private ScreenSize(@NonNull final Value width,
-                       @NonNull final Value height) {
+                       @NonNull final Value height,
+                       @NonNull final WindowMetrics metrics) {
         this.width = width;
         this.height = height;
+        this.metrics = metrics;
     }
 
     /**
@@ -134,7 +138,7 @@ public final class ScreenSize {
                                  .findFirst()
                                  .orElse(Value.Compact);
 
-        final ScreenSize screenSize = new ScreenSize(width, height);
+        final ScreenSize screenSize = new ScreenSize(width, height, metrics);
 
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "widthDp=" + widthDp + "|heightDp=" + heightDp
@@ -196,6 +200,11 @@ public final class ScreenSize {
     @NonNull
     public Value getHeight() {
         return height;
+    }
+
+    @NonNull
+    public WindowMetrics getMetrics() {
+        return metrics;
     }
 
     /**

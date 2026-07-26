@@ -20,5 +20,10 @@
   -->
 
 <resources>
-    <dimen name="floating_dialog_recycler_view_min_height">500dp</dimen>
+    <dimen name="floating_dialog_min_height">500dp</dimen>
+    <!-- ignored when the dialogs are fullscreen, -->
+    <item name="floating_dialog_height_ratio"
+          type="dimen"
+          format="float">0.66
+    </item>
 </resources>
