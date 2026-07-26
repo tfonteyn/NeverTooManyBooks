@@ -31,6 +31,6 @@ public class EditTagBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditTagDelegate(this, requireArguments());
+        setDelegate(new EditTagDelegate(this, requireArguments()));
     }
 }

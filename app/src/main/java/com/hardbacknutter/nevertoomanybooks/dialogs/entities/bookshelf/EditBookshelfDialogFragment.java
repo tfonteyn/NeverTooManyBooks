@@ -32,6 +32,6 @@ public class EditBookshelfDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditBookshelfDelegate(this, requireArguments());
+        setDelegate(new EditBookshelfDelegate(this, requireArguments()));
     }
 }

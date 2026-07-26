@@ -44,8 +44,12 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 public class FlexBottomSheetDialogFragment
         extends BottomSheetDialogFragment {
 
-    /** Must be created/set in {@link #onCreate(Bundle)}. */
-    protected FlexDialogDelegate delegate;
+    /**
+     * Must be created/set in {@link #onCreate(Bundle)}.
+     *
+     * @see #setDelegate(FlexDialogDelegate)
+     */
+    private FlexDialogDelegate delegate;
 
     @Override
     @NonNull
@@ -59,6 +63,15 @@ public class FlexBottomSheetDialogFragment
 
         getLifecycle().addObserver(delegate);
         return view;
+    }
+
+    /**
+     * Must be called from the child class in {@link #onCreate(Bundle)}.
+     *
+     * @param delegate to use
+     */
+    public void setDelegate(@NonNull final FlexDialogDelegate delegate) {
+        this.delegate = delegate;
     }
 
     @CallSuper

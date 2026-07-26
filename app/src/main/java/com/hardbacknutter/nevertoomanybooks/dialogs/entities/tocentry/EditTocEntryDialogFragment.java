@@ -31,6 +31,6 @@ public class EditTocEntryDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditTocEntryDelegate(this, requireArguments());
+        setDelegate(new EditTocEntryDelegate(this, requireArguments()));
     }
 }

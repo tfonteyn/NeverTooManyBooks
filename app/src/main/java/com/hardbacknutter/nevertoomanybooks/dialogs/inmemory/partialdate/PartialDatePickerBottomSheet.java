@@ -32,6 +32,6 @@ public class PartialDatePickerBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new PartialDatePickerDelegate(this, requireArguments());
+        setDelegate(new PartialDatePickerDelegate(this, requireArguments()));
     }
 }

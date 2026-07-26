@@ -31,6 +31,6 @@ public class BookshelfFiltersDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new BookshelfFiltersDelegate(this, requireArguments());
+        setDelegate(new BookshelfFiltersDelegate(this, requireArguments()));
     }
 }

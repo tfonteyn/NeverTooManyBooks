@@ -32,6 +32,6 @@ public class EditSeriesDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditSeriesDelegate(this, requireArguments());
+        setDelegate(new EditSeriesDelegate(this, requireArguments()));
     }
 }

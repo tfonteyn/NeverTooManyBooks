@@ -31,6 +31,6 @@ public class EditAuthorDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditAuthorDelegate(this, requireArguments());
+        setDelegate(new EditAuthorDelegate(this, requireArguments()));
     }
 }

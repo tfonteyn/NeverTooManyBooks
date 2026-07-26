@@ -31,7 +31,7 @@ public class MultiChoiceDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new MultiChoiceDelegate(this, requireArguments());
+        setDelegate(new MultiChoiceDelegate(this, requireArguments()));
         setFullscreen(false);
     }
 }

@@ -67,8 +67,12 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public abstract class FlexClassicDialogFragment
         extends DialogFragment {
 
-    /** Must be created/set in {@link #onCreate(Bundle)}. */
-    protected FlexDialogDelegate delegate;
+    /**
+     * Must be created/set in {@link #onCreate(Bundle)}.
+     *
+     * @see #setDelegate(FlexDialogDelegate)
+     */
+    private FlexDialogDelegate delegate;
 
     /**
      * Show the dialog fullscreen (default) or as a floating dialog.
@@ -92,6 +96,15 @@ public abstract class FlexClassicDialogFragment
                                         "screenSize=" + screenSize,
                                         "fullscreen=" + fullscreen);
         }
+    }
+
+    /**
+     * Must be called from the child class in {@link #onCreate(Bundle)}.
+     *
+     * @param delegate to use
+     */
+    public void setDelegate(@NonNull final FlexDialogDelegate delegate) {
+        this.delegate = delegate;
     }
 
     /**

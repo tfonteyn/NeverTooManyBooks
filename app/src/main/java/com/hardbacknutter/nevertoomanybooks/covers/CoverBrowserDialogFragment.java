@@ -31,6 +31,6 @@ public class CoverBrowserDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new CoverBrowserDelegate(this, requireArguments());
+        setDelegate(new CoverBrowserDelegate(this, requireArguments()));
     }
 }

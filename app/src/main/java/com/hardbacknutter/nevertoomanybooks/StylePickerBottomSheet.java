@@ -31,6 +31,6 @@ public class StylePickerBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new StylePickerDelegate(this, requireArguments());
+        setDelegate(new StylePickerDelegate(this, requireArguments()));
     }
 }

@@ -36,8 +36,8 @@ public class EditLocationDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditInLineStringDelegate(this, requireArguments(),
-                                                R.string.lbl_location, R.string.lbl_location,
-                                                ServiceLocator.getInstance()::getLocationDao);
+        setDelegate(new EditInLineStringDelegate(this, requireArguments(),
+                                                 R.string.lbl_location, R.string.lbl_location,
+                                                 ServiceLocator.getInstance()::getLocationDao));
     }
 }

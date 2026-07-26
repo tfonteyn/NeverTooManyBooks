@@ -33,8 +33,8 @@ public class EditFormatBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditInLineStringDelegate(this, requireArguments(),
-                                                R.string.lbl_format, R.string.lbl_format,
-                                                ServiceLocator.getInstance()::getFormatDao);
+        setDelegate(new EditInLineStringDelegate(this, requireArguments(),
+                                                 R.string.lbl_format, R.string.lbl_format,
+                                                 ServiceLocator.getInstance()::getFormatDao));
     }
 }

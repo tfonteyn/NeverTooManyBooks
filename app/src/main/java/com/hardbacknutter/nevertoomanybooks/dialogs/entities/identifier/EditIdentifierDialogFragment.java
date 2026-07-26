@@ -31,6 +31,6 @@ public class EditIdentifierDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditIdentifierDelegate(this, requireArguments());
+        setDelegate(new EditIdentifierDelegate(this, requireArguments()));
     }
 }
