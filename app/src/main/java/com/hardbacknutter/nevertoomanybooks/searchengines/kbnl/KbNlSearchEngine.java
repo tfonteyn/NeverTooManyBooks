@@ -66,10 +66,18 @@ import org.xml.sax.helpers.DefaultHandler;
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
  * <p>
  * Dutch language books & comics.
+ * <p>
+ * Dev. note: When accessing the site with a browser, the server actually returns Pica XML,
+ * which the browser then transforms to html using XSLT.
+ * We simply run the search, and get/parse the XML.
+ * Experiments done trying to convince the server to give us a more parser friendly
+ * XML (or marc21 or json) have failed so far. It's likely hardcoded to only return the
+ * Pica display xml.
  */
 public class KbNlSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
+                   SearchEngine.ByIssn,
                    SearchEngine.ByExternalId,
                    SearchEngine.CoverByEdition {
 
@@ -88,16 +96,12 @@ public class KbNlSearchEngine
     private static final String BASE_URL_COVERS =
             "https://webservices.bibliotheek.be/index.php?func=cover&ISBN=%1$s&coversize=%2$s";
 
-    /* param 1: site specific author id. */
-    //    private static final String AUTHOR_URL = getBaseURL(context)
-    //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
-
     /**
-     * Search by code.
+     * Search by product-code.
      * <p>
      * param 1: db version (part of the site session vars)
      * param 2: the set number (part of the site session vars)
-     * param 3: the ISBN.
+     * param 3: the ISBN or ISSN
      */
     private static final String SEARCH_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/CMD?"
                                              // Action is a search
@@ -206,17 +210,6 @@ public class KbNlSearchEngine
         );
     }
 
-    @Override
-    @AnyThread
-    public void cancel() {
-        synchronized (this) {
-            super.cancel();
-            if (httpGet != null) {
-                httpGet.cancel();
-            }
-        }
-    }
-
     /**
      * Send a HEAD request to prepare a cookie for further calls.
      *
@@ -230,6 +223,23 @@ public class KbNlSearchEngine
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
+    }
+
+    @NonNull
+    @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final BookSearchCriteria criteria)
+            throws StorageException, SearchException, CredentialsException {
+
+        final String externalId = criteria.requireSid(getEngineId());
+        final String url = getHostUrl() + String.format(PERMALINK_URL, dbVersion, externalId);
+        final Book book = getBook(context, url);
+        if (isCancelled()) {
+            return book;
+        }
+
+        fetchCovers(context, criteria, book);
+        return book;
     }
 
     @Override
@@ -246,36 +256,17 @@ public class KbNlSearchEngine
             return book;
         }
 
-        if (criteria.getFetchCovers()[0]) {
-            final AltEdition edition = new AltEditionProductCode(productCode);
-            searchBestCoverByEdition(context, edition, 0).ifPresent(
-                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-        }
+        fetchCovers(context, criteria, book);
         return book;
     }
 
     @NonNull
     @Override
-    public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final BookSearchCriteria criteria)
+    public Book searchByIssn(@NonNull final Context context,
+                             @NonNull final BookSearchCriteria criteria)
             throws StorageException, SearchException, CredentialsException {
-
-        final String externalId = criteria.requireSid(getEngineId());
-        final String url = getHostUrl() + String.format(PERMALINK_URL, dbVersion, externalId);
-        final Book book = getBook(context, url);
-        if (isCancelled()) {
-            return book;
-        }
-
-        if (criteria.getFetchCovers()[0]) {
-            final ProductCode productCode = book.getProductCode();
-            if (productCode != null && productCode.isIsbn()) {
-                final AltEdition edition = new AltEditionProductCode(productCode);
-                searchBestCoverByEdition(context, edition, 0).ifPresent(
-                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
-            }
-        }
-        return book;
+        // Searching on an ISSN is identical to isbn
+        return searchByIsbn(context, criteria);
     }
 
     @NonNull
@@ -324,12 +315,31 @@ public class KbNlSearchEngine
                                    @NonNull final DefaultHandler handler,
                                    @NonNull final Book book)
             throws IOException, SAXException {
+
+        // Do the actual parsing which will populate the book.
         parser.parse(is, handler);
+
+        // Extract the site tracking values.
         //noinspection DataFlowIssue
         dbVersion = book.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
         //noinspection DataFlowIssue
         setNr = book.getString(KbNlHandlerBase.BKEY_SET_NUMBER, DEFAULT_SET_NUMBER);
         return true;
+    }
+
+    private void fetchCovers(@NonNull final Context context,
+                             @NonNull final BookSearchCriteria criteria,
+                             @NonNull final Book book)
+            throws StorageException {
+        if (criteria.getFetchCovers()[0]) {
+            final ProductCode productCode = book.getProductCode();
+            // The KBR coversite we use only supports ISBN.
+            if (productCode != null && productCode.isIsbn()) {
+                final AltEdition edition = new AltEditionProductCode(productCode);
+                searchBestCoverByEdition(context, edition, 0).ifPresent(
+                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+            }
+        }
     }
 
     /**
@@ -407,5 +417,16 @@ public class KbNlSearchEngine
             return saveImage(context, url, null, codeStr, cIdx, size);
         }
         return Optional.empty();
+    }
+
+    @Override
+    @AnyThread
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (httpGet != null) {
+                httpGet.cancel();
+            }
+        }
     }
 }

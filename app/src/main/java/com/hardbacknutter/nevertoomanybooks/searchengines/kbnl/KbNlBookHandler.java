@@ -125,6 +125,8 @@ class KbNlBookHandler
      * Labels for both Dutch (default) and English are listed.
      * <p>
      * Note that "Colorist" is also used in Dutch.
+     * <p>
+     * A lot of the data is unstructured. Parsing is best-effort.
      *
      * @param currentLabel the current {@code labelledLabel}
      * @param currentData  content of {@code labelledData}
@@ -190,7 +192,9 @@ class KbNlBookHandler
                 break;
 
             case "ISBN":
-                parseIsbn(currentData);
+            case "ISSN":
+                // only one of the two will be present
+                parseProductCode(currentData);
                 break;
 
             case "Illustration":
@@ -200,7 +204,8 @@ class KbNlBookHandler
 
             case "Size":
             case "Formaat":
-                // seen, but skipped for now; it's one dimension, presumably the height.
+                // seen, but skipped for now; it's one dimension, the height
+                // so librarians know if it will fit on a shelf...
                 // Formaat: 30 cm
                 break;
 
@@ -210,7 +215,7 @@ class KbNlBookHandler
                 break;
 
             case "Editie":
-                // [2e dr.]
+                parseEditionInfo(currentData);
                 break;
 
             case "Contains":
@@ -220,44 +225,34 @@ class KbNlBookHandler
                 parseDescription(currentData);
                 break;
             }
-
+            // We concat these 3 fields into the description.
+            // but as it can also contain semi-structured data
+            // we parse twice.
+            // Note/Noot
+            // Note/Annotatie
+            // Annotation edition / Annotatie editie
+            case "Noot":
+                // drop down to Note
             case "Note":
             case "Annotatie":
                 // It's unclear if this is just an alternative field used
                 // for the same type of information. But as usual,... it's unstructured.
             case "Annotation edition":
             case "Annotatie editie":
+                // Parse semi-structured data
                 parseAnnotation(currentData);
-                break;
-
-            // case "Note": in English used a second time for the field above (Annotatie, in Dutch)
-            // So if we're parsing in English, we HAVE to skip this.
-            // Normally we should not be parsing in English though... flw
-            // Unique in Dutch.
-            case "Noot":
+                // add to the description
+                parseDescription(currentData);
                 break;
 
             case "Annex":
             case "Bĳlage":
-                // kleurenprent van oorspr. cover
+                // kleurenprent van oorspr. cover ?
                 break;
 
-            case "Subject heading Depot":
-            case "Trefwoord Depot":
-                // not used
-            case "Request number":
-            case "Aanvraagnummer":
-                // not used
-            case "Loan indication":
-            case "Uitleenindicatie":
-                // not used
-            case "Lending information":
-            case "Aanvraaginfo":
-                // not used
-                break;
-            case "Manufacturer":
-            case "Vervaardiger":
-                // not used
+            case "Numbering":
+            case "Nummering":
+                // ISSN .. but unstructured.
                 break;
 
             default:
@@ -266,7 +261,20 @@ class KbNlBookHandler
         }
     }
 
+    private void parseEditionInfo(@NonNull final List<CurrentData> currentData) {
+        final String data = currentData.stream()
+                                       .map(cd -> cd.data)
+                                       .filter(s -> !s.isEmpty())
+                                       .collect(Collectors.joining(" "));
+        final String s = SearchEngineUtils.cleanText(data);
+        if (!s.isBlank()) {
+            book.setEditionInfo(s);
+        }
+    }
+
     /**
+     * "Annotation" field can contain some semi-structured data.
+     *
      * <pre>{@code https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=306324296
      * <psi:labelledData>
      *   <psi:line>
@@ -319,6 +327,8 @@ class KbNlBookHandler
     }
 
     /**
+     * Title.
+     *
      * <pre>{@code
      *  <psi:labelledData>
      *    <psi:line>
@@ -356,6 +366,8 @@ class KbNlBookHandler
     }
 
     /**
+     * Author.
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
@@ -384,8 +396,6 @@ class KbNlBookHandler
      *     </psi:line>
      *   </psi:labelledData>
      * }</pre>
-     *
-     *
      *
      * <p>
      * Note that the author name in the above example can be the "actual" name, and not
@@ -457,6 +467,8 @@ class KbNlBookHandler
     }
 
     /**
+     * Series.
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
@@ -488,6 +500,8 @@ class KbNlBookHandler
     }
 
     /**
+     * Book number in a Series.
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
@@ -510,6 +524,8 @@ class KbNlBookHandler
     }
 
     /**
+     * ISBN or ISSN.
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
@@ -549,16 +565,19 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void parseIsbn(@NonNull final List<CurrentData> currentData) {
+    private void parseProductCode(@NonNull final List<CurrentData> currentData) {
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
             if (Character.isDigit(text.charAt(0))) {
                 if (!book.hasProductCode()) {
-                    final String isbnText = ISBN.cleanText(text.split(":")[0]);
+                    final String codeStr = ISBN.cleanText(text.split(":")[0]);
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)
-                    if (isbnText.length() == 10 || isbnText.length() == 13) {
-                        book.setRawProductCode(isbnText);
+                    // 8 for ISSN, 10/13 for ISBN-
+                    if (codeStr.length() == 8
+                        || codeStr.length() == 10
+                        || codeStr.length() == 13) {
+                        book.setRawProductCode(codeStr);
                     }
                 }
             } else if (text.charAt(0) == '(') {
@@ -571,6 +590,8 @@ class KbNlBookHandler
     }
 
     /**
+     * Publisher.
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
@@ -713,6 +734,8 @@ class KbNlBookHandler
     }
 
     /**
+     * Info on illustrations in the book.
+     *
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>

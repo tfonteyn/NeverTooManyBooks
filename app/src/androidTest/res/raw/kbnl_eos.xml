@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<?xml-stylesheet type="text/xsl" href="/cbs/get/worldcat_gui/%253Fid%253DLONGTITLE%2526db%253D2.37"?>
+<!-- Copyright (c) 2026 by OCLC -->
+<!-- Release: cbs-9.3.2.3; cbscfg-9.3.0; pusher_proxy-1.0.1; lib: cbs-9.3.2.3 (b2ba5c5eb, 2026-07-22T09:41:14+02:00) -->
+<psi:response name="LONGTITLE" xmlns:psi="http://oclc.org/xml/">
+    <psi:context>
+        <psi:session>
+            <psi:sessionVar name="LNG">NE</psi:sessionVar>
+            <psi:sessionVar name="DB">2.37</psi:sessionVar>
+            <psi:sessionVar name="SID">5c4ef7ef-8f</psi:sessionVar>
+            <psi:sessionVar name="SET">16</psi:sessionVar>
+            <psi:sessionVar name="COOKIE">U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E5c4ef7ef-8f,A,H,R82.14.154.162,FY</psi:sessionVar>
+            <psi:sessionVar name="SESID"></psi:sessionVar>
+            <psi:sessionVar name="CMD_COLLAPSE"></psi:sessionVar>
+            <psi:sessionVar name="ALTCFG"></psi:sessionVar>
+            <psi:sessionVar name="AUTHDB"></psi:sessionVar>
+        </psi:session>
+        <psi:contextVar name="CharSet">UTF-8</psi:contextVar>
+        <psi:contextVar name="userName">KOB ORS default login</psi:contextVar>
+        <psi:contextVar name="UserNum">93</psi:contextVar>
+        <psi:contextVar name="libId">0003</psi:contextVar>
+        <psi:contextVar name="fullLibId">0003</psi:contextVar>
+        <psi:contextVar name="relativeUrl">/NXT</psi:contextVar>
+        <psi:contextVar name="currentyear">2026</psi:contextVar>
+        <psi:contextVar name="versionName"></psi:contextVar>
+        <psi:contextVar name="versionNumber"></psi:contextVar>
+        <psi:contextVar name="ppn">851212786</psi:contextVar>
+        <psi:contextVar name="prs"></psi:contextVar>
+        <psi:contextVar name="ttl">1</psi:contextVar>
+        <psi:contextVar name="ttlmatcode">MAT_T</psi:contextVar>
+        <psi:contextVar name="webcatFullScreen"></psi:contextVar>
+        <psi:contextVar name="ccwEditMode"></psi:contextVar>
+        <psi:contextVar name="ccwReferer"></psi:contextVar>
+    </psi:context>
+    <psi:urls>
+        <psi:url name="SERVER_BASE">https://webggc.oclc.org/cbs</psi:url>
+        <psi:url name="SERVER_BASE_BASIC">https://webggc.oclc.org/cbs</psi:url>
+        <psi:url name="SCRIPT_NAME">/</psi:url>
+        <psi:url name="CBS_BASE">https://webggc.oclc.org/cbs</psi:url>
+        <psi:url name="urlcontext">/cbsDB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="ACQUIRE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/RESULTS_ACQUIRE?PPN=851212786&amp;TTLMATCODE=MAT_T</psi:url>
+        <psi:url name="ARROW">https://webggc.oclc.org/~r_cbs/psi_images/img_psi/2.0/gui/inline_arrow.gif</psi:url>
+        <psi:url name="BORROWER">/borrower/borrower.htm?USR=&amp;BES=2&amp;LAN=NE</psi:url>
+        <psi:url name="CBSLOGIN">https://webggc.oclc.org/cbs/login/DB=2.37/SET=16/TTL=1/ENDUSER</psi:url>
+        <psi:url name="CCWEB_ADMINISTRATION"></psi:url>
+        <psi:url name="CCWEB_CREATE"></psi:url>
+        <psi:url name="CCWEB_MYACCOUNT"></psi:url>
+        <psi:url name="CCWEB_MYLIBRARY"></psi:url>
+        <psi:url name="CCWEB_TOOLBOX"></psi:url>
+        <psi:url name="CONTRIBUTE_GEN">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/CONTRIBUTE</psi:url>
+        <psi:url name="DOMAIN">nl</psi:url>
+        <psi:url name="FAVICON_ROOT">https://webggc.oclc.org/~r_cbs/psi_images/img_psi/2.0/favicons/</psi:url>
+        <psi:url name="HM_PHP_BASE">https://webggc.oclc.org/~r_cbs/psi_images/psi/php</psi:url>
+        <psi:url name="IPORT_LANG">ned</psi:url>
+        <psi:url name="LANG">ne</psi:url>
+        <psi:url name="LOG">https://webggc.oclc.org/cbs/login/DB=2.37/SET=16/TTL=1/ENDUSER/REQUEST</psi:url>
+        <psi:url name="LOGIN">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/LOGIN=TRUE/</psi:url>
+        <psi:url name="LOGIN_RESOURCES_NCC">https://webggc.oclc.org/cbs/DB=2.4/</psi:url>
+        <psi:url name="LOGIN_RESOURCES_PICARTA">https://webggc.oclc.org/cbs/DB=2.41/</psi:url>
+        <psi:url name="LOGIN_RESOURCES_SPECIAL">https://webggc.oclc.org/cbs/login/DB=2.37/SET=16/TTL=1/DBMENU?GROUP=SPECIAL&amp;MODE=LOGIN</psi:url>
+        <psi:url name="MAIN">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="MAIN_PORTAL">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/START_WELCOME</psi:url>
+        <psi:url name="MARKLISTS">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/PSSL</psi:url>
+        <psi:url name="MARKLISTS_CONTRIBUTE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/CONTRIBUTE</psi:url>
+        <psi:url name="MARKLISTS_HISTORY">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/HIST?HIST_MODE=PSS</psi:url>
+        <psi:url name="MARKLISTS_HOLDING">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NO_PSS_SELECTED</psi:url>
+        <psi:url name="MARKLISTS_LONGTITLE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NO_PSS_SELECTED</psi:url>
+        <psi:url name="MARKLISTS_PPNLIST">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NO_PSS_SELECTED</psi:url>
+        <psi:url name="MODE_BORROWER">https://kb.alma.exlibrisgroup.com/discovery/account?vid=31UKB_NLN:Services&amp;section=overview</psi:url>
+        <psi:url name="NICK">https://webggc.oclc.org/cbs/login/DB=2.37/SET=16/TTL=1/LOGIN=TRUE/?REDIRECT=http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D16%2FTTL%3D1%2FNICK</psi:url>
+        <psi:url name="PICARTA">https://webggc.oclc.org/cbs/DB=2.41/XMLPRS=Y/LNG=NE/?COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E5c4ef7ef-8f,A,H,R82.14.154.162,FY</psi:url>
+        <psi:url name="PRIVACY">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/PRIVACY</psi:url>
+        <psi:url name="PROFILE_ADDRESS">https://webggc.oclc.org/cbs/adr/DB=2.37/SET=16/TTL=1/ADRESGEGEVENS</psi:url>
+        <psi:url name="PROFILE_DEPOSIT">https://webggc.oclc.org/cbs/dpo/DB=2.37/SET=16/TTL=1/FORM/REQUEST?P3C=TOO%1FDPO%1FUSE%1F%1F%1F&amp;P3S=NT&amp;P3B=NT</psi:url>
+        <psi:url name="PROFILE_PASSWORD">https://webggc.oclc.org/cbs/usr/DB=2.37/SET=16/TTL=1/FORM/REQUEST?P3C=MUT%1FPAS%1F&amp;P3S=UF&amp;P3B=UF</psi:url>
+        <psi:url name="PROFILE_REQUESTS">https://webggc.oclc.org/cbs/avr/DB=2.37/SET=16/TTL=1/FORM/REQUEST?P3C=SEL%1FING%1F&amp;P3S=AF&amp;P3B=AF</psi:url>
+        <psi:url name="PROFILE_SDIREQUESTS">https://webggc.oclc.org/cbs/sdi/DB=2.37/SET=16/TTL=1/FORM/REQUEST?P3C=TOO%1FSDI%1F1-%1F&amp;P3S=S3&amp;P3B=S3</psi:url>
+        <psi:url name="REFERER">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NXT</psi:url>
+        <psi:url name="REFERER_PRS_REL">/DB=2.37/SET=16/TTL=1/PRS=/NXT</psi:url>
+        <psi:url name="REFERER_PRS_REL_ENC">%2FDB%3D2.37%2FSET%3D16%2FTTL%3D1%2FPRS%3D%2FNXT</psi:url>
+        <psi:url name="REFERER_URL">http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D16%2FTTL%3D1%2FNXT</psi:url>
+        <psi:url name="RESULTSET">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NXT?FRST=1&amp;SET=16</psi:url>
+        <psi:url name="RESULTSET_CONTRIBUTE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/CONTRIBUTE</psi:url>
+        <psi:url name="RESULTSET_HIST">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/HIST</psi:url>
+        <psi:url name="RESULTSET_HOLDING">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
+        <psi:url name="RESULTSET_OVERVIEW">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NXT?FRST=1</psi:url>
+        <psi:url name="RESULTSET_PPNLIST">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NXT?FRST=1</psi:url>
+        <psi:url name="RESULTSET_TREFWOORD">https://www.kb.nl/onderzoeken-vinden/bronnen/kb-catalogus/trefwoorden</psi:url>
+        <psi:url name="RSC_URL_website">https://oclc.org/?id=2&amp;ln=nl</psi:url>
+        <psi:url name="SAVESET"></psi:url>
+        <psi:url name="SAVESET_CONTRIBUTE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/CONTRIBUTE</psi:url>
+        <psi:url name="SAVESET_HOLDING">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
+        <psi:url name="SAVESET_LONGTITLE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/SHW?FRST=1</psi:url>
+        <psi:url name="SAVESET_PPNLIST">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/NXT?FRST=1</psi:url>
+        <psi:url name="SEARCH_ADVANCED">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/ADVANCED_SEARCHFILTER</psi:url>
+        <psi:url name="SEARCH_HELP">/?DB=2.37&amp;LNG=NE&amp;COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E5c4ef7ef-8f,A,H,R82.14.154.162,FY</psi:url>
+        <psi:url name="SEARCH_PLUGIN">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/XML=1.0/SEARCHPLUGIN?NAME=Koninklijke+Bibliotheek&amp;FAVICON=</psi:url>
+        <psi:url name="SEARCH_SUBJECTS">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/ADVANCED_SUBJECTS</psi:url>
+        <psi:url name="server_adr">https://webggc.oclc.org/cbs/adr/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_avr">https://webggc.oclc.org/cbs/avr/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_current">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_current_enc">http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D16%2FTTL%3D1%2F</psi:url>
+        <psi:url name="server_current_rel">/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_dpo">https://webggc.oclc.org/cbs/dpo/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_hms">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_ind">https://webggc.oclc.org/cbs/request/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_log">https://webggc.oclc.org/cbs/login/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_msearch">https://webggc.oclc.org/cbs/msearch/LNG=NE/</psi:url>
+        <psi:url name="server_portal">https://webggc.oclc.org/cbs/portal/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_sdi">https://webggc.oclc.org/cbs/sdi/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_search">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="server_usr">https://webggc.oclc.org/cbs/usr/DB=2.37/SET=16/TTL=1/</psi:url>
+        <psi:url name="SIGNOFF">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/EXIT?DEST=</psi:url>
+        <psi:url name="SIGNON">https://webggc.oclc.org/cbs/login/DB=2.37/SET=16/TTL=1/ENDUSER/REQUEST?REDIRECT=http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D16%2FTTL%3D1%2F</psi:url>
+        <psi:url name="START_ABOUT">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/START_ABOUT</psi:url>
+        <psi:url name="START_RESOURCES_NCC">https://webggc.oclc.org/cbs/DB=2.4/</psi:url>
+        <psi:url name="START_RESOURCES_PICARTA">https://webggc.oclc.org/cbs/DB=2.41/</psi:url>
+        <psi:url name="START_RESOURCES_SPECIAL">https://webggc.oclc.org/cbs/login/DB=2.37/SET=16/TTL=1/DBMENU?GROUP=SPECIAL</psi:url>
+        <psi:url name="START_WELCOME">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/START_WELCOME</psi:url>
+        <psi:url name="TERMS_OF_USE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/TERMS_OF_USE</psi:url>
+        <psi:url name="USE_OPC">https://webggc.oclc.org/cbs/DB=1/LNG=NE/?COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E5c4ef7ef-8f,A,H,R82.14.154.162,FY</psi:url>
+        <psi:url name="USE_PORTAL">https://webggc.oclc.org/cbs/portal/DB=portal/XMLPRS=Y/LNG=NE/?COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E5c4ef7ef-8f,A,H,R82.14.154.162,FY</psi:url>
+        <psi:url name="USERCONFIG">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/USERCONFIG</psi:url>
+        <psi:url name="VOPC_LOGO"></psi:url>
+        <psi:url name="WEBCAT"></psi:url>
+        <psi:url name="WORLDCAT">https://www.worldcat.org</psi:url>
+
+
+
+        <psi:url name="PRS">PRS=PP/NXT</psi:url>
+        <psi:url name="PERMALINK" target="_blank" img="" alt="" title="">https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=851212786</psi:url>
+        <psi:url name="SDI">https://webggc.oclc.org/cbs/sdi/DB=2.37/SET=16/TTL=1/FORM/REQUEST?P3C=INV%1FSDI%1F&amp;P3S=S0&amp;P3B=B0&amp;SEARCH=00yS!i1007!t07720084!m!r1!aY!o2!cN.oR.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%0107720084%01%01%01Y%01%01%02</psi:url>
+        <psi:url name="SAVEINFO_LONGTITLE">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/RESULTS_SAVEINFO_LONG?FRST=1&amp;LAST=1&amp;HITS=1&amp;PPN=851212786</psi:url>
+        <psi:url name="ANALYSIS">https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/ADIGRP?IKT=&amp;SET=16</psi:url>
+        <psi:url name="RSSLINK">?DB=2.37&amp;SEARCH=00yS!i1007!t07720084!m!r1!aY!o2!cN.oR.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%0107720084%01%01%01Y%01%01%02&amp;EDOC=3944144645&amp;COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,E5c4ef7ef-8f,A,H,R82.14.154.162,FY</psi:url>
+    </psi:urls>
+    <psi:data>
+        <psi:logo_alt>Koninklijke Bibliotheek</psi:logo_alt>
+        <psi:iktList>
+            <psi:ikt iktnr="1016" mnemonic="ALL">alle woorden</psi:ikt>
+            <psi:ikt iktnr="4" mnemonic="TTL">titelwoorden</psi:ikt>
+            <psi:ikt iktnr="2001" mnemonic="HTL">hele titel tijdschrift</psi:ikt>
+            <psi:ikt iktnr="1004" mnemonic="AUT">auteur, medewerker</psi:ikt>
+            <psi:ikt iktnr="1009" mnemonic="PAO">trefwoord persoon</psi:ikt>
+            <psi:ikt iktnr="8050" mnemonic="BTR">trefwoord Depot</psi:ikt>
+            <psi:ikt iktnr="5040" mnemonic="GTR">trefwoord (GOO)</psi:ikt>
+            <psi:ikt iktnr="5004" mnemonic="BCL">basisclassificatie</psi:ikt>
+            <psi:ikt iktnr="4014" mnemonic="SYS">code KB</psi:ikt>
+            <psi:ikt iktnr="53" mnemonic="SIG">aanvraagnummer</psi:ikt>
+            <psi:ikt iktnr="1007" mnemonic="NUM">isbn, issn</psi:ikt>
+            <psi:ikt iktnr="2" mnemonic="COR">organisatie, congres</psi:ikt>
+            <psi:ikt iktnr="3003" mnemonic="IMP">uitgever, drukker</psi:ikt>
+            <psi:ikt iktnr="1" mnemonic="PRS">persoon</psi:ikt>
+            <psi:ikt iktnr="3" mnemonic="CON">Congres</psi:ikt>
+            <psi:ikt iktnr="5" mnemonic="TTI">Woord(en) uit Tijdschrifttitel</psi:ikt>
+            <psi:ikt iktnr="7" mnemonic="ISB">ISBN</psi:ikt>
+            <psi:ikt iktnr="8" mnemonic="ISS">ISSN</psi:ikt>
+            <psi:ikt iktnr="12" mnemonic="PPN">Pica Productienummer</psi:ikt>
+            <psi:ikt iktnr="13" mnemonic="DEW">Dewey classificatie</psi:ikt>
+            <psi:ikt iktnr="16" mnemonic="LCN">LC classificatie</psi:ikt>
+            <psi:ikt iktnr="17" mnemonic="NLM">NLM-code</psi:ikt>
+            <psi:ikt iktnr="20" mnemonic="SYS">Systematische codering</psi:ikt>
+            <psi:ikt iktnr="21" mnemonic="TR0">trefwoord</psi:ikt>
+            <psi:ikt iktnr="25" mnemonic="MSH">MESH-trefwoord</psi:ikt>
+            <psi:ikt iktnr="27" mnemonic="LCS">LC trefwoord</psi:ikt>
+            <psi:ikt iktnr="1000" mnemonic="ATS">Auteur/Titel-sleutel</psi:ikt>
+            <psi:ikt iktnr="1018" mnemonic="UIT">Uitgever</psi:ikt>
+            <psi:ikt iktnr="2000" mnemonic="TTI">titelwoorden: tijdschrift</psi:ikt>
+            <psi:ikt iktnr="5102" mnemonic="GT2">GOO corporatie</psi:ikt>
+            <psi:ikt iktnr="6120" mnemonic="OCN">OCLC number</psi:ikt>
+            <psi:ikt iktnr="9000" mnemonic="JVU">Jaar van uitgave</psi:ikt>
+            <psi:ikt iktnr="9001" mnemonic="MAT">Materiaalcode</psi:ikt>
+            <psi:ikt iktnr="9004" mnemonic="TCO">Taalcode</psi:ikt>
+            <psi:ikt iktnr="9005" mnemonic="LLC">Landcode</psi:ikt>
+            <psi:ikt iktnr="9" mnemonic="LCC">LC card-nummer</psi:ikt>
+            <psi:ikt iktnr="10" mnemonic="BNB">BNB nummer</psi:ikt>
+            <psi:ikt iktnr="48" mnemonic="BRI">Brinkman nummer</psi:ikt>
+            <psi:ikt iktnr="51" mnemonic="CAT">Catalogus nummer</psi:ikt>
+            <psi:ikt iktnr="63" mnemonic="ANN">Annotaties</psi:ikt>
+            <psi:ikt iktnr="1002" mnemonic="ANM">Achternaam</psi:ikt>
+            <psi:ikt iktnr="1003" mnemonic="WAU">Auteur (persoon)</psi:ikt>
+            <psi:ikt iktnr="1033" mnemonic="RKS">reeksveld</psi:ikt>
+            <psi:ikt iktnr="2524" mnemonic="VMP">[VMP]</psi:ikt>
+            <psi:ikt iktnr="5100" mnemonic="GT0">GOO Descriptor</psi:ikt>
+            <psi:ikt iktnr="6241" mnemonic="HVN">Huidig inventarisnummer</psi:ikt>
+            <psi:ikt iktnr="9003" mnemonic="BCO">Basiscode (GOO)</psi:ikt>
+            <psi:ikt iktnr="9008" mnemonic="SUP">Leverancier</psi:ikt>
+        </psi:iktList>
+        <psi:date_option_list>
+            <psi:date_option label="DATERANGE_DESC"></psi:date_option>
+            <psi:date_option label="DATERANGE_D7">20260719 {RANGE} 20260726</psi:date_option><!-- 7 days -->
+            <psi:date_option label="DATERANGE_M1">20260626 {RANGE} 20260726</psi:date_option><!-- 30 days -->
+            <psi:date_option label="DATERANGE_M3">20260426 {RANGE} 20260726</psi:date_option><!-- 91 days -->
+            <psi:date_option label="DATERANGE_M6">20260125 {RANGE} 20260726</psi:date_option><!-- 182 days -->
+            <psi:date_option label="DATERANGE_M12">20250726 {RANGE} 20260726</psi:date_option><!-- 365 days -->
+        </psi:date_option_list>
+        <psi:sortOptions>
+            <psi:sortOp>YOP</psi:sortOp>
+            <psi:sortOp>RLV</psi:sortOp>
+            <psi:sortOp>LST_aty</psi:sortOp>
+            <psi:sortOp>LST_tay</psi:sortOp>
+        </psi:sortOptions>
+        <psi:prs_types>
+            <psi:prs_type name="DEFAULT" link="https://webggc.oclc.org/cbs/DB=2.37/SET=16/TTL=1/PRS=/NXT"/>
+        </psi:prs_types>
+        <psi:oclc>905438002</psi:oclc>
+    </psi:data>
+    <psi:records><psi:record prs="">
+        <psi:labelledTable>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Titel: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text href="CLK?IKT=2000&amp;TRM=Eos">Eos</psi:text>
+                        <psi:text> </psi:text>
+                        <psi:text href="CLK?IKT=2000&amp;TRM=magazine">magazine</psi:text>
+                        <psi:text> : </psi:text>
+                        <psi:text href="CLK?IKT=2000&amp;TRM=technologie">technologie</psi:text>
+                        <psi:text> voor de </psi:text>
+                        <psi:text href="CLK?IKT=2000&amp;TRM=mens">mens</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text href="CLK?IKT=2000&amp;TRM=Eos">Eos</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text href="CLK?IKT=2000&amp;TRM=Eos">Eos</psi:text>
+                        <psi:text> </psi:text>
+                        <psi:text href="CLK?IKT=2000&amp;TRM=wetenschap">wetenschap</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Jaar: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>1983-...</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Nummering: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>Nr. 1 (1983) - ...</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Uitgever: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text href="CLK?IKT=3003&amp;TRM=Gentbrugge">Gentbrugge</psi:text>
+                        <psi:text> : </psi:text>
+                        <psi:text href="CLK?IKT=3003&amp;TRM=Cabus">Cabus</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Annotatie: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>Ondertitel varieert</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text>Later uitg. door: Gent : Drukkerij Het Volk ; vervolgens: Antwerpen : Cascade</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text>Later ook met jrg.-nummering</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text>Verschijnt 11x per jaar</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text>Met EOS Index op CD-ROM. - 2000</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text>Hierin opgenomen: Scientific American</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Formaat: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>30 cm</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>ISSN: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text mark="highlight">0772-0084</psi:text><psi:text> = Eos magazine</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Trefwoord Depot: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text href="REL?PPN=075624893">tijdschriften</psi:text>
+                        <psi:text>; </psi:text>
+                        <psi:text href="REL?PPN=075627345">wetenschap</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Trefwoord GOO: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text href="REL?PPN=078501830">Exacte wetenschappen</psi:text>
+                        <psi:text>, </psi:text>
+                        <psi:text href="REL?PPN=095984682">Technische wetenschappen</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Basisclassificatie: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text href="GOO?TRM=30.00+exacte+wetenschappen%3A+algemeen">30.00 exacte wetenschappen: algemeen</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text href="GOO?TRM=50.00+technische+wetenschappen%3A+algemeen">50.00 technische wetenschappen: algemeen</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Code KB: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text href="CLK?IKT=4014&amp;TRM=1509+ac">1509 ac</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text href="REL?PPN=397582935">1509 ac Aanhangsel → Technische wetenschappen → Inleiding → Tijdschriften</psi:text>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text> </psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Aanvraagnummer: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>T 7778 NL exact EOS</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Noot: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>Aanw.: vol. 2 (1985) - vol. 26, issue 6 (2009); vol. 26, issue 9 (2009) - vol. 32, issue 4 (2015); vol. 33, issue 5 (2016) - vol. 41, issue 12 (dec 2024); vol. 42, issue 2 (feb 2025) - ....; 22447970340007151; Lopende jaargang in de Leeszaal : NL exact EOS</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Beschikbaarheid: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:img href="https://kb.alma.exlibrisgroup.com/discovery/openurl?institution=31UKB_NLN&amp;vid=31UKB_NLN:Services&amp;lang=nl&amp;rft.oclcnum=905438002" target="_blank" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/worldcat_gui/button_request_ne.jpg" class="test" height="20"/>
+                    </psi:line>
+                    <psi:line>
+                        <psi:text> </psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Aanvraagnummer: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>TE 5669</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Noot: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:text>Aanw.: issue 10 (okt 1984) - vol. 21, issue 12 (dec 2004); 22447970430007151</psi:text>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+            <psi:labelledRow>
+                <psi:labelledLabel>
+                    <psi:line>
+                        <psi:text>Beschikbaarheid: </psi:text>
+                    </psi:line>
+                </psi:labelledLabel>
+                <psi:labelledData>
+                    <psi:line>
+                        <psi:img href="https://kb.alma.exlibrisgroup.com/discovery/openurl?institution=31UKB_NLN&amp;vid=31UKB_NLN:Services&amp;lang=nl&amp;rft.oclcnum=905438002" target="_blank" src="https://webggc.oclc.org/~r_cbs/psi_images/img_psi/3.0/worldcat_gui/button_request_ne.jpg" class="test" height="20"/>
+                    </psi:line>
+                </psi:labelledData>
+            </psi:labelledRow>
+        </psi:labelledTable>
+    </psi:record>
+    </psi:records>
+    <psi:query>
+        <psi:queryVar name="hits">1</psi:queryVar>
+        <psi:queryVar name="command">CMD</psi:queryVar>
+        <psi:queryVar name="frm">07720084</psi:queryVar>
+        <psi:queryVar name="impland">Y</psi:queryVar>
+        <psi:queryVar name="act">SRCHA</psi:queryVar>
+        <psi:queryVar name="srt">RLV</psi:queryVar>
+        <psi:queryVar name="fkt">1007</psi:queryVar>
+        <psi:queryVar name="srchSort">RLV</psi:queryVar>
+        <psi:queryVar name="srchActs" ikt="(isbn, issn)" mode="S" flag="Y">07720084</psi:queryVar>
+        <psi:queryVar name="scantype"></psi:queryVar>
+        <psi:queryVar name="scanctrm">07720084</psi:queryVar>
+    </psi:query>
+</psi:response>

@@ -72,10 +72,13 @@ class ParseTest
         assertEquals("9020612476", book.getString(DBKey.ISBN, null));
         assertEquals("428377971", book.requireIdentifierValue(Identifier.SID_KBNL));
 
+        assertEquals("[2e dr.]", book.getString(DBKey.EDITION_INFO, null));
         assertEquals("1973", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("157", book.getString(DBKey.PAGES, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
         assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
+
+        assertEquals("1e dr.: 1970", book.getString(DBKey.DESCRIPTION, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -154,6 +157,8 @@ class ParseTest
                                                      .getResources().openRawResource(resId)) {
             saxParser.parse(in, bookHandler);
         }
+
+        Log.d(TAG, book.toString());
         return book;
     }
 
@@ -171,7 +176,6 @@ class ParseTest
             throws IOException, SAXException {
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_book_1);
-        Log.d(TAG, book.toString());
 
         assertEquals("De Foundation", book.getString(DBKey.TITLE, null));
 
@@ -179,15 +183,21 @@ class ParseTest
         assertEquals("9022953351", book.getString(DBKey.ISBN, null));
         assertEquals("833191217", book.requireIdentifierValue(Identifier.SID_KBNL));
 
+        assertEquals("Foundation. - Cop. 1951",
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+        assertEquals("[3e dr.]", book.getString(DBKey.EDITION_INFO, null));
         assertEquals("geb.", book.getString(DBKey.FORMAT, null));
         assertEquals("156", book.getString(DBKey.PAGES, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
+
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Vert. van: Foundation"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Bruna", allPublishers.get(0).getName());
+
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
@@ -244,6 +254,12 @@ class ParseTest
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
         assertEquals("gekleurde illustraties", book.getString(DBKey.COLOR, null));
+
+        assertEquals("Le voyage extraordinaire. - Editions Glénat/Vents d'Ouest, 2012",
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("Beeldverhaal Vertaling van: Le voyage extraordinaire"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -369,5 +385,28 @@ class ParseTest
         oIv = author.getIdentifierValue(Identifier.SID_ISNI);
         assertTrue(oIv.isPresent());
         assertEquals("0000000122590564", oIv.get());
+    }
+
+    @Test
+    void parseMagazine()
+            throws IOException, SAXException {
+        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_eos);
+
+        assertEquals("Eos magazine : technologie voor de mens Eos Eos wetenschap",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("07720084", book.getString(DBKey.ISBN, null));
+        assertEquals("851212786", book.requireIdentifierValue(Identifier.SID_KBNL));
+
+        assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("1983", book.getString(DBKey.PUBLICATION_DATE, null));
+
+        assertTrue(book.getString(DBKey.DESCRIPTION).startsWith("Ondertitel varieert"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Cabus", allPublishers.get(0).getName());
+
     }
 }
