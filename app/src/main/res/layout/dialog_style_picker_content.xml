@@ -24,8 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_content"
-    style="@style/Dialog.Content"
-    android:minHeight="@dimen/floating_dialog_recycler_view_min_height">
+    style="@style/Dialog.Content">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
         android:id="@+id/drag_handle"
@@ -41,27 +40,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle"
-        app:title="@string/lbl_style"
         app:subtitle="@string/info_builtin_style_asterix"
         app:subtitleTextAppearance="?attr/textAppearanceTitleSmall"
+        app:title="@string/lbl_style"
         />
 
     <!-- layout_constrainedHeight/layout_constraintVertical_bias
-         works in conjunction with layout_height=wrap_content -->
+         works in conjunction with layout_height=wrap_content
+         WARNING: do NOT move them to the style; won't work! -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/styles_list"
         style="@style/Dialog.Body.RecyclerView"
         app:layout_constrainedHeight="true"
-        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintBottom_toTopOf="@id/button_panel_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
-        tools:itemCount="14"
+        app:layout_constraintVertical_bias="0.0"
+        tools:itemCount="10"
         tools:listitem="@layout/row_choice_single"
         />
 
-    <!-- RecyclerView above =>  layout_constraintBottom_toBottomOf="parent" -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
         style="@style/Dialog.ButtonPanel"
@@ -69,18 +68,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/styles_list">
-
-        <!--        <Button-->
-        <!--            android:id="@+id/btn_neutral"-->
-        <!--            style="?attr/buttonBarNeutralButtonStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:visibility="gone"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            tools:text="x"-->
-        <!--            tools:visibility="visible"-->
-        <!--            />-->
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_negative"

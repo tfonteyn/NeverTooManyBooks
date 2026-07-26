@@ -88,6 +88,7 @@
         tools:visibility="visible"
         />
 
+    <!-- Horizontal_bias: essential for having it centered. -->
     <ImageView
         android:id="@+id/preview"
         style="@style/CoverImage.BrowserPreview"
@@ -117,6 +118,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
         style="@style/Dialog.ButtonPanel"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/preview">

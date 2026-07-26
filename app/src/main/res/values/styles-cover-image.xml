@@ -124,17 +124,17 @@
 
     <style name="CoverImage.BrowserPreview"
            parent="Base.CoverImage">
-        <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_width">@dimen/cover_browser_preview_width</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
     <style name="CoverImage.BrowserGallery"
            parent="Base.CoverImage">
-        <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_width">@dimen/cover_browser_gallery_width</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/cover_list_padding</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
     <style name="CoverImage.BrowserGallery.Label"

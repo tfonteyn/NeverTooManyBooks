@@ -59,12 +59,10 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * Reminder: dialogs with a RecyclerView
  * <ol>
- *     <li>add to the root layout of the _content.xml:<br>
- *         {@code android:minHeight="@dimen/floating_dialog_recycler_view_min_height"}
- *     </li>
  *     <li>add to the RecyclerView:<br>
  *           {@code style="@style/Dialog.Body.RecyclerView"}<br>
- *           {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
+ *           {@code app:layout_constrainedHeight="true"}
+ *           {@code app:layout_constraintVertical_bias="0.0"}
  *     </li>
  *     <li>add to the button_panel_layout:<br>
  *           {@code app:layout_constraintBottom_toBottomOf="parent"}

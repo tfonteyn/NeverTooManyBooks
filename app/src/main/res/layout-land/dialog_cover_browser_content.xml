@@ -79,15 +79,15 @@
     <TextView
         android:id="@+id/lbl_preview"
         style="@style/Text.Body"
-        android:layout_width="0dp"
         android:layout_marginTop="@dimen/section_margin_top"
+        android:gravity="center_horizontal"
         android:maxLines="2"
         android:text="@string/info_tap_to_select"
         android:textAppearance="?attr/textAppearanceLabelMedium"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@id/preview"
         app:layout_constraintStart_toStartOf="@id/preview"
-        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
+        app:layout_constraintTop_toBottomOf="@id/status_message"
         tools:ignore="SelectableText"
         tools:visibility="visible"
         />
@@ -96,9 +96,8 @@
         android:id="@+id/preview"
         style="@style/CoverImage.BrowserPreview"
         android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginEnd="@dimen/field_margin_end"
+        android:layout_marginTop="@dimen/field_margin_top"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/barrier_covers_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/gallery"
         app:layout_constraintTop_toBottomOf="@id/lbl_preview"
@@ -129,6 +128,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
         style="@style/Dialog.ButtonPanel"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom">
