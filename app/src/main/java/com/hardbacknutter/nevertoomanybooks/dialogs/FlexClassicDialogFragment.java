@@ -25,24 +25,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.FloatRange;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.SoftwareKeyboardControllerCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.window.layout.WindowMetrics;
 
 import java.util.Objects;
-import java.util.function.IntFunction;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -65,21 +57,15 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *           {@code style="@style/Dialog.Body.RecyclerView"}<br>
  *           {@code app:layout_constrainedHeight="true"}
  *           {@code app:layout_constraintVertical_bias="0.0"}
+ *           {@code app:layout_constraintBottom_toTopOf="@id/button_panel_layout"}
  *     </li>
  *     <li>add to the button_panel_layout:<br>
  *           {@code app:layout_constraintBottom_toBottomOf="parent"}
- *     </li>
- *     <li>
- *         Special cases<br>
- *         Call {@link #adjustWindowSize(RecyclerView, int, float)}
- *         from {@link #onViewCreated(View, Bundle)}
  *     </li>
  * </ol>
  */
 public abstract class FlexClassicDialogFragment
         extends DialogFragment {
-
-    protected static final int MIN_HEIGHT_IN_DP = 200;
 
     /** Must be created/set in {@link #onCreate(Bundle)}. */
     protected FlexDialogDelegate delegate;
@@ -248,135 +234,6 @@ public abstract class FlexClassicDialogFragment
                 }
             }
         }
-    }
-
-    /**
-     * Fixes the dialog size for smaller screens when the dialog is not already full-screen.
-     * <p>
-     * <strong>MUST</strong> be called as the last thing from {@link #onViewCreated(View, Bundle)}.
-     * <p>
-     * FIXME: some day we'll convince the Material library to NOT maximize our dialogs,
-     *  and this method will no longer be needed.
-     *
-     *  @param recyclerView optional RecyclerView to adjust the height of
-     *
-     * @param dialogMinHeightInDp minimum height of the <strong>window</strong> in dp
-     * @param desiredHeightRatio         the ratio to apply to the screen height;
-     *                            will be capped at {@code 0.8}
-     */
-    protected void adjustWindowSize(
-            @Nullable final RecyclerView recyclerView,
-            @IntRange(from = MIN_HEIGHT_IN_DP) final int dialogMinHeightInDp,
-            @FloatRange(from = 0.0, to = 1.0) final float desiredHeightRatio) {
-
-        // Nothing to do.
-        if (fullscreen) {
-            return;
-        }
-
-        // Sanity check
-        if (getDialog() == null || getDialog().getWindow() == null) {
-            return;
-        }
-
-        final FragmentActivity activity = getActivity();
-        //noinspection DataFlowIssue
-        final ScreenSize screenSize = ScreenSize.compute(activity);
-
-        final int windowWidth;
-        if (screenSize.getWidth().isAtLeast(ScreenSize.Value.Medium)) {
-            // It's not ideal, but good enough
-            windowWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
-        } else {
-            windowWidth = ViewGroup.LayoutParams.MATCH_PARENT;
-        }
-
-        final float heightRatio = computeMaxHeightRatio(desiredHeightRatio, screenSize,
-                                                        recyclerView);
-
-        final WindowMetrics metrics = screenSize.getMetrics();
-
-        // Ensure the ratio is not higher than the absolute maximum ratio constant,
-        // and apply it to the screen height.
-        final float desiredHeightDp = Math.min(1, heightRatio)
-                                      * metrics.getHeightDp();
-
-        // Calculate the absolute minimum allowed
-        final int minHeightDp = Math.max(dialogMinHeightInDp, MIN_HEIGHT_IN_DP);
-        // Ensure the height does not become smaller than the absolute minimum
-        final float heightDp = Math.max(minHeightDp, desiredHeightDp);
-
-        // The final height converted into pixels
-        final int windowHeight = (int) (metrics.getDensity() * heightDp);
-
-        final Window window = getDialog().getWindow();
-
-        if (BuildConfig.DEBUG /* always */) {
-            final IntFunction<String> dbgLp = value -> {
-                switch (value) {
-                    case ViewGroup.LayoutParams.MATCH_PARENT:
-                        return "MATCH_PARENT";
-                    case ViewGroup.LayoutParams.WRAP_CONTENT:
-                        return "WRAP_CONTENT";
-                    default:
-                        return String.valueOf(value);
-                }
-            };
-
-            final WindowManager.LayoutParams lp = window.getAttributes();
-            LoggerFactory.getLogger()
-                         .d(getClass().getSimpleName(), "adjustWindowSize",
-                            "window lp.width=" + dbgLp.apply(lp.width),
-                            "window lp.height=" + dbgLp.apply(lp.height),
-                            "screen width=" + screenSize.getWidth(),
-                            "screen height=" + screenSize.getHeight(),
-                            "windowWidth=" + dbgLp.apply(windowWidth),
-                            "windowHeight=" + dbgLp.apply(windowHeight)
-                         );
-        }
-
-        window.setLayout(windowWidth, windowHeight);
-    }
-
-    private float computeMaxHeightRatio(final float desiredHeightRatio,
-                                        @NonNull final ScreenSize screenSize,
-                                        @Nullable final RecyclerView recyclerView) {
-        if (recyclerView == null) {
-            return desiredHeightRatio;
-        }
-        final RecyclerView.Adapter<?> adapter = recyclerView.getAdapter();
-        if (adapter == null) {
-            return desiredHeightRatio;
-        }
-        final int itemCount = adapter.getItemCount();
-        if (itemCount <= 1) {
-            return desiredHeightRatio;
-        }
-
-        // What we call the "wet finger in the air" method...
-        // FIXME: deciding on the final heightRatio should be rational.
-        float ratio = desiredHeightRatio;
-        if (screenSize.getHeight().isAtLeast(ScreenSize.Value.Expanded)) {
-            // Tested on a more or less standard size phone in Portrait.
-            // In landscape will work but no amount of tuning will make it fun-to-use.
-            if (itemCount == 2) {
-                ratio -= 0.35f;
-            } else if (itemCount == 3) {
-                ratio -= 0.25f;
-            } else if (itemCount <= 6) {
-                ratio -= 0.15f;
-            }
-        } else if (screenSize.getHeight().isAtLeast(ScreenSize.Value.Medium)) {
-            // Tested om "Small Phone" in Portrait.
-            // We consider a "Small Phone" in landscape unusable/unsupported.
-            if (itemCount == 2) {
-                ratio -= 0.20f;
-            } else if (itemCount > 9) {
-                // it will get capped at 1.0
-                ratio += 0.10f;
-            }
-        }
-        return ratio;
     }
 
     @Override

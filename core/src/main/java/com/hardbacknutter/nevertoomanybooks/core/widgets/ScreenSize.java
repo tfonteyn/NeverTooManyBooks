@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
  * <p>
  * This class is basically a rewrite of the above API.
  * The advantage (IMHO) is that we get to use simple {@code enum}s instead
- * of rather convoluted and kotlin-only mess.
+ * of a rather convoluted and kotlin-only mess.
  */
 public final class ScreenSize {
 
@@ -69,15 +69,11 @@ public final class ScreenSize {
 
     @NonNull
     private final Value height;
-    @NonNull
-    private final WindowMetrics metrics;
 
     private ScreenSize(@NonNull final Value width,
-                       @NonNull final Value height,
-                       @NonNull final WindowMetrics metrics) {
+                       @NonNull final Value height) {
         this.width = width;
         this.height = height;
-        this.metrics = metrics;
     }
 
     /**
@@ -138,7 +134,7 @@ public final class ScreenSize {
                                  .findFirst()
                                  .orElse(Value.Compact);
 
-        final ScreenSize screenSize = new ScreenSize(width, height, metrics);
+        final ScreenSize screenSize = new ScreenSize(width, height);
 
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "widthDp=" + widthDp + "|heightDp=" + heightDp
@@ -200,11 +196,6 @@ public final class ScreenSize {
     @NonNull
     public Value getHeight() {
         return height;
-    }
-
-    @NonNull
-    public WindowMetrics getMetrics() {
-        return metrics;
     }
 
     /**

@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
@@ -34,14 +32,5 @@ public class StylePickerDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new StylePickerDelegate(this, requireArguments());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final StylePickerDelegate pickerDelegate = (StylePickerDelegate) delegate;
-        adjustWindowSize(pickerDelegate.getRecyclerView(), 0.33f);
     }
 }

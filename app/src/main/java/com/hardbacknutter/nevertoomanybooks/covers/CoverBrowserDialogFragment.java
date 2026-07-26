@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
@@ -34,14 +32,5 @@ public class CoverBrowserDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new CoverBrowserDelegate(this, requireArguments());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Don't give it the gallery! We're auto-adapting in the delegate already
-        adjustWindowSize(null, /* ignored */ 0f);
     }
 }

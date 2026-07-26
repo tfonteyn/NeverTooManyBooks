@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
@@ -35,14 +33,5 @@ public class SingleChoiceDialogFragment
         super.onCreate(savedInstanceState);
         delegate = new SingleChoiceDelegate(this, requireArguments());
         setFullscreen(false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final SingleChoiceDelegate pickerDelegate = (SingleChoiceDelegate) delegate;
-        adjustWindowSize(pickerDelegate.getRecyclerView(), 0.33f);
     }
 }
