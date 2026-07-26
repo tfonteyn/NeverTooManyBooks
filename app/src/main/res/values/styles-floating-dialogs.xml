@@ -44,6 +44,17 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
+    <style name="Dialog.Body.RecyclerView.CoverGallery"
+           parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/section_margin_top</item>
+
+        <item name="spanCount">@integer/cover_browser_gallery_span_count</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="layoutManager">androidx.recyclerview.widget.GridLayoutManager</item>
+
+    </style>
     <!--
      TODO: re-evaluate the use of this in relation to the corner-radius and the backgroundTint
 

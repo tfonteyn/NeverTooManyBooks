@@ -68,16 +68,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/gallery"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="@dimen/section_margin_top"
-        android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        style="@style/Dialog.Body.RecyclerView.CoverGallery"
         app:layout_constraintEnd_toStartOf="@id/preview"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progress_bar"
-        app:spanCount="@integer/cover_browser_gallery_span_count"
         tools:itemCount="20"
         tools:listitem="@layout/row_cover_browser_gallery"
         />
