@@ -76,7 +76,9 @@ public abstract class FlexClassicDialogFragment
 
     /**
      * Show the dialog fullscreen (default) or as a floating dialog.
-     * Decided in {@link #onCreate(Bundle)}
+     *
+     * @see #onCreate(Bundle)
+     * @see #setDelegate(FlexDialogDelegate)
      */
     private boolean fullscreen;
 
@@ -105,19 +107,17 @@ public abstract class FlexClassicDialogFragment
      */
     public void setDelegate(@NonNull final FlexDialogDelegate delegate) {
         this.delegate = delegate;
-    }
 
-    /**
-     * Overrule/force this dialog to use floating dialogs or fullscreen mode
-     * instead of relying on the screen size.
-     * <p>
-     * <strong>Must</strong> be called from the child class {@link #onCreate(Bundle)}
-     * after it has called {@link FlexClassicDialogFragment#onCreate(Bundle)}.
-     *
-     * @param enabled flag
-     */
-    protected void setFullscreen(final boolean enabled) {
-        fullscreen = enabled;
+        final Boolean forceFullscreen = this.delegate.isForceFullscreen();
+        if (forceFullscreen != null) {
+            fullscreen = forceFullscreen;
+
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().d(getClass().getSimpleName(), "setDelegate",
+                                            "delegate=" + delegate.getClass().getName(),
+                                            "fullscreen=" + fullscreen);
+            }
+        }
     }
 
     /**

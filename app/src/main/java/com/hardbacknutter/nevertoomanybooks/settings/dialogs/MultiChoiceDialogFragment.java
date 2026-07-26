@@ -32,6 +32,5 @@ public class MultiChoiceDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setDelegate(new MultiChoiceDelegate(this, requireArguments()));
-        setFullscreen(false);
     }
 }

@@ -123,6 +123,24 @@ public interface FlexDialogDelegate
     }
 
     /**
+     * Delegates can force floating dialogs to go into fullscreen/dialog mode overriding
+     * the screen-size based decision logic.
+     * <p>
+     * This method is only applicable when the delegates run in dialog mode.
+     * Not applicable to BottomSheet mode.
+     * <p>
+     * The default implementation does <strong>NOT</strong> override.
+     *
+     * @return {@code null} leave it to the screen-size based decision logic.
+     *         {@code false} override, forcing floating dialogs
+     *         {@code true} override, forcing fullscreen
+     */
+    @Nullable
+    default Boolean isForceFullscreen() {
+        return null;
+    }
+
+    /**
      * Get the previously set toolbar.
      *
      * @return the toolbar

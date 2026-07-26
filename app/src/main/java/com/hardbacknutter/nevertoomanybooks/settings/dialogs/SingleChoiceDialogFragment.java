@@ -32,6 +32,5 @@ public class SingleChoiceDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setDelegate(new SingleChoiceDelegate(this, requireArguments()));
-        setFullscreen(false);
     }
 }

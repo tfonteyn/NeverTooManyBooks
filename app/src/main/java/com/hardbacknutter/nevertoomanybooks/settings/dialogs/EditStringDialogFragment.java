@@ -33,6 +33,5 @@ public class EditStringDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setDelegate(new EditStringDelegate(this, requireArguments()));
-        setFullscreen(false);
     }
 }

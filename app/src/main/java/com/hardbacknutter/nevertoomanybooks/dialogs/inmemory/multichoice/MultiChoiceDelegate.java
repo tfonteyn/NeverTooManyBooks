@@ -98,6 +98,12 @@ class MultiChoiceDelegate
         vm.init(args);
     }
 
+    @Nullable
+    @Override
+    public Boolean isForceFullscreen() {
+        return false;
+    }
+
     @NonNull
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
