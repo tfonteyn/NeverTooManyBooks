@@ -40,7 +40,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -62,12 +61,12 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRe
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -96,7 +95,7 @@ public final class ImageHandler {
     private static final int FLIP = 180;
     private static final float PROGRESS_INDICATOR_ELEVATION = 10f;
     private static final float PROGRESS_INDICATOR_ALPHA = 0.8f;
-    /** Index of the image we're handling. */
+    /** Image index we're handling. */
     @IntRange(from = 0, to = 3)
     private final int cIdx;
 
@@ -173,9 +172,8 @@ public final class ImageHandler {
         } else {
             coverBrowserLauncher = null;
         }
-        // we distinguish multiple vm in the same fragment by cIdx as the key
-        vm = new ViewModelProvider(fragment)
-                .get(String.valueOf(this.cIdx), ImageHandlerViewModel.class);
+        // We distinguish multiple vm in the same fragment by using cIdx as the key
+        vm = ImageHandlerViewModel.Factory.create(fragment, cIdx);
 
         imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                           ImageView.ScaleType.FIT_START,
@@ -218,17 +216,29 @@ public final class ImageHandler {
                 fragment.getString(R.string.warning_camera_permission_denied)
         );
 
-        takePictureLauncher = fragment.registerForActivityResult(
-                new TakePictureContract(), o -> o.ifPresent(this::onTakePictureResult));
-
         getFromFileLauncher = fragment.registerForActivityResult(
                 new PickVisualMediaContract(), o -> o.ifPresent(this::onPictureResult));
 
+        takePictureLauncher = fragment.registerForActivityResult(
+                new TakePictureContract(), success -> {
+                    if (success) {
+                        onTakePictureResult();
+                    }
+                });
+
         editImageExternalLauncher = fragment.registerForActivityResult(
-                new EditImageExternalContract(), o -> o.ifPresent(this::onPictureResult));
+                new EditImageExternalContract(), success -> {
+                    if (success) {
+                        onPictureResult();
+                    }
+                });
 
         editImageLauncher = fragment.registerForActivityResult(
-                new EditImageContract(), o -> o.ifPresent(this::onPictureResult));
+                new EditImageContract(), success -> {
+                    if (success) {
+                        onPictureResult();
+                    }
+                });
 
 
         final LifecycleOwner viewLifecycleOwner = fragment.getViewLifecycleOwner();
@@ -337,19 +347,20 @@ public final class ImageHandler {
     /**
      * Menu selection listener.
      *
-     * @param cIdx       0..n image index
+     * @param menuOwner  The id passed into
+     *                   {@link ExtMenuLauncher#launch(View, CharSequence, CharSequence, int, Menu)}
      * @param menuItemId The menu item that was invoked.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@IntRange(from = 0, to = 3) final int cIdx,
+    private boolean onMenuItemSelected(final int menuOwner,
                                        @IdRes final int menuItemId) {
 
         final ImageOwner imageOwner = imageSupplier.get();
         final Context context = fragment.requireContext();
 
         if (menuItemId == R.id.MENU_DELETE) {
-            vm.removeImage(imageOwner, cIdx);
+            vm.removeImage(imageOwner);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
@@ -368,11 +379,11 @@ public final class ImageHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_EDIT) {
-            vm.prepareInternalEditor(imageOwner, cIdx);
+            vm.prepareInternalEditor(imageOwner);
             return true;
 
         } else if (menuItemId == R.id.MENU_EDIT_WITH) {
-            vm.prepareExternalEditor(imageOwner, cIdx);
+            vm.prepareExternalEditor(imageOwner);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
@@ -392,7 +403,7 @@ public final class ImageHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_UNDO) {
-            imageOwner.getImageUuid().ifPresent(uuid -> vm.restore(uuid, cIdx));
+            imageOwner.getImageUuid().ifPresent(vm::restore);
             return true;
         }
         return false;
@@ -440,7 +451,7 @@ public final class ImageHandler {
      * @throws IllegalArgumentException (debug) if the fileSpec is invalid
      */
     private void onPictureSelected(@NonNull final String fileSpec) {
-        vm.onPictureSelected(imageSupplier.get(), cIdx, fileSpec);
+        vm.onPictureSelected(imageSupplier.get(), fileSpec);
     }
 
     /**
@@ -474,12 +485,10 @@ public final class ImageHandler {
 
     /**
      * Called when the user edited an image.
-     *
-     * @param file edited image file
      */
-    private void onPictureResult(@NonNull final File file) {
+    private void onPictureResult() {
         showProgress();
-        vm.onPictureResult(file);
+        vm.onPictureResult();
     }
 
     /**
@@ -494,13 +503,11 @@ public final class ImageHandler {
 
     /**
      * Called when the user used their camera to take a picture.
-     *
-     * @param file the image
      */
-    private void onTakePictureResult(@NonNull final File file) {
+    private void onTakePictureResult() {
         showProgress();
         //noinspection DataFlowIssue
-        vm.onTakePictureResult(fragment.getContext(), file);
+        vm.onTakePictureResult(fragment.getContext());
     }
 
     /**
@@ -510,7 +517,7 @@ public final class ImageHandler {
      */
     private void startRotation(final int angle) {
         showProgress();
-        vm.startRotation(imageSupplier.get(), cIdx, angle);
+        vm.startRotation(imageSupplier.get(), angle);
     }
 
     private void onAfterTransform(@NonNull final TransformationResult result) {
@@ -530,14 +537,14 @@ public final class ImageHandler {
                     return;
                 }
                 case Done: {
-                    vm.setImage(imageSupplier.get(), cIdx, file);
+                    vm.setImage(imageSupplier.get(), file);
                     return;
                 }
             }
         }
 
         // transformation failed
-        vm.removeImage(imageSupplier.get(), cIdx);
+        vm.removeImage(imageSupplier.get());
     }
 
     private void onError(@Nullable final Throwable e) {
@@ -608,6 +615,7 @@ public final class ImageHandler {
 
         @NonNull
         private final Fragment fragment;
+        /** Image index we're handling. */
         @IntRange(from = 0, to = 3)
         private final int cIdx;
         private final int maxWidth;

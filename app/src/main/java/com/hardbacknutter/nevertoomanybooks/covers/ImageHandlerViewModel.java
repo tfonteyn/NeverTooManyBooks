@@ -29,9 +29,15 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.lifecycle.HasDefaultViewModelProviderFactory;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.SavedStateHandle;
+import androidx.lifecycle.SavedStateHandleSupport;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.lifecycle.viewmodel.CreationExtras;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +63,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class ImageHandlerViewModel
         extends ViewModel {
 
+    /** Preference key: an angle to automatically apply after taking a photo. */
     public static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
+    private static final String TAG = "ImageHandlerViewModel";
 
     private final MutableLiveData<LiveDataEvent<TransformationResult>> transformationResult =
             new MutableLiveData<>();
@@ -75,6 +83,29 @@ public class ImageHandlerViewModel
             new MutableLiveData<>();
     private final MutableLiveData<Void> onReloadImage =
             new MutableLiveData<>();
+    @NonNull
+    private final SavedStateHandle savedStateHandle;
+    @NonNull
+    private final String savedStateTempDestFilePath;
+
+    /** Image index we're handling. */
+    @IntRange(from = 0, to = 3)
+    private final int cIdx;
+
+    /**
+     * Constructor.
+     *
+     * @param savedStateHandle handle
+     * @param cIdx             0..n image index
+     *
+     * @see Factory
+     */
+    public ImageHandlerViewModel(@NonNull final SavedStateHandle savedStateHandle,
+                                 final int cIdx) {
+        this.savedStateHandle = savedStateHandle;
+        this.cIdx = cIdx;
+        savedStateTempDestFilePath = TAG + ":tdfp:" + cIdx;
+    }
 
     @NonNull
     LiveData<LiveDataEvent<TransformationResult>> onTransformationResult() {
@@ -133,18 +164,15 @@ public class ImageHandlerViewModel
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
-     * @param cIdx       0..n image index
      */
-    void prepareExternalEditor(@NonNull final ImageOwner imageOwner,
-                               @IntRange(from = 0, to = 3) final int cIdx) {
+    void prepareExternalEditor(@NonNull final ImageOwner imageOwner) {
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     try {
-                        final File srcFile = createTempImageFile(context, imageOwner, cIdx);
-                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
-                                                           .getTempFile();
+                        final File srcFile = createSourceTempImageFile(context, imageOwner);
+                        final File dstFile = createDestinationTempImageFile();
                         return EditImageExternalContract.Input.create(srcFile, dstFile);
 
                     } catch (@NonNull final CoverStorageException e) {
@@ -170,8 +198,7 @@ public class ImageHandlerViewModel
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
-                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
-                                                           .getTempFile();
+                        final File dstFile = createDestinationTempImageFile();
                         return EditImageExternalContract.Input.create(srcFile, dstFile);
 
                     } catch (@NonNull final CoverStorageException e) {
@@ -189,19 +216,16 @@ public class ImageHandlerViewModel
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
-     * @param cIdx       0..n image index
      */
-    void prepareInternalEditor(@NonNull final ImageOwner imageOwner,
-                               @IntRange(from = 0, to = 3) final int cIdx) {
+    void prepareInternalEditor(@NonNull final ImageOwner imageOwner) {
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     try {
-                        final File srcFile = createTempImageFile(context, imageOwner, cIdx);
-                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
-                                                           .getTempFile();
-                        return new EditImageContract.Input(srcFile, dstFile);
+                        final File srcFile = createSourceTempImageFile(context, imageOwner);
+                        final File dstFile = createDestinationTempImageFile();
+                        return EditImageContract.Input.create(srcFile, dstFile);
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {
@@ -225,9 +249,8 @@ public class ImageHandlerViewModel
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
-                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
-                                                           .getTempFile();
-                        return new EditImageContract.Input(srcFile, dstFile);
+                        final File dstFile = createDestinationTempImageFile();
+                        return EditImageContract.Input.create(srcFile, dstFile);
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
                     }
@@ -247,8 +270,7 @@ public class ImageHandlerViewModel
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
-                        final File tempFile = ServiceLocator.getInstance().getCoverStorage()
-                                                            .getTempFile();
+                        final File tempFile = createDestinationTempImageFile();
                         return TakePictureContract.Input.create(tempFile);
                     } catch (@NonNull final CoverStorageException e) {
                         throw new UncheckedStorageException(e);
@@ -267,18 +289,16 @@ public class ImageHandlerViewModel
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
      *
      * @param imageOwner from which we want to edit an image
-     * @param cIdx       0..n image index
      * @param angle      to rotate
      */
     void startRotation(@NonNull final ImageOwner imageOwner,
-                       @IntRange(from = 0, to = 3) final int cIdx,
                        final int angle) {
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
                     try {
-                        final File srcFile = createTempImageFile(context, imageOwner, cIdx);
+                        final File srcFile = createSourceTempImageFile(context, imageOwner);
                         return transform(new Transformation()
                                                  .setSource(srcFile)
                                                  .setRotation(angle),
@@ -309,21 +329,13 @@ public class ImageHandlerViewModel
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
      *
      * @param context Current context.
-     * @param file    image to process
      */
-    void onTakePictureResult(@NonNull final Context context,
-                             @NonNull final File file) {
+    void onTakePictureResult(@NonNull final Context context) {
 
-        final int surfaceRotation;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            surfaceRotation = context.getDisplay().getRotation();
-        } else {
-            final WindowManager wm = (WindowManager)
-                    context.getSystemService(Context.WINDOW_SERVICE);
-            surfaceRotation = wm.getDefaultDisplay().getRotation();
-        }
-
-        // Should we apply an explicit rotation angle?
+        final File file = getDestinationImageFile();
+        // The device rotation if any.
+        final int surfaceRotation = getSurfaceRotation(context);
+        // Should we apply an additional/explicit rotation angle?
         final int explicitRotation =
                 ServiceLocator.getInstance().getSharedPreferences()
                               .getIntFromString(PK_CAMERA_IMAGE_AUTOROTATE, 0);
@@ -362,16 +374,26 @@ public class ImageHandlerViewModel
                 this::setInvalidImage);
     }
 
+    private int getSurfaceRotation(@NonNull final Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return context.getDisplay().getRotation();
+        } else {
+            //noinspection deprecation
+            return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay().getRotation();
+        }
+    }
+
     /**
      * Process the image after the user edited it.
      * <p>
      * Triggers {@link #onTransformationResult()} with the result.
      * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
-     *
-     * @param file image to process
      */
-    void onPictureResult(@NonNull final File file) {
+    void onPictureResult() {
+
+        final File file = getDestinationImageFile();
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
@@ -467,13 +489,11 @@ public class ImageHandlerViewModel
      * Process the image picked by the user from the cover-browser.
      *
      * @param imageOwner for which we want to set an image
-     * @param cIdx       0..n image index
      * @param fileSpec   the selected image
      *
      * @throws IllegalArgumentException (debug) if the fileSpec is invalid
      */
     void onPictureSelected(@NonNull final ImageOwner imageOwner,
-                           @IntRange(from = 0, to = 3) final int cIdx,
                            @NonNull final String fileSpec) {
         if (fileSpec.isEmpty()) {
             throw new IllegalArgumentException("fileSpec.isEmpty()");
@@ -501,7 +521,6 @@ public class ImageHandlerViewModel
     }
 
     void setImage(@NonNull final ImageOwner imageOwner,
-                  @IntRange(from = 0, to = 3) final int cIdx,
                   @NonNull final File file) {
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
@@ -520,8 +539,7 @@ public class ImageHandlerViewModel
                 e -> onError.setValue(LiveDataEvent.of(e)));
     }
 
-    void removeImage(@NonNull final ImageOwner imageOwner,
-                     @IntRange(from = 0, to = 3) final int cIdx) {
+    void removeImage(@NonNull final ImageOwner imageOwner) {
         STask.execute(
                 ASyncExecutor.STORAGE_WRITES,
                 () -> {
@@ -533,8 +551,7 @@ public class ImageHandlerViewModel
                 e -> onError.setValue(LiveDataEvent.of(e)));
     }
 
-    void restore(@NonNull final String uuid,
-                 @IntRange(from = 0, to = 3) final int cIdx) {
+    void restore(@NonNull final String uuid) {
         STask.execute(
                 ASyncExecutor.IMAGES,
                 () -> {
@@ -557,13 +574,12 @@ public class ImageHandlerViewModel
     /**
      * Create a temporary File for the given {@link ImageOwner}.
      * <p>
-     * If there is a permanent image, we get a <strong>copy of that one</strong>.
-     * If there is no image, we get a new File object.
+     * If there is a permanent image, we get a <strong>copy</strong>.
+     * If there is no image, we get a <strong>new</strong> File object.
      * Either way, the File returned will have a new temporary name.
      *
      * @param context    Current context
      * @param imageOwner for which we want an image
-     * @param cIdx       0..n image index
      *
      * @return the File
      *
@@ -572,9 +588,8 @@ public class ImageHandlerViewModel
      */
     @WorkerThread
     @NonNull
-    private File createTempImageFile(@NonNull final Context context,
-                                     @NonNull final ImageOwner imageOwner,
-                                     @IntRange(from = 0, to = 3) final int cIdx)
+    private File createSourceTempImageFile(@NonNull final Context context,
+                                           @NonNull final ImageOwner imageOwner)
             throws CoverStorageException, IOException {
 
         // the temp file we'll return
@@ -600,6 +615,37 @@ public class ImageHandlerViewModel
     }
 
     /**
+     * Create a temporary destination File for use by an Intent Contract.
+     *
+     * @return file
+     *
+     * @throws CoverStorageException The images directory is not available
+     * @see #getDestinationImageFile()
+     */
+    @NonNull
+    private File createDestinationTempImageFile()
+            throws CoverStorageException {
+        final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
+        savedStateHandle.set(savedStateTempDestFilePath, tempFile.getAbsolutePath());
+        return tempFile;
+    }
+
+    /**
+     * Get the previously create File.
+     *
+     * @return file
+     *
+     * @see #createDestinationTempImageFile()
+     */
+    @NonNull
+    private File getDestinationImageFile() {
+        final String path = savedStateHandle.get(savedStateTempDestFilePath);
+        savedStateHandle.remove(savedStateTempDestFilePath);
+        //noinspection DataFlowIssue
+        return new File(path);
+    }
+
+    /**
      * Run the transformation and persist the resulting file.
      *
      * @param transformation to run
@@ -608,7 +654,7 @@ public class ImageHandlerViewModel
      *
      * @return TransformationResult
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws CoverStorageException The images directory is not available
      * @throws IOException           on generic/other IO failures
      */
     @WorkerThread
@@ -627,5 +673,49 @@ public class ImageHandlerViewModel
         }
 
         return new TransformationResult(null, NextAction.Done);
+    }
+
+    public static final class Factory
+            implements ViewModelProvider.Factory {
+
+        /** Image index we're handling. */
+        @IntRange(from = 0, to = 3)
+        private final int cIdx;
+
+        private Factory(final int cIdx) {
+            this.cIdx = cIdx;
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param owner hosting Fragment or Activity
+         * @param cIdx  0..n image index
+         *
+         * @return registered ViewModel
+         */
+        @NonNull
+        public static ImageHandlerViewModel create(@NonNull final ViewModelStoreOwner owner,
+                                                   final int cIdx) {
+            final CreationExtras extras = ((HasDefaultViewModelProviderFactory) owner)
+                    .getDefaultViewModelCreationExtras();
+
+            return new ViewModelProvider(owner.getViewModelStore(), new Factory(cIdx), extras)
+                    .get(String.valueOf(cIdx), ImageHandlerViewModel.class);
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends ViewModel> T create(@NonNull final Class<T> modelClass,
+                                              @NonNull final CreationExtras extras) {
+            final SavedStateHandle handle = SavedStateHandleSupport.createSavedStateHandle(extras);
+
+            if (modelClass.isAssignableFrom(ImageHandlerViewModel.class)) {
+                return (T) new ImageHandlerViewModel(handle, cIdx);
+            }
+
+            throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
+        }
     }
 }

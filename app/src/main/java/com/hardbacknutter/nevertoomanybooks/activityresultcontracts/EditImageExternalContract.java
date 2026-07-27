@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -44,24 +43,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class EditImageExternalContract
-        extends ActivityResultContract<EditImageExternalContract.Input, Optional<File>> {
+        extends ActivityResultContract<EditImageExternalContract.Input, Boolean> {
 
     private static final String TAG = "ExternalEditImageContra";
 
     private static final String IMAGE_MIME_TYPE = "image/*";
 
-    /**
-     * Keeps a reference between {@link #createIntent(Context, Input)} and
-     * returning in {@link #parseResult(int, Intent)}.
-     */
-    private File dstFile;
-
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        // Intent.ACTION_EDIT does not produce output, so keep a reference here
-        this.dstFile = input.dstFile;
 
         final int permissions = Intent.FLAG_GRANT_READ_URI_PERMISSION
                                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
@@ -91,18 +82,14 @@ public class EditImageExternalContract
 
     @Override
     @NonNull
-    public Optional<File> parseResult(final int resultCode,
+    public Boolean parseResult(final int resultCode,
                                       @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
-        if (intent == null || resultCode != Activity.RESULT_OK) {
-            return Optional.empty();
-        }
-
-        return Optional.of(dstFile);
+        return resultCode == Activity.RESULT_OK;
     }
 
     public static final class Input {
@@ -111,22 +98,22 @@ public class EditImageExternalContract
                 "GenericFileProvider/IllegalArgumentException";
 
         @NonNull
-        final File dstFile;
-        @NonNull
         final Uri srcUri;
         @NonNull
         final Uri dstUri;
 
         private Input(@NonNull final Uri srcUri,
-                      @NonNull final Uri dstUri,
-                      @NonNull final File dstFile) {
+                      @NonNull final Uri dstUri) {
             this.srcUri = srcUri;
             this.dstUri = dstUri;
-            this.dstFile = dstFile;
         }
 
         /**
          * Constructor.
+         * <p>
+         * Make sure to keep a reference to the {@code dstFile}
+         * as {@link Intent#ACTION_EDIT}, and hence,
+         * this contract does not produce output.
          *
          * @param srcFile the input file
          * @param dstFile the output file (name)
@@ -143,7 +130,7 @@ public class EditImageExternalContract
             try {
                 final Uri srcUri = GenericFileProvider.createUri(srcFile);
                 final Uri dstUri = GenericFileProvider.createUri(dstFile);
-                return new Input(srcUri, dstUri, dstFile);
+                return new Input(srcUri, dstUri);
 
             } catch (@NonNull final IllegalArgumentException e) {
                 // This would be a bug; a permission issue with the GenericFileProvider

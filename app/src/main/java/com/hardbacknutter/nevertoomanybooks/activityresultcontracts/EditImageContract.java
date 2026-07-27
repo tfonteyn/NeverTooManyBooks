@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -42,7 +41,7 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
 public class EditImageContract
-        extends ActivityResultContract<EditImageContract.Input, Optional<File>> {
+        extends ActivityResultContract<EditImageContract.Input, Boolean> {
 
     private static final String TAG = "EditImageContract";
 
@@ -106,7 +105,7 @@ public class EditImageContract
 
     @NonNull
     @Override
-    public final Optional<File> parseResult(final int resultCode,
+    public final Boolean parseResult(final int resultCode,
                                             @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger().d(TAG, "parseResult",
@@ -114,29 +113,47 @@ public class EditImageContract
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return Optional.empty();
+            return false;
         }
 
+        // see Input constructor for why we don't pass this back
         final Uri resultUri = UCrop.getOutput(intent);
-
-        if (resultUri != null && resultUri.getPath() != null) {
-            return Optional.of(new File(resultUri.getPath()));
-        } else {
-            return Optional.empty();
-        }
+        return resultUri != null && resultUri.getPath() != null;
     }
 
-    public static class Input {
+    public static final class Input {
 
         @NonNull
         final Uri srcFile;
         @NonNull
         final Uri dstFile;
 
-        public Input(@NonNull final File srcFile,
-                     @NonNull final File dstFile) {
+
+        private Input(@NonNull final File srcFile,
+                      @NonNull final File dstFile) {
             this.srcFile = Uri.fromFile(srcFile);
             this.dstFile = Uri.fromFile(dstFile);
+        }
+
+        /**
+         * Constructor.
+         * <p>
+         * Make sure to keep a reference to the {@code dstFile}.
+         * <p>
+         * Dev. note: we <strong>could</strong> return the dstFile
+         * as {@link UCrop#getOutput(Intent)} provides it.
+         * We choose not to, to keep this class compatible with
+         * {@link EditImageExternalContract} which <strong>cannot</strong> return it.
+         * For the same reason we use this static constructor.
+         *
+         * @param srcFile the input file
+         * @param dstFile the output file (name)
+         *
+         * @return instance
+         */
+        public static Input create(@NonNull final File srcFile,
+                                   @NonNull final File dstFile) {
+            return new Input(srcFile, dstFile);
         }
     }
 }

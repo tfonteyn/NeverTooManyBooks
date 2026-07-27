@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -49,30 +48,21 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * https://www.opencamera.org.uk/
  */
 public class TakePictureContract
-        extends ActivityResultContract<TakePictureContract.Input, Optional<File>> {
+        extends ActivityResultContract<TakePictureContract.Input, Boolean> {
 
     private static final String TAG = "TakePictureContract";
-
-    /**
-     * Keeps a reference between {@link #createIntent(Context, Input)} and
-     * returning in {@link #parseResult(int, Intent)}.
-     */
-    private File dstFile;
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        // MediaStore.ACTION_IMAGE_CAPTURE does not produce output, so keep a reference here
-        this.dstFile = input.dstFile;
-
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 .putExtra(MediaStore.EXTRA_OUTPUT, input.dstUri);
     }
 
     @Override
     @NonNull
-    public Optional<File> parseResult(final int resultCode,
+    public Boolean parseResult(final int resultCode,
                                       @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
@@ -81,12 +71,8 @@ public class TakePictureContract
 
         // GitHub #11: the Google camera app returns an empty Intent, while
         // OpenCamera returns a null for the Intent.
-        // Hence ONLY test on the resultCode here.
-        if (resultCode != Activity.RESULT_OK) {
-            return Optional.empty();
-        }
-
-        return Optional.of(dstFile);
+        // Hence, ONLY test on the resultCode here.
+        return resultCode == Activity.RESULT_OK;
     }
 
     public static final class Input {
@@ -95,18 +81,18 @@ public class TakePictureContract
                 "GenericFileProvider/IllegalArgumentException";
 
         @NonNull
-        final File dstFile;
-        @NonNull
         final Uri dstUri;
 
-        private Input(@NonNull final Uri dstUri,
-                      @NonNull final File dstFile) {
+        private Input(@NonNull final Uri dstUri) {
             this.dstUri = dstUri;
-            this.dstFile = dstFile;
         }
 
         /**
          * Constructor.
+         * <p>
+         * Make sure to keep a reference to the {@code dstFile}
+         * as {@link MediaStore#ACTION_IMAGE_CAPTURE}, and hence,
+         * this contract does not produce output.
          *
          * @param dstFile the output file (name)
          *
@@ -120,7 +106,7 @@ public class TakePictureContract
                 throws CoverStorageException {
             try {
                 final Uri dstUri = GenericFileProvider.createUri(dstFile);
-                return new Input(dstUri, dstFile);
+                return new Input(dstUri);
 
             } catch (@NonNull final IllegalArgumentException e) {
                 // This would be a bug; a permission issue with the GenericFileProvider
