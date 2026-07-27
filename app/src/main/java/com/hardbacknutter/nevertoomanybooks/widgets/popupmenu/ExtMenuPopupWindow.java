@@ -26,6 +26,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 
 import androidx.annotation.Dimension;
@@ -51,9 +52,6 @@ public class ExtMenuPopupWindow {
 
     @NonNull
     private final PopupWindow popupWindow;
-    /** Only valid after calling {@link #show(View, MenuMode)}. */
-    @Nullable
-    private View anchor;
 
     @NonNull
     private final MenuItemListAdapter adapter;
@@ -65,26 +63,40 @@ public class ExtMenuPopupWindow {
     private final MenuItemListAdapter.MenuCallback menuCallback =
             new MenuItemListAdapter.MenuCallback() {
                 @Override
-                public boolean onSubMenuClick(@NonNull final View itemView,
-                                              @NonNull final ExtMenuItem menuItem) {
-                    final int[] rowScreenPos = new int[2];
-                    itemView.getLocationOnScreen(rowScreenPos);
-                    // The y position of the users finger, i.e. where they tapped the submenu.
-                    final int fingerY = rowScreenPos[1];
+                public boolean onSubMenuClick(@NonNull final View subMenuView,
+                                              @NonNull final ExtMenuItem subMenuItem) {
 
-                    vb.title.setText(menuItem.getTitle());
+                    vb.title.setText(subMenuItem.getTitle());
                     vb.title.setVisibility(View.VISIBLE);
 
+                    // Get the DEVICE SCREEN COORDINATES of the users finger,
+                    // i.e. where they tapped the submenu.
+                    final int[] fingerPosition = new int[2];
+                    subMenuView.getLocationOnScreen(fingerPosition);
+                    final int fingerX = fingerPosition[0];
+                    final int fingerY = fingerPosition[1];
+
+                    // run in post() so the window will have updated with its new content
                     popupWindow.getContentView().post(() -> {
+                        // with the NEW content, calculate the NEW window size
                         final int[] wh = calculatePopupWindowWidthAndHeight();
 
-                        final int[] anchorScreenPos = new int[2];
-                        anchor.getLocationOnScreen(anchorScreenPos);
-                        final int x = anchorScreenPos[0];
-                        // move it so the new first item is again/exactly under the users finger
-                        final int y = fingerY - vb.itemList.getTop();
+                        // top-left of the CURRENT/NEW menu in DEVICE SCREEN COORDINATES
+                        final int[] menuPosition = new int[2];
+                        vb.itemList.getLocationOnScreen(menuPosition);
 
-                        popupWindow.update(x, y, wh[0], wh[1]);
+                        // Deltas to move the window
+                        final int deltaX = fingerX - menuPosition[0];
+                        final int deltaY = fingerY - menuPosition[1];
+
+                        // We need to add the CURRENT layout params to that delta
+                        final View decorView = popupWindow.getContentView().getRootView();
+                        final WindowManager.LayoutParams lp = (WindowManager.LayoutParams)
+                                decorView.getLayoutParams();
+                        final int newX = lp.x + deltaX;
+                        final int newY = lp.y + deltaY;
+
+                        popupWindow.update(newX, newY, wh[0], wh[1]);
                     });
                     return true;
                 }
@@ -95,7 +107,6 @@ public class ExtMenuPopupWindow {
                     resultListener.onMenuItemClick(menuOwner, menuItem.getItemId());
                 }
             };
-
 
     /**
      * Constructor.
@@ -254,7 +265,6 @@ public class ExtMenuPopupWindow {
      */
     public void show(@NonNull final View view,
                      @NonNull final MenuMode menuMode) {
-        this.anchor = view;
         switch (menuMode) {
             case Start:
                 // 2024-07-12: 'Start' is not in use; this may be used in the future
