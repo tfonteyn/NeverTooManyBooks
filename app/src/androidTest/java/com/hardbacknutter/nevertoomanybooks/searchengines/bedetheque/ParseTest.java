@@ -183,7 +183,7 @@ class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true, true, true},
-                           ISBN.parseISBN("280010578X"),
+                           ISBN.parse("280010578X"),
                            book);
         Log.d(TAG, book.toString());
 

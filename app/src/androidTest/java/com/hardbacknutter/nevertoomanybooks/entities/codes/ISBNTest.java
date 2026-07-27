@@ -163,14 +163,14 @@ class ISBNTest {
     @ParameterizedTest
     @MethodSource("validIsbn13")
     void validIsbn13(@NonNull final String isbnStr) {
-        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        final ProductCode productCode = ISBN.parse(isbnStr);
         assertSame(ProductCodeType.Isbn13, productCode.getType());
     }
 
     @ParameterizedTest
     @MethodSource("invalidIsbn13")
     void invalidIsbn13(@NonNull final String isbnStr) {
-        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        final ProductCode productCode = ISBN.parse(isbnStr);
         assertSame(ProductCodeType.Invalid, productCode.getType());
     }
 
@@ -178,7 +178,7 @@ class ISBNTest {
     @MethodSource("validIsbn1310")
     void validIsbn1310(@NonNull final String isbnStr,
                       @NonNull final String expected) {
-        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        final ProductCode productCode = ISBN.parse(isbnStr);
         assertSame(ProductCodeType.Isbn13, productCode.getType());
         assertEquals(expected, productCode.asText(ProductCodeType.Isbn10));
     }
@@ -187,7 +187,7 @@ class ISBNTest {
     @MethodSource("validIsbn1013")
     void validIsbn1013(@NonNull final String isbnStr,
                        @NonNull final String expected) {
-        final ProductCode productCode = ISBN.parseISBN(isbnStr);
+        final ProductCode productCode = ISBN.parse(isbnStr);
         assertSame(ProductCodeType.Isbn10, productCode.getType());
         assertEquals(expected, productCode.asText(ProductCodeType.Isbn13));
     }
@@ -196,7 +196,7 @@ class ISBNTest {
     @MethodSource("validSbn")
     void validSbn(@NonNull final String sbnStr,
                   @NonNull final String expected) {
-        final ProductCode productCode = ISBN.parseISBN(sbnStr);
+        final ProductCode productCode = ISBN.parse(sbnStr);
         assertSame(ProductCodeType.Isbn10, productCode.getType());
         assertEquals(expected, productCode.asText(ProductCodeType.Isbn10));
     }

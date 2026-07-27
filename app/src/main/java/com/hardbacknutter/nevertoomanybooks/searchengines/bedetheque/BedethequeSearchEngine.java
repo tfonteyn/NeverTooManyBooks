@@ -797,7 +797,7 @@ public class BedethequeSearchEngine
         if (element != null) {
             final String codeStr = parseLabelText(element);
             if (codeStr != null) {
-                return ISBN.parseISBN(codeStr).equals(searchedCode);
+                return ISBN.parse(codeStr).equals(searchedCode);
             }
         }
         return false;

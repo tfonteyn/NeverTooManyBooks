@@ -313,7 +313,7 @@ public final class ISBN
     }
 
     /**
-     * Constructor - generic code.
+     * Constructor.
      *
      * @param text string to parse
      *
@@ -322,18 +322,6 @@ public final class ISBN
     @NonNull
     public static ProductCode parse(@Nullable final String text) {
         return new ISBN(text, false);
-    }
-
-    /**
-     * Constructor - ISBN codes only, anything else will be set to {@link ProductCodeType#Invalid}.
-     *
-     * @param text string to parse
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static ProductCode parseISBN(@Nullable final String text) {
-        return new ISBN(text, true);
     }
 
     /**

@@ -411,8 +411,7 @@ public final class ImageHandler {
         final String codeStr = coverBrowserCodeSupplier.get();
         if (!codeStr.isEmpty()) {
             // FORCE a parse, to get a correctly cleaned up string
-            final ProductCode productCode = ISBN.parseISBN(codeStr);
-            final String text = productCode.asText();
+            final ProductCode productCode = ISBN.parse(codeStr);
 
             // 2026-06-29: we reviewed the individual implementations of
             // AlternativeEditions#searchAlternativeEditions
@@ -423,7 +422,7 @@ public final class ImageHandler {
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),
                                             coverBrowserTitleSupplier.get(),
-                                            text, cIdx);
+                                            productCode.asText(), cIdx);
                 return;
             }
         }
