@@ -175,11 +175,11 @@ public class ExtMenuPopupWindow {
      * The latter try to determine the absolute position of the window versus the anchor.
      * i.e. as requested under the anchor, or if not enough space, above the anchor.
      * <p>
-     * Line numbers based on API 34 source.
-     * {@link PopupWindow} lines 1418 is where things start to go wrong.
+     * Line numbers based on API 37 source.
+     * {@link PopupWindow} lines 1419 is where things start to go wrong.
      * 'p' is initialised to the original width/height -> WRAP_CONTENT
      * instead of the ACTUAL width/height....
-     * line 2440 states:
+     * line 2451 states:
      * <pre>
      * // If width and mWidth were both < 0 then we have a MATCH_PARENT or
      * // WRAP_CONTENT case. findDropDownPosition will have resolved
