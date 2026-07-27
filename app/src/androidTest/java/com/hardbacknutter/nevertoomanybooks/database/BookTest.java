@@ -314,7 +314,7 @@ class BookTest
 
         final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
-        final Bundle args = serviceLocator.newBundle();
+        final Bundle args = new Bundle();
         args.putLong(DBKey.FK_BOOK, bookId);
 
         vm.init(context, args, s1.get());

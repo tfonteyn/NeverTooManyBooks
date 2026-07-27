@@ -210,9 +210,8 @@ public class JsonRecordReader
                         // The next gamble is that each element is formatted
                         // in the current archiver version format.
                         // If it's not... then the import will fail at a later stage...
-                        final ArchiveMetaData metaData = new ArchiveMetaData(
-                                ZipArchiveWriter.VERSION,
-                                ServiceLocator.getInstance().newBundle());
+                        final ArchiveMetaData metaData =
+                                new ArchiveMetaData(ZipArchiveWriter.VERSION, new Bundle());
                         metaData.setBookCount(nrOfBooks);
                         // and now let's hope for the best...
                         return Optional.of(metaData);

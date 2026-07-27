@@ -90,8 +90,7 @@ public class ArchiveMetaData
                                          final int version,
                                          @NonNull final ExportResults result) {
 
-        final ArchiveMetaData metaData = new ArchiveMetaData(
-                ServiceLocator.getInstance().newBundle());
+        final ArchiveMetaData metaData = new ArchiveMetaData(new Bundle());
 
         final Bundle data = metaData.getData();
 

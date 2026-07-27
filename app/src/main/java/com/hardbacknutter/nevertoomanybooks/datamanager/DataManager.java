@@ -43,7 +43,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
@@ -93,7 +92,7 @@ public class DataManager
      * Constructor.
      */
     public DataManager() {
-        this.rawData = ServiceLocator.getInstance().newBundle();
+        this.rawData = new Bundle();
     }
 
     /**

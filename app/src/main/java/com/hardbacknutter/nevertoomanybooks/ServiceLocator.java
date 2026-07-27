@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
@@ -291,18 +290,6 @@ public final class ServiceLocator {
         return appContext.getSharedPreferences(
                 appContext.getPackageName() + "_preferences",
                 Context.MODE_PRIVATE);
-    }
-
-    /**
-     * Create a "new Bundle()".
-     * <p>
-     * Dev. note: the only reason for this method is so we can mock creating a new Bundle.
-     *
-     * @return new Bundle instance
-     */
-    @NonNull
-    public Bundle newBundle() {
-        return new Bundle();
     }
 
     /**

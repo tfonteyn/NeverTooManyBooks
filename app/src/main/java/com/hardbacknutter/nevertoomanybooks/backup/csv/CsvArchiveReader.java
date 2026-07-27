@@ -120,7 +120,7 @@ public class CsvArchiveReader
                                  .map(name -> name.toLowerCase(Locale.ENGLISH))
                                  .anyMatch(lastUpdateColumnName::equals);
 
-        final Bundle bundle = ServiceLocator.getInstance().newBundle();
+        final Bundle bundle = new Bundle();
         bundle.putParcelable(CsvFormat.BKEY, csvFormat);
         bundle.putBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED, supportsUpdates);
         return Optional.of(new ArchiveMetaData(0, bundle));

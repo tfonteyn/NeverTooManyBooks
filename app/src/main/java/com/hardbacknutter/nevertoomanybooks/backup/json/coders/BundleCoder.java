@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import java.util.Iterator;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -77,7 +76,7 @@ public class BundleCoder
     @Override
     public Bundle decode(@NonNull final JSONObject data)
             throws JSONException {
-        final Bundle bundle = ServiceLocator.getInstance().newBundle();
+        final Bundle bundle = new Bundle();
         final Iterator<String> keys = data.keys();
 
         while (keys.hasNext()) {

@@ -31,7 +31,6 @@ import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -45,7 +44,7 @@ public class SyncWriterHelper
     private static final String ERROR_SYNC_SERVER_NULL = "syncServer";
 
     /** Extra arguments for specific writers. The writer must define them. */
-    private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
+    private final Bundle extraArgs = new Bundle();
     /** <strong>Where</strong> we write to. */
     @Nullable
     private SyncServer syncServer;

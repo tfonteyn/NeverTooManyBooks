@@ -249,7 +249,7 @@ public class Book
      * Constructor.
      */
     public Book() {
-        super(ServiceLocator.getInstance().newBundle());
+        super(new Bundle());
         stage = new EntityStage();
     }
 
