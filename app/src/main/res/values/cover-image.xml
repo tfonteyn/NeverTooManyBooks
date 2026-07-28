@@ -27,6 +27,9 @@
     <!-- View tag - tags an Image View with the uuid of the owner (book, author) it represents. -->
     <item name="TAG_IMAGE_OWNER_UUID"
           type="id" />
+    <!-- View tag - tags an Image View with the index of the cover it represents. -->
+    <item name="TAG_IMAGE_C_IDX"
+          type="id" />
 
     <!-- Predefined id's for cover image views; so we can use them in an array. -->
     <item name="cover_image_0"

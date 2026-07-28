@@ -25,8 +25,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.Dimension;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
@@ -78,18 +78,25 @@ class CoverHelper {
 
     /**
      * Zoom the given cover.
+     * <p>
+     * The view <strong>must</strong> have been loaded with
+     * {@link #setImageView(ImageView, String, int)}
+     * or this method will do nothing.
      *
-     * @param coverView containing the image to zoom.
-     *                  Passed in to allow for future expansion.
+     * @param imageView containing the image to zoom.
+     * @param fm        The FragmentManager the {@link ZoomedImageDialogFragment} will be added to
      */
-    void onZoomCover(@NonNull final View coverView) {
-        final String uuid = (String) coverView.getTag(R.id.TAG_IMAGE_OWNER_UUID);
-        coverStorage.getPersistedFile(uuid, 0).ifPresent(file -> {
-            // Rely on the fact that the BoB *is* an Activity.
-            final FragmentManager fm = ((FragmentActivity) coverView.getContext())
-                    .getSupportFragmentManager();
-            ZoomedImageDialogFragment.launch(fm, file);
-        });
+    void onZoomCover(@NonNull final View imageView,
+                     @NonNull final FragmentManager fm) {
+        final String uuid = (String) imageView.getTag(R.id.TAG_IMAGE_OWNER_UUID);
+        final Integer cIdx = (Integer) imageView.getTag(R.id.TAG_IMAGE_C_IDX);
+
+        // Defence against sloppy dev + Paranoia
+        if (uuid == null || cIdx == null) {
+            return;
+        }
+        coverStorage.getPersistedFile(uuid, 0).ifPresent(
+                file -> ZoomedImageDialogFragment.launch(fm, file));
     }
 
     /**
@@ -105,14 +112,17 @@ class CoverHelper {
      * @param coverView to load the image into.
      *                  Passed in to allow for future expansion.
      * @param uuid      UUID of the book
+     * @param cIdx      0..n image index
      *
      * @return {@code true} if an image was shown;
      *         {@code false} if there was no image
      */
     boolean setImageView(@NonNull final ImageView coverView,
-                         @NonNull final String uuid) {
-        // store the uuid for use in onZoomCover
+                         @NonNull final String uuid,
+                         @IntRange(from = 0, to = 3) final int cIdx) {
+        // store the uuid/cIdx for use in onZoomCover
         coverView.setTag(R.id.TAG_IMAGE_OWNER_UUID, uuid);
+        coverView.setTag(R.id.TAG_IMAGE_C_IDX, cIdx);
 
         // 2025-05-25: we did extensive tests using Glide 5.0rc1 library.
         // Neither during normal scrolling, fling-scrolling nor fast-scrolling
@@ -142,7 +152,7 @@ class CoverHelper {
         if (imageCachingEnabled) {
             // BAD: database access on UI thread
             // Problem: we need to report back whether we have an image or not.
-            final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, 0, cachedImageWidth);
+            final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, cIdx, cachedImageWidth);
             if (bitmap != null) {
                 // Uses the UiThread to display it.
                 imageLoader.fromBitmap(coverView, bitmap);
@@ -155,7 +165,7 @@ class CoverHelper {
         // Check on the file system for the original image file.
         // BAD: file-system access on UI thread
         // Problem: we need to report back whether we have an image or not.
-        final Optional<File> oFile = coverStorage.getPersistedFile(uuid, 0);
+        final Optional<File> oFile = coverStorage.getPersistedFile(uuid, cIdx);
         if (oFile.isEmpty()) {
             // let the caller deal with a non-existing image-file
             return false;
@@ -167,13 +177,13 @@ class CoverHelper {
             // 2. Uses the UiThread to display it.
             // 3. Start a subsequent task to send it to the cache.
             // Any errors are ignored
-            imageLoader.fromFile(uuid, 0, oFile.get(), coverView, bitmap ->
-                    coverStorage.saveToCache(uuid, 0, bitmap, cachedImageWidth));
+            imageLoader.fromFile(uuid, cIdx, oFile.get(), coverView, bitmap ->
+                    coverStorage.saveToCache(uuid, cIdx, bitmap, cachedImageWidth));
         } else {
             // 1. Starts a task to get the image from the file system.
             // 2. Uses the UiThread to display it.
             // Any errors are ignored
-            imageLoader.fromFile(uuid, 0, oFile.get(), coverView, null);
+            imageLoader.fromFile(uuid, cIdx, oFile.get(), coverView, null);
         }
         // the image was/will-be displayed or a placeholder was shown.
         return true;

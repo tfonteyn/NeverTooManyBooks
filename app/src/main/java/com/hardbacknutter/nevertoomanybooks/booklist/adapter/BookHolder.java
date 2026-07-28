@@ -30,6 +30,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +102,7 @@ public class BookHolder
 
     @NonNull
     private final Style style;
-    @Nullable
+    @NonNull
     private final CoverHelper coverHelper;
     @NonNull
     private final Locale locale;
@@ -138,6 +140,7 @@ public class BookHolder
         final Context context = itemView.getContext();
 
         this.style = style;
+        this.coverHelper = coverHelper;
         this.ratingNumberParser = ratingNumberParser;
         this.partialDateParser = partialDateParser;
 
@@ -153,10 +156,7 @@ public class BookHolder
             final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
             lp.width = imageViewSize.width;
             lp.height = imageViewSize.height;
-
-            this.coverHelper = coverHelper;
         } else {
-            this.coverHelper = null;
             vb.coverImage0.setVisibility(View.GONE);
         }
 
@@ -178,8 +178,12 @@ public class BookHolder
                 } else {
                     // Tapping the cover image will zoom the image
                     // Do not go overkill here by adding a full ImageHandler.
-                    //noinspection DataFlowIssue
-                    vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
+                    vb.coverImage0.setOnClickListener(coverView -> {
+                        // Rely on the fact that the BoB *is* an Activity.
+                        final FragmentManager fm = ((FragmentActivity) coverView.getContext())
+                                .getSupportFragmentManager();
+                        coverHelper.onZoomCover(coverView, fm);
+                    });
                 }
             }
             if (style.isShowField(FieldVisibility.Screen.List, DBKey.FK_AUTHOR)) {
@@ -235,9 +239,8 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.COVER[0])) {
-            //noinspection DataFlowIssue
-            final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
-                                                              rowData.getString(DBKey.BOOK_UUID));
+            final boolean hasImage = coverHelper
+                    .setImageView(vb.coverImage0, rowData.getString(DBKey.BOOK_UUID), 0);
             if (!hasImage) {
                 vb.coverImage0.setVisibility(View.GONE);
             }

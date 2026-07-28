@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -122,7 +124,12 @@ public class BookGridHolder
             } else {
                 // Tapping the cover image will zoom the image
                 // Do not go overkill here by adding a full ImageHandler.
-                vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
+                vb.coverImage0.setOnClickListener(coverView -> {
+                    // Rely on the fact that the BoB *is* an Activity.
+                    final FragmentManager fm = ((FragmentActivity) coverView.getContext())
+                            .getSupportFragmentManager();
+                    coverHelper.onZoomCover(coverView, fm);
+                });
 
                 // Add an explicit 'view' button
                 // as tapping on the background is not obvious when using the grid.
@@ -176,8 +183,8 @@ public class BookGridHolder
     public void onBind(@NonNull final DataHolder rowData) {
         vb.content.setVisibility(View.VISIBLE);
 
-        final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
-                                                          rowData.getString(DBKey.BOOK_UUID));
+        final boolean hasImage = coverHelper
+                .setImageView(vb.coverImage0, rowData.getString(DBKey.BOOK_UUID), 0);
         if (hasImage) {
             vb.coverImage0.setVisibility(View.VISIBLE);
 
