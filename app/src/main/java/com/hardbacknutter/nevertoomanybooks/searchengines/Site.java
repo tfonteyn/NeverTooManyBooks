@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.browser.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 

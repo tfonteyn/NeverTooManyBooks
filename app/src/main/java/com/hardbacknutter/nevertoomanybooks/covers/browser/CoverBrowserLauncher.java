@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2025 HardBackNutter
+ * @Copyright 2018-2026 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.covers;
+package com.hardbacknutter.nevertoomanybooks.covers.browser;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -30,7 +30,6 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 public class CoverBrowserLauncher
@@ -38,7 +37,7 @@ public class CoverBrowserLauncher
 
     private static final String TAG = "CoverBrowserLauncher";
 
-    /** <strong>IMPORTANT:</strong> always append the cIdx value */
+    /** <strong>IMPORTANT:</strong> always append the cIdx value. */
     private static final String RK_COVER_BROWSER = TAG + ":rk:";
 
     private static final String COVER_FILE_SPEC = "fileSpec";
@@ -51,8 +50,8 @@ public class CoverBrowserLauncher
      * @param cIdx           0..n image index
      * @param resultListener listener
      */
-    CoverBrowserLauncher(@IntRange(from = 0, to = 3) final int cIdx,
-                         @NonNull final ResultListener resultListener) {
+    public CoverBrowserLauncher(@IntRange(from = 0, to = 3) final int cIdx,
+                                @NonNull final ResultListener resultListener) {
         // Append the cIdx value!
         super(RK_COVER_BROWSER + cIdx,
               CoverBrowserDialogFragment::new,
@@ -79,33 +78,30 @@ public class CoverBrowserLauncher
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
-    /**
-     * Launch the dialog.
-     *
-     * @param context   preferably the {@code Activity}
-     *                  but another UI {@code Context} will also do.
-     * @param bookTitle to display
-     * @param code      of book
-     * @param cIdx      0..n image index
-     */
-    public void launch(@NonNull @UiContext final Context context,
-                       @NonNull final String bookTitle,
-                       @NonNull final String code,
-                       @IntRange(from = 0, to = 3) final int cIdx) {
-
-        final Bundle args = new Bundle(4);
-        args.putString(DBKey.TITLE, bookTitle);
-        args.putString(DBKey.ISBN, code);
-        args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
-
-        showDialog(context, args);
-    }
-
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
         resultListener.onResult(
                 Objects.requireNonNull(result.getString(COVER_FILE_SPEC), COVER_FILE_SPEC));
+    }
+
+    /**
+     * Launch the dialog.
+     *
+     * @param context        preferably the {@code Activity}
+     *                       but another UI {@code Context} will also do.
+     * @param bookTitle      to display
+     * @param productCodeStr of book
+     * @param cIdx           0..n image index
+     */
+    public void launch(@NonNull @UiContext final Context context,
+                       @NonNull final String bookTitle,
+                       @NonNull final String productCodeStr,
+                       @IntRange(from = 0, to = 3) final int cIdx) {
+
+        final CoverBrowserInput input = new CoverBrowserInput(
+                getRequestKey(), bookTitle, productCodeStr, cIdx, null);
+        showDialog(context, input.toBundle());
     }
 
     @FunctionalInterface

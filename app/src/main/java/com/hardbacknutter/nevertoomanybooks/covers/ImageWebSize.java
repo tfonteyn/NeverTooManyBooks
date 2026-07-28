@@ -53,8 +53,8 @@ public enum ImageWebSize
         }
     };
 
-    static final ImageWebSize[] SMALL_FIRST = {Small, Medium, Large};
-    static final ImageWebSize[] LARGE_FIRST = {Large, Medium, Small};
+    public static final ImageWebSize[] SMALL_FIRST = {Small, Medium, Large};
+    public static final ImageWebSize[] LARGE_FIRST = {Large, Medium, Small};
 
     @Override
     public int describeContents() {

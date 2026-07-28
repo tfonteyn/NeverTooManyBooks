@@ -17,18 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.covers;
+package com.hardbacknutter.nevertoomanybooks.covers.browser;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.HasDefaultViewModelProviderFactory;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.SavedStateHandle;
+import androidx.lifecycle.SavedStateHandleSupport;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.lifecycle.viewmodel.CreationExtras;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,10 +51,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.ISBN;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
@@ -58,14 +63,12 @@ import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 @SuppressWarnings("WeakerAccess")
-public class CoverBrowserViewModel
+public final class CoverBrowserViewModel
         extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
 
-    /** 0..n image index. */
-    static final String BKEY_FILE_INDEX = TAG + ":cIdx";
     /** Progressbar for the gallery. */
     private final MutableLiveData<Boolean> showGalleryProgress = new MutableLiveData<>();
     /** GalleryImage. */
@@ -145,47 +148,42 @@ public class CoverBrowserViewModel
     @Nullable
     private String selectedFileAbsolutePath;
     /** Handles downloading, checking and clean-up of files. */
-    private FileManager fileManager;
+    @NonNull
+    private final FileManager fileManager;
     /** Code of book to fetch other editions of. */
-    private ProductCode productCode;
+    @NonNull
+    private final ProductCode productCode;
     /** Index of the image we're handling. */
     @IntRange(from = 0, to = 3)
-    private int cIdx;
+    private final int cIdx;
+    @NonNull
+    private final String bookTitle;
+
+    private CoverBrowserViewModel(@NonNull final SavedStateHandle handle,
+                                  @NonNull final CoverBrowserInput args) {
+        bookTitle = args.getBookTitle();
+
+        cIdx = args.getCoverIdx();
+        productCode = ISBN.parse(args.getProductCodeStr());
+
+        List<Site> sites = args.getSites();
+        if (sites == null) {
+            sites = Site.Type.Covers.getSites();
+        }
+        // Filter for active engines only
+        final List<EngineId> engineIds = sites.stream()
+                                              .filter(Site::isActive)
+                                              .map(Site::getEngineId)
+                                              .collect(Collectors.toList());
+        fileManager = new FileManager(engineIds);
+    }
 
     @Override
     protected void onCleared() {
         cancelAllTasks();
 
         galleryDisplayExecutor.shutdownNow();
-
-        if (fileManager != null) {
-            fileManager.purge();
-        }
-    }
-
-    /**
-     * Pseudo constructor.
-     *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     */
-    public void init(@NonNull final Bundle args) {
-        if (productCode == null) {
-            productCode = ISBN.parse(SanityCheck.requireValue(args.getString(DBKey.ISBN),
-                                                              DBKey.ISBN));
-            cIdx = args.getInt(BKEY_FILE_INDEX);
-
-            // optional
-            List<Site> sites = args.getParcelableArrayList(Site.Type.Covers.getBundleKey());
-            if (sites == null) {
-                sites = Site.Type.Covers.getSites();
-            }
-            // Filter for active engines only
-            final List<EngineId> engineIds = sites.stream()
-                                                  .filter(Site::isActive)
-                                                  .map(Site::getEngineId)
-                                                  .collect(Collectors.toList());
-            fileManager = new FileManager(engineIds);
-        }
+        fileManager.purge();
     }
 
     /**
@@ -247,9 +245,14 @@ public class CoverBrowserViewModel
         return galleryDisplayExecutor;
     }
 
+    @NonNull
+    String getBookTitle() {
+        return bookTitle;
+    }
+
     // TODO: if there is only a single edition, we should skip the displaying and just use it
     @NonNull
-    public List<AltEdition> getEditions() {
+    List<AltEdition> getEditions() {
         // used directly, the caller can remove items
         return editions;
     }
@@ -262,7 +265,7 @@ public class CoverBrowserViewModel
      * @return {@code true} if we have at least one edition which <strong>might</strong>
      *         have images.
      */
-    public boolean setEditions(@Nullable final Collection<AltEdition> list) {
+    boolean setEditions(@Nullable final Collection<AltEdition> list) {
         editions.clear();
 
         if (BuildConfig.DEBUG /* always */) {
@@ -422,5 +425,48 @@ public class CoverBrowserViewModel
 
     boolean isSearchEditionsTaskRunning() {
         return searchEditionsTask.isActive();
+    }
+
+    static final class Factory
+            implements ViewModelProvider.Factory {
+
+        @NonNull
+        private final CoverBrowserInput args;
+
+        private Factory(@NonNull final CoverBrowserInput args) {
+            this.args = args;
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param owner hosting Fragment or Activity
+         * @param args  {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+         *
+         * @return registered ViewModel
+         */
+        @NonNull
+        static CoverBrowserViewModel create(@NonNull final ViewModelStoreOwner owner,
+                                            @NonNull final CoverBrowserInput args) {
+            final CreationExtras extras = ((HasDefaultViewModelProviderFactory) owner)
+                    .getDefaultViewModelCreationExtras();
+
+            return new ViewModelProvider(owner.getViewModelStore(), new Factory(args), extras)
+                    .get(CoverBrowserViewModel.class);
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends ViewModel> T create(@NonNull final Class<T> modelClass,
+                                              @NonNull final CreationExtras extras) {
+            final SavedStateHandle handle = SavedStateHandleSupport.createSavedStateHandle(extras);
+
+            if (modelClass.isAssignableFrom(CoverBrowserViewModel.class)) {
+                return (T) new CoverBrowserViewModel(handle, args);
+            }
+
+            throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
+        }
     }
 }

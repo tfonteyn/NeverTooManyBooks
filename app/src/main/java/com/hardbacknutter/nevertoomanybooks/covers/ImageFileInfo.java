@@ -53,7 +53,7 @@ public class ImageFileInfo {
      *
      * @param edition of the book for this cover
      */
-    ImageFileInfo(@NonNull final AltEdition edition) {
+    public ImageFileInfo(@NonNull final AltEdition edition) {
         this.edition = edition;
         fileSpec = null;
         size = null;
@@ -68,10 +68,10 @@ public class ImageFileInfo {
      * @param size     (optional) size
      * @param engineId the search engine id
      */
-    ImageFileInfo(@NonNull final AltEdition edition,
-                  @Nullable final String fileSpec,
-                  @Nullable final ImageWebSize size,
-                  @NonNull final EngineId engineId) {
+    public ImageFileInfo(@NonNull final AltEdition edition,
+                         @Nullable final String fileSpec,
+                         @Nullable final ImageWebSize size,
+                         @NonNull final EngineId engineId) {
         this.edition = edition;
         this.fileSpec = fileSpec;
         this.size = size;
@@ -137,7 +137,7 @@ public class ImageFileInfo {
      * @return engine-id
      */
     @NonNull
-    EngineId getEngineId() {
+    public EngineId getEngineId() {
         return Objects.requireNonNull(engineId);
     }
 
@@ -165,7 +165,7 @@ public class ImageFileInfo {
      *
      * @return {@code true} if the image is usable
      */
-    boolean isUsable(@NonNull final ImageWebSize size) {
+    public boolean isUsable(@NonNull final ImageWebSize size) {
         // Does it have an actual file ?
         if (fileSpec != null) {
             // There is a file, and it is good (as determined at download time)

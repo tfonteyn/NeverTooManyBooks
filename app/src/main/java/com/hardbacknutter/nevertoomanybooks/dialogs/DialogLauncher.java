@@ -120,6 +120,11 @@ public abstract class DialogLauncher
         this.bottomSheetSupplier = bottomSheetSupplier;
     }
 
+    @NonNull
+    public String getRequestKey() {
+        return requestKey;
+    }
+
     /**
      * Register this object for receiving Fragment results.
      *

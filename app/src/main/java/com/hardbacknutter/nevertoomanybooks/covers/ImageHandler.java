@@ -61,6 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRe
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.covers.browser.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.browser.CoverBrowserLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;

@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.covers;
+package com.hardbacknutter.nevertoomanybooks.covers.browser;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -51,10 +50,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserContentBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
@@ -86,8 +86,6 @@ class CoverBrowserDelegate
     private final int previewMaxWidth;
     /** The max height to be used for the preview image. */
     private final int previewMaxHeight;
-    @NonNull
-    private final String bookTitle;
     @NonNull
     private final CoverBrowserViewModel vm;
     @NonNull
@@ -126,16 +124,15 @@ class CoverBrowserDelegate
     CoverBrowserDelegate(@NonNull final DialogFragment owner,
                          @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
 
         final Resources res = owner.getResources();
         previewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
         previewMaxHeight = (int) (previewMaxWidth / CoverScale.HW_RATIO);
 
-        vm = new ViewModelProvider(owner).get(CoverBrowserViewModel.class);
-        vm.init(args);
+        final CoverBrowserInput input = CoverBrowserInput.fromBundle(args);
+        requestKey = input.getRequestKey();
+
+        vm = CoverBrowserViewModel.Factory.create(owner, input);
     }
 
     @NonNull
@@ -174,7 +171,7 @@ class CoverBrowserDelegate
             // Cancelling the action is by dismissing the BS,
             // selection is by tapping the large image.
             initToolbar(owner, dialogType, toolbar);
-            toolbar.setSubtitle(bookTitle);
+            toolbar.setSubtitle(vm.getBookTitle());
         }
 
         final Context context = vb.getRoot().getContext();
