@@ -124,14 +124,14 @@ public class ImageViewLoader {
     /**
      * Load the image bitmap into the given view.
      *
-     * @param imageView View to populate
      * @param bitmap    The Bitmap of the image
+     * @param imageView View to populate
      *
      * @throws IllegalArgumentException (debug)
      */
     @UiThread
-    public void fromBitmap(@NonNull final ImageView imageView,
-                           @NonNull final Bitmap bitmap) {
+    public void fromBitmap(@NonNull final Bitmap bitmap,
+                           @NonNull final ImageView imageView) {
         switch (applySizing) {
             case Constrained: {
                 final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
@@ -238,7 +238,7 @@ public class ImageViewLoader {
 
                         if (bitmap != null) {
                             // Finally, load it into the View
-                            fromBitmap(view, bitmap);
+                            fromBitmap(bitmap, view);
                             if (onDisplayed != null) {
                                 onDisplayed.accept(bitmap);
                             }

@@ -155,7 +155,7 @@ class CoverHelper {
             final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, cIdx, cachedImageWidth);
             if (bitmap != null) {
                 // Uses the UiThread to display it.
-                imageLoader.fromBitmap(coverView, bitmap);
+                imageLoader.fromBitmap(bitmap, coverView);
                 return true;
             }
         }
