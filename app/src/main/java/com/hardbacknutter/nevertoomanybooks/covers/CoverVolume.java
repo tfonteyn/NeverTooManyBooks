@@ -136,8 +136,10 @@ public final class CoverVolume {
                 available = false;
 
             } else {
-                //FIXME: add one more, elaborate, check for situations
+                // We could add one more, elaborate, check for situations
                 // where the SDCARD was REPLACED.
+                // 2026-07-28: given how devices often no longer have a physical sdcard slot
+                // this will not be added.
                 available = true;
             }
 
