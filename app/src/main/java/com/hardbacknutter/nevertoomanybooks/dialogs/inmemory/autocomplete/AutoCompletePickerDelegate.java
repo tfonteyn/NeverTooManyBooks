@@ -33,15 +33,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectAutoCompleteContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
@@ -71,19 +68,18 @@ class AutoCompletePickerDelegate
     AutoCompletePickerDelegate(@NonNull final DialogFragment owner,
                                @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        dialogTitle = args.getString(AutoCompletePickerLauncher.BKEY_DIALOG_TITLE,
-                                     owner.getString(R.string.action_edit));
-        dialogMessage = args.getString(AutoCompletePickerLauncher.BKEY_DIALOG_MESSAGE, null);
 
-        items = Arrays.stream(Objects.requireNonNull(
-                              args.getStringArray(AutoCompletePickerLauncher.BKEY_ITEM_LIST_TEXT),
-                              AutoCompletePickerLauncher.BKEY_ITEM_LIST_TEXT))
-                      .collect(Collectors.toList());
+        final AutoCompletePickerInput input = AutoCompletePickerInput.fromBundle(args);
+
+        requestKey = input.getRequestKey();
+        //noinspection DataFlowIssue
+        dialogTitle = input.getDialogTitle(owner.getContext());
+        dialogMessage = input.getDialogMessage();
+
+        items = input.getAllItems();
 
         vm = new ViewModelProvider(owner).get(AutoCompletePickerViewModel.class);
-        vm.init(args);
+        vm.init(input);
     }
 
     @NonNull

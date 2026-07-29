@@ -37,15 +37,8 @@ public class AutoCompletePickerLauncher
         extends DialogLauncher {
 
     private static final String TAG = "ACPickerLauncher";
-    static final String BKEY_DIALOG_TITLE = TAG + ":title";
-    static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
-
-    static final String BKEY_EXTRAS = TAG + ":extras";
-
-    /** The list of strings to display in the dropdown. */
-    static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
-
-    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_EXTRAS = TAG + ":extras";
     private static final String BKEY_ORIGINAL = TAG + ":original";
 
     @NonNull
@@ -111,23 +104,9 @@ public class AutoCompletePickerLauncher
                        @Nullable final String currentSelection,
                        @Nullable final Bundle extras) {
 
-        final Bundle args = new Bundle();
-        args.putString(BKEY_DIALOG_TITLE, dialogTitle);
-        if (dialogMessage != null && !dialogMessage.isEmpty()) {
-            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
-        }
-
-        // pass in the texts; there are no ids
-        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems.toArray(String[]::new));
-
-        if (currentSelection != null) {
-            args.putString(BKEY_EDIT, currentSelection);
-        }
-
-        if (extras != null && !extras.isEmpty()) {
-            args.putBundle(BKEY_EXTRAS, extras);
-        }
-        showDialog(context, args);
+        final AutoCompletePickerInput input = new AutoCompletePickerInput(
+                getRequestKey(), dialogTitle, dialogMessage, allItems, currentSelection, extras);
+        showDialog(context, input.toBundle());
     }
 
     @Override

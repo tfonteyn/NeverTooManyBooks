@@ -44,16 +44,16 @@ public class AutoCompletePickerViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final AutoCompletePickerInput args) {
         if (!initDone) {
             initDone = true;
 
-            previousValue = args.getString(AutoCompletePickerLauncher.BKEY_EDIT, null);
+            previousValue = args.getCurrentSelection();
             currentValue = previousValue != null ? previousValue : "";
 
-            extras = args.getBundle(AutoCompletePickerLauncher.BKEY_EXTRAS);
+            extras = args.getExtras();
         }
     }
 
