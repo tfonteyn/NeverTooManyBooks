@@ -167,7 +167,6 @@ public abstract class DialogLauncher
                 throw new IllegalArgumentException("mode=" + mode);
         }
 
-        args.putString(BKEY_REQUEST_KEY, requestKey);
         dialogFragment.setArguments(args);
         // using the requestKey as the fragment tag.
         dialogFragment.show(fragmentManager, requestKey);
