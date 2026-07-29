@@ -74,7 +74,7 @@ public class EditLenderViewModel
      *
      * @param args {@link Fragment#requireArguments()}
      *
-     * @throws IllegalArgumentException (debug) if the args did not contain a book id
+     * @throws IllegalArgumentException (debug) missing book id
      */
     public void init(@NonNull final Bundle args) {
         if (dao == null) {
