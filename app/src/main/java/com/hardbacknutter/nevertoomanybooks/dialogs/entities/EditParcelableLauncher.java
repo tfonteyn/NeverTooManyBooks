@@ -48,16 +48,8 @@ public final class EditParcelableLauncher<T extends Parcelable>
 
     private static final String TAG = "EditParcelableLauncher";
 
-    /** Input value: the item we're going to edit. */
-    public static final String BKEY_ITEM = TAG + ":item";
-    /**
-     * Input value: the issn-8 code from a book.
-     *
-     * @see #add(Context, Parcelable, String)
-     */
-    public static final String BKEY_BOOK_ISSN = TAG + ":issn";
-
     /** Output value: the item with the edits. */
+    private static final String BKEY_ITEM = TAG + ":item";
     private static final String MODIFIED = TAG + ":m";
 
     private static final String ERROR_NULL_ON_ADD_LISTENER = "onAddListener";
@@ -147,14 +139,9 @@ public final class EditParcelableLauncher<T extends Parcelable>
                     @Nullable final String bookIssn) {
         Objects.requireNonNull(onAddListener, ERROR_NULL_ON_ADD_LISTENER);
 
-        final Bundle args = new Bundle(4);
-        args.putParcelable(EditAction.BKEY, EditAction.Add);
-        args.putParcelable(BKEY_ITEM, item);
-        if (bookIssn != null) {
-            args.putString(BKEY_BOOK_ISSN, bookIssn);
-        }
-
-        showDialog(context, args);
+        final EditParcelableInput<T> input = new EditParcelableInput<>(
+                getRequestKey(), EditAction.Add, item, bookIssn);
+        showDialog(context, input.toBundle());
     }
 
     /**
@@ -175,14 +162,9 @@ public final class EditParcelableLauncher<T extends Parcelable>
                      @Nullable final String bookIssn) {
         Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Bundle args = new Bundle(4);
-        args.putParcelable(EditAction.BKEY, EditAction.Edit);
-        args.putParcelable(BKEY_ITEM, item);
-        if (bookIssn != null) {
-            args.putString(BKEY_BOOK_ISSN, bookIssn);
-        }
-
-        showDialog(context, args);
+        final EditParcelableInput<T> input = new EditParcelableInput<>(
+                getRequestKey(), EditAction.Edit, item, bookIssn);
+        showDialog(context, input.toBundle());
     }
 
     @SuppressWarnings("deprecation")

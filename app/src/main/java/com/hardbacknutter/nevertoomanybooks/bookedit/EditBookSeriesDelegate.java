@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +39,10 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -92,15 +93,16 @@ class EditBookSeriesDelegate
     EditBookSeriesDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        //noinspection deprecation
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+
+        final EditParcelableInput<Parcelable> input = EditParcelableInput.fromBundle(args);
+
+        requestKey = input.getRequestKey();
+        action = input.getAction();
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(owner.getActivity()).get(EditBookViewModel.class);
         seriesVm = new ViewModelProvider(owner).get(EditSeriesViewModel.class);
-        seriesVm.init(args);
+        seriesVm.init(input);
     }
 
     @NonNull

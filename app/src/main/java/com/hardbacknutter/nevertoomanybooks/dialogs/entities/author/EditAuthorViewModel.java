@@ -21,7 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.author;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorRole;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -74,20 +74,18 @@ public class EditAuthorViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
         if (dao == null) {
-            dao = ServiceLocator.getInstance().getAuthorDao();
-
-            original = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                                              EditParcelableLauncher.BKEY_ITEM);
-
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            dao = serviceLocator.getAuthorDao();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
             useAuthorRole = serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_ROLE);
 
+            original = (Author) args.getItem();
             currentEdit = new Author(original, true);
+
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
 

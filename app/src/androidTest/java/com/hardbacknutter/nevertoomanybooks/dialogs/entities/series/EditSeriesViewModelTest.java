@@ -20,7 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.series;
 
-import android.os.Bundle;
+import android.os.Parcelable;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -30,7 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -86,9 +87,10 @@ class EditSeriesViewModelTest
         dao.fixId(context, original, locale);
         assertTrue(original.getId() != 0);
 
-        final Bundle args = new Bundle();
-        args.putParcelable(EditParcelableLauncher.BKEY_ITEM,
-                           original);
+        final EditParcelableInput<Parcelable> args = new EditParcelableInput<>(
+                "unused", /* unused */ EditAction.Edit,
+                original, null);
+
         final EditSeriesViewModel vm = new EditSeriesViewModel();
         vm.init(args);
 

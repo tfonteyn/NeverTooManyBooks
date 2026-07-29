@@ -20,19 +20,17 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier;
 
-import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 @SuppressWarnings("WeakerAccess")
@@ -49,15 +47,13 @@ public class EditIdentifierViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getIdentifierDao();
 
-            original = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                                              EditParcelableLauncher.BKEY_ITEM);
-
+            original = (Identifier) args.getItem();
             currentEdit = new Identifier(original);
         }
     }

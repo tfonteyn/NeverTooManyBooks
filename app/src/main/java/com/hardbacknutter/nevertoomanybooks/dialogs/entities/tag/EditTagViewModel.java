@@ -21,21 +21,19 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 
 @SuppressWarnings("WeakerAccess")
@@ -52,15 +50,13 @@ public class EditTagViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getTagDao();
 
-            original = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                                              EditParcelableLauncher.BKEY_ITEM);
-
+            original = (Tag) args.getItem();
             currentEdit = new Tag(original);
         }
     }

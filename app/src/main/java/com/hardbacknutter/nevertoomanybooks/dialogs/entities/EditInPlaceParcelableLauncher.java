@@ -83,7 +83,7 @@ public final class EditInPlaceParcelableLauncher<T extends Parcelable>
     public static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
                                                         @NonNull final String requestKey,
                                                         @NonNull final T modified) {
-        final Bundle result = new Bundle(2);
+        final Bundle result = new Bundle(1);
         result.putParcelable(MODIFIED, modified);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -110,17 +110,16 @@ public final class EditInPlaceParcelableLauncher<T extends Parcelable>
                      @NonNull final T item) {
         Objects.requireNonNull(listener, ERROR_NULL_LISTENER);
 
-        final Bundle args = new Bundle(2);
-        args.putParcelable(EditParcelableLauncher.BKEY_ITEM, item);
-        showDialog(context, args);
+        final EditParcelableInput<T> input = new EditParcelableInput<>(
+                getRequestKey(), EditAction.Edit, item, null);
+        showDialog(context, input.toBundle());
     }
 
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-
         Objects.requireNonNull(listener, ERROR_NULL_LISTENER);
-        listener.onEdit(
-                Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+        //noinspection deprecation
+        listener.onEdit(Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
     }
 }

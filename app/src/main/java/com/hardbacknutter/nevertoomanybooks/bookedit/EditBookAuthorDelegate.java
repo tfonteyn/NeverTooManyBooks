@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,10 +46,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -107,14 +108,16 @@ class EditBookAuthorDelegate
     EditBookAuthorDelegate(@NonNull final DialogFragment owner,
                            @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+
+        final EditParcelableInput<Parcelable> input = EditParcelableInput.fromBundle(args);
+
+        requestKey = input.getRequestKey();
+        action = input.getAction();
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(owner.getActivity()).get(EditBookViewModel.class);
         authorVm = new ViewModelProvider(owner).get(EditAuthorViewModel.class);
-        authorVm.init(args);
+        authorVm.init(input);
     }
 
     @NonNull
