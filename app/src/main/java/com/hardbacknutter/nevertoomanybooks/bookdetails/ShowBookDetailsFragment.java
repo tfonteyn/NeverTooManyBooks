@@ -609,16 +609,16 @@ public class ShowBookDetailsFragment
         } else {
             showTocBtn.setVisibility(View.VISIBLE);
             showTocBtn.setOnClickListener(v -> {
-                final Fragment fragment = TocFragment.create(book, false, aVm.getBookshelf());
+                final Fragment fragment = ShowTocFragment.create(book, false, aVm.getBookshelf());
                 // yes, it must be the Activity FragmentManager,
                 // as that is where the R.id.main_fragment View is located.
-                // This also means the TocFragment is replacing the ViewPager!
+                // This also means the ShowTocFragment is replacing the ViewPager!
                 //noinspection DataFlowIssue
                 final FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
-                  .addToBackStack(TocFragment.TAG)
-                  .replace(R.id.content_frame, fragment, TocFragment.TAG)
+                  .addToBackStack(ShowTocFragment.TAG)
+                  .replace(R.id.content_frame, fragment, ShowTocFragment.TAG)
                   .commit();
             });
         }
@@ -639,18 +639,18 @@ public class ShowBookDetailsFragment
             tocFrame.setVisibility(View.VISIBLE);
             final FragmentManager fm = getChildFragmentManager();
 
-            Fragment fragment = fm.findFragmentByTag(TocFragment.TAG);
+            Fragment fragment = fm.findFragmentByTag(ShowTocFragment.TAG);
             if (fragment == null) {
-                fragment = TocFragment.create(book, true, aVm.getBookshelf());
+                fragment = ShowTocFragment.create(book, true, aVm.getBookshelf());
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
-                  .replace(R.id.toc_frame, fragment, TocFragment.TAG)
+                  .replace(R.id.toc_frame, fragment, ShowTocFragment.TAG)
                   .commit();
             } else {
-                // The above TocFragment will have created a vm in its
+                // The above ShowTocFragment will have created a vm in its
                 // parent-fragment (i.e. THIS fragment)  scope
-                final TocViewModel childVm = new ViewModelProvider(this)
-                        .get(TocViewModel.class);
+                final ShowTocViewModel childVm = new ViewModelProvider(this)
+                        .get(ShowTocViewModel.class);
                 childVm.reloadBook(book);
             }
         }

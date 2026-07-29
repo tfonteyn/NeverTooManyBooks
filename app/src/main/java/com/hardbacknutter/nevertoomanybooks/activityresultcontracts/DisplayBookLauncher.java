@@ -73,7 +73,7 @@ public class DisplayBookLauncher {
 
     /**
      * ENHANCE: GitHub #151 potential replacement for {@link #launcher}
-     *  when we decided on inconsistencies between TocFragment/AuthorWorksFragment.
+     *  when we decided on inconsistencies between ShowTocFragment/AuthorWorksFragment.
      * <p>
      * Launch the Book pager screen with the list of books derived
      * from the actual books and the books from TOCEntries.

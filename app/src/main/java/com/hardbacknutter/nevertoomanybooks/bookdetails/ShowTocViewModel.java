@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -37,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 @SuppressWarnings("WeakerAccess")
-public class TocViewModel
+public class ShowTocViewModel
         extends ViewModel {
 
     private final MutableLiveData<Long> onReloadBook = new MutableLiveData<>();
@@ -66,12 +64,13 @@ public class TocViewModel
      *
      * @throws IllegalArgumentException (debug) missing book id
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final ShowTocInput args) {
         if (works.isEmpty()) {
-            embedded = args.getBoolean(TocFragment.BKEY_EMBEDDED, false);
+            embedded = args.isEmbedded();
 
-            final long bookId = args.getLong(DBKey.FK_BOOK, 0);
+            final long bookId = args.getBookId();
             if (bookId <= 0) {
+                // Sanity check, we should not get a new book here (id==0)
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
 
@@ -81,7 +80,7 @@ public class TocViewModel
     }
 
     /**
-     * Are we running in embedded mode?
+     * Are we running in embedded mode.
      *
      * @return flag
      */

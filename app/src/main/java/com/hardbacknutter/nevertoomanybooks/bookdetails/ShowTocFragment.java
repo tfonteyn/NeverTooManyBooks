@@ -35,14 +35,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -54,17 +51,16 @@ import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 // and not a DialogFragment. No life cycle entry points.
 // This limits their use with a delegate (like we do for BottomSheet)
 // to allow flexibility. Especially the integrated DisplayBookLauncher becomes hard to use.
-public class TocFragment
+public class ShowTocFragment
         extends BaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "TocFragment";
-    static final String BKEY_EMBEDDED = TAG + ":toc-embedded";
+    public static final String TAG = "ShowTocFragment";
 
     /** View Binding. */
     private FragmentTocBinding vb;
 
-    private TocViewModel vm;
+    private ShowTocViewModel vm;
     private ShowBookDetailsActivityViewModel aVm;
 
     /** Callback - used when we're running inside another component; e.g. the BoB. */
@@ -93,12 +89,9 @@ public class TocFragment
     public static Fragment create(@NonNull final Book book,
                                   final boolean embedded,
                                   @NonNull final Bookshelf bookshelf) {
-        final Fragment fragment = new TocFragment();
-        final Bundle args = new Bundle(6);
-        args.putBoolean(BKEY_EMBEDDED, embedded);
-        args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
-        args.putLong(DBKey.FK_BOOK, book.getId());
-        fragment.setArguments(args);
+        final Fragment fragment = new ShowTocFragment();
+        final ShowTocInput input = new ShowTocInput(book.getId(), embedded, bookshelf);
+        fragment.setArguments(input.toBundle());
         return fragment;
     }
 
@@ -137,21 +130,19 @@ public class TocFragment
                     vm.reloadBook();
                 }));
 
-        final Bundle args = requireArguments();
+        final ShowTocInput args = ShowTocInput.fromBundle(requireArguments());
 
         //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        aVm.init(Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                        DBKey.FK_BOOKSHELF));
+        aVm.init(args.getBookshelf());
 
-        final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
-        if (embedded) {
+        if (args.isEmbedded()) {
             // If we're running in embedded mode, i.e. as a child-fragment, create the vm in
             // the parent fragment scope allowing it to be accessed by that parent.
-            vm = new ViewModelProvider(requireParentFragment()).get(TocViewModel.class);
+            vm = new ViewModelProvider(requireParentFragment()).get(ShowTocViewModel.class);
         } else {
             // Otherwise, use local scope.
-            vm = new ViewModelProvider(this).get(TocViewModel.class);
+            vm = new ViewModelProvider(this).get(ShowTocViewModel.class);
         }
 
         vm.init(args);
