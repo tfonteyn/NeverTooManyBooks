@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.ModificationListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ui.PFilterListAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -91,10 +90,12 @@ class BookshelfFiltersDelegate
     BookshelfFiltersDelegate(@NonNull final DialogFragment owner,
                              @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
+
+        final BookshelfFiltersInput input = BookshelfFiltersInput.fromBundle(args);
+        requestKey = input.getRequestKey();
+
         vm = new ViewModelProvider(owner).get(BookshelfFiltersViewModel.class);
-        vm.init(owner.requireContext(), args);
+        vm.init(owner.requireContext(), input);
     }
 
     @Override

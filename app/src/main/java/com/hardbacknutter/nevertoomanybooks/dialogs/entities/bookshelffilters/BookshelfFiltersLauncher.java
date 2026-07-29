@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -80,10 +79,9 @@ public class BookshelfFiltersLauncher
      */
     public void launch(@NonNull @UiContext final Context context,
                        @NonNull final Bookshelf bookshelf) {
-        final Bundle args = new Bundle(2);
-        args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
 
-        showDialog(context, args);
+        final BookshelfFiltersInput input = new BookshelfFiltersInput(getRequestKey(), bookshelf);
+        showDialog(context, input.toBundle());
     }
 
     @Override

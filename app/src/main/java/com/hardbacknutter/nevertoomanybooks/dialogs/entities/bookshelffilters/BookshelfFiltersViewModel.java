@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
@@ -30,7 +29,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
@@ -65,12 +63,11 @@ public class BookshelfFiltersViewModel
      * @param args    Bundle with arguments
      */
     void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+              @NonNull final BookshelfFiltersInput args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getBookshelfDao();
 
-            bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                               DBKey.FK_BOOKSHELF);
+            bookshelf = args.getBookshelf();
 
             // We do a refresh, to make sure the filters are fully up-to-date.
             // The database is not modified at this point.
