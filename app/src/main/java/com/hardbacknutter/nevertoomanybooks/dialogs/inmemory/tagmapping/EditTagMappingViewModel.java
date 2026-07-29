@@ -24,10 +24,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
-
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
@@ -49,18 +46,17 @@ public class EditTagMappingViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final EditTagMappingInput args) {
         if (!initDone) {
             initDone = true;
 
-            previousValue = Objects.requireNonNull(args.getParcelable(
-                    EditTagMappingLauncher.BKEY_EDIT));
+            previousValue = args.getTagMapping();
             // take a copy without copying the id
             currentValue = new TagMapping(previousValue);
 
-            extras = args.getBundle(EditTagMappingLauncher.BKEY_EXTRAS);
+            extras = args.getExtras();
         }
     }
 

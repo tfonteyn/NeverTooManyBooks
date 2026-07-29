@@ -38,9 +38,9 @@ public class EditTagMappingLauncher
 
     private static final String TAG = "EditTagMappingLauncher";
 
-    static final String BKEY_EXTRAS = TAG + ":extras";
+    private static final String BKEY_EXTRAS = TAG + ":extras";
 
-    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_EDIT = TAG + ":edit";
     private static final String BKEY_ORIGINAL = TAG + ":original";
 
     @NonNull
@@ -94,23 +94,18 @@ public class EditTagMappingLauncher
      * @param edit    the value to edit
      * @param extras  (optional) Bundle which will be passed back to the result-listener.
      */
-    @SuppressWarnings("TypeMayBeWeakened")
     public void launch(@NonNull @UiContext final Context context,
                        @NonNull final TagMapping edit,
                        @Nullable final Bundle extras) {
 
-        final Bundle args = new Bundle();
-        args.putParcelable(BKEY_EDIT, edit);
-
-        if (extras != null && !extras.isEmpty()) {
-            args.putBundle(BKEY_EXTRAS, extras);
-        }
-        showDialog(context, args);
+        final EditTagMappingInput input = new EditTagMappingInput(getRequestKey(), edit, extras);
+        showDialog(context, input.toBundle());
     }
 
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+        //noinspection deprecation
         resultListener.onResult(
                 Objects.requireNonNull(result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL),
                 Objects.requireNonNull(result.getParcelable(BKEY_EDIT), BKEY_EDIT),
