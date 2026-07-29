@@ -42,6 +42,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
@@ -65,7 +66,7 @@ public class SearchFtsFragment
 
     private TextWatcher textWatcher;
     private SearchAdapter searchAdapter;
-    private ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher;
+    private ActivityResultLauncher<ShowBookPagerInput> displayBookLauncher;
     /** View Binding. */
     private FragmentAdvancedSearchBinding vb;
     private MenuItem menuBtnApply;
@@ -122,7 +123,7 @@ public class SearchFtsFragment
         textWatcher = (ExtTextWatcher) s -> vm.userIsActive(true);
 
         searchAdapter = new SearchAdapter(vm.getSearchResults(), id ->
-                displayBookLauncher.launch(new ShowBookPagerContract.Input(id, vm.getBookshelf())));
+                displayBookLauncher.launch(new ShowBookPagerInput(id, vm.getBookshelf())));
         vb.searchResults.setAdapter(searchAdapter);
         // Timer will be started in OnResume().
     }

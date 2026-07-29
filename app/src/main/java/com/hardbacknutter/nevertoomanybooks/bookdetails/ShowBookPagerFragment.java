@@ -71,11 +71,12 @@ public class ShowBookPagerFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
+        final ShowBookPagerInput args =
+                ShowBookPagerInput.fromBundle(requireArguments());
 
         //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        aVm.init(args);
+        aVm.init(args.getBookshelf());
 
         vm = new ViewModelProvider(getActivity()).get(ShowBookPagerViewModel.class);
         if (!vm.init(args)) {

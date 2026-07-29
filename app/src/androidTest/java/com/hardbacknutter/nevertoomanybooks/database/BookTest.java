@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -37,6 +36,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.InstantTaskExecutorExtension;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsInput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -314,8 +314,9 @@ class BookTest
 
         final long bookId = prepareAndInsertBook(context, bookDao, bookIdx);
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
-        final Bundle args = new Bundle();
-        args.putLong(DBKey.FK_BOOK, bookId);
+
+        final ShowBookDetailsInput args = new ShowBookDetailsInput(
+                bookId, serviceLocator.getBookshelfDao().getDefault(), false);
 
         vm.init(context, args, s1.get());
         vm.loadBook();

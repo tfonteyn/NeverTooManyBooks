@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.LocaleList;
 import android.view.View;
 
@@ -114,11 +113,11 @@ public class ShowBookDetailsViewModel
      * @param args    Bundle with arguments
      * @param style   to apply
      *
-     * @throws IllegalArgumentException (debug) if the args did not contain a book id
+     * @throws IllegalArgumentException (debug) missing book id
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Context context,
-                     @NonNull final Bundle args,
+                     @NonNull final ShowBookDetailsInput args,
                      @NonNull final Style style) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
@@ -135,9 +134,10 @@ public class ShowBookDetailsViewModel
         }
 
         // Always refresh these
-        embedded = args.getBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, false);
-        bookId = args.getLong(DBKey.FK_BOOK, 0);
+        embedded = args.isEmbedded();
+        bookId = args.getBookId();
         if (bookId <= 0) {
+            // Sanity check, we should not get a new book here (id==0)
             throw new IllegalArgumentException(DBKey.FK_BOOK);
         }
     }

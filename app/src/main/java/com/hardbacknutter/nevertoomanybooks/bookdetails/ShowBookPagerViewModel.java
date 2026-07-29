@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -30,27 +29,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.Navigator;
 import com.hardbacknutter.nevertoomanybooks.booklist.NavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.NavigatorList;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class ShowBookPagerViewModel
         extends ViewModel {
-
-    private static final String TAG = "ShowBookPagerViewModel";
-
-    /** Table name of the {@link Booklist} navigator table. */
-    public static final String BKEY_NAV_TABLE_NAME = TAG + ":tableName";
-    /** The position (int) in the navigator list for the initial book to show. */
-    public static final String BKEY_NAV_POSITION = TAG + ":pos";
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
@@ -82,21 +70,21 @@ public class ShowBookPagerViewModel
      *         {@code false} if we should abort, and go back to the previous Activity
      *         (normally the BoB)
      *
-     * @throws IllegalArgumentException if there are missing mandatory arguments
+     * @throws IllegalArgumentException (debug) missing book id
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public boolean init(@NonNull final Bundle args) {
+    public boolean init(@NonNull final ShowBookPagerInput args) {
         if (initialBookId == 0) {
-            initialBookId = args.getLong(DBKey.FK_BOOK, 0);
+            initialBookId = args.getBookId();
             if (initialBookId <= 0) {
+                // Sanity check, we should not get a new book here (id==0)
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
-
-            initialPagerPosition = args.getInt(BKEY_NAV_POSITION, 0);
+            initialPagerPosition = args.getPosition();
 
             // the navTable is optional
             // If present, the user can swipe to the next/previous book in the list.
-            final String navTableName = args.getString(BKEY_NAV_TABLE_NAME, null);
+            final String navTableName = args.getNavTableName();
             if (navTableName != null && !navTableName.isEmpty()) {
                 // GitHub #90 + #140
                 // When the app was displaying a book-detail, and the user switched to other apps,
@@ -122,13 +110,10 @@ public class ShowBookPagerViewModel
                 }
             }
 
-            if (args.containsKey(Book.BKEY_BOOK_ID_LIST)) {
-                final List<Long> idList = Objects.requireNonNull(
-                        ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST));
-                if (!idList.isEmpty()) {
-                    navHelper = new NavigatorList(idList);
-                    return true;
-                }
+            final List<Long> idList = args.getBookIdList();
+            if (idList != null && !idList.isEmpty()) {
+                navHelper = new NavigatorList(idList);
+                return true;
             }
 
             // no navTable given, and no explicit id list.

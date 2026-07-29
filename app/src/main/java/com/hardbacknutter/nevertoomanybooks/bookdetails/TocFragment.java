@@ -35,6 +35,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
@@ -139,7 +141,8 @@ public class TocFragment
 
         //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        aVm.init(args);
+        aVm.init(Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
+                                        DBKey.FK_BOOKSHELF));
 
         final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
         if (embedded) {

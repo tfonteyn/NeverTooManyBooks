@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsCon
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
@@ -238,7 +239,7 @@ public class BooksOnBookshelf
     /** Manage the bookshelves. */
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
     /** Display a Book. */
-    private ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher;
+    private ActivityResultLauncher<ShowBookPagerInput> displayBookLauncher;
     /** Add a Book by doing a search on the internet. */
     private ActivityResultLauncher<AddBookBySearchContract.Input> addBookBySearchLauncher;
     /** Edit a Book. */
@@ -786,7 +787,7 @@ public class BooksOnBookshelf
         // The SearchView takes care of them already.
         searchViewHelper = new SearchViewHelper(
                 vb.searchView, vb.searchResults,
-                id -> displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                id -> displayBookLauncher.launch(new ShowBookPagerInput(
                         id, vm.getBookshelf())),
                 query -> {
                     vm.onFtsSearch(query);
@@ -1048,7 +1049,7 @@ public class BooksOnBookshelf
             } else {
                 //  On small screens, opens a ViewPager with the book details
                 //  and swipe prev/next functionality.
-                displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                displayBookLauncher.launch(new ShowBookPagerInput(
                         bookId,
                         vm.getBookshelf(),
                         vm.getNavigationTablePosition(rowData.getLong(DBKey.PK_ID)),

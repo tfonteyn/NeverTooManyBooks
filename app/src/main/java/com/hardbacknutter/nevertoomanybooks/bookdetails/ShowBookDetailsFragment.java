@@ -120,13 +120,6 @@ public class ShowBookDetailsFragment
     public static final String TAG = "ShowBookDetailsFragment";
 
     /**
-     * Whether {@link ShowBookDetailsFragment} and its related child fragments
-     * is running in embedded mode (i.e. inside a frame on the BoB screen) or not.
-     * We could (should?) use a boolean resource in "sw800-land" instead.
-     */
-    static final String BKEY_EMBEDDED = TAG + ":bd-embedded";
-
-    /**
      * Delegate to handle cover replacement, rotation, etc.
      * Individual instances are only created when the corresponding image field is globally enabled.
      * i.o.w. check for {@code null} !
@@ -172,14 +165,8 @@ public class ShowBookDetailsFragment
                                   @NonNull final Bookshelf bookshelf,
                                   final boolean embedded) {
         final Fragment fragment = new ShowBookDetailsFragment();
-        final Bundle args = new Bundle(3);
-        // aVm
-        args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
-        // onCreate + vm
-        args.putBoolean(BKEY_EMBEDDED, embedded);
-        // vm
-        args.putLong(DBKey.FK_BOOK, bookId);
-        fragment.setArguments(args);
+        final ShowBookDetailsInput input = new ShowBookDetailsInput(bookId, bookshelf, embedded);
+        fragment.setArguments(input.toBundle());
         return fragment;
     }
 
@@ -196,13 +183,13 @@ public class ShowBookDetailsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
+        final ShowBookDetailsInput args = ShowBookDetailsInput.fromBundle(requireArguments());
 
         //noinspection DataFlowIssue
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        aVm.init(args);
+        aVm.init(args.getBookshelf());
 
-        final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
+        final boolean embedded = args.isEmbedded();
         if (embedded) {
             // Create the vm in the Activity scope allowing it to be accessed by
             // the BooksOnBookshelf activity.

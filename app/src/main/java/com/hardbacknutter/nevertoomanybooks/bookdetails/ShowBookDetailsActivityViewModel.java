@@ -19,17 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-
 
 /**
  * Shared data between pager, details and TOC fragments.
@@ -66,12 +60,11 @@ public class ShowBookDetailsActivityViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link DBKey#FK_BOOKSHELF} the parcelled Bookshelf
+     * @param bookshelf current Bookshelf
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final Bookshelf bookshelf) {
         if (style == null) {
-            bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                               DBKey.FK_BOOKSHELF);
+            this.bookshelf = bookshelf;
             style = bookshelf.getStyle();
         }
     }

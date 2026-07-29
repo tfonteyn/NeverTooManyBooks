@@ -39,6 +39,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -55,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public class DisplayBookLauncher {
 
     @NonNull
-    private final ActivityResultLauncher<ShowBookPagerContract.Input> launcher;
+    private final ActivityResultLauncher<ShowBookPagerInput> launcher;
 
     /**
      * Constructor.
@@ -124,8 +125,8 @@ public class DisplayBookLauncher {
         final long currentWorkId = currentWork.getId();
         final int pos = bookIdList.indexOf(bookId);
 
-        launcher.launch(new ShowBookPagerContract.Input(currentWorkId, bookshelf,
-                                                        pos, bookIdList));
+        launcher.launch(new ShowBookPagerInput(currentWorkId, bookshelf,
+                                               pos, bookIdList));
     }
 
     /**
@@ -150,7 +151,7 @@ public class DisplayBookLauncher {
         switch (work.getWorkType()) {
             case Book:
             case BookLite: {
-                launcher.launch(new ShowBookPagerContract.Input(work.getId(), bookshelf));
+                launcher.launch(new ShowBookPagerInput(work.getId(), bookshelf));
                 break;
             }
             case TocEntry: {
@@ -179,7 +180,7 @@ public class DisplayBookLauncher {
                             final boolean allBookshelves) {
 
         if (bookIdList.size() == 1) {
-            launcher.launch(new ShowBookPagerContract.Input(bookIdList.get(0), bookshelf));
+            launcher.launch(new ShowBookPagerInput(bookIdList.get(0), bookshelf));
 
         } else {
             final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
