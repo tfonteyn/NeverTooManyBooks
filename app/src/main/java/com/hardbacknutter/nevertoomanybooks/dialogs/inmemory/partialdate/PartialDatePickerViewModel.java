@@ -31,8 +31,6 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 
 /**
@@ -68,20 +66,17 @@ public class PartialDatePickerViewModel
 
     private boolean initDone;
 
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final PartialDatePickerInput args) {
         if (!initDone) {
             initDone = true;
 
-            final String dateString = args.getString(PartialDatePickerLauncher.BKEY_EDIT, null);
-
-            final DateParser<PartialDate> partialDateParser = new PartialDateParser();
-            previousSelection = partialDateParser.parse(dateString).orElse(PartialDate.NOT_SET);
+            previousSelection = args.getSelectedDate();
 
             year = previousSelection.getYear().orElse(LocalDate.now().getYear());
             month = previousSelection.getMonthValue().orElse(null);
             day = previousSelection.getDayOfMonth().orElse(null);
 
-            extras = args.getBundle(PartialDatePickerLauncher.BKEY_EXTRAS);
+            extras = args.getExtras();
         }
     }
 

@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
@@ -113,16 +113,15 @@ class PartialDatePickerDelegate
         //noinspection DataFlowIssue
         limitedHeight = isVeryLimitedHeight(owner.getActivity());
 
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        dialogTitle = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_TITLE,
-                                     owner.getString(R.string.action_edit));
-        dialogMessage = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_MESSAGE,
-                                       // show the default help text
-                                       owner.getString(R.string.info_partial_date_picker));
+        final Context context = owner.requireContext();
+        final PartialDatePickerInput input = PartialDatePickerInput.fromBundle(args);
+
+        requestKey = input.getRequestKey();
+        dialogTitle = input.getDialogTitle(context);
+        dialogMessage = input.getDialogMessage(context);
 
         vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
-        vm.init(args);
+        vm.init(input);
     }
 
     @NonNull

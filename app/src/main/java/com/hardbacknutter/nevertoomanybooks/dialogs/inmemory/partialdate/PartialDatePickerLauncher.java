@@ -41,14 +41,10 @@ public class PartialDatePickerLauncher
         extends DialogLauncher {
 
     private static final String TAG = "PDatePickerLauncher";
-    static final String BKEY_DIALOG_TITLE = TAG + ":title";
-    static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
-    static final String BKEY_EXTRAS = TAG + ":extras";
-
-    /** A standard SQL style (partial) date string, must/will be valid. */
-    static final String BKEY_EDIT = TAG + ":edit";
     private static final String BKEY_ORIGINAL = TAG + ":original";
+    private static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_EXTRAS = TAG + ":extras";
 
     @NonNull
     private final ResultListener resultListener;
@@ -100,31 +96,21 @@ public class PartialDatePickerLauncher
      *                      but another UI {@code Context} will also do.
      * @param dialogTitle   the dialog title
      * @param dialogMessage (optional) message to display at the top of the dialog
-     * @param edit          (optional) the value to edit
+     * @param selectedDate  (optional) the value to edit
      * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull @UiContext final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
-                       @Nullable final String edit,
+                       @Nullable final String selectedDate,
                        @Nullable final Bundle extras) {
 
-        final Bundle args = new Bundle();
-        args.putString(BKEY_DIALOG_TITLE, dialogTitle);
-        if (dialogMessage != null && !dialogMessage.isEmpty()) {
-            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
-        }
-
-        if (edit != null) {
-            args.putString(BKEY_EDIT, edit);
-        }
-
-        if (extras != null && !extras.isEmpty()) {
-            args.putBundle(BKEY_EXTRAS, extras);
-        }
-        showDialog(context, args);
+        final PartialDatePickerInput input = new PartialDatePickerInput(
+                getRequestKey(), dialogTitle, dialogMessage, selectedDate, extras);
+        showDialog(context, input.toBundle());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
