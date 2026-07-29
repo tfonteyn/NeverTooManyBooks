@@ -39,7 +39,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
@@ -63,10 +62,12 @@ class StylePickerDelegate
     StylePickerDelegate(@NonNull final DialogFragment owner,
                         @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
+
+        final StylePickerInput input = StylePickerInput.fromBundle(args);
+        requestKey = input.getRequestKey();
+
         vm = new ViewModelProvider(owner).get(StylePickerViewModel.class);
-        vm.init(args);
+        vm.init(input);
     }
 
     @NonNull

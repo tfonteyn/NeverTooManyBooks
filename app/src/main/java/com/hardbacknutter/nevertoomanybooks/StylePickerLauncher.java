@@ -36,10 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 class StylePickerLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "StylePickerLauncher";
-
-    static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
-
     @NonNull
     private final ResultListener resultListener;
 
@@ -85,11 +81,9 @@ class StylePickerLauncher
                        @NonNull final Style currentStyle,
                        final boolean all) {
 
-        final Bundle args = new Bundle(3);
-        args.putString(Style.BKEY_UUID, currentStyle.getUuid());
-        args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
-
-        showDialog(context, args);
+        final StylePickerInput input = new StylePickerInput(
+                getRequestKey(), currentStyle.getUuid(), all);
+        showDialog(context, input.toBundle());
     }
 
     @Override

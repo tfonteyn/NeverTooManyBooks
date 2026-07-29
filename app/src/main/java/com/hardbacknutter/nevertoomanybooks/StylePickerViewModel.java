@@ -21,14 +21,12 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.SuperscriptSpan;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -56,18 +54,18 @@ public class StylePickerViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final StylePickerInput args) {
         if (selectedStyle == null) {
             // We MUST have a style
             selectedStyle = ServiceLocator
                     .getInstance()
                     .getStyles()
-                    .getStyle(args.getString(Style.BKEY_UUID))
+                    .getStyle(args.getUuid())
                     .orElseThrow(() -> new IllegalArgumentException(Style.BKEY_UUID));
 
-            showAllStyles = args.getBoolean(StylePickerLauncher.BKEY_SHOW_ALL_STYLES, false);
+            showAllStyles = args.isShowAllStyles();
 
             builtinLabelSuffix = new SpannableString(" *");
             builtinLabelSuffix.setSpan(new SuperscriptSpan(), 0, 1,
