@@ -35,10 +35,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class ExtMenuBottomSheet
@@ -50,9 +48,9 @@ public class ExtMenuBottomSheet
     private PopupMenuBinding vb;
     private List<ExtMenuItem> menuList;
     @Nullable
-    private String title;
+    private CharSequence title;
     @Nullable
-    private String message;
+    private CharSequence message;
     private String requestKey;
     private int menuOwner;
     private final MenuItemListAdapter.MenuCallback menuCallback =
@@ -77,14 +75,13 @@ public class ExtMenuBottomSheet
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
+        final ExtMenuInput args = ExtMenuInput.fromBundle(requireArguments());
+        requestKey = args.getRequestKey();
 
-        title = args.getString(ExtMenuLauncher.BKEY_TITLE);
-        message = args.getString(ExtMenuLauncher.BKEY_MESSAGE);
-        menuList = Objects.requireNonNull(args.getParcelableArrayList(ExtMenuLauncher.BKEY_MENU));
-        menuOwner = args.getInt(ExtMenuLauncher.BKEY_MENU_OWNER);
+        title = args.getMenuTitle();
+        message = args.getMessage();
+        menuList = args.getItems();
+        menuOwner = args.getMenuOwner();
     }
 
     @Nullable

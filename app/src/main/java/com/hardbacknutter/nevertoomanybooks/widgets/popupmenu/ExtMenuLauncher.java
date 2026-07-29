@@ -39,15 +39,8 @@ public class ExtMenuLauncher
         extends DialogLauncher {
 
     private static final String TAG = "ExtMenuLauncher";
-    static final String BKEY_TITLE = TAG + ":t";
-    static final String BKEY_MESSAGE = TAG + ":msg";
-    static final String BKEY_MENU = TAG + ":menu";
-    /**
-     * Typically the adapter-position (includes {@code 0}) for the View/item which
-     * owns the menu. But can also be a generic id.
-     */
-    static final String BKEY_MENU_OWNER = TAG + ":owner";
     private static final String RESULT_MENU_ITEM = TAG + ":mi";
+    private static final String RESULT_MENU_OWNER = TAG + ":owner";
 
     @NonNull
     private final ExtMenuResultListener resultListener;
@@ -62,7 +55,7 @@ public class ExtMenuLauncher
     public ExtMenuLauncher(@NonNull final String requestKey,
                            @NonNull final ExtMenuResultListener resultListener) {
         super(requestKey,
-              // We ONLY use a BottomSheet here as the dialog is done by using a PopupWindow
+              // We ONLY use a BottomSheet as the dialog is done by using a PopupWindow
               ExtMenuBottomSheet::new,
               ExtMenuBottomSheet::new);
         this.resultListener = resultListener;
@@ -95,7 +88,7 @@ public class ExtMenuLauncher
                           final int menuOwner,
                           @IdRes final int menuItemId) {
         final Bundle result = new Bundle(2);
-        result.putInt(BKEY_MENU_OWNER, menuOwner);
+        result.putInt(RESULT_MENU_OWNER, menuOwner);
         result.putInt(RESULT_MENU_ITEM, menuItemId);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -134,26 +127,16 @@ public class ExtMenuLauncher
         } else {
             final ArrayList<ExtMenuItem> items = ExtMenuItem.convert(menu, groupDividerEnabled);
 
-            final Bundle args = new Bundle(5);
-
-            if (menuTitle != null) {
-                args.putString(BKEY_TITLE, menuTitle.toString());
-            }
-            if (message != null) {
-                args.putString(BKEY_MESSAGE, message.toString());
-            }
-
-            args.putInt(BKEY_MENU_OWNER, menuOwner);
-            args.putParcelableArrayList(BKEY_MENU, items);
-
-            showDialog(context, args);
+            final ExtMenuInput input = new ExtMenuInput(
+                    getRequestKey(), menuTitle, message, menuOwner, items);
+            showDialog(context, input.toBundle());
         }
     }
 
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onMenuItemClick(result.getInt(BKEY_MENU_OWNER),
+        resultListener.onMenuItemClick(result.getInt(RESULT_MENU_OWNER),
                                        result.getInt(RESULT_MENU_ITEM));
     }
 }
