@@ -101,10 +101,9 @@ class ReadingProgressLauncher
      */
     public void launch(@NonNull @UiContext final Context context,
                        @NonNull final ReadingProgress readingProgress) {
-        final Bundle args = new Bundle(2);
-        args.putParcelable(DBKey.READ_PROGRESS, readingProgress);
 
-        showDialog(context, args);
+        final ReadingProgressInput input = new ReadingProgressInput(getRequestKey(), readingProgress);
+        showDialog(context, input.tobundle());
     }
 
     @Override
@@ -113,6 +112,7 @@ class ReadingProgressLauncher
         if (result.containsKey(DBKey.READ__BOOL)) {
             onReadListener.onRead(result.getBoolean(DBKey.READ__BOOL));
         } else {
+            //noinspection deprecation
             onReadingProgressListener.onReadingProgress(
                     Objects.requireNonNull(result.getParcelable(DBKey.READ_PROGRESS),
                                            DBKey.READ_PROGRESS));

@@ -20,14 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
-
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 @SuppressWarnings("WeakerAccess")
 public class ReadingProgressViewModel
@@ -35,9 +29,9 @@ public class ReadingProgressViewModel
 
     private ReadingProgress readingProgress;
 
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final ReadingProgressInput args) {
         if (readingProgress == null) {
-            readingProgress = Objects.requireNonNull(args.getParcelable(DBKey.READ_PROGRESS));
+            readingProgress = args.getReadingProgress();
         }
     }
 

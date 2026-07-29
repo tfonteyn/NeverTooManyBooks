@@ -48,7 +48,8 @@ public class ReadStatusFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        vm = ReadStatusFragmentFactory.getViewModel(this, requireArguments());
+        vm = ReadStatusFragmentFactory.getViewModel(this, ReadStatusFragmentFactory
+                .Input.fromBundle(requireArguments()));
     }
 
     @Nullable

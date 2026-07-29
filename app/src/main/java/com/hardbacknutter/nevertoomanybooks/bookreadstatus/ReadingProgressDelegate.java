@@ -44,7 +44,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookReadProgressContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
@@ -72,10 +71,12 @@ class ReadingProgressDelegate
     ReadingProgressDelegate(@NonNull final DialogFragment owner,
                             @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
+
+        final ReadingProgressInput input = ReadingProgressInput.fromBundle(args);
+
+        requestKey = input.getRequestKey();
         vm = new ViewModelProvider(owner).get(ReadingProgressViewModel.class);
-        vm.init(args);
+        vm.init(input);
 
         percentageTextWatcher = this::percentageTextToSlider;
         currentPageTextWatcher = this::currentPageTextToSlider;

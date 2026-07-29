@@ -124,7 +124,7 @@ public final class ReadStatusFragmentFactory {
      * To be called from the Read status/progress {@link Fragment#onCreate(Bundle)}.
      *
      * @param fragment hosting fragment
-     * @param args     bundle
+     * @param args     all arguments
      *
      * @return the ViewModel
      *
@@ -132,14 +132,13 @@ public final class ReadStatusFragmentFactory {
      */
     @NonNull
     static BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
-                                                @NonNull final Bundle args) {
+                                                @NonNull final Input args) {
 
-        final Input input = Input.fromBundle(args);
-        final Mode mode = input.getMode();
+        final Mode mode = args.getMode();
         switch (mode) {
             case Show: {
                 // See class docs for ShowBookDetailsFragment
-                if (input.isEmbedded()) {
+                if (args.isEmbedded()) {
                     return new ViewModelProvider(fragment.requireActivity())
                             .get(ShowBookDetailsViewModel.class);
                 } else {
@@ -197,7 +196,7 @@ public final class ReadStatusFragmentFactory {
         }
     }
 
-    private static final class Input {
+    static final class Input {
         @NonNull
         private final Mode mode;
         private final boolean embedded;
