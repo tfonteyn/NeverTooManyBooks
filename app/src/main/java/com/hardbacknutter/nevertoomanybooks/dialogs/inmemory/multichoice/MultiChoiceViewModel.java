@@ -24,13 +24,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class MultiChoiceViewModel
@@ -38,9 +35,8 @@ public class MultiChoiceViewModel
 
     @NonNull
     private final Set<Long> previousSelection = new HashSet<>();
-    @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
-    private Set<Long> currentSelection;
+    private final Set<Long> currentSelection = new HashSet<>();
     private boolean preferenceChanged;
     @Nullable
     private Bundle extras;
@@ -50,22 +46,16 @@ public class MultiChoiceViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final MultiChoiceInput args) {
         if (!initDone) {
             initDone = true;
 
-            @Nullable
-            final long[] selected = args.getLongArray(MultiChoiceLauncher.BKEY_EDIT);
-            if (selected != null) {
-                previousSelection.addAll(Arrays.stream(selected)
-                                              .boxed()
-                                              .collect(Collectors.toSet()));
-            }
-            currentSelection = new HashSet<>(previousSelection);
+            previousSelection.addAll(args.getSelectedIds());
+            currentSelection.addAll(previousSelection);
 
-            extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
+            extras = args.getExtras();
         }
     }
 

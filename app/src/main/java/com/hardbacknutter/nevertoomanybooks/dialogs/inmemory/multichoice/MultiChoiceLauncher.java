@@ -48,18 +48,10 @@ public final class MultiChoiceLauncher<T extends Entity>
         extends DialogLauncher {
 
     private static final String TAG = "MultiChoiceLauncher";
-    static final String BKEY_DIALOG_TITLE = TAG + ":title";
-    static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
-    static final String BKEY_EXTRAS = TAG + ":extras";
-
-    /** The list of strings to display in the dropdown. */
-    static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
-    /** The ids for the list of strings to display in the dropdown. */
-    static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
-
-    static final String BKEY_EDIT = TAG + ":edit";
     private static final String BKEY_ORIGINAL = TAG + ":original";
+    private static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_EXTRAS = TAG + ":extras";
 
     @NonNull
     private final ResultListener resultListener;
@@ -124,26 +116,9 @@ public final class MultiChoiceLauncher<T extends Entity>
                        @Nullable final List<T> edit,
                        @Nullable final Bundle extras) {
 
-        final Bundle args = new Bundle();
-        args.putString(BKEY_DIALOG_TITLE, dialogTitle);
-        if (dialogMessage != null && !dialogMessage.isEmpty()) {
-            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
-        }
-
-        // pass in id/labels as two arrays
-        args.putLongArray(BKEY_ITEM_LIST_ID, allItems
-                .stream().mapToLong(Entity::getId).toArray());
-        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
-                .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
-
-        if (edit != null) {
-            args.putLongArray(BKEY_EDIT, edit.stream().mapToLong(Entity::getId).toArray());
-        }
-
-        if (extras != null && !extras.isEmpty()) {
-            args.putBundle(BKEY_EXTRAS, extras);
-        }
-        showDialog(context, args);
+        final MultiChoiceInput input = new MultiChoiceInput(
+                context, getRequestKey(), dialogTitle, dialogMessage, allItems, edit, extras);
+        showDialog(context, input.toBundle());
     }
 
     @Override

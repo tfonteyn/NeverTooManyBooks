@@ -32,15 +32,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
@@ -63,10 +60,10 @@ class MultiChoiceDelegate
     @Nullable
     private final String dialogMessage;
 
-    /** The list of items to display. */
+    /** The labels of the items to display. */
     @NonNull
-    private final List<String> items;
-    /** The ids for the list of items to display. */
+    private final List<String> itemLabels;
+    /** The ids of the items to display. */
     @NonNull
     private final List<Long> itemIds;
 
@@ -79,23 +76,19 @@ class MultiChoiceDelegate
     MultiChoiceDelegate(@NonNull final DialogFragment owner,
                         @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        dialogTitle = args.getString(MultiChoiceLauncher.BKEY_DIALOG_TITLE,
-                                     owner.getString(R.string.action_edit));
-        dialogMessage = args.getString(MultiChoiceLauncher.BKEY_DIALOG_MESSAGE, null);
 
-        itemIds = Arrays.stream(Objects.requireNonNull(
-                              args.getLongArray(MultiChoiceLauncher.BKEY_ITEM_LIST_ID),
-                              MultiChoiceLauncher.BKEY_ITEM_LIST_ID))
-                        .boxed().collect(Collectors.toList());
-        items = Arrays.stream(Objects.requireNonNull(
-                                   args.getStringArray(MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT),
-                                   MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT))
-                      .collect(Collectors.toList());
+        final MultiChoiceInput input = MultiChoiceInput.fromBundle(args);
+
+        requestKey = input.getRequestKey();
+        //noinspection DataFlowIssue
+        dialogTitle = input.getDialogTitle(owner.getContext());
+        dialogMessage = input.getDialogMessage();
+
+        itemIds = input.getIds();
+        itemLabels = input.getLabels();
 
         vm = new ViewModelProvider(owner).get(MultiChoiceViewModel.class);
-        vm.init(args);
+        vm.init(input);
     }
 
     @Nullable
@@ -148,7 +141,7 @@ class MultiChoiceDelegate
         }
 
         adapter = new ChecklistRecyclerAdapter<>(
-                itemIds, items::get, vm.getCurrentSelection(),
+                itemIds, itemLabels::get, vm.getCurrentSelection(),
                 new ChecklistRecyclerAdapter.SelectionListener<>() {
                     @Override
                     public void onSelected(@NonNull final Long id,
