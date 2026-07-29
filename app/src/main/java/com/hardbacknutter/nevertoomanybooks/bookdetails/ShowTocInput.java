@@ -29,7 +29,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-public class ShowTocInput {
+class ShowTocInput {
 
     private static final String TAG = "ShowTocInput";
 
@@ -69,16 +69,16 @@ public class ShowTocInput {
         return args;
     }
 
-    public long getBookId() {
+    long getBookId() {
         return bookId;
     }
 
-    public boolean isEmbedded() {
+    boolean isEmbedded() {
         return embedded;
     }
 
     @NonNull
-    public Bookshelf getBookshelf() {
+    Bookshelf getBookshelf() {
         return bookshelf;
     }
 }

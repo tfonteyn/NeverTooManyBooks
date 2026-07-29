@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -66,11 +65,13 @@ class EditTocEntryDelegate
     EditTocEntryDelegate(@NonNull final DialogFragment owner,
                          @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
+
+        final EditTocEntryInput input = EditTocEntryInput.fromBundle(args);
+        requestKey = input.getRequestKey();
+
         vm = new ViewModelProvider(owner).get(EditTocEntryViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(owner.getContext(), args);
+        vm.init(owner.getContext(), input);
     }
 
     @NonNull

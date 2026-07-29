@@ -21,35 +21,27 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tocentry;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-@SuppressWarnings("noinspection WeakerAccess")
+@SuppressWarnings("WeakerAccess")
 public class EditTocEntryViewModel
         extends ViewModel {
 
-    private static final String TAG = "EditTocEntryViewModel";
-    static final String BKEY_ANTHOLOGY = TAG + ":anthology";
-    static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
-    static final String BKEY_POSITION = TAG + ":pos";
-
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
+
     @Nullable
     private String bookTitle;
 
@@ -78,17 +70,17 @@ public class EditTocEntryViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Fragment#requireArguments()}
+     * @param args    all arguments
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+    void init(@NonNull final Context context,
+              @NonNull final EditTocEntryInput args) {
         if (authorDao == null) {
             authorDao = ServiceLocator.getInstance().getAuthorDao();
 
-            original = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
-            editPosition = args.getInt(BKEY_POSITION, 0);
-            isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
-            bookTitle = args.getString(DBKey.TITLE);
+            original = args.getTocEntry();
+            editPosition = args.getPosition();
+            isAnthology = args.isAnthology();
+            bookTitle = args.getBookTitle();
 
             currentEdit = new TocEntry(new Author(original.getPrimaryAuthor(), true),
                                        original.getTitle(),
@@ -104,42 +96,42 @@ public class EditTocEntryViewModel
     }
 
     @Nullable
-    public String getBookTitle() {
+    String getBookTitle() {
         return bookTitle;
     }
 
     @NonNull
-    public TocEntry getOriginal() {
+    TocEntry getOriginal() {
         return original;
     }
 
-    public int getEditPosition() {
+    int getEditPosition() {
         return editPosition;
     }
 
-    public boolean isAnthology() {
+    boolean isAnthology() {
         return isAnthology;
     }
 
     @NonNull
-    public TocEntry getCurrentEdit() {
+    TocEntry getCurrentEdit() {
         return currentEdit;
     }
 
-    public void setTitle(@NonNull final String title) {
+    void setTitle(@NonNull final String title) {
         currentEdit.setTitle(title);
     }
 
-    public void setFirstPublicationDate(@NonNull final CharSequence dateStr) {
+    void setFirstPublicationDate(@NonNull final CharSequence dateStr) {
         currentEdit.setFirstPublicationDate(partialDateParser.parse(dateStr)
                                                              .orElse(PartialDate.NOT_SET));
     }
 
-    public String getCurrentAuthorName() {
+    String getCurrentAuthorName() {
         return currentAuthorName;
     }
 
-    public void setCurrentAuthorName(@NonNull final String currentAuthorName) {
+    void setCurrentAuthorName(@NonNull final String currentAuthorName) {
         this.currentAuthorName = currentAuthorName;
     }
 

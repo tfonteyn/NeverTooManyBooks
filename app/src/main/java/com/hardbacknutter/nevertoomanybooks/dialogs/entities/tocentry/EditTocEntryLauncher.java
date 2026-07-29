@@ -37,6 +37,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class EditTocEntryLauncher
         extends DialogLauncher {
 
+    private static final String TAG = "EditTocEntryLauncher";
+    private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
+    private static final String BKEY_POSITION = TAG + ":pos";
+
     @NonNull
     private final ResultListener resultListener;
 
@@ -69,8 +73,8 @@ public class EditTocEntryLauncher
                           final int position) {
 
         final Bundle result = new Bundle(2);
-        result.putParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY, tocEntry);
-        result.putInt(EditTocEntryViewModel.BKEY_POSITION, position);
+        result.putParcelable(BKEY_TOC_ENTRY, tocEntry);
+        result.putInt(BKEY_POSITION, position);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
@@ -90,22 +94,18 @@ public class EditTocEntryLauncher
                        @NonNull final TocEntry tocEntry,
                        final boolean isAnthology) {
 
-        final Bundle args = new Bundle(5);
-        args.putString(DBKey.TITLE, book.getTitle());
-        args.putBoolean(EditTocEntryViewModel.BKEY_ANTHOLOGY, isAnthology);
-        args.putParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY, tocEntry);
-        args.putInt(EditTocEntryViewModel.BKEY_POSITION, position);
-
-        showDialog(context, args);
+        final EditTocEntryInput input = new EditTocEntryInput(
+                getRequestKey(), book.getTitle(), position, tocEntry, isAnthology);
+        showDialog(context, input.toBundle());
     }
 
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+        //noinspection deprecation
         resultListener.onResult(
-                Objects.requireNonNull(result.getParcelable(EditTocEntryViewModel.BKEY_TOC_ENTRY),
-                                       EditTocEntryViewModel.BKEY_TOC_ENTRY),
-                result.getInt(EditTocEntryViewModel.BKEY_POSITION));
+                Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
+                result.getInt(BKEY_POSITION));
     }
 
     @FunctionalInterface
