@@ -117,11 +117,9 @@ public class EditLenderLauncher
             // The permission was optional - so regardless of the result, continue.
             // The delegate will simply check if the permission was granted when it
             // wants to get the contacts... or ignore it.
-            final Bundle args = new Bundle(3);
-            args.putLong(DBKey.FK_BOOK, bookId);
-            args.putString(DBKey.TITLE, bookTitle);
 
-            showDialog(context, args);
+            final EditLenderInput input = new EditLenderInput(getRequestKey(), bookId, bookTitle);
+            showDialog(context, input.toBundle());
         });
     }
 

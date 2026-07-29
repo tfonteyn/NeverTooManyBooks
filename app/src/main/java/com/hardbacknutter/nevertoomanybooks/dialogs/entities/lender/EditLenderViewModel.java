@@ -23,12 +23,10 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -72,11 +70,11 @@ public class EditLenderViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      *
      * @throws IllegalArgumentException (debug) missing book id
      */
-    public void init(@NonNull final Bundle args) {
+    void init(@NonNull final EditLenderInput args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getLoaneeDao();
 
@@ -89,18 +87,19 @@ public class EditLenderViewModel
             // We're NOT adding the null check to the DAO though leaving future investigation open
             people.addAll(list.stream().filter(Objects::nonNull).collect(Collectors.toList()));
 
-            bookId = args.getLong(DBKey.FK_BOOK, 0);
+            bookId = args.getBookId();
             if (bookId <= 0) {
+                // Sanity check, we should not get a new book here (id==0)
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
-            bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
+            bookTitle = args.getBookTitle();
 
             loanee = dao.findLoaneeByBookId(bookId);
             currentEdit = loanee;
         }
     }
 
-    public long getBookId() {
+    long getBookId() {
         return bookId;
     }
 
@@ -110,11 +109,11 @@ public class EditLenderViewModel
     }
 
     @Nullable
-    public String getCurrentEdit() {
+    String getCurrentEdit() {
         return currentEdit;
     }
 
-    public void setCurrentEdit(@Nullable final String currentEdit) {
+    void setCurrentEdit(@Nullable final String currentEdit) {
         this.currentEdit = currentEdit;
     }
 
@@ -126,7 +125,7 @@ public class EditLenderViewModel
      * @return list
      */
     @NonNull
-    public List<String> getPeople() {
+    List<String> getPeople() {
         return people;
     }
 

@@ -43,7 +43,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 
@@ -72,10 +71,13 @@ class EditLenderDelegate
     EditLenderDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
+
+        final EditLenderInput input = EditLenderInput.fromBundle(args);
+
+        requestKey = input.getRequestKey();
+
         vm = new ViewModelProvider(owner).get(EditLenderViewModel.class);
-        vm.init(args);
+        vm.init(input);
     }
 
     @NonNull
