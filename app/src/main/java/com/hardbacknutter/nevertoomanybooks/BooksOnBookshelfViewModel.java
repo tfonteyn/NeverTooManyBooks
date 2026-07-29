@@ -1443,8 +1443,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * This method is called after the user edited a style in
-     * the {@link StylePickerDialogFragment}.
+     * This method is called after the user edited a style in {@code StylePickerDialogFragment}.
      *
      * @param context Current context
      * @param data    returned from the view/edit contract

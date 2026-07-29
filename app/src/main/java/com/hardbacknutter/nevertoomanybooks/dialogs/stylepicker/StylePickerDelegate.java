@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.dialogs.stylepicker;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -37,6 +37,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;

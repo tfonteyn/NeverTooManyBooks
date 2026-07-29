@@ -119,6 +119,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters.BookshelfFiltersLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete.AutoCompletePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.stylepicker.StylePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.stylepicker.StylePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -1528,7 +1530,7 @@ public class BooksOnBookshelf
      *
      * @param style to edit
      */
-    void editStyle(@NonNull final Style style) {
+    public void editStyle(@NonNull final Style style) {
         editStyleLauncher.launch(EditStyleContract.edit(style, true));
     }
 
