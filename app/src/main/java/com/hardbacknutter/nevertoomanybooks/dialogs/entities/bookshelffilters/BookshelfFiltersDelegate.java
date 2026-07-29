@@ -153,11 +153,6 @@ class BookshelfFiltersDelegate
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
     }
 
-    @NonNull
-    RecyclerView getRecyclerView() {
-        return vb.filterList;
-    }
-
     @Override
     public void onStart(@NonNull final LifecycleOwner lifecycleOwner) {
         if (vm.getFilterList().isEmpty()) {

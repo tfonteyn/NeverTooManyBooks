@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Objects;
 
@@ -119,11 +118,6 @@ class StylePickerDelegate
                                                   vm.getSelectedStyle(),
                                                   vm::setSelectedStyle);
         vb.stylesList.setAdapter(adapter);
-    }
-
-    @NonNull
-    RecyclerView getRecyclerView() {
-        return vb.stylesList;
     }
 
     @Override

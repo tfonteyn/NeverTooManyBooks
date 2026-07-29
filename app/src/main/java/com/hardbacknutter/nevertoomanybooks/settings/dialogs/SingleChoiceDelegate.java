@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -134,11 +133,6 @@ class SingleChoiceDelegate
                 vm::setNewValue
         );
         vb.itemList.setAdapter(adapter);
-    }
-
-    @NonNull
-    RecyclerView getRecyclerView() {
-        return vb.itemList;
     }
 
     @Override
