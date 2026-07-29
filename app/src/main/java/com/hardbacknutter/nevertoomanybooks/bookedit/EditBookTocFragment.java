@@ -60,7 +60,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -75,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.codes.ProductCode;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
@@ -582,10 +582,6 @@ public class EditBookTocFragment
     public static class ConfirmTocDialogFragment
             extends DialogFragment {
 
-        /** Log tag. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "ConfirmTocDialogFrag";
-        private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
         /** FragmentResultListener request key to use for our response. */
         private String requestKey;
         private boolean hasOtherEditions;
@@ -596,15 +592,11 @@ public class EditBookTocFragment
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            final Bundle args = requireArguments();
-            requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                                DialogLauncher.BKEY_REQUEST_KEY);
-            tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
-                                                Book.BKEY_TOC_LIST);
-
-            bookContentType = Objects.requireNonNull(args.getParcelable(DBKey.CONTENT_TYPE),
-                                                     DBKey.CONTENT_TYPE);
-            hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
+            final LauncherInput args = LauncherInput.fromBundle(requireArguments());
+            requestKey = args.getRequestKey();
+            tocEntries = args.getToc();
+            bookContentType = args.getBookContentType();
+            hasOtherEditions = args.isHasOtherEditions();
         }
 
         @NonNull
@@ -650,11 +642,83 @@ public class EditBookTocFragment
             return dialog;
         }
 
+        private static class LauncherInput {
+
+            @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+            private static final String TAG = "LauncherInput";
+            private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hoe";
+
+            @NonNull
+            private final String requestKey;
+            @NonNull
+            private final List<TocEntry> toc;
+            @NonNull
+            private final Book.ContentType bookContentType;
+            private final boolean hasOtherEditions;
+
+            LauncherInput(@NonNull final String requestKey,
+                          @NonNull final List<TocEntry> toc,
+                          @NonNull final Book.ContentType bookContentType,
+                          final boolean hasOtherEditions) {
+                this.requestKey = requestKey;
+                this.toc = toc;
+                this.bookContentType = bookContentType;
+                this.hasOtherEditions = hasOtherEditions;
+            }
+
+            @SuppressWarnings("deprecation")
+            @NonNull
+            static LauncherInput fromBundle(@NonNull final Bundle args) {
+                final String requestKey = Objects.requireNonNull(
+                        args.getString(DialogLauncher.BKEY_REQUEST_KEY),
+                        DialogLauncher.BKEY_REQUEST_KEY);
+                final List<TocEntry> tocEntries = Objects.requireNonNull(
+                        args.getParcelableArrayList(Book.BKEY_TOC_LIST), Book.BKEY_TOC_LIST);
+
+                final Book.ContentType bookContentType = Objects.requireNonNull(
+                        args.getParcelable(DBKey.CONTENT_TYPE), DBKey.CONTENT_TYPE);
+                final boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
+
+                return new LauncherInput(requestKey, tocEntries, bookContentType, hasOtherEditions);
+            }
+
+            @NonNull
+            Bundle toBundle() {
+                final Bundle args = new Bundle(4);
+                args.putString(DialogLauncher.BKEY_REQUEST_KEY, requestKey);
+                args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
+                args.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
+                args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
+
+                return args;
+            }
+
+            @NonNull
+            String getRequestKey() {
+                return requestKey;
+            }
+
+            @NonNull
+            List<TocEntry> getToc() {
+                return toc;
+            }
+
+            @NonNull
+            Book.ContentType getBookContentType() {
+                return bookContentType;
+            }
+
+            boolean isHasOtherEditions() {
+                return hasOtherEditions;
+            }
+        }
+
         public static class Launcher
                 extends DialogLauncher {
 
-            private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
-            private static final String BKEY_TOC_LIST = "tocEntries";
+            private static final String TAG = "Launcher";
+            private static final String SEARCH_NEXT_EDITION = TAG + ":next";
+
             @NonNull
             private final ResultListener resultListener;
             @NonNull
@@ -696,7 +760,7 @@ public class EditBookTocFragment
                                   @NonNull final List<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
                 result.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
-                result.putParcelableArrayList(BKEY_TOC_LIST, new ArrayList<>(tocEntries));
+                result.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(tocEntries));
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
 
@@ -722,25 +786,25 @@ public class EditBookTocFragment
                                @NonNull final Book.ContentType bookContentType,
                                final boolean hasOtherEditions) {
 
-                final Bundle args = new Bundle(4);
-                args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
-                args.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
-                args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
-
-                showDialog(context, args);
+                final LauncherInput input = new LauncherInput(
+                        getRequestKey(), toc, bookContentType, hasOtherEditions);
+                showDialog(context, input.toBundle());
             }
 
+            @SuppressWarnings("deprecation")
             @Override
             public void onFragmentResult(@NonNull final String requestKey,
                                          @NonNull final Bundle result) {
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
                     onSearchNextListener.searchNextEdition();
                 } else {
+                    final Book.ContentType contentType = result
+                            .getParcelable(DBKey.CONTENT_TYPE);
+                    final ArrayList<TocEntry> tocList = result
+                            .getParcelableArrayList(Book.BKEY_TOC_LIST);
                     resultListener.onResult(
-                            Objects.requireNonNull(result.getParcelable(DBKey.CONTENT_TYPE),
-                                                   DBKey.CONTENT_TYPE),
-                            Objects.requireNonNull(result.getParcelableArrayList(BKEY_TOC_LIST),
-                                                   BKEY_TOC_LIST));
+                            Objects.requireNonNull(contentType, DBKey.CONTENT_TYPE),
+                            Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST));
                 }
             }
 
