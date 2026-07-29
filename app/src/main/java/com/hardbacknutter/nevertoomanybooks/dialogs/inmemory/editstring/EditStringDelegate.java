@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtClearTextEndIconDelegate;
@@ -68,17 +66,17 @@ class EditStringDelegate
     EditStringDelegate(@NonNull final DialogFragment owner,
                        @NonNull final Bundle args) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
-        dialogTitle = args.getString(EditStringLauncher.BKEY_DIALOG_TITLE,
-                                     owner.getString(R.string.action_edit));
-        dialogMessage = args.getString(EditStringLauncher.BKEY_DIALOG_MESSAGE, null);
 
-        inputType = args.getInt(EditStringLauncher.BKEY_INPUT_TYPE,
-                                InputType.TYPE_CLASS_TEXT);
+        final EditStringInput input = EditStringInput.fromBundle(args);
+        requestKey = input.getRequestKey();
+        //noinspection DataFlowIssue
+        dialogTitle = input.getDialogTitle(owner.getContext());
+        dialogMessage = input.getDialogMessage();
+
+        inputType = input.getInputType();
 
         vm = new ViewModelProvider(owner).get(EditStringViewModel.class);
-        vm.init(args);
+        vm.init(input);
     }
 
     @NonNull

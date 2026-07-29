@@ -24,7 +24,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 @SuppressWarnings("WeakerAccess")
@@ -43,16 +42,16 @@ public class EditStringViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param args all arguments
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final EditStringInput args) {
         if (!initDone) {
             initDone = true;
 
-            previousValue = args.getString(EditStringLauncher.BKEY_EDIT, null);
+            previousValue = args.getEdit();
             currentValue = previousValue != null ? previousValue : "";
 
-            extras = args.getBundle(EditStringLauncher.BKEY_EXTRAS);
+            extras = args.getExtras();
         }
     }
 

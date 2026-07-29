@@ -37,14 +37,10 @@ public class EditStringLauncher
         extends DialogLauncher {
 
     private static final String TAG = "EditStringLauncher";
-    static final String BKEY_DIALOG_TITLE = TAG + ":title";
-    static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
-    static final String BKEY_EXTRAS = TAG + ":extras";
-    static final String BKEY_INPUT_TYPE = TAG + ":it";
-
-    static final String BKEY_EDIT = TAG + ":edit";
     private static final String BKEY_ORIGINAL = TAG + ":original";
+    private static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_EXTRAS = TAG + ":extras";
 
     @NonNull
     private final ResultListener resultListener;
@@ -110,23 +106,9 @@ public class EditStringLauncher
                        @Nullable final String edit,
                        @Nullable final Bundle extras) {
 
-        final Bundle args = new Bundle();
-        args.putString(BKEY_DIALOG_TITLE, dialogTitle);
-        if (dialogMessage != null && !dialogMessage.isEmpty()) {
-            args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
-        }
-
-        args.putInt(BKEY_INPUT_TYPE, inputType != 0 ? inputType
-                                                    : InputType.TYPE_CLASS_TEXT);
-
-        if (edit != null) {
-            args.putString(BKEY_EDIT, edit);
-        }
-
-        if (extras != null && !extras.isEmpty()) {
-            args.putBundle(BKEY_EXTRAS, extras);
-        }
-        showDialog(context, args);
+        final EditStringInput input = new EditStringInput(
+                getRequestKey(), dialogTitle, dialogMessage, inputType, edit, extras);
+        showDialog(context, input.toBundle());
     }
 
     @Override
