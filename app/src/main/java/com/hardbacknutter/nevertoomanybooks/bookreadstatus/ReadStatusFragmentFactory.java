@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 public final class ReadStatusFragmentFactory {
 
     private static final String TAG = "ReadStatusFragmentFactory";
-    private static final String BKEY_VIEWMODEL_MODE = TAG + ":vm";
+    private static final String BKEY_MODE = TAG + ":mode";
     private static final String BKEY_EMBEDDED = TAG + ":bd-embedded";
 
     private ReadStatusFragmentFactory() {
@@ -112,10 +112,8 @@ public final class ReadStatusFragmentFactory {
                                @NonNull final Fragment fragment,
                                @NonNull final Mode mode,
                                final boolean embedded) {
-        final Bundle args = new Bundle(2);
-        args.putParcelable(BKEY_VIEWMODEL_MODE, mode);
-        args.putBoolean(BKEY_EMBEDDED, embedded);
-        fragment.setArguments(args);
+        final Input input = new Input(mode, embedded);
+        fragment.setArguments(input.toBundle());
         fm.beginTransaction()
           .setReorderingAllowed(true)
           .replace(fragmentContainerViewId, fragment, tag)
@@ -135,12 +133,13 @@ public final class ReadStatusFragmentFactory {
     @NonNull
     static BookReadStatusViewModel getViewModel(@NonNull final Fragment fragment,
                                                 @NonNull final Bundle args) {
-        final Mode mode = Objects.requireNonNull(args.getParcelable(BKEY_VIEWMODEL_MODE));
+
+        final Input input = Input.fromBundle(args);
+        final Mode mode = input.getMode();
         switch (mode) {
             case Show: {
                 // See class docs for ShowBookDetailsFragment
-                final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
-                if (embedded) {
+                if (input.isEmbedded()) {
                     return new ViewModelProvider(fragment.requireActivity())
                             .get(ShowBookDetailsViewModel.class);
                 } else {
@@ -195,6 +194,45 @@ public final class ReadStatusFragmentFactory {
         @Override
         public int describeContents() {
             return 0;
+        }
+    }
+
+    private static final class Input {
+        @NonNull
+        private final Mode mode;
+        private final boolean embedded;
+
+        private Input(@NonNull final Mode mode,
+                      final boolean embedded) {
+            this.mode = mode;
+            this.embedded = embedded;
+        }
+
+        @NonNull
+        static Input fromBundle(@NonNull final Bundle args) {
+            @SuppressWarnings("deprecation")
+            final Mode mode = Objects.requireNonNull(args.getParcelable(BKEY_MODE));
+            final boolean embedded = args.getBoolean(BKEY_EMBEDDED, false);
+
+            return new Input(mode, embedded);
+        }
+
+        @NonNull
+        Bundle toBundle() {
+            final Bundle args = new Bundle(2);
+            args.putParcelable(BKEY_MODE, mode);
+            args.putBoolean(BKEY_EMBEDDED, embedded);
+
+            return args;
+        }
+
+        @NonNull
+        Mode getMode() {
+            return mode;
+        }
+
+        boolean isEmbedded() {
+            return embedded;
         }
     }
 }
