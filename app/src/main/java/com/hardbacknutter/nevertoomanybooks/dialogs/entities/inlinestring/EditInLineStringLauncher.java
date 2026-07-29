@@ -106,10 +106,8 @@ public class EditInLineStringLauncher
                      @NonNull final String text) {
         Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Bundle args = new Bundle(2);
-        args.putString(BKEY_ITEM, text);
-
-        showDialog(context, args);
+        final EditInLineStringInput input = new EditInLineStringInput(getRequestKey(), text);
+        showDialog(context, input.toBundle());
     }
 
     @Override

@@ -20,10 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -44,15 +41,15 @@ public class EditInLineStringViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args        {@link Fragment#requireArguments()}
+     * @param args        all arguments
      * @param daoSupplier the {@link InlineStringDao} supplier
      */
-    void init(@NonNull final Bundle args,
+    void init(@NonNull final EditInLineStringInput args,
               @NonNull final Supplier<InlineStringDao> daoSupplier) {
         if (dao == null) {
             dao = daoSupplier.get();
 
-            original = args.getString(EditInLineStringLauncher.BKEY_ITEM, "");
+            original = args.getText();
             currentEdit = original;
         }
     }

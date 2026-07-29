@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookInlineStringContentBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
@@ -85,11 +84,12 @@ class EditInLineStringDelegate
                              @StringRes final int labelResId,
                              @NonNull final Supplier<InlineStringDao> daoSupplier) {
         this.owner = owner;
-        requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
-                                            DialogLauncher.BKEY_REQUEST_KEY);
+
+        final EditInLineStringInput input = EditInLineStringInput.fromBundle(args);
+        requestKey = input.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(EditInLineStringViewModel.class);
-        vm.init(args, daoSupplier);
+        vm.init(input, daoSupplier);
 
         final Context context = owner.getContext();
         //noinspection DataFlowIssue
