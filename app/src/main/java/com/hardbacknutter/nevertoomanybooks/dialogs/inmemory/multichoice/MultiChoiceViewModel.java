@@ -83,22 +83,12 @@ public class MultiChoiceViewModel
     }
 
     @NonNull
-    Set<Long> getPreviousSelection() {
-        return previousSelection;
-    }
-
-    @NonNull
     Set<Long> getCurrentSelection() {
         return currentSelection;
     }
 
-    /**
-     * Get the optional/additional payload.
-     *
-     * @return extras Bundle
-     */
-    @Nullable
-    Bundle getExtras() {
-        return extras;
+    @NonNull
+    MultiChoiceLauncher.Output getOutput() {
+        return new MultiChoiceLauncher.Output(previousSelection, currentSelection, extras);
     }
 }

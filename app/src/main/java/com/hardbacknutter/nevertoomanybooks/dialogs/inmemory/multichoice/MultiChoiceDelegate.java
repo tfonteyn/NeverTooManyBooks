@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -186,10 +185,7 @@ class MultiChoiceDelegate
             return true;
         }
 
-        MultiChoiceLauncher.setResult(owner, requestKey,
-                                      vm.getPreviousSelection(),
-                                      vm.getCurrentSelection(),
-                                      vm.getExtras());
+        MultiChoiceLauncher.setResult(owner, requestKey, vm.getOutput());
         return true;
     }
 }
