@@ -47,7 +47,7 @@ class MoneyTest {
 
     private DataManager dataManager;
 
-    @SuppressWarnings("SameParameterValue")
+    @SuppressWarnings({"SameParameterValue", "deprecation"})
     private static void checkPriceData(@NonNull final DataManager dataManager,
                                        @NonNull final String key,
                                        final double value,
@@ -106,6 +106,7 @@ class MoneyTest {
         checkPriceData(dataManager, DBKey.PRICE_LISTED, VALUE, "chocolates");
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void putSentiment() {
         dataManager.putString(DBKey.PRICE_LISTED, "Far to much dosh");
