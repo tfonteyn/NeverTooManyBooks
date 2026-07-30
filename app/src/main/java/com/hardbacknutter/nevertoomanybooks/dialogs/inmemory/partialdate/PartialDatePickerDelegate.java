@@ -294,10 +294,11 @@ class PartialDatePickerDelegate
             return true;
         }
 
-        PartialDatePickerLauncher.setResult(owner, requestKey,
-                                            previousSelection,
-                                            currentSelection,
-                                            vm.getExtras());
+        final PartialDatePickerLauncher.Output output = new PartialDatePickerLauncher.Output(
+                previousSelection,
+                currentSelection,
+                vm.getExtras());
+        PartialDatePickerLauncher.setResult(owner, requestKey, output);
         return true;
     }
 
