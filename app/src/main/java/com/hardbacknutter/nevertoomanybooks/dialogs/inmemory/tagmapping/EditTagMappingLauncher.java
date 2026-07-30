@@ -36,13 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 public class EditTagMappingLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "EditTagMappingLauncher";
-
-    private static final String BKEY_EXTRAS = TAG + ":extras";
-
-    private static final String BKEY_EDIT = TAG + ":edit";
-    private static final String BKEY_ORIGINAL = TAG + ":original";
-
     @NonNull
     private final ResultListener resultListener;
 
@@ -63,27 +56,17 @@ public class EditTagMappingLauncher
     /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
-     * @param fragment      the calling DialogFragment
-     * @param requestKey    to use
-     * @param previousValue the previous value
-     * @param currentValue  the new value
-     * @param extras        (optional) Bundle as provided to {@link #launch}
+     * @param fragment   the calling DialogFragment
+     * @param requestKey to use
+     * @param output     result
      *
      * @see #onFragmentResult(String, Bundle)
      */
-    @SuppressWarnings({"StaticMethodOnlyUsedInOneClass", "TypeMayBeWeakened"})
+    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final TagMapping previousValue,
-                          @NonNull final TagMapping currentValue,
-                          @Nullable final Bundle extras) {
-        final Bundle result = new Bundle(3);
-        result.putParcelable(BKEY_ORIGINAL, previousValue);
-        result.putParcelable(BKEY_EDIT, currentValue);
-        if (extras != null && !extras.isEmpty()) {
-            result.putBundle(BKEY_EXTRAS, extras);
-        }
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+                          @NonNull final Output output) {
+        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
     }
 
     /**
@@ -105,11 +88,8 @@ public class EditTagMappingLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        //noinspection deprecation
-        resultListener.onResult(
-                Objects.requireNonNull(result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL),
-                Objects.requireNonNull(result.getParcelable(BKEY_EDIT), BKEY_EDIT),
-                result.getBundle(BKEY_EXTRAS));
+        final Output output = Output.fromBundle(result);
+        resultListener.onResult(output.getOriginal(), output.getEdited(), output.getExtras());
     }
 
     @FunctionalInterface
@@ -125,5 +105,73 @@ public class EditTagMappingLauncher
         void onResult(@NonNull TagMapping previousValue,
                       @NonNull TagMapping currentValue,
                       @Nullable Bundle extras);
+    }
+
+    static class Output {
+        private static final String TAG = "Output";
+        private static final String BKEY_ORIGINAL = TAG + ":original";
+        private static final String BKEY_EDIT = TAG + ":edit";
+        private static final String BKEY_EXTRAS = TAG + ":extras";
+
+        @NonNull
+        private final TagMapping original;
+        @NonNull
+        private final TagMapping edited;
+        @Nullable
+        private final Bundle extras;
+
+        /**
+         * Constructor.
+         *
+         * @param original the previous value
+         * @param edited   the new value
+         * @param extras   (optional) Bundle provided as input
+         */
+        Output(@NonNull final TagMapping original,
+               @NonNull final TagMapping edited,
+               @Nullable final Bundle extras) {
+            this.original = original;
+            this.edited = edited;
+            this.extras = extras;
+        }
+
+        @SuppressWarnings("deprecation")
+        @NonNull
+        static Output fromBundle(@NonNull final Bundle result) {
+            final TagMapping previousValue = Objects.requireNonNull(
+                    result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL);
+            final TagMapping currentValue = Objects.requireNonNull(
+                    result.getParcelable(BKEY_EDIT), BKEY_EDIT);
+            final Bundle extras = result.getBundle(BKEY_EXTRAS);
+
+            return new Output(previousValue, currentValue, extras);
+        }
+
+        @NonNull
+        Bundle toBundle() {
+            final Bundle result = new Bundle(3);
+            result.putParcelable(BKEY_ORIGINAL, original);
+            result.putParcelable(BKEY_EDIT, edited);
+            if (extras != null && !extras.isEmpty()) {
+                result.putBundle(BKEY_EXTRAS, extras);
+            }
+
+            return result;
+        }
+
+        @NonNull
+        TagMapping getOriginal() {
+            return original;
+        }
+
+        @NonNull
+        TagMapping getEdited() {
+            return edited;
+        }
+
+        @Nullable
+        Bundle getExtras() {
+            return extras;
+        }
     }
 }

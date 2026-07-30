@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.tagmapping;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,8 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 class EditTagMappingDelegate
         implements FlexDialogDelegate {
-
-    private static final String TAG = "EditTagMappingDelegate";
 
     private final EditTagMappingViewModel vm;
 
@@ -154,10 +151,7 @@ class EditTagMappingDelegate
             return true;
         }
 
-        EditTagMappingLauncher.setResult(owner, requestKey,
-                                         vm.getPreviousValue(),
-                                         vm.getCurrentValue(),
-                                         vm.getExtras());
+        EditTagMappingLauncher.setResult(owner, requestKey, vm.getOutput());
         return true;
     }
 

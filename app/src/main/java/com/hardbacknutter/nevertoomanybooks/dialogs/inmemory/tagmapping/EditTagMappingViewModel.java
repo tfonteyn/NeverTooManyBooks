@@ -65,16 +65,6 @@ public class EditTagMappingViewModel
     }
 
     /**
-     * The original, unmodified item.
-     *
-     * @return value
-     */
-    @NonNull
-    TagMapping getPreviousValue() {
-        return previousValue;
-    }
-
-    /**
      * The currently edited value.
      *
      * @return value
@@ -84,13 +74,8 @@ public class EditTagMappingViewModel
         return currentValue;
     }
 
-    /**
-     * Get the optional/additional payload.
-     *
-     * @return extras Bundle
-     */
-    @Nullable
-    Bundle getExtras() {
-        return extras;
+    @NonNull
+    EditTagMappingLauncher.Output getOutput() {
+        return new EditTagMappingLauncher.Output(previousValue, currentValue, extras);
     }
 }
