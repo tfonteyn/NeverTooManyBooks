@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring;
 
-import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -173,10 +172,7 @@ class EditStringDelegate
             return true;
         }
 
-        EditStringLauncher.setResult(owner, requestKey,
-                                     vm.getPreviousValue(),
-                                     vm.getCurrentValue(),
-                                     vm.getExtras());
+        EditStringLauncher.setResult(owner, requestKey, vm.getOutput());
         return true;
     }
 

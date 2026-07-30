@@ -64,11 +64,6 @@ public class EditStringViewModel
         return !currentValue.equals(previousValue);
     }
 
-    @Nullable
-    String getPreviousValue() {
-        return previousValue;
-    }
-
     @NonNull
     String getCurrentValue() {
         return currentValue;
@@ -78,13 +73,8 @@ public class EditStringViewModel
         this.currentValue = currentValue;
     }
 
-    /**
-     * Get the optional/additional payload.
-     *
-     * @return extras Bundle
-     */
-    @Nullable
-    Bundle getExtras() {
-        return extras;
+    @NonNull
+    EditStringLauncher.Output getOutput() {
+        return new EditStringLauncher.Output(previousValue, currentValue, extras);
     }
 }
