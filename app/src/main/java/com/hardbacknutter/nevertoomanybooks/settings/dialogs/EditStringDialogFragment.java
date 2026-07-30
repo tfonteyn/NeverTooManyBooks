@@ -32,6 +32,7 @@ public class EditStringDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditStringDelegate(this, requireArguments()));
+        setDelegate(new EditStringDelegate(this, com.hardbacknutter.prefslib.DialogInput
+                .fromBundle(requireArguments())));
     }
 }

@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,11 +62,10 @@ class SingleChoiceDelegate
     private Toolbar toolbar;
 
     SingleChoiceDelegate(@NonNull final DialogFragment owner,
-                         @NonNull final Bundle args) {
+                         @NonNull final com.hardbacknutter.prefslib.DialogInput args) {
         this.owner = owner;
-        final String key = Objects.requireNonNull(args.getString(DBSDialogFactory.BKEY_KEY),
-                                                  DBSDialogFactory.BKEY_KEY);
-        dialogMessage = args.getString(DBSDialogFactory.BKEY_DIALOG_MESSAGE, null);
+        final String key = args.getKey();
+        dialogMessage = args.getDialogMessage();
 
         //noinspection DataFlowIssue
         svm = new ViewModelProvider(owner.getActivity()).get(SettingsManagerViewModel.class);

@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.hardbacknutter.prefslib.DialogInput;
 import com.hardbacknutter.prefslib.MultiChoiceSetting;
 import com.hardbacknutter.prefslib.SettingsManagerViewModel;
 import com.hardbacknutter.prefslib.databinding.PrefsLibDialogMultiChoiceBinding;
@@ -60,10 +61,9 @@ public class MultiChoiceDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        final String key = Objects.requireNonNull(args.getString(DefaultDialogFactory.BKEY_KEY),
-                                                  DefaultDialogFactory.BKEY_KEY);
-        dialogMessage = args.getString(DefaultDialogFactory.BKEY_DIALOG_MESSAGE);
+        final DialogInput args = DialogInput.fromBundle(requireArguments());
+        final String key = args.getKey();
+        dialogMessage = args.getDialogMessage();
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SettingsManagerViewModel.class);

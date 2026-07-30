@@ -33,8 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.Objects;
-
+import com.hardbacknutter.prefslib.DialogInput;
 import com.hardbacknutter.prefslib.SettingsManagerViewModel;
 import com.hardbacknutter.prefslib.StringSetting;
 import com.hardbacknutter.prefslib.databinding.PrefsLibDialogEditStringBinding;
@@ -53,10 +52,9 @@ public class StringDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        final String key = Objects.requireNonNull(args.getString(DefaultDialogFactory.BKEY_KEY),
-                                                  DefaultDialogFactory.BKEY_KEY);
-        dialogMessage = args.getString(DefaultDialogFactory.BKEY_DIALOG_MESSAGE);
+        final DialogInput args = DialogInput.fromBundle(requireArguments());
+        final String key = args.getKey();
+        dialogMessage = args.getDialogMessage();
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SettingsManagerViewModel.class);

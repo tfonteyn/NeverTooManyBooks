@@ -31,6 +31,7 @@ public class MultiChoiceDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new MultiChoiceDelegate(this, requireArguments()));
+        setDelegate(new MultiChoiceDelegate(this, com.hardbacknutter.prefslib.DialogInput
+                .fromBundle(requireArguments())));
     }
 }
