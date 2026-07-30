@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 @SuppressWarnings("WeakerAccess")
-public abstract class QueueViewModel
+public class QueueViewModel
         extends ViewModel {
 
     /** Return code from {@link #add(QueuedItem, Function)}. */
@@ -59,20 +59,18 @@ public abstract class QueueViewModel
 
     /** The batch mode queue. */
     @GuardedBy("lock")
-    private ItemQueue queue;
+    private final ItemQueue queue;
 
     /**
-     * Pseudo constructor.
-     * <p>
-     * Must call {@link #init(String, Function)}.
+     * Constructor.
+     *
+     * @param pkQueue     Storage key into preferences for the queue
+     * @param codeFactory a method with input a code-string,
+     *                    and returning a new instance of a {@link ProductCode}
      */
-    public abstract void init();
-
-    protected void init(@NonNull final String pkQueue,
-                        @NonNull final Function<String, ProductCode> codeFactory) {
-        if (queue == null) {
-            queue = new ItemQueue(pkQueue, codeFactory);
-        }
+    public QueueViewModel(@NonNull final String pkQueue,
+                          @NonNull final Function<String, ProductCode> codeFactory) {
+        queue = new ItemQueue(pkQueue, codeFactory);
     }
 
     /**

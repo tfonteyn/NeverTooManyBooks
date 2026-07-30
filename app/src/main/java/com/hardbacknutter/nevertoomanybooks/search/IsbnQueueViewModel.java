@@ -37,10 +37,10 @@ public class IsbnQueueViewModel
     private static final String PK_SCAN_QUEUE = "scan.queue";
 
     /**
-     * Pseudo constructor.
+     * Constructor.
      */
-    public void init() {
-        super.init(PK_SCAN_QUEUE, new IsbnFactory());
+    public IsbnQueueViewModel() {
+        super(PK_SCAN_QUEUE, new IsbnFactory());
     }
 
     private static class IsbnFactory

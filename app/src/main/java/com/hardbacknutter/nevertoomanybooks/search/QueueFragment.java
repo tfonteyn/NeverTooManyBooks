@@ -146,7 +146,6 @@ public abstract class QueueFragment
                    @NonNull final Style style) {
 
         qvm = new ViewModelProvider(this).get(clazz);
-        qvm.init();
 
         this.style = style;
     }
