@@ -80,7 +80,6 @@ public class TagAdminFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(TagAdminViewModel.class);
-        vm.init();
     }
 
     @Nullable

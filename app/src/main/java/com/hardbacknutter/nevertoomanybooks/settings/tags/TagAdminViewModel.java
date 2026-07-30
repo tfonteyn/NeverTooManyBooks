@@ -48,26 +48,28 @@ public class TagAdminViewModel
     private static final String TAG = "TagAdminViewModel";
 
     private final TagMapperTask mapperTask = new TagMapperTask();
+    private final TagDao tagDao;
+    private final TagMappingDao tagMappingDao;
+    private final List<TagMapping> mappings;
+    private final List<Tag> tags;
+
     private boolean modified;
-    private TagDao tagDao;
-    private TagMappingDao tagMappingDao;
-    private List<TagMapping> mappings;
-    private List<Tag> tags;
+
+    /**
+     * Constructor.
+     */
+    public TagAdminViewModel() {
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        tagDao = serviceLocator.getTagDao();
+        tagMappingDao = serviceLocator.getTagMappingDao();
+
+        tags = tagDao.getAll();
+        mappings = tagMappingDao.getAll();
+    }
 
     @Override
     protected void onCleared() {
         mapperTask.cancel();
-    }
-
-    void init() {
-        if (tagDao == null) {
-            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-            tagDao = serviceLocator.getTagDao();
-            tagMappingDao = serviceLocator.getTagMappingDao();
-
-            tags = tagDao.getAll();
-            mappings = tagMappingDao.getAll();
-        }
     }
 
     void reloadTags() {
@@ -234,7 +236,7 @@ public class TagAdminViewModel
         mapperTask.cancel();
     }
 
-    public int countBooks(@NonNull final Tag tag) {
+    int countBooks(@NonNull final Tag tag) {
         return tagDao.countBooks(tag);
     }
 }
