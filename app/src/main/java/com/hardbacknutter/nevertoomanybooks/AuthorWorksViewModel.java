@@ -22,17 +22,14 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
@@ -155,12 +152,12 @@ public class AuthorWorksViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args    all arguments
      *
-     * @throws IllegalArgumentException if the args do not contain a valid Author
+     * @throws IllegalArgumentException (debug) missing Author id
      */
     void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+              @NonNull final AuthorWorksInput args) {
 
         if (authorDao == null) {
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -171,8 +168,9 @@ public class AuthorWorksViewModel
             menuHandlers = List.of(new AuthorViewAuthorOnSiteMenuHandler());
         }
 
-        final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
+        final long authorId = args.getAuthorId();
         if (authorId <= 0) {
+            // Sanity check, we should not get a new author here (id==0)
             throw new IllegalArgumentException(DBKey.FK_AUTHOR);
         }
 
@@ -185,8 +183,7 @@ public class AuthorWorksViewModel
             authors.clear();
             authors.add(authorDao.findById(authorId).orElseThrow());
 
-            bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                               DBKey.FK_BOOKSHELF);
+            bookshelf = args.getBookshelf();
             style = bookshelf.getStyle();
 
             allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;

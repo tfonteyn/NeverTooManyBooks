@@ -50,7 +50,8 @@ public class AuthorWorksActivity
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
-        vm.init(this, Objects.requireNonNull(getIntent().getExtras()));
+        vm.init(this, AuthorWorksInput.fromBundle(
+                Objects.requireNonNull(getIntent().getExtras())));
     }
 
     /**
@@ -65,6 +66,7 @@ public class AuthorWorksActivity
         setIntent(intent);
 
         super.onNewIntent(intent);
-        vm.init(this, Objects.requireNonNull(intent.getExtras()));
+        vm.init(this, AuthorWorksInput.fromBundle(
+                Objects.requireNonNull(intent.getExtras())));
     }
 }

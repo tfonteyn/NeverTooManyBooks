@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
+import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
@@ -70,7 +71,7 @@ public class ShowTocFragment
     /** Display a Book. From there the user could edit it... so we must propagate the result. */
     private DisplayBookLauncher displayBookLauncher;
     /** View all works of an Author. */
-    private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
+    private ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
 
     /** The Adapter. */
     private AuthorWorksAdapter adapter;
@@ -178,7 +179,7 @@ public class ShowTocFragment
             final TocEntry tocEntry = vm.getWorks().get(position);
 
             if (v.getId() == R.id.author) {
-                authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                authorWorksLauncher.launch(new AuthorWorksInput(
                         tocEntry.getPrimaryAuthor().getId(),
                         aVm.getBookshelf()));
             } else {

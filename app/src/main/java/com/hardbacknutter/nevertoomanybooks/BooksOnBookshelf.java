@@ -252,7 +252,7 @@ public class BooksOnBookshelf
     /** Update a list of Books with information from the internet. */
     private ActivityResultLauncher<SearchBookUpdatesInput> updateBookListLauncher;
     /** View all works of an Author. */
-    private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
+    private ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
     /** The local FTS based search. */
     private ActivityResultLauncher<SearchFtsContract.Input> ftsSearchLauncher;
     /** Bring up the synchronisation options. */
@@ -1036,7 +1036,7 @@ public class BooksOnBookshelf
 
         if (v.getId() == R.id.author) {
             // User clicked an Author in a Book row, open the AuthorWorks
-            authorWorksLauncher.launch(new AuthorWorksContract.Input(
+            authorWorksLauncher.launch(new AuthorWorksInput(
                     rowData.getInt(DBKey.FK_AUTHOR),
                     vm.getBookshelf()));
 

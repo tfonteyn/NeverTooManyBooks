@@ -34,7 +34,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
+import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInPlaceParcelableLauncher;
@@ -55,11 +55,11 @@ public class RMAuthor
     @NonNull
     private final BooksOnBookshelfViewModel vm;
     @NonNull
-    private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
+    private final ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
     private final List<MenuHandler<DataHolder>> menuHandlers;
 
     public RMAuthor(@NonNull final BooksOnBookshelfViewModel vm,
-                    @NonNull final ActivityResultLauncher<AuthorWorksContract.Input>
+                    @NonNull final ActivityResultLauncher<AuthorWorksInput>
                             authorWorksLauncher) {
         this.vm = vm;
         this.authorWorksLauncher = authorWorksLauncher;
@@ -136,7 +136,7 @@ public class RMAuthor
                                       @NonNull final DataHolder rowData,
                                       final int adapterPosition) {
         if (menuItemId == R.id.MENU_AUTHOR_WORKS_LIST) {
-            authorWorksLauncher.launch(new AuthorWorksContract.Input(
+            authorWorksLauncher.launch(new AuthorWorksInput(
                     rowData.getLong(DBKey.FK_AUTHOR),
                     vm.getBookshelf()));
             return true;

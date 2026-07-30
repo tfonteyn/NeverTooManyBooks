@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
+import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
@@ -143,7 +144,7 @@ public class ShowBookDetailsFragment
     private ActivityResultLauncher<String> editSettingsLauncher;
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
     /** View all works of an Author. */
-    private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
+    private ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
     /** User edits a book. */
     private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
     /** User updates a book with internet data. */
@@ -307,7 +308,7 @@ public class ShowBookDetailsFragment
         ClickableListFormatter.getIndex(v, event).ifPresent(index -> {
             final List<Author> authors = vm.getBook().getAuthors();
             if (index < authors.size()) {
-                authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                authorWorksLauncher.launch(new AuthorWorksInput(
                         authors.get(index).getId(),
                         aVm.getBookshelf()));
             }

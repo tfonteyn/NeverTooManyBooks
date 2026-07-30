@@ -31,30 +31,28 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
+import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class AuthorWorksContract
-        extends ActivityResultContract<AuthorWorksContract.Input, Optional<EditBookOutput>> {
+        extends ActivityResultContract<AuthorWorksInput, Optional<EditBookOutput>> {
 
     private static final String TAG = "AuthorWorksContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
+                               @NonNull final AuthorWorksInput args) {
         return FragmentHostActivityLauncher
                 .createIntent(context,
                               AuthorWorksFragment.class,
                               R.layout.activity_author_works,
                               AuthorWorksActivity.class)
-                .putExtra(DBKey.FK_AUTHOR, input.authorId)
-                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf);
+                .putExtras(args.toBundle());
     }
 
     @Override
@@ -74,18 +72,5 @@ public class AuthorWorksContract
         // i.e. if the user, from the AuthorWorks screen opened/edited a book,
         // then back to AuthorWorks screen, then back... and we get here
         return Optional.of(EditBookOutput.parseResult(intent));
-    }
-
-    public static class Input {
-
-        final long authorId;
-        @NonNull
-        final Bookshelf bookshelf;
-
-        public Input(final long authorId,
-                     @NonNull final Bookshelf bookshelf) {
-            this.authorId = authorId;
-            this.bookshelf = bookshelf;
-        }
     }
 }

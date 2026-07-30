@@ -134,7 +134,7 @@ public class AuthorWorksFragment
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(AuthorWorksViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(context, requireArguments());
+        vm.init(context, AuthorWorksInput.fromBundle(requireArguments()));
 
         final FragmentManager fm = getChildFragmentManager();
 
