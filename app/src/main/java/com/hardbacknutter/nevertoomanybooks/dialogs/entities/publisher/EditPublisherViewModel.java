@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -52,11 +51,11 @@ public class EditPublisherViewModel
      *
      * @param args all arguments
      */
-    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
+    public void init(@NonNull final EditParcelableInput<Publisher> args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getPublisherDao();
 
-            original = (Publisher) args.getItem();
+            original = args.getItem();
             currentEdit = new Publisher(original);
         }
     }

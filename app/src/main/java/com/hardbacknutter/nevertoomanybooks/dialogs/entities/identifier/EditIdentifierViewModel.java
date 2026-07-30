@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier;
 
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
@@ -49,11 +47,11 @@ public class EditIdentifierViewModel
      *
      * @param args all arguments
      */
-    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
+    public void init(@NonNull final EditParcelableInput<Identifier> args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getIdentifierDao();
 
-            original = (Identifier) args.getItem();
+            original = args.getItem();
             currentEdit = new Identifier(original);
         }
     }

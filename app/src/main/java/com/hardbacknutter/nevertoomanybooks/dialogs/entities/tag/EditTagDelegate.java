@@ -21,8 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +80,7 @@ class EditTagDelegate
     private Toolbar toolbar;
 
     EditTagDelegate(@NonNull final DialogFragment owner,
-                    @NonNull final EditParcelableInput<Parcelable> args) {
+                    @NonNull final EditParcelableInput<Tag> args) {
         this.owner = owner;
         requestKey = args.getRequestKey();
         vm = new ViewModelProvider(owner).get(EditTagViewModel.class);

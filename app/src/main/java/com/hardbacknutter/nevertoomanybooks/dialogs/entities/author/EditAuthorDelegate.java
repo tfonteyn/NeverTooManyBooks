@@ -94,7 +94,7 @@ class EditAuthorDelegate
     private Toolbar toolbar;
 
     EditAuthorDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final EditParcelableInput<Parcelable> args) {
+                       @NonNull final EditParcelableInput<Author> args) {
         this.owner = owner;
         requestKey = args.getRequestKey();
 

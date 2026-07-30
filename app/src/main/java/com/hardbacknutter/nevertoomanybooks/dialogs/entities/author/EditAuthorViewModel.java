@@ -21,11 +21,9 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.author;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -76,14 +74,14 @@ public class EditAuthorViewModel
      *
      * @param args all arguments
      */
-    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
+    public void init(@NonNull final EditParcelableInput<Author> args) {
         if (dao == null) {
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             dao = serviceLocator.getAuthorDao();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
             useAuthorRole = serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_ROLE);
 
-            original = (Author) args.getItem();
+            original = args.getItem();
             currentEdit = new Author(original, true);
 
             final Author tmp = currentEdit.getRealAuthor();

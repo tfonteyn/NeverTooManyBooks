@@ -21,8 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.series;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +78,7 @@ class EditSeriesDelegate
     private Toolbar toolbar;
 
     EditSeriesDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final EditParcelableInput<Parcelable> args) {
+                       @NonNull final EditParcelableInput<Series> args) {
         this.owner = owner;
         requestKey = args.getRequestKey();
         vm = new ViewModelProvider(owner).get(EditSeriesViewModel.class);

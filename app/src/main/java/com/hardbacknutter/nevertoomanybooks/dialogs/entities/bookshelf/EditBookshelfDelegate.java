@@ -21,8 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +75,7 @@ class EditBookshelfDelegate
     private Toolbar toolbar;
 
     EditBookshelfDelegate(@NonNull final DialogFragment owner,
-                          @NonNull final EditParcelableInput<Parcelable> args) {
+                          @NonNull final EditParcelableInput<Bookshelf> args) {
         this.owner = owner;
         requestKey = args.getRequestKey();
         vm = new ViewModelProvider(owner).get(EditBookshelfViewModel.class);

@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.series;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,11 +55,11 @@ public class EditSeriesViewModel
      *
      * @param args all arguments
      */
-    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
+    public void init(@NonNull final EditParcelableInput<Series> args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getSeriesDao();
 
-            original = (Series) args.getItem();
+            original = args.getItem();
             bookIssn = Objects.requireNonNull(args.getBookIssn());
 
             currentEdit = new Series(original, true);

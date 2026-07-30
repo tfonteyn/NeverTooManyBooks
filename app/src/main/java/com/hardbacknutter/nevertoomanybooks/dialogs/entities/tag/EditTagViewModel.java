@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -52,11 +51,10 @@ public class EditTagViewModel
      *
      * @param args all arguments
      */
-    public void init(@NonNull final EditParcelableInput<Parcelable> args) {
+    public void init(@NonNull final EditParcelableInput<Tag> args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getTagDao();
-
-            original = (Tag) args.getItem();
+            original = args.getItem();
             currentEdit = new Tag(original);
         }
     }

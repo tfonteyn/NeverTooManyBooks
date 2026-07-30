@@ -21,8 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,7 +81,7 @@ class EditIdentifierDelegate
     private Toolbar toolbar;
 
     EditIdentifierDelegate(@NonNull final DialogFragment owner,
-                           @NonNull final EditParcelableInput<Parcelable> args) {
+                           @NonNull final EditParcelableInput<Identifier> args) {
         this.owner = owner;
         requestKey = args.getRequestKey();
         vm = new ViewModelProvider(owner).get(EditIdentifierViewModel.class);

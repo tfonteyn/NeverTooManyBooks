@@ -87,7 +87,7 @@ class EditSeriesViewModelTest
         dao.fixId(context, original, locale);
         assertTrue(original.getId() != 0);
 
-        final EditParcelableInput<Parcelable> args = new EditParcelableInput<>(
+        final EditParcelableInput<Series> args = new EditParcelableInput<>(
                 "unused", /* unused */ EditAction.Edit,
                 original, null);
 

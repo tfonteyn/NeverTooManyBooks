@@ -79,7 +79,7 @@ class EditPublisherDelegate
     private Toolbar toolbar;
 
     EditPublisherDelegate(@NonNull final DialogFragment owner,
-                          @NonNull final EditParcelableInput<Parcelable> args) {
+                          @NonNull final EditParcelableInput<Publisher> args) {
         this.owner = owner;
         requestKey = args.getRequestKey();
         vm = new ViewModelProvider(owner).get(EditPublisherViewModel.class);

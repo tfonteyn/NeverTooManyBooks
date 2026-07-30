@@ -51,11 +51,11 @@ public class EditBookshelfViewModel
      *
      * @param args all arguments
      */
-    void init(@NonNull final EditParcelableInput<Parcelable> args) {
+    void init(@NonNull final EditParcelableInput<Bookshelf> args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getBookshelfDao();
 
-            original = (Bookshelf) args.getItem();
+            original = args.getItem();
             currentEdit = new Bookshelf(original);
         }
     }
