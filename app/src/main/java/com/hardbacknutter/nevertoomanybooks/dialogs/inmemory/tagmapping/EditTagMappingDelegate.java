@@ -63,14 +63,12 @@ class EditTagMappingDelegate
     private Toolbar toolbar;
 
     EditTagMappingDelegate(@NonNull final DialogFragment owner,
-                           @NonNull final Bundle args) {
+                           @NonNull final EditTagMappingInput args) {
         this.owner = owner;
-
-        final EditTagMappingInput input = EditTagMappingInput.fromBundle(args);
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(EditTagMappingViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @NonNull

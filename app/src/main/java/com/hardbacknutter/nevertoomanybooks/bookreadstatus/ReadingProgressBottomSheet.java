@@ -32,6 +32,7 @@ public class ReadingProgressBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new ReadingProgressDelegate(this, requireArguments()));
+        setDelegate(new ReadingProgressDelegate(this, ReadingProgressInput
+                .fromBundle(requireArguments())));
     }
 }

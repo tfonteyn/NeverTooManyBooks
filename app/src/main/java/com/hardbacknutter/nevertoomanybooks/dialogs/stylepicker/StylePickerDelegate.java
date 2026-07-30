@@ -62,14 +62,12 @@ class StylePickerDelegate
     private Toolbar toolbar;
 
     StylePickerDelegate(@NonNull final DialogFragment owner,
-                        @NonNull final Bundle args) {
+                        @NonNull final StylePickerInput args) {
         this.owner = owner;
-
-        final StylePickerInput input = StylePickerInput.fromBundle(args);
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(StylePickerViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @NonNull

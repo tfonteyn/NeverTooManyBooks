@@ -122,17 +122,15 @@ class CoverBrowserDelegate
     };
 
     CoverBrowserDelegate(@NonNull final DialogFragment owner,
-                         @NonNull final Bundle args) {
+                         @NonNull final CoverBrowserInput args) {
         this.owner = owner;
+        requestKey = args.getRequestKey();
 
         final Resources res = owner.getResources();
         previewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
         previewMaxHeight = (int) (previewMaxWidth / CoverScale.HW_RATIO);
 
-        final CoverBrowserInput input = CoverBrowserInput.fromBundle(args);
-        requestKey = input.getRequestKey();
-
-        vm = CoverBrowserViewModel.Factory.create(owner, input);
+        vm = CoverBrowserViewModel.Factory.create(owner, args);
     }
 
     @NonNull

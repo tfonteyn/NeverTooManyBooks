@@ -88,14 +88,12 @@ class BookshelfFiltersDelegate
     private Toolbar toolbar;
 
     BookshelfFiltersDelegate(@NonNull final DialogFragment owner,
-                             @NonNull final Bundle args) {
+                             @NonNull final BookshelfFiltersInput args) {
         this.owner = owner;
-
-        final BookshelfFiltersInput input = BookshelfFiltersInput.fromBundle(args);
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(BookshelfFiltersViewModel.class);
-        vm.init(owner.requireContext(), input);
+        vm.init(owner.requireContext(), args);
     }
 
     @Override

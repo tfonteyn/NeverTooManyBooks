@@ -108,20 +108,19 @@ class PartialDatePickerDelegate
     private final boolean limitedHeight;
 
     PartialDatePickerDelegate(@NonNull final DialogFragment owner,
-                              @NonNull final Bundle args) {
+                              @NonNull final PartialDatePickerInput args) {
         this.owner = owner;
         //noinspection DataFlowIssue
         limitedHeight = isVeryLimitedHeight(owner.getActivity());
 
         final Context context = owner.requireContext();
-        final PartialDatePickerInput input = PartialDatePickerInput.fromBundle(args);
 
-        requestKey = input.getRequestKey();
-        dialogTitle = input.getDialogTitle(context);
-        dialogMessage = input.getDialogMessage(context);
+        requestKey = args.getRequestKey();
+        dialogTitle = args.getDialogTitle(context);
+        dialogMessage = args.getDialogMessage(context);
 
         vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @NonNull

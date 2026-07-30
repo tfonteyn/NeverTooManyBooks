@@ -24,6 +24,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 
 public class EditBookSeriesDialogFragment
         extends FlexClassicDialogFragment {
@@ -31,6 +32,7 @@ public class EditBookSeriesDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditBookSeriesDelegate(this, requireArguments()));
+        setDelegate(new EditBookSeriesDelegate(this, EditParcelableInput
+                .fromBundle(requireArguments())));
     }
 }

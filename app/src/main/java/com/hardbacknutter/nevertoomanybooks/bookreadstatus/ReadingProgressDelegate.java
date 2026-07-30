@@ -69,14 +69,11 @@ class ReadingProgressDelegate
     private Toolbar toolbar;
 
     ReadingProgressDelegate(@NonNull final DialogFragment owner,
-                            @NonNull final Bundle args) {
+                            @NonNull final ReadingProgressInput args) {
         this.owner = owner;
-
-        final ReadingProgressInput input = ReadingProgressInput.fromBundle(args);
-
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
         vm = new ViewModelProvider(owner).get(ReadingProgressViewModel.class);
-        vm.init(input);
+        vm.init(args);
 
         percentageTextWatcher = this::percentageTextToSlider;
         currentPageTextWatcher = this::currentPageTextToSlider;

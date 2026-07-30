@@ -64,19 +64,17 @@ class EditStringDelegate
     private Toolbar toolbar;
 
     EditStringDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final Bundle args) {
+                       @NonNull final EditStringInput args) {
         this.owner = owner;
-
-        final EditStringInput input = EditStringInput.fromBundle(args);
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
         //noinspection DataFlowIssue
-        dialogTitle = input.getDialogTitle(owner.getContext());
-        dialogMessage = input.getDialogMessage();
+        dialogTitle = args.getDialogTitle(owner.getContext());
+        dialogMessage = args.getDialogMessage();
 
-        inputType = input.getInputType();
+        inputType = args.getInputType();
 
         vm = new ViewModelProvider(owner).get(EditStringViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @NonNull

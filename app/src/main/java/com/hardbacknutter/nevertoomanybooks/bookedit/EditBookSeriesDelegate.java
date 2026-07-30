@@ -91,18 +91,15 @@ class EditBookSeriesDelegate
     private Toolbar toolbar;
 
     EditBookSeriesDelegate(@NonNull final DialogFragment owner,
-                           @NonNull final Bundle args) {
+                           @NonNull final EditParcelableInput<Parcelable> args) {
         this.owner = owner;
-
-        final EditParcelableInput<Parcelable> input = EditParcelableInput.fromBundle(args);
-
-        requestKey = input.getRequestKey();
-        action = input.getAction();
+        requestKey = args.getRequestKey();
+        action = args.getAction();
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(owner.getActivity()).get(EditBookViewModel.class);
         seriesVm = new ViewModelProvider(owner).get(EditSeriesViewModel.class);
-        seriesVm.init(input);
+        seriesVm.init(args);
     }
 
     @NonNull

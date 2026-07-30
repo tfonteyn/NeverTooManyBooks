@@ -31,6 +31,7 @@ public class StylePickerDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new StylePickerDelegate(this, requireArguments()));
+        setDelegate(new StylePickerDelegate(this, StylePickerInput
+                .fromBundle(requireArguments())));
     }
 }

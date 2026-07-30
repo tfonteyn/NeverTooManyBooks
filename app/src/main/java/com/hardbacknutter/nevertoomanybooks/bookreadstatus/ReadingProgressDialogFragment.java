@@ -26,13 +26,13 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
-
 public class ReadingProgressDialogFragment
         extends FlexClassicDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new ReadingProgressDelegate(this, requireArguments()));
+        setDelegate(new ReadingProgressDelegate(this, ReadingProgressInput
+                .fromBundle(requireArguments())));
     }
 }

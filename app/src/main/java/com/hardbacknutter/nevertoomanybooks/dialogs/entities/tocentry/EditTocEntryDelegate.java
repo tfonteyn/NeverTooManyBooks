@@ -63,15 +63,13 @@ class EditTocEntryDelegate
     private Toolbar toolbar;
 
     EditTocEntryDelegate(@NonNull final DialogFragment owner,
-                         @NonNull final Bundle args) {
+                         @NonNull final EditTocEntryInput args) {
         this.owner = owner;
-
-        final EditTocEntryInput input = EditTocEntryInput.fromBundle(args);
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(EditTocEntryViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(owner.getContext(), input);
+        vm.init(owner.getContext(), args);
     }
 
     @NonNull

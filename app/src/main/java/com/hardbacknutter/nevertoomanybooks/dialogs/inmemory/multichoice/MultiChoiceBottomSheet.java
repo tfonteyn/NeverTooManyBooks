@@ -32,6 +32,8 @@ public class MultiChoiceBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new MultiChoiceDelegate(this, requireArguments()));
+        setDelegate(new MultiChoiceDelegate(this, MultiChoiceInput
+                .fromBundle(requireArguments())));
+
     }
 }

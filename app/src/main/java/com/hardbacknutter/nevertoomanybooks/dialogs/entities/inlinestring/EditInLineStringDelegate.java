@@ -73,23 +73,21 @@ class EditInLineStringDelegate
      * Constructor.
      *
      * @param owner         hosting DialogFragment
-     * @param args          {@link Fragment#requireArguments()}
+     * @param args          all arguments
      * @param dialogTitleId for the dialog (i.e. the toolbar)
      * @param labelResId    to use for the 'hint' of the input field
      * @param daoSupplier   the {@link InlineStringDao} supplier
      */
     EditInLineStringDelegate(@NonNull final DialogFragment owner,
-                             @NonNull final Bundle args,
+                             @NonNull final EditInLineStringInput args,
                              @StringRes final int dialogTitleId,
                              @StringRes final int labelResId,
                              @NonNull final Supplier<InlineStringDao> daoSupplier) {
         this.owner = owner;
-
-        final EditInLineStringInput input = EditInLineStringInput.fromBundle(args);
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(EditInLineStringViewModel.class);
-        vm.init(input, daoSupplier);
+        vm.init(args, daoSupplier);
 
         final Context context = owner.getContext();
         //noinspection DataFlowIssue

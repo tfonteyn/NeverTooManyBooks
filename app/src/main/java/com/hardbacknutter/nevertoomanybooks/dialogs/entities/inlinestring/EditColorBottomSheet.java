@@ -33,8 +33,9 @@ public class EditColorBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditInLineStringDelegate(this, requireArguments(),
-                                                 R.string.lbl_color, R.string.lbl_color,
-                                                 ServiceLocator.getInstance()::getColorDao));
+        setDelegate(new EditInLineStringDelegate(
+                this, EditInLineStringInput.fromBundle(requireArguments()),
+                R.string.lbl_color, R.string.lbl_color,
+                ServiceLocator.getInstance()::getColorDao));
     }
 }

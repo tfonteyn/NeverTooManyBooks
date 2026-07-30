@@ -33,8 +33,9 @@ public class EditFormatDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditInLineStringDelegate(this, requireArguments(),
-                                                 R.string.lbl_format, R.string.lbl_format,
-                                                 ServiceLocator.getInstance()::getFormatDao));
+        setDelegate(new EditInLineStringDelegate(
+                this, EditInLineStringInput.fromBundle(requireArguments()),
+                R.string.lbl_format, R.string.lbl_format,
+                ServiceLocator.getInstance()::getFormatDao));
     }
 }

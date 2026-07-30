@@ -77,14 +77,11 @@ class EditBookshelfDelegate
     private Toolbar toolbar;
 
     EditBookshelfDelegate(@NonNull final DialogFragment owner,
-                          @NonNull final Bundle args) {
+                          @NonNull final EditParcelableInput<Parcelable> args) {
         this.owner = owner;
-
-        final EditParcelableInput<Parcelable> input = EditParcelableInput.fromBundle(args);
-
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
         vm = new ViewModelProvider(owner).get(EditBookshelfViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @NonNull

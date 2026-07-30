@@ -69,15 +69,12 @@ class EditLenderDelegate
 
     @SuppressLint("MissingPermission")
     EditLenderDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final Bundle args) {
+                       @NonNull final EditLenderInput args) {
         this.owner = owner;
-
-        final EditLenderInput input = EditLenderInput.fromBundle(args);
-
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(EditLenderViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @NonNull

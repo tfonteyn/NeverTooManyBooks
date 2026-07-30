@@ -66,20 +66,17 @@ class AutoCompletePickerDelegate
     private Toolbar toolbar;
 
     AutoCompletePickerDelegate(@NonNull final DialogFragment owner,
-                               @NonNull final Bundle args) {
+                               @NonNull final AutoCompletePickerInput args) {
         this.owner = owner;
-
-        final AutoCompletePickerInput input = AutoCompletePickerInput.fromBundle(args);
-
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
         //noinspection DataFlowIssue
-        dialogTitle = input.getDialogTitle(owner.getContext());
-        dialogMessage = input.getDialogMessage();
+        dialogTitle = args.getDialogTitle(owner.getContext());
+        dialogMessage = args.getDialogMessage();
 
-        items = input.getAllItems();
+        items = args.getAllItems();
 
         vm = new ViewModelProvider(owner).get(AutoCompletePickerViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @NonNull

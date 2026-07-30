@@ -32,6 +32,7 @@ public class EditTagMappingBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditTagMappingDelegate(this, requireArguments()));
+        setDelegate(new EditTagMappingDelegate(this, EditTagMappingInput
+                .fromBundle(requireArguments())));
     }
 }

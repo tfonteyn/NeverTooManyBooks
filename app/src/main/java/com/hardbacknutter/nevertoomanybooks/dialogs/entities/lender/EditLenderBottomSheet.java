@@ -31,6 +31,7 @@ public class EditLenderBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditLenderDelegate(this, requireArguments()));
+        setDelegate(new EditLenderDelegate(this, EditLenderInput
+                .fromBundle(requireArguments())));
     }
 }

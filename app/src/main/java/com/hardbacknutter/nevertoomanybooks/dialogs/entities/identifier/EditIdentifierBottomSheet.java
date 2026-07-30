@@ -24,6 +24,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexBottomSheetDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableInput;
 
 public class EditIdentifierBottomSheet
         extends FlexBottomSheetDialogFragment {
@@ -31,6 +32,7 @@ public class EditIdentifierBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditIdentifierDelegate(this, requireArguments()));
+        setDelegate(new EditIdentifierDelegate(this, EditParcelableInput
+                .fromBundle(requireArguments())));
     }
 }

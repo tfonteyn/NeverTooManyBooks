@@ -45,7 +45,7 @@ class EditLanguageDelegate
         extends EditInLineStringDelegate {
 
     EditLanguageDelegate(@NonNull final DialogFragment owner,
-                         @NonNull final Bundle args) {
+                         @NonNull final EditInLineStringInput args) {
         super(owner, args,
               R.string.lbl_language, R.string.lbl_language,
               ServiceLocator.getInstance()::getLanguageDao);

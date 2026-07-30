@@ -25,13 +25,13 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
-
 public class EditLanguageDialogFragment
         extends FlexClassicDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new EditLanguageDelegate(this, requireArguments()));
+        setDelegate(new EditLanguageDelegate(this, EditInLineStringInput
+                .fromBundle(requireArguments())));
     }
 }

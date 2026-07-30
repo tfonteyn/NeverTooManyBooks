@@ -94,15 +94,12 @@ class EditAuthorDelegate
     private Toolbar toolbar;
 
     EditAuthorDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final Bundle args) {
+                       @NonNull final EditParcelableInput<Parcelable> args) {
         this.owner = owner;
-
-        final EditParcelableInput<Parcelable> input = EditParcelableInput.fromBundle(args);
-
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
 
         vm = new ViewModelProvider(owner).get(EditAuthorViewModel.class);
-        vm.init(input);
+        vm.init(args);
 
         final FragmentManager fm = owner.getChildFragmentManager();
 

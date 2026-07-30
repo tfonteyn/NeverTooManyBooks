@@ -32,6 +32,8 @@ public class AutoCompletePickerBottomSheet
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setDelegate(new AutoCompletePickerDelegate(this, requireArguments()));
+        setDelegate(new AutoCompletePickerDelegate(this, AutoCompletePickerInput
+                .fromBundle(requireArguments())));
+
     }
 }

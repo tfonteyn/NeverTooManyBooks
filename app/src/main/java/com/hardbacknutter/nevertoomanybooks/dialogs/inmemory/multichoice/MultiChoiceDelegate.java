@@ -73,21 +73,18 @@ class MultiChoiceDelegate
     private ChecklistRecyclerAdapter<Long> adapter;
 
     MultiChoiceDelegate(@NonNull final DialogFragment owner,
-                        @NonNull final Bundle args) {
+                        @NonNull final MultiChoiceInput args) {
         this.owner = owner;
-
-        final MultiChoiceInput input = MultiChoiceInput.fromBundle(args);
-
-        requestKey = input.getRequestKey();
+        requestKey = args.getRequestKey();
         //noinspection DataFlowIssue
-        dialogTitle = input.getDialogTitle(owner.getContext());
-        dialogMessage = input.getDialogMessage();
+        dialogTitle = args.getDialogTitle(owner.getContext());
+        dialogMessage = args.getDialogMessage();
 
-        itemIds = input.getIds();
-        itemLabels = input.getLabels();
+        itemIds = args.getIds();
+        itemLabels = args.getLabels();
 
         vm = new ViewModelProvider(owner).get(MultiChoiceViewModel.class);
-        vm.init(input);
+        vm.init(args);
     }
 
     @Nullable
