@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.author;
 
-import android.os.Parcelable;
-
 import java.util.Locale;
 import java.util.Optional;
 
@@ -91,7 +89,7 @@ class EditAuthorViewModelTest
         dao.fixId(context, original, locale);
         assertTrue(original.getId() != 0);
 
-        final EditParcelableInput<Parcelable> args = new EditParcelableInput<>(
+        final EditParcelableInput<Author> args = new EditParcelableInput<>(
                 "unused", /* unused */ EditAction.Edit,
                 original, null);
 
@@ -115,7 +113,7 @@ class EditAuthorViewModelTest
         dao.fixId(context, original, locale);
         assertTrue(original.getId() != 0);
 
-        final EditParcelableInput<Parcelable> args = new EditParcelableInput<>(
+        final EditParcelableInput<Author> args = new EditParcelableInput<>(
                 "unused", /* unused */ EditAction.Edit,
                 original, null);
 

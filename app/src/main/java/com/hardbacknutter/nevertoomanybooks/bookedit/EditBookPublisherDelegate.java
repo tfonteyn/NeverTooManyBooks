@@ -21,8 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +87,7 @@ class EditBookPublisherDelegate
     private Toolbar toolbar;
 
     EditBookPublisherDelegate(@NonNull final DialogFragment owner,
-                              @NonNull final EditParcelableInput<Parcelable> args) {
+                              @NonNull final EditParcelableInput<Publisher> args) {
         this.owner = owner;
         requestKey = args.getRequestKey();
         action = args.getAction();
@@ -197,8 +195,9 @@ class EditBookPublisherDelegate
             return false;
         }
 
-        EditParcelableLauncher.setResult(owner, requestKey, action,
-                                         publisherVm.getOriginal(), currentEdit);
+        final EditParcelableLauncher.Output<Publisher> output =
+                new EditParcelableLauncher.Output<>(action, publisherVm.getOriginal(), currentEdit);
+        EditParcelableLauncher.setResult(owner, requestKey, output);
         return true;
     }
 
