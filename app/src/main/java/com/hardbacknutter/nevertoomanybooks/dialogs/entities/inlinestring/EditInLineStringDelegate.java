@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -193,7 +191,11 @@ class EditInLineStringDelegate
         }
 
         final String storedText = onSave(context, vm.getOriginal(), vm.getCurrentEdit());
-        EditInLineStringLauncher.setResult(owner, requestKey, vm.getOriginal(), storedText);
+
+        final EditInLineStringLauncher.Output output =
+                new EditInLineStringLauncher.Output(vm.getOriginal(), storedText);
+
+        EditInLineStringLauncher.setResult(owner, requestKey, output);
         return true;
     }
 

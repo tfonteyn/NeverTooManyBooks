@@ -46,12 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.OnEditListener;
 public class EditInLineStringLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "EditILStringLauncher";
-    /** Input value: the text (String) to edit. */
-    static final String BKEY_ITEM = TAG + ":item";
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
-    /** Return value: the modified text. */
-    private static final String MODIFIED = TAG + ":m";
 
     @Nullable
     private OnEditListener<String> onEditListener;
@@ -75,20 +70,16 @@ public class EditInLineStringLauncher
      *
      * @param fragment   the calling DialogFragment
      * @param requestKey to use
-     * @param original   the original text which was passed in to be edited
-     * @param modified   the modified text
+     * @param output     result
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final String original,
-                          @NonNull final String modified) {
-        final Bundle result = new Bundle(2);
-        result.putString(BKEY_ITEM, original);
-        result.putString(MODIFIED, modified);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+                          @NonNull final Output output) {
+
+        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
     }
 
     public void setOnEditListener(@NonNull final OnEditListener<String> listener) {
@@ -115,7 +106,60 @@ public class EditInLineStringLauncher
                                  @NonNull final Bundle result) {
         Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        onEditListener.onEdit(Objects.requireNonNull(result.getString(BKEY_ITEM), BKEY_ITEM),
-                              Objects.requireNonNull(result.getString(MODIFIED), MODIFIED));
+        final Output output = Output.fromBundle(result);
+        onEditListener.onEdit(output.getOriginal(), output.getEdited());
+    }
+
+    static class Output {
+
+        private static final String TAG = "Output";
+        private static final String BKEY_ORIGINAL = TAG + ":original";
+        private static final String BKEY_EDIT = TAG + ":edit";
+
+        @NonNull
+        private final String original;
+        @NonNull
+        private final String edited;
+
+        /**
+         * Constructor.
+         *
+         * @param original the previous value
+         * @param edited   the new value
+         */
+        Output(@NonNull final String original,
+               @NonNull final String edited) {
+            this.original = original;
+            this.edited = edited;
+        }
+
+        @NonNull
+        static Output fromBundle(@NonNull final Bundle result) {
+            final String previousValue = Objects.requireNonNull(
+                    result.getString(BKEY_ORIGINAL, null));
+            final String currentValue = Objects.requireNonNull(
+                    result.getString(BKEY_EDIT, null), BKEY_EDIT);
+
+            return new Output(previousValue, currentValue);
+        }
+
+        @NonNull
+        Bundle toBundle() {
+            final Bundle result = new Bundle(2);
+            result.putString(BKEY_ORIGINAL, original);
+            result.putString(BKEY_EDIT, edited);
+
+            return result;
+        }
+
+        @NonNull
+        String getOriginal() {
+            return original;
+        }
+
+        @NonNull
+        String getEdited() {
+            return edited;
+        }
     }
 }
