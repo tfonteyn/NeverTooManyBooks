@@ -108,8 +108,7 @@ public class SearchBookByExternalIdFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
-        final String styleUuid = requireArguments().getString(Style.BKEY_UUID);
-        vm.init(styleUuid);
+        vm.init(requireArguments().getString(Style.BKEY_UUID));
     }
 
     @Override

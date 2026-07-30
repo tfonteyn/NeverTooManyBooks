@@ -90,8 +90,7 @@ public class SearchBookByTextFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        final String styleUuid = requireArguments().getString(Style.BKEY_UUID);
-        vm.init(styleUuid);
+        vm.init(requireArguments().getString(Style.BKEY_UUID));
     }
 
     @Override

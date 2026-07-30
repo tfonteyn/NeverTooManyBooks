@@ -20,11 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.settings.bookshelves;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,7 +32,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -70,15 +67,15 @@ public class EditBookshelvesViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()} ()}
+     * @param initialBookshelfId the initial selected Bookshelf
      */
-    void init(@NonNull final Bundle args) {
+    void init(final long initialBookshelfId) {
         if (bookshelfDao == null) {
             bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
             list = bookshelfDao.getAll();
 
-            initialBookshelfId = args.getLong(DBKey.FK_BOOKSHELF);
-            selectedBookshelfId = initialBookshelfId;
+            this.initialBookshelfId = initialBookshelfId;
+            selectedBookshelfId = this.initialBookshelfId;
         }
     }
 

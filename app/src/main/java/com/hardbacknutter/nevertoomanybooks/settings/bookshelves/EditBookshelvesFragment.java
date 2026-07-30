@@ -132,7 +132,7 @@ public class EditBookshelvesFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
-        vm.init(requireArguments());
+        vm.init(requireArguments().getLong(DBKey.FK_BOOKSHELF));
 
         final FragmentManager fm = getChildFragmentManager();
 

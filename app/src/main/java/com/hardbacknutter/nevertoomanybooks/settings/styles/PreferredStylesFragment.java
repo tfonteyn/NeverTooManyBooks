@@ -160,9 +160,8 @@ public class PreferredStylesFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        final String styleUuid = SanityCheck.requireValue(
-                requireArguments().getString(Style.BKEY_UUID), Style.BKEY_UUID);
-        vm.init(styleUuid);
+        vm.init(SanityCheck.requireValue(
+                requireArguments().getString(Style.BKEY_UUID), Style.BKEY_UUID));
 
         final FragmentManager fm = getChildFragmentManager();
 

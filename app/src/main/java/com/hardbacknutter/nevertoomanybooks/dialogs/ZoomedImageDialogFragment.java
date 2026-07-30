@@ -86,9 +86,8 @@ public class ZoomedImageDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        final String fileSpec = SanityCheck.requireValue(args.getString(BKEY_IMAGE_PATH),
-                                                         BKEY_IMAGE_PATH);
+        final String fileSpec = SanityCheck.requireValue(
+                requireArguments().getString(BKEY_IMAGE_PATH), BKEY_IMAGE_PATH);
         imageFile = new File(fileSpec);
     }
 
