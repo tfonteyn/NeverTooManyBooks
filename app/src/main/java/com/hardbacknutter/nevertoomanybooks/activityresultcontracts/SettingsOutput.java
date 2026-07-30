@@ -36,8 +36,8 @@ public final class SettingsOutput {
     private final boolean forceRebuildBooklist;
 
     public SettingsOutput(@NonNull final Bundle result) {
-        recreateActivity = result.getBoolean(SettingsOutput.BKEY_RECREATE_ACTIVITY, false);
-        forceRebuildBooklist = result.getBoolean(SettingsOutput.BKEY_REBUILD_BOOKLIST, false);
+        recreateActivity = result.getBoolean(BKEY_RECREATE_ACTIVITY, false);
+        forceRebuildBooklist = result.getBoolean(BKEY_REBUILD_BOOKLIST, false);
     }
 
     /**
