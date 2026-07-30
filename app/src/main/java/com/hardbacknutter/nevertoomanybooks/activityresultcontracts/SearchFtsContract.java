@@ -32,28 +32,23 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsInput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SearchFtsContract
-        extends ActivityResultContract<SearchFtsContract.Input, Optional<LocalSearchCriteria>> {
+        extends ActivityResultContract<SearchFtsInput, Optional<LocalSearchCriteria>> {
 
     private static final String TAG = "SearchFtsContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final SearchFtsContract.Input input) {
-        final Intent intent = FragmentHostActivityLauncher
+                               @NonNull final SearchFtsInput input) {
+        return FragmentHostActivityLauncher
                 .createIntent(context, SearchFtsFragment.class)
-                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf);
-        if (input.criteria != null && !input.criteria.isEmpty()) {
-            intent.putExtra(LocalSearchCriteria.BKEY, input.criteria);
-        }
-        return intent;
+                .putExtras(input.toBundle());
     }
 
     @Override
@@ -77,19 +72,5 @@ public class SearchFtsContract
             // Paranoia, we should never get here.
             return Optional.empty();
         }
-    }
-
-    public static final class Input {
-        @NonNull
-        final Bookshelf bookshelf;
-        @Nullable
-        final LocalSearchCriteria criteria;
-
-        public Input(@NonNull final Bookshelf bookshelf,
-                     @Nullable final LocalSearchCriteria criteria) {
-            this.criteria = criteria;
-            this.bookshelf = bookshelf;
-        }
-
     }
 }

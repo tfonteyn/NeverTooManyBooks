@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.localsearch;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -33,7 +31,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -66,14 +63,13 @@ public class SearchFtsViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args Bundle with arguments
+     * @param args all arguments
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final SearchFtsInput args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getFtsDao();
-            bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                               DBKey.FK_BOOKSHELF);
-            criteria = args.getParcelable(LocalSearchCriteria.BKEY);
+            bookshelf = args.getBookshelf();
+            criteria = args.getCriteria();
             if (criteria == null) {
                 criteria = new LocalSearchCriteria();
             }

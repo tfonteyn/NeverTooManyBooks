@@ -77,7 +77,7 @@ public class SearchFtsFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchFtsViewModel.class);
-        vm.init(requireArguments());
+        vm.init(SearchFtsInput.fromBundle(requireArguments()));
 
         displayBookLauncher = registerForActivityResult(
                 new ShowBookPagerContract(), o -> {

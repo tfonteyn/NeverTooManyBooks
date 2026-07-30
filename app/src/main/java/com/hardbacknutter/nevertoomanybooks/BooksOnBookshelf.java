@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshel
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsInput;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -255,7 +256,7 @@ public class BooksOnBookshelf
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
     /** The local FTS based search. */
-    private ActivityResultLauncher<SearchFtsContract.Input> ftsSearchLauncher;
+    private ActivityResultLauncher<SearchFtsInput> ftsSearchLauncher;
     /** Bring up the synchronisation options. */
     @Nullable
     private ActivityResultLauncher<Void> stripInfoSyncLauncher;
@@ -1135,8 +1136,8 @@ public class BooksOnBookshelf
         navDrawer.close();
 
         if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
-            ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getBookshelf(),
-                                                                 vm.getSearchCriteria()));
+            ftsSearchLauncher.launch(new SearchFtsInput(vm.getBookshelf(),
+                                                        vm.getSearchCriteria()));
             return true;
 
         } else if (menuItemId == R.id.MENU_MANAGE_LIST_STYLES) {
