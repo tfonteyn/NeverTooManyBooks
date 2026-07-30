@@ -95,7 +95,6 @@ public class ExportFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
-        vm.init();
     }
 
     @Override

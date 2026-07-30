@@ -57,15 +57,13 @@ public class ExportViewModel
             ArchiveWriterEncoding.SqLiteDb};
 
     @Nullable
-    private ExportHelper exportHelper;
+    private final ExportHelper exportHelper;
 
     /**
-     * Pseudo constructor.
+     * Constructor.
      */
-    public void init() {
-        if (exportHelper == null) {
-            exportHelper = new ExportHelper();
-        }
+    public ExportViewModel() {
+        exportHelper = new ExportHelper();
     }
 
     @NonNull
