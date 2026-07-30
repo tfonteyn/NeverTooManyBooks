@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,10 +165,7 @@ class AutoCompletePickerDelegate
             return true;
         }
 
-        AutoCompletePickerLauncher.setResult(owner, requestKey,
-                                             vm.getPreviousValue(),
-                                             vm.getCurrentValue(),
-                                             vm.getExtras());
+        AutoCompletePickerLauncher.setResult(owner, requestKey, vm.getOutput());
         return true;
     }
 

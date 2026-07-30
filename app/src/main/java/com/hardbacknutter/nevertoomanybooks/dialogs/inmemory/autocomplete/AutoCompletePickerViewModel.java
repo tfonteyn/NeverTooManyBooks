@@ -24,7 +24,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 @SuppressWarnings("WeakerAccess")
@@ -61,11 +60,6 @@ public class AutoCompletePickerViewModel
         return !currentValue.equals(previousValue);
     }
 
-    @Nullable
-    String getPreviousValue() {
-        return previousValue;
-    }
-
     @NonNull
     String getCurrentValue() {
         return currentValue;
@@ -75,13 +69,8 @@ public class AutoCompletePickerViewModel
         this.currentValue = currentValue;
     }
 
-    /**
-     * Get the optional/additional payload.
-     *
-     * @return extras Bundle
-     */
-    @Nullable
-    Bundle getExtras() {
-        return extras;
+    @NonNull
+    AutoCompletePickerLauncher.Output getOutput() {
+        return new AutoCompletePickerLauncher.Output(previousValue, currentValue, extras);
     }
 }

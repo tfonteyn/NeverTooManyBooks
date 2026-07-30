@@ -36,11 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 public class AutoCompletePickerLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "ACPickerLauncher";
-    private static final String BKEY_EDIT = TAG + ":edit";
-    private static final String BKEY_EXTRAS = TAG + ":extras";
-    private static final String BKEY_ORIGINAL = TAG + ":original";
-
     @NonNull
     private final ResultListener resultListener;
 
@@ -61,29 +56,17 @@ public class AutoCompletePickerLauncher
     /**
      * Encode and forward the results to {@link #onFragmentResult(String, Bundle)}.
      *
-     * @param fragment          the calling DialogFragment
-     * @param requestKey        to use
-     * @param previousSelection the previous selection/value
-     * @param currentSelection  the new selection/value
-     * @param extras            (optional) Bundle as provided to {@link #launch}
+     * @param fragment   the calling DialogFragment
+     * @param requestKey to use
+     * @param output     result
      *
      * @see #onFragmentResult(String, Bundle)
      */
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @Nullable final String previousSelection,
-                          @NonNull final String currentSelection,
-                          @Nullable final Bundle extras) {
-        final Bundle result = new Bundle(3);
-        if (previousSelection != null) {
-            result.putString(BKEY_ORIGINAL, previousSelection);
-        }
-        result.putString(BKEY_EDIT, currentSelection);
-        if (extras != null && !extras.isEmpty()) {
-            result.putBundle(BKEY_EXTRAS, extras);
-        }
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+                          @NonNull final Output output) {
+        fragment.getParentFragmentManager().setFragmentResult(requestKey, output.toBundle());
     }
 
     /**
@@ -112,9 +95,8 @@ public class AutoCompletePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-        resultListener.onResult(result.getString(BKEY_ORIGINAL, null),
-                                Objects.requireNonNull(result.getString(BKEY_EDIT)),
-                                result.getBundle(BKEY_EXTRAS));
+        final Output output = Output.fromBundle(result);
+        resultListener.onResult(output.getOriginal(), output.getEdited(), output.getExtras());
     }
 
     @FunctionalInterface
@@ -130,5 +112,74 @@ public class AutoCompletePickerLauncher
         void onResult(@Nullable String previousSelection,
                       @NonNull String currentSelection,
                       @Nullable Bundle extras);
+    }
+
+    static class Output {
+
+        private static final String TAG = "Output";
+        private static final String BKEY_ORIGINAL = TAG + ":original";
+        private static final String BKEY_EDIT = TAG + ":edit";
+        private static final String BKEY_EXTRAS = TAG + ":extras";
+
+        @Nullable
+        private final String original;
+        @NonNull
+        private final String edited;
+        @Nullable
+        private final Bundle extras;
+
+        /**
+         * Constructor.
+         *
+         * @param original the previous value
+         * @param edited   the new value
+         * @param extras   (optional) Bundle provided as input
+         */
+        Output(@Nullable final String original,
+               @NonNull final String edited,
+               @Nullable final Bundle extras) {
+            this.original = original;
+            this.edited = edited;
+            this.extras = extras;
+        }
+
+        @NonNull
+        static Output fromBundle(@NonNull final Bundle result) {
+            final String previousValue = result.getString(BKEY_ORIGINAL, null);
+            final String currentValue = Objects.requireNonNull(
+                    result.getString(BKEY_EDIT, null), BKEY_EDIT);
+            final Bundle extras = result.getBundle(BKEY_EXTRAS);
+
+            return new Output(previousValue, currentValue, extras);
+        }
+
+        @NonNull
+        Bundle toBundle() {
+            final Bundle result = new Bundle(3);
+            if (original != null && !original.isBlank()) {
+                result.putString(BKEY_ORIGINAL, original);
+            }
+            result.putString(BKEY_EDIT, edited);
+            if (extras != null && !extras.isEmpty()) {
+                result.putBundle(BKEY_EXTRAS, extras);
+            }
+
+            return result;
+        }
+
+        @Nullable
+        String getOriginal() {
+            return original;
+        }
+
+        @NonNull
+        String getEdited() {
+            return edited;
+        }
+
+        @Nullable
+        Bundle getExtras() {
+            return extras;
+        }
     }
 }
