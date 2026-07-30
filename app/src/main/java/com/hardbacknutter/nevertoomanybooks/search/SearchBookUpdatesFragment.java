@@ -76,11 +76,6 @@ public class SearchBookUpdatesFragment
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesFragment";
 
-    /** Optional argument to set a Toolbar title. */
-    public static final String BKEY_SCREEN_TITLE = TAG + ":title";
-    /** Optional argument to set a Toolbar subtitle. */
-    public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
-
     /** The extended SearchCoordinator. */
     private SearchBookUpdatesViewModel vm;
     private final ActivityResultLauncher<List<Site>> editSitesLauncher =
@@ -91,16 +86,6 @@ public class SearchBookUpdatesFragment
     private ProgressDelegate progressDelegate;
     /** View Binding. */
     private FragmentSyncfieldConfigBinding vb;
-
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        vm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), getArguments());
-    }
 
     @Nullable
     @Override
@@ -115,23 +100,33 @@ public class SearchBookUpdatesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final Bundle rawArgs = getArguments();
+        @Nullable
+        SearchBookUpdatesInput args = null;
+        if (rawArgs != null) {
+            args = SearchBookUpdatesInput.fromBundle(rawArgs);
+        }
+
+        vm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
+        //noinspection DataFlowIssue
+        vm.init(getContext(), args);
+
         // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
         InsetsListenerBuilder.apply(vb.fieldList);
-
-        final Bundle args = getArguments();
 
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         // optional activity title
-        if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
-            toolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));
+        if (args != null && args.getScreenTitle() != null) {
+            toolbar.setTitle(args.getScreenTitle());
         } else {
             toolbar.setTitle(R.string.lbl_select_fields);
         }
         // optional activity subtitle
-        if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
-            toolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
+        if (args != null && args.getScreenSubtitle() != null) {
+            toolbar.setSubtitle(args.getScreenSubtitle());
         } else {
             final int nrOfBooks = vm.getTotalBooks();
             toolbar.setSubtitle(getString(R.string.name_colon_value,
@@ -158,7 +153,6 @@ public class SearchBookUpdatesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
-        //noinspection DataFlowIssue
         final GridDividerItemDecoration columnDivider =
                 new GridDividerItemDecoration(getContext(), false, true);
         vb.fieldList.addItemDecoration(columnDivider);

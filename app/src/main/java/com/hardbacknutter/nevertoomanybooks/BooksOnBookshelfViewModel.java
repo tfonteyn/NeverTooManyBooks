@@ -48,7 +48,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
@@ -920,7 +920,7 @@ public class BooksOnBookshelfViewModel
      * @return a fully initialised input object
      */
     @NonNull
-    UpdateBooklistContract.Input createUpdateBooklistContractInput(
+    SearchBookUpdatesInput createUpdateBooklistContractInput(
             @NonNull final Context context) {
         //noinspection DataFlowIssue
         final List<Long> books = booklist.getCurrentBookIdList();
@@ -928,7 +928,7 @@ public class BooksOnBookshelfViewModel
         final String title = context.getString(R.string.name_colon_value,
                                                context.getString(R.string.lbl_bookshelf),
                                                getBookshelf().getName());
-        return new UpdateBooklistContract.Input(books, title, null);
+        return new SearchBookUpdatesInput(books, title, null);
     }
 
     /**
@@ -943,7 +943,7 @@ public class BooksOnBookshelfViewModel
      * @throws IllegalArgumentException for an unsupported group
      */
     @NonNull
-    UpdateBooklistContract.Input createUpdateBooklistContractInput(
+    SearchBookUpdatesInput createUpdateBooklistContractInput(
             @NonNull final Context context,
             @NonNull final DataHolder rowData,
             final boolean onlyThisShelf) {
@@ -997,7 +997,7 @@ public class BooksOnBookshelfViewModel
                                       context.getString(blgRecord.emptyItemTextResId));
         }
 
-        return new UpdateBooklistContract.Input(books, title, null);
+        return new SearchBookUpdatesInput(books, title, null);
     }
 
     /**
@@ -1009,7 +1009,7 @@ public class BooksOnBookshelfViewModel
      * @return a fully initialised input object
      */
     @NonNull
-    UpdateBooklistContract.Input createDateRowUpdateBooklistContractInput(
+    SearchBookUpdatesInput createDateRowUpdateBooklistContractInput(
             @NonNull final Context context,
             @NonNull final DataHolder rowData) {
 
@@ -1038,7 +1038,7 @@ public class BooksOnBookshelfViewModel
         final String title = context.getString(R.string.name_colon_value,
                                                context.getString(blgRecord.labelResId),
                                                sj.toString());
-        return new UpdateBooklistContract.Input(books, title, null);
+        return new SearchBookUpdatesInput(books, title, null);
     }
 
     /**

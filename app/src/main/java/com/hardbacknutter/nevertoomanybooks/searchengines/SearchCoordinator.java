@@ -20,13 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -448,10 +445,8 @@ public class SearchCoordinator
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+    public void init(@NonNull final Context context) {
         if (sites == null) {
             sites = Site.Type.Data.getSites();
             listElementPrefixString = context.getString(R.string.list_element);

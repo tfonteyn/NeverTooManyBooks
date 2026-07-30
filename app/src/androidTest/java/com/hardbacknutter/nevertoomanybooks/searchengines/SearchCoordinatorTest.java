@@ -56,7 +56,7 @@ class SearchCoordinatorTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         coordinator = new SearchCoordinator();
-        coordinator.init(context, null);
+        coordinator.init(context);
 
         final Site ol = Site.Type.Data.getSite(EngineId.OpenLibrary);
         coordinator.setSiteList(List.of(ol));

@@ -102,7 +102,7 @@ public abstract class SearchBookBaseFragment
         //noinspection DataFlowIssue
         coordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
         //noinspection DataFlowIssue
-        coordinator.init(getContext(), requireArguments());
+        coordinator.init(getContext());
     }
 
     private void createActivityLaunchers() {

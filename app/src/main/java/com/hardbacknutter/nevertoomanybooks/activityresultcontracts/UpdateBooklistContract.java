@@ -27,41 +27,32 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Update a list of Books. The input is a list of ids and screen title/subtitle,
- * using {@link Input}.
+ * using {@link SearchBookUpdatesInput}.
  */
 public class UpdateBooklistContract
-        extends ActivityResultContract<UpdateBooklistContract.Input, Optional<EditBookOutput>> {
+        extends ActivityResultContract<SearchBookUpdatesInput, Optional<EditBookOutput>> {
 
     private static final String TAG = "UpdateBooklistContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
-        final Intent intent = FragmentHostActivityLauncher
-                .createIntent(context, SearchBookUpdatesFragment.class)
-                .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(input.bookIdList));
+                               @NonNull final SearchBookUpdatesInput args) {
 
-        if (input.title != null) {
-            intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, input.title);
-        }
-        if (input.subTitle != null) {
-            intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE, input.subTitle);
-        }
-        return intent;
+        return FragmentHostActivityLauncher
+                .createIntent(context, SearchBookUpdatesFragment.class)
+                .putExtras(args.toBundle());
     }
 
     @Override
@@ -80,28 +71,4 @@ public class UpdateBooklistContract
         return Optional.of(EditBookOutput.parseResult(intent));
     }
 
-    public static class Input {
-
-        @NonNull
-        final List<Long> bookIdList;
-        @Nullable
-        final String title;
-        @Nullable
-        final String subTitle;
-
-        /**
-         * Constructor.
-         *
-         * @param bookIdList list of ids to process
-         * @param title      optional title for the screen
-         * @param subTitle   optional subtitle for the screen
-         */
-        public Input(@NonNull final List<Long> bookIdList,
-                     @Nullable final String title,
-                     @Nullable final String subTitle) {
-            this.bookIdList = bookIdList;
-            this.title = title;
-            this.subTitle = subTitle;
-        }
-    }
 }

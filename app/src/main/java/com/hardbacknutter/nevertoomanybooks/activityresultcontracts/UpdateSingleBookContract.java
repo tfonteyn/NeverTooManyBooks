@@ -34,10 +34,10 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -56,17 +56,17 @@ public class UpdateSingleBookContract
         final List<Long> bookIdList = new ArrayList<>();
         bookIdList.add(book.getId());
 
-        final Intent intent = FragmentHostActivityLauncher
-                .createIntent(context, SearchBookUpdatesFragment.class)
-                .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
-                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle());
-
+        String subTitle = null;
         final Author author = book.getPrimaryAuthor();
         if (author != null) {
-            intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE,
-                            author.getLabel(context));
+            subTitle = author.getLabel(context);
         }
-        return intent;
+        final SearchBookUpdatesInput args =
+                new SearchBookUpdatesInput(bookIdList, book.getTitle(), subTitle);
+
+        return FragmentHostActivityLauncher
+                .createIntent(context, SearchBookUpdatesFragment.class)
+                .putExtras(args.toBundle());
     }
 
     @Override

@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.os.LocaleList;
 
 import androidx.annotation.AnyThread;
@@ -29,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -56,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -167,12 +164,12 @@ public class SearchBookUpdatesViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Fragment#getArguments()}
+     * @param args    all arguments
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+                     @Nullable final SearchBookUpdatesInput args) {
         // init the SearchCoordinator.
-        super.init(context, args);
+        super.init(context);
 
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
@@ -180,8 +177,7 @@ public class SearchBookUpdatesViewModel
 
             if (args != null) {
                 // if we have args, then we can expect the list to be present
-                bookIdList = Objects.requireNonNull(
-                        ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST));
+                bookIdList = args.getBookIdList();
             }
 
             syncProcessorBuilder = createSyncProcessorBuilder(context);

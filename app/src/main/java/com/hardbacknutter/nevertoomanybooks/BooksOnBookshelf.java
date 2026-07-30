@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshel
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
@@ -249,7 +250,7 @@ public class BooksOnBookshelf
     /** Update an individual Book with information from the internet. */
     private ActivityResultLauncher<Book> updateBookLauncher;
     /** Update a list of Books with information from the internet. */
-    private ActivityResultLauncher<UpdateBooklistContract.Input> updateBookListLauncher;
+    private ActivityResultLauncher<SearchBookUpdatesInput> updateBookListLauncher;
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
     /** The local FTS based search. */
