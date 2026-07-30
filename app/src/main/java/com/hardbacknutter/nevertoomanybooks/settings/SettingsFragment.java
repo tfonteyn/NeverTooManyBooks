@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesAllListsContract;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleInput;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagAdminContract;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -231,12 +231,7 @@ public class SettingsFragment
                                  .StyleDefaultsFragment.class.getName(),
                          R.id.content_frame, p -> {
                     p.setIcon(R.drawable.style_24px);
-                    p.setArgumentSupplier(() -> {
-                        // Add a flag to indicate we want to edit the global-style
-                        final Bundle args = new Bundle(1);
-                        args.putBoolean(StyleViewModel.BKEY_GLOBAL_STYLE, true);
-                        return args;
-                    });
+                    p.setArgumentSupplier(() -> EditStyleInput.editDefaults().toBundle());
                 });
 
         factory.header(R.string.pc_edit);

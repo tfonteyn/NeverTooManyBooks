@@ -60,15 +60,14 @@ public class PreferredStylesViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param styleUuid to lookup
      */
-    void init(@NonNull final Bundle args) {
+    void init(@NonNull final String styleUuid) {
         if (stylesHelper == null) {
             stylesHelper = ServiceLocator.getInstance().getStyles();
             styleList = stylesHelper.getStyles(true);
 
-            initialStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
-                                                        Style.BKEY_UUID);
+            initialStyleUuid = styleUuid;
             selectedStyleUuid = initialStyleUuid;
         }
     }

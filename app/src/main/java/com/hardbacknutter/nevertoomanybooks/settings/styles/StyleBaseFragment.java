@@ -348,7 +348,7 @@ public abstract class StyleBaseFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
+        vm.init(getContext(), EditStyleInput.fromBundle(requireArguments()));
         // init the vm BEFORE calling the super, as onCreateSettings uses it.
         super.onViewCreated(view, savedInstanceState);
 

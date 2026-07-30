@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -107,7 +108,8 @@ public class SearchBookByExternalIdFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
-        vm.init(requireArguments());
+        final String styleUuid = requireArguments().getString(Style.BKEY_UUID);
+        vm.init(styleUuid);
     }
 
     @Override

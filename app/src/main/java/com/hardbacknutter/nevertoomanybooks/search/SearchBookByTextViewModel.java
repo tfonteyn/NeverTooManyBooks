@@ -20,10 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -125,9 +124,9 @@ public class SearchBookByTextViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#requireArguments()}
+     * @param styleUuid to lookup
      */
-    void init(@NonNull final Bundle args) {
+    void init(@Nullable final String styleUuid) {
         if (authorDao == null) {
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             authorDao = serviceLocator.getAuthorDao();
@@ -137,7 +136,6 @@ public class SearchBookByTextViewModel
             searchCriteria = new BookSearchCriteria();
 
             // Lookup the provided style or use the default if not found.
-            final String styleUuid = args.getString(Style.BKEY_UUID);
             final StylesHelper stylesHelper = serviceLocator.getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
         }

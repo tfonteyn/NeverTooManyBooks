@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -74,11 +72,8 @@ class PreferredStylesViewModelTest
                         .forEach(stylesHelper::delete);
         }
 
-        final Style aDefault = stylesHelper.getDefault();
         listVm = new PreferredStylesViewModel();
-        final Bundle args = new Bundle(1);
-        args.putString(Style.BKEY_UUID, aDefault.getUuid());
-        listVm.init(args);
+        listVm.init(stylesHelper.getDefault().getUuid());
     }
 
     @Test
@@ -129,8 +124,9 @@ class PreferredStylesViewModelTest
         initialStyle.setPreferred(asPreferred);
 
         // Prepare editing
-        final StyleViewModel styleVm = initVm(
-                initialStyle, EditStyleContract.ACTION_CLONE);
+        final StyleViewModel styleVm = new StyleViewModel();
+        styleVm.init(context, EditStyleInput.duplicate(initialStyle));
+        assertNotNull(styleVm.getStyleDataStore());
 
 
         // Test the prepared style
@@ -197,8 +193,9 @@ class PreferredStylesViewModelTest
         initialStyle.setPreferred(asPreferred);
 
         // Prepare editing
-        final StyleViewModel styleVm = initVm(
-                initialStyle, EditStyleContract.ACTION_CLONE);
+        final StyleViewModel styleVm = new StyleViewModel();
+        styleVm.init(context, EditStyleInput.duplicate(initialStyle));
+        assertNotNull(styleVm.getStyleDataStore());
 
 
         // Test the prepared style
@@ -268,8 +265,9 @@ class PreferredStylesViewModelTest
         initialStyle.setPreferred(asPreferred);
 
         // Prepare editing
-        final StyleViewModel styleVm = initVm(
-                initialStyle, EditStyleContract.ACTION_EDIT);
+        final StyleViewModel styleVm = new StyleViewModel();
+        styleVm.init(context, EditStyleInput.edit(initialStyle));
+        assertNotNull(styleVm.getStyleDataStore());
 
 
         // Test the prepared style
@@ -303,19 +301,6 @@ class PreferredStylesViewModelTest
             assertEquals(modifiedName, editedStyle.getLabel(context));
             assertEquals(addedStyle.isPreferred(), editedStyle.isPreferred());
         }
-    }
-
-    @NonNull
-    private StyleViewModel initVm(@NonNull final Style initialStyle,
-                                  final int action) {
-        final StyleViewModel styleVm = new StyleViewModel();
-        final Bundle args = new Bundle(3);
-        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
-        args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
-        args.putInt(EditStyleContract.BKEY_ACTION, action);
-        styleVm.init(context, args);
-        assertNotNull(styleVm.getStyleDataStore());
-        return styleVm;
     }
 
 }

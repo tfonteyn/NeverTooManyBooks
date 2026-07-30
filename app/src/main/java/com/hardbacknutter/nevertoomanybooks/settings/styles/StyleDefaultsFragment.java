@@ -68,9 +68,7 @@ public class StyleDefaultsFragment
     @NonNull
     public static Fragment create() {
         final Fragment fragment = new StyleDefaultsFragment();
-        final Bundle args = new Bundle(1);
-        args.putBoolean(StyleViewModel.BKEY_GLOBAL_STYLE, true);
-        fragment.setArguments(args);
+        fragment.setArguments(EditStyleInput.editDefaults().toBundle());
         return fragment;
     }
 

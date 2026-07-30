@@ -24,12 +24,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -40,34 +37,13 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class EditStyleContract
-        extends ActivityResultContract<EditStyleContract.Input,
+        extends ActivityResultContract<EditStyleInput,
         Optional<EditStyleContract.Output>> {
 
-    public static final int ACTION_CLONE = 0;
-    public static final int ACTION_EDIT = 1;
-
     private static final String TAG = "EditStyleContract";
-    public static final String BKEY_ACTION = TAG + ":action";
-    public static final String BKEY_SET_AS_PREFERRED = TAG + ":setAsPreferred";
 
     private static final String BKEY_MODIFIED = TAG + ":m";
     private static final String BKEY_TEMPLATE_UUID = TAG + ":template";
-
-    @NonNull
-    public static Input duplicate(@NonNull final Style style) {
-        return new Input(ACTION_CLONE, style, style.isPreferred());
-    }
-
-    @NonNull
-    public static Input edit(@NonNull final Style style) {
-        return new Input(ACTION_EDIT, style, style.isPreferred());
-    }
-
-    @NonNull
-    public static Input edit(@NonNull final Style style,
-                             final boolean setAsPreferred) {
-        return new Input(ACTION_EDIT, style, setAsPreferred);
-    }
 
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
@@ -91,12 +67,10 @@ public class EditStyleContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
+                               @NonNull final EditStyleInput args) {
         return FragmentHostActivityLauncher
                 .createIntent(context, StyleFragment.class)
-                .putExtra(Style.BKEY_UUID, input.styleUuid)
-                .putExtra(BKEY_ACTION, input.action)
-                .putExtra(BKEY_SET_AS_PREFERRED, input.setAsPreferred);
+                .putExtras(args.toBundle());
     }
 
     @Override
@@ -120,38 +94,9 @@ public class EditStyleContract
         return Optional.of(new Output(templateUuid, modified, uuid));
     }
 
-    @IntDef({ACTION_CLONE, ACTION_EDIT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface EditAction {
-
-    }
-
-    public static class Input {
-
-        @EditAction
-        final int action;
-
-        @NonNull
-        final String styleUuid;
-
-        /**
-         * If set to {@code true} the edited/cloned style will be set as preferred.
-         * If set to {@code false} the preferred state will not be touched.
-         */
-        final boolean setAsPreferred;
-
-        Input(@EditAction final int action,
-              @NonNull final Style style,
-              final boolean setAsPreferred) {
-            this.action = action;
-            this.styleUuid = style.getUuid();
-            this.setAsPreferred = setAsPreferred;
-        }
-    }
-
     public static final class Output {
 
-        /** The uuid which was passed into the {@link Input#styleUuid} for editing. */
+        /** The uuid which was passed into the {@link EditStyleInput} for editing. */
         @NonNull
         private final String templateUuid;
 

@@ -134,6 +134,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Tuning;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleInput;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
@@ -238,7 +239,7 @@ public class BooksOnBookshelf
     /** Manage the list of (preferred) styles. */
     private ActivityResultLauncher<String> editStylesLauncher;
     /** Edit an individual style. */
-    private ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher;
+    private ActivityResultLauncher<EditStyleInput> editStyleLauncher;
     /** Manage the bookshelves. */
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
     /** Display a Book. */
@@ -1527,12 +1528,13 @@ public class BooksOnBookshelf
 
     /**
      * Called from {@link StylePickerDialogFragment} when the user wants
-     * to <strong>edit</strong> the selected style.
+     * to <strong>edit</strong> the selected Style.
+     * This will make it a preferred Style.
      *
      * @param style to edit
      */
     public void editStyle(@NonNull final Style style) {
-        editStyleLauncher.launch(EditStyleContract.edit(style, true));
+        editStyleLauncher.launch(EditStyleInput.edit(style, true));
     }
 
     /**

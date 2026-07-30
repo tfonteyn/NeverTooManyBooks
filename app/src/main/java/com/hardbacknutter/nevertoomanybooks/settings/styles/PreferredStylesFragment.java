@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleIte
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -136,7 +137,7 @@ public class PreferredStylesFragment
             };
 
     @SuppressLint("NotifyDataSetChanged")
-    private final ActivityResultLauncher<EditStyleContract.Input> editStyleContract =
+    private final ActivityResultLauncher<EditStyleInput> editStyleContract =
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
                 if (data.isModified()) {
                     //noinspection DataFlowIssue
@@ -159,7 +160,9 @@ public class PreferredStylesFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        vm.init(requireArguments());
+        final String styleUuid = SanityCheck.requireValue(
+                requireArguments().getString(Style.BKEY_UUID), Style.BKEY_UUID);
+        vm.init(styleUuid);
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -293,11 +296,11 @@ public class PreferredStylesFragment
         final Style style = vm.getStyle(position);
 
         if (menuItemId == R.id.MENU_EDIT) {
-            editStyleContract.launch(EditStyleContract.edit(style));
+            editStyleContract.launch(EditStyleInput.edit(style));
             return true;
 
         } else if (menuItemId == R.id.MENU_DUPLICATE) {
-            editStyleContract.launch(EditStyleContract.duplicate(style));
+            editStyleContract.launch(EditStyleInput.duplicate(style));
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {

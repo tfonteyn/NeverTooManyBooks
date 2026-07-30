@@ -20,14 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -57,11 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 public class StyleViewModel
         extends ViewModel {
-
-    private static final String TAG = "StyleViewModel";
-
-    /** boolean. Flag indicating we're editing the global style settings. */
-    public static final String BKEY_GLOBAL_STYLE = TAG + ":global";
 
     private final MutableLiveData<String> onDataStoreModified = new MutableLiveData<>();
     private final MutableLiveData<String> onNameNotUnique = new MutableLiveData<>();
@@ -127,21 +119,23 @@ public class StyleViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args    all arguments
      */
     void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+              @NonNull final EditStyleInput args) {
         if (style == null) {
             stylesHelper = ServiceLocator.getInstance().getStyles();
 
-            isDefaultStyle = args.getBoolean(BKEY_GLOBAL_STYLE, false);
+            @EditStyleInput.EditAction
+            final int action = args.getAction();
+
+            isDefaultStyle = action == EditStyleInput.ACTION_EDIT_DEFAULTS;
             if (isDefaultStyle) {
                 style = (WritableStyle) stylesHelper.getGlobalStyle();
 
             } else {
                 // We MUST have a style
-                final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
-                                                             Style.BKEY_UUID);
+                final String uuid = SanityCheck.requireValue(args.getStyleUuid(), Style.BKEY_UUID);
                 // ALWAYS pass the original style uuid back.
                 templateUuid = uuid;
 
@@ -149,21 +143,17 @@ public class StyleViewModel
                                                   .orElseThrow(() -> new IllegalArgumentException(
                                                           "uuid not found: " + uuid));
 
-                @EditStyleContract.EditAction
-                final int action = args.getInt(EditStyleContract.BKEY_ACTION,
-                                               EditStyleContract.ACTION_EDIT);
-
-                if (action == EditStyleContract.ACTION_CLONE
+                if (action == EditStyleInput.ACTION_CLONE
                     || dbStyle.getType() == Style.Type.Builtin) {
                     // We're cloning a style. If it's a built-in Style, we force cloning.
                     style = dbStyle.clone(context);
                 } else {
-                    // just edit the style.
+                    // EditStyleInput.ACTION_EDIT
                     style = (WritableStyle) dbStyle;
                 }
 
                 // Only set if true, don't overwrite
-                if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
+                if (args.isSetAsPreferred()) {
                     style.setPreferred(true);
                 }
             }
