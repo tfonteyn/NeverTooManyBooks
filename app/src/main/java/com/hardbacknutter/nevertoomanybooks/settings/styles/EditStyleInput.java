@@ -87,7 +87,7 @@ public final class EditStyleInput {
     static EditStyleInput fromBundle(@NonNull final Bundle args) {
         @EditStyleInput.EditAction
         final int action = args.getInt(EditStyleInput.BKEY_ACTION, EditStyleInput.ACTION_EDIT);
-        final String uuid = args.getString(Style.BKEY_UUID, null);
+        final String uuid = args.getString(Style.BKEY_UUID);
         final boolean setAsPreferred = args.getBoolean(EditStyleInput.BKEY_SET_AS_PREFERRED, false);
 
         return new EditStyleInput(action, uuid, setAsPreferred);

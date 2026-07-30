@@ -64,7 +64,7 @@ public class SearchBookUpdatesInput {
     @NonNull
     static SearchBookUpdatesInput fromBundle(@NonNull final Bundle args) {
         final List<Long> bookIdList = Objects.requireNonNull(
-                ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST));
+                ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST), Book.BKEY_BOOK_ID_LIST);
         final String screenTitle = args.getString(SearchBookUpdatesInput.BKEY_SCREEN_TITLE);
         final String screenSubtitle = args.getString(SearchBookUpdatesInput.BKEY_SCREEN_SUBTITLE);
 

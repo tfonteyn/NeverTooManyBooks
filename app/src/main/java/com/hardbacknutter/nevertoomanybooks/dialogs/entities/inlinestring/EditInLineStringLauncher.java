@@ -136,9 +136,9 @@ public class EditInLineStringLauncher
         @NonNull
         static Output fromBundle(@NonNull final Bundle result) {
             final String previousValue = Objects.requireNonNull(
-                    result.getString(BKEY_ORIGINAL, null));
+                    result.getString(BKEY_ORIGINAL), BKEY_ORIGINAL);
             final String currentValue = Objects.requireNonNull(
-                    result.getString(BKEY_EDIT, null), BKEY_EDIT);
+                    result.getString(BKEY_EDIT), BKEY_EDIT);
 
             return new Output(previousValue, currentValue);
         }

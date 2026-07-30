@@ -77,15 +77,15 @@ class AutoCompletePickerInput {
         final String requestKey = Objects.requireNonNull(
                 args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                 DialogLauncher.BKEY_REQUEST_KEY);
-        final String dialogTitle = args.getString(BKEY_DIALOG_TITLE, null);
-        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
+        final String dialogTitle = args.getString(BKEY_DIALOG_TITLE);
+        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE);
 
         final List<String> items = Arrays
                 .stream(Objects.requireNonNull(args.getStringArray(BKEY_ITEM_LIST_TEXT),
                                                BKEY_ITEM_LIST_TEXT))
                 .collect(Collectors.toList());
 
-        final String currentSelection = args.getString(BKEY_EDIT, null);
+        final String currentSelection = args.getString(BKEY_EDIT);
 
         final Bundle extras = args.getBundle(BKEY_EXTRAS);
 

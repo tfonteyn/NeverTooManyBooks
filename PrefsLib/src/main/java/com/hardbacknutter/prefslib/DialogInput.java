@@ -46,7 +46,7 @@ public class DialogInput {
     @NonNull
     public static DialogInput fromBundle(@NonNull final Bundle args) {
         final String key = Objects.requireNonNull(args.getString(BKEY_KEY), BKEY_KEY);
-        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
+        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE);
 
         return new DialogInput(key, dialogMessage);
     }

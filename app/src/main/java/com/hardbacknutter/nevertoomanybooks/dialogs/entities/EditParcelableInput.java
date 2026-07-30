@@ -73,7 +73,7 @@ public class EditParcelableInput<T extends Parcelable> {
                 args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         final T item = Objects.requireNonNull(args.getParcelable(BKEY_ITEM), BKEY_ITEM);
 
-        final String bookIssn = args.getString(BKEY_BOOK_ISSN, null);
+        final String bookIssn = args.getString(BKEY_BOOK_ISSN);
 
         return new EditParcelableInput<>(requestKey, action, item, bookIssn);
     }

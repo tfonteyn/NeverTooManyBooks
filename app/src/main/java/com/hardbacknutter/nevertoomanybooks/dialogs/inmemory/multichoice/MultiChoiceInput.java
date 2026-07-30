@@ -118,8 +118,8 @@ class MultiChoiceInput {
         final String requestKey = Objects.requireNonNull(
                 args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                 DialogLauncher.BKEY_REQUEST_KEY);
-        final String dialogTitle = args.getString(MultiChoiceInput.BKEY_DIALOG_TITLE, null);
-        final String dialogMessage = args.getString(MultiChoiceInput.BKEY_DIALOG_MESSAGE, null);
+        final String dialogTitle = args.getString(MultiChoiceInput.BKEY_DIALOG_TITLE);
+        final String dialogMessage = args.getString(MultiChoiceInput.BKEY_DIALOG_MESSAGE);
 
         final String[] labels = Objects.requireNonNull(
                 args.getStringArray(MultiChoiceInput.BKEY_LIST_LABELS),

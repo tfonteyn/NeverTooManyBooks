@@ -66,8 +66,10 @@ public class IdentifiersEditorViewModel
      */
     void init(@NonNull final Bundle args) {
         if (entityType == null) {
-            entityType = Objects.requireNonNull(args.getParcelable(
-                    IdentifiersEditorFragment.BKEY_ENTITY_TYPE));
+            //noinspection deprecation
+            entityType = Objects.requireNonNull(
+                    args.getParcelable(IdentifiersEditorFragment.BKEY_ENTITY_TYPE),
+                    IdentifiersEditorFragment.BKEY_ENTITY_TYPE);
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             identifierDao = serviceLocator.getIdentifierDao();

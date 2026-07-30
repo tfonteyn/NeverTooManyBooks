@@ -72,9 +72,9 @@ class PartialDatePickerInput {
         final String requestKey = Objects.requireNonNull(
                 args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                 DialogLauncher.BKEY_REQUEST_KEY);
-        final String dialogTitle = args.getString(BKEY_DIALOG_TITLE, null);
-        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
-        final String date = args.getString(BKEY_EDIT, null);
+        final String dialogTitle = args.getString(BKEY_DIALOG_TITLE);
+        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE);
+        final String date = args.getString(BKEY_EDIT);
         final Bundle extras = args.getBundle(BKEY_EXTRAS);
 
         return new PartialDatePickerInput(requestKey, dialogTitle, dialogMessage, date, extras);

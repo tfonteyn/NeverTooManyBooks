@@ -72,13 +72,13 @@ class EditStringInput {
         final String requestKey = Objects.requireNonNull(
                 args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                 DialogLauncher.BKEY_REQUEST_KEY);
-        final String dialogTitle = args.getString(BKEY_DIALOG_TITLE, null);
-        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
+        final String dialogTitle = args.getString(BKEY_DIALOG_TITLE);
+        final String dialogMessage = args.getString(BKEY_DIALOG_MESSAGE);
 
         final int inputType = args.getInt(BKEY_INPUT_TYPE,
                                           InputType.TYPE_CLASS_TEXT);
 
-        final String edit = args.getString(BKEY_EDIT, null);
+        final String edit = args.getString(BKEY_EDIT);
         final Bundle extras = args.getBundle(BKEY_EXTRAS);
 
         return new EditStringInput(requestKey, dialogTitle, dialogMessage, inputType, edit, extras);

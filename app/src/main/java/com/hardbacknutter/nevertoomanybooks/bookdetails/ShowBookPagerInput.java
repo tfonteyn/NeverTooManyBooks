@@ -140,7 +140,7 @@ public class ShowBookPagerInput {
         // Pager
         final long bookId = args.getLong(DBKey.FK_BOOK, 0);
         final int position = args.getInt(BKEY_NAV_POSITION, 0);
-        final String navTableName = args.getString(BKEY_NAV_TABLE_NAME, null);
+        final String navTableName = args.getString(BKEY_NAV_TABLE_NAME);
         final List<Long> bookIdList = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
 
         return new ShowBookPagerInput(bookId, bookshelf, position, bookIdList, navTableName);

@@ -87,7 +87,7 @@ public abstract class EditBookBaseFragment
                 if (extras == null) {
                     throw new IllegalArgumentException("No extras?");
                 }
-                final String fieldKey = extras.getString(BKEY_DATE_PICKER_FIELD_KEY, null);
+                final String fieldKey = extras.getString(BKEY_DATE_PICKER_FIELD_KEY);
                 if (fieldKey == null) {
                     throw new IllegalArgumentException("No fieldKey?");
                 }
