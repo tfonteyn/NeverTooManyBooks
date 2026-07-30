@@ -76,9 +76,8 @@ public class SyncWriterFragment
     @NonNull
     public static Fragment create(@NonNull final SyncServer syncServer) {
         final Fragment fragment = new SyncWriterFragment();
-        final Bundle args = new Bundle(1);
-        args.putParcelable(SyncServer.BKEY_SITE, syncServer);
-        fragment.setArguments(args);
+        final SyncServer.Input args = new SyncServer.Input(syncServer);
+        fragment.setArguments(args.toBundle());
         return fragment;
     }
 
@@ -88,7 +87,7 @@ public class SyncWriterFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SyncWriterViewModel.class);
-        vm.init(requireArguments());
+        vm.init(SyncServer.Input.fromBundle(requireArguments()));
     }
 
     @Nullable

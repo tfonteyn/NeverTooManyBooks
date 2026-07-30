@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderViewModel;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 
 @SuppressWarnings("WeakerAccess")
 public class CalibreLibraryMappingViewModel
@@ -54,10 +55,10 @@ public class CalibreLibraryMappingViewModel
      * Pseudo constructor.
      *
      * @param context Current Context
-     * @param args    Bundle with arguments
+     * @param args    all arguments
      */
     public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+                     @NonNull final SyncServer.Input args) {
         super.init(context, args);
         if (bookshelfDao == null) {
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();

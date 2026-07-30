@@ -327,8 +327,6 @@ public enum SyncServer
 
     /* Log tag. */
     private static final String TAG = "SyncServer";
-    /** The (optional) preset encoding to pass to export/import. */
-    public static final String BKEY_SITE = TAG + ":encoding";
 
     /** See {@link #getSyncPreferencePrefix()}. */
     private static final String FIELDS_UPDATE = ".fields.update.";
@@ -483,5 +481,39 @@ public enum SyncServer
                + ", hasLastUpdateDateField=" + hasLastUpdateDateField
                + ", syncDateIsUserEditable=" + syncDateIsUserEditable
                + '}';
+    }
+
+    public static class Input {
+
+        private static final String BKEY_SERVER = TAG + ":server";
+
+        @NonNull
+        private final SyncServer syncServer;
+
+        public Input(@NonNull final SyncServer syncServer) {
+            this.syncServer = syncServer;
+        }
+
+        @NonNull
+        public static Input fromBundle(@NonNull final Bundle args) {
+            @SuppressWarnings("deprecation")
+            final SyncServer syncServer = Objects.requireNonNull(
+                    args.getParcelable(BKEY_SERVER), BKEY_SERVER);
+
+            return new Input(syncServer);
+        }
+
+        @NonNull
+        public Bundle toBundle() {
+            final Bundle args = new Bundle(1);
+            args.putParcelable(BKEY_SERVER, syncServer);
+
+            return args;
+        }
+
+        @NonNull
+        SyncServer getSyncServer() {
+            return syncServer;
+        }
     }
 }

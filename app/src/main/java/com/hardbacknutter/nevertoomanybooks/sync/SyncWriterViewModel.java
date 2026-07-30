@@ -20,11 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
@@ -49,14 +46,11 @@ public class SyncWriterViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args    all arguments
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final SyncServer.Input args) {
         if (syncWriterHelper == null) {
-            final SyncServer syncServer = Objects.requireNonNull(
-                    args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
-
-            syncWriterHelper = new SyncWriterHelper(syncServer);
+            syncWriterHelper = new SyncWriterHelper(args.getSyncServer());
         }
     }
 

@@ -78,9 +78,8 @@ public class CalibreLibraryMappingFragment
     @NonNull
     public static Fragment create() {
         final Fragment fragment = new CalibreLibraryMappingFragment();
-        final Bundle args = new Bundle(1);
-        args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
-        fragment.setArguments(args);
+        final SyncServer.Input args = new SyncServer.Input(SyncServer.CalibreCS);
+        fragment.setArguments(args.toBundle());
         return fragment;
     }
 
@@ -90,7 +89,7 @@ public class CalibreLibraryMappingFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
-        vm.init(requireContext(), requireArguments());
+        vm.init(requireContext(), SyncServer.Input.fromBundle(requireArguments()));
     }
 
     @Nullable

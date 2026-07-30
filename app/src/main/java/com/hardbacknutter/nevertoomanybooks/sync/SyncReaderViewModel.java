@@ -43,15 +43,12 @@ public class SyncReaderViewModel
      * Pseudo constructor.
      *
      * @param context Current Context
-     * @param args    Bundle with arguments
+     * @param args    all arguments
      */
     public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+                     @NonNull final SyncServer.Input args) {
         if (syncReaderHelper == null) {
-            final SyncServer syncServer = Objects.requireNonNull(
-                    args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
-
-            syncReaderHelper = new SyncReaderHelper(context, syncServer);
+            syncReaderHelper = new SyncReaderHelper(context, args.getSyncServer());
         }
     }
 

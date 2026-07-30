@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -54,9 +52,8 @@ public class StripInfoBookshelfMappingFragment
         final Fragment fragment = new StripInfoBookshelfMappingFragment();
         // 2026-03-24: We're not using this for now, but want to keep the same
         // logic as used by the Calibre bookshelf mapper.
-        final Bundle args = new Bundle(1);
-        args.putParcelable(SyncServer.BKEY_SITE, SyncServer.StripInfo);
-        fragment.setArguments(args);
+        final SyncServer.Input args = new SyncServer.Input(SyncServer.StripInfo);
+        fragment.setArguments(args.toBundle());
         return fragment;
     }
 
