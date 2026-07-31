@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
@@ -260,9 +261,8 @@ public class CoverCacheDaoImpl
                         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
-                            stmt.bindString(3, LocalDateTime
-                                    .now(ZoneOffset.UTC)
-                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                            stmt.bindString(3, SqlEncode.dateTime(
+                                    LocalDateTime.now(ZoneOffset.UTC)));
 
                             stmt.bindString(4, cacheId);
 

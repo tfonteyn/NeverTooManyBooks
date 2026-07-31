@@ -75,10 +75,11 @@ public class CacheDbHelper
      * v1.0.0: 1
      * v5.3.0: 2
      * v7.4.0: 3  removed Bdt 'resolved' flag
+     * v8.0.1: 4  modified how timestamps are generated
      * <p>
      * Current version.
      */
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static final Domain DOM_PK_ID;
     /** {@link #TBL_IMAGE}. */
@@ -231,7 +232,8 @@ public class CacheDbHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
-        // This is a cache, so no data needs preserving. Drop & recreate.
+        // This is a cache, so no data needs preserving. Drop & recreate as needed.
+        // ENHANCE: it would be better if we only recreated the table that needs it.
         db.execSQL(DROP_TABLE_IF_EXISTS_ + TBL_IMAGE.getName());
         db.execSQL(DROP_TABLE_IF_EXISTS_ + TBL_BDT_AUTHORS.getName());
         onCreate(db);
