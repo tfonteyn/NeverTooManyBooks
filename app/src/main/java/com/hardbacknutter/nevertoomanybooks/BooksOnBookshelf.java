@@ -446,7 +446,7 @@ public class BooksOnBookshelf
         // and will always be present but can be 0 for none.
         manageBookshelvesLauncher = registerForActivityResult(
                 new EditBookshelvesContract(), o -> o.ifPresent(
-                        id -> vm.onManageBookshelvesFinished(this, id)));
+                        data -> vm.onManageBookshelvesFinished(this, data)));
 
         // We still call {@link BooksOnBookshelfViewModel#onBookEditFinished(EditBookOutput)}
         // as the user might have done so from the displaying fragment.

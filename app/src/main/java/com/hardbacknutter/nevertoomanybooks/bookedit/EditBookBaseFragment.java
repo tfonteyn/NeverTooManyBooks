@@ -115,12 +115,15 @@ public abstract class EditBookBaseFragment
         final FragmentManager fm = getChildFragmentManager();
 
         manageBookshelvesLauncher = registerForActivityResult(
-                new EditBookshelvesContract(), ignored -> {
-                });
+                new EditBookshelvesContract(), o -> o.ifPresent(data -> {
+                    if (data.isModified()) {
+                        vm.updateBookshelves();
+                    }
+                }));
 
         editSettingsLauncher = registerForActivityResult(
-                new SettingsContract(), o -> o.ifPresent(result -> {
-                    if (result.isRecreateActivity()) {
+                new SettingsContract(), o -> o.ifPresent(data -> {
+                    if (data.isRecreateActivity()) {
                         ActivityRestarter.recreate();
                     }
                 }));

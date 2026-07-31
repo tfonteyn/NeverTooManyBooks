@@ -88,7 +88,8 @@ public class EditBookshelvesFragment
                 public void handleOnBackPressed() {
                     @IntRange(from = 0)
                     final long id = vm.getSelectedBookshelfId();
-                    final Intent resultIntent = EditBookshelvesContract.createResult(id);
+                    final boolean modified = vm.isModified();
+                    final Intent resultIntent = EditBookshelvesContract.createResult(id, modified);
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

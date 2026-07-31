@@ -48,6 +48,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
@@ -1463,7 +1464,7 @@ public class BooksOnBookshelfViewModel
     }
 
     void onManageBookshelvesFinished(@NonNull final Context context,
-                                     @IntRange(from = 0) final long bookshelfId) {
+                                     @NonNull final EditBookshelvesContract.Output data) {
         // Always update the list of bookshelves
         reloadBookshelfList(context);
 
@@ -1472,8 +1473,8 @@ public class BooksOnBookshelfViewModel
         // This also covers the situation where the current one was deleted.
         // i.e. #getBookshelf() will actually be the deleted one,
         // but it will immediately be replaced in #selectBookshelf(..) with the new one
-        if (bookshelfId != getBookshelf().getId()) {
-            selectBookshelf(context, bookshelfId);
+        if (data.getSelectedBookshelfId() != getBookshelf().getId()) {
+            selectBookshelf(context, data.getSelectedBookshelfId());
             forceRebuildInOnResume = true;
         }
     }

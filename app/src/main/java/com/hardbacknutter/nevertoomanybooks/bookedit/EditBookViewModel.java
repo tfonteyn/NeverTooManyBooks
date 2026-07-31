@@ -45,11 +45,13 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -233,6 +235,8 @@ public class EditBookViewModel
     private SeriesDao seriesDao;
     private TagDao tagDao;
     private TocEntryDao tocEntryDao;
+    /** Reference as-is. Transform to a Set only when actually needed. */
+    private List<Bookshelf> initialBookshelfList;
 
     int getCurrentTab() {
         return currentTab;
@@ -296,6 +300,7 @@ public class EditBookViewModel
 
             if (args != null) {
                 // 1. Do we have a Book? e.g. after an internet search
+                @SuppressWarnings("deprecation")
                 final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
                 if (bookFromArguments != null) {
                     book = bookFromArguments;
@@ -330,6 +335,8 @@ public class EditBookViewModel
             book.addValidators(context);
             book.ensureBookshelf();
             book.ensureLanguage(userLocale);
+
+            initialBookshelfList = book.getBookshelves();
         }
     }
 
@@ -587,6 +594,7 @@ public class EditBookViewModel
      */
     void addFieldsFromArguments(@Nullable final Bundle args) {
         if (args != null) {
+            @SuppressWarnings("deprecation")
             final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
             if (bookFromArguments != null) {
                 bookFromArguments.keySet()
@@ -919,6 +927,14 @@ public class EditBookViewModel
         requireField(Book.BKEY_TAG_LIST).setValue(list);
     }
 
+    /**
+     * We get here from the user having brought up the dialog
+     * with the list of all bookshelves + checkboxes.
+     *
+     * @param previousSelection the previously checked shelves
+     * @param bookshelfIds      the new selection of checked shelves
+     * @param extras            unused
+     */
     void updateBookshelves(@NonNull final Set<Long> previousSelection,
                            @NonNull final Set<Long> bookshelfIds,
                            @Nullable final Bundle extras) {
@@ -940,6 +956,66 @@ public class EditBookViewModel
         book.setBookshelves(selected);
         field.setValue(selected);
         field.notifyIfChanged(previous);
+    }
+
+    /**
+     * We get here from the user having used the bookshelves editor (add/delete/rename...).
+     */
+    public void updateBookshelves() {
+        // Reload, so any renames/deleted are updated.
+        final List<Bookshelf> dbList = bookshelfDao.getByBookId(book.getId());
+
+        final Field<List<Bookshelf>, TextView> field = requireField(Book.BKEY_BOOKSHELF_LIST);
+        final List<Bookshelf> previous = field.getValue();
+
+        final List<Bookshelf> currentList;
+        if (previous != null) {
+            currentList = new ArrayList<>(previous);
+        } else {
+            // We should never get here... flw
+            // but creating a new list is the right thing to do.
+            currentList = new ArrayList<>();
+        }
+
+        mergeBookshelfLists(dbList, currentList);
+
+        // Update BOTH the book and the field
+        book.setBookshelves(currentList);
+        field.setValue(currentList);
+        field.notifyIfChanged(previous);
+    }
+
+    /**
+     * Merge the reloaded list from the database
+     * with the current/edited list.
+     * <p>
+     * The result is the (potentially) updated currentList.
+     *
+     * @param dbList      to merge
+     * @param currentList to merge with
+     */
+    private void mergeBookshelfLists(@NonNull final List<Bookshelf> dbList,
+                                     @NonNull final List<Bookshelf> currentList) {
+
+        final Set<Long> initialDbIds = initialBookshelfList
+                .stream().map(Bookshelf::getId).collect(Collectors.toSet());
+        final Map<Long, Bookshelf> dbMap = dbList
+                .stream().collect(Collectors.toMap(Bookshelf::getId, Function.identity()));
+
+        final ListIterator<Bookshelf> iterator = currentList.listIterator();
+        while (iterator.hasNext()) {
+            final long id = iterator.next().getId();
+            final Bookshelf dbItem = dbMap.get(id);
+            if (dbItem != null) {
+                // Exists in DB -> replace to have potential renames
+                iterator.set(dbItem);
+
+            } else if (initialDbIds.contains(id)) {
+                // Existed originally, but now deleted from DB
+                iterator.remove();
+            }
+            // others were newly added by user, keep them.
+        }
     }
 
     void changeForThisBook(@NonNull final Context context,

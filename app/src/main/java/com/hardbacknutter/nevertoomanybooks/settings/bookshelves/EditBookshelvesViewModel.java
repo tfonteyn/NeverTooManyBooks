@@ -51,6 +51,9 @@ public class EditBookshelvesViewModel
     @IntRange(from = 0)
     private long initialBookshelfId;
 
+    /** Was anything at all modified. */
+    private boolean modified;
+
     /**
      * Currently selected {@link Bookshelf} id.
      * <p>
@@ -77,6 +80,15 @@ public class EditBookshelvesViewModel
             this.initialBookshelfId = initialBookshelfId;
             selectedBookshelfId = this.initialBookshelfId;
         }
+    }
+
+    /**
+     * Was anything at all modified.
+     *
+     * @return flag
+     */
+    public boolean isModified() {
+        return modified;
     }
 
     /**
@@ -116,6 +128,7 @@ public class EditBookshelvesViewModel
     }
 
     void setDefaultBookshelf(@NonNull final Bookshelf bookshelf) {
+        modified = true;
         bookshelfDao.setDefault(bookshelf);
     }
 
@@ -136,6 +149,7 @@ public class EditBookshelvesViewModel
     }
 
     void setSelectedPosition(final int position) {
+        modified = true;
         selectedBookshelfId = list.get(position).getId();
     }
 
@@ -148,6 +162,7 @@ public class EditBookshelvesViewModel
      */
     void onBookshelfEdited(@NonNull final Context context,
                            @NonNull final Bookshelf bookshelf) {
+        modified = true;
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         bookshelfDao.fixId(context, bookshelf, locale);
 
@@ -164,6 +179,7 @@ public class EditBookshelvesViewModel
      */
     void deleteBookshelf(@NonNull final Context context,
                          @NonNull final Bookshelf bookshelf) {
+        modified = true;
         // preserve before deleting
         final long deletedId = bookshelf.getId();
 
@@ -190,6 +206,7 @@ public class EditBookshelvesViewModel
      * @param bookshelfId id of the Bookshelf
      */
     void purgeNodeStates(final long bookshelfId) {
+        // don't set the modified flag, don't care
         try {
             bookshelfDao.purgeNodeStates(bookshelfId);
         } catch (@NonNull final DaoWriteException e) {
