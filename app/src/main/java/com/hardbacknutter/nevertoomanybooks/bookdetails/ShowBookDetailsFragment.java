@@ -300,6 +300,9 @@ public class ShowBookDetailsFragment
             }
             return true;
         });
+
+        // load the initial book data and trigger a UI update
+        vm.displayBook();
     }
 
     private void onAuthorClicked(@NonNull final TextView v,
@@ -432,30 +435,6 @@ public class ShowBookDetailsFragment
         }
     }
 
-    public void onResume() {
-        super.onResume();
-        // (re)Load the book data, and trigger a UI update
-        vm.displayBook();
-
-        if (!vm.isEmbedded()) {
-            updateToolbarTitle();
-        }
-    }
-
-    private void updateToolbarTitle() {
-        final Toolbar toolbar = getToolbar();
-        final Book book = vm.getBook();
-
-        //noinspection DataFlowIssue
-        toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
-
-        String bookTitle = book.getTitle();
-        if (BuildConfig.DEBUG /* always */) {
-            bookTitle = "[" + book.getId() + "] " + bookTitle;
-        }
-        toolbar.setSubtitle(bookTitle);
-    }
-
     /**
      * Called when the ViewModel triggers an update.
      * Dev. note: this will get called FOR EACH fragment currently existing
@@ -465,17 +444,7 @@ public class ShowBookDetailsFragment
      * @param book to display
      */
     private void onBindBook(@NonNull final Book book) {
-        // The menu is entirely dependent on the book we're displaying,
-        // so we need to remove the old menu if present,
-        // and construct a new menu for each book we're binding.
-        final Toolbar toolbar = getToolbar();
-        if (toolbarMenuProvider != null) {
-            toolbar.removeMenuProvider(toolbarMenuProvider);
-        }
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        // add it, but ONLY display it when THIS fragment is resumed.
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
-                                Lifecycle.State.RESUMED);
+        updateToolbar(book);
 
         final Collection<Field<?, ? extends View>> fields = vm.getFields();
 
@@ -522,6 +491,31 @@ public class ShowBookDetailsFragment
         // All views should now have proper visibility set, so fix their focus order.
         //noinspection DataFlowIssue
         ViewFocusOrder.fix(parentView);
+    }
+
+    private void updateToolbar(@NonNull final Book book) {
+        // The menu is entirely dependent on the book we're displaying,
+        // so we need to remove the old menu if present,
+        // and construct a new menu for each book we're binding.
+        final Toolbar toolbar = getToolbar();
+        if (toolbarMenuProvider != null) {
+            toolbar.removeMenuProvider(toolbarMenuProvider);
+        }
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        // add it, but ONLY display it when THIS fragment is in RESUMED state.
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
+
+        if (!vm.isEmbedded()) {
+            //noinspection DataFlowIssue
+            toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
+
+            String bookTitle = book.getTitle();
+            if (BuildConfig.DEBUG /* always */) {
+                bookTitle = "[" + book.getId() + "] " + bookTitle;
+            }
+            toolbar.setSubtitle(bookTitle);
+        }
     }
 
     private void bindCoverImages() {
