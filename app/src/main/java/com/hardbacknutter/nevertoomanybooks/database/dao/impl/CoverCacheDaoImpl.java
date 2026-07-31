@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Pair;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -65,7 +66,7 @@ public class CoverCacheDaoImpl
     /** Compresses images to 80% to store in the cache. */
     private static final int QUALITY = 80;
     /** Used to prevent trying to read from the cache while we're writing to it. */
-    private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
+    private static final AtomicInteger TASKS_WRITING = new AtomicInteger();
 
     @NonNull
     private final SynchronizedDb db;
@@ -101,7 +102,7 @@ public class CoverCacheDaoImpl
 
     @Override
     public int count() {
-        //noinspection CheckStyle
+        //noinspection CheckStyle,OverlyBroadCatchBlock
         try {
             try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT)) {
                 return (int) stmt.simpleQueryForLongOrZero();
@@ -126,6 +127,7 @@ public class CoverCacheDaoImpl
 
     @Override
     public void deleteAll() {
+        //noinspection OverlyBroadCatchBlock
         try {
             db.execSQL(Sql.DELETE_ALL);
         } catch (@NonNull final SQLException e) {
@@ -133,37 +135,75 @@ public class CoverCacheDaoImpl
         }
     }
 
+    @Nullable
+    private Pair<String, String> selectionArgs(@NonNull final String uuid,
+                                               @IntRange(from = 0, to = 3) final int cIdx,
+                                               final int maxWidth) {
+
+        final long fileLastModified = ServiceLocator
+                .getInstance()
+                .getCoverStorage()
+                .getPersistedFile(uuid, cIdx)
+                .map(File::lastModified)
+                .orElse(0L);
+
+        if (fileLastModified <= 0) {
+            // no file
+            return null;
+        }
+
+        final String cacheId = constructCacheId(uuid, cIdx, maxWidth);
+        final String lastUpdatedAsIsoString = Instant
+                .ofEpochMilli(fileLastModified)
+                .atZone(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+        return new Pair<>(cacheId, lastUpdatedAsIsoString);
+    }
+
     @Override
     @Nullable
-    public Bitmap getCover(@NonNull final String uuid,
-                           @IntRange(from = 0, to = 3) final int cIdx,
-                           final int maxWidth) {
+    public Pair<String, String> hasBitmap(@NonNull final String uuid,
+                                          @IntRange(from = 0, to = 3) final int cIdx,
+                                          final int maxWidth) {
         if (isBusy()) {
             return null;
-
         }
+
+        //noinspection CheckStyle,OverlyBroadCatchBlock
+        try {
+            final Pair<String, String> args = selectionArgs(uuid, cIdx, maxWidth);
+            if (args == null) {
+                return null;
+            }
+
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.EXISTS_BY_ID)) {
+                stmt.bindString(1, args.first);
+                stmt.bindString(1, args.second);
+
+                return stmt.simpleQueryForLongOrZero() == 1 ? args : null;
+            }
+        } catch (@NonNull final RuntimeException e) {
+            LoggerFactory.getLogger().e(TAG, e);
+        }
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public Bitmap getBitmap(@NonNull final Pair<String, String> args) {
+        if (isBusy()) {
+            return null;
+        }
+
         //noinspection CheckStyle
         try {
-            final long lm = ServiceLocator.getInstance()
-                                          .getCoverStorage()
-                                          .getPersistedFile(uuid, cIdx)
-                                          .map(File::lastModified)
-                                          .orElse(0L);
-            if (lm > 0) {
-                final String fileLastModified =
-                        Instant.ofEpochMilli(lm)
-                               .atZone(ZoneOffset.UTC)
-                               .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
-                final String cacheId = constructCacheId(uuid, cIdx, maxWidth);
-
-                try (Cursor cursor = db.rawQuery(
-                        Sql.FIND_BY_ID, new String[]{cacheId, fileLastModified})) {
-                    if (cursor.moveToFirst()) {
-                        final byte[] bytes = cursor.getBlob(0);
-                        if (bytes != null) {
-                            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        }
+            try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID,
+                                             new String[]{args.first, args.second})) {
+                if (cursor.moveToFirst()) {
+                    final byte[] bytes = cursor.getBlob(0);
+                    if (bytes != null) {
+                        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     }
                 }
             }
@@ -180,19 +220,19 @@ public class CoverCacheDaoImpl
      */
     @AnyThread
     private boolean isBusy() {
-        return RUNNING_TASKS.get() != 0;
+        return TASKS_WRITING.get() != 0;
     }
 
     @Override
-    public void saveCover(@NonNull final String uuid,
-                          @IntRange(from = 0, to = 3) final int cIdx,
-                          @NonNull final Bitmap bitmap,
-                          final int width) {
+    public void saveBitmap(@NonNull final String uuid,
+                           @IntRange(from = 0, to = 3) final int cIdx,
+                           @NonNull final Bitmap bitmap,
+                           final int width) {
         // Start a task to send it to the cache.
         // Use the default serial executor as we only want a single write thread at a time.
         ASyncExecutor.STORAGE_WRITES.execute(() -> {
-            RUNNING_TASKS.incrementAndGet();
-            //noinspection CheckStyle
+            TASKS_WRITING.incrementAndGet();
+            //noinspection CheckStyle,OverlyBroadCatchBlock
             try {
                 // Rapid scrolling of view could already have recycled the bitmap.
                 if (!bitmap.isRecycled()) {
@@ -241,7 +281,7 @@ public class CoverCacheDaoImpl
                 logAndDisableCache(e);
             }
 
-            RUNNING_TASKS.decrementAndGet();
+            TASKS_WRITING.decrementAndGet();
         });
     }
 
@@ -254,10 +294,11 @@ public class CoverCacheDaoImpl
     }
 
     private static final class Sql {
-        static final String _FROM_ = " FROM ";
-        static final String _WHERE_ = " WHERE ";
-        static final String DELETE_FROM_ = "DELETE FROM ";
-        static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
+        private static final String _AND_ = " AND ";
+        private static final String _FROM_ = " FROM ";
+        private static final String _WHERE_ = " WHERE ";
+        private static final String DELETE_FROM_ = "DELETE FROM ";
+        private static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
 
         static final String INSERT =
                 "INSERT INTO " + CacheDbHelper.TBL_IMAGE.getName()
@@ -279,9 +320,15 @@ public class CoverCacheDaoImpl
                 "SELECT " + CacheDbHelper.IMAGE_BLOB
                 + _FROM_ + CacheDbHelper.TBL_IMAGE.getName()
                 + _WHERE_ + CacheDbHelper.IMAGE_ID + "=?"
-                + " AND " + CacheDbHelper.IMAGE_LAST_UPDATED__UTC + ">?";
+                + _AND_ + CacheDbHelper.IMAGE_LAST_UPDATED__UTC + ">?";
 
-        /** Run a count for the desired file. 1 == exists, 0 == not there. */
+        /** Check if we have a image which is 'newer' than its original file. */
+        static final String EXISTS_BY_ID =
+                "SELECT 1" + _FROM_ + CacheDbHelper.TBL_IMAGE.getName()
+                + _WHERE_ + CacheDbHelper.IMAGE_ID + "=?"
+                + _AND_ + CacheDbHelper.IMAGE_LAST_UPDATED__UTC + ">?";
+
+        /** Run a count for the desired image. */
         static final String COUNT_BY_IMAGE_ID =
                 SELECT_COUNT_FROM_ + CacheDbHelper.TBL_IMAGE.getName()
                 + _WHERE_ + CacheDbHelper.IMAGE_ID + "=?";

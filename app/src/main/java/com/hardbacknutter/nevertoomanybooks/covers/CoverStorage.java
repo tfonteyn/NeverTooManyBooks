@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Pair;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.Discouraged;
@@ -656,19 +657,34 @@ public class CoverStorage {
     /**
      * Get a cached image.
      *
+     * @param args from {@link #hasCachedBitmap(String, int, int)}
+     *
+     * @return Bitmap; or {@code null} if not found or if the cache was busy
+     *
+     * @see CoverCacheDao#getBitmap(Pair)
+     */
+    @Nullable
+    public Bitmap getCachedBitmap(@NonNull final Pair<String, String> args) {
+        return coverCacheDaoSupplier.get().getBitmap(args);
+    }
+
+    /**
+     * Check if there is a cached image.
+     *
      * @param uuid  UUID of the book
      * @param cIdx  0..n image index
      * @param width desired/maximum width
      *
-     * @return Bitmap (if cached) or {@code null} if not cached or if the cache was busy
+     * @return a pair of arguments to be used with {@link #getCachedBitmap(Pair)};
+     *         {@code null} if not found, or if the cache was busy
      *
-     * @see CoverCacheDao#getCover(String, int, int)
+     * @see CoverCacheDao#hasBitmap(String, int, int)
      */
     @Nullable
-    public Bitmap getCachedBitmap(@NonNull final String uuid,
-                                  @IntRange(from = 0, to = 3) final int cIdx,
-                                  final int width) {
-        return coverCacheDaoSupplier.get().getCover(uuid, cIdx, width);
+    public Pair<String, String> hasCachedBitmap(@NonNull final String uuid,
+                                                @IntRange(from = 0, to = 3) final int cIdx,
+                                                final int width) {
+        return coverCacheDaoSupplier.get().hasBitmap(uuid, cIdx, width);
     }
 
     /**
@@ -682,12 +698,12 @@ public class CoverStorage {
      * @param bitmap to save
      * @param width  desired/maximum width
      *
-     * @see CoverCacheDao#saveCover(String, int, Bitmap, int)
+     * @see CoverCacheDao#saveBitmap(String, int, Bitmap, int)
      */
     public void saveToCache(@NonNull final String uuid,
                             @IntRange(from = 0, to = 3) final int cIdx,
                             @NonNull final Bitmap bitmap,
                             final int width) {
-        coverCacheDaoSupplier.get().saveCover(uuid, cIdx, bitmap, width);
+        coverCacheDaoSupplier.get().saveBitmap(uuid, cIdx, bitmap, width);
     }
 }

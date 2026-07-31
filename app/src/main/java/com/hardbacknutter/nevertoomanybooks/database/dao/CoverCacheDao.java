@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.graphics.Bitmap;
+import android.util.Pair;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -57,7 +58,7 @@ public interface CoverCacheDao {
     void deleteAll();
 
     /**
-     * Get a cached image.
+     * Check if there is a cached image.
      * <p>
      * <strong>All Exceptions are ignored, and {@code null} is returned instead.</strong>
      *
@@ -66,11 +67,27 @@ public interface CoverCacheDao {
      * @param width  desired/maximum width
      *
      * @return Bitmap (if cached) or {@code null} (if not cached)
+     *
+     * @see #getBitmap(Pair)
      */
     @Nullable
-    Bitmap getCover(@NonNull String uuid,
-                    @IntRange(from = 0, to = 3) int cIdx,
-                    int width);
+    Pair<String, String> hasBitmap(@NonNull String uuid,
+                                   @IntRange(from = 0, to = 3) int cIdx,
+                                   int width);
+
+    /**
+     * Get a cached image.
+     * <p>
+     * <strong>All Exceptions are ignored, and {@code null} is returned instead.</strong>
+     *
+     * @param args from {@link #hasBitmap(String, int, int)}
+     *
+     * @return Bitmap; or {@code null} if not found or if the cache was busy
+     *
+     * @see #hasBitmap(String, int, int)
+     */
+    @Nullable
+    Bitmap getBitmap(@NonNull Pair<String, String> args);
 
     /**
      * Save the passed bitmap to the cache.
@@ -82,8 +99,8 @@ public interface CoverCacheDao {
      * @param bitmap to save
      * @param width  desired/maximum width
      */
-    void saveCover(@NonNull String uuid,
-                   @IntRange(from = 0, to = 3) int cIdx,
-                   @NonNull Bitmap bitmap,
-                   int width);
+    void saveBitmap(@NonNull String uuid,
+                    @IntRange(from = 0, to = 3) int cIdx,
+                    @NonNull Bitmap bitmap,
+                    int width);
 }

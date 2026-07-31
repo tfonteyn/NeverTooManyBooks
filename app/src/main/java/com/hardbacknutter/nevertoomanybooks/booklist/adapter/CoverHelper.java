@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.graphics.Bitmap;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -152,11 +153,14 @@ class CoverHelper {
         if (imageCachingEnabled) {
             // BAD: database access on UI thread
             // Problem: we need to report back whether we have an image or not.
-            final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, cIdx, cachedImageWidth);
-            if (bitmap != null) {
-                // Uses the UiThread to display it.
-                imageLoader.fromBitmap(bitmap, coverView);
-                return true;
+            final Pair<String, String> args = coverStorage.hasCachedBitmap(uuid, cIdx, cachedImageWidth);
+            if (args != null) {
+                final Bitmap bitmap = coverStorage.getCachedBitmap(args);
+                if (bitmap != null) {
+                    // Uses the UiThread to display it.
+                    imageLoader.fromBitmap(bitmap, coverView);
+                    return true;
+                }
             }
         }
 
