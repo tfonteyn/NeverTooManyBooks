@@ -22,11 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity;
@@ -71,6 +73,7 @@ public class AuthorWorksContract
         // We're cascading the result from a potential book-edit.
         // i.e. if the user, from the AuthorWorks screen opened/edited a book,
         // then back to AuthorWorks screen, then back... and we get here
-        return Optional.of(EditBookOutput.parseResult(intent));
+        final Bundle result = Objects.requireNonNull(intent.getExtras());
+        return Optional.of(EditBookOutput.fromBundle(result));
     }
 }

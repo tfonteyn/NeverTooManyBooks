@@ -22,12 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -97,7 +99,8 @@ public class AddBookBySearchContract
             return Optional.empty();
         }
 
-        return Optional.of(EditBookOutput.parseResult(intent));
+        final Bundle result = Objects.requireNonNull(intent.getExtras());
+        return Optional.of(EditBookOutput.fromBundle(result));
     }
 
     public enum By {

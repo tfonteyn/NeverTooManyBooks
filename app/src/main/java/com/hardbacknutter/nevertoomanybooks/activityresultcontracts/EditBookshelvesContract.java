@@ -28,6 +28,7 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -79,12 +80,8 @@ public class EditBookshelvesContract
             return Optional.empty();
         }
 
-        // the selected shelf, can be 0 for none
-        final Bundle extras = intent.getExtras();
-        if (extras == null) {
-            return Optional.empty();
-        }
-        return Optional.of(Output.fromBundle(extras));
+        final Bundle result = Objects.requireNonNull(intent.getExtras());
+        return Optional.of(Output.fromBundle(result));
     }
 
     public static class Output {

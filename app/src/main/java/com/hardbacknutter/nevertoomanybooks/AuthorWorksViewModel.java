@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
@@ -395,9 +394,8 @@ public class AuthorWorksViewModel
         });
     }
 
-    @NonNull
-    Intent createResultIntent() {
-        return new EditBookOutput(dataModified, 0, 0).createResultIntent();
+    boolean isDataModified() {
+        return dataModified;
     }
 
     void setDataModified(@NonNull final EditBookOutput data) {

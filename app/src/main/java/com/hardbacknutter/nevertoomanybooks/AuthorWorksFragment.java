@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
@@ -51,6 +52,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -97,8 +99,11 @@ public class AuthorWorksFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    final EditBookOutput result =
+                            new EditBookOutput(vm.isDataModified(), 0, 0);
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, vm.createResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            new Intent().putExtras(result.toBundle()));
                     getActivity().finish();
                 }
             };

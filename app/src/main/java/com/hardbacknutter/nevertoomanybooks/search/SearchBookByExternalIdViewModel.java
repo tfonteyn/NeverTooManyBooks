@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.content.Intent;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -54,8 +53,8 @@ public class SearchBookByExternalIdViewModel
     private String sid;
 
     @NonNull
-    Intent createResultIntent() {
-        return resultData.createResultIntent();
+    EditBookOutput getResultData() {
+        return resultData;
     }
 
     void onBookEditingDone(@NonNull final EditBookOutput data) {

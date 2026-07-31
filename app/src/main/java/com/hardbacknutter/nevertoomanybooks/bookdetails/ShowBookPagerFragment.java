@@ -59,10 +59,10 @@ public class ShowBookPagerFragment
                     // always set the *current* book, so BoB can reposition more accurately.
                     final int currentItem = viewPager != null ? viewPager.getCurrentItem() : 0;
                     final long bookId = vm.getBookIdAtPosition(currentItem);
-                    final Intent resultIntent = new EditBookOutput(aVm.isModified(), bookId, 0)
-                            .createResultIntent();
+                    final EditBookOutput result = new EditBookOutput(aVm.isModified(), bookId, 0);
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            new Intent().putExtras(result.toBundle()));
                     getActivity().finish();
                 }
             };

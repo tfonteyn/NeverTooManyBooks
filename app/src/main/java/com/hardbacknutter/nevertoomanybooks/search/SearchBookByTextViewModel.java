@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.content.Intent;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
@@ -113,8 +111,8 @@ public class SearchBookByTextViewModel
     }
 
     @NonNull
-    Intent createResultIntent() {
-        return resultData.createResultIntent();
+    EditBookOutput getResultData() {
+        return resultData;
     }
 
     void onBookEditingDone(@NonNull final EditBookOutput data) {

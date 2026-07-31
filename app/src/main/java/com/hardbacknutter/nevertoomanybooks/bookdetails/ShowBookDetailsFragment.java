@@ -841,10 +841,10 @@ public class ShowBookDetailsFragment
                 } else {
                     // Not embedded, set 0 as the repositionToBookId and return to the BoB
                     // (could hardcode modified=true, but consistency prevails)
-                    final Intent resultIntent = new EditBookOutput(aVm.isModified(), 0, 0)
-                            .createResultIntent();
+                    final EditBookOutput result = new EditBookOutput(aVm.isModified(), 0, 0);
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            new Intent().putExtras(result.toBundle()));
                     getActivity().finish();
                 }
             });

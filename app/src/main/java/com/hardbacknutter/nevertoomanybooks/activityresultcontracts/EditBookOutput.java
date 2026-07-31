@@ -19,9 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
-import android.content.Intent;
+import android.os.Bundle;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -71,37 +70,26 @@ public final class EditBookOutput {
         this.lastBookIdProcessed = lastBookIdProcessed;
     }
 
-    /**
-     * Parse the intent according to {@link #createResultIntent()}.
-     *
-     * @param intent to parse
-     *
-     * @return result
-     */
     @NonNull
-    public static EditBookOutput parseResult(@NonNull final Intent intent) {
-        final boolean modified = intent.getBooleanExtra(BKEY_MODIFIED, false);
-        final long repositionToBookId = intent.getLongExtra(DBKey.FK_BOOK, 0);
-        final long lastBookIdProcessed = intent.getLongExtra(BKEY_LAST_BOOK_ID_PROCESSED, 0);
+    static EditBookOutput fromBundle(@NonNull final Bundle result) {
+        final boolean modified = result.getBoolean(BKEY_MODIFIED, false);
+        final long repositionToBookId = result.getLong(DBKey.FK_BOOK, 0);
+        final long lastBookIdProcessed = result.getLong(BKEY_LAST_BOOK_ID_PROCESSED, 0);
 
         return new EditBookOutput(modified, repositionToBookId, lastBookIdProcessed);
     }
 
-    /**
-     * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
-     *
-     * @return Intent
-     */
     @NonNull
-    public Intent createResultIntent() {
-        final Intent intent = new Intent().putExtra(BKEY_MODIFIED, modified);
+    public Bundle toBundle() {
+        final Bundle args = new Bundle(3);
+        args.putBoolean(BKEY_MODIFIED, modified);
         if (repositionToBookId > 0) {
-            intent.putExtra(DBKey.FK_BOOK, repositionToBookId);
+            args.putLong(DBKey.FK_BOOK, repositionToBookId);
         }
         if (lastBookIdProcessed > 0) {
-            intent.putExtra(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
+            args.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
         }
-        return intent;
+        return args;
     }
 
     /**

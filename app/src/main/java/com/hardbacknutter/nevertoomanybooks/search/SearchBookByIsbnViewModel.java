@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -82,8 +81,8 @@ public class SearchBookByIsbnViewModel
     }
 
     @NonNull
-    Intent createResultIntent() {
-        return resultData.createResultIntent();
+    EditBookOutput getResultData() {
+        return resultData;
     }
 
     void onBookEditingDone(@NonNull final EditBookOutput data) {

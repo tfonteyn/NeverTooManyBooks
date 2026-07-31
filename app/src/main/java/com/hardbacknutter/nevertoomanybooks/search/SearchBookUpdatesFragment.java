@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -229,12 +230,13 @@ public class SearchBookUpdatesFragment
     private void onAllDone(@NonNull final LiveDataEvent<BookSearchResult> message) {
         closeProgressDialog();
 
-        message.process(result -> {
+        message.process(data -> {
             @Nullable
-            final EditBookOutput editBookOutput = result.getEditBookOutput();
-            if (editBookOutput != null) {
+            final EditBookOutput result = data.getEditBookOutput();
+            if (result != null) {
                 //noinspection DataFlowIssue
-                getActivity().setResult(Activity.RESULT_OK, editBookOutput.createResultIntent());
+                getActivity().setResult(Activity.RESULT_OK,
+                                        new Intent().putExtras(result.toBundle()));
                 getActivity().finish();
             } else {
                 // We should never get here, flw...
@@ -255,15 +257,15 @@ public class SearchBookUpdatesFragment
             // not only the queue being empty, but also against the item polled
             // having no EditBookOutput (it being of a single result instead of the list-result)
             // ==> see the BookSearchResult class docs
-            final BookSearchResult result = vm.pollCancelledQueue();
-            if (result != null) {
+            final BookSearchResult data = vm.pollCancelledQueue();
+            if (data != null) {
                 @Nullable
-                final EditBookOutput editBookOutput = result.getEditBookOutput();
-                if (editBookOutput != null) {
+                final EditBookOutput result = data.getEditBookOutput();
+                if (result != null) {
                     // We should not get here, but adding this code makes us future proof.
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK,
-                                            editBookOutput.createResultIntent());
+                                            new Intent().putExtras(result.toBundle()));
                     getActivity().finish();
                     return;
                 }

@@ -22,11 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -65,6 +67,7 @@ public class ShowBookPagerContract
             return Optional.empty();
         }
 
-        return Optional.of(EditBookOutput.parseResult(intent));
+        final Bundle result = Objects.requireNonNull(intent.getExtras());
+        return Optional.of(EditBookOutput.fromBundle(result));
     }
 }

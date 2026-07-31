@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
@@ -551,10 +550,8 @@ public class EditBookViewModel
         book.setStage(EntityStage.Stage.Clean);
     }
 
-    @NonNull
-    Intent createResultIntent() {
-        return new EditBookOutput(modified, book.getId(), 0)
-                .createResultIntent();
+    public boolean isModified() {
+        return modified;
     }
 
     /**

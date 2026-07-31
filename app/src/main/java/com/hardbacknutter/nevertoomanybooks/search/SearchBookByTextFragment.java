@@ -82,7 +82,7 @@ public class SearchBookByTextFragment
     @Override
     @NonNull
     Intent createResultIntent() {
-        return vm.createResultIntent();
+        return new Intent().putExtras(vm.getResultData().toBundle());
     }
 
     @Override
