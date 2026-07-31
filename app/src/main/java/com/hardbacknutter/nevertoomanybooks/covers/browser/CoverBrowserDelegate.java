@@ -24,7 +24,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -389,11 +388,17 @@ class CoverBrowserDelegate
             final Optional<File> file = imageFileInfo.getFile();
             if (file.isPresent()) {
                 previewLoader.fromFile(null, 0, file.get(), vb.preview, bitmap -> {
-                    // Set AFTER it was successfully loaded and displayed for maximum reliability
-                    vm.setSelectedFile(file.get());
-                    vb.lblPreview.setVisibility(View.VISIBLE);
-                    vb.preview.setVisibility(View.VISIBLE);
-                    vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
+                    // Paranoia.
+                    // If the gallery has been able to display an image,
+                    // and the user tapped it to get the larger preview,
+                    // then displaying the preview SHOULD always be successful.
+                    // But a null-check is cheap.
+                    if (bitmap != null) {
+                        vm.setSelectedFile(file.get());
+                        vb.lblPreview.setVisibility(View.VISIBLE);
+                        vb.preview.setVisibility(View.VISIBLE);
+                        vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
+                    }
                 });
                 return;
             }
