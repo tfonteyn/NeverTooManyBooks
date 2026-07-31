@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -77,9 +78,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 class BookDaoHelper {
 
     private static final String TAG = "BookDaoHelper";
-
-    /** Used to transform Java-ISO to SQL-ISO datetime format. */
-    private static final Pattern T = Pattern.compile("T");
 
     @NonNull
     private final TextNormaliser textNormaliser;
@@ -316,7 +314,7 @@ class BookDaoHelper {
                 // Again, very crude logic... we simply check for the 11th char being a 'T'
                 // and if so, replace it with a space
                 if (date.length() > 10 && date.charAt(10) == 'T') {
-                    book.putString(key, T.matcher(date).replaceFirst(" "));
+                    book.putString(key, SqlEncode.dateTime(date));
                 }
             }
         }

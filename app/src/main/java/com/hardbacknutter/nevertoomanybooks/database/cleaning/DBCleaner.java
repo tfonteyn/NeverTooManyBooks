@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -95,8 +96,6 @@ public class DBCleaner {
     private static final String UPDATE_BOOKS_SET =
             UPDATE_ + TBL_BOOKS.getName()
             + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp";
-
-    private static final Pattern T = Pattern.compile("T");
 
     private static final Pattern RATING_PATTERN = Pattern.compile("^\\s*\\d*\\.?\\d*\\s*$");
 
@@ -326,7 +325,7 @@ public class DBCleaner {
                     UPDATE_BOOKS_SET + ',' + key + "=?" + _WHERE_ + DBKey.PK_ID + "=?")) {
 
                 for (final Pair<Long, String> row : rows) {
-                    stmt.bindString(1, T.matcher(row.second).replaceFirst(" "));
+                    stmt.bindString(1, SqlEncode.dateTime(row.second));
                     stmt.bindLong(2, row.first);
                     stmt.executeUpdateDelete();
                 }

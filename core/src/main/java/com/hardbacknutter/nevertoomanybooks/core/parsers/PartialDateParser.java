@@ -276,6 +276,8 @@ public class PartialDateParser
                     // Full date match with an optional timestamp; simply pass the whole group
                     // Creating the LocalDateTime object will automatically adjust for timezones.
                     localDate = LocalDateTime
+                            // Replace the first space (between date and time parts) with
+                            // the standard java 'T'.
                             .parse(SPACE.matcher(matcher.group()).replaceFirst("T"))
                             .atZone(ZoneOffset.UTC)
                             .withZoneSameInstant(ZoneId.systemDefault())
