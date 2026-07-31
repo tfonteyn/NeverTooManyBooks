@@ -536,9 +536,9 @@ public class BooksOnBookshelf
         });
         vm.onFinished().observe(this, message -> {
             vb.progressCircle.hide();
-            message.process(outcome -> {
-                vm.onBuildFinished(outcome);
-                displayList(outcome.getTargetNodes());
+            message.process(output -> {
+                vm.onBuildFinished(output);
+                displayList(output.getTargetNodes());
             });
         });
 
@@ -628,7 +628,7 @@ public class BooksOnBookshelf
                 calibreSyncLauncher = registerForActivityResult(
                         new CalibreSyncContract(), result -> {
                             // If we imported anything at all... rebuild
-                            if (result.contains(SyncContractBase.Outcome.Read)) {
+                            if (result.contains(SyncContractBase.Output.Read)) {
                                 vm.setForceRebuildInOnResume();
                             }
                         });
@@ -640,7 +640,7 @@ public class BooksOnBookshelf
                 stripInfoSyncLauncher = registerForActivityResult(
                         new StripInfoSyncContract(), result -> {
                             // If we imported anything at all... rebuild
-                            if (result.contains(SyncContractBase.Outcome.Read)) {
+                            if (result.contains(SyncContractBase.Output.Read)) {
                                 vm.setForceRebuildInOnResume();
                             }
                         });

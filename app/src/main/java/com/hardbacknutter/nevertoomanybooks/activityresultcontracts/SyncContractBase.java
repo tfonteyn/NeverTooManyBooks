@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public abstract class SyncContractBase
-        extends ActivityResultContract<Void, EnumSet<SyncContractBase.Outcome>> {
+        extends ActivityResultContract<Void, EnumSet<SyncContractBase.Output>> {
 
     private static final String TAG = "SyncContractBase";
     private static final String BKEY_RESULT = TAG + ":result";
@@ -45,37 +45,37 @@ public abstract class SyncContractBase
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
-     * @param outcome the result
+     * @param output the result
      *
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(@NonNull final Outcome outcome) {
+    public static Intent createResult(@NonNull final Output output) {
         return new Intent().putParcelableArrayListExtra(BKEY_RESULT,
-                                                        new ArrayList<>(EnumSet.of(outcome)));
+                                                        new ArrayList<>(EnumSet.of(output)));
     }
 
     @Override
     @NonNull
-    public EnumSet<SyncContractBase.Outcome> parseResult(final int resultCode,
-                                                         @Nullable final Intent intent) {
+    public EnumSet<Output> parseResult(final int resultCode,
+                                       @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
                           .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return EnumSet.noneOf(Outcome.class);
+            return EnumSet.noneOf(Output.class);
         }
 
-        final List<Outcome> list = intent.getParcelableArrayListExtra(BKEY_RESULT);
+        final List<Output> list = intent.getParcelableArrayListExtra(BKEY_RESULT);
         if (list == null) {
-            return EnumSet.noneOf(Outcome.class);
+            return EnumSet.noneOf(Output.class);
         }
         return EnumSet.copyOf(list);
     }
 
-    public enum Outcome
+    public enum Output
             implements Parcelable {
         /** Data was imported; i.e. local changes were made. */
         Read,
@@ -83,17 +83,17 @@ public abstract class SyncContractBase
         Write;
 
         /** {@link Parcelable}. */
-        public static final Creator<Outcome> CREATOR = new Creator<>() {
+        public static final Creator<Output> CREATOR = new Creator<>() {
             @Override
             @NonNull
-            public Outcome createFromParcel(@NonNull final Parcel in) {
+            public Output createFromParcel(@NonNull final Parcel in) {
                 return values()[in.readInt()];
             }
 
             @Override
             @NonNull
-            public Outcome[] newArray(final int size) {
-                return new Outcome[size];
+            public Output[] newArray(final int size) {
+                return new Output[size];
             }
         };
 

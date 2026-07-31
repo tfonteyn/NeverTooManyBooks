@@ -454,7 +454,7 @@ public class SyncReaderFragment
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
                     final Intent resultIntent = SyncContractBase
-                            .createResult(SyncContractBase.Outcome.Read);
+                            .createResult(SyncContractBase.Output.Read);
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

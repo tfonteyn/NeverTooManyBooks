@@ -263,7 +263,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<BoBTask.Outcome>> onCancelled() {
+    LiveData<LiveDataEvent<BoBTask.Output>> onCancelled() {
         return boBTask.onCancelled();
     }
 
@@ -280,10 +280,10 @@ public class BooksOnBookshelfViewModel
     /**
      * Observable to receive success.
      *
-     * @return the {@link BoBTask.Outcome} which can be considered to be complete and correct.
+     * @return the {@link BoBTask.Output} which can be considered to be complete and correct.
      */
     @NonNull
-    LiveData<LiveDataEvent<BoBTask.Outcome>> onFinished() {
+    LiveData<LiveDataEvent<BoBTask.Output>> onFinished() {
         return boBTask.onFinished();
     }
 
@@ -1573,9 +1573,9 @@ public class BooksOnBookshelfViewModel
     /**
      * Called when the list build succeeded.
      *
-     * @param outcome from the task; contains the (optional) target rows.
+     * @param output from the task; contains the (optional) target rows.
      */
-    void onBuildFinished(@NonNull final BoBTask.Outcome outcome) {
+    void onBuildFinished(@NonNull final BoBTask.Output output) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
             Debug.stopMethodTracing();
         }
@@ -1587,10 +1587,10 @@ public class BooksOnBookshelfViewModel
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             final Logger logger = LoggerFactory.getLogger();
-            logger.d(TAG, outcome);
+            logger.d(TAG, output);
         }
 
-        booklist = outcome.getList();
+        booklist = output.getList();
 
         // preserve the new state by default
         rebuildMode = RebuildBooklist.FromSaved;

@@ -243,7 +243,7 @@ public class SyncWriterFragment
                         .setMessage(itemList)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
                             final Intent resultIntent = SyncContractBase
-                                    .createResult(SyncContractBase.Outcome.Write);
+                                    .createResult(SyncContractBase.Output.Write);
                             //noinspection DataFlowIssue
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
                             getActivity().finish();

@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class BoBTask
-        extends MTask<BoBTask.Outcome> {
+        extends MTask<BoBTask.Output> {
 
     /**
      * Counter for generating ID's. Only increments.
@@ -100,7 +100,7 @@ public class BoBTask
     @Override
     @WorkerThread
     @NonNull
-    protected Outcome doWork() {
+    protected Output doWork() {
         final Style style = bookshelf.getStyle();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -129,7 +129,7 @@ public class BoBTask
             }
 
             // Get the row(s) which will be used to determine new cursor position
-            return new Outcome(booklist, booklist.getVisibleBookNodes(desiredCentralBookId));
+            return new Output(booklist, booklist.getVisibleBookNodes(desiredCentralBookId));
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
             if (booklist != null) {
@@ -225,15 +225,15 @@ public class BoBTask
         return rowStateDao;
     }
 
-    public static class Outcome {
+    public static class Output {
 
         @NonNull
         private final Booklist booklist;
         @NonNull
         private final List<BooklistNode> targetNodes;
 
-        Outcome(@NonNull final Booklist booklist,
-                @NonNull final List<BooklistNode> targetNodes) {
+        Output(@NonNull final Booklist booklist,
+               @NonNull final List<BooklistNode> targetNodes) {
             this.booklist = booklist;
             this.targetNodes = targetNodes;
         }
@@ -261,7 +261,7 @@ public class BoBTask
         @Override
         @NonNull
         public String toString() {
-            return "Outcome{"
+            return "Output{"
                    + "booklist=" + booklist
                    + ", targetNodes=" + targetNodes
                    + '}';
