@@ -1,0 +1,10 @@
+NEW:
+
+- kb.nl supports ISSN searches
+- performance increase when swiping between books
+- Settings dialogs themselves now follow user-settings for dialog/bottomsheet
+
+FIXES:
+
+- popup menu/submenu on screen positioning fixed
+- tablets (10") display dialogs properly sized instead of too large / too small.
