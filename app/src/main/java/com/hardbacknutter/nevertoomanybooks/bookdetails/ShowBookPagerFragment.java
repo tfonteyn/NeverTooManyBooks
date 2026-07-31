@@ -110,6 +110,9 @@ public class ShowBookPagerFragment
 
         final ShowBookPagerAdapter adapter = new ShowBookPagerAdapter(this);
         viewPager.setAdapter(adapter);
+        // allow 3 books to be preloaded, b-1, b, b+1
+        viewPager.setOffscreenPageLimit(1);
+
         // Don't animate/softscroll, always jump.
         viewPager.setCurrentItem(vm.getInitialPagerPosition(), false);
 
