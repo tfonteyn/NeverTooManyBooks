@@ -37,9 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-/**
- * Use {@link SettingsOutput#createResult(boolean, boolean)} to construct the output.
- */
 public class SettingsContract
         extends ActivityResultContract<String, Optional<SettingsOutput>> {
 
@@ -74,6 +71,6 @@ public class SettingsContract
             return Optional.empty();
         }
 
-        return Optional.of(new SettingsOutput(result));
+        return Optional.of(SettingsOutput.fromBundle(result));
     }
 }

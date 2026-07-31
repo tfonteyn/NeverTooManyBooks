@@ -38,9 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-/**
- * Use {@link SettingsOutput#createResult(boolean, boolean)} to construct the output.
- */
 public class TagAdminContract
         extends ActivityResultContract<Void, Optional<SettingsOutput>> {
 
@@ -70,6 +67,6 @@ public class TagAdminContract
             return Optional.empty();
         }
 
-        return Optional.of(new SettingsOutput(result));
+        return Optional.of(SettingsOutput.fromBundle(result));
     }
 }

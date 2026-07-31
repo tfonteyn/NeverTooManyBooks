@@ -158,7 +158,7 @@ public class UserInterfacePreferenceFragment
     private boolean onChangeUiTopMenuScrolling(@NonNull final Setting setting,
                                                @Nullable final Object newValue) {
         // Set the activity result so our caller will recreate itself
-        vm.setOnBackRequiresActivityRecreation();
+        vm.setForceActivityRecreation();
         // and recreate the current activity
         //noinspection DataFlowIssue
         getActivity().recreate();
@@ -168,7 +168,7 @@ public class UserInterfacePreferenceFragment
     private boolean onChangeUiLocale(@NonNull final Setting setting,
                                      @Nullable final Object newValue) {
         // Set the activity result so our caller will recreate itself
-        vm.setOnBackRequiresActivityRecreation();
+        vm.setForceActivityRecreation();
         // and recreate the current activity so we get the new language immediately
         //noinspection DataFlowIssue
         getActivity().recreate();
@@ -178,7 +178,7 @@ public class UserInterfacePreferenceFragment
     private boolean onChangeDragHandle(@NonNull final Setting setting,
                                        @Nullable final Object newValue) {
         // Set the activity result so our caller will recreate itself
-        vm.setOnBackRequiresActivityRecreation();
+        vm.setForceActivityRecreation();
         return true;
     }
 

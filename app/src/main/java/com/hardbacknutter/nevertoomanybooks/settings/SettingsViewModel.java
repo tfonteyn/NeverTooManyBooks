@@ -45,7 +45,7 @@ import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 /**
  * Shared on the Activity level as it's needed by more than 1 Fragment.
  * <p>
- * Note that {@link #forceRebuildBooklist} and {@link #requiresActivityRecreation}
+ * Note that {@link #forceRebuildBooklist} and {@link #forceActivityRecreation}
  * are somewhat overlapping in functionality.
  */
 @SuppressWarnings("WeakerAccess")
@@ -59,7 +59,7 @@ public class SettingsViewModel
 
 
     private final StorageMoverTask storageMoverTask = new StorageMoverTask();
-    private boolean requiresActivityRecreation;
+    private boolean forceActivityRecreation;
 
     private boolean forceRebuildBooklist;
 
@@ -138,12 +138,12 @@ public class SettingsViewModel
         return uiLanguageEntries;
     }
 
-    boolean isRequiresActivityRecreation() {
-        return requiresActivityRecreation;
+    boolean isForceActivityRecreation() {
+        return forceActivityRecreation;
     }
 
-    public void setOnBackRequiresActivityRecreation() {
-        requiresActivityRecreation = true;
+    public void setForceActivityRecreation() {
+        forceActivityRecreation = true;
     }
 
     public boolean isForceRebuildBooklist() {

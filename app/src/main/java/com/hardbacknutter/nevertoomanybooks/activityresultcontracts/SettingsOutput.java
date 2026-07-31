@@ -20,41 +20,39 @@
 
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
 public final class SettingsOutput {
     private static final String TAG = "SettingsOutput";
-
     /** Something changed (or not) that requires a recreation of the caller Activity. */
     private static final String BKEY_RECREATE_ACTIVITY = TAG + ":recreate";
     /** Something changed (or not) that requires a rebuild of the Booklist. */
     private static final String BKEY_REBUILD_BOOKLIST = TAG + ":rebuildList";
+
     private final boolean recreateActivity;
     private final boolean forceRebuildBooklist;
 
-    public SettingsOutput(@NonNull final Bundle result) {
-        recreateActivity = result.getBoolean(BKEY_RECREATE_ACTIVITY, false);
-        forceRebuildBooklist = result.getBoolean(BKEY_REBUILD_BOOKLIST, false);
+    public SettingsOutput(final boolean recreateActivity,
+                          final boolean forceRebuildBooklist) {
+        this.recreateActivity = recreateActivity;
+        this.forceRebuildBooklist = forceRebuildBooklist;
     }
 
-    /**
-     * Create the result which {@code #parseResult(int, Intent)} will receive.
-     *
-     * @param recreateActivity     flag indicating if the BoB <strong>Activity</strong>
-     *                             should be recreated
-     * @param forceRebuildBooklist flag indicating if the BoB <strong>Booklist</strong>
-     *                             should be rebuilt
-     *
-     * @return Intent
-     */
     @NonNull
-    public static Intent createResult(final boolean recreateActivity,
-                                      final boolean forceRebuildBooklist) {
-        return new Intent().putExtra(BKEY_RECREATE_ACTIVITY, recreateActivity)
-                           .putExtra(BKEY_REBUILD_BOOKLIST, forceRebuildBooklist);
+    public static SettingsOutput fromBundle(@NonNull final Bundle result) {
+        final boolean recreateActivity = result.getBoolean(BKEY_RECREATE_ACTIVITY, false);
+        final boolean forceRebuildBooklist = result.getBoolean(BKEY_REBUILD_BOOKLIST, false);
+        return new SettingsOutput(recreateActivity, forceRebuildBooklist);
+    }
+
+    @NonNull
+    public Bundle toBundle() {
+        final Bundle args = new Bundle(2);
+        args.putBoolean(BKEY_RECREATE_ACTIVITY, recreateActivity);
+        args.putBoolean(BKEY_REBUILD_BOOKLIST, forceRebuildBooklist);
+        return args;
     }
 
     public boolean isRecreateActivity() {

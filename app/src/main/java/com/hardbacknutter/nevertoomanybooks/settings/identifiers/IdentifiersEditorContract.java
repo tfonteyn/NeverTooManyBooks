@@ -39,9 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-/**
- * Use {@link SettingsOutput#createResult(boolean, boolean)} to construct the output.
- */
 public class IdentifiersEditorContract
         extends ActivityResultContract<Void, Optional<SettingsOutput>> {
 
@@ -91,6 +88,6 @@ public class IdentifiersEditorContract
             return Optional.empty();
         }
 
-        return Optional.of(new SettingsOutput(result));
+        return Optional.of(SettingsOutput.fromBundle(result));
     }
 }

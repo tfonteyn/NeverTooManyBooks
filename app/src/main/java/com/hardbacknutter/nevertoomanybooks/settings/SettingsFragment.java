@@ -134,11 +134,11 @@ public class SettingsFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Intent resultIntent = SettingsOutput.createResult(
-                            vm.isRequiresActivityRecreation(),
-                            vm.isForceRebuildBooklist());
+                    final SettingsOutput result = new SettingsOutput(
+                            vm.isForceActivityRecreation(), vm.isForceRebuildBooklist());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            new Intent().putExtras(result.toBundle()));
                     getActivity().finish();
                 }
             };
@@ -435,7 +435,7 @@ public class SettingsFragment
 
     private boolean onChangeScrollerOverlay(@NonNull final Setting setting,
                                             @Nullable final Object newValue) {
-        vm.setOnBackRequiresActivityRecreation();
+        vm.setForceActivityRecreation();
         return true;
     }
 
@@ -642,7 +642,7 @@ public class SettingsFragment
             try {
                 // Init the newly configured volume
                 ServiceLocator.getInstance().getCoverStorage().initDir();
-                vm.setOnBackRequiresActivityRecreation();
+                vm.setForceActivityRecreation();
                 return true;
 
             } catch (@NonNull final StorageException e) {

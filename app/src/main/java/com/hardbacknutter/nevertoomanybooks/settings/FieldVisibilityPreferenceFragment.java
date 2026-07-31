@@ -210,7 +210,7 @@ public class FieldVisibilityPreferenceFragment
         }
 
         // Changing ANY field visibility will usually require recreating the activity
-        vm.setOnBackRequiresActivityRecreation();
+        vm.setForceActivityRecreation();
 
         return true;
     }
