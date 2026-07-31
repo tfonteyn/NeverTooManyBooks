@@ -36,29 +36,21 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class EditBookContract
-        extends ActivityResultContract<EditBookContract.Input, Optional<EditBookOutput>> {
+        extends ActivityResultContract<EditBookInput, Optional<EditBookOutput>> {
 
     private static final String TAG = "EditBookContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
-        final Intent intent = FragmentHostActivityLauncher
+                               @NonNull final EditBookInput input) {
+        return FragmentHostActivityLauncher
                 .createIntent(context, EditBookFragment.class, R.layout.activity_edit_book)
-                .putExtra(Style.BKEY_UUID, input.styleUuid);
-
-        if (input.book != null) {
-            return intent.putExtra(Book.BKEY_BOOK_DATA, input.book);
-        } else {
-            return intent.putExtra(DBKey.FK_BOOK, input.bookId);
-        }
+                .putExtras(input.toBundle());
     }
 
     @Override
@@ -76,43 +68,5 @@ public class EditBookContract
 
         final Bundle result = Objects.requireNonNull(intent.getExtras());
         return Optional.of(EditBookOutput.fromBundle(result));
-    }
-
-    public static class Input {
-        final long bookId;
-        @Nullable
-        final Book book;
-
-        @NonNull
-        final String styleUuid;
-
-        /**
-         * Add/Edit a <strong>new</strong> book, typically data as retrieved after an
-         * internet search, or a copy of an existing book.
-         * <p>
-         * This is meant for book(data) <strong>without</strong> an {@code id}.
-         *
-         * @param book  data
-         * @param style to use
-         */
-        public Input(@NonNull final Book book,
-                     @NonNull final Style style) {
-            this.bookId = 0;
-            this.book = book;
-            this.styleUuid = style.getUuid();
-        }
-
-        /**
-         * Edit an <strong>existing</strong> book.
-         *
-         * @param bookId of the book; can be {@code 0} for a new empty book.
-         * @param style  to use
-         */
-        public Input(final long bookId,
-                     @NonNull final Style style) {
-            this.bookId = bookId;
-            this.book = null;
-            this.styleUuid = style.getUuid();
-        }
     }
 }

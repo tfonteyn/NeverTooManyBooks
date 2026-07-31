@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -146,7 +147,7 @@ public class ShowBookDetailsFragment
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksInput> authorWorksLauncher;
     /** User edits a book. */
-    private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
+    private ActivityResultLauncher<EditBookInput> editBookLauncher;
     /** User updates a book with internet data. */
     private ActivityResultLauncher<Book> updateBookLauncher;
     /** Handle the edit-lender dialog. */
@@ -736,8 +737,8 @@ public class ShowBookDetailsFragment
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_BOOK_EDIT) {
-                editBookLauncher.launch(new EditBookContract.Input(book.getId(),
-                                                                   aVm.getStyle()));
+                editBookLauncher.launch(new EditBookInput(book.getId(),
+                                                          aVm.getStyle()));
                 return true;
 
             } else if (menuItemId == R.id.MENU_BOOK_DELETE) {

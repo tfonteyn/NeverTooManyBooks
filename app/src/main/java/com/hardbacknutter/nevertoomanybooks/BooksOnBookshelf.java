@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySea
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
@@ -248,7 +249,7 @@ public class BooksOnBookshelf
     /** Add a Book by doing a search on the internet. */
     private ActivityResultLauncher<AddBookBySearchContract.Input> addBookBySearchLauncher;
     /** Edit a Book. */
-    private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
+    private ActivityResultLauncher<EditBookInput> editBookLauncher;
     /** Update an individual Book with information from the internet. */
     private ActivityResultLauncher<Book> updateBookLauncher;
     /** Update a list of Books with information from the internet. */
@@ -1446,7 +1447,7 @@ public class BooksOnBookshelf
                     vm.getStyle()));
 
         } else if (menuItemId == R.id.fab3_add_manually) {
-            editBookLauncher.launch(new EditBookContract.Input(0L, vm.getStyle()));
+            editBookLauncher.launch(new EditBookInput(0L, vm.getStyle()));
 
         } else if (menuItemId == R.id.fab4_search_external_id) {
             addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(

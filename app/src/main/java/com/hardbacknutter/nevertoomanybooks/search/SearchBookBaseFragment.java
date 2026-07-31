@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -72,7 +73,7 @@ public abstract class SearchBookBaseFragment
             };
     SearchCoordinator coordinator;
 
-    private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
+    private ActivityResultLauncher<EditBookInput> editBookLauncher;
     private ActivityResultLauncher<List<Site>> editSitesLauncher;
 
     @Nullable
@@ -279,12 +280,12 @@ public abstract class SearchBookBaseFragment
 
     void editBook(@NonNull final Book book,
                   @NonNull final Style style) {
-        editBookLauncher.launch(new EditBookContract.Input(book, style));
+        editBookLauncher.launch(new EditBookInput(book, style));
     }
 
     void editBook(final long bookId,
                   @NonNull final Style style) {
-        editBookLauncher.launch(new EditBookContract.Input(bookId, style));
+        editBookLauncher.launch(new EditBookInput(bookId, style));
     }
 
     /**

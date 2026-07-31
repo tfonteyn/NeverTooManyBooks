@@ -37,7 +37,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLauncher;
@@ -55,7 +55,7 @@ public class RMBook
     @NonNull
     private final BooksOnBookshelfViewModel vm;
     @NonNull
-    private final ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
+    private final ActivityResultLauncher<EditBookInput> editBookLauncher;
     @NonNull
     private final ActivityResultLauncher<Book> updateBookLauncher;
     @NonNull
@@ -67,7 +67,7 @@ public class RMBook
     public RMBook(@NonNull final FragmentActivity activity,
                   @NonNull final ActivityResultCaller contractOwner,
                   @NonNull final BooksOnBookshelfViewModel vm,
-                  @NonNull final ActivityResultLauncher<EditBookContract.Input> editBookLauncher,
+                  @NonNull final ActivityResultLauncher<EditBookInput> editBookLauncher,
                   @NonNull final ActivityResultLauncher<Book> updateBookLauncher,
                   @Nullable final CalibreHandler calibreHandler) {
         this.vm = vm;
@@ -140,13 +140,13 @@ public class RMBook
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_EDIT) {
-            editBookLauncher.launch(new EditBookContract.Input(bookId, vm.getStyle()));
+            editBookLauncher.launch(new EditBookInput(bookId, vm.getStyle()));
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DUPLICATE) {
             final Book book = Book.from(bookId);
-            editBookLauncher.launch(new EditBookContract.Input(book.duplicate(context),
-                                                               vm.getStyle()));
+            editBookLauncher.launch(new EditBookInput(book.duplicate(context),
+                                                      vm.getStyle()));
             return true;
 
         } else if (menuItemId == R.id.MENU_BOOK_DELETE) {

@@ -114,10 +114,16 @@ public class EditBookFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Bundle rawArgs = getArguments();
+        @Nullable
+        EditBookInput args = null;
+        if (rawArgs != null) {
+            args = EditBookInput.fromBundle(rawArgs);
+        }
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(getContext(), getArguments());
+        vm.init(getContext(), args);
     }
 
     @Nullable

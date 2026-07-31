@@ -252,7 +252,7 @@ public class EditBookViewModel
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     void init(@NonNull final Context context,
-              @Nullable final Bundle args) {
+              @Nullable final EditBookInput args) {
 
         if (authorDao == null) {
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -275,7 +275,7 @@ public class EditBookViewModel
                                    new SiteSearchMenuHandler());
 
             // Lookup the provided style or use the default if not found.
-            final String styleUuid = args != null ? args.getString(Style.BKEY_UUID) : null;
+            final String styleUuid = args != null ? args.getStyleUuid() : null;
             final StylesHelper stylesHelper = serviceLocator.getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 
@@ -300,7 +300,7 @@ public class EditBookViewModel
             if (args != null) {
                 // 1. Do we have a Book? e.g. after an internet search
                 @SuppressWarnings("deprecation")
-                final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
+                final Book bookFromArguments = args.getBook();
                 if (bookFromArguments != null) {
                     book = bookFromArguments;
                     // It should always be a new book here, but paranoia...
@@ -315,7 +315,7 @@ public class EditBookViewModel
 
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
-                    final long bookId = args.getLong(DBKey.FK_BOOK, 0);
+                    final long bookId = args.getBookId();
                     if (bookId > 0) {
                         book = Book.from(bookId);
                     } else {
