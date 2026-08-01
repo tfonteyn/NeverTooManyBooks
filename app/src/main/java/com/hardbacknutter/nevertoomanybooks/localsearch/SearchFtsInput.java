@@ -48,7 +48,7 @@ public final class SearchFtsInput {
         final Bookshelf bookshelf = Objects.requireNonNull(
                 args.getParcelable(DBKey.FK_BOOKSHELF),
                 DBKey.FK_BOOKSHELF);
-        final LocalSearchCriteria criteria = args.getParcelable(LocalSearchCriteria.BKEY);
+        final LocalSearchCriteria criteria = LocalSearchCriteria.fromBundle(args);
         return new SearchFtsInput(bookshelf, criteria);
     }
 
@@ -57,7 +57,7 @@ public final class SearchFtsInput {
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
         if (criteria != null && !criteria.isEmpty()) {
-            args.putParcelable(LocalSearchCriteria.BKEY, criteria);
+            args.putAll(criteria.toBundle());
         }
         return args;
     }
@@ -67,8 +67,13 @@ public final class SearchFtsInput {
         return bookshelf;
     }
 
-    @Nullable
+    /**
+     * Get the criteria. If there are none, this method returns a new instance.
+     *
+     * @return criteria
+     */
+    @NonNull
     public LocalSearchCriteria getCriteria() {
-        return criteria;
+        return criteria != null ? criteria : new LocalSearchCriteria();
     }
 }

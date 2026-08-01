@@ -172,8 +172,7 @@ public class SearchFtsFragment
      */
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showFullResults() {
-        final Intent resultIntent = new Intent().putExtra(LocalSearchCriteria.BKEY,
-                                                          vm.getCriteria());
+        final Intent resultIntent = new Intent().putExtras(vm.getCriteria().toBundle());
         //noinspection DataFlowIssue
         getActivity().setResult(Activity.RESULT_OK, resultIntent);
         getActivity().finish();

@@ -70,9 +70,6 @@ public class SearchFtsViewModel
             dao = ServiceLocator.getInstance().getFtsDao();
             bookshelf = args.getBookshelf();
             criteria = args.getCriteria();
-            if (criteria == null) {
-                criteria = new LocalSearchCriteria();
-            }
 
             // The callback comes from the timer thread, hence use "post"
             timerDelegate = new TimerDelegate(() -> onSearchStart.postValue(null));

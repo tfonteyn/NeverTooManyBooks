@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
 import android.content.Intent;
-import android.os.Parcelable;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
@@ -37,15 +36,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfInput;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -186,16 +182,15 @@ public class DisplayBookLauncher {
             final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
             // multiple books, open a new BooksOnBookshelf instance
             // (it will have a 'back' button)
-            final Intent intent = new Intent(fragment.getContext(), BooksOnBookshelf.class)
-                    .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
-                    // Open the list expanded, as otherwise you end up with
-                    // the author as a single line, and no books shown at all,
-                    // which can be quite confusing to the user.
-                    .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
-                              (Parcelable) RebuildBooklist.Expanded)
-                    // The Bookshelf id! NOT the parcelled Bookshelf object!
-                    .putExtra(DBKey.FK_BOOKSHELF, bookshelfId);
 
+            // Open the list expanded, as otherwise you end up with
+            // the author as a single line, and no books shown at all,
+            // which can be quite confusing to the user.
+            final BooksOnBookshelfInput input = new BooksOnBookshelfInput(
+                    bookshelfId, bookIdList, RebuildBooklist.Expanded);
+
+            final Intent intent = new Intent(fragment.getContext(), BooksOnBookshelf.class)
+                    .putExtras(input.toBundle());
             fragment.startActivity(intent);
         }
     }

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.localsearch;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -58,8 +59,7 @@ public class LocalSearchCriteria
 
     /** Log tag. */
     private static final String TAG = "LocalSearchCriteria";
-    /** Bundle key to pass this object around. */
-    public static final String BKEY = TAG + ":a";
+    private static final String BKEY = TAG + ":a";
 
     /**
      * Bundle key for Author search text.
@@ -127,6 +127,7 @@ public class LocalSearchCriteria
      * @param in Parcel to construct the object from
      */
     private LocalSearchCriteria(@NonNull final Parcel in) {
+        //noinspection deprecation
         in.readList(bookIdList, getClass().getClassLoader());
         ftsBookTitle = in.readString();
         ftsSeriesTitle = in.readString();
@@ -134,6 +135,22 @@ public class LocalSearchCriteria
         ftsPublisher = in.readString();
         ftsKeywords = in.readString();
         loanee = in.readString();
+    }
+
+    @Nullable
+    public static LocalSearchCriteria fromBundle(@Nullable final Bundle args) {
+        if (args == null) {
+            return null;
+        }
+        //noinspection deprecation
+        return args.getParcelable(BKEY);
+    }
+
+    @NonNull
+    public Bundle toBundle() {
+        final Bundle args = new Bundle(1);
+        args.putParcelable(BKEY, this);
+        return args;
     }
 
     @Override

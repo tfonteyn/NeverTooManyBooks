@@ -54,15 +54,7 @@ public class SearchFtsContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
-        // The criteria are always present, but can be empty.
-        @SuppressWarnings("deprecation")
-        final LocalSearchCriteria searchCriteria = intent.getParcelableExtra(
-                LocalSearchCriteria.BKEY);
-        if (searchCriteria != null) {
-            return Optional.of(searchCriteria);
-        } else {
-            // Paranoia, we should never get here.
-            return Optional.empty();
-        }
+        final LocalSearchCriteria criteria = LocalSearchCriteria.fromBundle(intent.getExtras());
+        return criteria != null ? Optional.of(criteria) : Optional.empty();
     }
 }

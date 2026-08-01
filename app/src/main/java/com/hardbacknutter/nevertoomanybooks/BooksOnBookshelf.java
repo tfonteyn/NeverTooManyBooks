@@ -509,7 +509,7 @@ public class BooksOnBookshelf
     private void createViewModel() {
         // Does not use the full progress dialog. Instead, uses the overlay progress bar.
         vm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
-        vm.init(this, getIntent().getExtras());
+        vm.init(this, BooksOnBookshelfInput.fromBundle(getIntent().getExtras()));
 
         vm.onCancelled().observe(this, message -> {
             vb.progressCircle.hide();

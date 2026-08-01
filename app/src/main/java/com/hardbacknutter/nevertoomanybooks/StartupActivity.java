@@ -160,7 +160,7 @@ public class StartupActivity
                     // and hand over to the real main activity
                     final Intent intent = new Intent(this, BooksOnBookshelf.class);
                     if (vm.isProposeBackup()) {
-                        intent.putExtra(BooksOnBookshelfViewModel.BKEY_PROPOSE_BACKUP, true);
+                        intent.putExtras(new BooksOnBookshelfInput(true).toBundle());
                     }
                     startActivity(intent);
                     finish();

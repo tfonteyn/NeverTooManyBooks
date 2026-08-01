@@ -103,12 +103,6 @@ public class BooksOnBookshelfViewModel
 
     static final String BKEY_BOOK_IDS = TAG + ":bookIds";
 
-    /** collapsed/expanded. */
-    public static final String BKEY_LIST_STATE = TAG + ":list.state";
-
-    /** Passed in by the {@link StartupActivity} if the user confirmed to take a backup. */
-    static final String BKEY_PROPOSE_BACKUP = TAG + ":pb";
-
     private static final String ERROR_GROUP_NOT_DEFINED = "Group not defined: ";
     private static final String ERROR_NULL_BOOKLIST = "booklist";
     private static final String ERROR_NO_EXTRAS = "No extras?";
@@ -325,14 +319,10 @@ public class BooksOnBookshelfViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    (optional) {@link #BKEY_PROPOSE_BACKUP} flag
-     *                (optional) {@link LocalSearchCriteria#BKEY} for filtering
-     *                (optional) {@link Book#BKEY_BOOK_ID_LIST} list of book ids
-     *                (optional) {@link #BKEY_LIST_STATE} override the user preference
-     *                (optional) {@link DBKey#FK_BOOKSHELF} the Bookshelf id
+     * @param args    all arguments
      */
     void init(@NonNull final Context context,
-              @Nullable final Bundle args) {
+              @Nullable final BooksOnBookshelfInput args) {
 
         if (authorDao == null) {
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -349,38 +339,25 @@ public class BooksOnBookshelfViewModel
             rebuildMode = RebuildBooklist.getPreferredMode();
 
             if (args != null) {
-                proposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
-
-                // Check for incoming criteria
-                searchCriteria = args.getParcelable(LocalSearchCriteria.BKEY);
-                // Typically there won't be any, create them if needed.
-                if (searchCriteria == null) {
-                    searchCriteria = new LocalSearchCriteria();
-                }
-
-                // There MAY be a list of book id's.
-                final List<Long> bookIdlist = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
-                if (bookIdlist != null) {
-                    searchCriteria.setBookIdList(bookIdlist);
-                }
+                proposeBackup = args.isProposeBackup();
+                searchCriteria = args.getCriteria();
+                // There MAY be a list of book id's which overrules the criteria
+                // if present
+                args.getBookIdList().ifPresent(searchCriteria::setBookIdList);
 
                 // allow the caller to override the user preference
-                if (args.containsKey(BKEY_LIST_STATE)) {
-                    // If present, must not be null
-                    rebuildMode = Objects.requireNonNull(args.getParcelable(BKEY_LIST_STATE),
-                                                         BKEY_LIST_STATE);
+                final RebuildBooklist rebuildBooklist = args.getRebuildBooklist();
+                if (rebuildBooklist != null) {
+                    rebuildMode = rebuildBooklist;
                 }
 
                 // check for an explicit bookshelf set
                 // 2025-06-02: currently this is only used by {@link DisplayBookLauncher}
                 // when we want to show a list of books retrieved from a TocEntry.
                 // (reminder: this comment might not be updated lately and hence incorrect)
-                if (args.containsKey(DBKey.FK_BOOKSHELF)) {
-                    // might be null, that's OK.
-                    bookshelf = bookshelfDao
-                            .getBookshelf(context, args.getLong(DBKey.FK_BOOKSHELF))
-                            .orElse(null);
-                }
+                bookshelf = args.getBookshelfId()
+                                .flatMap(id -> bookshelfDao.getBookshelf(context, id))
+                                .orElse(null);
             }
         } else {
             // always preserve the state when the hosting fragment was revived
