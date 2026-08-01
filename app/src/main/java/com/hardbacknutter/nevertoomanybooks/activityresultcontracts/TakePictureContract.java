@@ -55,9 +55,9 @@ public class TakePictureContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
+                               @NonNull final Input args) {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                .putExtra(MediaStore.EXTRA_OUTPUT, input.dstUri);
+                .putExtra(MediaStore.EXTRA_OUTPUT, args.dstUri);
     }
 
     @Override

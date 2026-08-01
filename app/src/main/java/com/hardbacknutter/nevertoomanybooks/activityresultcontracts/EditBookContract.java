@@ -47,10 +47,10 @@ public class EditBookContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final EditBookInput input) {
+                               @NonNull final EditBookInput args) {
         return FragmentHostActivityLauncher
                 .createIntent(context, EditBookFragment.class, R.layout.activity_edit_book)
-                .putExtras(input.toBundle());
+                .putExtras(args.toBundle());
     }
 
     @Override

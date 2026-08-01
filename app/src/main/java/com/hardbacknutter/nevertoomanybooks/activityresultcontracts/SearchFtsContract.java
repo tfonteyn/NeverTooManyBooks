@@ -45,10 +45,10 @@ public class SearchFtsContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final SearchFtsInput input) {
+                               @NonNull final SearchFtsInput args) {
         return FragmentHostActivityLauncher
                 .createIntent(context, SearchFtsFragment.class)
-                .putExtras(input.toBundle());
+                .putExtras(args.toBundle());
     }
 
     @Override

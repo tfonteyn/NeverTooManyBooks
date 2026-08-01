@@ -49,9 +49,9 @@ public class EditImageContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
+                               @NonNull final Input args) {
 
-        return UCrop.of(input.srcFile, input.dstFile)
+        return UCrop.of(args.srcFile, args.dstFile)
                     .withOptions(getStandardOptions(context))
                     .getIntent(context);
     }

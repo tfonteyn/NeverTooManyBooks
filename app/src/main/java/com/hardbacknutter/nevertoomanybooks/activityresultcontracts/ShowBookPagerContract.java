@@ -47,11 +47,11 @@ public class ShowBookPagerContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final ShowBookPagerInput input) {
+                               @NonNull final ShowBookPagerInput args) {
 
         return FragmentHostActivityLauncher
                 .createIntent(context, ShowBookPagerFragment.class, R.layout.activity_book_details)
-                .putExtras(input.toBundle());
+                .putExtras(args.toBundle());
     }
 
     @Override

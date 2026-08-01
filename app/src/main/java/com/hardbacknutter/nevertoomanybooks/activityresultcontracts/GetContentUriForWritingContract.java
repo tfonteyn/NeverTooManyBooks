@@ -48,10 +48,10 @@ public class GetContentUriForWritingContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
+                               @NonNull final Input args) {
         return new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                .setType(input.mimeType)
-                .putExtra(Intent.EXTRA_TITLE, input.fileName);
+                .setType(args.mimeType)
+                .putExtra(Intent.EXTRA_TITLE, args.fileName);
     }
 
     @Override

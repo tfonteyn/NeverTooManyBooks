@@ -52,15 +52,15 @@ public class EditImageExternalContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
+                               @NonNull final Input args) {
 
         final int permissions = Intent.FLAG_GRANT_READ_URI_PERMISSION
                                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 
         final Intent intent = new Intent(Intent.ACTION_EDIT)
-                .setDataAndType(input.srcUri, IMAGE_MIME_TYPE)
+                .setDataAndType(args.srcUri, IMAGE_MIME_TYPE)
                 .addFlags(permissions)
-                .putExtra(MediaStore.EXTRA_OUTPUT, input.dstUri);
+                .putExtra(MediaStore.EXTRA_OUTPUT, args.dstUri);
 
         final List<ResolveInfo> resInfoList =
                 context.getPackageManager()
@@ -73,7 +73,7 @@ public class EditImageExternalContract
         // We do not know which app will be used, so need to grant permission to all.
         for (final ResolveInfo resolveInfo : resInfoList) {
             context.grantUriPermission(resolveInfo.activityInfo.packageName,
-                                       input.dstUri,
+                                       args.dstUri,
                                        permissions);
         }
 

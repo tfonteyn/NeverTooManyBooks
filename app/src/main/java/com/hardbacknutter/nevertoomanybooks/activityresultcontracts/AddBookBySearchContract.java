@@ -48,26 +48,26 @@ public class AddBookBySearchContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final SearchBookInput input) {
-        switch (input.getBy()) {
+                               @NonNull final SearchBookInput args) {
+        switch (args.getBy()) {
             case ProductCode:
             case Scan:
             case ScanBatch:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByIsbnFragment.class)
-                        .putExtras(input.toBundle());
+                        .putExtras(args.toBundle());
 
             case ExternalId:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByExternalIdFragment.class)
-                        .putExtras(input.toBundle());
+                        .putExtras(args.toBundle());
 
             case Text:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByTextFragment.class)
-                        .putExtras(input.toBundle());
+                        .putExtras(args.toBundle());
             default:
-                throw new IllegalArgumentException(input.getBy().name());
+                throw new IllegalArgumentException(args.getBy().name());
         }
     }
 
