@@ -80,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsCont
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -630,7 +630,7 @@ public class BooksOnBookshelf
                 calibreSyncLauncher = registerForActivityResult(
                         new CalibreSyncContract(), result -> {
                             // If we imported anything at all... rebuild
-                            if (result.contains(SyncContractBase.Output.Read)) {
+                            if (result.contains(SyncContractOutput.Read)) {
                                 vm.setForceRebuildInOnResume();
                             }
                         });
@@ -642,7 +642,7 @@ public class BooksOnBookshelf
                 stripInfoSyncLauncher = registerForActivityResult(
                         new StripInfoSyncContract(), result -> {
                             // If we imported anything at all... rebuild
-                            if (result.contains(SyncContractBase.Output.Read)) {
+                            if (result.contains(SyncContractOutput.Read)) {
                                 vm.setForceRebuildInOnResume();
                             }
                         });

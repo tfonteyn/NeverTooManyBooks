@@ -21,84 +21,25 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
-public abstract class SyncContractBase
-        extends ActivityResultContract<Void, EnumSet<SyncContractBase.Output>> {
-
-    private static final String TAG = "SyncContractBase";
-    private static final String BKEY_RESULT = TAG + ":result";
-
-    /**
-     * Create the result which {@link #parseResult(int, Intent)} will receive.
-     *
-     * @param output the result
-     *
-     * @return Intent
-     */
-    @NonNull
-    public static Intent createResult(@NonNull final Output output) {
-        return new Intent().putParcelableArrayListExtra(BKEY_RESULT,
-                                                        new ArrayList<>(EnumSet.of(output)));
-    }
+abstract class SyncContractBase
+        extends ActivityResultContract<Void, EnumSet<SyncContractOutput>> {
 
     @Override
     @NonNull
-    public EnumSet<Output> parseResult(final int resultCode,
-                                       @Nullable final Intent intent) {
+    public EnumSet<SyncContractOutput> parseResult(final int resultCode,
+                                                   @Nullable final Intent intent) {
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return EnumSet.noneOf(Output.class);
+            return EnumSet.noneOf(SyncContractOutput.class);
         }
 
-        @SuppressWarnings("deprecation")
-        final List<Output> list = intent.getParcelableArrayListExtra(BKEY_RESULT);
-        if (list == null) {
-            return EnumSet.noneOf(Output.class);
-        }
-        return EnumSet.copyOf(list);
-    }
-
-    public enum Output
-            implements Parcelable {
-        /** Data was imported; i.e. local changes were made. */
-        Read,
-        /** Data was exported/written; no local changes done. */
-        Write;
-
-        /** {@link Parcelable}. */
-        public static final Creator<Output> CREATOR = new Creator<>() {
-            @Override
-            @NonNull
-            public Output createFromParcel(@NonNull final Parcel in) {
-                return values()[in.readInt()];
-            }
-
-            @Override
-            @NonNull
-            public Output[] newArray(final int size) {
-                return new Output[size];
-            }
-        };
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            dest.writeInt(this.ordinal());
-        }
+        return SyncContractOutput.fromBundle(intent.getExtras());
     }
 }

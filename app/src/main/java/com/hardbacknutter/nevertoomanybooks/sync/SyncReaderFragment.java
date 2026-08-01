@@ -49,7 +49,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractOutput;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
@@ -453,8 +453,8 @@ public class SyncReaderFragment
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
-                    final Intent resultIntent = SyncContractBase
-                            .createResult(SyncContractBase.Output.Read);
+                    final Intent resultIntent = new Intent()
+                            .putExtras(SyncContractOutput.Read.toBundle());
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

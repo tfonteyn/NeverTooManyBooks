@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractOutput;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -242,8 +242,8 @@ public class SyncWriterFragment
                         .setTitle(R.string.info_export_successful)
                         .setMessage(itemList)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
-                            final Intent resultIntent = SyncContractBase
-                                    .createResult(SyncContractBase.Output.Write);
+                            final Intent resultIntent = new Intent()
+                                    .putExtras(SyncContractOutput.Write.toBundle());
                             //noinspection DataFlowIssue
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
                             getActivity().finish();
