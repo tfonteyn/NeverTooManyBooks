@@ -44,6 +44,7 @@ final class CoverBrowserInput {
 
     /** 0..n image index. */
     private static final String BKEY_C_IDX = TAG + ":cIdx";
+    private static final String BKEY_SITE_LIST = TAG + ":list";
 
     @NonNull
     private final String requestKey;
@@ -83,7 +84,7 @@ final class CoverBrowserInput {
         final int cIdx = args.getInt(BKEY_C_IDX);
 
         @SuppressWarnings("deprecation")
-        final ArrayList<Site> sites = args.getParcelableArrayList(Site.Type.Covers.getBundleKey());
+        final ArrayList<Site> sites = args.getParcelableArrayList(BKEY_SITE_LIST);
 
         return new CoverBrowserInput(requestKey, bookTitle, productCodeStr, cIdx, sites);
     }
@@ -96,7 +97,7 @@ final class CoverBrowserInput {
         args.putString(DBKey.ISBN, productCodeStr);
         args.putInt(BKEY_C_IDX, cIdx);
         if (sites != null) {
-            args.putParcelableArrayList(Site.Type.Covers.getBundleKey(), sites);
+            args.putParcelableArrayList(BKEY_SITE_LIST, sites);
         }
 
         return args;
