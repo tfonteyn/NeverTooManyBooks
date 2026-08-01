@@ -20,12 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.settings.searchsites;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -46,15 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 public class SearchAdminViewModel
         extends ViewModel {
 
-    /** Log tag. */
-    private static final String TAG = "SearchAdminViewModel";
-    /**
-     * Single-list/tab mode parameter.
-     * <p>
-     * Type: {@code java.util.ArrayList<? extends android.os.Parcelable>)}
-     */
-    static final String BKEY_LIST = TAG + ":list";
-
     /** Ordered list. */
     private final Map<Site.Type, List<Site>> typeAndSites = new LinkedHashMap<>();
 
@@ -67,20 +55,15 @@ public class SearchAdminViewModel
 
     /**
      * Pseudo constructor.
-     * <p>
-     * If the {@link #BKEY_LIST} argument is present, we read a single list/type from it.
-     * Otherwise, we get the system/user preferred lists.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param siteList single list/type, when {@code null} or empty,
+     *                 the system/user preferred lists will be used.
      */
-    public void init(@Nullable final Bundle args) {
+    public void init(@Nullable final List<Site> siteList) {
         if (typeAndSites.isEmpty()) {
-            if (args != null) {
-                final List<Site> siteList = args.getParcelableArrayList(BKEY_LIST);
-                if (siteList != null && !siteList.isEmpty()) {
-                    // all sites have the same type, just grab it from the first one.
-                    typeAndSites.put(siteList.get(0).getType(), siteList);
-                }
+            if (siteList != null && !siteList.isEmpty()) {
+                // all sites have the same type, just grab it from the first one.
+                typeAndSites.put(siteList.get(0).getType(), siteList);
             }
 
             if (typeAndSites.isEmpty()) {

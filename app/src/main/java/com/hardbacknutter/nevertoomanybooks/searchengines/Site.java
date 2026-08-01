@@ -118,6 +118,7 @@ public final class Site
      *
      * @param in Parcel to construct the object from
      */
+    @SuppressWarnings("deprecation")
     private Site(@NonNull final Parcel in) {
         //noinspection DataFlowIssue
         engineId = in.readParcelable(Type.class.getClassLoader());
@@ -233,9 +234,6 @@ public final class Site
 
         /** Preferences prefix for site order per type. */
         private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
-
-        /** Log tag. */
-        private static final String TAG = "Site.Type";
 
         /** Internal name (for prefs). */
         @NonNull
@@ -453,11 +451,6 @@ public final class Site
         @StringRes
         public int getContentDescriptionResId() {
             return contentDescriptionResId;
-        }
-
-        @NonNull
-        public String getBundleKey() {
-            return TAG + ":" + key;
         }
 
         @Override

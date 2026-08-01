@@ -79,12 +79,11 @@ public class SearchAdminFragment
                         vm.persist();
                         // but to keep changes minimal, we still return the list if it's single.
                         if (vm.getTypes().size() == 1) {
-                            final Site.Type type = vm.getTypes().get(0);
-                            final Intent resultIntent = new Intent()
-                                    .putParcelableArrayListExtra(type.getBundleKey(),
-                                                                 new ArrayList<>(vm.getList(type)));
+                            final Bundle result = SingleSiteListInputOutput.toBundle(
+                                    new ArrayList<>(vm.getList(vm.getTypes().get(0))));
                             //noinspection DataFlowIssue
-                            getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                            getActivity().setResult(Activity.RESULT_OK,
+                                                    new Intent().putExtras(result));
                         }
                         //noinspection DataFlowIssue
                         getActivity().finish();
@@ -104,7 +103,7 @@ public class SearchAdminFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
-        vm.init(getArguments());
+        vm.init(SingleSiteListInputOutput.fromBundle(getArguments()));
     }
 
     @Nullable

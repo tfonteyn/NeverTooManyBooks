@@ -43,21 +43,14 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 public class SearchSitesSingleListContract
         extends ActivityResultContract<List<Site>, Optional<List<Site>>> {
 
-    /** The key (list type) to retrieve the result. */
-    private String listKey;
-
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final List<Site> list) {
 
-        // All sites in a list are always of the same type; just grab it from the first entry
-        listKey = list.get(0).getType().getBundleKey();
-
         return FragmentHostActivityLauncher
                 .createIntent(context, SearchAdminFragment.class, R.layout.activity_main_tabbar)
-                .putParcelableArrayListExtra(SearchAdminViewModel.BKEY_LIST,
-                                             new ArrayList<>(list));
+                .putExtras(SingleSiteListInputOutput.toBundle(new ArrayList<>(list)));
     }
 
     @NonNull
@@ -69,7 +62,6 @@ public class SearchSitesSingleListContract
             return Optional.empty();
         }
 
-        //noinspection deprecation
-        return Optional.ofNullable(intent.getParcelableArrayListExtra(listKey));
+        return Optional.ofNullable(SingleSiteListInputOutput.fromBundle(intent.getExtras()));
     }
 }
