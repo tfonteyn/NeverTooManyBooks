@@ -71,18 +71,14 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySea
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsInput;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
@@ -90,6 +86,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingle
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookInput;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -129,8 +127,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsInput;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookInput;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Tuning;
 import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorContract;
@@ -247,7 +248,7 @@ public class BooksOnBookshelf
     /** Display a Book. */
     private ActivityResultLauncher<ShowBookPagerInput> displayBookLauncher;
     /** Add a Book by doing a search on the internet. */
-    private ActivityResultLauncher<AddBookBySearchContract.Input> addBookBySearchLauncher;
+    private ActivityResultLauncher<SearchBookInput> addBookBySearchLauncher;
     /** Edit a Book. */
     private ActivityResultLauncher<EditBookInput> editBookLauncher;
     /** Update an individual Book with information from the internet. */
@@ -1427,32 +1428,27 @@ public class BooksOnBookshelf
     private void onFabMenuItemSelected(@IdRes final int menuItemId) {
 
         if (menuItemId == R.id.fab0_scan_barcode) {
-            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
-                    AddBookBySearchContract.By.Scan,
-                    vm.getStyle()));
+            addBookBySearchLauncher.launch(new SearchBookInput(
+                    SearchBookInput.By.Scan, vm.getStyle()));
 
         } else if (menuItemId == R.id.fab0_scan_barcode_batch) {
-            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
-                    AddBookBySearchContract.By.ScanBatch,
-                    vm.getStyle()));
+            addBookBySearchLauncher.launch(new SearchBookInput(
+                    SearchBookInput.By.ScanBatch, vm.getStyle()));
 
         } else if (menuItemId == R.id.fab1_search_isbn) {
-            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
-                    AddBookBySearchContract.By.ProductCode,
-                    vm.getStyle()));
+            addBookBySearchLauncher.launch(new SearchBookInput(
+                    SearchBookInput.By.ProductCode, vm.getStyle()));
 
         } else if (menuItemId == R.id.fab2_search_text) {
-            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
-                    AddBookBySearchContract.By.Text,
-                    vm.getStyle()));
+            addBookBySearchLauncher.launch(new SearchBookInput(
+                    SearchBookInput.By.Text, vm.getStyle()));
 
         } else if (menuItemId == R.id.fab3_add_manually) {
             editBookLauncher.launch(new EditBookInput(0L, vm.getStyle()));
 
         } else if (menuItemId == R.id.fab4_search_external_id) {
-            addBookBySearchLauncher.launch(new AddBookBySearchContract.Input(
-                    AddBookBySearchContract.By.ExternalId,
-                    vm.getStyle()));
+            addBookBySearchLauncher.launch(new SearchBookInput(
+                    SearchBookInput.By.ExternalId, vm.getStyle()));
 
         } else {
             throw new IllegalArgumentException(String.valueOf(menuItemId));

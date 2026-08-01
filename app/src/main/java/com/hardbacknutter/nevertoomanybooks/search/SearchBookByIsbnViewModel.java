@@ -20,12 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -45,12 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 
 public class SearchBookByIsbnViewModel
         extends ViewModel {
-
-    /** Log tag. */
-    private static final String TAG = "SearchBookByIsbnViewModel";
-
-    /** The {@link ScanMode} to start in. */
-    public static final String BKEY_SCANNER_MODE = TAG + ":scanMode";
 
     @NonNull
     private final EditBookOutput resultData = new EditBookOutput();
@@ -93,21 +85,21 @@ public class SearchBookByIsbnViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Fragment#getArguments()}
+     * @param args    all arguments
      */
     void init(@NonNull final Context context,
-              @Nullable final Bundle args) {
+              @Nullable final SearchBookInput args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
-                final ScanMode tmpScanMode = args.getParcelable(BKEY_SCANNER_MODE);
+                final ScanMode tmpScanMode = args.getScanMode();
                 if (tmpScanMode != null) {
                     this.scanMode = tmpScanMode;
                 }
 
                 // Lookup the provided style or use the default if not found.
-                final String styleUuid = args.getString(Style.BKEY_UUID);
+                final String styleUuid = args.getStyleUuid();
                 final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
                 style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
             }

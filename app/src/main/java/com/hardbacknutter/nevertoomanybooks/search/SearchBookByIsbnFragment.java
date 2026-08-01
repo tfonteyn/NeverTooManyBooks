@@ -287,8 +287,13 @@ public class SearchBookByIsbnFragment
         createActivityLaunchers();
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        final Bundle rawArgs = getArguments();
+        SearchBookInput args = null;
+        if (rawArgs != null) {
+            args = SearchBookInput.fromBundle(rawArgs);
+        }
         //noinspection DataFlowIssue
-        vm.init(getContext(), getArguments());
+        vm.init(getContext(), args);
 
         initQueue(IsbnQueueViewModel.class, vm.getStyle());
     }

@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -35,54 +34,40 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookInput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class AddBookBySearchContract
-        extends ActivityResultContract<AddBookBySearchContract.Input, Optional<EditBookOutput>> {
+        extends ActivityResultContract<SearchBookInput, Optional<EditBookOutput>> {
 
     private static final String TAG = "AddBookBySearchContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
-        switch (input.by) {
+                               @NonNull final SearchBookInput input) {
+        switch (input.getBy()) {
             case ProductCode:
-                return FragmentHostActivityLauncher
-                        .createIntent(context, SearchBookByIsbnFragment.class)
-                        .putExtra(Style.BKEY_UUID, input.styleUuid);
-
             case Scan:
-                return FragmentHostActivityLauncher
-                        .createIntent(context, SearchBookByIsbnFragment.class)
-                        .putExtra(Style.BKEY_UUID, input.styleUuid)
-                        .putExtra(SearchBookByIsbnViewModel.BKEY_SCANNER_MODE,
-                                  (Parcelable) ScanMode.getScannerModeSingle());
-
             case ScanBatch:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByIsbnFragment.class)
-                        .putExtra(Style.BKEY_UUID, input.styleUuid)
-                        .putExtra(SearchBookByIsbnViewModel.BKEY_SCANNER_MODE,
-                                  (Parcelable) ScanMode.Batch);
+                        .putExtras(input.toBundle());
 
             case ExternalId:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByExternalIdFragment.class)
-                        .putExtra(Style.BKEY_UUID, input.styleUuid);
+                        .putExtras(input.toBundle());
 
             case Text:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByTextFragment.class)
-                        .putExtra(Style.BKEY_UUID, input.styleUuid);
+                        .putExtras(input.toBundle());
             default:
-                throw new IllegalArgumentException(input.by.name());
+                throw new IllegalArgumentException(input.getBy().name());
         }
     }
 
@@ -101,27 +86,5 @@ public class AddBookBySearchContract
 
         final Bundle result = Objects.requireNonNull(intent.getExtras());
         return Optional.of(EditBookOutput.fromBundle(result));
-    }
-
-    public enum By {
-        ProductCode,
-        Scan,
-        ScanBatch,
-        Text,
-        ExternalId
-    }
-
-    public static class Input {
-
-        @NonNull
-        final By by;
-        @NonNull
-        final String styleUuid;
-
-        public Input(@NonNull final By by,
-                     @NonNull final Style style) {
-            this.by = by;
-            this.styleUuid = style.getUuid();
-        }
     }
 }

@@ -64,14 +64,14 @@ public class SearchBookByExternalIdViewModel
     /**
      * Pseudo constructor.
      *
-     * @param styleUuid to lookup
+     * @param args all arguments
      */
-    void init(@Nullable final String styleUuid) {
+    void init(@NonNull final SearchBookInput args) {
         if (identifierDao == null) {
             identifierDao = ServiceLocator.getInstance().getIdentifierDao();
             // Lookup the provided style or use the default if not found.
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-            style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
+            style = stylesHelper.getStyle(args.getStyleUuid()).orElseGet(stylesHelper::getDefault);
         }
     }
 
