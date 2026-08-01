@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -71,7 +70,7 @@ public class EditBookshelfViewModel
     }
 
     /**
-     * Were any of the fields changed?
+     * Were any of the fields changed.
      *
      * @return {@code true} if modified
      */

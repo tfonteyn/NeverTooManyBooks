@@ -543,8 +543,7 @@ public enum EngineId
      */
     @NonNull
     public Optional<String> getIdentifierKey(@NonNull final Identifier.EntityType type) {
-        final String k = identifierKeys.get(type);
-        return k == null ? Optional.empty() : Optional.of(k);
+        return Optional.ofNullable(identifierKeys.get(type));
     }
 
     @NonNull

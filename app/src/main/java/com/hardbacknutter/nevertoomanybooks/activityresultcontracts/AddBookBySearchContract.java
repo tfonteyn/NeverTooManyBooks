@@ -71,6 +71,7 @@ public class AddBookBySearchContract
     @NonNull
     public Optional<EditBookOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
+
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }

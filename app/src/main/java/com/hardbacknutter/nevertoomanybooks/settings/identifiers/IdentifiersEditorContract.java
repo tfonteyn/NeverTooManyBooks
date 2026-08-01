@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -74,11 +73,7 @@ public class IdentifiersEditorContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
-        final Bundle result = intent.getExtras();
-        if (result == null) {
-            return Optional.empty();
-        }
 
-        return Optional.of(SettingsOutput.fromBundle(result));
+        return SettingsOutput.fromBundle(intent.getExtras());
     }
 }

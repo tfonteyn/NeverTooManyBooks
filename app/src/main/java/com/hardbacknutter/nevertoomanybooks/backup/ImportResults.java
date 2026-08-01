@@ -134,15 +134,11 @@ public class ImportResults
 
     @NonNull
     public static Optional<ImportResults> fromBundle(@Nullable final Bundle args) {
-        if (args != null) {
-            @SuppressWarnings("deprecation")
-            final ImportResults importResults = args.getParcelable(ImportResults.BKEY);
-            if (importResults != null) {
-                return Optional.of(importResults);
-            }
+        if (args == null) {
+            return Optional.empty();
         }
-
-        return Optional.empty();
+        //noinspection deprecation
+        return Optional.ofNullable(args.getParcelable(ImportResults.BKEY));
     }
 
     @NonNull

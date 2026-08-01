@@ -46,9 +46,9 @@ public class EditBookshelvesOutput {
     }
 
     @NonNull
-    static EditBookshelvesOutput fromBundle(@NonNull final Bundle result) {
-        final long id = result.getLong(DBKey.FK_BOOKSHELF, 0);
-        final boolean modified = result.getBoolean(BKEY_MODIFIED, false);
+    static EditBookshelvesOutput fromBundle(@NonNull final Bundle args) {
+        final long id = args.getLong(DBKey.FK_BOOKSHELF, 0);
+        final boolean modified = args.getBoolean(BKEY_MODIFIED, false);
 
         return new EditBookshelvesOutput(id, modified);
     }

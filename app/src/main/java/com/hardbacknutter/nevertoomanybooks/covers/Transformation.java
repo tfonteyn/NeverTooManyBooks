@@ -219,20 +219,20 @@ class Transformation {
             return Optional.empty();
         }
 
-        if (bitmap != null) {
-            if (rotate) {
-                final int angle = determineRotationAngle(srcFile);
-                if (angle != 0) {
-                    final Optional<Bitmap> rotatedBitmap = rotate(bitmap, angle);
-                    if (rotatedBitmap.isPresent()) {
-                        return rotatedBitmap;
-                    }
-                }
-            }
-            return Optional.of(bitmap);
+        if (bitmap == null) {
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        if (rotate) {
+            final int angle = determineRotationAngle(srcFile);
+            if (angle != 0) {
+                final Optional<Bitmap> rotatedBitmap = rotate(bitmap, angle);
+                if (rotatedBitmap.isPresent()) {
+                    return rotatedBitmap;
+                }
+            }
+        }
+        return Optional.of(bitmap);
     }
 
     private int determineRotationAngle(@NonNull final File file) {

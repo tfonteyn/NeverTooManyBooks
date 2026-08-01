@@ -157,20 +157,20 @@ public final class MultiChoiceLauncher<T extends Entity>
         }
 
         @NonNull
-        static Output fromBundle(@NonNull final Bundle result) {
+        static Output fromBundle(@NonNull final Bundle args) {
             final Set<Long> previousSelection =
                     Arrays.stream(Objects.requireNonNull(
-                                  result.getLongArray(BKEY_ORIGINAL), BKEY_ORIGINAL))
+                                  args.getLongArray(BKEY_ORIGINAL), BKEY_ORIGINAL))
                           .boxed()
                           .collect(Collectors.toSet());
 
             final Set<Long> currentSelection =
                     Arrays.stream(Objects.requireNonNull(
-                                  result.getLongArray(BKEY_EDIT), BKEY_EDIT))
+                                  args.getLongArray(BKEY_EDIT), BKEY_EDIT))
                           .boxed()
                           .collect(Collectors.toSet());
 
-            final Bundle extras = result.getBundle(BKEY_EXTRAS);
+            final Bundle extras = args.getBundle(BKEY_EXTRAS);
             return new Output(previousSelection, currentSelection, extras);
         }
 

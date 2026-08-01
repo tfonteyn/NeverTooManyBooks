@@ -203,13 +203,13 @@ public final class EditParcelableLauncher<T extends Parcelable>
 
         @SuppressWarnings("deprecation")
         @NonNull
-        static <T extends Parcelable> Output<T> fromBundle(@NonNull final Bundle result) {
+        static <T extends Parcelable> Output<T> fromBundle(@NonNull final Bundle args) {
             final EditAction action = Objects.requireNonNull(
-                    result.getParcelable(EditAction.BKEY), EditAction.BKEY);
+                    args.getParcelable(EditAction.BKEY), EditAction.BKEY);
             final T previousValue = Objects.requireNonNull(
-                    result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL);
+                    args.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL);
             final T currentValue = Objects.requireNonNull(
-                    result.getParcelable(BKEY_EDIT), BKEY_EDIT);
+                    args.getParcelable(BKEY_EDIT), BKEY_EDIT);
 
             return new Output<>(action, previousValue, currentValue);
         }

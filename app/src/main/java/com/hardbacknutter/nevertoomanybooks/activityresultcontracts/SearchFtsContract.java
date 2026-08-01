@@ -54,7 +54,6 @@ public class SearchFtsContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
-        final LocalSearchCriteria criteria = LocalSearchCriteria.fromBundle(intent.getExtras());
-        return criteria != null ? Optional.of(criteria) : Optional.empty();
+        return Optional.ofNullable(LocalSearchCriteria.fromBundle(intent.getExtras()));
     }
 }

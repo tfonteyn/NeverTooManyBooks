@@ -1037,8 +1037,10 @@ public class Author
      */
     @NonNull
     public Optional<String> getBirthDate() {
-        return birthDate == null || birthDate.isEmpty() ? Optional.empty()
-                                                        : Optional.of(birthDate);
+        if (birthDate == null || birthDate.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(birthDate);
     }
 
     /**
@@ -1057,8 +1059,10 @@ public class Author
      */
     @NonNull
     public Optional<String> getDeathDate() {
-        return deathDate == null || deathDate.isEmpty() ? Optional.empty()
-                                                        : Optional.of(deathDate);
+        if (deathDate == null || deathDate.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(deathDate);
     }
 
     /**
@@ -1218,8 +1222,10 @@ public class Author
     @Override
     @NonNull
     public Optional<String> getImageUuid() {
-        return imageUuid == null || imageUuid.isEmpty()
-               ? Optional.empty() : Optional.of(imageUuid);
+        if (imageUuid == null || imageUuid.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(imageUuid);
     }
 
     /**
@@ -1238,8 +1244,10 @@ public class Author
      */
     @NonNull
     public Optional<String> getTmpPictureFileSpec() {
-        return tmpPictureFileSpec == null || tmpPictureFileSpec.isEmpty()
-               ? Optional.empty() : Optional.of(tmpPictureFileSpec);
+        if (tmpPictureFileSpec == null || tmpPictureFileSpec.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(tmpPictureFileSpec);
     }
 
     /**

@@ -291,7 +291,7 @@ public class ShowBookDetailsViewModel
     <T, V extends View> Optional<Field<T, V>> getField(@NonNull final String key) {
         //noinspection unchecked
         final Field<T, V> field = (Field<T, V>) fields.get(key);
-        return field == null ? Optional.empty() : Optional.of(field);
+        return Optional.ofNullable(field);
     }
 
     private void addField(@NonNull final Field<?, ? extends View> field) {

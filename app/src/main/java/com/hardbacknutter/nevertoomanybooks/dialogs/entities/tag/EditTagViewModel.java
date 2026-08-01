@@ -75,7 +75,7 @@ public class EditTagViewModel
     }
 
     /**
-     * Were any of the fields changed?
+     * Were any of the fields changed.
      *
      * @return {@code true} if modified
      */

@@ -23,6 +23,9 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Optional;
 
 public final class SettingsOutput {
     private static final String TAG = "SettingsOutput";
@@ -41,10 +44,15 @@ public final class SettingsOutput {
     }
 
     @NonNull
-    public static SettingsOutput fromBundle(@NonNull final Bundle result) {
-        final boolean recreateActivity = result.getBoolean(BKEY_RECREATE_ACTIVITY, false);
-        final boolean forceRebuildBooklist = result.getBoolean(BKEY_REBUILD_BOOKLIST, false);
-        return new SettingsOutput(recreateActivity, forceRebuildBooklist);
+    public static Optional<SettingsOutput> fromBundle(@Nullable final Bundle args) {
+        if (args == null) {
+            return Optional.empty();
+        }
+
+        final boolean recreateActivity = args.getBoolean(BKEY_RECREATE_ACTIVITY, false);
+        final boolean forceRebuildBooklist = args.getBoolean(BKEY_REBUILD_BOOKLIST, false);
+
+        return Optional.of(new SettingsOutput(recreateActivity, forceRebuildBooklist));
     }
 
     @NonNull

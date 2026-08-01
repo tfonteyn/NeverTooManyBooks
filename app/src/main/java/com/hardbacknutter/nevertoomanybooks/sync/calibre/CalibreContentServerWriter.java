@@ -241,16 +241,7 @@ public class CalibreContentServerWriter
         //  but on a local/home network it's good enough
         final JSONObject calibreBook = server.getBook(library.getLibraryStringId(), calibreUuid);
 
-        Optional<LocalDateTime> remoteDate = Optional.empty();
-        if (!calibreBook.isNull(CalibreBookJsonKey.LAST_MODIFIED)) {
-            try {
-                final String dateStr = calibreBook.getString(CalibreBookJsonKey.LAST_MODIFIED);
-                remoteDate = dateParser.parse(dateStr);
-            } catch (@NonNull final JSONException ignore) {
-                // ignore
-            }
-        }
-
+        final Optional<LocalDateTime> remoteDate = getRemoteDate(calibreBook);
         final Optional<LocalDateTime> localDate = book.getLastModified(dateParser);
 
         // Both should always be present, but paranoia...
@@ -265,6 +256,19 @@ public class CalibreContentServerWriter
             server.pushChanges(library.getLibraryStringId(), calibreId, changes);
             results.addBook(book.getId());
         }
+    }
+
+    @NonNull
+    private Optional<LocalDateTime> getRemoteDate(final JSONObject calibreBook) {
+        if (!calibreBook.isNull(CalibreBookJsonKey.LAST_MODIFIED)) {
+            try {
+                final String dateStr = calibreBook.getString(CalibreBookJsonKey.LAST_MODIFIED);
+                return dateParser.parse(dateStr);
+            } catch (@NonNull final JSONException ignore) {
+                // ignore
+            }
+        }
+        return Optional.empty();
     }
 
     /**

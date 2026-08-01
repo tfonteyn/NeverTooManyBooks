@@ -102,7 +102,7 @@ public class StylesHelper {
             return Optional.empty();
         }
         final Style style = getAllStyles().get(uuid);
-        return style == null ? Optional.empty() : Optional.of(style);
+        return Optional.ofNullable(style);
     }
 
     /**

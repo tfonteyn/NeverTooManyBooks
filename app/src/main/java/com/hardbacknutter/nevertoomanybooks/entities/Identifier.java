@@ -534,11 +534,7 @@ public class Identifier
         if (SID_ASIN.equals(key)) {
             return AmazonSearchEngine.getIdentifierUri(entityType);
         }
-
-        if (uri == null) {
-            return Optional.empty();
-        }
-        return Optional.of(uri);
+        return Optional.ofNullable(uri);
     }
 
     /**

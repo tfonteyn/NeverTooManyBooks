@@ -145,11 +145,11 @@ public class EditStringLauncher
         }
 
         @NonNull
-        static Output fromBundle(@NonNull final Bundle result) {
-            final String previousValue = result.getString(BKEY_ORIGINAL);
+        static Output fromBundle(@NonNull final Bundle args) {
+            final String previousValue = args.getString(BKEY_ORIGINAL);
             final String currentValue = Objects.requireNonNull(
-                    result.getString(BKEY_EDIT), BKEY_EDIT);
-            final Bundle extras = result.getBundle(BKEY_EXTRAS);
+                    args.getString(BKEY_EDIT), BKEY_EDIT);
+            final Bundle extras = args.getBundle(BKEY_EXTRAS);
 
             return new Output(previousValue, currentValue, extras);
         }

@@ -71,10 +71,10 @@ public final class EditBookOutput {
     }
 
     @NonNull
-    static EditBookOutput fromBundle(@NonNull final Bundle result) {
-        final boolean modified = result.getBoolean(BKEY_MODIFIED, false);
-        final long repositionToBookId = result.getLong(DBKey.FK_BOOK, 0);
-        final long lastBookIdProcessed = result.getLong(BKEY_LAST_BOOK_ID_PROCESSED, 0);
+    static EditBookOutput fromBundle(@NonNull final Bundle args) {
+        final boolean modified = args.getBoolean(BKEY_MODIFIED, false);
+        final long repositionToBookId = args.getLong(DBKey.FK_BOOK, 0);
+        final long lastBookIdProcessed = args.getLong(BKEY_LAST_BOOK_ID_PROCESSED, 0);
 
         return new EditBookOutput(modified, repositionToBookId, lastBookIdProcessed);
     }

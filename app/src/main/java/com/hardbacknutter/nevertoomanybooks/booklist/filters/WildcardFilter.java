@@ -85,7 +85,7 @@ public class WildcardFilter
     @NonNull
     @Override
     public Optional<Pair<String, String>> getJoinExpression() {
-        return join == null ? Optional.empty() : Optional.of(join);
+        return Optional.ofNullable(join);
     }
 
     @Override

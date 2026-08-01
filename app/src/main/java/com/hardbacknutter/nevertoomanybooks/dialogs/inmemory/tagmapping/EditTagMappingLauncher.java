@@ -137,12 +137,12 @@ public class EditTagMappingLauncher
 
         @SuppressWarnings("deprecation")
         @NonNull
-        static Output fromBundle(@NonNull final Bundle result) {
+        static Output fromBundle(@NonNull final Bundle args) {
             final TagMapping previousValue = Objects.requireNonNull(
-                    result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL);
+                    args.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL);
             final TagMapping currentValue = Objects.requireNonNull(
-                    result.getParcelable(BKEY_EDIT), BKEY_EDIT);
-            final Bundle extras = result.getBundle(BKEY_EXTRAS);
+                    args.getParcelable(BKEY_EDIT), BKEY_EDIT);
+            final Bundle extras = args.getBundle(BKEY_EXTRAS);
 
             return new Output(previousValue, currentValue, extras);
         }

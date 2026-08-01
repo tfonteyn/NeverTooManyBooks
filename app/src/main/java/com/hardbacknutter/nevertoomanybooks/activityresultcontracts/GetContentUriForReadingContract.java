@@ -57,11 +57,6 @@ public class GetContentUriForReadingContract
             return Optional.empty();
         }
 
-        final Uri uri = intent.getData();
-        if (uri != null) {
-            return Optional.of(uri);
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(intent.getData());
     }
 }

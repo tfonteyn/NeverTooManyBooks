@@ -62,24 +62,24 @@ public final class Barcode {
     @NonNull
     public static Optional<Barcode> from(@NonNull final Result result) {
         final String barcode = result.getText();
-        if (barcode != null) {
-            final Barcode value;
-            final Map<ResultMetadataType, Object> metadata = result.getResultMetadata();
-            if (metadata != null) {
-                value = new Barcode(
-                        barcode,
-                        result.getBarcodeFormat(),
-                        (Integer) metadata.get(ResultMetadataType.ISSUE_NUMBER),
-                        (String) metadata.get(ResultMetadataType.SUGGESTED_PRICE),
-                        (String) metadata.get(ResultMetadataType.UPC_EAN_EXTENSION));
-            } else {
-                value = new Barcode(barcode, result.getBarcodeFormat(),
-                                    null, null, null);
-            }
-            return Optional.of(value);
-        } else {
+        if (barcode == null) {
             return Optional.empty();
         }
+
+        final Barcode value;
+        final Map<ResultMetadataType, Object> metadata = result.getResultMetadata();
+        if (metadata != null) {
+            value = new Barcode(
+                    barcode,
+                    result.getBarcodeFormat(),
+                    (Integer) metadata.get(ResultMetadataType.ISSUE_NUMBER),
+                    (String) metadata.get(ResultMetadataType.SUGGESTED_PRICE),
+                    (String) metadata.get(ResultMetadataType.UPC_EAN_EXTENSION));
+        } else {
+            value = new Barcode(barcode, result.getBarcodeFormat(),
+                                null, null, null);
+        }
+        return Optional.of(value);
     }
 
     @NonNull
