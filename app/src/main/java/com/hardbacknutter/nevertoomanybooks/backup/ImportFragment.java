@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvFormat;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
@@ -349,7 +348,7 @@ public class ImportFragment
         final StringJoiner info = new StringJoiner("\n");
         final Context context = getContext();
 
-        //noinspection deprecation
+        @SuppressWarnings("deprecation")
         @Nullable
         final CsvFormat csvFormat = metaData.getData().getParcelable(CsvFormat.BKEY);
         if (csvFormat != null) {
@@ -522,9 +521,9 @@ public class ImportFragment
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
                     backPressedCallback.setEnabled(false);
-                    final Intent resultIntent = ImportContract.createResult(result);
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            new Intent().putExtras(result.toBundle()));
                     getActivity().finish();
                 })
                 .create()

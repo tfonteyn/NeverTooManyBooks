@@ -20,15 +20,18 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -81,8 +84,10 @@ public class ImportResults
      * Not strictly needed as row number should be part of the messages.
      * Keeping for possible future enhancements.
      */
+    @VisibleForTesting
     final List<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
+    @VisibleForTesting
     final List<String> failedLinesMessage = new ArrayList<>();
     /** records we found, but did not understand; i.e. did not have a {@link RecordReader} for. */
     public int recordsSkipped;
@@ -121,8 +126,30 @@ public class ImportResults
         deletedBookRecords = in.readInt();
 
         recordsSkipped = in.readInt();
+        //noinspection deprecation
         in.readList(failedLinesNr, getClass().getClassLoader());
+        //noinspection deprecation
         in.readList(failedLinesMessage, getClass().getClassLoader());
+    }
+
+    @NonNull
+    public static Optional<ImportResults> fromBundle(@Nullable final Bundle args) {
+        if (args != null) {
+            @SuppressWarnings("deprecation")
+            final ImportResults importResults = args.getParcelable(ImportResults.BKEY);
+            if (importResults != null) {
+                return Optional.of(importResults);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @NonNull
+    public Bundle toBundle() {
+        final Bundle args = new Bundle(1);
+        args.putParcelable(BKEY, this);
+        return args;
     }
 
     /**

@@ -36,18 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 public class ImportContract
         extends ActivityResultContract<Void, Optional<ImportResults>> {
 
-    /**
-     * Create the result which {@link #parseResult(int, Intent)} will receive.
-     *
-     * @param importResults the result
-     *
-     * @return Intent
-     */
-    @NonNull
-    public static Intent createResult(@NonNull final ImportResults importResults) {
-        return new Intent().putExtra(ImportResults.BKEY, importResults);
-    }
-
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
@@ -64,12 +52,6 @@ public class ImportContract
             return Optional.empty();
         }
 
-        @SuppressWarnings("deprecation")
-        final ImportResults importResults = intent.getParcelableExtra(ImportResults.BKEY);
-        if (importResults != null) {
-            return Optional.of(importResults);
-        } else {
-            return Optional.empty();
-        }
+        return ImportResults.fromBundle(intent.getExtras());
     }
 }
