@@ -60,6 +60,7 @@ public class EditTocEntryInput {
         this.isAnthology = isAnthology;
     }
 
+    @NonNull
     static EditTocEntryInput fromBundle(@NonNull final Bundle args) {
         final String requestKey = Objects.requireNonNull(
                 args.getString(DialogLauncher.BKEY_REQUEST_KEY),

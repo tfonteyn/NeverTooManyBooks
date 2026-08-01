@@ -51,6 +51,7 @@ class EditTagMappingInput {
         this.extras = extras;
     }
 
+    @NonNull
     static EditTagMappingInput fromBundle(@NonNull final Bundle args) {
         final String requestKey = Objects.requireNonNull(
                 args.getString(DialogLauncher.BKEY_REQUEST_KEY),
