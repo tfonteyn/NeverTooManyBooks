@@ -86,12 +86,11 @@ public class PreferredStylesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final String uuid = vm.getSelectedUuid();
-                    final Intent resultIntent = EditPreferredStylesContract
-                            .createResult(uuid, vm.isModified());
-
+                    final PreferredStylesOutput args = new PreferredStylesOutput(
+                            vm.getSelectedUuid(), vm.isModified());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            new Intent().putExtras(args.toBundle()));
                     getActivity().finish();
                 }
             };

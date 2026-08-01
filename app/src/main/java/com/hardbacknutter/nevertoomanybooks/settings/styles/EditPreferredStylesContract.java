@@ -22,40 +22,20 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
 public class EditPreferredStylesContract
-        extends ActivityResultContract<String, Optional<EditPreferredStylesContract.Output>> {
-
-    private static final String TAG = "EditPreferredStylesContract";
-
-    private static final String BKEY_MODIFIED = TAG + ":m";
-
-    /**
-     * Create the result which {@link #parseResult(int, Intent)} will receive.
-     *
-     * @param styleUuid Return the currently selected style UUID, so the caller can apply it.
-     *                  This is independent of any modification to this or another style,
-     *                  or the order of the styles.
-     * @param modified  flag indicating if <strong>anything at all</strong> was modified.
-     *                  This is independent of the returned style
-     *
-     * @return Intent
-     */
-    @NonNull
-    public static Intent createResult(@Nullable final String styleUuid,
-                                      final boolean modified) {
-        return new Intent().putExtra(Style.BKEY_UUID, styleUuid)
-                           .putExtra(BKEY_MODIFIED, modified);
-    }
+        extends ActivityResultContract<String, Optional<PreferredStylesOutput>> {
 
     @NonNull
     @Override
@@ -68,45 +48,14 @@ public class EditPreferredStylesContract
 
     @Override
     @NonNull
-    public Optional<Output> parseResult(final int resultCode,
-                                        @Nullable final Intent intent) {
+    public Optional<PreferredStylesOutput> parseResult(final int resultCode,
+                                                       @Nullable final Intent intent) {
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
 
-        final String uuid = intent.getStringExtra(Style.BKEY_UUID);
-        final boolean modified = intent.getBooleanExtra(BKEY_MODIFIED, false);
-        return Optional.of(new Output(uuid, modified));
-    }
-
-    public static final class Output {
-
-        @Nullable
-        private final String uuid;
-        private final boolean modified;
-
-        private Output(@Nullable final String uuid,
-                       final boolean modified) {
-            this.uuid = uuid;
-            this.modified = modified;
-        }
-
-        /**
-         * Get the UUID.
-         *
-         * @return {@link Optional} with a non-blank UUID
-         */
-        @NonNull
-        public Optional<String> getUuid() {
-            if (uuid == null || uuid.isBlank()) {
-                return Optional.empty();
-            }
-            return Optional.of(uuid);
-        }
-
-        public boolean isModified() {
-            return modified;
-        }
+        final Bundle args = Objects.requireNonNull(intent.getExtras());
+        return Optional.of(PreferredStylesOutput.fromBundle(args));
     }
 }

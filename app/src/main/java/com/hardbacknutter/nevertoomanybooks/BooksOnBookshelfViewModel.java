@@ -89,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesOutput;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.util.livedataevent.LiveDataEvent;
 import com.hardbacknutter.util.logger.Logger;
@@ -1433,9 +1434,8 @@ public class BooksOnBookshelfViewModel
      * @param data    returned from the view/edit contract
      */
     void onEditStylesFinished(@NonNull final Context context,
-                              @NonNull final EditPreferredStylesContract.Output data) {
-        // we get the UUID for the selected style back.
-        data.getUuid().ifPresent(uuid -> onStyleChanged(context, uuid));
+                              @NonNull final PreferredStylesOutput data) {
+        data.getSelectedStyleUuid().ifPresent(uuid -> onStyleChanged(context, uuid));
 
         // This is independent of the above style having been modified or not.
         if (data.isModified()) {
