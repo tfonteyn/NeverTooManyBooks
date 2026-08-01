@@ -50,7 +50,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -86,12 +86,11 @@ public class EditBookshelvesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    @IntRange(from = 0)
-                    final long id = vm.getSelectedBookshelfId();
-                    final boolean modified = vm.isModified();
-                    final Intent resultIntent = EditBookshelvesContract.createResult(id, modified);
+                    final EditBookshelvesOutput output =
+                            new EditBookshelvesOutput(vm.getSelectedBookshelfId(), vm.isModified());
                     //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            new Intent().putExtras(output.toBundle()));
                     getActivity().finish();
                 }
             };

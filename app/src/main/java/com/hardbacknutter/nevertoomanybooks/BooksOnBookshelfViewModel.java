@@ -48,7 +48,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesOutput;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
@@ -1464,7 +1464,7 @@ public class BooksOnBookshelfViewModel
     }
 
     void onManageBookshelvesFinished(@NonNull final Context context,
-                                     @NonNull final EditBookshelvesContract.Output data) {
+                                     @NonNull final EditBookshelvesOutput data) {
         // Always update the list of bookshelves
         reloadBookshelfList(context);
 

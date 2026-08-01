@@ -36,22 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesFragment;
 
 public class EditBookshelvesContract
-        extends ActivityResultContract<Long, Optional<EditBookshelvesContract.Output>> {
-
-    /**
-     * Create the result which {@link #parseResult(int, Intent)} will receive.
-     *
-     * @param selectedBookshelfId id, or {@code 0} for none
-     * @param modified            was anything at all modified
-     *
-     * @return Intent
-     */
-    public static Intent createResult(final long selectedBookshelfId,
-                                      final boolean modified) {
-        final EditBookshelvesContract.Output output =
-                new EditBookshelvesContract.Output(selectedBookshelfId, modified);
-        return new Intent().putExtras(output.toBundle());
-    }
+        extends ActivityResultContract<Long, Optional<EditBookshelvesOutput>> {
 
     @NonNull
     @Override
@@ -64,57 +49,14 @@ public class EditBookshelvesContract
 
     @NonNull
     @Override
-    public Optional<Output> parseResult(final int resultCode,
-                                      @Nullable final Intent intent) {
+    public Optional<EditBookshelvesOutput> parseResult(final int resultCode,
+                                                       @Nullable final Intent intent) {
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
 
         final Bundle result = Objects.requireNonNull(intent.getExtras());
-        return Optional.of(Output.fromBundle(result));
+        return Optional.of(EditBookshelvesOutput.fromBundle(result));
     }
 
-    public static class Output {
-
-        private static final String BKEY_MODIFIED = "modified";
-
-        private final long selectedBookshelfId;
-        private final boolean modified;
-
-        public Output(final long selectedBookshelfId,
-                      final boolean modified) {
-            this.selectedBookshelfId = selectedBookshelfId;
-            this.modified = modified;
-        }
-
-        @NonNull
-        static Output fromBundle(@NonNull final Bundle result) {
-            final long id = result.getLong(DBKey.FK_BOOKSHELF, 0);
-            final boolean modified = result.getBoolean(BKEY_MODIFIED, false);
-
-            return new Output(id, modified);
-        }
-
-        @NonNull
-        Bundle toBundle() {
-            final Bundle args = new Bundle(2);
-            args.putLong(DBKey.FK_BOOKSHELF, selectedBookshelfId);
-            args.putBoolean(BKEY_MODIFIED, modified);
-
-            return args;
-        }
-
-        public long getSelectedBookshelfId() {
-            return selectedBookshelfId;
-        }
-
-        /**
-         * Was anything at all modified.
-         *
-         * @return flag
-         */
-        public boolean isModified() {
-            return modified;
-        }
-    }
 }
