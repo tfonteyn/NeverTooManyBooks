@@ -32,10 +32,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.util.logger.LoggerFactory;
-
 public abstract class SyncContractBase
         extends ActivityResultContract<Void, EnumSet<SyncContractBase.Output>> {
 
@@ -59,15 +55,12 @@ public abstract class SyncContractBase
     @NonNull
     public EnumSet<Output> parseResult(final int resultCode,
                                        @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return EnumSet.noneOf(Output.class);
         }
 
+        @SuppressWarnings("deprecation")
         final List<Output> list = intent.getParcelableArrayListExtra(BKEY_RESULT);
         if (list == null) {
             return EnumSet.noneOf(Output.class);

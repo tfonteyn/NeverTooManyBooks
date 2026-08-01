@@ -34,16 +34,11 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksInput;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class AuthorWorksContract
         extends ActivityResultContract<AuthorWorksInput, Optional<EditBookOutput>> {
-
-    private static final String TAG = "AuthorWorksContract";
 
     @NonNull
     @Override
@@ -61,10 +56,6 @@ public class AuthorWorksContract
     @NonNull
     public Optional<EditBookOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

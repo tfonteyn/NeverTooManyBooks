@@ -29,18 +29,13 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsInput;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SearchFtsContract
         extends ActivityResultContract<SearchFtsInput, Optional<LocalSearchCriteria>> {
-
-    private static final String TAG = "SearchFtsContract";
 
     @NonNull
     @Override
@@ -55,15 +50,12 @@ public class SearchFtsContract
     @NonNull
     public Optional<LocalSearchCriteria> parseResult(final int resultCode,
                                                      @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
         // The criteria are always present, but can be empty.
+        @SuppressWarnings("deprecation")
         final LocalSearchCriteria searchCriteria = intent.getParcelableExtra(
                 LocalSearchCriteria.BKEY);
         if (searchCriteria != null) {

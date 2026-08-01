@@ -33,22 +33,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Update a single Book. The input is the Book itself.
  */
 public class UpdateSingleBookContract
         extends ActivityResultContract<Book, Optional<EditBookOutput>> {
-
-    private static final String TAG = "Update1BookContract";
 
     @NonNull
     @Override
@@ -75,10 +70,6 @@ public class UpdateSingleBookContract
     @NonNull
     public Optional<EditBookOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

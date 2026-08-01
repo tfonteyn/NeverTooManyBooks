@@ -34,13 +34,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.entities.codes.Barcode;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Full-screen {@code com.hardbacknutter.tinyzxingwrapper} scanner activity.
@@ -50,8 +47,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class ScannerContract
         extends ActivityResultContract<ScanOptions, Optional<Barcode>> {
-
-    private static final String TAG = "ScannerContract";
 
     /**
      * The barcode formats we read.
@@ -103,10 +98,6 @@ public class ScannerContract
     @Override
     public Optional<Barcode> parseResult(final int resultCode,
                                          @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

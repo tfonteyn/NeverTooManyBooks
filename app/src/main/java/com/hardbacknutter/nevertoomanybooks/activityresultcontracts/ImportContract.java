@@ -29,17 +29,12 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class ImportContract
         extends ActivityResultContract<Void, Optional<ImportResults>> {
-
-    private static final String TAG = "ImportContract";
 
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
@@ -64,15 +59,12 @@ public class ImportContract
     @NonNull
     public Optional<ImportResults> parseResult(final int resultCode,
                                                @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
 
+        @SuppressWarnings("deprecation")
         final ImportResults importResults = intent.getParcelableExtra(ImportResults.BKEY);
         if (importResults != null) {
             return Optional.of(importResults);

@@ -68,10 +68,6 @@ public final class DEBUG_SWITCHES {
      */
     public static final boolean BOB_NODE_POSITIONS = false;
 
-
-    /** track results from {@link ActivityResultContract#parseResult}. */
-    public static final boolean ON_ACTIVITY_RESULT = false;
-
     /** all things related to cover image handling. */
     public static final boolean IMAGES = false;
 

@@ -31,11 +31,8 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * A replacement for
@@ -50,8 +47,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class TakePictureContract
         extends ActivityResultContract<TakePictureContract.Input, Boolean> {
 
-    private static final String TAG = "TakePictureContract";
-
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
@@ -64,10 +59,6 @@ public class TakePictureContract
     @NonNull
     public Boolean parseResult(final int resultCode,
                                       @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         // GitHub #11: the Google camera app returns an empty Intent, while
         // OpenCamera returns a null for the Intent.

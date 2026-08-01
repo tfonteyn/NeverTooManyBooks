@@ -31,17 +31,12 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesFragment;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class EditBookshelvesContract
         extends ActivityResultContract<Long, Optional<EditBookshelvesContract.Output>> {
-
-    private static final String TAG = "EditBookshelvesContract";
 
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
@@ -71,11 +66,6 @@ public class EditBookshelvesContract
     @Override
     public Optional<Output> parseResult(final int resultCode,
                                       @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
-
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }

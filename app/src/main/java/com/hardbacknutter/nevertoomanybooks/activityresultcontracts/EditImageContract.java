@@ -33,17 +33,12 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
-import com.hardbacknutter.util.logger.LoggerFactory;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
 public class EditImageContract
         extends ActivityResultContract<EditImageContract.Input, Boolean> {
-
-    private static final String TAG = "EditImageContract";
 
     @CallSuper
     @NonNull
@@ -107,10 +102,6 @@ public class EditImageContract
     @Override
     public final Boolean parseResult(final int resultCode,
                                             @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger().d(TAG, "parseResult",
-                                        "resultCode=" + resultCode, "intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return false;

@@ -34,18 +34,12 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.util.logger.LoggerFactory;
-
 /**
  * A replacement for the broken java API of
  * {@link androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia}.
  */
 public class PickVisualMediaContract
         extends ActivityResultContract<String, Optional<Uri>> {
-
-    private static final String TAG = "PickVisualMediaContract";
 
     /**
      * Check if the current device has support for the photo picker by checking
@@ -85,10 +79,6 @@ public class PickVisualMediaContract
     @NonNull
     public Optional<Uri> parseResult(final int resultCode,
                                      @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

@@ -35,17 +35,12 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class EditImageExternalContract
         extends ActivityResultContract<EditImageExternalContract.Input, Boolean> {
-
-    private static final String TAG = "ExternalEditImageContra";
 
     private static final String IMAGE_MIME_TYPE = "image/*";
 
@@ -84,10 +79,6 @@ public class EditImageExternalContract
     @NonNull
     public Boolean parseResult(final int resultCode,
                                       @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         return resultCode == Activity.RESULT_OK;
     }

@@ -31,24 +31,20 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookInput;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class AddBookBySearchContract
         extends ActivityResultContract<SearchBookInput, Optional<EditBookOutput>> {
-
-    private static final String TAG = "AddBookBySearchContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SearchBookInput args) {
+
         switch (args.getBy()) {
             case ProductCode:
             case Scan:
@@ -75,11 +71,6 @@ public class AddBookBySearchContract
     @NonNull
     public Optional<EditBookOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
-
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }

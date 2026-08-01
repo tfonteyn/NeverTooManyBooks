@@ -31,12 +31,9 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesInput;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Update a list of Books. The input is a list of ids and screen title/subtitle,
@@ -44,8 +41,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class UpdateBooklistContract
         extends ActivityResultContract<SearchBookUpdatesInput, Optional<EditBookOutput>> {
-
-    private static final String TAG = "UpdateBooklistContract";
 
     @NonNull
     @Override
@@ -61,10 +56,6 @@ public class UpdateBooklistContract
     @NonNull
     public Optional<EditBookOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

@@ -30,17 +30,12 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SettingsContract
         extends ActivityResultContract<String, Optional<SettingsOutput>> {
-
-    private static final String TAG = "SettingsContract";
 
     @NonNull
     @Override
@@ -58,10 +53,6 @@ public class SettingsContract
     @NonNull
     public Optional<SettingsOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger().d(TAG, "parseResult", "|resultCode=" + resultCode
-                                                            + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

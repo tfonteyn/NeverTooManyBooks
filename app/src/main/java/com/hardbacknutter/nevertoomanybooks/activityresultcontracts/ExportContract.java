@@ -27,16 +27,11 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class ExportContract
         extends ActivityResultContract<Void, Boolean> {
-
-    private static final String TAG = "ExportContract";
 
     @NonNull
     @Override
@@ -49,10 +44,6 @@ public class ExportContract
     @NonNull
     public Boolean parseResult(final int resultCode,
                                @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         return intent != null && resultCode == Activity.RESULT_OK;
     }

@@ -31,10 +31,6 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.util.logger.LoggerFactory;
-
 /**
  * A replacement for
  * {@link androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree}.
@@ -43,8 +39,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class GetDirectoryUriContract
         extends ActivityResultContract<Uri, Optional<Uri>> {
-
-    private static final String TAG = "GetDirectoryUriContract";
 
     @NonNull
     @Override
@@ -61,10 +55,6 @@ public class GetDirectoryUriContract
     @NonNull
     public Optional<Uri> parseResult(final int resultCode,
                                      @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

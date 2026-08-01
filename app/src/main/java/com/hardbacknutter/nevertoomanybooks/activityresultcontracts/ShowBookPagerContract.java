@@ -31,18 +31,13 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerInput;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class ShowBookPagerContract
         extends ActivityResultContract<ShowBookPagerInput, Optional<EditBookOutput>> {
-
-    private static final String TAG = "ShowBookPagerContract";
 
     @NonNull
     @Override
@@ -58,10 +53,6 @@ public class ShowBookPagerContract
     @NonNull
     public Optional<EditBookOutput> parseResult(final int resultCode,
                                                 @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();

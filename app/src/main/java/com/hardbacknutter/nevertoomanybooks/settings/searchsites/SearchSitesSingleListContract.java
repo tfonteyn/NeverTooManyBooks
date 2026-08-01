@@ -31,12 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * We're sticking with the {@code Optional<List<Site>>} to maintain consistency with
@@ -46,8 +43,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SearchSitesSingleListContract
         extends ActivityResultContract<List<Site>, Optional<List<Site>>> {
 
-    /** Log tag. */
-    private static final String TAG = "SearchSitesSingleList";
     /** The key (list type) to retrieve the result. */
     private String listKey;
 
@@ -69,16 +64,12 @@ public class SearchSitesSingleListContract
     @Override
     public Optional<List<Site>> parseResult(final int resultCode,
                                             @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger().d(TAG, "parseResult", "|resultCode=" + resultCode
-                                                            + "|intent=" + intent
-                                                            + "|listKey=" + listKey);
-        }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
 
+        //noinspection deprecation
         return Optional.ofNullable(intent.getParcelableArrayListExtra(listKey));
     }
 }
